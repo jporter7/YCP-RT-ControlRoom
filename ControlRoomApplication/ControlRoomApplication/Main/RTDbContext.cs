@@ -4,11 +4,11 @@ namespace ControlRoomApplication
 {
     public class RTDbContext : DbContext
     {
-        public RTDbContext() : base()
+        public RTDbContext() : base("rtdatabase")
         {
+            Configuration.LazyLoadingEnabled = true;
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
     }
 }

@@ -2,6 +2,6 @@
 {
     public class Constants
     {
-        public const int MAX_USERNAME_LENGTH = 15;
+        public static readonly int MAX_USERNAME_LENGTH = 15;
     }
 }
