@@ -9,7 +9,7 @@ namespace ControlRoomApplicationTest
     {
         private Schedule schedule;
         private DateTime currentDateTime;
-        private const double TIME_DELTA = 3.0;
+        private const double TIME_DELTA = 5.0;
 
         [TestInitialize]
         public void BuildUp()
