@@ -9,20 +9,19 @@ namespace ControlRoomApplicationTest
     {
         private Schedule schedule;
         private DateTime currentDateTime;
-        private const double TIME_DELTA = 3.0;
 
         [TestInitialize]
         public void BuildUp()
         {
             schedule = new Schedule();
-            currentDateTime = DateTime.Now;
+            currentDateTime = new DateTime();
         }
 
         [TestMethod]
         public void TestSettersAndGetters()
         {
             Assert.AreEqual(0, schedule.Appointments.Count);
-            Assert.AreEqual(currentDateTime.Millisecond, schedule.CurrentDateTime.Millisecond, TIME_DELTA);
+            Assert.AreEqual(currentDateTime.Year, schedule.CurrentDateTime.Year);
         }
     }
 }
