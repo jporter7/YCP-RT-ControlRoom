@@ -49,7 +49,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntitiesTests\ScheduleTest\ScheduleTest.cs" />
+    <Compile Include="EntitiesTests\ControlRoomTest.cs" />
+    <Compile Include="EntitiesTests\ScheduleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
