@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
+    <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Main\Program.cs" />
