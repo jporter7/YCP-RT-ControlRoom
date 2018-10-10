@@ -2,7 +2,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ControlRoomApplicationTest
+namespace ControlRoomApplicationTest.EntitiesTests
 {
     [TestClass]
     public class ScheduleTest
