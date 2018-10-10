@@ -2,7 +2,7 @@ using System.Data.Entity.Migrations;
 
 namespace ControlRoomApplication.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<ControlRoomApplication.RTDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<ControlRoomApplication.Main.RTDbContext>
     {
         public Configuration()
         {
@@ -10,7 +10,7 @@ namespace ControlRoomApplication.Migrations
             SetSqlGenerator("MySql.Data.MySqlClient", new MySql.Data.EntityFramework.MySqlMigrationSqlGenerator());
         }
 
-        protected override void Seed(ControlRoomApplication.RTDbContext context)
+        protected override void Seed(ControlRoomApplication.Main.RTDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 

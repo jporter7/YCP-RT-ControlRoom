@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ControlRoomApplication
+namespace ControlRoomApplication.Entities
 {
     [Table("Appointments")]
     public class Appointment

@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
+using ControlRoomApplication.Entities;
 
-namespace ControlRoomApplication
+namespace ControlRoomApplication.Main
 {
     public class RTDbContext : DbContext
     {

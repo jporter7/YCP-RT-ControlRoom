@@ -1,16 +1,23 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-namespace ControlRoomApplication.Entities.Schedule
+namespace ControlRoomApplication.Entities
 {
-    [Table("Schedule")]
     public class Schedule
     {
         public Schedule()
         {
-
+            CurrentDateTime = new DateTime();
+            Appointments = new Collection<Appointment>();
         }
 
-        public virtual ICollection<Appointment> Appointments { get; set; }
+        public Schedule(ICollection<Appointment> appointments)
+        {
+            Appointments = appointments;
+        }
+
+        public DateTime CurrentDateTime { get; set; }
+        public ICollection<Appointment> Appointments { get; set; }
     }
 }
