@@ -73,6 +73,7 @@
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Orientation\Orientation.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Main\Program.cs" />
