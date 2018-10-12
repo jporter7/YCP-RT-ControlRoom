@@ -1,9 +1,12 @@
-﻿using System;
-
-namespace ControlRoomApplication.Entities.Coordinate
+﻿namespace ControlRoomApplication.Entities
 {
-    class Coordinate
+    public class Coordinate
     {
+        public Coordinate()
+        {
+
+        }
+        
         public double Azimuth { get; set; }
         public double Altitude { get; set; }
     }

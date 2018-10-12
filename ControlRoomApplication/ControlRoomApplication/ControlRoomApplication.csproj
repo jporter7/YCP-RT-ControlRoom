@@ -69,7 +69,6 @@
   <ItemGroup>
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
-    <Compile Include="Entities\Command\Command.cs" />
     <Compile Include="Entities\Coordinate\Coordinate.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
