@@ -17,5 +17,6 @@ namespace ControlRoomApplication
         public static readonly int SPECTRA_CYBER_BUFFER_SIZE = 8; // Max necessary value should only be 4, so this can change if necessary
         public static readonly int SPECTRA_CYBER_TIMEOUT_MS = 1000;
         public static readonly int SPECTRA_CYBER_WAIT_TIME_MS = 70; // TODO: confirm that this is enough time to wait
+        public static readonly string SPECTRA_CYBER_DEFAULT_COMM_PORT = "COM1";
     }
 }

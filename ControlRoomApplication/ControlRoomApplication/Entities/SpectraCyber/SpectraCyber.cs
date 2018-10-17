@@ -16,13 +16,15 @@ namespace ControlRoomApplication.Entities
 {
     public enum SpecraCyberModeTypeEnum { Unknown, Continuum, Spectral };
 
-    class SpectraCyberCommunication
+    public class SpectraCyber
     {
+        private SpecraCyberModeTypeEnum CurrentModeType { get; set; }
         private string CommPort { get; }
         private SerialPort SCSerialPort;
 
-        public SpectraCyberCommunication(string commPort)
+        public SpectraCyber(string commPort)
         {
+            CurrentModeType = SpecraCyberModeTypeEnum.Unknown;
             CommPort = commPort;
 
             SCSerialPort = new SerialPort(
@@ -37,19 +39,7 @@ namespace ControlRoomApplication.Entities
                 WriteTimeout = Constants.SPECTRA_CYBER_TIMEOUT_MS
             };
         }
-    }
 
-    public class SpectraCyber
-    {
-        private SpectraCyberCommunication SCComms;
-        private SpecraCyberModeTypeEnum CurrentModeType { get; set; }
-
-        public SpectraCyber(string commPort)
-        {
-            SCComms = new SpectraCyberCommunication(commPort);
-            CurrentModeType = SpecraCyberModeTypeEnum.Unknown;
-        }
-
-        public SpectraCyber() : this("COM1") { }
+        public SpectraCyber() : this(Constants.SPECTRA_CYBER_DEFAULT_COMM_PORT) { }
     }
 }
