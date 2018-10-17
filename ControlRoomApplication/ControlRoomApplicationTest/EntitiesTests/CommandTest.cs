@@ -17,7 +17,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
                 Resolution = 2.0,
                 T_Move = 2.0,
                 StartTime = DateTime.Today,
-                EndTime = DateTime.MaxValue
+                EndTime = DateTime.Today
             };
         }
 
@@ -26,10 +26,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
         {
             Assert.AreEqual(2, command.Resolution);
             Assert.AreEqual(2, command.T_Move);
-            command.StartTime = DateTime.UtcNow;
-            Assert.AreEqual(DateTime.UtcNow, command.StartTime);
-            command.EndTime = DateTime.Today;
-            Assert.AreEqual(DateTime.Today, command.EndTime);
+            Assert.AreEqual(DateTime.Today.Year, command.StartTime.Year);
+            Assert.AreEqual(DateTime.MaxValue, command.EndTime);
 
         }
 
