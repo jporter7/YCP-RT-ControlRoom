@@ -1,6 +1,4 @@
 ﻿using ControlRoomApplication.Entities;
-using System;
-using System.Collections.Generic;
 
 namespace ControlRoomApplication.Controllers.ScheduleController
 {
