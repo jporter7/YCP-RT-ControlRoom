@@ -76,6 +76,7 @@
     <Compile Include="Entities\RadioTelescope\RadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
