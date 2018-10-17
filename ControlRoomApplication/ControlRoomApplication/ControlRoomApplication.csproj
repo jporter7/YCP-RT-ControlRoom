@@ -57,6 +57,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
@@ -69,7 +70,9 @@
   <ItemGroup>
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
-    <Compile Include="Entities\Coordinate\Coordinate.cs" />
+    <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
+    <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
+    <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />

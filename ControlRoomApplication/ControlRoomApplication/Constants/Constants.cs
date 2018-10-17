@@ -1,4 +1,4 @@
-﻿namespace ControlRoomApplication
+﻿namespace ControlRoomApplication.Constants
 {
     public class Constants
     {

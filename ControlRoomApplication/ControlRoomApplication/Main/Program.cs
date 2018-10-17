@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using ControlRoomApplication.Entities;
 
-namespace ControlRoomApplication
+namespace ControlRoomApplication.Main
 {
     public class Program
     {

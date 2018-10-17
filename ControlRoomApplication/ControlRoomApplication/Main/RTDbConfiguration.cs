@@ -1,7 +1,7 @@
 ﻿using MySql.Data.EntityFramework;
 using System.Data.Entity;
 
-namespace ControlRoomApplication
+namespace ControlRoomApplication.Main
 {
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
     public class RTDbConfiguration : DbConfiguration
