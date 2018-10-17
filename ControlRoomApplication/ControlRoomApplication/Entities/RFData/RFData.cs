@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
+    [Table("RFData")]
     public class RFData
     {
         public RFData()
