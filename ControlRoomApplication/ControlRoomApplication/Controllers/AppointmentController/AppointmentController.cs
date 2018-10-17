@@ -1,10 +1,7 @@
 ﻿using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AASharp;
 
 namespace ControlRoomApplication.Controllers.AppointmentController
 {
@@ -16,9 +13,8 @@ namespace ControlRoomApplication.Controllers.AppointmentController
             Context = context;
         }
 
-        public Boolean ValidateAppointment()
+        public bool GetAppointmentCoordinates()
         {
-
             return false;
         }
 

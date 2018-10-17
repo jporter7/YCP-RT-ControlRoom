@@ -15,7 +15,7 @@ namespace ControlRoomApplication.Controllers.ScheduleController
         {
             List<Appointment> appointments = (List<Appointment>) Schedule.Appointments;
 
-            appointments.Sort((x, y) => DateTime.Compare(x.StartTime, y.StartTime));
+            appointments.Sort((x, y) => DateTime.Compare(y.StartTime, x.StartTime));
 
             return appointments[0];
         }

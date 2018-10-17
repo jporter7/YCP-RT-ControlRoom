@@ -52,6 +52,7 @@
     <Compile Include="EntitiesTests\AppointmentTest.cs" />
     <Compile Include="EntitiesTests\ControlRoomTest.cs" />
     <Compile Include="EntitiesTests\ScheduleTest.cs" />
+    <Compile Include="EntityControllersTests\ScheduleControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
