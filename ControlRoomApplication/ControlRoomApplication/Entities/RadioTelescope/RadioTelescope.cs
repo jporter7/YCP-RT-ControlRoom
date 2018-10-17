@@ -12,7 +12,7 @@ namespace ControlRoomApplication.Entities
 {
     public enum RadioTelescopeStatusEnum { Unknown, ShutDown, Idle, Moving, Integrating, MovingAndIntegrating };
 
-    [Table("radio_telescopes")]
+    [Table("RadioTelescope")]
     public abstract class RadioTelescope
     {
         public RadioTelescope()
@@ -35,12 +35,11 @@ namespace ControlRoomApplication.Entities
 
     public class FullTelescope : RadioTelescope
     {
-        // Add when SpectraCyber entity is ready
-        //private SpectraCyber FTSpectraCyber;
-        //
-        //public FullTelescope()
-        //{
-        //    FTSpectraCyber = new SpectraCyber();
-        //}
+        private SpectraCyber FTSpectraCyber;
+        
+        public FullTelescope()
+        {
+            FTSpectraCyber = new SpectraCyber();
+        }
     }
 }
