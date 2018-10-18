@@ -52,7 +52,10 @@
     <Compile Include="EntitiesTests\AppointmentTest.cs" />
     <Compile Include="EntitiesTests\ControlRoomTest.cs" />
     <Compile Include="EntitiesTests\OrientationTest.cs" />
+    <Compile Include="EntitiesTests\RadioTelescopeTest.cs" />
+    <Compile Include="EntitiesTests\RFDataTest.cs" />
     <Compile Include="EntitiesTests\ScheduleTest.cs" />
+    <Compile Include="EntitiesTests\SpectraCyberTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

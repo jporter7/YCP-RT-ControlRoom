@@ -33,10 +33,18 @@ namespace ControlRoomApplication.Entities
         //public virtual Coordinate.Coordinate InstallLocation { get; set; }
     }
 
+    public class SimulatedTelescope : RadioTelescope
+    {
+        public SimulatedTelescope()
+        {
+            // Nothing extra at the moment
+        }
+    }
+
     public class FullTelescope : RadioTelescope
     {
         private SpectraCyber FTSpectraCyber;
-        
+
         public FullTelescope()
         {
             FTSpectraCyber = new SpectraCyber();

@@ -6,25 +6,23 @@ using System.IO.Ports;
 
 //
 // Changes made here that need to be reflected in the UML (if agreed upon):
-//  - Add the entirety of the SpectraCyberCommunication class
-//  - SpecraCyberModeType was renamed to SpecraCyberModeTypeEnum
-//  - SpecraCyberModeTypeEnum has Unknown instead of Unspecified
-//  - SpectraCyber's comm field changed to SCComms
+//  - SpectraCyberModeType was renamed to SpectraCyberModeTypeEnum
+//  - SpectraCyberModeTypeEnum has Unknown instead of Unspecified
 //
 
 namespace ControlRoomApplication.Entities
 {
-    public enum SpecraCyberModeTypeEnum { Unknown, Continuum, Spectral };
+    public enum SpectraCyberModeTypeEnum { Unknown, Continuum, Spectral };
 
     public class SpectraCyber
     {
-        private SpecraCyberModeTypeEnum CurrentModeType { get; set; }
-        private string CommPort { get; }
-        private SerialPort SCSerialPort;
+        public SpectraCyberModeTypeEnum CurrentModeType { get; set; }
+        public string CommPort { get; }
+        public SerialPort SCSerialPort;
 
         public SpectraCyber(string commPort)
         {
-            CurrentModeType = SpecraCyberModeTypeEnum.Unknown;
+            CurrentModeType = SpectraCyberModeTypeEnum.Unknown;
             CommPort = commPort;
 
             SCSerialPort = new SerialPort(
