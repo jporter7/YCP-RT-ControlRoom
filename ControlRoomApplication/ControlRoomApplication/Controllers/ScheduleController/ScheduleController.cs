@@ -1,6 +1,8 @@
 ﻿using ControlRoomApplication.Entities;
+using ControlRoomApplication.Main;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 
 namespace ControlRoomApplication.Controllers.ScheduleController
 {
@@ -11,6 +13,11 @@ namespace ControlRoomApplication.Controllers.ScheduleController
             Schedule = schedule;
         }
 
+        /// <summary>
+        /// This method returns the next Appointment chronologically by sorting the list
+        /// of Appointments by their StartTime.
+        /// </summary>
+        /// <returns> The next Appointment chronologically. </returns>
         public Appointment GetNextAppointment()
         {
             List<Appointment> appointments = (List<Appointment>) Schedule.Appointments;
@@ -20,6 +27,12 @@ namespace ControlRoomApplication.Controllers.ScheduleController
             return appointments[0];
         }
 
+        public void StartAppointment()
+        {
+            
+        }
+
         public Schedule Schedule { get; set; }
+        public RTDbContext Context { get; set; }
     }
 }
