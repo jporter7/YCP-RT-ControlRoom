@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AASharp">
+      <HintPath>..\..\..\AASharp\AASharp-master\AASharp-master\Src\AASharp\bin\Debug\net40\AASharp.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -69,12 +72,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\Constants.cs" />
+    <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
+    <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Orientation\Orientation.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
+    <Compile Include="Entities\PLC\PLC.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
     <Compile Include="Main\Program.cs" />
