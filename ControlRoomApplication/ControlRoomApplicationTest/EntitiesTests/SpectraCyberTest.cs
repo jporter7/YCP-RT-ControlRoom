@@ -22,15 +22,9 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void TestInitialization()
         {
             Assert.AreEqual(spectraCyber.CurrentModeType, SpectraCyberModeTypeEnum.Unknown);
-            Assert.AreEqual(commPort, spectraCyber.CommPort);
-
-            Assert.AreEqual(spectraCyber.SCSerialPort.PortName, spectraCyber.CommPort);
-            Assert.AreEqual(spectraCyber.SCSerialPort.BaudRate, Constants.SPECTRA_CYBER_BAUD_RATE);
-            Assert.AreEqual(spectraCyber.SCSerialPort.Parity, Constants.SPECTRA_CYBER_PARITY_BITS);
-            Assert.AreEqual(spectraCyber.SCSerialPort.DataBits, Constants.SPECTRA_CYBER_DATA_BITS);
-            Assert.AreEqual(spectraCyber.SCSerialPort.StopBits, Constants.SPECTRA_CYBER_STOP_BITS);
-            Assert.AreEqual(spectraCyber.SCSerialPort.ReadTimeout, Constants.SPECTRA_CYBER_TIMEOUT_MS);
-            Assert.AreEqual(spectraCyber.SCSerialPort.WriteTimeout, Constants.SPECTRA_CYBER_TIMEOUT_MS);
+            Assert.AreEqual(spectraCyber.CommPort, commPort);
+            Assert.AreEqual(spectraCyber.CommunicationThreadActive, false);
+            Assert.AreEqual(spectraCyber.KillCommunicationThreadFlag, false);
         }
 
         [TestMethod]

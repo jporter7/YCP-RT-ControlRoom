@@ -74,6 +74,7 @@
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
     <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
+    <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
@@ -83,6 +84,8 @@
     <Compile Include="Entities\PLC\PLC.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberRequest.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
@@ -97,9 +100,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201810072215446_InitialDb.resx">
       <DependentUpon>201810072215446_InitialDb.cs</DependentUpon>
