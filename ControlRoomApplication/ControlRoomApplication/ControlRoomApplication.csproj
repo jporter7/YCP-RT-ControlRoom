@@ -77,6 +77,7 @@
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
+    <Compile Include="Entities\Command\Commmand.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Orientation\Orientation.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescope.cs" />
