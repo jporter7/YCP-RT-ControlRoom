@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplicationTest.Entities;
 
 namespace ControlRoomApplicationTest.EntitiesTests
@@ -6,28 +6,22 @@ namespace ControlRoomApplicationTest.EntitiesTests
     [TestClass]
     class CoordinateTest
     {
-        private Coordinate coordinate;
-        
-        private DateTime ra;
-        private DateTime dec;
-
-        private Time time;
+        private double latitude;
+        private double longitude;
 
         [TestInitialize]
         public void BuildUp()
         {
-            coordinate = new Coordinate();
-
-            // the Sun's RA and Dec on Jan 1, 2017
-            ra = new DateTime(2017, 1, 1, 18, 50, 06);
-            dec = new DateTime(2017, 1, 1, -22, 56, 07);
+            latitude = 87.7;
+            longitude = 70.5;
         }
 
         [TestMethod]
-        public void TestGettersAndSetters()
+        public void TestCoordinate()
         {
-            Assert.AreEqual(ra, new DateTime(2017, 1, 1, 18, 50, 06));
-            Assert.AreEqual(dec, new DateTime(2017, 1, 1, -22, 56, 07));
+            Coordinate coordinate = new Coordinate(87.7, 70.5);
+            Assert.AreEqual(latitude, coordinate.Latitude);
+            Assert.AreEqual(longitude, coordinate.Longitude);
         }
     }
 }
