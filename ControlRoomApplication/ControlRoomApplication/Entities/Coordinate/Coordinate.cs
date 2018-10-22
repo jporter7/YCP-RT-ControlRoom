@@ -4,15 +4,16 @@ namespace ControlRoomApplication.Entities.Coordinate
 {
     class Coordinate
     {
-        readonly DateTime _ra;
-        readonly DateTime _dec;
+        readonly double _latitude;
+        readonly double _longitude;
 
-        public Coordinate()
+        public Coordinate(double latitude, double longitude)
         {
-
+            this._latitude = latitude;
+            this._longitude = longitude;
         }
         
-        public DateTime RA { get; set; }
-        public DateTime Dec { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }
