@@ -1,13 +1,18 @@
-﻿namespace ControlRoomApplication.Entities
+﻿using System;
+
+namespace ControlRoomApplication.Entities.Coordinate
 {
-    public class Coordinate
+    class Coordinate
     {
+        readonly DateTime _ra;
+        readonly DateTime _dec;
+
         public Coordinate()
         {
 
         }
         
-        public double Azimuth { get; set; }
-        public double Altitude { get; set; }
+        public DateTime RA { get; set; }
+        public DateTime Dec { get; set; }
     }
 }
