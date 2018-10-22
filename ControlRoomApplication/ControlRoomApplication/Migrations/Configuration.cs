@@ -6,8 +6,8 @@ namespace ControlRoomApplication.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
-            SetSqlGenerator("MySql.Data.MySqlClient", new MySql.Data.EntityFramework.MySqlMigrationSqlGenerator());
+            AutomaticMigrationsEnabled = true;
+            SetSqlGenerator(AWSConstants.DATABASE_PROVIDER, new MySql.Data.EntityFramework.MySqlMigrationSqlGenerator());
         }
 
         protected override void Seed(ControlRoomApplication.Main.RTDbContext context)

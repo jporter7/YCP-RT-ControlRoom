@@ -1,5 +1,6 @@
 ﻿using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
+using ControlRoomApplication.Constants;
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
@@ -28,14 +29,14 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 SpectraCyber.SerialPort = new SerialPort(
                 SpectraCyber.CommPort,
-                Constants.SPECTRA_CYBER_BAUD_RATE,
-                Constants.SPECTRA_CYBER_PARITY_BITS,
-                Constants.SPECTRA_CYBER_DATA_BITS,
-                Constants.SPECTRA_CYBER_STOP_BITS
+                GenericConstants.SPECTRA_CYBER_BAUD_RATE,
+                GenericConstants.SPECTRA_CYBER_PARITY_BITS,
+                GenericConstants.SPECTRA_CYBER_DATA_BITS,
+                GenericConstants.SPECTRA_CYBER_STOP_BITS
                 )
                 {
-                    ReadTimeout = Constants.SPECTRA_CYBER_TIMEOUT_MS,
-                    WriteTimeout = Constants.SPECTRA_CYBER_TIMEOUT_MS
+                    ReadTimeout = GenericConstants.SPECTRA_CYBER_TIMEOUT_MS,
+                    WriteTimeout = GenericConstants.SPECTRA_CYBER_TIMEOUT_MS
                 };
             }
             catch (Exception e)
@@ -191,7 +192,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             response.RequestSuccessful = true;
 
             // Give the SpectraCyber some time to process the command
-            Thread.Sleep(Constants.SPECTRA_CYBER_WAIT_TIME_MS);
+            Thread.Sleep(GenericConstants.SPECTRA_CYBER_WAIT_TIME_MS);
 
             // Check for any significant cases
             switch (request.CommandType)
@@ -227,11 +228,11 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                     string hexString;
 
                     // Read a number of characters in the buffer
-                    char[] charInBuffer = new char[Constants.SPECTRA_CYBER_BUFFER_SIZE];
+                    char[] charInBuffer = new char[GenericConstants.SPECTRA_CYBER_BUFFER_SIZE];
                     int length = SpectraCyber.SerialPort.Read(charInBuffer, 0, request.CharsToRead);
 
                     // Clip the string to the exact number of bytes read
-                    if (Constants.SPECTRA_CYBER_CLIP_BUFFER_RESPONSE && (length != Constants.SPECTRA_CYBER_BUFFER_SIZE))
+                    if (GenericConstants.SPECTRA_CYBER_CLIP_BUFFER_RESPONSE && (length != GenericConstants.SPECTRA_CYBER_BUFFER_SIZE))
                     {
                         char[] actual = new char[length];
 
@@ -276,7 +277,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         {
             if (numChars <= 0)
             {
-                numChars = Constants.SPECTRA_CYBER_BUFFER_SIZE;
+                numChars = GenericConstants.SPECTRA_CYBER_BUFFER_SIZE;
             }
             
             // Based on the current mode, create the proper command string
