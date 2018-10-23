@@ -1,4 +1,6 @@
-﻿namespace ControlRoomApplication.Entities
+﻿using ControlRoomApplication.Constants;
+
+namespace ControlRoomApplication.Entities
 {
     public class SpectraCyberRequest
     {
@@ -14,7 +16,7 @@
             Priority = CalcPriority();
             CommandString = commandString;
             WaitForReply = waitForReply;
-            CharsToRead = (charsToRead <= 0) ? Constants.SPECTRA_CYBER_BUFFER_SIZE : charsToRead;
+            CharsToRead = (charsToRead <= 0) ? GenericConstants.SPECTRA_CYBER_BUFFER_SIZE : charsToRead;
             ResponseIdentifier = responseIdentifier;
         }
 

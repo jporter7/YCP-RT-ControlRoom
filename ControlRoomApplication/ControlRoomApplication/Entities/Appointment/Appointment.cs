@@ -9,7 +9,7 @@ namespace ControlRoomApplication.Entities
     /// The Appointment entity will use a radio-telescope between the designated
     /// start time and end time and will be created by users.
     /// </summary>
-    [Table("Appointments")]
+    [Table("appointment")]
     public class Appointment
     {
         /// <summary>
@@ -28,6 +28,10 @@ namespace ControlRoomApplication.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
+        [Required]
+        [Column("user_id")]
+        public int UserId { get; set; }
 
         /// <summary>
         /// The getter/setter for the start time associated with this Appointment.

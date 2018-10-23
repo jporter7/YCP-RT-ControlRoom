@@ -1,8 +1,8 @@
 ﻿using System.IO.Ports;
 
-namespace ControlRoomApplication
+namespace ControlRoomApplication.Constants
 {
-    public abstract class Constants
+    public sealed class GenericConstants
     {
         public static readonly int MAX_USERNAME_LENGTH = 15;
 
