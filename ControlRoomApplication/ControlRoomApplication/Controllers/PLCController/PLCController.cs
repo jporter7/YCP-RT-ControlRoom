@@ -1,7 +1,16 @@
-﻿namespace ControlRoomApplication.Controllers.PLCController
+﻿using ControlRoomApplication.Entities.PLC;
+
+namespace ControlRoomApplication.Controllers.PLCController
 {
     class PLCController
     {
+        private PLC plc;
+
+        public PLCController()
+        {
+
+        }
+
         public void CalibrateRT()
         {
             throw new System.NotImplementedException();
@@ -12,12 +21,12 @@
             throw new System.NotImplementedException();
         }
 
-        public void UpdateAzimuth()
+        public void MoveAzimuth()
         {
             throw new System.NotImplementedException();
         }
 
-        public void UpdateElevation()
+        public void MoveElevation()
         {
             throw new System.NotImplementedException();
         }

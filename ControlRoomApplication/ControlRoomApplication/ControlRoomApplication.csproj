@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Constants\Constants.cs" />
     <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
+    <Compile Include="Controllers\PLCController\PLCController.cs" />
     <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
