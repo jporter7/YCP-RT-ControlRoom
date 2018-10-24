@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.ScheduleController;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Main
@@ -13,9 +16,15 @@ namespace ControlRoomApplication.Main
             // changes that were automatically checked by dbContext.ChangeTracker
             try
             {
-                RTDbContext dbContext = new RTDbContext(GenericConstants.LOCAL_CONNECTION_STRING);
+                RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
 
                 Console.WriteLine("Appointments table: \n");
+                var schedule = new Schedule();
+                var appts = dbContext.Appointments.OrderBy(x => x.StartTime).ToList();
+                var appt = appts[0];
+
+                Console.WriteLine($"The next appointment for the radio-telescope starts at {appt.StartTime}.\n");
+
                 foreach(Appointment app in dbContext.Appointments)
                 {
                     Console.WriteLine(string.Join(Environment.NewLine,
@@ -32,19 +41,21 @@ namespace ControlRoomApplication.Main
                     rf.TimeCaptured = DateTime.Now;
 
                     rf.Intensity = 4245345;
-                    rf.AppointmentId = 0;
+                    rf.AppointmentId = 1;
 
-                    dbContext.RFDatas.Add(rf);
-                    dbContext.SaveChanges();
+                    //dbContext.RFDatas.Add(rf);
+                    //dbContext.SaveChanges();
+
                 }
 
                 foreach(RFData rfData in dbContext.RFDatas)
                 {
                     Console.WriteLine(string.Join(Environment.NewLine,
-                        $"RFdata {rfData.Id} has an intensity of {rfData.Intensity}.",
+                        $"RFdata {rfData.Id} has an intensity of {rfData.Intensity} and a timestamp of {rfData.TimeCaptured}.",
                         ""));
                 }
 
+                dbContext.Database.Connection.Close();
                 Console.ReadKey(true);
             }
             catch (ArgumentException e)

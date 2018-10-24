@@ -6,7 +6,7 @@ namespace ControlRoomApplication.Main
 {
     public class RTDbContext : DbContext
     {
-        public RTDbContext() : base(GenericConstants.LOCAL_DATABASE_NAME)
+        public RTDbContext() : base(AWSConstants.REMOTE_DATABASE_NAME)
         {
 
         }
