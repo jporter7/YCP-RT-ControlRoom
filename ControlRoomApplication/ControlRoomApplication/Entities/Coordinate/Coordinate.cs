@@ -1,16 +1,14 @@
-﻿using System;
-
-namespace ControlRoomApplication.Entities
+﻿namespace ControlRoomApplication.Entities
 {
-    class Coordinate
+    public class Coordinate
     {
-        readonly double _latitude;
-        readonly double _longitude;
+        private readonly double _latitude;
+        private readonly double _longitude;
 
         public Coordinate(double latitude, double longitude)
         {
-            this._latitude = latitude;
-            this._longitude = longitude;
+            _latitude = latitude;
+            _longitude = longitude;
         }
         
         public double Latitude { get; set; }

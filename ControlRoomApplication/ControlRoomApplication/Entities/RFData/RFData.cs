@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    [Table("RFData")]
+    [Table("rf_data")]
     public class RFData
     {
         public RFData()
@@ -14,6 +14,7 @@ namespace ControlRoomApplication.Entities
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
         public int Id { get; set; }
 
         [Required]
@@ -23,6 +24,10 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("intensity")]
         public long Intensity { get; set; }
+
+        [Required]
+        [Column("appointment_id")]
+        public int AppointmentId { get; set; }
 
         public virtual Orientation AcquisitionOrientation { get; set; }
     }
