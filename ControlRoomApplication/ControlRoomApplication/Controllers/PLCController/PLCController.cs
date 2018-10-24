@@ -4,7 +4,7 @@ namespace ControlRoomApplication.Controllers.PLCController
 {
     class PLCController
     {
-        private PLC plc;
+        private readonly PLC plc;
 
         public PLCController()
         {
@@ -21,12 +21,12 @@ namespace ControlRoomApplication.Controllers.PLCController
             throw new System.NotImplementedException();
         }
 
-        public void MoveAzimuth()
+        public void MoveAzimuth(long azimuth, long azimuthOffset)
         {
             throw new System.NotImplementedException();
         }
 
-        public void MoveElevation()
+        public void MoveElevation(long elevation, long elevationOffset)
         {
             throw new System.NotImplementedException();
         }
