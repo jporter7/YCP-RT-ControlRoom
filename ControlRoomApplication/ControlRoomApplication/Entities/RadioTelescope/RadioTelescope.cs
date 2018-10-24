@@ -55,11 +55,11 @@ namespace ControlRoomApplication.Entities
 
     public class FullTelescope : RadioTelescope
     {
-        private SpectraCyberController FTSpectraCyberController;
+        private AbstractSpectraCyberController FTSpectraCyberController;
 
         public FullTelescope()
         {
-            FTSpectraCyberController = new SpectraCyberController(new SpectraCyber());
+            FTSpectraCyberController = new AbstractSpectraCyberController(new AbstractSpectraCyber());
             FTSpectraCyberController.BringUp();
         }
 
