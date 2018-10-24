@@ -70,6 +70,7 @@
     <Compile Include="EntitiesTests\RFDataTest.cs" />
     <Compile Include="EntitiesTests\ScheduleTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberTest.cs" />
+    <Compile Include="EntityControllersTests\CoordinateCalculationControllerTest.cs" />
     <Compile Include="EntityControllersTests\ScheduleControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
