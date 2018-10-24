@@ -6,6 +6,10 @@ namespace ControlRoomApplication.Constants
     {
         public static readonly int MAX_USERNAME_LENGTH = 15;
 
+        // Local database strings
+        public static readonly string LOCAL_DATABASE_NAME = "RTDatabase";
+        public static readonly string LOCAL_CONNECTION_STRING = "server=localhost;uid=root;pwd=ycpRT2018!;database=RTDatabase;";
+
         //
         // Start SpectraCyber constants
         //

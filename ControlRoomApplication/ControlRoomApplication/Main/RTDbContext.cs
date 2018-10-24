@@ -1,11 +1,12 @@
 ﻿using System.Data.Entity;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Main
 {
     public class RTDbContext : DbContext
     {
-        public RTDbContext() : base(AWSConstants.REMOTE_DATABASE_NAME)
+        public RTDbContext() : base(GenericConstants.LOCAL_DATABASE_NAME)
         {
 
         }
@@ -17,5 +18,6 @@ namespace ControlRoomApplication.Main
         }
 
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<RFData> RFDatas { get; set; }
     }
 }

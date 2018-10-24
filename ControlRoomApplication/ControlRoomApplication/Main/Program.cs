@@ -1,4 +1,5 @@
 ﻿using System;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Main
@@ -12,14 +13,30 @@ namespace ControlRoomApplication.Main
             // changes that were automatically checked by dbContext.ChangeTracker
             try
             {
-                RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
+                RTDbContext dbContext = new RTDbContext(GenericConstants.LOCAL_CONNECTION_STRING);
 
                 Console.WriteLine("Appointments table: \n");
                 foreach(Appointment app in dbContext.Appointments)
                 {
                     Console.WriteLine(string.Join(Environment.NewLine,
-                        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}",
+                        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}. ",
+                        $"The appointment's id is: {app.Id}",
                         ""));
+                }
+
+                Console.WriteLine("Would you like to add some RFData? (y/n)");
+                var input = Console.ReadLine();
+
+                if (input.ToLower().Equals("y"))
+                {
+                    RFData rf = new RFData();
+                    rf.TimeCaptured = DateTime.Now;
+
+                    rf.Intensity = 4245345;
+                    rf.AppointmentId = 0;
+
+                    dbContext.RFDatas.Add(rf);
+                    dbContext.SaveChanges();
                 }
 
                 Console.ReadKey(true);

@@ -1,4 +1,5 @@
-﻿using MySql.Data.EntityFramework;
+﻿using ControlRoomApplication.Constants;
+using MySql.Data.EntityFramework;
 using System.Data.Entity;
 
 namespace ControlRoomApplication.Main
@@ -10,7 +11,7 @@ namespace ControlRoomApplication.Main
         {
             SetProviderFactory(AWSConstants.DATABASE_PROVIDER, new MySql.Data.MySqlClient.MySqlClientFactory());
             SetProviderServices(AWSConstants.DATABASE_PROVIDER, new MySql.Data.MySqlClient.MySqlProviderServices());
-            SetDefaultConnectionFactory(new MySqlConnectionFactory(AWSConstants.REMOTE_DATABASE_NAME));
+            SetDefaultConnectionFactory(new MySqlConnectionFactory(GenericConstants.LOCAL_DATABASE_NAME));
         }
     }
 }
