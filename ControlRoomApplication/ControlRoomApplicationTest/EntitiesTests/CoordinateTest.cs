@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ControlRoomApplicationTest.Entities;
+using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplicationTest.EntitiesTests
 {

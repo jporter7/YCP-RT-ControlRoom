@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ControlRoomApplication.Entities.Coordinate
+namespace ControlRoomApplication.Entities
 {
     class Coordinate
     {
