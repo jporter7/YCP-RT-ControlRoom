@@ -20,7 +20,6 @@ namespace ControlRoomApplication.Main
                 {
                     Console.WriteLine(string.Join(Environment.NewLine,
                         $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}. ",
-                        $"The appointment's id is: {app.Id}",
                         ""));
                 }
 
@@ -37,6 +36,13 @@ namespace ControlRoomApplication.Main
 
                     dbContext.RFDatas.Add(rf);
                     dbContext.SaveChanges();
+                }
+
+                foreach(RFData rfData in dbContext.RFDatas)
+                {
+                    Console.WriteLine(string.Join(Environment.NewLine,
+                        $"RFdata {rfData.Id} has an intensity of {rfData.Intensity}.",
+                        ""));
                 }
 
                 Console.ReadKey(true);
