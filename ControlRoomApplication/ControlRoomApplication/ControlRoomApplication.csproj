@@ -79,8 +79,10 @@
   <ItemGroup>
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
+    <Compile Include="Constants\SpectraCyberConstants.cs" />
     <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
     <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
+    <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
@@ -93,9 +95,13 @@
     <Compile Include="Entities\RFData\RFData.cs" />
     <Compile Include="Entities\PLC\PLC.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
+    <Compile Include="Entities\SpectraCyber\AbstractSpectraCyber.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberCommandTypeEnum.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberModeTypeEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberRequest.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberSimaultor.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
