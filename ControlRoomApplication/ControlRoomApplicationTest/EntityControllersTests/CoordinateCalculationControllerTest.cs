@@ -17,7 +17,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void TestCalculateSunCoorindates()
         {
             Coordinate = CoordinateCalculationController.CalculateCoordinates("sun", DateTime.Now);
 

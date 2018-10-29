@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using ControlRoomApplication.Constants;
-using ControlRoomApplication.Controllers.ScheduleController;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Main
@@ -43,8 +40,8 @@ namespace ControlRoomApplication.Main
                     rf.Intensity = 4245345;
                     rf.AppointmentId = 1;
 
-                    //dbContext.RFDatas.Add(rf);
-                    //dbContext.SaveChanges();
+                    dbContext.RFDatas.Add(rf);
+                    dbContext.SaveChanges();
 
                 }
 
