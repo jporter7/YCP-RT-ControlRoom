@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Main
@@ -15,13 +16,43 @@ namespace ControlRoomApplication.Main
                 RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
 
                 Console.WriteLine("Appointments table: \n");
+                var schedule = new Schedule();
+                var appts = dbContext.Appointments.OrderBy(x => x.StartTime).ToList();
+                var appt = appts[0];
+
+                Console.WriteLine($"The next appointment for the radio-telescope starts at {appt.StartTime}.\n");
+
                 foreach(Appointment app in dbContext.Appointments)
                 {
                     Console.WriteLine(string.Join(Environment.NewLine,
-                        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}",
+                        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}. ",
                         ""));
                 }
 
+                Console.WriteLine("Would you like to add some RFData? (y/n)");
+                var input = Console.ReadLine();
+
+                if (input.ToLower().Equals("y"))
+                {
+                    RFData rf = new RFData();
+                    rf.TimeCaptured = DateTime.Now;
+
+                    rf.Intensity = 4245345;
+                    rf.AppointmentId = 1;
+
+                    dbContext.RFDatas.Add(rf);
+                    dbContext.SaveChanges();
+
+                }
+
+                foreach(RFData rfData in dbContext.RFDatas)
+                {
+                    Console.WriteLine(string.Join(Environment.NewLine,
+                        $"RFdata {rfData.Id} has an intensity of {rfData.Intensity} and a timestamp of {rfData.TimeCaptured}.",
+                        ""));
+                }
+
+                dbContext.Database.Connection.Close();
                 Console.ReadKey(true);
             }
             catch (ArgumentException e)

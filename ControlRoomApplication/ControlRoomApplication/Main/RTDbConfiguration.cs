@@ -1,4 +1,5 @@
-﻿using MySql.Data.EntityFramework;
+﻿using ControlRoomApplication.Constants;
+using MySql.Data.EntityFramework;
 using System.Data.Entity;
 
 namespace ControlRoomApplication.Main

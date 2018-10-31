@@ -79,7 +79,8 @@
   <ItemGroup>
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
-    <Compile Include="Constants\SpectraCyberConstants.cs" />
+    <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
+    <Compile Include="Controllers\AASharpControllers\SunCoordinateCalculator.cs" />
     <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
     <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
     <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
@@ -113,6 +114,10 @@
     <Compile Include="Migrations\201810220130330_RemoteDatabaseMigration.Designer.cs">
       <DependentUpon>201810220130330_RemoteDatabaseMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810240413185_RFDataMigration.cs" />
+    <Compile Include="Migrations\201810240413185_RFDataMigration.Designer.cs">
+      <DependentUpon>201810240413185_RFDataMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteDb\RemoteDbConfiguration.cs" />
@@ -130,6 +135,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810220130330_RemoteDatabaseMigration.resx">
       <DependentUpon>201810220130330_RemoteDatabaseMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810240413185_RFDataMigration.resx">
+      <DependentUpon>201810240413185_RFDataMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
