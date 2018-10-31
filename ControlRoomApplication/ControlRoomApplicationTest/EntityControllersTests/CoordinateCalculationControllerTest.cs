@@ -19,10 +19,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestCalculateSunCoorindates()
         {
-            Coordinate = CoordinateCalculationController.CalculateCoordinates("sun", DateTime.Now);
+            DateTime time = new DateTime(2018, 10, 30, 12, 0, 0);
+            Coordinate = CoordinateCalculationController.CalculateCoordinates("sun", time);
 
-            //Assert.AreEqual(Coordinate.Latitude, 12.05, 0.05);
-            //Assert.AreEqual(Coordinate.Longitude, 67.25, 0.05);
+            Assert.AreEqual(24.476, Coordinate.Latitude, 0.05);
+            Assert.AreEqual(218.75, Coordinate.Longitude, 0.05);
         }
 
         public CoordinateCalculationController CoordinateCalculationController { get; set; }
