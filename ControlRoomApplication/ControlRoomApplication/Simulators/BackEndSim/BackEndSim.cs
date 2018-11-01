@@ -7,41 +7,51 @@ namespace ControlRoomApplication.Simulators.BackEndSim
 {
     class BackEndSim
     {
-        public BackEndSim() { throw new NotImplementedException("TODO"); }
-        
-        public Collection<Appointment> RetrieveAppointments()
-        {
-            throw new NotImplementedException("TODO");
-        }
-
-        public void SendAppointmentSchedule(Schedule schedule)
-        {
-            throw new NotImplementedException("TODO");
-        }
-
-        public void AppointmentOverride(DateTime dateTime)
-        {
-            throw new NotImplementedException("TODO");
-        }
-
-        public void RadioTelescopeStatus(RadioTelescopeStatusEnum status)
-        {
-            throw new NotImplementedException("TODO");
-        }
-
-        public void SendRFData(RFData data)
-        {
-            throw new NotImplementedException("TODO");
-        }
-
-        public void SendCurrentOrientation(Orientation orientation)
+        public BackEndSim()
         {
             throw new NotImplementedException("TODO");
         }
         
-        public void RecieveCommand(Command command)
+        public static void RecieveAppointment(int packet)
+        {
+            /*Appointment appointment = new Appointment();
+            string s = appointment.ToString();
+            s.*/
+        }
+
+        public void SendAppointments()
         {
             throw new NotImplementedException("TODO");
+        }
+
+        public void RetrieveSchedule()
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        public void AppointmentOverride()
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        public void RetrieveRTOrientation()
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        public void RetrieveRTStatus()
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        public void RetrieveRFData()
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        public void SendCommand()
+        {
+
         }
     }
 }

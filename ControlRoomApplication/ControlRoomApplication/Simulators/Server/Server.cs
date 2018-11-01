@@ -2,6 +2,8 @@
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Collections.ObjectModel;
+using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Simulators.Server
 {
@@ -30,8 +32,8 @@ namespace ControlRoomApplication.Simulators.Server
         ///<summary>
         /// Instantiates a Socket on which the server will listen
         /// </summary>
-        /// <returns> an open socket </returns>
-        public Socket Connect()
+        /// <returns> An opened Socket </returns>
+        public TcpClient Connect()
         {
             try
             {
@@ -44,10 +46,10 @@ namespace ControlRoomApplication.Simulators.Server
                 Console.WriteLine("Endpoint:" + listener.LocalEndpoint);
                 Console.WriteLine("Waiting for connection");
 
-                Socket s = listener.AcceptSocket();
+                TcpClient client = listener.AcceptTcpClient();
                 Console.WriteLine("Connection Accepted");
 
-                return s;
+                return client;
             }
             catch (Exception exception)
             {
@@ -57,21 +59,16 @@ namespace ControlRoomApplication.Simulators.Server
             return null;
         }
         /// <summary>
-        /// Closes the connection and cleans up the Socket passed and the List
+        /// Closes the connection and cleans up the Socket passed as well as the listener
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public bool CloseConnection(Socket s)
+        public bool CloseConnection(TcpClient client)
         {
             try
             {   
-                // sends acknowledgment
-                ASCIIEncoding asen = new ASCIIEncoding();
-                s.Send(asen.GetBytes("The string was received by the server."));
-                Console.WriteLine("\nSent ACK");
-
                 // clean up
-                s.Close();
+                client.Close();
                 listener.Stop();
             }
             catch (Exception exception)
@@ -81,9 +78,63 @@ namespace ControlRoomApplication.Simulators.Server
             return true;
         }
 
-       /* static void RecieveAppointmentSchedule()
+        public static void SendAppointment(TcpClient client)
         {
+           /* NetworkStream stream = client.GetStream();
+            byte[] b = new byte[client.ReceiveBufferSize];
 
-        }*/
+            int packet = stream.Read(b, 0, client.ReceiveBufferSize);
+            string s = */
+            
+        }
+
+        public static Collection<Appointment> RetrieveAppointments()
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        /// <summary>
+        /// Sends the Scheduler's current Schedule
+        /// </summary>
+        /// <param name="schedule"></param>
+        public static void SendAppointmentSchedule(Schedule schedule)
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        /// <summary>
+        /// Sends the overriden appointment(s)
+        /// </summary>
+        /// <param name="overridenAppointmentCollection"></param>
+        /// <returns>Returns a collection of those appointments that reflects alterations</returns>
+        public static Collection<Appointment> AppointmentOverride(Collection<Appointment> overridenAppointmentCollection)
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        /// <summary>
+        /// Allows the retrieval of the Radio Telescopes current status
+        /// </summary>
+        /// <param name="status"></param>
+        public static void SendRadioTelescopeStatus(RadioTelescopeStatusEnum status)
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+
+        public static void SendRFData(RFData data)
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        public static void CurrentRTOrientation(Orientation orientation)
+        {
+            throw new NotImplementedException("TODO");
+        }
+
+        public static void RetrieveCommand(Command command)
+        {
+            throw new NotImplementedException("TODO");
+        }
     }
 }
