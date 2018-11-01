@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Entities;
+using ControlRoomApplication.Simulators.Server;
 using System;
 using System.Collections.ObjectModel;
 
