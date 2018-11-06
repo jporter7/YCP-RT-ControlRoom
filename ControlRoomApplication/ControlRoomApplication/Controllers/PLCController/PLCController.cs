@@ -2,7 +2,7 @@
 
 namespace ControlRoomApplication.Controllers.PLCController
 {
-    class PLCController
+    public class PLCController
     {
         private readonly PLC plc;
 
