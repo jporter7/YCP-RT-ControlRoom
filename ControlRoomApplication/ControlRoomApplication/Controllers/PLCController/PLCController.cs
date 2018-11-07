@@ -4,31 +4,50 @@ namespace ControlRoomApplication.Controllers.PLCController
 {
     public class PLCController
     {
-        private readonly PLC plc;
-
         public PLCController()
         {
 
         }
 
-        public void CalibrateRT()
+        public string CalibrateRT(PLC plc)
         {
-            throw new System.NotImplementedException();
+            return plc.SendMessage("calibrate");
         }
 
-        public void ShutdownRT()
+        /// <summary>
+        /// Tells the specified PLC to shutdown.
+        /// </summary>
+        /// <param name="plc"> The PLC to communicate with.</param>
+        /// <returns></returns>
+        public string ShutdownRT(PLC plc)
         {
-            throw new System.NotImplementedException();
+            return plc.SendMessage("shutdown");
         }
 
-        public void MoveAzimuth(long azimuth, long azimuthOffset)
+        /// <summary>
+        /// Tells the specified PLC to move the radiotelescope to the specified azimuth.
+        /// </summary>
+        /// <param name="plc"> The PLC to communicate with. </param>
+        /// <param name="azimuth"> The azimuth that the PLC should move the radiotelescope to. </param>
+        /// <returns></returns>
+        public string MoveAzimuth(PLC plc, double azimuth) //long azimuthOffset)
         {
-            throw new System.NotImplementedException();
-        }
+            if (azimuth < 0 || azimuth > 359.99)
+            {
+                return "ERROR";
+            }            
 
-        public void MoveElevation(long elevation, long elevationOffset)
+            return plc.SendMessage($"azimuth {azimuth}");
+        }
+        
+        public string MoveElevation(PLC plc, double elevation) //long elevationOffset)
         {
-            throw new System.NotImplementedException();
+            if (elevation < 0 || elevation > 180)
+            {
+                return "ERROR";
+            }
+
+            return plc.SendMessage($"elevation {elevation}");
         }
     }
 }

@@ -9,9 +9,25 @@ namespace ControlRoomApplication.Entities.PLC
             PLCConnector = new PLCConnector(ip, port);
         }
 
-        public void SendMessage()
+        public string SendMessage(string message)
         {
-            PLCConnector.C
+            PLCConnector.WriteMessage(message);
+
+            return GetMessage();
+        }
+
+        public string GetMessage()
+        {
+            // I have this inside the while loop because I believe that
+            // we will need to perform the call multiple times while the PLC 
+            // software/fhardware perform their tasks so this is a form of waiting.
+            string result = null;
+            while(result == null)
+            {
+                result = PLCConnector.ReceiveMessage();
+            }
+
+            return result;
         }
 
         // Getter/Setter for the Connector that connects
