@@ -84,6 +84,7 @@
     <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
     <Compile Include="Controllers\PLCController\PLCController.cs" />
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCConnector.cs" />
+    <Compile Include="Controllers\PLCController\PLCUtilities\PLCSimulator.cs" />
     <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
     <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
