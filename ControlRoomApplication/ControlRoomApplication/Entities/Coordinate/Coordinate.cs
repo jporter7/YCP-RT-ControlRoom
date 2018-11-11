@@ -1,10 +1,17 @@
-﻿using System;
-
-namespace ControlRoomApplication.Entities.Coordinate
+﻿namespace ControlRoomApplication.Entities
 {
-    class Coordinate
+    public class Coordinate
     {
-        public double Azimuth { get; set; }
-        public double Altitude { get; set; }
+        private readonly double _latitude;
+        private readonly double _longitude;
+
+        public Coordinate(double latitude, double longitude)
+        {
+            _latitude = latitude;
+            _longitude = longitude;
+        }
+        
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

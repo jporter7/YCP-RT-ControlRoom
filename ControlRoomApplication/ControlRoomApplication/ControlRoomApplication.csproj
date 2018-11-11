@@ -33,6 +33,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AASharp">
+      <HintPath>..\..\..\AASharp\AASharp-master\AASharp-master\Src\AASharp\bin\Debug\net40\AASharp.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.Core.3.3.27.3\lib\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.RDS.3.3.31.1\lib\net45\AWSSDK.RDS.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -68,11 +77,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants\Constants.cs" />
+    <Compile Include="Constants\AWSConstants.cs" />
+    <Compile Include="Constants\GenericConstants.cs" />
+    <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
+    <Compile Include="Controllers\AASharpControllers\SunCoordinateCalculator.cs" />
+    <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
+    <Compile Include="Controllers\PLCController\PLCController.cs" />
+    <Compile Include="Controllers\PLCController\PLCUtilities\PLCConnector.cs" />
+    <Compile Include="Controllers\PLCController\PLCUtilities\PLCSimulator.cs" />
+    <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
+    <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
+    <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
+    <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
+    <Compile Include="Entities\Command\Commmand.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
+    <Compile Include="Entities\Coordinate\Coordinate.cs" />
+    <Compile Include="Entities\Orientation\Orientation.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescope.cs" />
+    <Compile Include="Entities\RFData\RFData.cs" />
+    <Compile Include="Entities\PLC\PLC.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
+    <Compile Include="Entities\SpectraCyber\AbstractSpectraCyber.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberCommandTypeEnum.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberModeTypeEnum.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberRequest.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberSimaultor.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
@@ -80,19 +113,37 @@
     <Compile Include="Migrations\201810072215446_InitialDb.Designer.cs">
       <DependentUpon>201810072215446_InitialDb.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810220130330_RemoteDatabaseMigration.cs" />
+    <Compile Include="Migrations\201810220130330_RemoteDatabaseMigration.Designer.cs">
+      <DependentUpon>201810220130330_RemoteDatabaseMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810240413185_RFDataMigration.cs" />
+    <Compile Include="Migrations\201810240413185_RFDataMigration.Designer.cs">
+      <DependentUpon>201810240413185_RFDataMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteDb\RemoteDbConfiguration.cs" />
+    <Compile Include="Simulators\BackEndSim\BackEndSim.cs" />
+    <Compile Include="Simulators\FrontEndSim\FrontEndSim.cs" />
+    <Compile Include="Simulators\Server\Server.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201810072215446_InitialDb.resx">
       <DependentUpon>201810072215446_InitialDb.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810220130330_RemoteDatabaseMigration.resx">
+      <DependentUpon>201810220130330_RemoteDatabaseMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810240413185_RFDataMigration.resx">
+      <DependentUpon>201810240413185_RFDataMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

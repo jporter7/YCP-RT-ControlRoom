@@ -1,4 +1,5 @@
-﻿using MySql.Data.EntityFramework;
+﻿using ControlRoomApplication.Constants;
+using MySql.Data.EntityFramework;
 using System.Data.Entity;
 
 namespace ControlRoomApplication.Main
@@ -8,9 +9,9 @@ namespace ControlRoomApplication.Main
     {
         public RTDbConfiguration()
         {
-            SetProviderFactory("MySql.Data.MySqlClient", new MySql.Data.MySqlClient.MySqlClientFactory());
-            SetProviderServices("MySql.Data.MySqlClient", new MySql.Data.MySqlClient.MySqlProviderServices());
-            SetDefaultConnectionFactory(new MySqlConnectionFactory("RTDatabase"));
+            SetProviderFactory(AWSConstants.DATABASE_PROVIDER, new MySql.Data.MySqlClient.MySqlClientFactory());
+            SetProviderServices(AWSConstants.DATABASE_PROVIDER, new MySql.Data.MySqlClient.MySqlProviderServices());
+            SetDefaultConnectionFactory(new MySqlConnectionFactory(AWSConstants.REMOTE_DATABASE_NAME));
         }
     }
 }

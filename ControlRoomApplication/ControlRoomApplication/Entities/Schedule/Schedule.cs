@@ -19,6 +19,6 @@ namespace ControlRoomApplication.Entities
         }
 
         public DateTime CurrentDateTime { get; set; }
-        public ICollection<Appointment> Appointments { get; set; }
+        public virtual ICollection<Appointment> Appointments { get; set; }
     }
 }
