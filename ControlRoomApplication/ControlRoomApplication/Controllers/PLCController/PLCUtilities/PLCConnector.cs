@@ -1,17 +1,42 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Net;
+using System.IO.Ports;
+using System.Threading;
 
 namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
 {
     public class PLCConnector
     {
+        /// <summary>
+        /// Constructor for the PLCConnector. This constructor should be used for 
+        /// connecting to a TCP connection at the localhost 127.0.0.1 address and port 8080.
+        /// </summary>
         public PLCConnector()
         {
             ConnectionEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080);
             TCPClient = new TcpClient();
         }
 
+        /// <summary>
+        /// Constructor for the PLCConnector. This constructor should be used for
+        /// connecting to a serial port connection.
+        /// </summary>
+        /// <param name="portName"></param>
+        public PLCConnector(string portName)
+        {
+            SPort = new SerialPort();
+            SPort.PortName = portName;
+            SPort.BaudRate = 9600;
+            SPort.Open();
+        }
+
+        /// <summary>
+        /// Constructor for the PLCConecctor. This constructor should be used for
+        /// connecting to a TCP connection at the specified IP address and port.
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="port"></param>
         public PLCConnector(string ip, int port)
         {
             // Initialize Connector with information passed in
@@ -53,13 +78,29 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
             // that is being used and write to it.
             if (ConnectToPLC())
             {
-                Stream = TCPClient.GetStream();
+                try
+                {
+                    Stream = TCPClient.GetStream();
 
-                Stream.Write(Data, 0, Data.Length);
+                    Stream.Write(Data, 0, Data.Length);
+                }
+                catch(SocketException e)
+                {
+                    Console.WriteLine($"Socket encountered an error: {e.Message}");
+                } 
+                finally
+                {
+                    DisconnectFromPLC();
+                }
+
             }
         }
 
-        //
+        /// <summary>
+        /// Receives messages from a TCP connection from the IPEndpoint that TCPClient
+        /// is connected to.
+        /// </summary>
+        /// <returns></returns>
         public string ReceiveMessage()
         {
             // Create a new byte[] array and initialize the string
@@ -81,15 +122,50 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
                 {
                     Console.WriteLine("Encountered a socket exception: " + e.Message);
                 }
+                finally
+                {
+                    DisconnectFromPLC();
+                }
             }
 
             return Message;
         }
 
-        public void DiscconnectFromPLC()
+        public void DisconnectFromPLC()
         {
             // Call the dispose() method to close the stream and connection.
             TCPClient.Dispose();
+        }
+
+        //*** These methods will be for the arduino scale model. ***//
+
+        public void CloseSerialPort()
+        {
+            SPort.Close();
+        }
+
+        public string GetSerialPortMessage()
+        {
+            int count = 0;
+            Message = string.Empty;
+
+            while (count < 1000)
+            {
+                Message = SPort.ReadExisting();
+                Thread.Sleep(5000);
+                count++;
+            }
+
+            return Message;
+        }
+
+        public bool SendSerialPortMessage(int num)
+        {
+            Data = BitConverter.GetBytes(num);
+
+            SPort.Write(Data, 0, Data.Length);
+
+            return true;
         }
 
         // Getters/Setters for TCP/IP connection
@@ -98,5 +174,8 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
         public NetworkStream Stream { get; set; }
         public byte[] Data { get; set; }
         public string Message { get; set; }
+
+        // Getters/Setters for Serial Port connection (for arduino scale model)
+        public SerialPort SPort { get; set; }
     }
 }

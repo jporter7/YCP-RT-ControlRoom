@@ -9,6 +9,11 @@ namespace ControlRoomApplication.Entities.PLC
             PLCConnector = new PLCConnector(ip, port);
         }
 
+        public PLC()
+        {
+            //PLCConnector = new PLCConnector(" ");
+        }
+
         public string SendMessage(string message)
         {
             PLCConnector.WriteMessage(message);
@@ -28,6 +33,28 @@ namespace ControlRoomApplication.Entities.PLC
             }
 
             return result;
+        }
+
+        public bool MoveScaleModelAzimuth(int azimuth)
+        {
+            PLCConnector = new PLCConnector("COM3");
+
+            var sent = PLCConnector.SendSerialPortMessage(azimuth);
+
+            PLCConnector.CloseSerialPort();
+
+            return sent;
+        }
+
+        public bool MoveScaleModelElevation(int elevation)
+        {
+            PLCConnector = new PLCConnector("COM4");
+
+            var sent = PLCConnector.SendSerialPortMessage(elevation);
+
+            PLCConnector.CloseSerialPort();
+
+            return sent;
         }
 
         // Getter/Setter for the Connector that connects
