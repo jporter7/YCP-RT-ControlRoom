@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -14,7 +15,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestInitialize]
         public void BuildUp()
         {
-            commPort = Constants.SPECTRA_CYBER_DEFAULT_COMM_PORT;
+            commPort = GenericConstants.SPECTRA_CYBER_DEFAULT_COMM_PORT;
             spectraCyber = new SpectraCyber(commPort);
         }
 

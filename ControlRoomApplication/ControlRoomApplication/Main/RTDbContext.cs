@@ -5,8 +5,14 @@ namespace ControlRoomApplication.Main
 {
     public class RTDbContext : DbContext
     {
-        public RTDbContext() : base("rtdatabase")
+        public RTDbContext() : base(AWSConstants.REMOTE_DATABASE_NAME)
         {
+
+        }
+
+        public RTDbContext(string connectionString) : base(connectionString)
+        {
+            Database.Connection.ConnectionString = connectionString;
             Configuration.LazyLoadingEnabled = true;
         }
 

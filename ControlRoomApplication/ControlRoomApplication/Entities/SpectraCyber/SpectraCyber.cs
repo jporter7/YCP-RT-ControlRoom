@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
+using ControlRoomApplication.Constants;
 
 //
 // Changes made here that need to be reflected in the UML (if agreed upon):
@@ -68,6 +69,6 @@ namespace ControlRoomApplication.Entities
             ResponseList = new List<SpectraCyberResponse>();
         }
 
-        public SpectraCyber() : this(Constants.SPECTRA_CYBER_DEFAULT_COMM_PORT) { }
+        public SpectraCyber() : this(GenericConstants.SPECTRA_CYBER_DEFAULT_COMM_PORT) { }
     }
 }

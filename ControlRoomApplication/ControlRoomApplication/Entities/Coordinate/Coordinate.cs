@@ -4,7 +4,16 @@ namespace ControlRoomApplication.Entities.Coordinate
 {
     class Coordinate
     {
-        public double Azimuth { get; set; }
-        public double Altitude { get; set; }
+        readonly double _latitude;
+        readonly double _longitude;
+
+        public Coordinate(double latitude, double longitude)
+        {
+            this._latitude = latitude;
+            this._longitude = longitude;
+        }
+        
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

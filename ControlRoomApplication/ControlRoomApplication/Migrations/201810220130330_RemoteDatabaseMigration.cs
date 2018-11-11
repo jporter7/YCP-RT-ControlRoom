@@ -1,0 +1,18 @@
+namespace ControlRoomApplication.Migrations
+{
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class RemoteDatabaseMigration : DbMigration
+    {
+        public override void Up()
+        {
+            AddColumn("dbo.Appointments", "user_id", c => c.Int(nullable: false));
+        }
+        
+        public override void Down()
+        {
+            DropColumn("dbo.Appointments", "user_id");
+        }
+    }
+}
