@@ -2,9 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ControlRoomApplication.Entities.Coordinate
+namespace ControlRoomApplication.Entities
 {
-    class Coordinate
+    [Table("coordinate")]
+    public class Coordinate
     {
 
         public Coordinate(double rightAscension, double declination)
