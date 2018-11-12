@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
+    <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
     <Compile Include="Controllers\PLCController\PLCController.cs" />
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCConnector.cs" />
