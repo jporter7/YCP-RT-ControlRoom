@@ -51,8 +51,8 @@ namespace ControlRoomApplication.Entities
         /// The getter/setter for the coordinate asscociated with this Appointment.
         /// </summary>
         [Required]
-        [Column("coordinate")]
-        public Coordinate Coordinate { get; set; }
+        [Column("coordinate_id")]
+        public int CoordinateId { get; set; }
 
     }
 }
