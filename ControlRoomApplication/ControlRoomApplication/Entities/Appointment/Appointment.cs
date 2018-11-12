@@ -53,6 +53,5 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("coordinate_id")]
         public int CoordinateId { get; set; }
-
     }
 }
