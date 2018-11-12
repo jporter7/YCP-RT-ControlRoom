@@ -17,8 +17,8 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             {
                 case "sun":
                     SunCoordinateCalculator sunCoordinateCalculator = new SunCoordinateCalculator(date);
-                    coordinate.Latitude = sunCoordinateCalculator.GetEquatorialElevation();
-                    coordinate.Longitude = sunCoordinateCalculator.GetEquatorialAzimuth();
+                    coordinate.rightAscension = sunCoordinateCalculator.GetEquatorialElevation();
+                    coordinate.declination = sunCoordinateCalculator.GetEquatorialAzimuth();
 
                     return coordinate;
                 default:
