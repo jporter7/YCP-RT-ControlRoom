@@ -1,4 +1,5 @@
-﻿using ControlRoomApplication.Entities.PLC;
+﻿using ControlRoomApplication.Entities.Coordinate;
+using ControlRoomApplication.Entities.PLC;
 
 namespace ControlRoomApplication.Controllers.PLCController
 {
@@ -30,14 +31,14 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// <param name="plc"> The PLC to communicate with. </param>
         /// <param name="azimuth"> The azimuth that the PLC should move the radiotelescope to. </param>
         /// <returns> A string that indicates the state of the operation. </returns>
-        public string MoveTelescope(PLC plc, double azimuth) //long azimuthOffset)
+        public string MoveTelescope(PLC plc, Coordinate coordinate) //long azimuthOffset)
         {
-            if (azimuth < 0 || azimuth > 359.99)
+            if (coordinate.rightAscension < 0 || coordinate.rightAscension > 359.99)
             {
                 return "ERROR";
             }            
 
-            return plc.SendMessage($"azimuth {azimuth}");
+            return plc.SendMessage($"right_ascension {coordinate.rightAscension}, declination {coordinate.declination}");
         }
     }
 }
