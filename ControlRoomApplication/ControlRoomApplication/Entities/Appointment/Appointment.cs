@@ -46,5 +46,13 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("end_time")]
         public DateTime EndTime { get; set; }
+
+        /// <summary>
+        /// The getter/setter for the coordinate asscociated with this Appointment.
+        /// </summary>
+        [Required]
+        [Column("coordinate_id")]
+        public int CoordinateId { get; set; }
+
     }
 }
