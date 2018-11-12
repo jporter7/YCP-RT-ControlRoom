@@ -59,7 +59,7 @@ namespace ControlRoomApplication.Entities
 
         public FullTelescope()
         {
-            FTSpectraCyberController = new AbstractSpectraCyberController(new AbstractSpectraCyber());
+            FTSpectraCyberController = new SpectraCyberController(new SpectraCyber());
             FTSpectraCyberController.BringUp();
         }
 
