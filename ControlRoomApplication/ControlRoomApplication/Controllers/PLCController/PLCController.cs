@@ -1,4 +1,6 @@
-﻿using ControlRoomApplication.Entities.PLC;
+﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.PLC;
 
 namespace ControlRoomApplication.Controllers.PLCController
 {
@@ -9,19 +11,24 @@ namespace ControlRoomApplication.Controllers.PLCController
 
         }
 
+        /// <summary>
+        /// Method that will send commands to the plc to calibrate the telescope.
+        /// </summary>
+        /// <param name="plc"> The plc that the commands should be sent to. </param>
+        /// <returns> A string representing the state of the operation. </returns>
         public string CalibrateRT(PLC plc)
         {
-            return plc.SendMessage("calibrate");
+            return plc.SendMessage(PLCConstants.CALIBRATE);
         }
 
         /// <summary>
         /// Tells the specified PLC to shutdown.
         /// </summary>
         /// <param name="plc"> The PLC to communicate with.</param>
-        /// <returns></returns>
+        /// <returns> A string representing the state of the operation. </returns>
         public string ShutdownRT(PLC plc)
         {
-            return plc.SendMessage("shutdown");
+            return plc.SendMessage(PLCConstants.SHUTDOWN);
         }
 
         /// <summary>
@@ -29,25 +36,41 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// </summary>
         /// <param name="plc"> The PLC to communicate with. </param>
         /// <param name="azimuth"> The azimuth that the PLC should move the radiotelescope to. </param>
-        /// <returns></returns>
-        public string MoveAzimuth(PLC plc, double azimuth) //long azimuthOffset)
+        /// <returns> A string that indicates the state of the operation. </returns>
+        public string MoveTelescope(PLC plc, Coordinate coordinate) //long azimuthOffset)
         {
-            if (azimuth < 0 || azimuth > 359.99)
+            if (coordinate.rightAscension < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || coordinate.rightAscension > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
             {
-                return "ERROR";
-            }            
-
-            return plc.SendMessage($"azimuth {azimuth}");
-        }
-        
-        public string MoveElevation(PLC plc, double elevation) //long elevationOffset)
-        {
-            if (elevation < 0 || elevation > 180)
+                throw new System.Exception();
+            }
+            else if (coordinate.declination < PLCConstants.DECLINATION_LOWER_LIMIT || coordinate.declination > PLCConstants.DECLINATION_UPPER_LIMIT)
             {
-                return "ERROR";
+                throw new System.Exception();
             }
 
-            return plc.SendMessage($"elevation {elevation}");
+            return plc.SendMessage($"right_ascension {coordinate.rightAscension}, declination {coordinate.declination}");
         }
+
+        /// <summary>
+        /// Method to move the scale model to a certain set of coordinates.
+        /// </summary>
+        /// <param name="plc"> The plc that the commands should be sent to. </param>
+        /// <param name="coordinate"> A set of coordinates that the telescope should be moved to.</param>
+        public void MoveScaleModel(PLC plc, Coordinate coordinate)
+        {
+            if (coordinate.rightAscension < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || coordinate.rightAscension > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
+            {
+                throw new System.Exception();
+            }
+            else if (coordinate.declination < PLCConstants.DECLINATION_LOWER_LIMIT || coordinate.declination > PLCConstants.DECLINATION_UPPER_LIMIT)
+            {
+                throw new System.Exception();
+            }
+
+            plc.MoveScaleModelAzimuth((int)coordinate.rightAscension);
+            plc.MoveScaleModelElevation((int)coordinate.declination);
+        }
+
+        public PLC Plc { get; set; }
     }
 }

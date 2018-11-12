@@ -1,17 +1,43 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Net;
+using System.IO.Ports;
+using System.Threading;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
 {
     public class PLCConnector
     {
+        /// <summary>
+        /// Constructor for the PLCConnector. This constructor should be used for 
+        /// connecting to a TCP connection at the localhost 127.0.0.1 address and port 8080.
+        /// </summary>
         public PLCConnector()
         {
-            ConnectionEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080);
+            ConnectionEndpoint = new IPEndPoint(IPAddress.Parse(PLCConstants.LOCAL_HOST_IP), PLCConstants.PORT_8080);
             TCPClient = new TcpClient();
         }
 
+        /// <summary>
+        /// Constructor for the PLCConnector. This constructor should be used for
+        /// connecting to a serial port connection.
+        /// </summary>
+        /// <param name="portName"> The serial port name that should be connected to. </param>
+        public PLCConnector(string portName)
+        {
+            SPort = new SerialPort();
+            SPort.PortName = portName;
+            SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
+            SPort.Open();
+        }
+
+        /// <summary>
+        /// Constructor for the PLCConecctor. This constructor should be used for
+        /// connecting to a TCP connection at the specified IP address and port.
+        /// </summary>
+        /// <param name="ip"> The IP address, in string format, that should be connected to. </param>
+        /// <param name="port"> The port that should be connected to. </param>
         public PLCConnector(string ip, int port)
         {
             // Initialize Connector with information passed in
@@ -43,7 +69,7 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
         /// Writes a message to the network stream that is connecting this application
         /// to the application running the PLC hardware.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message"> A string that represents the state of the object. </param>
         public void WriteMessage(string message)
         {
             // Convert the message passed in into a byte[] array.
@@ -53,13 +79,29 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
             // that is being used and write to it.
             if (ConnectToPLC())
             {
-                Stream = TCPClient.GetStream();
+                try
+                {
+                    Stream = TCPClient.GetStream();
 
-                Stream.Write(Data, 0, Data.Length);
+                    Stream.Write(Data, 0, Data.Length);
+                }
+                catch(SocketException e)
+                {
+                    Console.WriteLine($"Socket encountered an error: {e.Message}");
+                } 
+                finally
+                {
+                    DisconnectFromPLC();
+                }
+
             }
         }
 
-        //
+        /// <summary>
+        /// Receives messages from a TCP connection from the IPEndpoint that TCPClient
+        /// is connected to.
+        /// </summary>
+        /// <returns> A string that indicates the state of the operation. </returns>
         public string ReceiveMessage()
         {
             // Create a new byte[] array and initialize the string
@@ -81,15 +123,60 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
                 {
                     Console.WriteLine("Encountered a socket exception: " + e.Message);
                 }
+                finally
+                {
+                    DisconnectFromPLC();
+                }
             }
 
             return Message;
         }
 
-        public void DiscconnectFromPLC()
+        /// <summary>
+        /// Disconnects the TCP connection that was established to the PLC.
+        /// </summary>
+        public void DisconnectFromPLC()
         {
             // Call the dispose() method to close the stream and connection.
             TCPClient.Dispose();
+        }
+
+        //*** These methods will be for the arduino scale model. ***//
+
+        /// <summary>
+        /// Closes the serial port that was opened in SPort.
+        /// </summary>
+        public void CloseSerialPort()
+        {
+            SPort.Close();
+        }
+
+        /// <summary>
+        /// Gets a message from the specified serial port in SPort.
+        /// </summary>
+        /// <returns> Returns a string that was read from the serial port. </returns>
+        public string GetSerialPortMessage()
+        {
+            Message = string.Empty;
+
+            Message = SPort.ReadExisting();
+            Thread.Sleep(5000);
+
+            return Message;
+        }
+
+        /// <summary>
+        /// Sends an integer over serial port to the arduino that controls a stepper motor.
+        /// </summary>
+        /// <param name="num"> The degrees, as an int, that the scale model should move. </param>
+        /// <returns> A boolean that indicates the operation was successful. </returns>
+        public bool SendSerialPortMessage(int num)
+        {
+            Data = BitConverter.GetBytes((short)num);
+
+            SPort.Write(Data, 0, Data.Length);
+
+            return true;
         }
 
         // Getters/Setters for TCP/IP connection
@@ -98,5 +185,8 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
         public NetworkStream Stream { get; set; }
         public byte[] Data { get; set; }
         public string Message { get; set; }
+
+        // Getters/Setters for Serial Port connection (for arduino scale model)
+        public SerialPort SPort { get; set; }
     }
 }

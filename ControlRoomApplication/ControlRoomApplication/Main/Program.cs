@@ -1,65 +1,53 @@
 ﻿using System;
-using System.Linq;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.PLC;
 
 namespace ControlRoomApplication.Main
 {
     public class Program
     {
+        [STAThread]
         public static void Main(string[] args)
         {
             // Create an instance of the DbContext (it does all of the data accessing
             // and manipulation). Then, add the user to the user table. Lastly, save the 
             // changes that were automatically checked by dbContext.ChangeTracker
-            try
+            //RTDbContext dbContext = new RTDbContext();
+
+            //foreach(Appointment app in dbContext.Appointments)
+            //{
+            //    Console.WriteLine(string.Join(Environment.NewLine,
+            //        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}",
+            //        ""));
+            //}
+
+            while(true)
             {
-                RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
+                PLC plc = new PLC();
 
-                Console.WriteLine("Appointments table: \n");
-                var schedule = new Schedule();
-                var appts = dbContext.Appointments.OrderBy(x => x.StartTime).ToList();
-                var appt = appts[0];
+                Console.WriteLine("Enter an elevation: ");
+                var ele = Convert.ToInt32(Console.ReadLine());
+                plc.MoveScaleModelElevation(ele);
 
-                Console.WriteLine($"The next appointment for the radio-telescope starts at {appt.StartTime}.\n");
 
-                foreach(Appointment app in dbContext.Appointments)
-                {
-                    Console.WriteLine(string.Join(Environment.NewLine,
-                        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}. ",
-                        ""));
-                }
+                Console.WriteLine("Enter an azimuth: ");
+                var num = Convert.ToInt32(Console.ReadLine());
 
-                Console.WriteLine("Would you like to add some RFData? (y/n)");
-                var input = Console.ReadLine();
+                plc.MoveScaleModelAzimuth(num);
 
-                if (input.ToLower().Equals("y"))
-                {
-                    RFData rf = new RFData();
-                    rf.TimeCaptured = DateTime.Now;
 
-                    rf.Intensity = 4245345;
-                    rf.AppointmentId = 1;
-
-                    dbContext.RFDatas.Add(rf);
-                    dbContext.SaveChanges();
-
-                }
-
-                foreach(RFData rfData in dbContext.RFDatas)
-                {
-                    Console.WriteLine(string.Join(Environment.NewLine,
-                        $"RFdata {rfData.Id} has an intensity of {rfData.Intensity} and a timestamp of {rfData.TimeCaptured}.",
-                        ""));
-                }
-
-                dbContext.Database.Connection.Close();
-                Console.ReadKey(true);
             }
-            catch (ArgumentException e)
-            {
-                Console.WriteLine(e.Message);
-                Console.ReadKey(true);
-            }
+
+            //}
+            //else
+            //{
+            //    var num = Convert.ToInt32(command);
+            //    Console.WriteLine(num);
+            //    plc.MoveScaleModelElevation(num);
+            //}
+
+
+            Console.ReadKey(true);
         }
     }
 }

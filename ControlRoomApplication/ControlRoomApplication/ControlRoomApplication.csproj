@@ -79,6 +79,7 @@
   <ItemGroup>
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
+    <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\AASharpControllers\SunCoordinateCalculator.cs" />
     <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
