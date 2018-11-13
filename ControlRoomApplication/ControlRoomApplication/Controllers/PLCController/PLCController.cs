@@ -1,6 +1,6 @@
 ﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.PLC;
+using ControlRoomApplication.Entities.Plc;
 
 namespace ControlRoomApplication.Controllers.PLCController
 {
@@ -39,16 +39,16 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// <returns> A string that indicates the state of the operation. </returns>
         public string MoveTelescope(PLC plc, Coordinate coordinate) //long azimuthOffset)
         {
-            if (coordinate.rightAscension < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || coordinate.rightAscension > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
+            if (coordinate.RightAscension < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || coordinate.RightAscension > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
             {
                 throw new System.Exception();
             }
-            else if (coordinate.declination < PLCConstants.DECLINATION_LOWER_LIMIT || coordinate.declination > PLCConstants.DECLINATION_UPPER_LIMIT)
+            else if (coordinate.Declination < PLCConstants.DECLINATION_LOWER_LIMIT || coordinate.Declination > PLCConstants.DECLINATION_UPPER_LIMIT)
             {
                 throw new System.Exception();
             }
 
-            return plc.SendMessage($"right_ascension {coordinate.rightAscension}, declination {coordinate.declination}");
+            return plc.SendMessage($"right_ascension {coordinate.RightAscension}, declination {coordinate.Declination}");
         }
 
         /// <summary>
@@ -56,19 +56,19 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// </summary>
         /// <param name="plc"> The plc that the commands should be sent to. </param>
         /// <param name="coordinate"> A set of coordinates that the telescope should be moved to.</param>
-        public void MoveScaleModel(PLC plc, Coordinate coordinate)
+        public void MoveScaleModel(PLC plc, Orientation orientation)
         {
-            if (coordinate.rightAscension < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || coordinate.rightAscension > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
+            if (orientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || orientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
             {
                 throw new System.Exception();
             }
-            else if (coordinate.declination < PLCConstants.DECLINATION_LOWER_LIMIT || coordinate.declination > PLCConstants.DECLINATION_UPPER_LIMIT)
+            else if (orientation.Elevation < PLCConstants.DECLINATION_LOWER_LIMIT || orientation.Elevation > PLCConstants.DECLINATION_UPPER_LIMIT)
             {
                 throw new System.Exception();
             }
 
-            plc.MoveScaleModelAzimuth((int)coordinate.rightAscension);
-            plc.MoveScaleModelElevation((int)coordinate.declination);
+            plc.MoveScaleModelAzimuth((int)orientation.Azimuth);
+            plc.MoveScaleModelElevation((int)orientation.Elevation);
         }
 
         public PLC Plc { get; set; }

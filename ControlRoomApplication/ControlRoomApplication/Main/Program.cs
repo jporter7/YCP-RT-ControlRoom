@@ -1,6 +1,5 @@
 ﻿using System;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.PLC;
+using ControlRoomApplication.Entities.Plc;
 
 namespace ControlRoomApplication.Main
 {

@@ -97,9 +97,12 @@
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Coordinate\Coordinate.cs" />
     <Compile Include="Entities\Orientation\Orientation.cs" />
-    <Compile Include="Entities\RadioTelescope\RadioTelescope.cs" />
+    <Compile Include="Entities\RadioTelescope\AbstractRadioTelescope.cs" />
+    <Compile Include="Entities\RadioTelescope\ProductionRadioTelescope.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeStatusEnum.cs" />
+    <Compile Include="Entities\RadioTelescope\ScaleRadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
-    <Compile Include="Entities\PLC\PLC.cs" />
+    <Compile Include="Entities\Plc\PLC.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Entities\SpectraCyber\AbstractSpectraCyber.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />

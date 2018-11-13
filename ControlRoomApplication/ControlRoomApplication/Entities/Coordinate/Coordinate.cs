@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
@@ -7,11 +6,10 @@ namespace ControlRoomApplication.Entities
     [Table("coordinate")]
     public class Coordinate
     {
-
         public Coordinate(double rightAscension, double declination)
         {
-            this.rightAscension = rightAscension;
-            this.declination = declination;
+            RightAscension = rightAscension;
+            Declination = declination;
         }
 
         [Key]
@@ -20,11 +18,10 @@ namespace ControlRoomApplication.Entities
 
         [Required]
         [Column("right_ascension")]
-        public double rightAscension { get; set; }
+        public double RightAscension { get; set; }
 
         [Required]
         [Column("declination")]
-        public double declination { get; set; }
-       
+        public double Declination { get; set; }
     }
 }

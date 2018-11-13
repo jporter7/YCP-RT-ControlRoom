@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Main
@@ -20,5 +19,6 @@ namespace ControlRoomApplication.Main
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<RFData> RFDatas { get; set; }
         public DbSet<Orientation> Orientations { get; set; }
+        public DbSet<Coordinate> Coordinates { get; set; }
     }
 }

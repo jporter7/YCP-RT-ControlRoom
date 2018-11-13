@@ -1,8 +1,8 @@
 ﻿using ControlRoomApplication.Constants;
-using ControlRoomApplication.Controllers.PLCController.PLCUtilities;
+using ControlRoomApplication.Controllers.PLCController;
 using System;
 
-namespace ControlRoomApplication.Entities.PLC
+namespace ControlRoomApplication.Entities.Plc
 {
     public class PLC
     {

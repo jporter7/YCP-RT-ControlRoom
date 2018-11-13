@@ -1,5 +1,6 @@
 ﻿using ControlRoomApplication;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.RadioTelescope;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.EntitiesTests
@@ -7,45 +8,45 @@ namespace ControlRoomApplicationTest.EntitiesTests
     [TestClass]
     public class RadioTelescopeTest
     {
-        private SimulatedTelescope simulatedTelescope;
-        private FullTelescope fullTelescope;
+        private ScaleRadioTelescope scaleRadioTelescope;
+        private ProductionRadioTelescope productionRadioTelescope;
 
         [TestInitialize]
         public void BuildUp()
         {
-            simulatedTelescope = new SimulatedTelescope();
-            fullTelescope = new FullTelescope();
+            scaleRadioTelescope = new ScaleRadioTelescope();
+            productionRadioTelescope = new ProductionRadioTelescope();
         }
 
         [TestMethod]
         public void TestSimulatedTelescopeInitialization()
         {
-            Assert.AreEqual(simulatedTelescope.CurrentStatus, RadioTelescopeStatusEnum.Unknown);
+            Assert.AreEqual(scaleRadioTelescope.Status, RadioTelescopeStatusEnum.UNKNOWN);
         }
 
         [TestMethod]
         public void TestFullTelescopeInitialization()
         {
-            Assert.AreEqual(fullTelescope.CurrentStatus, RadioTelescopeStatusEnum.Unknown);
+            Assert.AreEqual(productionRadioTelescope.Status, RadioTelescopeStatusEnum.UNKNOWN);
         }
 
         [TestMethod]
         public void TestSettersAndGetters()
         {
-            simulatedTelescope.CurrentStatus = RadioTelescopeStatusEnum.ShutDown;
-            fullTelescope.CurrentStatus = RadioTelescopeStatusEnum.ShutDown;
-            Assert.AreEqual(simulatedTelescope.CurrentStatus, RadioTelescopeStatusEnum.ShutDown);
-            Assert.AreEqual(fullTelescope.CurrentStatus, RadioTelescopeStatusEnum.ShutDown);
+            scaleRadioTelescope.Status = RadioTelescopeStatusEnum.SHUTDOWN;
+            productionRadioTelescope.Status = RadioTelescopeStatusEnum.SHUTDOWN;
+            Assert.AreEqual(scaleRadioTelescope.Status, RadioTelescopeStatusEnum.SHUTDOWN);
+            Assert.AreEqual(productionRadioTelescope.Status, RadioTelescopeStatusEnum.SHUTDOWN);
 
-            simulatedTelescope.CurrentStatus = RadioTelescopeStatusEnum.Idle;
-            fullTelescope.CurrentStatus = RadioTelescopeStatusEnum.Idle;
-            Assert.AreEqual(simulatedTelescope.CurrentStatus, RadioTelescopeStatusEnum.Idle);
-            Assert.AreEqual(fullTelescope.CurrentStatus, RadioTelescopeStatusEnum.Idle);
+            scaleRadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
+            productionRadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
+            Assert.AreEqual(scaleRadioTelescope.Status, RadioTelescopeStatusEnum.IDLE);
+            Assert.AreEqual(productionRadioTelescope.Status, RadioTelescopeStatusEnum.IDLE);
 
-            simulatedTelescope.CurrentStatus = RadioTelescopeStatusEnum.MovingAndIntegrating;
-            fullTelescope.CurrentStatus = RadioTelescopeStatusEnum.MovingAndIntegrating;
-            Assert.AreEqual(simulatedTelescope.CurrentStatus, RadioTelescopeStatusEnum.MovingAndIntegrating);
-            Assert.AreEqual(fullTelescope.CurrentStatus, RadioTelescopeStatusEnum.MovingAndIntegrating);
+            scaleRadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING_AND_INTEGRATING;
+            productionRadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING_AND_INTEGRATING;
+            Assert.AreEqual(scaleRadioTelescope.Status, RadioTelescopeStatusEnum.RUNNING_AND_INTEGRATING);
+            Assert.AreEqual(productionRadioTelescope.Status, RadioTelescopeStatusEnum.RUNNING_AND_INTEGRATING);
         }
     }
 }

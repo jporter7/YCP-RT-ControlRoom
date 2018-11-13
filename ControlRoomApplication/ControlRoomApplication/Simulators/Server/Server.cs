@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections.ObjectModel;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.RadioTelescope;
 
 namespace ControlRoomApplication.Simulators.Server
 {

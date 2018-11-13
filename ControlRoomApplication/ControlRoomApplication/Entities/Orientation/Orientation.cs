@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ControlRoomApplication.Entities
 {
     [Table("orientation")]
+    [Serializable]
     public class Orientation
     {
         public Orientation(long azimuth, long elevation)
@@ -13,20 +14,18 @@ namespace ControlRoomApplication.Entities
             Elevation = elevation;
         }
 
-        public Orientation() : this(0, 0) { }
+        public Orientation() : this(0, 90) { }
 
-        [Key, ForeignKey("RFData")]
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int CapturedOrientationId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [Column("azimuth")]
-        public long Azimuth { get; set; }
+        public double Azimuth { get; set; }
 
         [Required]
         [Column("elevation")]
-        public long Elevation { get; set; }
-
-        public virtual RFData RFData { get; set; }
+        public double Elevation { get; set; }
     }
 }

@@ -1,9 +1,9 @@
-﻿using ControlRoomApplication.Entities.PLC;
+﻿using ControlRoomApplication.Entities.Plc;
 using System;
 using System.Net;
 using System.Net.Sockets;
 
-namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
+namespace ControlRoomApplication.Controllers.PLCController
 {
     public class PLCSimulator
     {

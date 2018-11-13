@@ -5,7 +5,7 @@ using System.IO.Ports;
 using System.Threading;
 using ControlRoomApplication.Constants;
 
-namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
+namespace ControlRoomApplication.Controllers.PLCController
 {
     public class PLCConnector
     {
