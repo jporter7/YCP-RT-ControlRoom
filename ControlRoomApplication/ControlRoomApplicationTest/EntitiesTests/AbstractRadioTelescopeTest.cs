@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace ControlRoomApplicationTest.EntitiesTests
 {
     [TestClass]
-    public class RadioTelescopeTest
+    public class AbstractRadioTelescopeTest
     {
         private SimulatedTelescope simulatedTelescope;
         private FullTelescope fullTelescope;
@@ -13,8 +13,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestInitialize]
         public void BuildUp()
         {
-            simulatedTelescope = new SimulatedTelescope();
-            fullTelescope = new FullTelescope();
+            //simulatedTelescope = new SimulatedTelescope();
+            //fullTelescope = new FullTelescope();
         }
 
         [TestMethod]

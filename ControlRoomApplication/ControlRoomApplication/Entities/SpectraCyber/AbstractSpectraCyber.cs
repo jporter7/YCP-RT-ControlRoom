@@ -17,21 +17,29 @@ namespace ControlRoomApplication.Entities
     {
         public SpectraCyberModeTypeEnum CurrentModeType { get; set; }
 
-        // Attributes that handle inter-process communication
-        // TODO: implement proper inter-process communication standards (i.e., a mutex for ResponseList and maybe CurrentSpectraCyberRequest)
-        public bool CommunicationThreadActive { get; set; }
-        public Thread CommunicationThread { get; set; }
-        public bool KillCommunicationThreadFlag { get; set; }
+        //
+        // Below are attributes that handle inter-process communication
+        //
+
         public SpectraCyberRequest CurrentSpectraCyberRequest { get; set; }
+        public bool Available { get; set; }
+
+        public Thread CommunicationThread { get; set; }
+        public bool CommunicationThreadActive { get; set; }
+        public bool KillCommunicationThreadFlag { get; set; }
+        
         public List<SpectraCyberResponse> ResponseList { get; set; }
 
         public AbstractSpectraCyber()
         {
             CurrentModeType = SpectraCyberModeTypeEnum.UNKNOWN;
 
+            CurrentSpectraCyberRequest = SpectraCyberRequest.GetNewEmpty();
+            Available = true;
+
             CommunicationThreadActive = false;
             KillCommunicationThreadFlag = false;
-            CurrentSpectraCyberRequest = SpectraCyberRequest.GetNewEmpty();
+            
             ResponseList = new List<SpectraCyberResponse>();
         }
     }

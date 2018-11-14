@@ -1,7 +1,6 @@
 ﻿using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 using System;
-using AASharp;
 
 namespace ControlRoomApplication.Controllers.AppointmentController
 {

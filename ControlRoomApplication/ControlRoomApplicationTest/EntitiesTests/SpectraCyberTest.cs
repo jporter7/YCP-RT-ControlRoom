@@ -14,7 +14,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestInitialize]
         public void BuildUp()
         {
-            commPort = AbstractSpectraCyberConstants.SPECTRA_CYBER_DEFAULT_COMM_PORT;
+            commPort = AbstractSpectraCyberConstants.DEFAULT_COMM_PORT;
             spectraCyber = new SpectraCyber(commPort);
         }
 
