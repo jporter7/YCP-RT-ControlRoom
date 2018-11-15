@@ -80,6 +80,7 @@
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
+    <Compile Include="Controllers\AASharpControllers\CoordinateTransformation.cs" />
     <Compile Include="Controllers\AASharpControllers\MoonCoordinateCalculator.cs" />
     <Compile Include="Controllers\AASharpControllers\SunCoordinateCalculator.cs" />
     <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
