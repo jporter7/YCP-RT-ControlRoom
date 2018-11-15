@@ -31,7 +31,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
         // N = RT Long
         // L = RT Lat
         // G = S - N
-        public static Orientation SunAzEle(System.DateTime date)
+        private static Orientation SunAzEle(System.DateTime date)
         {
             double S = CalculateSunPos(date).RA;
             //RadioTelescope Longitude
@@ -50,7 +50,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation MoonAzEle(System.DateTime date)
+        private static Orientation MoonAzEle(System.DateTime date)
         {
             double JD = AASDate.DateToJD(date.Year, date.Month, date.Day, true);
 
@@ -65,7 +65,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation MercAzEle(System.DateTime date)
+        private static Orientation MercAzEle(System.DateTime date)
         {
             var bHighPrecision = false;
             double JD = AASDate.DateToJD(date.Year, date.Month, date.Day, true);
@@ -97,7 +97,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation VenusAzEle(System.DateTime date)
+        private static Orientation VenusAzEle(System.DateTime date)
         {
             var bHighPrecision = true;
 
@@ -114,7 +114,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation MarsAzEle(System.DateTime date)
+        private static Orientation MarsAzEle(System.DateTime date)
         {
             var bHighPrecision = true;
 
@@ -131,7 +131,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation JupAzEle(System.DateTime date)
+        private static Orientation JupAzEle(System.DateTime date)
         {
             var bHighPrecision = true;
 
@@ -148,7 +148,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation SatAzEle(System.DateTime date)
+        private static Orientation SatAzEle(System.DateTime date)
         {
             var bHighPrecision = true;
 
@@ -165,7 +165,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation UraAzEle(System.DateTime date)
+        private static Orientation UraAzEle(System.DateTime date)
         {
             var bHighPrecision = true;
 
@@ -182,7 +182,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation NepAzEle(System.DateTime date)
+        private static Orientation NepAzEle(System.DateTime date)
         {
             var bHighPrecision = true;
 
@@ -199,7 +199,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(azimuth, elevation);
         }
 
-        public static Orientation PluAzEle(System.DateTime date)
+        private static Orientation PluAzEle(System.DateTime date)
         {
             double JD = AASDate.DateToJD(date.Year, date.Month, date.Day, true);
             double S = AASPluto.EclipticLongitude(JD);
@@ -217,7 +217,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
 
 
-        public static Coordinate CalculateSunPos(System.DateTime date)
+        private static Coordinate CalculateSunPos(System.DateTime date)
         {
             var bHighPrecision = false;
 
@@ -241,7 +241,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(Topo.X, Topo.Y);
         }
 
-        public static Coordinate CalculateMoonPos(System.DateTime date)
+        private static Coordinate CalculateMoonPos(System.DateTime date)
         {
             double JD = AASDate.DateToJD(date.Year, date.Month, date.Day, true);
             double Lambda = AASMoon.EclipticLongitude(JD);
@@ -259,7 +259,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(Equatorial.X, Equatorial.Y);
         }
 
-        public static Coordinate CalculateMercPos(System.DateTime date)
+        private static Coordinate CalculateMercPos(System.DateTime date)
         {
             var bHighPrecision = false;
             double JD = AASDate.DateToJD(date.Year, date.Month, date.Day, true);
@@ -282,7 +282,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(Topo.X, Topo.Y);
         }
 
-        public static Coordinate CalculateVenusPos(System.DateTime date)
+        private static Coordinate CalculateVenusPos(System.DateTime date)
         {
             var bHighPrecision = false;
 
@@ -295,7 +295,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(VenusCoord.X, VenusCoord.Y);
         }
 
-        public static Coordinate CalculateMarsPos(System.DateTime date)
+        private static Coordinate CalculateMarsPos(System.DateTime date)
         {
             var bHighPrecision = false;
 
@@ -308,7 +308,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(MarsCoord.X, MarsCoord.Y);
         }
 
-        public static Coordinate CalculateJupPos(System.DateTime date)
+        private static Coordinate CalculateJupPos(System.DateTime date)
         {
             var bHighPrecision = false;
 
@@ -321,7 +321,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(JupiterCoord.X, JupiterCoord.Y);
         }
 
-        public static Coordinate CalculateSatPos(System.DateTime date)
+        private static Coordinate CalculateSatPos(System.DateTime date)
         {
             var bHighPrecision = false;
 
@@ -334,7 +334,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(SaturnCoord.X, SaturnCoord.Y);
         }
 
-        public static Coordinate CalculateUraPos(System.DateTime date)
+        private static Coordinate CalculateUraPos(System.DateTime date)
         {
             var bHighPrecision = false;
 
@@ -347,7 +347,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(UranusCoord.X, UranusCoord.Y);
         }
 
-        public static Coordinate CalculateNepPos(System.DateTime date)
+        private static Coordinate CalculateNepPos(System.DateTime date)
         {
             var bHighPrecision = false;
 
@@ -360,7 +360,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(NeptuneCoord.X, NeptuneCoord.Y);
         }
 
-        public static Coordinate CalculatePluPos(System.DateTime date)
+        private static Coordinate CalculatePluPos(System.DateTime date)
         {
             double JD = AASDate.DateToJD(date.Year, date.Month, date.Day, true);
             double Lambda = AASPluto.EclipticLongitude(JD);
