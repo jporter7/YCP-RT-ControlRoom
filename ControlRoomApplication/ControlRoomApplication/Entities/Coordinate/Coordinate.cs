@@ -12,6 +12,11 @@ namespace ControlRoomApplication.Entities
             Declination = declination;
         }
 
+        public Coordinate()
+        {
+
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

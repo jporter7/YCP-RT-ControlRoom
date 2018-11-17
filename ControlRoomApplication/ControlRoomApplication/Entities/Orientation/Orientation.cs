@@ -14,7 +14,7 @@ namespace ControlRoomApplication.Entities
             Elevation = elevation;
         }
 
-        public Orientation() : this(0, 90) { }
+        public Orientation() : this(0, 0) { }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -13,14 +13,14 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// software that is meant to connect to the PLC software.This class is a simulator for that.
         /// </summary>
         /// <param name="plc"></param>
-        public PLCSimulator(PLC plc)
+        public PLCSimulator(PLCConnector plcConnector)
         {
-            Plc = plc;
-            ConnectionEndpoint = Plc.PLCConnector.ConnectionEndpoint;
+            PlcConnector = plcConnector;
+            ConnectionEndpoint = plcConnector.ConnectionEndpoint;
             TCPServer = new TcpListener(ConnectionEndpoint);
             TCPServer.Start();
-            Plc.PLCConnector.TCPClient = TCPServer.AcceptTcpClient();
-            Stream = Plc.PLCConnector.TCPClient.GetStream();
+            PlcConnector.TCPClient = TCPServer.AcceptTcpClient();
+            Stream = PlcConnector.TCPClient.GetStream();
         }
 
         public string ReceiveMessage()
@@ -50,7 +50,7 @@ namespace ControlRoomApplication.Controllers.PLCController
         }
 
         // Getters/Setters
-        public PLC Plc { get; set; }
+        public PLCConnector PlcConnector { get; set; }
         public TcpListener TCPServer { get; set; }
         public NetworkStream Stream { get; set; }
         public IPEndPoint ConnectionEndpoint { get; set; }

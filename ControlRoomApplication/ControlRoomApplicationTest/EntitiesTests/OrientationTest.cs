@@ -17,7 +17,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             orientation = new Orientation();
 
             azimuth = 0;
-            elevation = 90;
+            elevation = 00;
         }
 
         [TestMethod]

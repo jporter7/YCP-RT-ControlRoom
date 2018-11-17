@@ -3,14 +3,14 @@ using System.Data.Entity;
 
 namespace ControlRoomApplication.RemoteDb
 {
-    //[DbConfigurationType(typeof(MySqlEFConfiguration))]
-    public class RTDbConfiguration //: DbConfiguration
+    [DbConfigurationType(typeof(MySqlEFConfiguration))]
+    public class RTDbConfiguration : DbConfiguration
     {
         public RTDbConfiguration()
         {
-            //SetProviderFactory("MySql.Data.MySqlClient", new MySql.Data.MySqlClient.MySqlClientFactory());
-            //SetProviderServices("MySql.Data.MySqlClient", new MySql.Data.MySqlClient.MySqlProviderServices());
-            //SetDefaultConnectionFactory(new MySqlConnectionFactory("radio_telescope"));
+            SetProviderFactory(AWSConstants.DATABASE_PROVIDER, new MySql.Data.MySqlClient.MySqlClientFactory());
+            SetProviderServices(AWSConstants.DATABASE_PROVIDER, new MySql.Data.MySqlClient.MySqlProviderServices());
+            SetDefaultConnectionFactory(new MySqlConnectionFactory(AWSConstants.REMOTE_DATABASE_NAME));
         }
     }
 }

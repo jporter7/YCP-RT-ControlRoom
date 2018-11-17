@@ -12,7 +12,7 @@ namespace ControlRoomApplication.Entities.RadioTelescope
             FTSpectraCyberController.BringUp();
         }
 
-        public override Orientation GetCurrentOrientation()
+        public Orientation GetCurrentOrientation()
         {
             throw new System.NotImplementedException();
         }
@@ -22,12 +22,12 @@ namespace ControlRoomApplication.Entities.RadioTelescope
             throw new System.NotImplementedException();
         }
 
-        public override void ShutdownRadioTelescope()
+        public void ShutdownRadioTelescope()
         {
             throw new System.NotImplementedException();
         }
 
-        public override void MoveRadioTelescope(Orientation orientation)
+        public void MoveRadioTelescope(Orientation orientation)
         {
             throw new System.NotImplementedException();
         }

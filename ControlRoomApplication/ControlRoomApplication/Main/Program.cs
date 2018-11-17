@@ -1,5 +1,9 @@
 ﻿using System;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Controllers.PLCController;
+using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Plc;
+using ControlRoomApplication.Entities.RadioTelescope;
 
 namespace ControlRoomApplication.Main
 {
@@ -8,42 +12,28 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            // Create an instance of the DbContext (it does all of the data accessing
-            // and manipulation). Then, add the user to the user table. Lastly, save the 
-            // changes that were automatically checked by dbContext.ChangeTracker
-            //RTDbContext dbContext = new RTDbContext();
+            RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
 
-            //foreach(Appointment app in dbContext.Appointments)
-            //{
-            //    Console.WriteLine(string.Join(Environment.NewLine,
-            //        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}",
-            //        ""));
-            //}
+            PLC plc = new PLC();
+            PLCController plcController = new PLCController(plc);
+            Orientation orientation = new Orientation();
 
-            while(true)
+            ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController, orientation);
+
+            ControlRoom CRoom = new ControlRoom(scaleModel, dbContext);
+            ControlRoomController CRoomController = new ControlRoomController(CRoom);
+            CRoomController.StartAppointment();
+
+            Console.WriteLine("Post-appointment run: ");
+            foreach (Appointment app in dbContext.Appointments)
             {
-                PLC plc = new PLC();
-
-                Console.WriteLine("Enter an elevation: ");
-                var ele = Convert.ToInt32(Console.ReadLine());
-                plc.MoveScaleModelElevation(ele);
-
-
-                Console.WriteLine("Enter an azimuth: ");
-                var num = Convert.ToInt32(Console.ReadLine());
-
-                plc.MoveScaleModelAzimuth(num);
-
-
+                Console.WriteLine(string.Join(Environment.NewLine,
+                    $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}... {app.CoordinateId}",
+                    $"Appointment status: {app.Status}",
+                    ""));
             }
 
-            //}
-            //else
-            //{
-            //    var num = Convert.ToInt32(command);
-            //    Console.WriteLine(num);
-            //    plc.MoveScaleModelElevation(num);
-            //}
+            dbContext.Database.Connection.Close();
 
 
             Console.ReadKey(true);

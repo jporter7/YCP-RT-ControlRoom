@@ -146,7 +146,7 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// <summary>
         /// Closes the serial port that was opened in SPort.
         /// </summary>
-        public void CloseSerialPort()
+        private void CloseSerialPort()
         {
             SPort.Close();
         }
@@ -161,20 +161,17 @@ namespace ControlRoomApplication.Controllers.PLCController
 
             Message = SPort.ReadExisting();
             Thread.Sleep(5000);
+            SPort.Close();
 
             return Message;
         }
 
-        /// <summary>
-        /// Sends an integer over serial port to the arduino that controls a stepper motor.
-        /// </summary>
-        /// <param name="num"> The degrees, as an int, that the scale model should move. </param>
-        /// <returns> A boolean that indicates the operation was successful. </returns>
-        public bool SendSerialPortMessage(int num)
+        public bool SendSerialPortMessage(string jsonOrientation)
         {
-            Data = BitConverter.GetBytes((short)num);
+            Data = System.Text.ASCIIEncoding.ASCII.GetBytes(jsonOrientation);
 
             SPort.Write(Data, 0, Data.Length);
+            SPort.Close();
 
             return true;
         }

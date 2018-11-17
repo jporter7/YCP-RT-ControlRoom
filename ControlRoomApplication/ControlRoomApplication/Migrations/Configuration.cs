@@ -7,6 +7,7 @@ namespace ControlRoomApplication.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
             SetSqlGenerator(AWSConstants.DATABASE_PROVIDER, new MySql.Data.EntityFramework.MySqlMigrationSqlGenerator());
         }
 

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ControlRoomApplication.Controllers.PLCController;
+using ControlRoomApplication.Entities.Plc;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 //
@@ -26,8 +28,8 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         [Column("current_orientation")]
         public Orientation CurrentOrientation { get; set; }
 
-        public abstract Orientation GetCurrentOrientation();
-        public abstract void ShutdownRadioTelescope();
-        public abstract void MoveRadioTelescope(Orientation orientation);
+        public PLC Plc { get; set; }
+        public PLCController PlcController { get; set; }
+        public Orientation CalibrationOrientation { get; set; }
     }
 }

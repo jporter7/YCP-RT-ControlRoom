@@ -27,8 +27,9 @@ namespace ControlRoomApplication.Entities
 
         [Required]
         [Column("appointment_id")]
+        [ForeignKey("Appointment")]
         public int AppointmentId { get; set; }
 
-        public virtual Orientation AcquisitionOrientation { get; set; }
+        public Appointment Appointment { get; set; }
     }
 }
