@@ -16,14 +16,14 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 ((SpectraCyber)SpectraCyber).SerialPort = new SerialPort(
                 ((SpectraCyber)SpectraCyber).CommPort,
-                AbstractSpectraCyberConstants.SPECTRA_CYBER_BAUD_RATE,
-                AbstractSpectraCyberConstants.SPECTRA_CYBER_PARITY_BITS,
-                AbstractSpectraCyberConstants.SPECTRA_CYBER_DATA_BITS,
-                AbstractSpectraCyberConstants.SPECTRA_CYBER_STOP_BITS
+                AbstractSpectraCyberConstants.BAUD_RATE,
+                AbstractSpectraCyberConstants.PARITY_BITS,
+                AbstractSpectraCyberConstants.DATA_BITS,
+                AbstractSpectraCyberConstants.STOP_BITS
                 )
                 {
-                    ReadTimeout = AbstractSpectraCyberConstants.SPECTRA_CYBER_TIMEOUT_MS,
-                    WriteTimeout = AbstractSpectraCyberConstants.SPECTRA_CYBER_TIMEOUT_MS
+                    ReadTimeout = AbstractSpectraCyberConstants.TIMEOUT_MS,
+                    WriteTimeout = AbstractSpectraCyberConstants.TIMEOUT_MS
                 };
             }
             catch (Exception e)
@@ -122,6 +122,11 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         // Submit a command and return a response
         protected override SpectraCyberResponse SendCommand(SpectraCyberRequest request)
         {
+            while (!((SpectraCyber)SpectraCyber).Available)
+            {
+                // Wait for the SpectraCyber to be ready to be used
+            }
+
             SpectraCyberResponse response = new SpectraCyberResponse();
 
             // If the request is empty, don't process
@@ -129,6 +134,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 return response;
             }
+
+            SpectraCyber.Available = false;
 
             try
             {
@@ -145,7 +152,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             response.RequestSuccessful = true;
 
             // Give the SpectraCyber some time to process the command
-            Thread.Sleep(AbstractSpectraCyberConstants.SPECTRA_CYBER_WAIT_TIME_MS);
+            Thread.Sleep(AbstractSpectraCyberConstants.WAIT_TIME_MS);
 
             // Check for any significant cases
             switch (request.CommandType)
@@ -163,10 +170,10 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 case SpectraCyberCommandTypeEnum.DATA_DISCARD:
                     ((SpectraCyber)SpectraCyber).SerialPort.DiscardInBuffer();
                     break;
-
-                    //
-                    // Do nothing by default
-                    //
+                
+                //
+                // Do nothing by default
+                //
             }
 
             // If the request expects a reply back, capture the data and attach it to the response
@@ -181,11 +188,14 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                     string hexString;
 
                     // Read a number of characters in the buffer
-                    char[] charInBuffer = new char[AbstractSpectraCyberConstants.SPECTRA_CYBER_BUFFER_SIZE];
+                    char[] charInBuffer = new char[AbstractSpectraCyberConstants.BUFFER_SIZE];
                     int length = ((SpectraCyber)SpectraCyber).SerialPort.Read(charInBuffer, 0, request.CharsToRead);
 
+                    // Set the time captured to be as close to the read as possible, in case it's valid
+                    response.DateTimeCaptured = DateTime.Now;
+
                     // Clip the string to the exact number of bytes read
-                    if (AbstractSpectraCyberConstants.SPECTRA_CYBER_CLIP_BUFFER_RESPONSE && (length != AbstractSpectraCyberConstants.SPECTRA_CYBER_BUFFER_SIZE))
+                    if (AbstractSpectraCyberConstants.CLIP_BUFFER_RESPONSE && (length != AbstractSpectraCyberConstants.BUFFER_SIZE))
                     {
                         char[] actual = new char[length];
 
@@ -222,6 +232,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
             // Clear the input buffer
             ((SpectraCyber)SpectraCyber).SerialPort.DiscardInBuffer();
+
+            SpectraCyber.Available = true;
 
             // Return the response, no matter what happened
             return response;

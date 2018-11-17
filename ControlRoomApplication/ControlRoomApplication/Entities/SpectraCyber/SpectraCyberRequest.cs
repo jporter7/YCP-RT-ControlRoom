@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Entities
             Priority = CalcPriority();
             CommandString = commandString;
             WaitForReply = waitForReply;
-            CharsToRead = (charsToRead <= 0) ? AbstractSpectraCyberConstants.SPECTRA_CYBER_BUFFER_SIZE : charsToRead;
+            CharsToRead = (charsToRead <= 0) ? AbstractSpectraCyberConstants.BUFFER_SIZE : charsToRead;
             ResponseIdentifier = responseIdentifier;
         }
 
