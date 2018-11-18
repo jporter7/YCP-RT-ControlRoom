@@ -30,7 +30,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
             throw new System.NotImplementedException();
         }
 
-        public void MoveRadioTelescope(Orientation orientation)
+        public string MoveRadioTelescope(Orientation orientation)
         {
             // Switch based on the type of radiotelescope that is being controlled by this controller.
             switch(RadioTelescope)
@@ -45,14 +45,16 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     scale.CurrentOrientation = orientation;
 
                     scale.Status = RadioTelescopeStatusEnum.IDLE;
-                    break;
-
+                    return scale.Plc.OutgoingMessage;
+                    
                 case ProductionRadioTelescope prod:
                     // Add Code for production radiotelescope later
 
+                    return string.Empty;
+                    
                 default:
 
-                    break;
+                    return string.Empty;
             }
         }
 
