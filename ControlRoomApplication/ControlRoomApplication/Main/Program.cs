@@ -1,34 +1,39 @@
 ﻿using System;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.Plc;
+using ControlRoomApplication.Entities.RadioTelescope;
 
 namespace ControlRoomApplication.Main
 {
     public class Program
     {
+        [STAThread]
         public static void Main(string[] args)
         {
-            // Create an instance of the DbContext (it does all of the data accessing
-            // and manipulation). Then, add the user to the user table. Lastly, save the 
-            // changes that were automatically checked by dbContext.ChangeTracker
-            try
-            {
-                RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
+            RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
 
-                Console.WriteLine("Appointments table: \n");
-                foreach(Appointment app in dbContext.Appointments)
-                {
-                    Console.WriteLine(string.Join(Environment.NewLine,
-                        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}",
-                        ""));
-                }
+            PLC plc = new PLC();
+            PLCController plcController = new PLCController(plc);
+            Orientation orientation = new Orientation();
 
-                Console.ReadKey(true);
-            }
-            catch (ArgumentException e)
+            ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController, orientation);
+
+            ControlRoom CRoom = new ControlRoom(scaleModel, dbContext);
+            ControlRoomController CRoomController = new ControlRoomController(CRoom);
+            CRoomController.StartAppointment();
+
+            Console.WriteLine("Post-appointment run: ");
+            foreach (Appointment app in dbContext.Appointments)
             {
-                Console.WriteLine(e.Message);
-                Console.ReadKey(true);
+                Console.WriteLine(string.Join(Environment.NewLine,
+                    $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}... {app.CoordinateId}",
+                    $"Appointment status: {app.Status}",
+                    ""));
             }
+
+            Console.ReadKey();
         }
     }
 }

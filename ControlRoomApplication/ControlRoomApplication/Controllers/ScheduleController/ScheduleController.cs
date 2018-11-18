@@ -29,7 +29,8 @@ namespace ControlRoomApplication.Controllers.ScheduleController
 
         public void StartAppointment()
         {
-            
+            // From here, should be calling some PLC controller function(s) to
+            // begin the appointment's commands.
         }
 
         public Schedule Schedule { get; set; }

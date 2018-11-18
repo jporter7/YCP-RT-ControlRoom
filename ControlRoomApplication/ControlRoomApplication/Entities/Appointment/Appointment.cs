@@ -17,9 +17,7 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public Appointment()
         {
-            Id = -9999;
-            StartTime = new DateTime();
-            EndTime = new DateTime();
+
         }
 
         /// <summary>
@@ -46,5 +44,28 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("end_time")]
         public DateTime EndTime { get; set; }
+
+        /// <summary>
+        /// The getter/setter for the coordinate asscociated with this Appointment.
+        /// </summary>
+        [Required]
+        [Column("coordinate_id")]
+        public int CoordinateId { get; set; }
+
+        [Required]
+        [Column("telescope_id")]
+        public int TelescopeId { get; set; }
+
+        //[Required]
+        //[Column("status")]
+        //[EnumDataType(typeof(AppointmentStatusEnum))]
+        //public AppointmentStatusEnum Status { //get; set;
+        //    get { return Status; }
+        //    set { Status = (AppointmentStatusEnum)value; }
+        //}
+
+        [Required]
+        [Column("status")]
+        public string Status { get; set; }
     }
 }

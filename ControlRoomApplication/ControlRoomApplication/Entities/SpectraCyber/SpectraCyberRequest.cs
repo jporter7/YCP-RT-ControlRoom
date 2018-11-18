@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Entities
             Priority = CalcPriority();
             CommandString = commandString;
             WaitForReply = waitForReply;
-            CharsToRead = (charsToRead <= 0) ? GenericConstants.SPECTRA_CYBER_BUFFER_SIZE : charsToRead;
+            CharsToRead = (charsToRead <= 0) ? AbstractSpectraCyberConstants.BUFFER_SIZE : charsToRead;
             ResponseIdentifier = responseIdentifier;
         }
 
@@ -52,35 +52,35 @@ namespace ControlRoomApplication.Entities
             switch (CommandType)
             {
                 // Cover the unknown case first
-                case SpectraCyberCommandTypeEnum.Unknown:
+                case SpectraCyberCommandTypeEnum.UNKNOWN:
                     return 6;
 
                 // Then, the empty case
-                case SpectraCyberCommandTypeEnum.Empty:
+                case SpectraCyberCommandTypeEnum.EMPTY:
                     return 5;
 
                 //
                 // Finally, the standard cases...
                 //
 
-                case SpectraCyberCommandTypeEnum.DataDiscard:
-                case SpectraCyberCommandTypeEnum.DataRequest:
-                case SpectraCyberCommandTypeEnum.FrequencySet:
-                case SpectraCyberCommandTypeEnum.GeneralCommunication:
-                case SpectraCyberCommandTypeEnum.Rescan:
+                case SpectraCyberCommandTypeEnum.DATA_DISCARD:
+                case SpectraCyberCommandTypeEnum.DATA_REQUEST:
+                case SpectraCyberCommandTypeEnum.FREQUENCY_SET:
+                case SpectraCyberCommandTypeEnum.GENERAL_COMMUNICATION:
+                case SpectraCyberCommandTypeEnum.RESCAN:
                     return 4;
 
-                case SpectraCyberCommandTypeEnum.ScanStart:
-                case SpectraCyberCommandTypeEnum.ScanStop:
+                case SpectraCyberCommandTypeEnum.SCAN_START:
+                case SpectraCyberCommandTypeEnum.SCAN_STOP:
                     return 3;
 
-                case SpectraCyberCommandTypeEnum.ChangeSetting:
+                case SpectraCyberCommandTypeEnum.CHANGE_SETTING:
                     return 2;
 
-                case SpectraCyberCommandTypeEnum.Reset:
+                case SpectraCyberCommandTypeEnum.RESET:
                     return 1;
 
-                case SpectraCyberCommandTypeEnum.Terminate:
+                case SpectraCyberCommandTypeEnum.TERMINATE:
                     return 0;
 
                 // Could not find the case, return lowest priority
@@ -92,14 +92,14 @@ namespace ControlRoomApplication.Entities
         // Check if the request is of type Empty
         public bool IsEmpty()
         {
-            return CommandType == SpectraCyberCommandTypeEnum.Empty;
+            return CommandType == SpectraCyberCommandTypeEnum.EMPTY;
         }
 
         // Create a new Empty request
         public static SpectraCyberRequest GetNewEmpty()
         {
             return new SpectraCyberRequest(
-                SpectraCyberCommandTypeEnum.Empty,
+                SpectraCyberCommandTypeEnum.EMPTY,
                 "EMPTY",
                 false,
                 0

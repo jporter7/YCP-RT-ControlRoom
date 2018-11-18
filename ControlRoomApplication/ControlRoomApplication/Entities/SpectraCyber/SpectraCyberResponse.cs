@@ -1,14 +1,9 @@
-﻿namespace ControlRoomApplication.Entities
+﻿using System;
+
+namespace ControlRoomApplication.Entities
 {
     public class SpectraCyberResponse
     {
-        public SpectraCyberResponse()
-        {
-            RequestSuccessful = false;
-            Valid = false;
-            DecimalData = 0;
-        }
-
         // Whether or not the command was successfully sent
         public bool RequestSuccessful { get; set; }
 
@@ -17,5 +12,16 @@
 
         // The decimal value pertaining to this response
         public int DecimalData { get; set; }
+
+        // The moment this data was captured
+        public DateTime DateTimeCaptured { get; set; }
+
+        public SpectraCyberResponse()
+        {
+            RequestSuccessful = false;
+            Valid = false;
+            DecimalData = 0;
+            DateTimeCaptured = DateTime.MinValue;
+        }
     }
 }

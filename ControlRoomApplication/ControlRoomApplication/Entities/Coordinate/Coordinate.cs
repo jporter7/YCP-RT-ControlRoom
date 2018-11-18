@@ -1,19 +1,32 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    class Coordinate
+    [Table("coordinate")]
+    public class Coordinate
     {
-        readonly double _latitude;
-        readonly double _longitude;
-
-        public Coordinate(double latitude, double longitude)
+        public Coordinate(double rightAscension, double declination)
         {
-            this._latitude = latitude;
-            this._longitude = longitude;
+            RightAscension = rightAscension;
+            Declination = declination;
         }
-        
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+
+        public Coordinate()
+        {
+
+        }
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        [Required]
+        [Column("right_ascension")]
+        public double RightAscension { get; set; }
+
+        [Required]
+        [Column("declination")]
+        public double Declination { get; set; }
     }
 }

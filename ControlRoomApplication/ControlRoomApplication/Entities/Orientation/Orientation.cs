@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
+    [Table("orientation")]
+    [Serializable]
     public class Orientation
     {
         public Orientation(long azimuth, long elevation)
@@ -20,10 +22,10 @@ namespace ControlRoomApplication.Entities
 
         [Required]
         [Column("azimuth")]
-        public long Azimuth { get; set; }
+        public double Azimuth { get; set; }
 
         [Required]
         [Column("elevation")]
-        public long Elevation { get; set; }
+        public double Elevation { get; set; }
     }
 }

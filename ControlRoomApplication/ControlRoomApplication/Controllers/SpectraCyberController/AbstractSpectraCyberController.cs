@@ -1,5 +1,4 @@
 ﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Main;
 using ControlRoomApplication.Constants;
 using System;
 using System.Collections.Generic;
@@ -10,11 +9,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     public abstract class AbstractSpectraCyberController
     {
         public AbstractSpectraCyber SpectraCyber { get; set; }
-        public RTDbContext Context { get; set; }
+        public Mutex mutex;
 
         public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber)
         {
             SpectraCyber = spectraCyber;
+            mutex = new Mutex();
         }
 
         public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
@@ -23,10 +23,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         }
 
         public abstract bool BringUp();
-
         public abstract bool BringDown();
-
-        // Submit a command and return a response
         protected abstract SpectraCyberResponse SendCommand(SpectraCyberRequest request);
 
         // Scan once, based on current mode
@@ -35,40 +32,41 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return SendCommand(GenerateCurrentDataRequest());
         }
 
-        // Start scan
-        // TODO: implement a start time and stop time option
-        public void StartScan()
+        // Start scanning, keep doing so until requested to stop
+        // TODO: implement error handling
+        public bool StartScan()
         {
             SpectraCyber.CurrentSpectraCyberRequest = GenerateCurrentDataRequest();
+
+            mutex.WaitOne();
+
             SpectraCyber.ResponseList.Clear();
             SpectraCyber.CommunicationThreadActive = true;
+
+            mutex.ReleaseMutex();
+
+            return true;
         }
 
-        // Stop scan (return scan info)
+        // Stop scanning and return scan results
         public List<SpectraCyberResponse> StopScan()
         {
+            mutex.WaitOne();
+
             SpectraCyber.CommunicationThreadActive = false;
-            return SpectraCyber.ResponseList;
-        }
+            List<SpectraCyberResponse> responses = SpectraCyber.ResponseList;
 
-        public List<SpectraCyberResponse> ScanFor(int durationMilliseconds, int startDelayMillseconds = 0)
-        {
-            if (startDelayMillseconds > 0)
-            {
-                Thread.Sleep(startDelayMillseconds);
-            }
+            mutex.ReleaseMutex();
 
-            StartScan();
-            Thread.Sleep(durationMilliseconds);
-            return StopScan();
+            return responses;
         }
 
         // Generate a SpectraCyberRequest based on currentMode
-        protected SpectraCyberRequest GenerateCurrentDataRequest(bool waitForReply = true, int numChars = -1)
+        protected SpectraCyberRequest GenerateCurrentDataRequest(bool waitForReply = true, int numChars = 0)
         {
             if (numChars <= 0)
             {
-                numChars = AbstractSpectraCyberConstants.SPECTRA_CYBER_BUFFER_SIZE;
+                numChars = AbstractSpectraCyberConstants.BUFFER_SIZE;
             }
 
             // Based on the current mode, create the proper command string
@@ -98,21 +96,37 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
         public void RunCommunicationThread()
         {
-            // Loop until the thread is attempting to be shutdown
-            while (!SpectraCyber.KillCommunicationThreadFlag)
+            bool KeepRunningCommsThread = true;
+
+            // Loop until the thread is attempting to be shutdown (don't directly reference SpectraCyber.KillCommunicationThreadFlag
+            // because it can't be kept in the mutex's scope)
+            while (KeepRunningCommsThread)
             {
+                // Wait for the mutex to say it's safe to proceed
+                mutex.WaitOne();
+
                 // Process if the thread is set to be active, otherwise don't send commands
                 if (SpectraCyber.CommunicationThreadActive)
                 {
                     SpectraCyber.ResponseList.Add(SendCommand(SpectraCyber.CurrentSpectraCyberRequest));
                 }
+
+                // Tell the loop to break on its next pass (so the mutex is still released if the flag is high)
+                KeepRunningCommsThread = !SpectraCyber.KillCommunicationThreadFlag;
+
+                // Release the mutex
+                mutex.ReleaseMutex();
+                Thread.Sleep(5);
             }
         }
 
         // Implicitly kills the processing thread and waits for it to join before returning
         public void KillCommunicationThreadAndWait()
         {
+            mutex.WaitOne();
             SpectraCyber.KillCommunicationThreadFlag = true;
+            mutex.ReleaseMutex();
+
             SpectraCyber.CommunicationThread.Join();
         }
 
