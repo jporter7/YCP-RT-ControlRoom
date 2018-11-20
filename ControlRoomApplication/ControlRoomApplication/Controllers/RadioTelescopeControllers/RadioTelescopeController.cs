@@ -64,13 +64,6 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
             }
         }
 
-        /// <summary>
-        /// Method to move the Radio Telescope, which behaves differently based on the type
-        /// of Radio Telescope in question. Currently, only the ScaleRadioTelescope scenario
-        /// is designed with functionality, wherein it will use the PLCController to send 
-        /// movement information to the scale model
-        /// </summary>
-        /// <param name="orientation"></param>
         public void MoveRadioTelescope(Orientation orientation)
         {
             // Switch based on the type of radiotelescope that is being controlled by this controller.
@@ -87,9 +80,12 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 
                     scale.Status = RadioTelescopeStatusEnum.IDLE;
                     break;
+
                 case ProductionRadioTelescope prod:
                     // Add Code for production radiotelescope later
+
                 default:
+
                     break;
             }
         }

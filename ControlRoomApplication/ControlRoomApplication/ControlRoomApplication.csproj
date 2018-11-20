@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A9AF6C2B-B653-48AC-8DAD-791197740034}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>ControlRoomApplication</RootNamespace>
     <AssemblyName>ControlRoomApplication</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
@@ -91,7 +91,6 @@
     <Compile Include="Constants\RadioTelescopeConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\AASharpControllers\SunCoordinateCalculator.cs" />
-    <Compile Include="Controllers\AppointmentController\AppointmentController.cs" />
     <Compile Include="Controllers\ControlRoomController.cs" />
     <Compile Include="Controllers\PLCController\PLCController.cs" />
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCConnector.cs" />
