@@ -36,8 +36,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AASharp">
-      <HintPath>..\..\..\AASharp\AASharp-master\AASharp-master\Src\AASharp\bin\Debug\net40\AASharp.dll</HintPath>
+    <Reference Include="AASharp, Version=1.93.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AASharp.1.93.3\lib\net45\AASharp.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.Core.3.3.27.3\lib\net45\AWSSDK.Core.dll</HintPath>
@@ -107,12 +107,14 @@
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Coordinate\Coordinate.cs" />
     <Compile Include="Entities\Orientation\Orientation.cs" />
+    <Compile Include="Entities\Plc\AbstractPLC.cs" />
+    <Compile Include="Entities\Plc\TestPLC.cs" />
     <Compile Include="Entities\RadioTelescope\AbstractRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\ProductionRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeStatusEnum.cs" />
     <Compile Include="Entities\RadioTelescope\ScaleRadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
-    <Compile Include="Entities\Plc\PLC.cs" />
+    <Compile Include="Entities\Plc\ScaleModelPLC.cs" />
     <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Entities\SpectraCyber\AbstractSpectraCyber.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
@@ -139,7 +141,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201811140600133_Milestone3_Migration.resx">

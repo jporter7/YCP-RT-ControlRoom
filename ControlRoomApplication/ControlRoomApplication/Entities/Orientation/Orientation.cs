@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Entities
     [Serializable]
     public class Orientation
     {
-        public Orientation(long azimuth, long elevation)
+        public Orientation(double azimuth, double elevation)
         {
             Azimuth = azimuth;
             Elevation = elevation;
