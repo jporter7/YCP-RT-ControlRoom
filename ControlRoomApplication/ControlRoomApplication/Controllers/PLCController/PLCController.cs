@@ -21,6 +21,11 @@ namespace ControlRoomApplication.Controllers.PLCController
 
         /// <summary>
         /// Method that will send commands to the plc to calibrate the telescope.
+        /// Functions differently based on the plc type. If the PLC is a ScaleModelPLC,
+        /// it will actually write and send a message, and receive a corresponding response.
+        /// If it is a TestPLC, it will just return a boilerplate message, as the TestPLC is used
+        /// to ensure the functionality of other components, while not requiring to actually be 
+        /// hooked up with the Scale Model.
         /// </summary>
         /// <param name="plc"> The plc that the commands should be sent to. </param>
         /// <returns> A string representing the state of the operation. </returns>
@@ -41,6 +46,11 @@ namespace ControlRoomApplication.Controllers.PLCController
 
         /// <summary>
         /// Tells the specified PLC to shutdown.
+        /// Functions differently based on the plc type. If the PLC is a ScaleModelPLC,
+        /// it will actually write and send a shutdown message, and receive a corresponding response.
+        /// If it is a TestPLC, it will just return a boilerplate message, as the TestPLC is used
+        /// to ensure the functionality of other components, while not requiring that the application 
+        /// actually be hooked up to the Scale Model.
         /// </summary>
         /// <param name="plc"> The PLC to communicate with.</param>
         /// <returns> A string representing the state of the operation. </returns>
@@ -61,6 +71,11 @@ namespace ControlRoomApplication.Controllers.PLCController
 
         /// <summary>
         /// Tells the specified PLC to move the radiotelescope to the specified azimuth.
+        /// Functions differently based on the plc type. If the PLC is a ScaleModelPLC,
+        /// it will actually write and send a message containing the azimuth and elevation, and
+        /// will receive a corresponding response. If it is a TestPLC, it will just return a boilerplate 
+        /// message, since the TestPLC is used to ensure the functionality of other components, while not requiring
+        /// that the application actually be hooked up to the Scale Model.
         /// </summary>
         /// <param name="plc"> The PLC to communicate with. </param>
         /// <param name="azimuth"> The azimuth that the PLC should move the radiotelescope to. </param>
@@ -131,7 +146,7 @@ namespace ControlRoomApplication.Controllers.PLCController
 
                     return state;
                 case TestPLC testPLC:
-                    return "Radio Telescope successfully moved";
+                    return "Oh yea we received a message from the Radio Telescope boyo";
                 default:
                     return null;
             }
