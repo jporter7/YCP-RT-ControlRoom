@@ -91,6 +91,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
         }
 
+        [TestMethod]
+        public void TestShutdownScaleRadioTelescope()
+        {
+            // Set the controller's RadioTelescope field to the ScaleRadioTelescope
+            // Make sure to specify that we are just using the TestPLC since we do
+            // not care if what the PLC does, just how this method responds
+            PLCController PLCController = new PLCController(new TestPLC());
+            RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(PLCController);
+
+            // Call the ShutdownRadioTelescope method
+            RadioTelescopeController.ShutdownRadioTelescope();
+
+            // The Radio Telescope should now have a CurrentOrientation of (0, -90)
+            Assert.AreEqual(RadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth, 0.0);
+            Assert.AreEqual(RadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation, -90.0);
+
+            // It should also now be in a shutdown state
+            Assert.AreEqual(RadioTelescopeController.RadioTelescope.Status, RadioTelescopeStatusEnum.SHUTDOWN);
+        }
+
         public RadioTelescopeController RadioTelescopeController { get; set; }
     }
 }

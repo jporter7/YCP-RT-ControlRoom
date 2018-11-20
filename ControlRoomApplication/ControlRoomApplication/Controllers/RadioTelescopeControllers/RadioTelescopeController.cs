@@ -33,9 +33,35 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
             return RadioTelescope.CurrentOrientation;
         }
 
+        /// <summary>
+        /// Method used to shutdown the Radio Telescope in the case of inclement
+        /// weather, maintenance, etc.
+        /// This method functions differently depending on the Radio Telescope type.
+        /// Currently, only the ScaleModel scenario is implemented, and it will move
+        /// the CurrentOrientation to a straight upward position and set the status to shutdown.
+        /// </summary>
         public void ShutdownRadioTelescope()
         {
-            throw new System.NotImplementedException();
+            switch (RadioTelescope)
+            {
+                case ScaleRadioTelescope scale:
+                    // Move the telescope to the "shutdown" position
+                    Orientation ShutdownOrientation = new Orientation(0.0, -90.0);
+                    scale.Plc.OutgoingOrientation = ShutdownOrientation;
+                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3);
+                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4);
+                    scale.CurrentOrientation = ShutdownOrientation;
+
+                    // Set the status to shutdown
+                    scale.Status = RadioTelescopeStatusEnum.SHUTDOWN;
+
+                    break;
+                case ProductionRadioTelescope prod:
+                    // Add Code for production radiotelescope later
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>
@@ -61,12 +87,9 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 
                     scale.Status = RadioTelescopeStatusEnum.IDLE;
                     break;
-
                 case ProductionRadioTelescope prod:
                     // Add Code for production radiotelescope later
-
                 default:
-
                     break;
             }
         }
