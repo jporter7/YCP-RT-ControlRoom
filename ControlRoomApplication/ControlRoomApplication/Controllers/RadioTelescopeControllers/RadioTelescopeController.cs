@@ -83,9 +83,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 
                 case ProductionRadioTelescope prod:
                     // Add Code for production radiotelescope later
-
                 default:
-
                     break;
             }
         }
