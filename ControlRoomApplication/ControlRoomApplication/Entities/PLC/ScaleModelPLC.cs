@@ -2,14 +2,14 @@
 
 namespace ControlRoomApplication.Entities.Plc
 {
-    public class PLC
+    public class ScaleModelPLC : AbstractPLC
     {
         /// <summary>
         /// Constructor for a PLC object.
         /// </summary>
         /// <param name="ip"> The IP address of the PLC to connect to. </param>
         /// <param name="port"> The port that the PLC should be connected through. </param>
-        public PLC(string ip, int port)
+        public ScaleModelPLC(string ip, int port)
         {
             IpEndpoint = new IPEndPoint(IPAddress.Parse(ip), port);
             ComPort = null;
@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Entities.Plc
         /// <summary>
         /// Empty constructor for the PLC object.
         /// </summary>
-        public PLC()
+        public ScaleModelPLC()
         {
             IpEndpoint = null;
             ComPort = string.Empty;
@@ -29,11 +29,5 @@ namespace ControlRoomApplication.Entities.Plc
             IncomingState = string.Empty;
             OutgoingOrientation = new Orientation();
         }
-
-        public IPEndPoint IpEndpoint { get; set; }
-        public string ComPort { get; set; }
-        public string OutgoingMessage { get; set; }
-        public string IncomingState { get; set; }
-        public Orientation OutgoingOrientation { get; set; }
     }
 }
