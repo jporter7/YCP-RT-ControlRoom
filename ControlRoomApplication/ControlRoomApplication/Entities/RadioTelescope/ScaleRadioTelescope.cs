@@ -14,9 +14,18 @@ namespace ControlRoomApplication.Entities.RadioTelescope
             CurrentOrientation = currentOrientation;
         }
 
+        public ScaleRadioTelescope(PLCController PLCController) 
+        {
+            Plc = PLCController.Plc;
+            PlcController = PLCController;
+            CalibrationOrientation = new Orientation();
+            Status = RadioTelescopeStatusEnum.UNKNOWN;
+            CurrentOrientation = CalibrationOrientation;
+        }
+
         public ScaleRadioTelescope()
         {
-            Plc = new PLC();
+            Plc = new ScaleModelPLC();
             PlcController = new PLCController(Plc);
             CalibrationOrientation = new Orientation();
             Status = RadioTelescopeStatusEnum.UNKNOWN;

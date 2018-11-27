@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Main
 
             RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
 
-            PLC plc = new PLC();
+            ScaleModelPLC plc = new ScaleModelPLC();
             PLCController plcController = new PLCController(plc);
             Orientation orientation = new Orientation();
 
