@@ -4,7 +4,7 @@ using ControlRoomApplication.Entities;
 namespace ControlRoomApplicationTest.EntitiesTests
 {
     [TestClass]
-    class CoordinateTest
+    public class CoordinateTest
     {
         private double latitude;
         private double longitude;
@@ -20,8 +20,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void TestCoordinate()
         {
             Coordinate coordinate = new Coordinate(87.7, 70.5);
-            Assert.AreEqual(latitude, coordinate.Declination);
-            Assert.AreEqual(longitude, coordinate.RightAscension);
+            Assert.AreEqual(latitude, coordinate.RightAscension);
+            Assert.AreEqual(longitude, coordinate.Declination);
         }
     }
 }

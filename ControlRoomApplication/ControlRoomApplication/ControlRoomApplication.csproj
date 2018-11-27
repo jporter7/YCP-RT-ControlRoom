@@ -36,8 +36,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AASharp, Version=1.93.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AASharp.1.93.3\lib\net45\AASharp.dll</HintPath>
+    <Reference Include="AASharp, Version=1.97.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AASharp.1.97.0\lib\net45\AASharp.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.Core.3.3.29.12\lib\net45\AWSSDK.Core.dll</HintPath>
@@ -93,8 +93,8 @@
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\RadioTelescopeConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
-    <Compile Include="Controllers\AASharpControllers\OrientationCalculationController.cs" />
     <Compile Include="Controllers\AASharpControllers\SunCoordinateCalculator.cs" />
+    <Compile Include="Controllers\AASharpControllers\OrientationCalculationController.cs" />
     <Compile Include="Controllers\ControlRoomController.cs" />
     <Compile Include="Controllers\PLCController\PLCController.cs" />
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCConnector.cs" />
