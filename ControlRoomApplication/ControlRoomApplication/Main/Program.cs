@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Main
         public static void Main(string[] args)
         {
             // Testing logging
-            log.Info("<--------------- Control Room Application Started --------------->");
+            logger.Info("<--------------- Control Room Application Started --------------->");
 
             RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
 
@@ -36,11 +36,11 @@ namespace ControlRoomApplication.Main
                     ""));
             }
 
-            log.Info("<--------------- Control Room Application Terminated --------------->");
+            logger.Info("<--------------- Control Room Application Terminated --------------->");
             Console.ReadKey();
         }
 
-        private static readonly log4net.ILog log =
+        private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

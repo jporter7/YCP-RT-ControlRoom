@@ -155,5 +155,7 @@ namespace ControlRoomApplication.Controllers.PLCController
 
         public AbstractPLC Plc { get; set; }
         public PLCConnector PlcConnector { get; set; }
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }
