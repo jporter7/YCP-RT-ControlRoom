@@ -35,13 +35,17 @@ namespace ControlRoomApplication.Controllers.PLCController
             {
                 case ScaleModelPLC scaleModelPLC:
                     PlcConnector.WriteMessage(PLCConstants.CALIBRATE);
+
+                    logger.Info("Scale model calibrated.");
                     return PlcConnector.ReceiveMessage();
+
                 case TestPLC testPLC:
                     return "Radio Telescope successfully calibrated";
+
                 default:
+                    logger.Error("Radiotelescope type not defined.");
                     return null;
             }
-            
         }
 
         /// <summary>
@@ -60,10 +64,15 @@ namespace ControlRoomApplication.Controllers.PLCController
             {
                 case ScaleModelPLC scaleModelPLC:
                     PlcConnector.WriteMessage(PLCConstants.SHUTDOWN);
+
+                    logger.Info("Scale model shut down.");
                     return PlcConnector.ReceiveMessage();
+
                 case TestPLC testPLC:
                     return "Radio Telescope successfully shut down";
+
                 default:
+                    logger.Error("Radio-telescope type not defined.");
                     return null;
             }
             
@@ -95,10 +104,15 @@ namespace ControlRoomApplication.Controllers.PLCController
                     }
 
                     PlcConnector.WriteMessage($"right_ascension {coordinate.RightAscension}, declination {coordinate.Declination}");
+
+                    logger.Info($"Scale model moved to ({coordinate.RightAscension},{coordinate.Declination})");
                     return PlcConnector.ReceiveMessage();
+
                 case TestPLC testPLC:
                     return "Oh yea we received a message from the Radio Telescope boyo";
+
                 default:
+                    logger.Info("Radio-telescope type not defined.");
                     return null;
             }
             
@@ -144,10 +158,14 @@ namespace ControlRoomApplication.Controllers.PLCController
                     // Print the state of the move operation to the console.
                     Console.WriteLine(state);
 
+                    logger.Info($"Scale model moved to {plc.OutgoingMessage}");
                     return state;
+
                 case TestPLC testPLC:
                     return "Oh yea we received a message from the Radio Telescope boyo";
+
                 default:
+                    logger.Info("PLC type not defined.");
                     return null;
             }
             
