@@ -27,15 +27,6 @@ namespace ControlRoomApplication.Main
             ControlRoomController CRoomController = new ControlRoomController(CRoom);
             CRoomController.StartAppointment();
 
-            Console.WriteLine("Post-appointment run: ");
-            foreach (Appointment app in dbContext.Appointments)
-            {
-                Console.WriteLine(string.Join(Environment.NewLine,
-                    $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}... {app.CoordinateId}",
-                    $"Appointment status: {app.Status}",
-                    ""));
-            }
-
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Console.ReadKey();
         }
