@@ -112,7 +112,7 @@ namespace ControlRoomApplication.Controllers.PLCController
                     return "Oh yea we received a message from the Radio Telescope boyo";
 
                 default:
-                    logger.Info("Radio-telescope type not defined.");
+                    logger.Info("PLC type not defined.");
                     return null;
             }
             
@@ -130,10 +130,12 @@ namespace ControlRoomApplication.Controllers.PLCController
                 case ScaleModelPLC scaleModelPLC:
                     if (plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
                     {
+                        logger.Error($"Azimuth ({plc.OutgoingOrientation.Azimuth}) was out of range .");
                         throw new System.Exception();
                     }
                     else if (plc.OutgoingOrientation.Elevation < PLCConstants.DECLINATION_LOWER_LIMIT || plc.OutgoingOrientation.Elevation > PLCConstants.DECLINATION_UPPER_LIMIT)
                     {
+                        logger.Error($"Elevation ({plc.OutgoingOrientation.Elevation} was out of range.)");
                         throw new System.Exception();
                     }
 
