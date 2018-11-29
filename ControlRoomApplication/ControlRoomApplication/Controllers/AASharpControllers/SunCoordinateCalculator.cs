@@ -52,7 +52,6 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
         }
 
         public AAS2DCoordinate TopologicalCoordinate { get; set; }
-        AASEarth
         public DateTime Date { get; set; }
     }
 }
