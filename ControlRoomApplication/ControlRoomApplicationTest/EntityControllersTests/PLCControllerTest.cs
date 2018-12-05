@@ -1,7 +1,7 @@
 ﻿using System;
 using ControlRoomApplication.Controllers.PLCController;
-using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.Plc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
