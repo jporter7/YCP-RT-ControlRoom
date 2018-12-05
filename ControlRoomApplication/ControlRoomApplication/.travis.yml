@@ -5,5 +5,5 @@ dotnet: 4.6.1
 solution: ControlRoomApplication.sln
 
 script:
-    - cd ControlRoomApplicationTests
+    - cd ControlRoomApplicationTests.Test
     - dotnet test
