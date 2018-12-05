@@ -3,6 +3,7 @@ using ControlRoomApplication.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -29,11 +30,13 @@ namespace ControlRoomApplication.Controllers
             // but that can wait until later on.
 
             logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");
-            app.Status = AppointmentConstants.IN_PROGRESS;
-            CRoom.Context.SaveChanges();
-            CRoom.Controller.MoveRadioTelescope(orientation);
-            app.Status = AppointmentConstants.COMPLETED;
-            CRoom.Context.SaveChanges();
+            Thread movementThread = new Thread(() => StartRadioTelescope(app, orientation));
+            movementThread.Start();
+            
+            // Start SpectraCyber thread
+
+            // End PLC & SpectraCyber thread
+
             logger.Info("Appointment completed.");
         }
 
@@ -85,6 +88,16 @@ namespace ControlRoomApplication.Controllers
             }
 
             return CRoom.Context.Appointments.Find(0);
+        }
+
+        public void StartRadioTelescope(Appointment app, Orientation orientation)
+        {
+            app.Status = AppointmentConstants.IN_PROGRESS;
+            CRoom.Context.SaveChanges();
+            CRoom.Controller.MoveRadioTelescope(orientation);
+            CRoom.RadioTelescope.CurrentOrientation = orientation;
+            app.Status = AppointmentConstants.COMPLETED;
+            CRoom.Context.SaveChanges();
         }
 
         public ControlRoom CRoom { get; set; }
