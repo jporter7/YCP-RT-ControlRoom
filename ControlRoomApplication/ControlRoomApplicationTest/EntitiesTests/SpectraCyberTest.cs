@@ -1,5 +1,4 @@
-﻿using ControlRoomApplication;
-using ControlRoomApplication.Constants;
+﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,14 +14,14 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestInitialize]
         public void BuildUp()
         {
-            commPort = GenericConstants.SPECTRA_CYBER_DEFAULT_COMM_PORT;
+            commPort = AbstractSpectraCyberConstants.DEFAULT_COMM_PORT;
             spectraCyber = new SpectraCyber(commPort);
         }
 
         [TestMethod]
         public void TestInitialization()
         {
-            Assert.AreEqual(spectraCyber.CurrentModeType, SpectraCyberModeTypeEnum.Unknown);
+            Assert.AreEqual(spectraCyber.CurrentModeType, SpectraCyberModeTypeEnum.UNKNOWN);
             Assert.AreEqual(spectraCyber.CommPort, commPort);
             Assert.AreEqual(spectraCyber.CommunicationThreadActive, false);
             Assert.AreEqual(spectraCyber.KillCommunicationThreadFlag, false);
@@ -31,11 +30,11 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestMethod]
         public void TestSettersAndGetters()
         {
-            spectraCyber.CurrentModeType = SpectraCyberModeTypeEnum.Continuum;
-            Assert.AreEqual(spectraCyber.CurrentModeType, SpectraCyberModeTypeEnum.Continuum);
+            spectraCyber.CurrentModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+            Assert.AreEqual(spectraCyber.CurrentModeType, SpectraCyberModeTypeEnum.CONTINUUM);
 
-            spectraCyber.CurrentModeType = SpectraCyberModeTypeEnum.Spectral;
-            Assert.AreEqual(spectraCyber.CurrentModeType, SpectraCyberModeTypeEnum.Spectral);
+            spectraCyber.CurrentModeType = SpectraCyberModeTypeEnum.SPECTRAL;
+            Assert.AreEqual(spectraCyber.CurrentModeType, SpectraCyberModeTypeEnum.SPECTRAL);
         }
     }
 }

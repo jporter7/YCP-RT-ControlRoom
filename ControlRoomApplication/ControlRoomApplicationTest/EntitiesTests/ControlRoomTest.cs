@@ -13,11 +13,5 @@ namespace ControlRoomApplicationTest.EntitiesTests
         {
             controlRoom = new ControlRoom();
         }
-
-        [TestMethod]
-        public void TestGettersAndSetters()
-        {
-            Assert.AreEqual(0, controlRoom.Schedule.Appointments.Count);
-        }
     }
 }

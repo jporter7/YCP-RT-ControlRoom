@@ -1,42 +1,29 @@
 ﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Main;
 using ControlRoomApplication.Constants;
 using System;
-using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
-    public class SpectraCyberController
+    public class SpectraCyberController : AbstractSpectraCyberController
     {
-        public SpectraCyber SpectraCyber { get; set; }
-        public RTDbContext Context { get; set; }
+        public SpectraCyberController(SpectraCyber spectraCyber) : base(spectraCyber) { }
 
-        public SpectraCyberController(SpectraCyber spectraCyber)
-        {
-            SpectraCyber = spectraCyber;
-        }
-
-        public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
-        {
-            SpectraCyber.CurrentModeType = type;
-        }
-
-        public bool BringUp()
+        public override bool BringUp()
         {
             try
             {
-                SpectraCyber.SerialPort = new SerialPort(
-                SpectraCyber.CommPort,
-                GenericConstants.SPECTRA_CYBER_BAUD_RATE,
-                GenericConstants.SPECTRA_CYBER_PARITY_BITS,
-                GenericConstants.SPECTRA_CYBER_DATA_BITS,
-                GenericConstants.SPECTRA_CYBER_STOP_BITS
+                ((SpectraCyber)SpectraCyber).SerialPort = new SerialPort(
+                ((SpectraCyber)SpectraCyber).CommPort,
+                AbstractSpectraCyberConstants.BAUD_RATE,
+                AbstractSpectraCyberConstants.PARITY_BITS,
+                AbstractSpectraCyberConstants.DATA_BITS,
+                AbstractSpectraCyberConstants.STOP_BITS
                 )
                 {
-                    ReadTimeout = GenericConstants.SPECTRA_CYBER_TIMEOUT_MS,
-                    WriteTimeout = GenericConstants.SPECTRA_CYBER_TIMEOUT_MS
+                    ReadTimeout = AbstractSpectraCyberConstants.TIMEOUT_MS,
+                    WriteTimeout = AbstractSpectraCyberConstants.TIMEOUT_MS
                 };
             }
             catch (Exception e)
@@ -55,7 +42,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
             try
             {
-                SpectraCyber.SerialPort.Open();
+                ((SpectraCyber)SpectraCyber).SerialPort.Open();
             }
             catch (Exception e)
             {
@@ -104,13 +91,13 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return true;
         }
 
-        public bool BringDown()
+        public override bool BringDown()
         {
             try
             {
-                if (SpectraCyber.SerialPort != null)
+                if (((SpectraCyber)SpectraCyber).SerialPort != null)
                 {
-                    SpectraCyber.SerialPort.Close();
+                    ((SpectraCyber)SpectraCyber).SerialPort.Close();
                 }
             }
             catch (Exception e)
@@ -132,43 +119,14 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return true;
         }
 
-        // Scan once, based on current mode
-        public SpectraCyberResponse ScanOnce()
+        // Submit a command and return a response
+        protected override SpectraCyberResponse SendCommand(SpectraCyberRequest request)
         {
-            return SendCommand(GenerateCurrentDataRequest());
-        }
-
-        // Start scan
-        // TODO: implement a start time and stop time option
-        public void StartScan()
-        {
-            SpectraCyber.CurrentSpectraCyberRequest = GenerateCurrentDataRequest();
-            SpectraCyber.ResponseList.Clear();
-            SpectraCyber.CommunicationThreadActive = true;
-        }
-
-        // Stop scan (return scan info)
-        public List<SpectraCyberResponse> StopScan()
-        {
-            SpectraCyber.CommunicationThreadActive = false;
-            return SpectraCyber.ResponseList;
-        }
-
-        public List<SpectraCyberResponse> ScanFor(int durationMilliseconds, int startDelayMillseconds = 0)
-        {
-            if (startDelayMillseconds > 0)
+            while (!((SpectraCyber)SpectraCyber).Available)
             {
-                Thread.Sleep(startDelayMillseconds);
+                // Wait for the SpectraCyber to be ready to be used
             }
 
-            StartScan();
-            Thread.Sleep(durationMilliseconds);
-            return StopScan();
-        }
-
-        // Submit a command and return a response
-        private SpectraCyberResponse SendCommand(SpectraCyberRequest request)
-        {
             SpectraCyberResponse response = new SpectraCyberResponse();
 
             // If the request is empty, don't process
@@ -177,10 +135,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 return response;
             }
 
+            SpectraCyber.Available = false;
+
             try
             {
                 // Attempt to write the command to the serial port
-                SpectraCyber.SerialPort.Write(request.CommandString);
+                ((SpectraCyber)SpectraCyber).SerialPort.Write(request.CommandString);
             }
             catch (Exception)
             {
@@ -192,23 +152,23 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             response.RequestSuccessful = true;
 
             // Give the SpectraCyber some time to process the command
-            Thread.Sleep(GenericConstants.SPECTRA_CYBER_WAIT_TIME_MS);
+            Thread.Sleep(AbstractSpectraCyberConstants.WAIT_TIME_MS);
 
             // Check for any significant cases
             switch (request.CommandType)
             {
                 // Termination, safely end communication
-                case SpectraCyberCommandTypeEnum.Terminate:
+                case SpectraCyberCommandTypeEnum.TERMINATE:
                     BringDown();
                     break;
 
                 // TODO: implement this case further probably
-                case SpectraCyberCommandTypeEnum.ScanStop:
+                case SpectraCyberCommandTypeEnum.SCAN_STOP:
                     break;
 
                 // Purge the serial buffer
-                case SpectraCyberCommandTypeEnum.DataDiscard:
-                    SpectraCyber.SerialPort.DiscardInBuffer();
+                case SpectraCyberCommandTypeEnum.DATA_DISCARD:
+                    ((SpectraCyber)SpectraCyber).SerialPort.DiscardInBuffer();
                     break;
                 
                 //
@@ -228,21 +188,26 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                     string hexString;
 
                     // Read a number of characters in the buffer
-                    char[] charInBuffer = new char[GenericConstants.SPECTRA_CYBER_BUFFER_SIZE];
-                    int length = SpectraCyber.SerialPort.Read(charInBuffer, 0, request.CharsToRead);
+                    char[] charInBuffer = new char[AbstractSpectraCyberConstants.BUFFER_SIZE];
+                    int length = ((SpectraCyber)SpectraCyber).SerialPort.Read(charInBuffer, 0, request.CharsToRead);
+
+                    // Set the time captured to be as close to the read as possible, in case it's valid
+                    response.DateTimeCaptured = DateTime.Now;
 
                     // Clip the string to the exact number of bytes read
-                    if (GenericConstants.SPECTRA_CYBER_CLIP_BUFFER_RESPONSE && (length != GenericConstants.SPECTRA_CYBER_BUFFER_SIZE))
+                    if (AbstractSpectraCyberConstants.CLIP_BUFFER_RESPONSE && (length != AbstractSpectraCyberConstants.BUFFER_SIZE))
                     {
                         char[] actual = new char[length];
 
                         for (int i = 0; i < length; i++)
+                        {
                             actual[i] = charInBuffer[i];
+                        }
 
                         hexString = new string(actual);
                     }
 
-                    // Leave the string how it is, with the possibility of chars being 0
+                    // Leave the string how it is, with the possibility of trailing chararacters being "0"
                     else
                     {
                         hexString = new string(charInBuffer);
@@ -260,143 +225,18 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 catch (Exception e)
                 {
                     // Something went wrong, the response isn't valid
-                    Console.WriteLine("Failed to send a command: " + e.ToString());
+                    Console.WriteLine("Failed to receive a response: " + e.ToString());
                     response.Valid = false;
                 }
             }
 
             // Clear the input buffer
-            SpectraCyber.SerialPort.DiscardInBuffer();
+            ((SpectraCyber)SpectraCyber).SerialPort.DiscardInBuffer();
+
+            SpectraCyber.Available = true;
 
             // Return the response, no matter what happened
             return response;
-        }
-
-        // Generate a SpectraCyberRequest based on currentMode
-        private SpectraCyberRequest GenerateCurrentDataRequest(bool waitForReply = true, int numChars = -1)
-        {
-            if (numChars <= 0)
-            {
-                numChars = GenericConstants.SPECTRA_CYBER_BUFFER_SIZE;
-            }
-            
-            // Based on the current mode, create the proper command string
-            string commandString;
-
-            if (SpectraCyber.CurrentModeType == SpectraCyberModeTypeEnum.Continuum)
-            {
-                commandString = "!D000";
-            }
-            else if (SpectraCyber.CurrentModeType == SpectraCyberModeTypeEnum.Spectral)
-            {
-                commandString = "!D001";
-            }
-            else
-            {
-                // Unknown current mode type
-                throw new Exception();
-            }
-
-            return new SpectraCyberRequest(
-                SpectraCyberCommandTypeEnum.DataRequest,
-                commandString,
-                waitForReply,
-                numChars
-            );
-        }
-
-        public void RunCommunicationThread()
-        {
-            // Loop until the thread is attempting to be shutdown
-            while (!SpectraCyber.KillCommunicationThreadFlag)
-            {
-                // Process if the thread is set to be active, otherwise don't send commands
-                if (SpectraCyber.CommunicationThreadActive)
-                {
-                    SpectraCyber.ResponseList.Add(SendCommand(SpectraCyber.CurrentSpectraCyberRequest));
-                }
-            }
-        }
-        
-        // Implicitly kills the processing thread and waits for it to join before returning
-        public void KillCommunicationThreadAndWait()
-        {
-            SpectraCyber.KillCommunicationThreadFlag = true;
-            SpectraCyber.CommunicationThread.Join();
-        }
-
-        // TODO: implement proper error handling if ch is out of acceptable range
-        private static int HexCharToInt(char ch)
-        {
-            int baseVal = Convert.ToByte(ch);
-
-            // Between [0-9]
-            if (baseVal >= 48 && baseVal <= 57)
-            {
-                return baseVal - 48;
-            }
-
-            // Between [A-F]
-            if (baseVal >= 65 && baseVal <= 70)
-            {
-                return baseVal - 55;
-            }
-
-            // Between [a-f]
-            if (baseVal >= 97 && baseVal <= 102)
-            {
-                return baseVal - 87;
-            }
-
-            // Unknown
-            return 0;
-        }
-
-        private static int HexStringToInt(string hex, int length)
-        {
-            if (length == 0)
-            {
-                return 0;
-            }
-
-            if (length == 1)
-            {
-                return HexCharToInt(hex[0]);
-            }
-
-            return (int)(HexCharToInt(hex[0]) * Math.Pow(16, length - 1)) + HexStringToInt(hex.Substring(1), length - 1);
-        }
-
-        private static int HexStringToInt(string hex)
-        {
-            return HexStringToInt(hex, hex.Length);
-        }
-
-        private static string IntToHexString(int value)
-        {
-            string strHex = "0123456789ABCDEF";
-            string strTemp = "";
-
-            // First, encode the integer into hex (but backward)
-            while (value > 0)
-            {
-                strTemp = strHex[value % 16] + strTemp;
-                value /= 16;
-            }
-
-            // Now, pad the string with zeros to make it the correct length
-            for (int i = strTemp.Length; i < 4; i++)
-            {
-                strTemp = "0" + strTemp;
-            }
-
-            // Finally, reverse the direction of the string
-            string strOutput = "";
-            foreach (char ch in strTemp.ToCharArray())
-                strOutput = ch + strOutput;
-
-            // Return it
-            return strOutput;
         }
     }
 }

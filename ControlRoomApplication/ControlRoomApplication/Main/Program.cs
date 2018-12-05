@@ -1,6 +1,9 @@
 ﻿using System;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.PLC;
+using ControlRoomApplication.Entities.Plc;
+using ControlRoomApplication.Entities.RadioTelescope;
 
 namespace ControlRoomApplication.Main
 {
@@ -9,45 +12,26 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            // Create an instance of the DbContext (it does all of the data accessing
-            // and manipulation). Then, add the user to the user table. Lastly, save the 
-            // changes that were automatically checked by dbContext.ChangeTracker
-            //RTDbContext dbContext = new RTDbContext();
+            // Testing logging
+            logger.Info("<--------------- Control Room Application Started --------------->");
 
-            //foreach(Appointment app in dbContext.Appointments)
-            //{
-            //    Console.WriteLine(string.Join(Environment.NewLine,
-            //        $"Appointment {app.Id} has a start time of {app.StartTime} and an end time of {app.EndTime}",
-            //        ""));
-            //}
+            RTDbContext dbContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
 
-            while(true)
-            {
-                PLC plc = new PLC();
+            ScaleModelPLC plc = new ScaleModelPLC();
+            PLCController plcController = new PLCController(plc);
+            Orientation orientation = new Orientation();
 
-                Console.WriteLine("Enter an elevation: ");
-                var ele = Convert.ToInt32(Console.ReadLine());
-                plc.MoveScaleModelElevation(ele);
+            ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController, orientation);
 
+            ControlRoom CRoom = new ControlRoom(scaleModel, dbContext);
+            ControlRoomController CRoomController = new ControlRoomController(CRoom);
+            CRoomController.StartAppointment();
 
-                Console.WriteLine("Enter an azimuth: ");
-                var num = Convert.ToInt32(Console.ReadLine());
-
-                plc.MoveScaleModelAzimuth(num);
-
-
-            }
-
-            //}
-            //else
-            //{
-            //    var num = Convert.ToInt32(command);
-            //    Console.WriteLine(num);
-            //    plc.MoveScaleModelElevation(num);
-            //}
-
-
-            Console.ReadKey(true);
+            logger.Info("<--------------- Control Room Application Terminated --------------->");
+            Console.ReadKey();
         }
+
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

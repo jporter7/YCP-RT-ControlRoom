@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ControlRoomApplicationTest.Entities;
+using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplicationTest.EntitiesTests
 {
@@ -20,8 +20,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void TestCoordinate()
         {
             Coordinate coordinate = new Coordinate(87.7, 70.5);
-            Assert.AreEqual(latitude, coordinate.Latitude);
-            Assert.AreEqual(longitude, coordinate.Longitude);
+            Assert.AreEqual(latitude, coordinate.Declination);
+            Assert.AreEqual(longitude, coordinate.RightAscension);
         }
     }
 }

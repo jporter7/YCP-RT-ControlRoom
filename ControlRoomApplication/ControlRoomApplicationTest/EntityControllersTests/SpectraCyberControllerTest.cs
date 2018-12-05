@@ -8,8 +8,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
     [TestClass]
     public class SpectraCyberControllerTest
     {
-        public SpectraCyber SpectraCyber { get; set; }
-        public SpectraCyberController SpectraCyberController { get; set; }
+        public AbstractSpectraCyber SpectraCyber { get; set; }
+        public AbstractSpectraCyberController SpectraCyberController { get; set; }
 
         [TestInitialize]
         public void BuildUp()

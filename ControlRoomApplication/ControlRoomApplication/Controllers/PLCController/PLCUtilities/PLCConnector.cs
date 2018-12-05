@@ -5,7 +5,7 @@ using System.IO.Ports;
 using System.Threading;
 using ControlRoomApplication.Constants;
 
-namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
+namespace ControlRoomApplication.Controllers.PLCController
 {
     public class PLCConnector
     {
@@ -30,6 +30,7 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
             SPort.PortName = portName;
             SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
             SPort.Open();
+            logger.Info($"Serial port ({portName}) opened.");
         }
 
         /// <summary>
@@ -62,6 +63,7 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
             // hardware. C# cannot run PLC hardware
             Stream = TCPClient.GetStream();
 
+            logger.Info($"Established TCP connection at ({ConnectionEndpoint.Address}, {ConnectionEndpoint.Port}).");
             return TCPClient.Client.Connected;
         }
 
@@ -84,14 +86,19 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
                     Stream = TCPClient.GetStream();
 
                     Stream.Write(Data, 0, Data.Length);
+
+                    logger.Info("Sent message to PLC over TCP.");
                 }
                 catch(SocketException e)
                 {
-                    Console.WriteLine($"Socket encountered an error: {e.Message}");
+                    Console.WriteLine($"Encountered a socket exception.");
+                    logger.Error($"There was an issue with the socket: {e.Message}.");
                 } 
                 finally
                 {
                     DisconnectFromPLC();
+
+                    logger.Info("Disconnected from PLC.");
                 }
 
             }
@@ -118,14 +125,18 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
                     {
                         Message = System.Text.Encoding.ASCII.GetString(Data, 0, i);
                     }
+
+                    logger.Info("Message received from PLC.");
                 }
                 catch(SocketException e)
                 {
-                    Console.WriteLine("Encountered a socket exception: " + e.Message);
+                    Console.WriteLine("Encountered a socket exception.");
+                    logger.Error($"There was an issue with the socket {e.Message}");
                 }
                 finally
                 {
                     DisconnectFromPLC();
+                    logger.Info("Disconnected from PLC.");
                 }
             }
 
@@ -139,6 +150,7 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
         {
             // Call the dispose() method to close the stream and connection.
             TCPClient.Dispose();
+            logger.Info("Disposed of the TCP Client.");
         }
 
         //*** These methods will be for the arduino scale model. ***//
@@ -146,9 +158,10 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
         /// <summary>
         /// Closes the serial port that was opened in SPort.
         /// </summary>
-        public void CloseSerialPort()
+        private void CloseSerialPort()
         {
             SPort.Close();
+            logger.Info("Serial port has been closed.");
         }
 
         /// <summary>
@@ -161,21 +174,20 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
 
             Message = SPort.ReadExisting();
             Thread.Sleep(5000);
+            SPort.Close();
 
+            logger.Info("Message received from Arduino.");
             return Message;
         }
 
-        /// <summary>
-        /// Sends an integer over serial port to the arduino that controls a stepper motor.
-        /// </summary>
-        /// <param name="num"> The degrees, as an int, that the scale model should move. </param>
-        /// <returns> A boolean that indicates the operation was successful. </returns>
-        public bool SendSerialPortMessage(int num)
+        public bool SendSerialPortMessage(string jsonOrientation)
         {
-            Data = BitConverter.GetBytes((short)num);
+            Data = System.Text.ASCIIEncoding.ASCII.GetBytes(jsonOrientation);
 
             SPort.Write(Data, 0, Data.Length);
+            SPort.Close();
 
+            logger.Info("Message sent to Arduino");
             return true;
         }
 
@@ -188,5 +200,7 @@ namespace ControlRoomApplication.Controllers.PLCController.PLCUtilities
 
         // Getters/Setters for Serial Port connection (for arduino scale model)
         public SerialPort SPort { get; set; }
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }
