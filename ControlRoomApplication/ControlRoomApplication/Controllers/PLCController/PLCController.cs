@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Threading;
 
+
 namespace ControlRoomApplication.Controllers.PLCController
 {
     public class PLCController
@@ -26,6 +27,8 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// If it is a TestPLC, it will just return a boilerplate message, as the TestPLC is used
         /// to ensure the functionality of other components, while not requiring to actually be 
         /// hooked up with the Scale Model.
+        /// If it is a VRPLC, it just returns the same boilerplate message since there is no 
+        /// calibration for the VR Telescope at this moment.
         /// </summary>
         /// <param name="plc"> The plc that the commands should be sent to. </param>
         /// <returns> A string representing the state of the operation. </returns>
@@ -42,6 +45,9 @@ namespace ControlRoomApplication.Controllers.PLCController
                 case TestPLC testPLC:
                     return "Radio Telescope successfully calibrated";
 
+                case VRPLC vrPLC:
+                    return "Radio Telescope sucessfully calibrated";
+
                 default:
                     logger.Error("Radiotelescope type not defined.");
                     return null;
@@ -55,6 +61,7 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// If it is a TestPLC, it will just return a boilerplate message, as the TestPLC is used
         /// to ensure the functionality of other components, while not requiring that the application 
         /// actually be hooked up to the Scale Model.
+        /// If it is vrPLC it shuts down the namedPipeServer.
         /// </summary>
         /// <param name="plc"> The PLC to communicate with.</param>
         /// <returns> A string representing the state of the operation. </returns>
@@ -71,6 +78,10 @@ namespace ControlRoomApplication.Controllers.PLCController
                 case TestPLC testPLC:
                     return "Radio Telescope successfully shut down";
 
+                case VRPLC vrPLC:
+                    vrPLC.pipeClient.Close();
+                    return "Radio Telescope successfully shut down";
+
                 default:
                     logger.Error("Radio-telescope type not defined.");
                     return null;
@@ -85,6 +96,8 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// will receive a corresponding response. If it is a TestPLC, it will just return a boilerplate 
         /// message, since the TestPLC is used to ensure the functionality of other components, while not requiring
         /// that the application actually be hooked up to the Scale Model.
+        /// VRPLC sends coordinate to VR telescope through named pipe from VRPLC entity.
+        /// VR telescope will return 1 on sucess.
         /// </summary>
         /// <param name="plc"> The PLC to communicate with. </param>
         /// <param name="azimuth"> The azimuth that the PLC should move the radiotelescope to. </param>
@@ -110,6 +123,13 @@ namespace ControlRoomApplication.Controllers.PLCController
 
                 case TestPLC testPLC:
                     return "Oh yea we received a message from the Radio Telescope boyo";
+
+                case VRPLC vrPLC:
+                    vrPLC.pipeClient.WaitForConnection();
+                    vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.RightAscension));
+                    vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.Declination));
+                    return "If this is a 1 we got good data from VR Telescope!!! -> "+vrPLC.pipeClient.ReadByte();
+
 
                 default:
                     logger.Info("PLC type not defined.");
@@ -164,6 +184,9 @@ namespace ControlRoomApplication.Controllers.PLCController
                     return state;
 
                 case TestPLC testPLC:
+                    return "Oh yea we received a message from the Radio Telescope boyo";
+
+                case VRPLC vrPLC:
                     return "Oh yea we received a message from the Radio Telescope boyo";
 
                 default:
