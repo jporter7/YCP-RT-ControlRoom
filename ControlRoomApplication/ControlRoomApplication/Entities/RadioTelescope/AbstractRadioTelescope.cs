@@ -23,51 +23,34 @@ namespace ControlRoomApplication.Entities
         public RadioTelescopeStatusEnum CurrentStatus { get; set; }
         public AbstractSpectraCyberController AbstractSpectraCyberController { get; set; }
 
-        // Add when Coordinate entity is ready
-        //public virtual Coordinate InstallLocation { get; set; }
-
         public AbstractRadioTelescope(AbstractSpectraCyberController spectraCyberController)
         {
             CurrentStatus = RadioTelescopeStatusEnum.Unknown;
             AbstractSpectraCyberController = spectraCyberController;
+            AbstractSpectraCyberController.SetParent(this);
         }
 
-        public RFData IntegrateNow()
+        public void IntegrateNow()
         {
-            return GenerateRFData(AbstractSpectraCyberController.ScanOnce());
+            AbstractSpectraCyberController.SingleScan();
         }
 
-        public bool StartContinuousIntegration()
+        public void StartContinuousIntegration()
         {
-            return AbstractSpectraCyberController.StartScan();
+            AbstractSpectraCyberController.StartScan();
         }
 
-        public List<RFData> StopContinuousIntegration()
+        public void StopContinuousIntegration()
         {
-            return GenerateRFDataList(AbstractSpectraCyberController.StopScan());
+            AbstractSpectraCyberController.StopScan();
+        }
+
+        public void StartScheduledIntegration(int intervalMS, int delayMS, bool startAfterScan)
+        {
+            AbstractSpectraCyberController.ScheduleScan(intervalMS, delayMS, startAfterScan);
         }
 
         public abstract Orientation GetCurrentReferenceOrientation();
         public abstract bool SendReferenceVelocityCommand(double velocityAzimuth, double velocityElevation);
-
-        private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
-        {
-            RFData rfData = new RFData();
-            rfData.TimeCaptured = spectraCyberResponse.DateTimeCaptured;
-            rfData.Intensity = spectraCyberResponse.DecimalData;
-            // TODO: set ID
-            return rfData;
-        }
-
-        private static List<RFData> GenerateRFDataList(List<SpectraCyberResponse> spectraCyberResponses)
-        {
-            List<RFData> rfDataList = new List<RFData>();
-            foreach (SpectraCyberResponse response in spectraCyberResponses)
-            {
-                rfDataList.Add(GenerateRFData(response));
-            }
-
-            return rfDataList;
-        }
     }
 }

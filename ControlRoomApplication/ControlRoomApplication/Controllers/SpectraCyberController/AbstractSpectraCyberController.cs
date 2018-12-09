@@ -1,20 +1,31 @@
 ﻿using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
     public abstract class AbstractSpectraCyberController
     {
-        public AbstractSpectraCyber SpectraCyber { get; set; }
-        public Mutex mutex;
+        protected AbstractRadioTelescope Parent { get; set; }
+        protected AbstractSpectraCyber SpectraCyber { get; set; }
+        protected SpectraCyberScanSchedule Schedule { get; set; }
+
+        protected Thread CommunicationThread { get; set; }
+        protected bool KillCommunicationThreadFlag { get; set; }
+        protected Mutex CommunicationMutex;
 
         public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber)
         {
             SpectraCyber = spectraCyber;
-            mutex = new Mutex();
+            Schedule = new SpectraCyberScanSchedule(SpectraCyberScanScheduleMode.OFF);
+            KillCommunicationThreadFlag = false;
+            CommunicationMutex = new Mutex();
+        }
+
+        public AbstractRadioTelescope GetParent()
+        {
+            return Parent;
         }
 
         public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
@@ -22,43 +33,162 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             SpectraCyber.CurrentModeType = type;
         }
 
+        public void SetParent(AbstractRadioTelescope rt)
+        {
+            Parent = rt;
+        }
+
         public abstract bool BringUp();
         public abstract bool BringDown();
-        protected abstract SpectraCyberResponse SendCommand(SpectraCyberRequest request);
+        protected abstract void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response);
 
-        // Scan once, based on current mode
-        public SpectraCyberResponse ScanOnce()
+        public void TestCommunication()
         {
-            return SendCommand(GenerateCurrentDataRequest());
+            SpectraCyberRequest Request = new SpectraCyberRequest(
+                SpectraCyberCommandTypeEnum.RESET,
+                "!R000",
+                true,
+                4
+            );
+
+            SpectraCyberResponse Response = new SpectraCyberResponse();
+            SendCommand(Request, ref Response);
+
+            string ResponseData = Response.SerialIdentifier + Response.DecimalData.ToString("X3");
+            Console.WriteLine("Attempted RESET with command \"!R000\", heard back: " + ResponseData);
+        }
+
+        private bool SetSomeOffsetVoltage(double offset, char identifier)
+        {
+            if ((offset < 0.0) || (offset > 4.095))
+            {
+                Console.WriteLine("ERROR: input voltage outside of range [0, 4.095]");
+                return false;
+            }
+
+            int Magnitude = (int)(offset * 1000);
+            string Command = "!" + identifier + IntToHexString(Magnitude);
+
+            SpectraCyberRequest Request = new SpectraCyberRequest(
+                SpectraCyberCommandTypeEnum.CHANGE_SETTING,
+                Command,
+                false,
+                4
+            );
+
+            SpectraCyberResponse Response = new SpectraCyberResponse();
+            SendCommand(Request, ref Response);
+
+            return Response.RequestSuccessful;
+        }
+
+        public bool SetContinuumOffsetVoltage(double offset)
+        {
+            return SetSomeOffsetVoltage(offset, 'O');
+        }
+
+        public bool SetSpectralOffsetVoltage(double offset)
+        {
+            return SetSomeOffsetVoltage(offset, 'J');
+        }
+
+        private bool SetSomeIntegrationTime(SpectraCyberIntegrationTimeEnum time, char identifier)
+        {
+            string Command = "!" + identifier + "00" + SpectraCyberIntegrationTimeEnumHelper.GetValue(time);
+
+            SpectraCyberRequest Request = new SpectraCyberRequest(
+                SpectraCyberCommandTypeEnum.CHANGE_SETTING,
+                Command,
+                false,
+                4
+            );
+
+            SpectraCyberResponse Response = new SpectraCyberResponse();
+            SendCommand(Request, ref Response);
+
+            return Response.RequestSuccessful;
+        }
+
+        public bool SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum time)
+        {
+            return SetSomeIntegrationTime(time, 'I');
+        }
+
+        public bool SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum time)
+        {
+            return SetSomeIntegrationTime(time, 'L');
+        }
+
+        // Perform a single scan, based on current mode
+        private SpectraCyberResponse DoSpectraCyberScan()
+        {
+            SpectraCyberResponse Response = new SpectraCyberResponse();
+
+            CommunicationMutex.WaitOne();
+            SendCommand(GenerateCurrentDataRequest(), ref Response);
+            CommunicationMutex.ReleaseMutex();
+
+            return Response;
         }
 
         // Start scanning, keep doing so until requested to stop
-        // TODO: implement error handling
-        public bool StartScan()
+        public void SingleScan()
         {
-            SpectraCyber.CurrentSpectraCyberRequest = GenerateCurrentDataRequest();
+            try
+            {
+                CommunicationMutex.WaitOne();
+                Schedule.SetSingleMode();
+                CommunicationMutex.ReleaseMutex();
+            }
+            catch
+            {
+                // ERROR
+            }
+        }
 
-            mutex.WaitOne();
-
-            SpectraCyber.ResponseList.Clear();
-            SpectraCyber.CommunicationThreadActive = true;
-
-            mutex.ReleaseMutex();
-
-            return true;
+        // Start scanning, keep doing so until requested to stop
+        public void StartScan()
+        {
+            try
+            {
+                CommunicationMutex.WaitOne();
+                Schedule.SetContinuousMode();
+                CommunicationMutex.ReleaseMutex();
+            }
+            catch
+            {
+                // ERROR
+            }
         }
 
         // Stop scanning and return scan results
-        public List<SpectraCyberResponse> StopScan()
+        public void StopScan()
         {
-            mutex.WaitOne();
+            try
+            {
+                CommunicationMutex.WaitOne();
+                Schedule.SetModeOff();
+                CommunicationMutex.ReleaseMutex();
+            }
+            catch
+            {
+                // ERROR
+            }
+        }
 
-            SpectraCyber.CommunicationThreadActive = false;
-            List<SpectraCyberResponse> responses = SpectraCyber.ResponseList;
-
-            mutex.ReleaseMutex();
-
-            return responses;
+        // Start a scheduled scan interval
+        public void ScheduleScan(int intervalMS, int delayMS, bool startAfterDelay)
+        {
+            try
+            {
+                CommunicationMutex.WaitOne();
+                Schedule.SetScheduledMode(intervalMS, delayMS, startAfterDelay);
+                CommunicationMutex.ReleaseMutex();
+            }
+            catch
+            {
+                // ERROR
+            }
         }
 
         // Generate a SpectraCyberRequest based on currentMode
@@ -103,31 +233,42 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             while (KeepRunningCommsThread)
             {
                 // Wait for the mutex to say it's safe to proceed
-                mutex.WaitOne();
+                CommunicationMutex.WaitOne();
 
-                // Process if the thread is set to be active, otherwise don't send commands
-                if (SpectraCyber.CommunicationThreadActive)
+                if (Schedule.PollReadiness())
                 {
-                    SpectraCyber.ResponseList.Add(SendCommand(SpectraCyber.CurrentSpectraCyberRequest));
+                    AddToRFDataDatabase(DoSpectraCyberScan());
+                    Schedule.Consume();
+                    Console.WriteLine("SC Scan");
                 }
 
                 // Tell the loop to break on its next pass (so the mutex is still released if the flag is high)
-                KeepRunningCommsThread = !SpectraCyber.KillCommunicationThreadFlag;
+                KeepRunningCommsThread = !KillCommunicationThreadFlag;
 
                 // Release the mutex
-                mutex.ReleaseMutex();
-                Thread.Sleep(5);
+                CommunicationMutex.ReleaseMutex();
             }
         }
 
         // Implicitly kills the processing thread and waits for it to join before returning
         public void KillCommunicationThreadAndWait()
         {
-            mutex.WaitOne();
-            SpectraCyber.KillCommunicationThreadFlag = true;
-            mutex.ReleaseMutex();
+            CommunicationMutex.WaitOne();
+            KillCommunicationThreadFlag = true;
+            CommunicationMutex.ReleaseMutex();
 
-            SpectraCyber.CommunicationThread.Join();
+            CommunicationThread.Join();
+        }
+
+        private static RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse)
+        {
+            RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
+
+            //
+            // Add to database
+            //
+
+            return rfData;
         }
 
         // TODO: implement proper error handling if ch is out of acceptable range
@@ -177,28 +318,23 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return HexStringToInt(hex, hex.Length);
         }
 
-        protected static string IntToHexString(int value)
+        protected static string IntToHexString(int value, int minimumLength = 3)
         {
             string strHex = "0123456789ABCDEF";
-            string strTemp = "";
+            string strOutput = "";
 
-            // First, encode the integer into hex (but backward)
+            // First, encode the integer into hex
             while (value > 0)
             {
-                strTemp = strHex[value % 16] + strTemp;
+                strOutput = strHex[value % 16] + strOutput;
                 value /= 16;
             }
 
             // Now, pad the string with zeros to make it the correct length
-            for (int i = strTemp.Length; i < 4; i++)
+            for (int i = strOutput.Length; i < minimumLength; i++)
             {
-                strTemp = "0" + strTemp;
+                strOutput = "0" + strOutput;
             }
-
-            // Finally, reverse the direction of the string
-            string strOutput = "";
-            foreach (char ch in strTemp.ToCharArray())
-                strOutput = ch + strOutput;
 
             // Return it
             return strOutput;

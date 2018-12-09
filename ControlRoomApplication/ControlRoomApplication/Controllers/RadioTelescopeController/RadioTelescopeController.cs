@@ -1,5 +1,4 @@
 ﻿using ControlRoomApplication.Entities;
-using System.Collections.Generic;
 
 namespace ControlRoomApplication.Controllers.RadioTelescopeController
 {
@@ -12,19 +11,24 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeController
             RadioTelescope = radioTelescope;
         }
 
-        public RFData GetCurrentRadioTelescopeRFData()
+        public void GetCurrentRadioTelescopeRFData()
         {
-            return RadioTelescope.IntegrateNow();
+            RadioTelescope.IntegrateNow();
         }
         
-        public bool StartRadioTelscopeRFDataScan()
+        public void StartRadioTelscopeRFDataScan()
         {
-            return RadioTelescope.StartContinuousIntegration();
+            RadioTelescope.StartContinuousIntegration();
         }
 
-        public List<RFData> StopRadioTelescopeRFDataScan()
+        public void StopRadioTelescopeRFDataScan()
         {
-            return RadioTelescope.StopContinuousIntegration();
+            RadioTelescope.StopContinuousIntegration();
+        }
+
+        public void ScheduleRadioTelescopeRFDataScan(int intervalMS, int delayMS = 0, bool startAfterDelay = false)
+        {
+            RadioTelescope.StartScheduledIntegration(intervalMS, delayMS, startAfterDelay);
         }
     }
 }

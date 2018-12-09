@@ -19,8 +19,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             try
             {
                 // Initialize thread and start it
-                SpectraCyber.CommunicationThread = new Thread(new ThreadStart(RunCommunicationThread));
-                SpectraCyber.CommunicationThread.Start();
+                CommunicationThread = new Thread(new ThreadStart(RunCommunicationThread));
+                CommunicationThread.Start();
             }
             catch (Exception e)
             {
@@ -54,13 +54,9 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         }
 
         // Submit a command and return a response
-        protected override SpectraCyberResponse SendCommand(SpectraCyberRequest request)
+        protected override void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response)
         {
-            SpectraCyberResponse response = new SpectraCyberResponse();
-
             // Here is where the request would be sent through serial if this were a physical device
-
-            SpectraCyber.Available = false;
 
             // Assume it is successfully sent
             response.RequestSuccessful = true;
@@ -87,6 +83,9 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 // Reponse's data is valid
                 response.Valid = true;
 
+                // Set the SerialIdentifier, assuming the correct type of response is heard back
+                response.SerialIdentifier = request.ResponseIdentifier;
+
                 // Generate random data
                 int minIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MINIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
                 int maxIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MAXIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
@@ -97,11 +96,6 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             }
 
             // Do nothing to purge a simulated buffer
-
-            SpectraCyber.Available = true;
-
-            // Return the response
-            return response;
         }
     }
 }
