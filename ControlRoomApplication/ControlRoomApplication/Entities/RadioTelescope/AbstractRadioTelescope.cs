@@ -24,19 +24,19 @@ namespace ControlRoomApplication.Entities.RadioTelescope
             AbstractSpectraCyberController = spectraCyberController;
         }
 
-        public RFData IntegrateNow()
+        public void IntegrateNow()
         {
-            return GenerateRFData(AbstractSpectraCyberController.ScanOnce());
+            AbstractSpectraCyberController.SingleScan();
         }
 
-        public bool StartContinuousIntegration()
+        public void StartContinuousIntegration()
         {
-            return AbstractSpectraCyberController.StartScan();
+            AbstractSpectraCyberController.StartScan();
         }
 
-        public List<RFData> StopContinuousIntegration()
+        public void StopContinuousIntegration()
         {
-            return GenerateRFDataList(AbstractSpectraCyberController.StopScan());
+            AbstractSpectraCyberController.StopScan();
         }
 
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)

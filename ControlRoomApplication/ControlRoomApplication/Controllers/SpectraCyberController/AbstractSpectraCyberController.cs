@@ -2,6 +2,7 @@
 using ControlRoomApplication.Constants;
 using System;
 using System.Threading;
+using ControlRoomApplication.Entities.RadioTelescope;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
