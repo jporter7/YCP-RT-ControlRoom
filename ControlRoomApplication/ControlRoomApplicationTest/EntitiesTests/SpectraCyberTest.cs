@@ -23,8 +23,6 @@ namespace ControlRoomApplicationTest.EntitiesTests
         {
             Assert.AreEqual(spectraCyber.CurrentModeType, SpectraCyberModeTypeEnum.UNKNOWN);
             Assert.AreEqual(spectraCyber.CommPort, commPort);
-            Assert.AreEqual(spectraCyber.CommunicationThreadActive, false);
-            Assert.AreEqual(spectraCyber.KillCommunicationThreadFlag, false);
         }
 
         [TestMethod]

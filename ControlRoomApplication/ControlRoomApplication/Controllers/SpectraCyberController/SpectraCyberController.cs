@@ -65,8 +65,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             try
             {
                 // Initialize thread and start it
-                SpectraCyber.CommunicationThread = new Thread(new ThreadStart(RunCommunicationThread));
-                SpectraCyber.CommunicationThread.Start();
+                CommunicationThread = new Thread(new ThreadStart(RunCommunicationThread));
+                CommunicationThread.Start();
             }
             catch (Exception e)
             {
@@ -120,22 +120,13 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         }
 
         // Submit a command and return a response
-        protected override SpectraCyberResponse SendCommand(SpectraCyberRequest request)
+        protected override void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response)
         {
-            while (!((SpectraCyber)SpectraCyber).Available)
-            {
-                // Wait for the SpectraCyber to be ready to be used
-            }
-
-            SpectraCyberResponse response = new SpectraCyberResponse();
-
             // If the request is empty, don't process
             if (request.IsEmpty())
             {
-                return response;
+                return;
             }
-
-            SpectraCyber.Available = false;
 
             try
             {
@@ -145,7 +136,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             catch (Exception)
             {
                 // Something went wrong, return the response
-                return response;
+                return;
             }
 
             // Command was successfully sent through serial communication
@@ -213,8 +204,11 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                         hexString = new string(charInBuffer);
                     }
 
+                    // Set the SerialIdentifier, as heard (but not necessarily expected)
+                    response.SerialIdentifier = hexString[0];
+
                     // Check to see that replyString's first character is what was expected
-                    if (hexString[0] != request.ResponseIdentifier)
+                    if (response.SerialIdentifier != request.ResponseIdentifier)
                     {
                         throw new Exception();
                     }
@@ -232,11 +226,6 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
             // Clear the input buffer
             ((SpectraCyber)SpectraCyber).SerialPort.DiscardInBuffer();
-
-            SpectraCyber.Available = true;
-
-            // Return the response, no matter what happened
-            return response;
         }
     }
 }

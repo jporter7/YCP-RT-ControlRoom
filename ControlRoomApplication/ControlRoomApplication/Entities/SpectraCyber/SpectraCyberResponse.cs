@@ -10,6 +10,9 @@ namespace ControlRoomApplication.Entities
         // Whether or not the response is valid and populated
         public bool Valid { get; set; }
 
+        // The identifier of the response string
+        public char SerialIdentifier { get; set; }
+
         // The decimal value pertaining to this response
         public int DecimalData { get; set; }
 
@@ -20,6 +23,7 @@ namespace ControlRoomApplication.Entities
         {
             RequestSuccessful = false;
             Valid = false;
+            SerialIdentifier = (char)0;
             DecimalData = 0;
             DateTimeCaptured = DateTime.MinValue;
         }

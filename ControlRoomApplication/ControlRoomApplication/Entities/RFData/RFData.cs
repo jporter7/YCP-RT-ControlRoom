@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    [Table("rf_data")]
+    [Table("RFData")]
     public class RFData
     {
         public RFData()
@@ -14,7 +15,6 @@ namespace ControlRoomApplication.Entities
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("id")]
         public int Id { get; set; }
 
         [Required]
@@ -25,11 +25,25 @@ namespace ControlRoomApplication.Entities
         [Column("intensity")]
         public long Intensity { get; set; }
 
-        [Required]
-        [Column("appointment_id")]
-        [ForeignKey("Appointment")]
-        public int AppointmentId { get; set; }
+        public virtual Orientation AcquisitionOrientation { get; set; }
 
-        public Appointment Appointment { get; set; }
+        public static RFData GenerateFrom(SpectraCyberResponse response)
+        {
+            RFData rfData = new RFData();
+            rfData.TimeCaptured = response.DateTimeCaptured;
+            rfData.Intensity = response.DecimalData;
+            return rfData;
+        }
+
+        public static List<RFData> GenerateListFrom(List<SpectraCyberResponse> responses)
+        {
+            List<RFData> rfDataList = new List<RFData>();
+            foreach (SpectraCyberResponse response in responses)
+            {
+                rfDataList.Add(GenerateFrom(response));
+            }
+
+            return rfDataList;
+        }
     }
 }
