@@ -1,6 +1,6 @@
 ﻿using System;
 using ControlRoomApplication.Controllers.PLCController;
-using ControlRoomApplication.Entities.PLC;
+using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -19,7 +19,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public void TestTelescopeLimitsMethod()
         {
             PLCController plccontroller = new PLCController();
-            PLC plc = new PLC("127.0.0.1", 8080);
+            AbstractPLC plc = new ScaleModelPLC("127.0.0.1", 8080);
             //Right Ascention Out of Bounds Tests
             //Bad RightAscension positive
             Boolean test = false;
@@ -35,7 +35,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(test, true);
 
             //Bad RightAscension negative
-            badRighta.rightAscension = -360;
+            badRighta.RightAscension = -360;
             test = false;
             try
             {
@@ -62,7 +62,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(test, true);
 
             //Bad Dec negative
-            badDec.declination = -91;
+            badDec.Declination = -91;
             test = false;
             try
             {
