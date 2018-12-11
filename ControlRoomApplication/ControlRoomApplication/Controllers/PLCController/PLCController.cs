@@ -127,6 +127,7 @@ namespace ControlRoomApplication.Controllers.PLCController
                 case VRPLC vrPLC:
                     vrPLC.pipeClient.WaitForConnection();
                     vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.RightAscension));
+                    vrPLC.pipeClient.WaitForPipeDrain();
                     vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.Declination));
                     return "If this is a 1 we got good data from VR Telescope!!! -> "+vrPLC.pipeClient.ReadByte();
 
