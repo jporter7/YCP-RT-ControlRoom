@@ -68,3 +68,7 @@ ________________________________________________________________________________
 
 Steps:
     - “Tools” >> “Port” >> select the proper COM port that your USB is connected to.
+
+________________________________________________________________________________________________________________________________________
+							Travis-CI Build Badge
+[![Build Status](https://travis-ci.org/AaronLenoir/ControlRoomApplication.svg?branch=master)](https://travis-ci.org/jporter7/ControlRoomApplication)
