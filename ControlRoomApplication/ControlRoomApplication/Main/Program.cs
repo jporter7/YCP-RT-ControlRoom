@@ -26,9 +26,10 @@ namespace ControlRoomApplication.Main
             orientation.Elevation = 0;
             SpectraCyber spectraCyber = new SpectraCyber();
             SpectraCyberController spectraCyberController = new SpectraCyberController(spectraCyber, dbContext, 0);
+            spectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
             ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController, spectraCyberController, orientation);
             RadioTelescopeController rtController = new RadioTelescopeController(scaleModel);
-            //scaleModel.SpectraCyberController.BringUp();
+            scaleModel.SpectraCyberController.BringUp();
             scaleModel.CurrentOrientation = new Orientation();
 
             ControlRoom CRoom = new ControlRoom(scaleModel, rtController, dbContext);

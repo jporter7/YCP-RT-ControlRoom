@@ -41,11 +41,11 @@ namespace ControlRoomApplication.Controllers
             logger.Info("Beginning SpectraCyber readings from appointment.");
             CRoom.RadioTelescope.SpectraCyberController.AppId = app.Id;
             Thread readingThread = new Thread(() => CRoom.RadioTelescope.SpectraCyberController.StartScan());
-            //readingThread.Start();
+            readingThread.Start();
 
             // End PLC & SpectraCyber thread
             movementThread.Join();
-            //readingThread.Join();
+            readingThread.Join();
 
             StopReadingRFData();
 
