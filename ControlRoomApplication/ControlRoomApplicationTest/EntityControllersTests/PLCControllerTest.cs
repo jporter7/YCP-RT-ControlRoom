@@ -19,7 +19,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public void TestTelescopeLimitsMethod()
         {
             PLCController plccontroller = new PLCController();
-            AbstractPLC plc = new ScaleModelPLC("127.0.0.1", 8080);
+            AbstractPLC plc = new ScaleModelPLC();
             //Right Ascention Out of Bounds Tests
             //Bad RightAscension positive
             Boolean test = false;
