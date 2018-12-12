@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities.RadioTelescope
 {
@@ -8,7 +9,7 @@ namespace ControlRoomApplication.Entities.RadioTelescope
 
         public ProductionRadioTelescope()
         {
-            FTSpectraCyberController = new SpectraCyberController(new SpectraCyber());
+            FTSpectraCyberController = new SpectraCyberController(new SpectraCyber(), new RTDbContext(), 1);
             FTSpectraCyberController.BringUp();
         }
 

@@ -3,12 +3,16 @@ using ControlRoomApplication.Constants;
 using System;
 using System.IO.Ports;
 using System.Threading;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
     public class SpectraCyberController : AbstractSpectraCyberController
     {
-        public SpectraCyberController(SpectraCyber spectraCyber) : base(spectraCyber) { }
+        public SpectraCyberController(SpectraCyber spectraCyber, RTDbContext context, int appId) : base(spectraCyber, context, appId)
+        {
+            AppId = appId;
+        }
 
         public override bool BringUp()
         {
@@ -65,7 +69,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(new ThreadStart(RunCommunicationThread));
+                CommunicationThread = new Thread(() => RunCommunicationThread(AppId));
                 CommunicationThread.Start();
             }
             catch (Exception e)
@@ -87,7 +91,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 }
             }
 
-            Console.WriteLine("Successfully started SpectraCyber communication and communication thread.");
+            //Console.WriteLine("Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
 

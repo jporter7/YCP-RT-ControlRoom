@@ -182,7 +182,7 @@ namespace ControlRoomApplication.Controllers.PLCController
 
         public bool SendSerialPortMessage(string jsonOrientation)
         {
-            Data = System.Text.ASCIIEncoding.ASCII.GetBytes(jsonOrientation);
+            Data = System.Text.Encoding.ASCII.GetBytes(jsonOrientation);
 
             SPort.Write(Data, 0, Data.Length);
             SPort.Close();

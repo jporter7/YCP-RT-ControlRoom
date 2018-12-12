@@ -1,6 +1,8 @@
 ﻿using System;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCController;
+using ControlRoomApplication.Controllers.RadioTelescopeControllers;
+using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities.RadioTelescope;
@@ -20,13 +22,20 @@ namespace ControlRoomApplication.Main
             ScaleModelPLC plc = new ScaleModelPLC();
             PLCController plcController = new PLCController(plc);
             Orientation orientation = new Orientation();
+            orientation.Azimuth = 0;
+            orientation.Elevation = 0;
+            SpectraCyber spectraCyber = new SpectraCyber();
+            SpectraCyberController spectraCyberController = new SpectraCyberController(spectraCyber, dbContext, 0);
+            ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController, spectraCyberController, orientation);
+            RadioTelescopeController rtController = new RadioTelescopeController(scaleModel);
+            //scaleModel.SpectraCyberController.BringUp();
+            scaleModel.CurrentOrientation = new Orientation();
 
-            ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController, orientation);
-
-            ControlRoom CRoom = new ControlRoom(scaleModel, dbContext);
+            ControlRoom CRoom = new ControlRoom(scaleModel, rtController, dbContext);
             ControlRoomController CRoomController = new ControlRoomController(CRoom);
             CRoomController.StartAppointment();
 
+            scaleModel.SpectraCyberController.BringDown();
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Console.ReadKey();
         }

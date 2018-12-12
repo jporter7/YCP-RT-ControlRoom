@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,9 @@ namespace ControlRoomApplication.Controllers
         public ControlRoomController(ControlRoom controlRoom)
         {
             CRoom = controlRoom;
+
+            // SpectraCyber work
+            // CRoom.RadioTelescope.SpectraCyberController.BringUp();
         }
 
         /// <summary>
@@ -32,10 +36,18 @@ namespace ControlRoomApplication.Controllers
             logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");
             Thread movementThread = new Thread(() => StartRadioTelescope(app, orientation));
             movementThread.Start();
-            
-            // Start SpectraCyber thread
+
+            //// Start SpectraCyber thread
+            logger.Info("Beginning SpectraCyber readings from appointment.");
+            CRoom.RadioTelescope.SpectraCyberController.AppId = app.Id;
+            Thread readingThread = new Thread(() => CRoom.RadioTelescope.SpectraCyberController.StartScan());
+            //readingThread.Start();
 
             // End PLC & SpectraCyber thread
+            movementThread.Join();
+            //readingThread.Join();
+
+            StopReadingRFData();
 
             logger.Info("Appointment completed.");
         }
@@ -53,7 +65,7 @@ namespace ControlRoomApplication.Controllers
             diff = app.StartTime - DateTime.Now;
 
             logger.Info("Waiting for the next appointment to be within 10 minutes.");
-            while (diff.TotalMinutes > 10)
+            while (diff.TotalDays > 10)
             {
                 diff = app.StartTime - DateTime.Now;
             }
@@ -70,22 +82,31 @@ namespace ControlRoomApplication.Controllers
         {
             logger.Info("Retrieving list of appointments.");
             var list = new List<DateTime>();
-            foreach(Appointment app in CRoom.Context.Appointments)
+
+            foreach (Appointment app in CRoom.Context.Appointments)
             {
                 list.Add(app.StartTime);
             }
 
-            list.OrderBy(x => Math.Abs((x - DateTime.Now).Ticks)).First();
-            list.RemoveAll(x => x < DateTime.Now);
-
-            logger.Info("Appointment list sorted. Starting to retrieve the next chronological appointment.");
-            foreach(Appointment app in CRoom.Context.Appointments)
+            try
             {
-                if (app.StartTime == list[0])
+                list.OrderBy(x => Math.Abs((x - DateTime.Now).Ticks)).First();
+                list.RemoveAll(x => x < DateTime.Now);
+ 
+                logger.Info("Appointment list sorted. Starting to retrieve the next chronological appointment.");
+                foreach(Appointment app in CRoom.Context.Appointments)
                 {
-                    return app;
+                    if (app.StartTime == list[0])
+                    {
+                        return app;
+                    }
                 }
             }
+            catch (ArgumentException e)
+            {
+                logger.Error("There was an error with the size of the list of appointments.");
+            }
+
 
             return CRoom.Context.Appointments.Find(0);
         }
@@ -98,6 +119,16 @@ namespace ControlRoomApplication.Controllers
             CRoom.RadioTelescope.CurrentOrientation = orientation;
             app.Status = AppointmentConstants.COMPLETED;
             CRoom.Context.SaveChanges();
+        }
+
+        public void StartReadingData()
+        {
+            CRoom.RadioTelescope.SpectraCyberController.StartScan();
+        }
+
+        public void StopReadingRFData()
+        {
+            CRoom.RadioTelescope.SpectraCyberController.StopScan();
         }
 
         public ControlRoom CRoom { get; set; }

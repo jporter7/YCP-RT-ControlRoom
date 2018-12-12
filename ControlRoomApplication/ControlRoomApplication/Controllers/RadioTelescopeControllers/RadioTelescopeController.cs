@@ -71,14 +71,14 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
             {
                 case ScaleRadioTelescope scale:
                     // Move the telescope to the orientation that it is supposed to be at
-                    scale.Status = RadioTelescopeStatusEnum.RUNNING;
+                    RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
 
-                    scale.Plc.OutgoingOrientation = orientation;
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3);
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4);
-                    scale.CurrentOrientation = orientation;
+                    RadioTelescope.PlcController.Plc.OutgoingOrientation = orientation;
+                    RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3);
+                    RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4);
+                    RadioTelescope.CurrentOrientation = orientation;
 
-                    scale.Status = RadioTelescopeStatusEnum.IDLE;
+                    RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
                     break;
 
                 case ProductionRadioTelescope prod:
@@ -96,7 +96,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void CalibrateRadioTelescope()
         {
-            switch(RadioTelescope)
+            switch (RadioTelescope)
             {
                 case ScaleRadioTelescope scale:
                     // Move the telescope to the orientation that it is supposed to calibrate at
@@ -116,7 +116,27 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                 default:
                     break;
             }
-            
+
+        }
+
+        public void GetCurrentRadioTelescopeRFData()
+        {
+            RadioTelescope.IntegrateNow();
+        }
+
+        public void StartRadioTelscopeRFDataScan()
+        {
+            RadioTelescope.StartContinuousIntegration();
+        }
+
+        public void StopRadioTelescopeRFDataScan()
+        {
+            RadioTelescope.StopContinuousIntegration();
+        }
+
+        public void ScheduleRadioTelescopeRFDataScan(int intervalMS, int delayMS = 0, bool startAfterDelay = false)
+        {
+            RadioTelescope.StartScheduledIntegration(intervalMS, delayMS, startAfterDelay);
         }
 
         public AbstractRadioTelescope RadioTelescope { get; set; }

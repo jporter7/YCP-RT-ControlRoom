@@ -28,7 +28,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             {
                 plccontroller.MoveTelescope(plc, badRighta);
             }
-            catch (SystemException e)
+            catch (SystemException)
             {
                 test = true;
             }
@@ -41,7 +41,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             {
                 plccontroller.MoveTelescope(plc, badRighta);
             }
-            catch (SystemException e)
+            catch (SystemException)
             {
                 test = true;
             }
@@ -55,7 +55,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             {
                 plccontroller.MoveTelescope(plc, badDec);
             }
-            catch (SystemException e)
+            catch (SystemException)
             {
                 test = true;
             }
@@ -68,7 +68,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             {
                 plccontroller.MoveTelescope(plc, badDec);
             }
-            catch (SystemException e)
+            catch (SystemException)
             {
                 test = true;
             }

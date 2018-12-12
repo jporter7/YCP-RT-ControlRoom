@@ -1,6 +1,7 @@
 ﻿using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Entities.Plc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -19,24 +20,24 @@ namespace ControlRoomApplication.Entities.RadioTelescope
     {
         public AbstractRadioTelescope() { }
 
-        public AbstractRadioTelescope(AbstractSpectraCyberController spectraCyberController)
+        public AbstractRadioTelescope(SpectraCyberController spectraCyberController)
         {
-            AbstractSpectraCyberController = spectraCyberController;
+            SpectraCyberController = spectraCyberController;
         }
 
         public void IntegrateNow()
         {
-            AbstractSpectraCyberController.SingleScan();
+            SpectraCyberController.SingleScan();
         }
 
         public void StartContinuousIntegration()
         {
-            AbstractSpectraCyberController.StartScan();
+            SpectraCyberController.StartScan();
         }
 
         public void StopContinuousIntegration()
         {
-            AbstractSpectraCyberController.StopScan();
+            SpectraCyberController.StopScan();
         }
 
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
@@ -72,7 +73,14 @@ namespace ControlRoomApplication.Entities.RadioTelescope
 
         public AbstractPLC Plc { get; set; }
         public PLCController PlcController { get; set; }
-        public AbstractSpectraCyberController AbstractSpectraCyberController { get; set; }
+        public AbstractSpectraCyber SpectraCyber { get; set; }
+        public SpectraCyberController SpectraCyberController { get; set; }
         public Orientation CalibrationOrientation { get; set; }
+        public int AppId { get; set; }
+
+        internal void StartScheduledIntegration(int intervalMS, int delayMS, bool startAfterDelay)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

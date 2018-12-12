@@ -2,6 +2,7 @@
 using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
@@ -9,7 +10,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     {
         private Random random;
 
-        public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator) : base(spectraCyberSimulator)
+        public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator, RTDbContext context, int appId) : base(spectraCyberSimulator, context, appId)
         {
             random = new Random();
         }
@@ -19,7 +20,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(new ThreadStart(RunCommunicationThread));
+                CommunicationThread = new Thread(() => RunCommunicationThread(0));
                 CommunicationThread.Start();
             }
             catch (Exception e)

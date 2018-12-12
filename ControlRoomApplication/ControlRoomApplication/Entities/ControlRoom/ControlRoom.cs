@@ -9,10 +9,10 @@ namespace ControlRoomApplication.Entities
 {
     public class ControlRoom
     {
-        public ControlRoom(AbstractRadioTelescope radioTelescope, RTDbContext dbContext)
+        public ControlRoom(AbstractRadioTelescope radioTelescope, RadioTelescopeController controller, RTDbContext dbContext)
         {
             RadioTelescope = radioTelescope;
-            Controller = new RadioTelescopeController(RadioTelescope);
+            Controller = controller; // new RadioTelescopeController(RadioTelescope);
             Context = dbContext;
         }
 

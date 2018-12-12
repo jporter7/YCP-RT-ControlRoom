@@ -3,6 +3,8 @@ using ControlRoomApplication.Constants;
 using System;
 using System.Threading;
 using ControlRoomApplication.Entities.RadioTelescope;
+using ControlRoomApplication.Main;
+using System.Data.Entity;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
@@ -16,12 +18,15 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         protected bool KillCommunicationThreadFlag { get; set; }
         protected Mutex CommunicationMutex;
 
-        public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber)
+        public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber, RTDbContext dBContext, int appId)
         {
             SpectraCyber = spectraCyber;
             Schedule = new SpectraCyberScanSchedule(SpectraCyberScanScheduleMode.OFF);
             KillCommunicationThreadFlag = false;
             CommunicationMutex = new Mutex();
+
+            // Adding dbContext
+            Context = dBContext;
         }
 
         public AbstractRadioTelescope GetParent()
@@ -225,7 +230,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             );
         }
 
-        public void RunCommunicationThread()
+        public void RunCommunicationThread(int appId)
         {
             bool KeepRunningCommsThread = true;
 
@@ -238,7 +243,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
                 if (Schedule.PollReadiness())
                 {
-                    AddToRFDataDatabase(DoSpectraCyberScan());
+                    AddToRFDataDatabase(DoSpectraCyberScan(), appId);
                     Schedule.Consume();
                     Console.WriteLine("SC Scan");
                 }
@@ -261,13 +266,15 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             CommunicationThread.Join();
         }
 
-        private static RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse)
+        private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, int appId)
         {
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
 
             //
             // Add to database
             //
+            rfData.Id = appId;
+            Context.RFDatas.Add(rfData);
 
             return rfData;
         }
@@ -340,5 +347,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             // Return it
             return strOutput;
         }
+
+        public RTDbContext Context { get; set; }
+        public int AppId { get; set; }
     }
 }
