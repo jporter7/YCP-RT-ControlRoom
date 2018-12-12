@@ -77,6 +77,7 @@
     <Compile Include="EntitiesTests\CoordinateTest.cs" />
     <Compile Include="EntitiesTests\OrientationTest.cs" />
     <Compile Include="EntitiesTests\AbstractRadioTelescopeTest.cs" />
+    <Compile Include="EntitiesTests\PLCTest.cs" />
     <Compile Include="EntitiesTests\RFDataTest.cs" />
     <Compile Include="EntitiesTests\ScheduleTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberTest.cs" />

@@ -22,6 +22,12 @@ namespace ControlRoomApplicationTest.EntitiesTests
         {
             Assert.AreEqual(0, schedule.Appointments.Count);
             Assert.AreEqual(currentDateTime.Year, schedule.CurrentDateTime.Year);
+            Appointment appointment = new Appointment();
+            appointment.StartTime() = new DateTime();
+            appointment.EndTime() = new DateTime();
+            schedule.Appointments.add(appointment);
+            Assert.AreEqual(1, schedule.Appointments.Count);
+
         }
     }
 }
