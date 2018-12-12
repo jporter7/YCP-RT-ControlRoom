@@ -126,9 +126,35 @@ namespace ControlRoomApplication.Controllers.PLCController
 
                 case VRPLC vrPLC:
                     vrPLC.pipeClient.WaitForConnection();
-                    vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.RightAscension));
-                    vrPLC.pipeClient.WaitForPipeDrain();
-                    vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.Declination));
+                    if(coordinate.RightAscension <= 255)
+                    {
+                        vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.RightAscension));
+                        vrPLC.pipeClient.WaitForPipeDrain();
+                        vrPLC.pipeClient.WriteByte(0);
+                        vrPLC.pipeClient.WaitForPipeDrain();
+                    }
+                    else if (coordinate.RightAscension <= 360)
+                    {
+                        vrPLC.pipeClient.WriteByte(255);
+                        vrPLC.pipeClient.WaitForPipeDrain();
+                        vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.RightAscension-255));
+                        vrPLC.pipeClient.WaitForPipeDrain();
+                    }
+
+                    if (coordinate.Declination <= 255)
+                    {
+                        vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.Declination));
+                        vrPLC.pipeClient.WaitForPipeDrain();
+                        vrPLC.pipeClient.WriteByte(0);
+                        vrPLC.pipeClient.WaitForPipeDrain();
+                    }
+                    else if (coordinate.Declination <= 360)
+                    {
+                        vrPLC.pipeClient.WriteByte(255);
+                        vrPLC.pipeClient.WaitForPipeDrain();
+                        vrPLC.pipeClient.WriteByte(System.Convert.ToByte(coordinate.Declination-255));
+                        vrPLC.pipeClient.WaitForPipeDrain();
+                    }
                     return "If this is a 1 we got good data from VR Telescope!!! -> "+vrPLC.pipeClient.ReadByte();
 
 
