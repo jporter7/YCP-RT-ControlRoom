@@ -275,6 +275,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             //
             rfData.Id = appId;
             Context.RFDatas.Add(rfData);
+            Context.SaveChanges();
 
             return rfData;
         }

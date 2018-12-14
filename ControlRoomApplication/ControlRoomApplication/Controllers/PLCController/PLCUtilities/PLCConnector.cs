@@ -26,11 +26,24 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// <param name="portName"> The serial port name that should be connected to. </param>
         public PLCConnector(string portName)
         {
-            SPort = new SerialPort();
-            SPort.PortName = portName;
-            SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
-            SPort.Open();
-            logger.Info($"Serial port ({portName}) opened.");
+            try
+            { 
+           
+                SPort = new SerialPort();
+                SPort.PortName = portName;
+                SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
+                //if (!HardwareFlags.COM3 || !HardwareFlags.COM4)
+                //{
+                    SPort.Open();
+                //}
+                logger.Info($"Serial port ({portName}) opened.");
+            }
+            catch (Exception)
+            {
+                //SPort.Close();
+                logger.Error("Serial port was already opened.");
+                //SPort.Open();
+            }
         }
 
         /// <summary>
@@ -94,13 +107,6 @@ namespace ControlRoomApplication.Controllers.PLCController
                     Console.WriteLine($"Encountered a socket exception.");
                     logger.Error($"There was an issue with the socket: {e.Message}.");
                 } 
-                finally
-                {
-                    DisconnectFromPLC();
-
-                    logger.Info("Disconnected from PLC.");
-                }
-
             }
         }
 
@@ -172,9 +178,9 @@ namespace ControlRoomApplication.Controllers.PLCController
         {
             Message = string.Empty;
 
-            Message = SPort.ReadExisting();
-            Thread.Sleep(5000);
-            SPort.Close();
+            //Message = SPort.ReadExisting();
+            //Thread.Sleep(5000);
+            //SPort.Close();
 
             logger.Info("Message received from Arduino.");
             return Message;
@@ -185,7 +191,7 @@ namespace ControlRoomApplication.Controllers.PLCController
             Data = System.Text.Encoding.ASCII.GetBytes(jsonOrientation);
 
             SPort.Write(Data, 0, Data.Length);
-            SPort.Close();
+            //SPort.Close();
 
             logger.Info("Message sent to Arduino");
             return true;
