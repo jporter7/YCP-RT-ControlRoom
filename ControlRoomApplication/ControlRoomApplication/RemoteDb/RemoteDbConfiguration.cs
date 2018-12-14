@@ -1,5 +1,6 @@
 ﻿using MySql.Data.EntityFramework;
 using System.Data.Entity;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.RemoteDb
 {
