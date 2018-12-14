@@ -130,7 +130,7 @@ namespace ControlRoomApplication.Controllers.PLCController
                 case ScaleModelPLC scaleModelPLC:
                     if (plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
                     {
-                        logger.Error($"Azimuth ({plc.OutgoingOrientation.Azimuth}) was out of range .");
+                        logger.Error($"Azimuth ({plc.OutgoingOrientation.Azimuth}) was out of range.");
                         throw new System.Exception();
                     }
                     else if (plc.OutgoingOrientation.Elevation < PLCConstants.DECLINATION_LOWER_LIMIT || plc.OutgoingOrientation.Elevation > PLCConstants.DECLINATION_UPPER_LIMIT)
@@ -147,20 +147,17 @@ namespace ControlRoomApplication.Controllers.PLCController
                     // move the first motor (azimuth)
                     PlcConnector = new PLCConnector(comPort);
                     PlcConnector.SendSerialPortMessage(jsonOrientation);
-                    Thread.Sleep(5000);
 
                     // Wait for the arduinos to send back a response 
                     // in the arduino code, as of milestone 2, the response is a string: "finished"
                     var state = string.Empty;
-                    while (state == string.Empty)
-                    {
-                        state = PlcConnector.GetSerialPortMessage();
-                    }
+                    state = PlcConnector.GetSerialPortMessage();
 
                     // Print the state of the move operation to the console.
                     Console.WriteLine(state);
 
                     logger.Info($"Scale model moved to {plc.OutgoingMessage}");
+                    PlcConnector.SPort.Dispose();
                     return state;
 
                 case TestPLC testPLC:

@@ -89,6 +89,7 @@
     <Compile Include="Constants\AbstractSpectraCyberConstants.cs" />
     <Compile Include="Constants\AppointmentConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
+    <Compile Include="Constants\HardwareFlags.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\RadioTelescopeConstants.cs" />

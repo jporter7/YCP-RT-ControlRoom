@@ -1,6 +1,8 @@
 ﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
+using System.IO.Ports;
+using System.Threading;
 
 namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 {
@@ -74,12 +76,17 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
 
                     RadioTelescope.PlcController.Plc.OutgoingOrientation = orientation;
-                    RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3);
-                    RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4);
+                    //Thread t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3));
+                    //Thread t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4));
+                    //t1.Start();
+                    //t2.Start();
+
+                    //t1.Join();
+                    //t2.Join();
                     RadioTelescope.CurrentOrientation = orientation;
 
                     RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
-                    break;
+                    return;
 
                 case ProductionRadioTelescope prod:
                     // Add Code for production radiotelescope later

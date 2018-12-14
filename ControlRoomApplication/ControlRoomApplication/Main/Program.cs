@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
@@ -31,6 +33,20 @@ namespace ControlRoomApplication.Main
             RadioTelescopeController rtController = new RadioTelescopeController(scaleModel);
             scaleModel.SpectraCyberController.BringUp();
             scaleModel.CurrentOrientation = new Orientation();
+
+            //orientation.Azimuth = 150;
+            //orientation.Elevation = 50;
+
+            //rtController.MoveRadioTelescope(orientation);
+
+            //HardwareFlags.COM3 = true;
+            //HardwareFlags.COM4 = true;
+            //Thread.Sleep(10000);
+
+            //orientation.Azimuth = -150;
+            //orientation.Elevation = -50;
+
+            //rtController.MoveRadioTelescope(orientation);
 
             ControlRoom CRoom = new ControlRoom(scaleModel, rtController, dbContext);
             ControlRoomController CRoomController = new ControlRoomController(CRoom);
