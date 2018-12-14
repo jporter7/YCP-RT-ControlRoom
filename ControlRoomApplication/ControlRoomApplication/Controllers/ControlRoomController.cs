@@ -121,6 +121,14 @@ namespace ControlRoomApplication.Controllers
             CRoom.Context.SaveChanges();
         }
 
+        public void EndAppointment()
+        {
+            Coordinate stow = new Coordinate();
+            stow.RightAscension = 0;
+            stow.Declination = 90;
+            CRoom.RadioTelescope.PlcController.MoveTelescope(CRoom.RadioTelescope.Plc, stow);
+        }
+
         public void StartReadingData()
         {
             CRoom.RadioTelescope.SpectraCyberController.StartScan();
