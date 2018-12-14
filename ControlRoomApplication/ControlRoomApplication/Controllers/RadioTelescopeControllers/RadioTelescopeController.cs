@@ -104,7 +104,9 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 
                     // For the Scale Model, just align the orientation at (0, 0)
                     Orientation orientation = new Orientation();
-
+                    orientation.Azimuth = 0;
+                    orientation.Elevation = 0;
+                    scale.PlcController.Plc.OutgoingOrientation = orientation;
                     scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3);
                     scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4);
 
