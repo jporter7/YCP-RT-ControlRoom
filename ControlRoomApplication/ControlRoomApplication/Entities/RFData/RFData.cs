@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    [Table("RFData")]
+    [Table("rf_data")]
     public class RFData
     {
         public RFData()
@@ -25,7 +25,7 @@ namespace ControlRoomApplication.Entities
         [Column("intensity")]
         public long Intensity { get; set; }
 
-        public virtual Orientation AcquisitionOrientation { get; set; }
+        //public Orientation AcquisitionOrientation { get; set; }
 
         public static RFData GenerateFrom(SpectraCyberResponse response)
         {

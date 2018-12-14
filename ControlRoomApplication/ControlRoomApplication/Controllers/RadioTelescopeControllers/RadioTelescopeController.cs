@@ -76,13 +76,13 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
 
                     RadioTelescope.PlcController.Plc.OutgoingOrientation = orientation;
-                    Thread t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3));
-                    Thread t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4));
-                    t1.Start();
-                    t2.Start();
-                    //Thread.Sleep(5000);
-                    t1.Join();
-                    t2.Join();
+                    //Thread t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3));
+                    //Thread t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4));
+                    //t1.Start();
+                    //t2.Start();
+
+                    //t1.Join();
+                    //t2.Join();
                     RadioTelescope.CurrentOrientation = orientation;
 
                     RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
