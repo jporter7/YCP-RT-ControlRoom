@@ -123,7 +123,7 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// </summary>
         /// <param name="plc"> The plc that the commands should be sent to. </param>
         /// <param name="coordinate"> A set of coordinates that the telescope should be moved to.</param>
-        public string MoveScaleModel(AbstractPLC plc, string comPort)
+        public string MoveScaleModel(AbstractPLC plc, string comPort, bool flag)
         {
             switch (plc)
             {
@@ -145,19 +145,21 @@ namespace ControlRoomApplication.Controllers.PLCController
                     // Move the scale model's azimuth motor on com3 and its elevation on com4
                     // make sure there is a delay in this thread for enough time to have the arduino
                     // move the first motor (azimuth)
-                    PlcConnector = new PLCConnector(comPort);
+                    if (flag)
+                    {
+                        PlcConnector = new PLCConnector(comPort);
+                    }
                     PlcConnector.SendSerialPortMessage(jsonOrientation);
 
                     // Wait for the arduinos to send back a response 
                     // in the arduino code, as of milestone 2, the response is a string: "finished"
                     var state = string.Empty;
-                    state = PlcConnector.GetSerialPortMessage();
+                    //state = PlcConnector.GetSerialPortMessage();
 
                     // Print the state of the move operation to the console.
-                    Console.WriteLine(state);
+                    //Console.WriteLine(state);
 
                     logger.Info($"Scale model moved to {plc.OutgoingMessage}");
-                    PlcConnector.SPort.Dispose();
                     return state;
 
                 case TestPLC testPLC:

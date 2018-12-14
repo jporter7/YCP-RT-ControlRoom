@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
 using System;
@@ -52,8 +53,8 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     // Move the telescope to the "shutdown" position
                     Orientation ShutdownOrientation = new Orientation(0.0, -90.0);
                     scale.Plc.OutgoingOrientation = ShutdownOrientation;
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3);
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4);
+                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3, true);
+                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4, true);
                     scale.CurrentOrientation = ShutdownOrientation;
 
                     // Set the status to shutdown
@@ -78,32 +79,52 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
 
                     RadioTelescope.PlcController.Plc.OutgoingOrientation = orientation;
-                    Orientation[] cords = new Orientation[15];
+                    List<Orientation> cords = new List<Orientation>();
                     Orientation computedO = new Orientation();
-                    for (int i = 0; i < 15; i++)
+                    for (int i = 0; i < 2; i++)
                     {
                         Orientation ord = new Orientation();
 
-                        ord.Azimuth = 30 + (3 * i);
-                        ord.Elevation = 40 - (3 * i);
-                        cords[i] = ord;
+                        ord.Azimuth = 75 + (60 * i);
+                        ord.Elevation = 75 - (60 * i);
+                        cords.Add(ord);
                     }
 
                     int x = 0;
                     foreach(Orientation ord in cords)
                     {
-                        computedO.Azimuth = cords[x].Azimuth - cords[x - 1].Azimuth;
-                        computedO.Elevation = cords[x].Elevation - cords[x - 1].Elevation;
+                        if (x > 0)
+                        {
+                            computedO.Azimuth = cords[x].Azimuth - cords[x - 1].Azimuth;
+                            computedO.Elevation = cords[x].Elevation - cords[x - 1].Elevation;
+                        } else
+                        {
+                            computedO.Azimuth = cords[x].Azimuth;
+                            computedO.Elevation = cords[x].Elevation;
+                        }
+
 
                         RadioTelescope.PlcController.Plc.OutgoingOrientation = computedO;
-                        Thread t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3));
-                        Thread t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4));
+                        Thread t1, t2;
+                        if (x > 0)
+                        {
+                            t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3, true));
+                            t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4, true));
+                        }
+                        else
+                        {
+                            t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3, true));
+                            t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4, true));
+                        }
                         t1.Start();
                         t2.Start();
-
+                        Console.WriteLine("Moving model.");
                         t1.Join();
                         t2.Join();
-
+                        Thread.Sleep(3000);
+                        HardwareFlags.COM3 = true;
+                        HardwareFlags.COM4 = true;
+                        x++;
                     }
                     
                     RadioTelescope.CurrentOrientation = orientation;
@@ -137,8 +158,8 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     orientation.Azimuth = 0;
                     orientation.Elevation = 0;
                     scale.PlcController.Plc.OutgoingOrientation = orientation;
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3);
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4);
+                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3, true);
+                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4, true);
 
                     scale.Status = RadioTelescopeStatusEnum.IDLE;
                     break;

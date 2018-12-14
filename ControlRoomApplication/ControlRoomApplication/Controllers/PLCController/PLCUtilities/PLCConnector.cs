@@ -28,12 +28,11 @@ namespace ControlRoomApplication.Controllers.PLCController
         {
             try
             { 
-           
-                SPort = new SerialPort();
-                SPort.PortName = portName;
-                SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
                 //if (!HardwareFlags.COM3 || !HardwareFlags.COM4)
                 //{
+                    SPort = new SerialPort();
+                    SPort.PortName = portName;
+                    SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
                     SPort.Open();
                 //}
                 logger.Info($"Serial port ({portName}) opened.");
@@ -189,10 +188,10 @@ namespace ControlRoomApplication.Controllers.PLCController
         public bool SendSerialPortMessage(string jsonOrientation)
         {
             Data = System.Text.Encoding.ASCII.GetBytes(jsonOrientation);
-
+            Thread.Sleep(5000);
             SPort.Write(Data, 0, Data.Length);
-            //SPort.Close();
-
+            Thread.Sleep(5000);
+            SPort.Dispose();
             logger.Info("Message sent to Arduino");
             return true;
         }

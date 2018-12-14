@@ -26,13 +26,13 @@ namespace ControlRoomApplication.Main
             Orientation orientation = new Orientation();
             orientation.Azimuth = 0;
             orientation.Elevation = 0;
-            SpectraCyber spectraCyber = new SpectraCyber();
-            SpectraCyberController spectraCyberController = new SpectraCyberController(spectraCyber, dbContext, 0);
-            spectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-            ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController, spectraCyberController, orientation);
+            //SpectraCyber spectraCyber = new SpectraCyber();
+            //SpectraCyberController spectraCyberController = new SpectraCyberController(spectraCyber, dbContext, 0);
+            //spectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+            ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController);//, spectraCyberController, orientation);
             RadioTelescopeController rtController = new RadioTelescopeController(scaleModel);
-            scaleModel.SpectraCyberController.BringUp();
-            scaleModel.CurrentOrientation = new Orientation();
+            //scaleModel.SpectraCyberController.BringUp();
+            //scaleModel.CurrentOrientation = new Orientation();
 
             //orientation.Azimuth = 150;
             //orientation.Elevation = 50;
@@ -52,7 +52,7 @@ namespace ControlRoomApplication.Main
             ControlRoomController CRoomController = new ControlRoomController(CRoom);
             CRoomController.StartAppointment();
 
-            scaleModel.SpectraCyberController.BringDown();
+            //scaleModel.SpectraCyberController.BringDown();
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Console.ReadKey();
         }
