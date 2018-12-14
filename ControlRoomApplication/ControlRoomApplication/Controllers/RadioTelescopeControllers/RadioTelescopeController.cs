@@ -1,6 +1,8 @@
 ﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
+using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Threading;
 
@@ -76,13 +78,34 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
 
                     RadioTelescope.PlcController.Plc.OutgoingOrientation = orientation;
-                    //Thread t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3));
-                    //Thread t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4));
-                    //t1.Start();
-                    //t2.Start();
+                    Orientation[] cords = new Orientation[15];
+                    Orientation computedO = new Orientation();
+                    for (int i = 0; i < 15; i++)
+                    {
+                        Orientation ord = new Orientation();
 
-                    //t1.Join();
-                    //t2.Join();
+                        ord.Azimuth = 30 + (3 * i);
+                        ord.Elevation = 40 - (3 * i);
+                        cords[i] = ord;
+                    }
+
+                    int x = 0;
+                    foreach(Orientation ord in cords)
+                    {
+                        computedO.Azimuth = cords[x].Azimuth - cords[x - 1].Azimuth;
+                        computedO.Elevation = cords[x].Elevation - cords[x - 1].Elevation;
+
+                        RadioTelescope.PlcController.Plc.OutgoingOrientation = computedO;
+                        Thread t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3));
+                        Thread t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4));
+                        t1.Start();
+                        t2.Start();
+
+                        t1.Join();
+                        t2.Join();
+
+                    }
+                    
                     RadioTelescope.CurrentOrientation = orientation;
 
                     RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
