@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            // Testing logging
+            // Begin logging
             logger.Info("<--------------- Control Room Application Started --------------->");
 
             RTDbContext dbContext = new RTDbContext(); // AWSConstants.REMOTE_CONNECTION_STRING);
