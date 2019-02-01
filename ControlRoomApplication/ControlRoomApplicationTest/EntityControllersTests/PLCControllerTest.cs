@@ -1,7 +1,7 @@
 ﻿using System;
 using ControlRoomApplication.Controllers.PLCController;
-using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.Plc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
@@ -9,90 +9,39 @@ namespace ControlRoomApplicationTest.EntityControllersTests
     [TestClass]
     public class PLCControllerTest
     {
+        //Using TestPLC to ensure that all of the PLCController Messages are properly send and recieved
+        TestPLC test;
+        PLCController testcontroller;
+
         [TestInitialize]
         public void BuildUp()
         {
-            
+            test = new TestPLC();
+            testcontroller = new PLCController(test);
         }
 
         [TestMethod]
-        public void TestTelescopeLimitsMethod()
+        public void TestCalibrateTelescope()
         {
-            PLCController plccontroller = new PLCController();
-            AbstractPLC plc = new ScaleModelPLC();
-            //Right Ascention Out of Bounds Tests
-            //Bad RightAscension positive
-            Boolean test = false;
-            Coordinate badRighta = new Coordinate(360, 0);
-            try
-            {
-                plccontroller.MoveTelescope(plc, badRighta);
-            }
-            catch (SystemException)
-            {
-                test = true;
-            }
-            Assert.AreEqual(test, true);
-
-            //Bad RightAscension negative
-            badRighta.RightAscension = -360;
-            test = false;
-            try
-            {
-                plccontroller.MoveTelescope(plc, badRighta);
-            }
-            catch (SystemException)
-            {
-                test = true;
-            }
-            Assert.AreEqual(test, true);
-
-            //Declination Out of Bounds Tests
-            //Bad Dec positive
-            Coordinate badDec = new Coordinate(0, 91);
-            test = false;
-            try
-            {
-                plccontroller.MoveTelescope(plc, badDec);
-            }
-            catch (SystemException)
-            {
-                test = true;
-            }
-            Assert.AreEqual(test, true);
-
-            //Bad Dec negative
-            badDec.Declination = -91;
-            test = false;
-            try
-            {
-                plccontroller.MoveTelescope(plc, badDec);
-            }
-            catch (SystemException)
-            {
-                test = true;
-            }
-            Assert.AreEqual(test, true);
-
-            //Need to Discuss with Jason Best Practice for Testing Positive Outcomes
+            Assert.AreEqual("Radio Telescope successfully calibrated", testcontroller.CalibrateRT(test));
         }
 
         [TestMethod]
-        public void TestShutdownMethod()
+        public void TestShutdown()
         {
-
+            Assert.AreEqual("Radio Telescope successfully shut down", testcontroller.CalibrateRT(test));
         }
 
         [TestMethod]
-        public void TestCalibrateMethod()
+        public void TestMoveTelescope()
         {
-
+            Assert.AreEqual("Oh yea we received a message from the Radio Telescope boyo", testcontroller.CalibrateRT(test));
         }
 
         [TestMethod]
-        public void TestMoveScaleModelMethod()
+        public void TestMoveScaleModel()
         {
-
+            Assert.AreEqual("Oh yea we received a message from the Radio Telescope boyo", testcontroller.CalibrateRT(test));
         }
 
     }
