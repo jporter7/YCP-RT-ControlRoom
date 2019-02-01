@@ -4,7 +4,7 @@ using ControlRoomApplication.Entities;
 namespace ControlRoomApplicationTest.EntitiesTests
 {
     [TestClass]
-    class CoordinateTest
+    public class CoordinateTest
     {
         private double latitude;
         private double longitude;
