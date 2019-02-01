@@ -20,6 +20,11 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void TestCoordinate()
         {
             Coordinate coordinate = new Coordinate(87.7, 70.5);
+            Assert.AreEqual(longitude, coordinate.Declination);
+            Assert.AreEqual(latitude, coordinate.RightAscension);
+            //Set setters outside of constructor
+            coordinate.RightAscension = 70.5;
+            coordinate.Declination = 87.5;
             Assert.AreEqual(latitude, coordinate.Declination);
             Assert.AreEqual(longitude, coordinate.RightAscension);
         }
