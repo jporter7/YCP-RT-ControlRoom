@@ -22,6 +22,8 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
                     coordinate.Declination = sunCoordinateCalculator.GetEquatorialAzimuth();
 
                     return coordinate;
+                case "moon":
+                    
                 default:
                     return new Coordinate(0.0,0.0);
             }

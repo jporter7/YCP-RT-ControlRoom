@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
         public SunCoordinateCalculator(DateTime date)
         {
             Date = date;
-            CalculateEquatorialCoordinates();
+            CalculateCoordinates();
         }
 
         public double GetEquatorialAzimuth()
@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return TopologicalCoordinate.Y;
         }
 
-        public void CalculateEquatorialCoordinates()
+        public void CalculateCoordinates()
         {
             var bHighPrecision = false;
 
