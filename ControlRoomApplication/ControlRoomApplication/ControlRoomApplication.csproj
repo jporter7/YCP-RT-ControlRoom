@@ -114,6 +114,7 @@
     <Compile Include="Entities\Orientation\Orientation.cs" />
     <Compile Include="Entities\Plc\AbstractPLC.cs" />
     <Compile Include="Entities\Plc\TestPLC.cs" />
+    <Compile Include="Entities\Plc\VRPLC.cs" />
     <Compile Include="Entities\RadioTelescope\AbstractRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\ProductionRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeStatusEnum.cs" />
