@@ -7,13 +7,13 @@ namespace ControlRoomApplication.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class Milestone3_Migration : IMigrationMetadata
+    public sealed partial class Jan31 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Milestone3_Migration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Jan31));
         
         string IMigrationMetadata.Id
         {
-            get { return "201811140600133_Milestone3_Migration"; }
+            get { return "201902010427496_Jan31"; }
         }
         
         string IMigrationMetadata.Source

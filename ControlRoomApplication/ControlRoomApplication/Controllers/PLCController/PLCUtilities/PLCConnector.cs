@@ -28,20 +28,16 @@ namespace ControlRoomApplication.Controllers.PLCController
         {
             try
             { 
-                //if (!HardwareFlags.COM3 || !HardwareFlags.COM4)
-                //{
-                    SPort = new SerialPort();
-                    SPort.PortName = portName;
-                    SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
-                    SPort.Open();
-                //}
+                SPort = new SerialPort();
+                SPort.PortName = portName;
+                SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
+                SPort.Open();
+
                 logger.Info($"Serial port ({portName}) opened.");
             }
             catch (Exception)
             {
-                //SPort.Close();
                 logger.Error("Serial port was already opened.");
-                //SPort.Open();
             }
         }
 
@@ -71,8 +67,7 @@ namespace ControlRoomApplication.Controllers.PLCController
 
             // This gets the stream that the client is connected to above.
             // Stream is how we will write our data back and forth between
-            // this C# application and whatever application is running the PLC
-            // hardware. C# cannot run PLC hardware
+            // the PLC.
             Stream = TCPClient.GetStream();
 
             logger.Info($"Established TCP connection at ({ConnectionEndpoint.Address}, {ConnectionEndpoint.Port}).");
@@ -177,9 +172,8 @@ namespace ControlRoomApplication.Controllers.PLCController
         {
             Message = string.Empty;
 
-            //Message = SPort.ReadExisting();
-            //Thread.Sleep(5000);
-            //SPort.Close();
+            // Read all existing bytes in the stream.
+            Message = SPort.ReadExisting();
 
             logger.Info("Message received from Arduino.");
             return Message;
@@ -188,10 +182,9 @@ namespace ControlRoomApplication.Controllers.PLCController
         public bool SendSerialPortMessage(string jsonOrientation)
         {
             Data = System.Text.Encoding.ASCII.GetBytes(jsonOrientation);
-            Thread.Sleep(5000);
+            Thread.Sleep(1000);
             SPort.Write(Data, 0, Data.Length);
-            Thread.Sleep(5000);
-            SPort.Dispose();
+            Thread.Sleep(1000);
             logger.Info("Message sent to Arduino");
             return true;
         }

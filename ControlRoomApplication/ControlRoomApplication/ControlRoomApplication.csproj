@@ -132,9 +132,9 @@
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
-    <Compile Include="Migrations\201811140600133_Milestone3_Migration.cs" />
-    <Compile Include="Migrations\201811140600133_Milestone3_Migration.Designer.cs">
-      <DependentUpon>201811140600133_Milestone3_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201902010427496_Jan31.cs" />
+    <Compile Include="Migrations\201902010427496_Jan31.Designer.cs">
+      <DependentUpon>201902010427496_Jan31.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -153,8 +153,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201811140600133_Milestone3_Migration.resx">
-      <DependentUpon>201811140600133_Milestone3_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201902010427496_Jan31.resx">
+      <DependentUpon>201902010427496_Jan31.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

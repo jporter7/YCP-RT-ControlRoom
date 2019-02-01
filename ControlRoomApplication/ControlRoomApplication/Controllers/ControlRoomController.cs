@@ -1,5 +1,4 @@
 ﻿using ControlRoomApplication.Constants;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,9 +12,6 @@ namespace ControlRoomApplication.Controllers
         public ControlRoomController(ControlRoom controlRoom)
         {
             CRoom = controlRoom;
-
-            // SpectraCyber work
-            // CRoom.RadioTelescope.SpectraCyberController.BringUp();
         }
 
         /// <summary>
@@ -37,17 +33,10 @@ namespace ControlRoomApplication.Controllers
             Thread movementThread = new Thread(() => StartRadioTelescope(app, orientation));
             movementThread.Start();
 
-            //// Start SpectraCyber thread
-            //logger.Info("Beginning SpectraCyber readings from appointment.");
-            //CRoom.RadioTelescope.SpectraCyberController.AppId = app.Id;
-            //Thread readingThread = new Thread(() => CRoom.RadioTelescope.SpectraCyberController.StartScan());
-            //readingThread.Start();
+            // Start SpectraCyber thread
 
             // End PLC & SpectraCyber thread
             movementThread.Join();
-            //readingThread.Join();
-
-            //StopReadingRFData();
 
             logger.Info("Appointment completed.");
         }
