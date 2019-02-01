@@ -1,6 +1,6 @@
 ﻿using System;
-using ControlRoomApplication.Entities;
 using AASharp;
+using ControlRoomApplication.Entities;
 
 
 namespace ControlRoomApplication.Controllers.AASharpControllers
@@ -16,11 +16,11 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             double LST = AASSidereal.ApparentGreenwichSiderealTime(JD);
 
             //Local Hour Angle = dideReal - RA then multiply by 15 (24hrs to 360deg)
-            double LHA = LST - coordinate.Latitude;
+            double LHA = LST - coordinate.Declination;
             LHA *= 15;
 
-            double elevation = Math.Asin(Math.Sin(coordinate.Longitude) * Math.Sin(latRT) + Math.Cos(coordinate.Longitude) * Math.Cos(latRT) * Math.Cos(LHA));
-            double azimuth = Math.Asin(Math.Sin(LHA) * Math.Cos(coordinate.Longitude) / Math.Cos(elevation));
+            double elevation = Math.Asin(Math.Sin(coordinate.RightAscension) * Math.Sin(latRT) + Math.Cos(coordinate.RightAscension) * Math.Cos(latRT) * Math.Cos(LHA));
+            double azimuth = Math.Asin(Math.Sin(LHA) * Math.Cos(coordinate.RightAscension) / Math.Cos(elevation));
             return new Orientation((long) azimuth, (long) elevation);
         }
 
