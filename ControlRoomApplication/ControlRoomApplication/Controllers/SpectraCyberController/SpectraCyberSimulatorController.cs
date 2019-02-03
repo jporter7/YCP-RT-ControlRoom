@@ -15,7 +15,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             random = new Random();
         }
 
-        public override bool BringUp()
+        public override bool BringUpSpectraCyber()
         {
             try
             {
@@ -46,7 +46,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return true;
         }
 
-        public override bool BringDown()
+        public override bool BringDownSpectraCyber()
         {
             KillCommunicationThreadAndWait();
 
@@ -70,7 +70,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 // Termination, safely end communication
                 case SpectraCyberCommandTypeEnum.TERMINATE:
-                    BringDown();
+                    BringDownSpectraCyber();
                     break;
                 
                 //
@@ -97,6 +97,11 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             }
 
             // Do nothing to purge a simulated buffer
+        }
+
+        protected override bool TestIfComponentIsAlive()
+        {
+            return random.NextDouble() < 0.02;
         }
     }
 }
