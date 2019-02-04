@@ -100,6 +100,14 @@ namespace ControlRoomApplication.Controllers
             return CRoom.Context.Appointments.Find(0);
         }
 
+        /// <summary>
+        /// Starts movement of the RT by updating the appointment status and
+        /// then calling the RT controller to move the RT to the orientation
+        /// it needs to go to. This will have to be refactored to work with a 
+        /// set of Orientations as opposed to one orientation.
+        /// </summary>
+        /// <param name="app"> The appointment that is currently running. </param>
+        /// <param name="orientation"> The orientation that the RT is going to. </param>
         public void StartRadioTelescope(Appointment app, Orientation orientation)
         {
             app.Status = AppointmentConstants.IN_PROGRESS;
@@ -110,6 +118,11 @@ namespace ControlRoomApplication.Controllers
             CRoom.Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Ends an appointment by returning the RT to the stow position.
+        /// This probably does not need to be done if an appointment is within
+        /// ????? amount of minutes/hours but that can be determined later.
+        /// </summary>
         public void EndAppointment()
         {
             Coordinate stow = new Coordinate();
@@ -118,11 +131,17 @@ namespace ControlRoomApplication.Controllers
             CRoom.RadioTelescope.PlcController.MoveTelescope(CRoom.RadioTelescope.Plc, stow);
         }
 
+        /// <summary>
+        /// Calls the SpectraCyber controller to start the SpectraCyber readings.
+        /// </summary>
         public void StartReadingData()
         {
             CRoom.RadioTelescope.SpectraCyberController.StartScan();
         }
 
+        /// <summary>
+        /// Calls the SpectraCyber controller to stop the SpectraCyber readings.
+        /// </summary>
         public void StopReadingRFData()
         {
             CRoom.RadioTelescope.SpectraCyberController.StopScan();
