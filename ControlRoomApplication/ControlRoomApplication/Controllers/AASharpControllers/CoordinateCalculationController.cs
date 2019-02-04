@@ -11,22 +11,6 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
         }
 
-        public Coordinate CalculateCoordinates(string celestialBody, DateTime date)
-        {
-            Coordinate coordinate = new Coordinate(0.0, 0.0);
-            switch(celestialBody)
-            {
-                case "sun":
-                    SunCoordinateCalculator sunCoordinateCalculator = new SunCoordinateCalculator(date);
-                    coordinate.RightAscension = sunCoordinateCalculator.GetEquatorialElevation();
-                    coordinate.Declination = sunCoordinateCalculator.GetEquatorialAzimuth();
-
-                    return coordinate;
-                default:
-                    return new Coordinate(0.0,0.0);
-            }
-        }
-
         public Orientation CoordinateToOrientation(Coordinate coordinate, double RT_LAT, double RT_LONG, double RT_ALT, DateTime Date)
         {
             AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
@@ -118,6 +102,38 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             }
 
             return new Orientation(MoonHorizontal.X, MoonHorizontal.Y);
+        }
+
+        public Orientation JupiterCoordinateToOrientation(double RT_LAT, double RT_LONG, double RT_ALT, DateTime Date)
+        {
+            AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
+            double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
+            double JupiterLong = AASJupiter.EclipticLongitude(JD, false);
+            double JupiterLat = AASJupiter.EclipticLatitude(JD, false);
+
+            AAS2DCoordinate Equatorial = AASCoordinateTransformation.Ecliptic2Equatorial(JupiterLong, JupiterLat, AASNutation.TrueObliquityOfEcliptic(JD));
+            double JupiterRad = AASJupiter.RadiusVector(JD, false);
+            JupiterRad /= 149597870.691; //Convert KM to AU
+
+            AAS2DCoordinate JupiterTopo = AASParallax.Equatorial2Topocentric(Equatorial.X, Equatorial.Y, JupiterRad, RT_LONG, RT_LAT, RT_ALT, JD);
+            double AST = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
+            double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RT_LONG);
+            double LocalHourAngle = AST - LongtitudeAsHourAngle - JupiterTopo.X;
+
+            AAS2DCoordinate JupiterHorizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, JupiterTopo.Y, RT_LAT);
+            JupiterHorizontal.Y += AASRefraction.RefractionFromTrue(JupiterHorizontal.Y, 1013, 10);
+
+            // South is considered 0 instead of North
+            if (JupiterHorizontal.X > 180)
+            {
+                JupiterHorizontal.X -= 180;
+            }
+            else
+            {
+                JupiterHorizontal.X += 180;
+            }
+
+            return new Orientation(JupiterHorizontal.X, JupiterHorizontal.Y);
         }
     }
 }
