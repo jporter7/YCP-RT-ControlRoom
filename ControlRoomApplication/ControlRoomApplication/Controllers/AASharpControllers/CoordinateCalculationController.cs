@@ -31,23 +31,32 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
         {
             AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
             double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
-            
+
+            double Rad = AASEarth.RadiusVector(JD, false);
+            AAS2DCoordinate Topo = AASParallax.Equatorial2Topocentric(coordinate.RightAscension, coordinate.Declination, Rad, RT_LONG, RT_LAT, RT_ALT, JD);
+
             double AST = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
             double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RT_LONG);
-            double LocalHourAngle = AST - LongtitudeAsHourAngle - coordinate.RightAscension;
-            AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, RT_LAT);
+            double LocalHourAngle = AST - LongtitudeAsHourAngle - Topo.X;
 
-            Horizontal.X += 180;
-            if(Horizontal.X > 360)
+            AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, Topo.Y, RT_LAT);
+
+            //AASharp takes south as 0
+            if(Horizontal.X > 180)
             {
                 Horizontal.X -= 180;
             }
-
+            else
+            {
+                Horizontal.X += 180;
+            }
+            
             return new Orientation(Horizontal.X, Horizontal.Y);
         }
 
         public Orientation SunCoordinateToOrientation(double RT_LAT, double RT_LONG, double RT_ALT, DateTime Date)
         {
+
             AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
             double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
             double SunLong = AASSun.ApparentEclipticLongitude(JD, false);
@@ -67,10 +76,13 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             SunHorizontal.Y += AASRefraction.RefractionFromTrue(SunHorizontal.Y, 1013, 10);
 
             // AASharp considers South as 0, instead of North
-            SunHorizontal.X += 180;
-            if(SunHorizontal.X > 360)
+            if(SunHorizontal.X > 180)
             {
-                SunHorizontal.X -= 360;
+                SunHorizontal.X -= 180;
+            }
+            else
+            {
+                SunHorizontal.X += 180;
             }
 
             return new Orientation(SunHorizontal.X, SunHorizontal.Y);
@@ -78,7 +90,6 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
         public Orientation MoonCoordinateToOrientation(double RT_LAT, double RT_LONG, double RT_ALT, DateTime Date)
         {
-
             AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
             double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
             double MoonLong = AASMoon.EclipticLongitude(JD);
@@ -93,15 +104,17 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RT_LONG);
             double LocalHourAngle = AST - LongtitudeAsHourAngle - MoonTopo.X;
 
-
             AAS2DCoordinate MoonHorizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, MoonTopo.Y, RT_LAT);
             MoonHorizontal.Y += AASRefraction.RefractionFromTrue(MoonHorizontal.Y, 1013, 10);
 
             // South is considered 0 instead of North
-            MoonHorizontal.X += 180;
-            if(MoonHorizontal.X > 360)
+            if(MoonHorizontal.X > 180)
             {
-                MoonHorizontal.X -= 360;
+                MoonHorizontal.X -= 180;
+            }
+            else
+            {
+                MoonHorizontal.X += 180;
             }
 
             return new Orientation(MoonHorizontal.X, MoonHorizontal.Y);

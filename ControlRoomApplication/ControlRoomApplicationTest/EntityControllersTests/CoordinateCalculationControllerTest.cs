@@ -28,13 +28,19 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestCoordinateToOrientation()
         {
-            DateTime date = new DateTime(2018, 12, 14, 7, 0, 0);
-            Coordinate = new Coordinate(0.0, 0.0);
+            DateTime date = new DateTime(2018, 12, 14, 4, 45, 0);
+            Coordinate = new Coordinate(0.0, 90.0);
             Orientation = CoordinateCalculationController.CoordinateToOrientation(Coordinate, RT_LAT, RT_LONG, RT_ALT, date);
 
-            //Assert.AreEqual(205.731, Orientation.Azimuth, 1);
-            Assert.AreEqual(47.008, Orientation.Elevation, 1);
+            //Assert.AreEqual(360, Orientation.Azimuth, 1);
+            //Assert.AreEqual(40.024, Orientation.Elevation, 1);
 
+            date = new DateTime(2018, 12, 14, 12, 0, 0);
+            Coordinate = new Coordinate(12, 10);
+            Orientation = CoordinateCalculationController.CoordinateToOrientation(Coordinate, RT_LAT, RT_LONG, RT_ALT, date);
+
+            Assert.AreEqual(60.26, Orientation.Azimuth, 1);
+            Assert.AreEqual(193.73, Orientation.Elevation, 1);
         }
 
         [TestMethod]
