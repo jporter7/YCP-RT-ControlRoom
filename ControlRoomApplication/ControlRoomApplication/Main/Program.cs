@@ -29,7 +29,7 @@ namespace ControlRoomApplication.Main
 
             ControlRoom CRoom = new ControlRoom(scaleModel, rtController, dbContext);
             ControlRoomController CRoomController = new ControlRoomController(CRoom);
-            CRoomController.StartAppointment();
+            CRoomController.Start();
 
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Console.ReadKey();
