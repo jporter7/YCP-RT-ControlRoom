@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Entities
         public ControlRoom()
         {
             RadioTelescope = new ScaleRadioTelescope();
-            Context = new RTDbContext(GenericConstants.LOCAL_DATABASE_NAME);
+            Context = new RTDbContext();
         }
 
         private List<Appointment> DbSetToList(DbSet<Appointment> appointments)
