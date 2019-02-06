@@ -2,6 +2,7 @@
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
+using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities.RadioTelescope;
@@ -16,21 +17,6 @@ namespace ControlRoomApplication.Main
             // Begin logging
             logger.Info("<--------------- Control Room Application Started --------------->");
 
-            //RTDbContext dbContext = new RTDbContext(); // AWSConstants.REMOTE_CONNECTION_STRING);
-
-            //ScaleModelPLC plc = new ScaleModelPLC();
-            //PLCController plcController = new PLCController(plc);
-            //Orientation orientation = new Orientation();
-            //orientation.Azimuth = 0;
-            //orientation.Elevation = 0;
-
-            //ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController);
-            //RadioTelescopeController rtController = new RadioTelescopeController(scaleModel);
-
-            //ControlRoom CRoom = new ControlRoom(scaleModel, rtController, dbContext);
-            //ControlRoomController CRoomController = new ControlRoomController(CRoom);
-            //CRoomController.StartAppointment();
-            
             // Instantiate the configuration manager and the database being used.
             ConfigManager = new ConfigurationManager();
             RTDbContext dbContext = new RTDbContext();
@@ -39,7 +25,16 @@ namespace ControlRoomApplication.Main
             AbstractSpectraCyber spectraCyber = ConfigManager.ConfigureSpectraCyber(args[1]);
             AbstractRadioTelescope radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2]);
 
+            PLCController plcController = new PLCController(plc);
+            // This line and a few things under it will need to be reviewed/refactored.
+            AbstractSpectraCyberController spectraCyberController = new SpectraCyberController((SpectraCyber) spectraCyber, dbContext, 0);
+            RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
 
+            ControlRoom cRoom = new ControlRoom(radioTelescope, rtController, dbContext);
+            ControlRoomController crController = new ControlRoomController(cRoom);
+            crController.StartAppointment();
+
+            // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Console.ReadKey();
         }
