@@ -26,13 +26,13 @@ namespace ControlRoomApplication.Main
             AbstractRadioTelescope radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2]);
 
             PLCController plcController = new PLCController(plc);
-            // This line and a few things under it will need to be reviewed/refactored.
-            AbstractSpectraCyberController spectraCyberController = new SpectraCyberController((SpectraCyber)spectraCyber, dbContext, 0);
+            // This line and a few things within it will need to be reviewed/refactored.
+            AbstractSpectraCyberController spectraCyberController = new SpectraCyberController((SpectraCyber)spectraCyber, dbContext);
             RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
 
-            ControlRoom cRoom = new ControlRoom(radioTelescope, rtController, dbContext);
+            ControlRoom cRoom = new ControlRoom(rtController, dbContext);
             ControlRoomController crController = new ControlRoomController(cRoom);
-            crController.StartAppointment();
+            crController.Start();
 
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
