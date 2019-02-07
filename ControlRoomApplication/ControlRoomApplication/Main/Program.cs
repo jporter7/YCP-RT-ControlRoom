@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
@@ -23,44 +21,22 @@ namespace ControlRoomApplication.Main
             ConfigManager = new ConfigurationManager();
             RTDbContext dbContext = new RTDbContext();
 
-            // -----------------------------------------------------------------------------------------------------
-
             AbstractPLC plc = ConfigManager.ConfigurePLC(args[0]);
             AbstractSpectraCyber spectraCyber = ConfigManager.ConfigureSpectraCyber(args[1]);
             AbstractRadioTelescope radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2]);
 
             PLCController plcController = new PLCController(plc);
-
-            // This line will need to be reviewed/refactored.
-            AbstractSpectraCyberController spectraCyberController = new SpectraCyberController((SpectraCyber)spectraCyber, dbContext);
-
+            // This line and a few things under it will need to be reviewed/refactored.
+            AbstractSpectraCyberController spectraCyberController = new SpectraCyberController((SpectraCyber)spectraCyber, dbContext, 0);
             RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
-            ControlRoom CRoom = new ControlRoom(rtController, dbContext);
-            ControlRoomController CRoomController = new ControlRoomController(CRoom);
 
-            // -------------------------------- TEST --------------------------------  
-            // Coordinate
-            Coordinate coord = new Coordinate(0, 0);
-            dbContext.Coordinates.Add(coord);
-            dbContext.SaveChanges();
-            var coords = dbContext.Coordinates.ToList();
+            ControlRoom cRoom = new ControlRoom(radioTelescope, rtController, dbContext);
+            ControlRoomController crController = new ControlRoomController(cRoom);
+            crController.StartAppointment();
 
-            // Appointment
-            var app = new Appointment();
-            app.UserId = 1;
-            app.StartTime = DateTime.Now.AddMinutes(1);
-            app.EndTime = DateTime.Now.AddMinutes(2);
-            app.CoordinateId = 1;
-            app.TelescopeId = 1;
-            app.Status = "GOOD";
-            List<Appointment> apps = CRoom.Appointments;
-            apps.Add(app);
-            CRoom.Appointments = apps;
-            var result_apps = CRoom.Appointments;
-            // -------------------------------- TEST -------------------------------- 
-
-            CRoomController.Start();
-
+            // End logging
+            logger.Info("<--------------- Control Room Application Terminated --------------->");
+            Console.ReadKey();
         }
 
         private static ConfigurationManager ConfigManager;
