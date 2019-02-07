@@ -134,6 +134,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimaultor.cs" />
+    <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
