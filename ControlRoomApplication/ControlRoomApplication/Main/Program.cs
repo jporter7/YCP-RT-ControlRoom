@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
+using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities.RadioTelescope;
@@ -18,17 +21,35 @@ namespace ControlRoomApplication.Main
 
             RTDbContext dbContext = new RTDbContext(); // AWSConstants.REMOTE_CONNECTION_STRING);
 
-            ScaleModelPLC plc = new ScaleModelPLC();
-            PLCController plcController = new PLCController(plc);
-            Orientation orientation = new Orientation();
-            orientation.Azimuth = 0;
-            orientation.Elevation = 0;
+            var plc = new ScaleModelPLC();
+            var plcController = new PLCController(plc);
+            var scaleModel = new ScaleRadioTelescope(plcController);
+            var rtController = new RadioTelescopeController(scaleModel);
 
-            ScaleRadioTelescope scaleModel = new ScaleRadioTelescope(plcController);
-            RadioTelescopeController rtController = new RadioTelescopeController(scaleModel);
-
-            ControlRoom CRoom = new ControlRoom(scaleModel, rtController, dbContext);
+            ControlRoom CRoom = new ControlRoom(rtController, dbContext);
             ControlRoomController CRoomController = new ControlRoomController(CRoom);
+
+            // -------------------------------- TEST --------------------------------  
+            // Coordinate
+            Coordinate coord = new Coordinate(0, 0);
+            dbContext.Coordinates.Add(coord);
+            dbContext.SaveChanges();
+            var coords = dbContext.Coordinates.ToList();
+
+            // Appointment
+            var app = new Appointment();
+            app.UserId = 1;
+            app.StartTime = DateTime.Now.AddMinutes(1);
+            app.EndTime = DateTime.Now.AddMinutes(2);
+            app.CoordinateId = 1;
+            app.TelescopeId = 1;
+            app.Status = "GOOD";
+            List<Appointment> apps = CRoom.Appointments;
+            apps.Add(app);
+            CRoom.Appointments = apps;
+            var result_apps = CRoom.Appointments;
+            // -------------------------------- TEST -------------------------------- 
+
             CRoomController.Start();
 
             logger.Info("<--------------- Control Room Application Terminated --------------->");

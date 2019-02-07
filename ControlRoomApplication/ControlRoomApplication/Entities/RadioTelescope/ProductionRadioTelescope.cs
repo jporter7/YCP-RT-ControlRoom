@@ -9,8 +9,7 @@ namespace ControlRoomApplication.Entities.RadioTelescope
 
         public ProductionRadioTelescope()
         {
-            FTSpectraCyberController = new SpectraCyberController(new SpectraCyber(), new RTDbContext(), 1);
-            FTSpectraCyberController.BringUp();
+            FTSpectraCyberController = new SpectraCyberController(new SpectraCyber(), new RTDbContext());
         }
 
         public Orientation GetCurrentOrientation()

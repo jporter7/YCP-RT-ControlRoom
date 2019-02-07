@@ -52,9 +52,9 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                 case ScaleRadioTelescope scale:
                     // Move the telescope to the "shutdown" position
                     Orientation ShutdownOrientation = new Orientation(0.0, -90.0);
-                    scale.Plc.OutgoingOrientation = ShutdownOrientation;
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3, true);
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4, true);
+                    scale.PlcController.Plc.OutgoingOrientation = ShutdownOrientation;
+                    scale.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3, true);
+                    scale.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4, true);
                     scale.CurrentOrientation = ShutdownOrientation;
 
                     // Set the status to shutdown
@@ -158,8 +158,8 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     orientation.Azimuth = 0;
                     orientation.Elevation = 0;
                     scale.PlcController.Plc.OutgoingOrientation = orientation;
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3, true);
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4, true);
+                    scale.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3, true);
+                    scale.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4, true);
 
                     scale.Status = RadioTelescopeStatusEnum.IDLE;
                     break;

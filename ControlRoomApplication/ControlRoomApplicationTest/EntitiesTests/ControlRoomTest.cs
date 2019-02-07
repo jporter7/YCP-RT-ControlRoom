@@ -26,7 +26,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             //Tests whether any appointments exist in the context
             Assert.IsTrue(appointments.Count != 0);
             //Test to make sure that the defautl constructor creates an instance of the scalemodelPLC
-            Assert.IsTrue(controlRoom.RadioTelescope.Status == RadioTelescopeStatusEnum.UNKNOWN);
+            Assert.IsTrue(controlRoom.RadioTelescopeController.RadioTelescope.Status == RadioTelescopeStatusEnum.UNKNOWN);
 
         }
     }

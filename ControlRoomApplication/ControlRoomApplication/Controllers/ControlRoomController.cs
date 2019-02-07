@@ -22,25 +22,42 @@ namespace ControlRoomApplication.Controllers
             while (true)
             {
                 Appointment app = WaitingForNextAppointment();
-                /// Could break here because of coordinate id relationship ????
                 Coordinate coordinate = CRoom.Context.Coordinates.Find(app.CoordinateId);
-                Orientation orientation = new Orientation();
+                
+                if(coordinate != null)
+                {
+                    Orientation orientation = new Orientation();
+                    // This stuff should actually be some conversion between right ascension/decl & az/el
+                    orientation.Azimuth = coordinate.RightAscension;
+                    orientation.Elevation = coordinate.Declination;
+                    // but that can wait until later on.
 
-                // This stuff should actually be some conversion between right ascension/decl & az/el
-                orientation.Azimuth = coordinate.RightAscension;
-                orientation.Elevation = coordinate.Declination;
-                // but that can wait until later on.
+                    logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");
 
-                logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");
-                Thread movementThread = new Thread(() => StartRadioTelescope(app, orientation));
-                movementThread.Start();
+                    // Calibrate telescope
+                    CalibrateRadioTelescope();
 
-                // Start SpectraCyber thread
+                    // Start movement thread
+                    Thread movementThread = new Thread(() => StartRadioTelescope(app, orientation));
+                    movementThread.Start();
 
-                // End PLC & SpectraCyber thread
-                movementThread.Join();
+                    // Start SpectraCyber
+                    StartReadingData(app);
 
-                logger.Info("Appointment completed.");
+                    // End PLC thread & SpectraCyber 
+                    movementThread.Join();
+                    StopReadingRFData();
+
+                    // Stow Telescope
+                    EndAppointment();
+
+                    logger.Info("Appointment completed.");
+                }
+                else
+                {
+                    logger.Info("Appointment coordinate is null.");
+                }
+                
             }
         }
 
@@ -79,7 +96,7 @@ namespace ControlRoomApplication.Controllers
         {
             Appointment appointment = null;
             logger.Debug("Retrieving list of appointments.");
-            var appointments = CRoom.Context.Appointments.ToList<Appointment>();
+            List<Appointment> appointments = CRoom.Context.Appointments.ToList();
             if(appointments.Count > 0)
             {
                 appointments.Sort();
@@ -96,6 +113,16 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// Ends an appointment by returning the RT to the stow position.
+        /// This probably does not need to be done if an appointment is within
+        /// ????? amount of minutes/hours but that can be determined later.
+        /// </summary>
+        public void CalibrateRadioTelescope()
+        {
+            // TODO: implement
+        }
+
+        /// <summary>
         /// Starts movement of the RT by updating the appointment status and
         /// then calling the RT controller to move the RT to the orientation
         /// it needs to go to. This will have to be refactored to work with a 
@@ -107,8 +134,8 @@ namespace ControlRoomApplication.Controllers
         {
             app.Status = AppointmentConstants.IN_PROGRESS;
             CRoom.Context.SaveChanges();
-            CRoom.Controller.MoveRadioTelescope(orientation);
-            CRoom.RadioTelescope.CurrentOrientation = orientation;
+            CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
+            CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation = orientation;
             app.Status = AppointmentConstants.COMPLETED;
             CRoom.Context.SaveChanges();
         }
@@ -120,18 +147,17 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public void EndAppointment()
         {
-            Coordinate stow = new Coordinate();
-            stow.RightAscension = 0;
-            stow.Declination = 90;
-            CRoom.RadioTelescope.PlcController.MoveTelescope(CRoom.RadioTelescope.Plc, stow);
+            Orientation stow = new Orientation(0, 90);
+            CRoom.RadioTelescopeController.MoveRadioTelescope(stow);
         }
 
         /// <summary>
         /// Calls the SpectraCyber controller to start the SpectraCyber readings.
         /// </summary>
-        public void StartReadingData()
+        public void StartReadingData(Appointment app)
         {
-            CRoom.RadioTelescope.SpectraCyberController.StartScan();
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringUp(app.Id);
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.StartScan();
         }
 
         /// <summary>
@@ -139,7 +165,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public void StopReadingRFData()
         {
-            CRoom.RadioTelescope.SpectraCyberController.StopScan();
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.StopScan();
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringDown();
         }
 
         public ControlRoom CRoom { get; set; }

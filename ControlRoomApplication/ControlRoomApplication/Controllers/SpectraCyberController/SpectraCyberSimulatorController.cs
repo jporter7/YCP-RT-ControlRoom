@@ -10,17 +10,17 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     {
         private Random random;
 
-        public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator, RTDbContext context, int appId) : base(spectraCyberSimulator, context, appId)
+        public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator, RTDbContext context) : base(spectraCyberSimulator, context)
         {
             random = new Random();
         }
 
-        public override bool BringUp()
+        public override bool BringUp(int appId)
         {
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(() => RunCommunicationThread(0));
+                CommunicationThread = new Thread(() => RunCommunicationThread(appId));
                 CommunicationThread.Start();
             }
             catch (Exception e)
