@@ -19,13 +19,22 @@ namespace ControlRoomApplication.Main
             // Begin logging
             logger.Info("<--------------- Control Room Application Started --------------->");
 
-            RTDbContext dbContext = new RTDbContext(); // AWSConstants.REMOTE_CONNECTION_STRING);
+            // Instantiate the configuration manager and the database being used.
+            ConfigManager = new ConfigurationManager();
+            RTDbContext dbContext = new RTDbContext();
 
-            var plc = new ScaleModelPLC();
-            var plcController = new PLCController(plc);
-            var scaleModel = new ScaleRadioTelescope(plcController);
-            var rtController = new RadioTelescopeController(scaleModel);
+            // -----------------------------------------------------------------------------------------------------
 
+            AbstractPLC plc = ConfigManager.ConfigurePLC(args[0]);
+            AbstractSpectraCyber spectraCyber = ConfigManager.ConfigureSpectraCyber(args[1]);
+            AbstractRadioTelescope radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2]);
+
+            PLCController plcController = new PLCController(plc);
+
+            // This line will need to be reviewed/refactored.
+            AbstractSpectraCyberController spectraCyberController = new SpectraCyberController((SpectraCyber)spectraCyber, dbContext);
+
+            RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
             ControlRoom CRoom = new ControlRoom(rtController, dbContext);
             ControlRoomController CRoomController = new ControlRoomController(CRoom);
 
@@ -52,10 +61,9 @@ namespace ControlRoomApplication.Main
 
             CRoomController.Start();
 
-            logger.Info("<--------------- Control Room Application Terminated --------------->");
-            Console.ReadKey();
         }
 
+        private static ConfigurationManager ConfigManager;
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
