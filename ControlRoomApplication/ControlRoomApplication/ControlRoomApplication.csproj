@@ -110,6 +110,7 @@
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberSimulatorController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
+    <Compile Include="Entities\Camera\AbstractCamera.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Command\Commmand.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Entities\Plc\AbstractPLC.cs" />
     <Compile Include="Entities\Plc\TestPLC.cs" />
     <Compile Include="Entities\Plc\VRPLC.cs" />
+    <Compile Include="Entities\ProximitySensor\AbstractProximitySensor.cs" />
     <Compile Include="Entities\RadioTelescope\AbstractRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\ProductionRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeStatusEnum.cs" />
@@ -166,5 +168,6 @@
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
