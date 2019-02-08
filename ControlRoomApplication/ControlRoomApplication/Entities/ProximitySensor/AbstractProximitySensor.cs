@@ -1,6 +1,6 @@
 ﻿namespace ControlRoomApplication.Entities.ProximitySensor
 {
-    interface ProximitySensorInterface
+    class AbstractProximitySensor
     {
     }
 }
