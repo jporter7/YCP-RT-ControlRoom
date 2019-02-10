@@ -30,11 +30,10 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// If it is a VRPLC, it just returns the same boilerplate message since there is no 
         /// calibration for the VR Telescope at this moment.
         /// </summary>
-        /// <param name="plc"> The plc that the commands should be sent to. </param>
         /// <returns> A string representing the state of the operation. </returns>
-        public string CalibrateRT(AbstractPLC plc)
+        public string CalibrateRT()
         {
-            switch (plc)
+            switch (Plc)
             {
                 case ScaleModelPLC scaleModelPLC:
                     PlcConnector.WriteMessage(PLCConstants.CALIBRATE);
@@ -63,11 +62,10 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// actually be hooked up to the Scale Model.
         /// If it is vrPLC it shuts down the namedPipeServer.
         /// </summary>
-        /// <param name="plc"> The PLC to communicate with.</param>
         /// <returns> A string representing the state of the operation. </returns>
         public string ShutdownRT(AbstractPLC plc)
         {
-            switch (plc)
+            switch (Plc)
             {
                 case ScaleModelPLC scaleModelPLC:
                     PlcConnector.WriteMessage(PLCConstants.SHUTDOWN);
@@ -99,12 +97,11 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// VRPLC sends coordinate to VR telescope through named pipe from VRPLC entity.
         /// VR telescope will return 1 on sucess.
         /// </summary>
-        /// <param name="plc"> The PLC to communicate with. </param>
         /// <param name="azimuth"> The azimuth that the PLC should move the radiotelescope to. </param>
         /// <returns> A string that indicates the state of the operation. </returns>
         public string MoveTelescope(AbstractPLC plc, Coordinate coordinate) //long azimuthOffset)
         {
-            switch(plc)
+            switch(Plc)
             {
                 case ScaleModelPLC scaleModelPLC:
                     if (coordinate.RightAscension < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || coordinate.RightAscension > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
@@ -170,24 +167,24 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// </summary>
         /// <param name="plc"> The plc that the commands should be sent to. </param>
         /// <param name="coordinate"> A set of coordinates that the telescope should be moved to.</param>
-        public string MoveScaleModel(AbstractPLC plc, string comPort, bool flag)
+        public string MoveScaleModel(string comPort, bool flag)
         {
-            switch (plc)
+            switch (Plc)
             {
                 case ScaleModelPLC scaleModelPLC:
-                    if (plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
+                    if (Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT)
                     {
-                        logger.Error($"Azimuth ({plc.OutgoingOrientation.Azimuth}) was out of range.");
+                        logger.Error($"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range.");
                         throw new System.Exception();
                     }
-                    else if (plc.OutgoingOrientation.Elevation < PLCConstants.DECLINATION_LOWER_LIMIT || plc.OutgoingOrientation.Elevation > PLCConstants.DECLINATION_UPPER_LIMIT)
+                    else if (Plc.OutgoingOrientation.Elevation < PLCConstants.DECLINATION_LOWER_LIMIT || Plc.OutgoingOrientation.Elevation > PLCConstants.DECLINATION_UPPER_LIMIT)
                     {
-                        logger.Error($"Elevation ({plc.OutgoingOrientation.Elevation} was out of range.)");
+                        logger.Error($"Elevation ({Plc.OutgoingOrientation.Elevation} was out of range.)");
                         throw new System.Exception();
                     }
 
                     // Convert orientation object to a json string
-                    string jsonOrientation = JsonConvert.SerializeObject(plc.OutgoingOrientation);
+                    string jsonOrientation = JsonConvert.SerializeObject(Plc.OutgoingOrientation);
 
                     // Move the scale model's azimuth motor on com3 and its elevation on com4
                     // make sure there is a delay in this thread for enough time to have the arduino
@@ -206,7 +203,7 @@ namespace ControlRoomApplication.Controllers.PLCController
                     // Print the state of the move operation to the console.
                     //Console.WriteLine(state);
 
-                    logger.Info($"Scale model moved to {plc.OutgoingMessage}");
+                    logger.Info($"Scale model moved to {Plc.OutgoingMessage}");
                     return state;
 
                 case TestPLC testPLC:
