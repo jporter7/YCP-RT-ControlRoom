@@ -40,10 +40,10 @@
       <HintPath>..\packages\AASharp.1.99.1\lib\net45\AASharp.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.Core.3.3.29.12\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.Core.3.3.31.7\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.RDS.3.3.36\lib\net45\AWSSDK.RDS.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.RDS.3.3.38.2\lib\net45\AWSSDK.RDS.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -106,7 +106,6 @@
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCConnector.cs" />
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCSimulator.cs" />
     <Compile Include="Controllers\RadioTelescopeControllers\RadioTelescopeController.cs" />
-    <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
     <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberSimulatorController.cs" />
@@ -125,7 +124,6 @@
     <Compile Include="Entities\RadioTelescope\ScaleRadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
     <Compile Include="Entities\Plc\ScaleModelPLC.cs" />
-    <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Entities\SpectraCyber\AbstractSpectraCyber.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberCommandTypeEnum.cs" />
@@ -136,6 +134,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimaultor.cs" />
+    <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
@@ -165,7 +164,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\AWSSDK.RDS.3.3.36\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,52 +1,46 @@
 ﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
+using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Main;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 
 namespace ControlRoomApplication.Entities
 {
     public class ControlRoom
     {
-        public ControlRoom(AbstractRadioTelescope radioTelescope, RadioTelescopeController controller, RTDbContext dbContext)
+        public ControlRoom( RadioTelescopeController controller, RTDbContext dbContext)
         {
-            RadioTelescope = radioTelescope;
-            Controller = controller; // new RadioTelescopeController(RadioTelescope);
+            RadioTelescopeController = controller;
             Context = dbContext;
         }
 
         public ControlRoom()
         {
-            RadioTelescope = new ScaleRadioTelescope();
-            Context = new RTDbContext(GenericConstants.LOCAL_DATABASE_NAME);
+            // By default no radio telescope will be added to the radioTelescopeController
+            RadioTelescopeController =  new RadioTelescopeController();
+            Context = new RTDbContext();
         }
 
-        private List<Appointment> DbSetToList(DbSet<Appointment> appointments)
-        {
-            List<Appointment> apps = new List<Appointment>();
-
-            foreach(Appointment app in appointments)
-            {
-                apps.Add(app);
-            }
-
-            return apps;
-        }
-
-        public AbstractRadioTelescope RadioTelescope { get; set; }
-        public RadioTelescopeController Controller { get; set; }
+        public RadioTelescopeController RadioTelescopeController { get; set; }
+        public RTDbContext Context { get; set; }
         public List<Appointment> Appointments
         {
             get
             {
-                return DbSetToList(Context.Appointments);
+                return Context.Appointments.ToList();
             }
             set
             {
-                Appointments = value;
+                foreach(Appointment app in value)
+                {
+                    Context.Appointments.Add(app);
+                    Context.SaveChanges();
+                }
             }
         }
-        public RTDbContext Context { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Entities.Plc;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities.RadioTelescope
 {
@@ -18,8 +19,10 @@ namespace ControlRoomApplication.Entities.RadioTelescope
 
         public ScaleRadioTelescope(PLCController PLCController) 
         {
-            Plc = PLCController.Plc;
             PlcController = PLCController;
+            var context = new RTDbContext();
+            var spectraCyber = new SpectraCyber();
+            SpectraCyberController = new SpectraCyberController(spectraCyber, context);
             CalibrationOrientation = new Orientation();
             Status = RadioTelescopeStatusEnum.UNKNOWN;
             CurrentOrientation = CalibrationOrientation;
@@ -27,8 +30,10 @@ namespace ControlRoomApplication.Entities.RadioTelescope
 
         public ScaleRadioTelescope()
         {
-            Plc = new ScaleModelPLC();
-            PlcController = new PLCController(Plc);
+            PlcController = new PLCController(new ScaleModelPLC());
+            var context = new RTDbContext();
+            var spectraCyber = new SpectraCyber();
+            SpectraCyberController = new SpectraCyberController(spectraCyber, context);
             CalibrationOrientation = new Orientation();
             Status = RadioTelescopeStatusEnum.UNKNOWN;
             CurrentOrientation = CalibrationOrientation;

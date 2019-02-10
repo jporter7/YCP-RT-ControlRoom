@@ -71,12 +71,9 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         [Column("current_orientation")]
         public Orientation CurrentOrientation { get; set; }
 
-        public AbstractPLC Plc { get; set; }
         public PLCController PlcController { get; set; }
-        public AbstractSpectraCyber SpectraCyber { get; set; }
         public SpectraCyberController SpectraCyberController { get; set; }
         public Orientation CalibrationOrientation { get; set; }
-        public int AppId { get; set; }
 
         internal void StartScheduledIntegration(int intervalMS, int delayMS, bool startAfterDelay)
         {

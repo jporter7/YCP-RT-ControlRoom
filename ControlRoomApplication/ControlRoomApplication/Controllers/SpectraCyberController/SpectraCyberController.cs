@@ -9,12 +9,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
     public class SpectraCyberController : AbstractSpectraCyberController
     {
-        public SpectraCyberController(SpectraCyber spectraCyber, RTDbContext context, int appId) : base(spectraCyber, context, appId)
+        public SpectraCyberController(SpectraCyber spectraCyber, RTDbContext context) : base(spectraCyber, context)
         {
-            AppId = appId;
+            
         }
 
-        public override bool BringUp()
+        public override bool BringUp(int appId)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(() => RunCommunicationThread(AppId));
+                CommunicationThread = new Thread(() => RunCommunicationThread(appId));
                 CommunicationThread.Start();
             }
             catch (Exception e)
