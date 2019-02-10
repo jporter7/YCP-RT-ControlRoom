@@ -25,21 +25,6 @@ namespace ControlRoomApplication.Entities.RadioTelescope
             SpectraCyberController = spectraCyberController;
         }
 
-        public void IntegrateNow()
-        {
-            SpectraCyberController.SingleScan();
-        }
-
-        public void StartContinuousIntegration()
-        {
-            SpectraCyberController.StartScan();
-        }
-
-        public void StopContinuousIntegration()
-        {
-            SpectraCyberController.StopScan();
-        }
-
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
         {
             RFData rfData = new RFData();
@@ -74,10 +59,5 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         public PLCController PlcController { get; set; }
         public SpectraCyberController SpectraCyberController { get; set; }
         public Orientation CalibrationOrientation { get; set; }
-
-        internal void StartScheduledIntegration(int intervalMS, int delayMS, bool startAfterDelay)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
