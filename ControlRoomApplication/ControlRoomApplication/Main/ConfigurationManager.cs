@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Main
         /// <returns> A concrete instance of a PLC. </returns>
         public AbstractPLC ConfigurePLC(string arg0)
         {
-            switch(arg0.Substring(0, 3).ToUpper())
+            switch(arg0.ToUpper())
             {
                 case "/SP":
                     return new ScaleModelPLC();
@@ -52,7 +52,7 @@ namespace ControlRoomApplication.Main
         /// <returns> A concrete instance of a SpectraCyberController. </returns>
         public AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1, RTDbContext dbContext)
         {
-            switch(arg1.Substring(0, 3).ToUpper())
+            switch(arg1.ToUpper())
             {
                 case "/PS":
                     return new SpectraCyberController(new SpectraCyber(), dbContext);
@@ -79,7 +79,7 @@ namespace ControlRoomApplication.Main
         public AbstractRadioTelescope ConfigureRadioTelescope(string arg2, AbstractSpectraCyberController spectraCyberController, AbstractPLC plc)
         {
             PLCController plcController = new PLCController(plc);
-            switch (arg2.Substring(0, 3).ToUpper())
+            switch (arg2.ToUpper())
             {
                 case "/SR":
                     return new ScaleRadioTelescope(spectraCyberController, plcController);
