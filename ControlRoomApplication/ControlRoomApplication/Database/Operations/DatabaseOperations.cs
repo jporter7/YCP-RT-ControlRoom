@@ -21,6 +21,23 @@ namespace ControlRoomApplication.Database.Operations
         }
 
         /// <summary>
+        /// Initialize only the local database, for testing purposes only.
+        /// </summary>
+        public static void InitializeLocalConnectionOnly()
+        {
+            LocalContext = new RTDbContext();
+        }
+
+        /// <summary>
+        /// Clean up the local database resources/connections, 
+        /// for testing purposes only.
+        /// </summary>
+        public static void DisposeLocalDatabaseOnly()
+        {
+            LocalContext.Dispose();
+        }
+
+        /// <summary>
         /// Creates and stores and RFData reading in the local database.
         /// </summary>
         /// <param name="data">The RFData reading to be created/stored.</param>
