@@ -21,6 +21,16 @@ namespace ControlRoomApplication.Controllers.PLCController
         }
 
         /// <summary>
+        /// Method that returns the current position of the radiotelescope
+        /// </summary>
+        /// <returns> The Orientation of the radio telescope </returns>
+        public Orientation GetOrientation()
+        {
+            // TODO: get real orientation from plc
+            return new Orientation();
+        }
+
+        /// <summary>
         /// Method that will send commands to the plc to calibrate the telescope.
         /// Functions differently based on the plc type. If the PLC is a ScaleModelPLC,
         /// it will actually write and send a message, and receive a corresponding response.

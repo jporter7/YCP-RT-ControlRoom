@@ -22,12 +22,10 @@ namespace ControlRoomApplication.Main
             RTDbContext dbContext = new RTDbContext();
 
             AbstractPLC plc = ConfigManager.ConfigurePLC(args[0]);
-            AbstractSpectraCyber spectraCyber = ConfigManager.ConfigureSpectraCyber(args[1]);
-            AbstractRadioTelescope radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2]);
+            AbstractSpectraCyberController spectraCyberController = ConfigManager.ConfigureSpectraCyberController(args[1], dbContext);
+            AbstractRadioTelescope radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2], spectraCyberController, plc);
 
             PLCController plcController = new PLCController(plc);
-            // This line and a few things within it will need to be reviewed/refactored.
-            AbstractSpectraCyberController spectraCyberController = new SpectraCyberController((SpectraCyber)spectraCyber, dbContext);
             RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
 
             ControlRoom cRoom = new ControlRoom(rtController, dbContext);

@@ -1,15 +1,23 @@
-﻿using ControlRoomApplication.Controllers.SpectraCyberController;
+﻿using ControlRoomApplication.Controllers.PLCController;
+using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities.RadioTelescope
 {
     public class ProductionRadioTelescope : AbstractRadioTelescope
     {
-        private AbstractSpectraCyberController FTSpectraCyberController;
-
         public ProductionRadioTelescope()
         {
-            FTSpectraCyberController = new SpectraCyberController(new SpectraCyber(), new RTDbContext());
+            
+        }
+
+        public ProductionRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCController plcController)
+        {
+            PlcController = plcController;
+            SpectraCyberController = spectraCyberController;
+            CalibrationOrientation = new Orientation();
+            Status = RadioTelescopeStatusEnum.UNKNOWN;
+            CurrentOrientation = PlcController.GetOrientation();
         }
 
         public Orientation GetCurrentOrientation()

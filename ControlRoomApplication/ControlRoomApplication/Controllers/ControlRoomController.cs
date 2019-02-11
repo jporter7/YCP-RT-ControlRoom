@@ -106,6 +106,7 @@ namespace ControlRoomApplication.Controllers
             if (appointments.Count > 0)
             {
                 appointment = appointments[0];
+                appointment = (appointment.Status == AppointmentConstants.COMPLETED) ? null : appointment;
             }
             else
             {
@@ -122,7 +123,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public void CalibrateRadioTelescope()
         {
-            // TODO: implement
+            CRoom.RadioTelescopeController.CalibrateRadioTelescope();
         }
 
         /// <summary>

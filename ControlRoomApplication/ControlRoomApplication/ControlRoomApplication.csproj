@@ -109,6 +109,7 @@
     <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberSimulatorController.cs" />
+    <Compile Include="Controllers\SpectraCyberController\SpectraCyberTestController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Command\Commmand.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Entities\RadioTelescope\ProductionRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeStatusEnum.cs" />
     <Compile Include="Entities\RadioTelescope\ScaleRadioTelescope.cs" />
+    <Compile Include="Entities\RadioTelescope\TestRadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
     <Compile Include="Entities\Plc\ScaleModelPLC.cs" />
     <Compile Include="Entities\SpectraCyber\AbstractSpectraCyber.cs" />

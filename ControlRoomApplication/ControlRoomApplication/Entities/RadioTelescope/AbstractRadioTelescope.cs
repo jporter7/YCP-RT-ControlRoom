@@ -18,33 +18,6 @@ namespace ControlRoomApplication.Entities.RadioTelescope
     [Table("radio_telescope")]
     public abstract class AbstractRadioTelescope
     {
-        public AbstractRadioTelescope() { }
-
-        public AbstractRadioTelescope(SpectraCyberController spectraCyberController)
-        {
-            SpectraCyberController = spectraCyberController;
-        }
-
-        private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
-        {
-            RFData rfData = new RFData();
-            rfData.TimeCaptured = spectraCyberResponse.DateTimeCaptured;
-            rfData.Intensity = spectraCyberResponse.DecimalData;
-            // TODO: set ID
-            return rfData;
-        }
-
-        private static List<RFData> GenerateRFDataList(List<SpectraCyberResponse> spectraCyberResponses)
-        {
-            List<RFData> rfDataList = new List<RFData>();
-            foreach (SpectraCyberResponse response in spectraCyberResponses)
-            {
-                rfDataList.Add(GenerateRFData(response));
-            }
-
-            return rfDataList;
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id")]
@@ -57,7 +30,7 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         public Orientation CurrentOrientation { get; set; }
 
         public PLCController PlcController { get; set; }
-        public SpectraCyberController SpectraCyberController { get; set; }
+        public AbstractSpectraCyberController SpectraCyberController { get; set; }
         public Orientation CalibrationOrientation { get; set; }
     }
 }

@@ -6,20 +6,20 @@ using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities.RadioTelescope
 {
-    public class ScaleRadioTelescope : AbstractRadioTelescope
+    public class TestRadioTelescope : AbstractRadioTelescope
     {
-        public ScaleRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCController plcController)
+        public TestRadioTelescope()
+        {
+
+        }
+
+        public TestRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCController plcController)
         {
             PlcController = plcController;
             SpectraCyberController = spectraCyberController;
             CalibrationOrientation = new Orientation();
             Status = RadioTelescopeStatusEnum.UNKNOWN;
             CurrentOrientation = PlcController.GetOrientation();
-        }
-
-        public ScaleRadioTelescope()
-        {
-
         }
     }
 }
