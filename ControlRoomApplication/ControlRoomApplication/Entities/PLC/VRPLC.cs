@@ -11,13 +11,19 @@ namespace ControlRoomApplication.Entities.Plc
         /// </summary>
         public VRPLC()
         {
-            ///Creates named pipe for use in the PLCController
-            pipeClient = new NamedPipeServerStream("VR-pipe");
-
-
+          
         }
 
         /// This pipe client is used for communicating with the Unity Engine
         public NamedPipeServerStream pipeClient {get; set;}
+
+        /// <summary>
+        /// Method for creating the named pipe server stream which allows for communication with VR telescope.
+        /// </summary>
+
+        public void StartClient()
+        {
+            this.pipeClient = new NamedPipeServerStream("VR-pipe");
+        }
     }
 }
