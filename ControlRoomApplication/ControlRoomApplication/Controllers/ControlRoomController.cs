@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace ControlRoomApplication.Controllers
         public ControlRoomController(ControlRoom controlRoom)
         {
             CRoom = controlRoom;
+            coordinateController = new CoordinateCalculationController();
         }
 
         /// <summary>
@@ -26,12 +28,7 @@ namespace ControlRoomApplication.Controllers
                 
                 if(coordinate != null)
                 {
-                    Orientation orientation = new Orientation();
-                    // This stuff should actually be some conversion between right ascension/decl & az/el
-                    orientation.Azimuth = coordinate.RightAscension;
-                    orientation.Elevation = coordinate.Declination;
-                    // but that can wait until later on.
-
+                    Orientation orientation = coordinateController.CoordinateToOrientation(coordinate, DateTime.Now);
                     logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");
 
                     // Calibrate telescope
@@ -174,6 +171,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         public ControlRoom CRoom { get; set; }
+        public CoordinateCalculationController coordinateController { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }

@@ -30,7 +30,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             DateTime date = new DateTime(2018, 12, 14, 7, 0, 0);
             Coordinate = new Coordinate(0.0, 0.0);
-            Orientation = CoordinateCalculationController.CoordinateToOrientation(Coordinate, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, date);
+            Orientation = CoordinateCalculationController.CoordinateToOrientation(Coordinate, date);
 
             //Assert.AreEqual(205.731, Orientation.Azimuth, 1);
             Assert.AreEqual(47.008, Orientation.Elevation, 1);
@@ -43,21 +43,21 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Test at noon (highest elevation)
             DateTime date = new DateTime(2018, 12, 14, 7, 0, 0);
             //date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, date);
+            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(date);
             Assert.AreEqual(26.8, Orientation.Elevation, 1);
             Assert.AreEqual(179.6, Orientation.Azimuth, 3);
 
             // Test at sunrise
             date = new DateTime(2018, 12, 14, 2, 0, 0);
             //date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, date);
+            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(date);
             Assert.AreEqual(-4.3, Orientation.Elevation, 3);
             Assert.AreEqual(116.9, Orientation.Azimuth, 2);
 
             // Test at sunset
             date = new DateTime(2018, 12, 14, 12, 0, 0);
             //date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, date);
+            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(date);
             Assert.AreEqual(-3.8, Orientation.Elevation, 1);
             Assert.AreEqual(242.6, Orientation.Azimuth, 2);
         }
@@ -68,21 +68,21 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Test at 11:00pm
             DateTime date = new DateTime(2018, 12, 14, 18, 0, 0);
             // date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, date);
+            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(date);
             Assert.AreEqual(5.4, Orientation.Elevation, 6);
             Assert.AreEqual(254.2, Orientation.Azimuth, 4);
 
             // Test at sunset
             date = new DateTime(2018, 12, 14, 12, 0, 0);
             // date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, date);
+            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(date);
             Assert.AreEqual(39.1, Orientation.Elevation, 1);
             Assert.AreEqual(164.0, Orientation.Azimuth, 10);
 
             // Test at moonrise
             date = new DateTime(2018, 12, 14, 7, 0, 0);
             // date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, date);
+            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(date);
             Assert.AreEqual(-3.5, Orientation.Elevation, 5);
             Assert.AreEqual(100.6, Orientation.Azimuth, 6);
         }
