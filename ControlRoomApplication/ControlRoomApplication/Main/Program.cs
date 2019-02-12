@@ -20,14 +20,40 @@ namespace ControlRoomApplication.Main
             // Instantiate the configuration manager and the database being used.
             ConfigManager = new ConfigurationManager();
             RTDbContext dbContext = new RTDbContext();
+            AbstractPLC plc;
+            AbstractSpectraCyberController spectraCyberController;
+            AbstractRadioTelescope radioTelescope;
 
-            AbstractPLC plc = ConfigManager.ConfigurePLC(args[0]);
-            AbstractSpectraCyber spectraCyber = ConfigManager.ConfigureSpectraCyber(args[1]);
-            AbstractRadioTelescope radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2]);
+
+            if (args.Length > 0)
+            {
+                plc = ConfigManager.ConfigurePLC(args[0]);
+            }
+            else
+            {
+                plc = ConfigManager.ConfigurePLC("");
+            }
+
+            if (args.Length > 1)
+            {
+                spectraCyberController = ConfigManager.ConfigureSpectraCyberController(args[1], dbContext);
+            }
+            else
+            {
+                spectraCyberController = ConfigManager.ConfigureSpectraCyberController("", dbContext);
+            }
+
+            if (args.Length > 2)
+            {
+                radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2], spectraCyberController, plc);
+            }
+            else
+            {
+                radioTelescope = ConfigManager.ConfigureRadioTelescope("", spectraCyberController, plc);
+            }
+
 
             PLCController plcController = new PLCController(plc);
-            // This line and a few things within it will need to be reviewed/refactored.
-            AbstractSpectraCyberController spectraCyberController = new SpectraCyberController((SpectraCyber)spectraCyber, dbContext);
             RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
 
             ControlRoom cRoom = new ControlRoom(rtController, dbContext);

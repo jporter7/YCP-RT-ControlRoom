@@ -73,7 +73,10 @@ namespace ControlRoomApplication.Controllers
             while (app == null)
             {
                 app = GetNextAppointment();
-                Thread.Sleep(5000); // delay between checking database for new appointments
+                if (app == null)
+                {
+                    Thread.Sleep(5000); // delay between checking database for new appointments
+                }
             }
 
             TimeSpan diff = app.StartTime - DateTime.Now;
@@ -97,12 +100,13 @@ namespace ControlRoomApplication.Controllers
             Appointment appointment = null;
             logger.Debug("Retrieving list of appointments.");
             List<Appointment> appointments = CRoom.Context.Appointments.ToList();
-            if(appointments.Count > 0)
+            appointments.Sort();
+            appointments.RemoveAll(x => x.StartTime < DateTime.Now);
+            logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
+            if (appointments.Count > 0)
             {
-                appointments.Sort();
-                appointments.RemoveAll(x => x.StartTime < DateTime.Now);
-                logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                 appointment = appointments[0];
+                appointment = (appointment.Status == AppointmentConstants.COMPLETED) ? null : appointment;
             }
             else
             {
@@ -119,7 +123,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public void CalibrateRadioTelescope()
         {
-            // TODO: implement
+            CRoom.RadioTelescopeController.CalibrateRadioTelescope();
         }
 
         /// <summary>

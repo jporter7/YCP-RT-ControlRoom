@@ -1,4 +1,6 @@
-﻿using ControlRoomApplication.Entities;
+﻿using ControlRoomApplication.Controllers.PLCController;
+using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities.RadioTelescope;
 
@@ -19,7 +21,7 @@ namespace ControlRoomApplication.Main
         /// <returns> A concrete instance of a PLC. </returns>
         public AbstractPLC ConfigurePLC(string arg0)
         {
-            switch(arg0.Substring(0, 3).ToUpper())
+            switch(arg0.ToUpper())
             {
                 case "/SP":
                     return new ScaleModelPLC();
@@ -42,25 +44,29 @@ namespace ControlRoomApplication.Main
         }
 
         /// <summary>
-        /// Configures the type of SpectraCyber to be used in the rest of the 
+        /// Configures the type of SpectraCyberController to be used in the rest of the 
         /// application based on the second program argument passed in.
         /// </summary>
         /// <param name="arg1"> The second program argument passed in. </param>
-        /// <returns> A concrete instance of a SpectraCyber. </returns>
-        public AbstractSpectraCyber ConfigureSpectraCyber(string arg1)
+        /// <param name="dbContext"> The database context </param>
+        /// <returns> A concrete instance of a SpectraCyberController. </returns>
+        public AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1, RTDbContext dbContext)
         {
-            switch(arg1.Substring(0, 3).ToUpper())
+            switch(arg1.ToUpper())
             {
                 case "/PS":
-                    return new SpectraCyber();
+                    return new SpectraCyberController(new SpectraCyber(), dbContext);
 
                 case "/SS":
-                    return new SpectraCyberSimulator();
+                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator(), dbContext);
+
+                case "/TS":
+                    return new SpectraCyberTestController(new SpectraCyberSimulator(), dbContext);
 
                 default:
                     // If none of the switches match or there wasn't one declared
-                    // for the PLC, assume we are using the simulated/testing one.
-                    return new SpectraCyberSimulator();
+                    // for the spectraCyber, assume we are using the simulated/testing one.
+                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator(), dbContext);
             }
         }
 
@@ -70,24 +76,25 @@ namespace ControlRoomApplication.Main
         /// </summary>
         /// <param name="arg2"> The third program argument passed in. </param>
         /// <returns> A concrete instance of a radio telescope. </returns>
-        public AbstractRadioTelescope ConfigureRadioTelescope(string arg2)
+        public AbstractRadioTelescope ConfigureRadioTelescope(string arg2, AbstractSpectraCyberController spectraCyberController, AbstractPLC plc)
         {
-            switch(arg2.Substring(0, 3).ToUpper())
+            PLCController plcController = new PLCController(plc);
+            switch (arg2.ToUpper())
             {
                 case "/SR":
-                    return new ScaleRadioTelescope();
+                    return new ScaleRadioTelescope(spectraCyberController, plcController);
 
                 case "/PR":
-                    return new ProductionRadioTelescope();
+                    return new ProductionRadioTelescope(spectraCyberController, plcController);
 
                 case "/TR":
                     // Case for the test/simulated radiotelescope.
                     // Will need to be uncommented later.
-                    // return new TestRadioTelescope();
+                    return new TestRadioTelescope(spectraCyberController, plcController);
                 default:
                     // Should be changed once we have a simulated
                     // radiotelescope class implemented
-                    return new ScaleRadioTelescope();
+                    return new ScaleRadioTelescope(spectraCyberController, plcController);
             }
         }
     }
