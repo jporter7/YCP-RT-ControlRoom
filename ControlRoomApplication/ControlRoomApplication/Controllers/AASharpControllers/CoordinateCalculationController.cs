@@ -30,7 +30,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             }
         }
 
-        public Orientation CoordinateToOrientation(Coordinate coordinate, double OBSERVATORY_LATITUDE, double OBSERVATORY_LONGITUDE, double OBSERVATORY_HEIGHT, DateTime Date)
+        public Orientation CoordinateToOrientation(Coordinate coordinate, DateTime Date)
         {
             AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
             double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
@@ -49,7 +49,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(Horizontal.X, Horizontal.Y);
         }
 
-        public Orientation SunCoordinateToOrientation(double OBSERVATORY_LATITUDE, double OBSERVATORY_LONGITUDE, double OBSERVATORY_HEIGHT, DateTime Date)
+        public Orientation SunCoordinateToOrientation(DateTime Date)
         {
             AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
             double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
@@ -79,7 +79,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Orientation(SunHorizontal.X, SunHorizontal.Y);
         }
 
-        public Orientation MoonCoordinateToOrientation(double OBSERVATORY_LATITUDE, double OBSERVATORY_LONGITUDE, double OBSERVATORY_HEIGHT, DateTime Date)
+        public Orientation MoonCoordinateToOrientation(DateTime Date)
         {
 
             AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);

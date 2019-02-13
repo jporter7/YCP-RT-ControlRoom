@@ -18,7 +18,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         protected bool KillCommunicationThreadFlag { get; set; }
         protected Mutex CommunicationMutex;
 
-        public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber, RTDbContext dBContext, int appId)
+        public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber, RTDbContext dBContext)
         {
             SpectraCyber = spectraCyber;
             Schedule = new SpectraCyberScanSchedule(SpectraCyberScanScheduleMode.OFF);
@@ -44,8 +44,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             Parent = rt;
         }
 
-        public abstract bool BringUpSpectraCyber();
-        public abstract bool BringDownSpectraCyber();
+        public abstract bool BringUp(int appId);
+        public abstract bool BringDown();
         protected abstract void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response);
 
         public void TestCommunication()
@@ -358,6 +358,5 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         }
 
         public RTDbContext Context { get; set; }
-        public int AppId { get; set; }
     }
 }

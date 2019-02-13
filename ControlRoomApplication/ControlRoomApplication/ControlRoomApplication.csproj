@@ -36,14 +36,14 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AASharp, Version=1.97.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AASharp.1.97.1\lib\net45\AASharp.dll</HintPath>
+    <Reference Include="AASharp, Version=1.99.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AASharp.1.99.1\lib\net45\AASharp.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.Core.3.3.29.12\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.Core.3.3.31.7\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.RDS.3.3.36\lib\net45\AWSSDK.RDS.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.RDS.3.3.38.2\lib\net45\AWSSDK.RDS.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -57,14 +57,14 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=8.0.13.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.8.0.13\lib\net452\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=8.0.15.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.0.15\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data.EntityFramework, Version=8.0.13.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.EntityFramework.8.0.13\lib\net452\MySql.Data.EntityFramework.dll</HintPath>
+    <Reference Include="MySql.Data.EntityFramework, Version=8.0.15.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.EntityFramework.8.0.15\lib\net452\MySql.Data.EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -78,6 +78,9 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -104,11 +107,12 @@
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCConnector.cs" />
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCSimulator.cs" />
     <Compile Include="Controllers\RadioTelescopeControllers\RadioTelescopeController.cs" />
-    <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
     <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\FailableSpectraCyberSimulatorController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberSimulatorController.cs" />
+    <Compile Include="Controllers\SpectraCyberController\SpectraCyberTestController.cs" />
+    <Compile Include="Database\Operations\DatabaseOperations.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Command\Commmand.cs" />
@@ -125,9 +129,9 @@
     <Compile Include="Entities\RadioTelescope\ProductionRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeStatusEnum.cs" />
     <Compile Include="Entities\RadioTelescope\ScaleRadioTelescope.cs" />
+    <Compile Include="Entities\RadioTelescope\TestRadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
     <Compile Include="Entities\Plc\ScaleModelPLC.cs" />
-    <Compile Include="Entities\Schedule\Schedule.cs" />
     <Compile Include="Entities\SpectraCyber\AbstractSpectraCyber.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberCommandTypeEnum.cs" />
@@ -138,6 +142,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimaultor.cs" />
+    <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
@@ -167,7 +172,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\AWSSDK.RDS.3.3.36\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

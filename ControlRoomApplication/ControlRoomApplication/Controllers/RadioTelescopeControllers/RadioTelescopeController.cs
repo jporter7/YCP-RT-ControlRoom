@@ -47,23 +47,25 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void ShutdownRadioTelescope()
         {
-            switch (RadioTelescope)
+            switch (RadioTelescope.GetType().Name)
             {
-                case ScaleRadioTelescope scale:
+                case "ScaleRadioTelescope":
                     // Move the telescope to the "shutdown" position
                     Orientation ShutdownOrientation = new Orientation(0.0, -90.0);
-                    scale.Plc.OutgoingOrientation = ShutdownOrientation;
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3, true);
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4, true);
-                    scale.CurrentOrientation = ShutdownOrientation;
+                    RadioTelescope.PlcController.Plc.OutgoingOrientation = ShutdownOrientation;
+                    RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM3, true);
+                    RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM4, true);
+                    RadioTelescope.CurrentOrientation = ShutdownOrientation;
 
                     // Set the status to shutdown
-                    scale.Status = RadioTelescopeStatusEnum.SHUTDOWN;
+                    RadioTelescope.Status = RadioTelescopeStatusEnum.SHUTDOWN;
 
                     break;
-                case ProductionRadioTelescope prod:
+                case "ProductionRadioTelescope":
                     // Add Code for production radiotelescope later
                     break;
+                case "TestRadioTelescope":
+                    // Add Code for test radiotelescope later
                 default:
                     break;
             }
@@ -72,9 +74,9 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         public void MoveRadioTelescope(Orientation orientation)
         {
             // Switch based on the type of radiotelescope that is being controlled by this controller.
-            switch(RadioTelescope)
+            switch(RadioTelescope.GetType().Name)
             {
-                case ScaleRadioTelescope scale:
+                case "ScaleRadioTelescope":
                     // Move the telescope to the orientation that it is supposed to be at
                     RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
 
@@ -108,13 +110,13 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                         Thread t1, t2;
                         if (x > 0)
                         {
-                            t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3, true));
-                            t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4, true));
+                            t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM3, true));
+                            t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM4, true));
                         }
                         else
                         {
-                            t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM3, true));
-                            t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(RadioTelescope.PlcController.Plc, PLCConstants.COM4, true));
+                            t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM3, true));
+                            t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM4, true));
                         }
                         t1.Start();
                         t2.Start();
@@ -132,8 +134,10 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                     RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
                     return;
 
-                case ProductionRadioTelescope prod:
+                case "ProductionRadioTelescope":
                     // Add Code for production radiotelescope later
+                case "TestRadioTelescope":
+                    // Add Code for test radiotelescope later
                 default:
                     break;
             }
@@ -147,49 +151,51 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void CalibrateRadioTelescope()
         {
-            switch (RadioTelescope)
+            switch (RadioTelescope.GetType().Name)
             {
-                case ScaleRadioTelescope scale:
+                case "ScaleRadioTelescope":
                     // Move the telescope to the orientation that it is supposed to calibrate at
-                    scale.Status = RadioTelescopeStatusEnum.RUNNING;
+                    RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
 
                     // For the Scale Model, just align the orientation at (0, 0)
                     Orientation orientation = new Orientation();
                     orientation.Azimuth = 0;
                     orientation.Elevation = 0;
-                    scale.PlcController.Plc.OutgoingOrientation = orientation;
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM3, true);
-                    scale.PlcController.MoveScaleModel(RadioTelescope.Plc, PLCConstants.COM4, true);
+                    RadioTelescope.PlcController.Plc.OutgoingOrientation = orientation;
+                    RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM3, true);
+                    RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM4, true);
 
-                    scale.Status = RadioTelescopeStatusEnum.IDLE;
+                    RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
                     break;
-                case ProductionRadioTelescope prod:
+                case "ProductionRadioTelescope":
                     // Add Code for production radio-telescope later
                     break;
+                case "TestRadioTelescope":
+                    // Add Code for test radiotelescope later
                 default:
                     break;
             }
 
         }
 
-        public void GetCurrentRadioTelescopeRFData()
+        private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
         {
-            RadioTelescope.IntegrateNow();
+            RFData rfData = new RFData();
+            rfData.TimeCaptured = spectraCyberResponse.DateTimeCaptured;
+            rfData.Intensity = spectraCyberResponse.DecimalData;
+            // TODO: set ID
+            return rfData;
         }
 
-        public void StartRadioTelscopeRFDataScan()
+        private static List<RFData> GenerateRFDataList(List<SpectraCyberResponse> spectraCyberResponses)
         {
-            RadioTelescope.StartContinuousIntegration();
-        }
+            List<RFData> rfDataList = new List<RFData>();
+            foreach (SpectraCyberResponse response in spectraCyberResponses)
+            {
+                rfDataList.Add(GenerateRFData(response));
+            }
 
-        public void StopRadioTelescopeRFDataScan()
-        {
-            RadioTelescope.StopContinuousIntegration();
-        }
-
-        public void ScheduleRadioTelescopeRFDataScan(int intervalMS, int delayMS = 0, bool startAfterDelay = false)
-        {
-            RadioTelescope.StartScheduledIntegration(intervalMS, delayMS, startAfterDelay);
+            return rfDataList;
         }
 
         public AbstractRadioTelescope RadioTelescope { get; set; }

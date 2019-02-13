@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,33 +13,49 @@ namespace ControlRoomApplication.Controllers
         public ControlRoomController(ControlRoom controlRoom)
         {
             CRoom = controlRoom;
+            coordinateController = new CoordinateCalculationController();
         }
 
         /// <summary>
         /// Starts the next appointment based on chronological order.
         /// </summary>
-        public void StartAppointment()
+        public void Start()
         {
-            Appointment app = WaitingForNextAppointment();
-            /// Could break here because of coordinate id relationship ????
-            Coordinate coordinate = CRoom.Context.Coordinates.Find(app.CoordinateId);
-            Orientation orientation = new Orientation();
+            while (true)
+            {
+                Appointment app = WaitingForNextAppointment();
+                Coordinate coordinate = CRoom.Context.Coordinates.Find(app.CoordinateId);
+                
+                if(coordinate != null)
+                {
+                    Orientation orientation = coordinateController.CoordinateToOrientation(coordinate, DateTime.Now);
+                    logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");
 
-            // This stuff should actually be some conversion between right ascension/decl & az/el
-            orientation.Azimuth = coordinate.RightAscension;
-            orientation.Elevation = coordinate.Declination;
-            // but that can wait until later on.
+                    // Calibrate telescope
+                    CalibrateRadioTelescope();
 
-            logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");
-            Thread movementThread = new Thread(() => StartRadioTelescope(app, orientation));
-            movementThread.Start();
+                    // Start movement thread
+                    Thread movementThread = new Thread(() => StartRadioTelescope(app, orientation));
+                    movementThread.Start();
 
-            // Start SpectraCyber thread
+                    // Start SpectraCyber
+                    StartReadingData(app);
 
-            // End PLC & SpectraCyber thread
-            movementThread.Join();
+                    // End PLC thread & SpectraCyber 
+                    movementThread.Join();
+                    StopReadingRFData();
 
-            logger.Info("Appointment completed.");
+                    // Stow Telescope
+                    EndAppointment();
+
+                    logger.Info("Appointment completed.");
+                }
+                else
+                {
+                    logger.Info("Appointment coordinate is null.");
+                }
+                
+            }
         }
 
         /// <summary>
@@ -49,12 +66,20 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
         public Appointment WaitingForNextAppointment()
         {
-            TimeSpan diff = new TimeSpan();
-            Appointment app = GetNextAppointment();
-            diff = app.StartTime - DateTime.Now;
+            Appointment app = null;
+            while (app == null)
+            {
+                app = GetNextAppointment();
+                if (app == null)
+                {
+                    Thread.Sleep(5000); // delay between checking database for new appointments
+                }
+            }
+
+            TimeSpan diff = app.StartTime - DateTime.Now;
 
             logger.Info("Waiting for the next appointment to be within 10 minutes.");
-            while (diff.TotalDays > 10)
+            while (diff.TotalMinutes > 10)
             {
                 diff = app.StartTime - DateTime.Now;
             }
@@ -69,66 +94,84 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An appointment object that is the next in the database in chronological order. </returns>
         public Appointment GetNextAppointment()
         {
-            logger.Info("Retrieving list of appointments.");
-            var list = new List<DateTime>();
-
-            foreach (Appointment app in CRoom.Context.Appointments)
+            Appointment appointment = null;
+            logger.Debug("Retrieving list of appointments.");
+            List<Appointment> appointments = CRoom.Context.Appointments.ToList();
+            appointments.Sort();
+            appointments.RemoveAll(x => x.StartTime < DateTime.Now);
+            logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
+            if (appointments.Count > 0)
             {
-                list.Add(app.StartTime);
+                appointment = appointments[0];
+                appointment = (appointment.Status == AppointmentConstants.COMPLETED) ? null : appointment;
+            }
+            else
+            {
+                logger.Debug("No appointments found");
             }
 
-            try
-            {
-                list.OrderBy(x => Math.Abs((x - DateTime.Now).Ticks)).First();
-                list.RemoveAll(x => x < DateTime.Now);
- 
-                logger.Info("Appointment list sorted. Starting to retrieve the next chronological appointment.");
-                foreach(Appointment app in CRoom.Context.Appointments)
-                {
-                    if (app.StartTime == list[0])
-                    {
-                        return app;
-                    }
-                }
-            }
-            catch (ArgumentException e)
-            {
-                logger.Error("There was an error with the size of the list of appointments.");
-            }
-
-
-            return CRoom.Context.Appointments.Find(0);
+            return appointment;
         }
 
+        /// <summary>
+        /// Ends an appointment by returning the RT to the stow position.
+        /// This probably does not need to be done if an appointment is within
+        /// ????? amount of minutes/hours but that can be determined later.
+        /// </summary>
+        public void CalibrateRadioTelescope()
+        {
+            CRoom.RadioTelescopeController.CalibrateRadioTelescope();
+        }
+
+        /// <summary>
+        /// Starts movement of the RT by updating the appointment status and
+        /// then calling the RT controller to move the RT to the orientation
+        /// it needs to go to. This will have to be refactored to work with a 
+        /// set of Orientations as opposed to one orientation.
+        /// </summary>
+        /// <param name="app"> The appointment that is currently running. </param>
+        /// <param name="orientation"> The orientation that the RT is going to. </param>
         public void StartRadioTelescope(Appointment app, Orientation orientation)
         {
             app.Status = AppointmentConstants.IN_PROGRESS;
             CRoom.Context.SaveChanges();
-            CRoom.Controller.MoveRadioTelescope(orientation);
-            CRoom.RadioTelescope.CurrentOrientation = orientation;
+            CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
+            CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation = orientation;
             app.Status = AppointmentConstants.COMPLETED;
             CRoom.Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Ends an appointment by returning the RT to the stow position.
+        /// This probably does not need to be done if an appointment is within
+        /// ????? amount of minutes/hours but that can be determined later.
+        /// </summary>
         public void EndAppointment()
         {
-            Coordinate stow = new Coordinate();
-            stow.RightAscension = 0;
-            stow.Declination = 90;
-            CRoom.RadioTelescope.PlcController.MoveTelescope(CRoom.RadioTelescope.Plc, stow);
+            Orientation stow = new Orientation(0, 90);
+            CRoom.RadioTelescopeController.MoveRadioTelescope(stow);
         }
 
-        public void StartReadingData()
+        /// <summary>
+        /// Calls the SpectraCyber controller to start the SpectraCyber readings.
+        /// </summary>
+        public void StartReadingData(Appointment app)
         {
-            CRoom.RadioTelescope.SpectraCyberController.StartScan();
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringUp(app.Id);
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.StartScan();
         }
 
+        /// <summary>
+        /// Calls the SpectraCyber controller to stop the SpectraCyber readings.
+        /// </summary>
         public void StopReadingRFData()
         {
-            CRoom.RadioTelescope.SpectraCyberController.StopScan();
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.StopScan();
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringDown();
         }
 
         public ControlRoom CRoom { get; set; }
+        public CoordinateCalculationController coordinateController { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }

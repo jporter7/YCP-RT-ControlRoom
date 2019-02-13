@@ -10,17 +10,17 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     {
         protected Random random;
 
-        public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator, RTDbContext context, int appId) : base(spectraCyberSimulator, context, appId)
+        public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator, RTDbContext context) : base(spectraCyberSimulator, context)
         {
             random = new Random();
         }
 
-        public override bool BringUpSpectraCyber()
+        public override bool BringUp(int appId)
         {
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(() => RunCommunicationThread(0));
+                CommunicationThread = new Thread(() => RunCommunicationThread(appId));
                 CommunicationThread.Start();
             }
             catch (Exception e)
@@ -46,7 +46,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return true;
         }
 
-        public override bool BringDownSpectraCyber()
+        public override bool BringDown()
         {
             KillCommunicationThreadAndWait();
 
@@ -70,7 +70,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 // Termination, safely end communication
                 case SpectraCyberCommandTypeEnum.TERMINATE:
-                    BringDownSpectraCyber();
+                    BringDown();
                     break;
                 
                 //

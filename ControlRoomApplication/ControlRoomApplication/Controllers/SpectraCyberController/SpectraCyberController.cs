@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             SerialCommsFailed = false;
         }
 
-        public override bool BringUpSpectraCyber()
+        public override bool BringUp(int appId)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(() => RunCommunicationThread(AppId));
+                CommunicationThread = new Thread(() => RunCommunicationThread(appId));
                 CommunicationThread.Start();
             }
             catch (Exception e)
@@ -98,7 +98,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return true;
         }
 
-        public override bool BringDownSpectraCyber()
+        public override bool BringDown()
         {
             try
             {
@@ -158,7 +158,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 // Termination, safely end communication
                 case SpectraCyberCommandTypeEnum.TERMINATE:
-                    BringDownSpectraCyber();
+                    BringDown();
                     break;
 
                 // TODO: implement this case further probably

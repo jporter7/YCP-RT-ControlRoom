@@ -95,15 +95,6 @@ namespace ControlRoomApplication.Simulators.Server
         }
 
         /// <summary>
-        /// Sends the Scheduler's current Schedule
-        /// </summary>
-        /// <param name="schedule"></param>
-        public static void SendAppointmentSchedule(Schedule schedule)
-        {
-            throw new NotImplementedException("TODO");
-        }
-
-        /// <summary>
         /// Sends the overriden appointment(s)
         /// </summary>
         /// <param name="overridenAppointmentCollection"></param>

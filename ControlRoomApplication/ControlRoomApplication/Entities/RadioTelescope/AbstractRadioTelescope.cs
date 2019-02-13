@@ -18,48 +18,6 @@ namespace ControlRoomApplication.Entities.RadioTelescope
     [Table("radio_telescope")]
     public abstract class AbstractRadioTelescope
     {
-        public AbstractRadioTelescope() { }
-
-        public AbstractRadioTelescope(SpectraCyberController spectraCyberController)
-        {
-            SpectraCyberController = spectraCyberController;
-        }
-
-        public void IntegrateNow()
-        {
-            SpectraCyberController.SingleScan();
-        }
-
-        public void StartContinuousIntegration()
-        {
-            SpectraCyberController.StartScan();
-        }
-
-        public void StopContinuousIntegration()
-        {
-            SpectraCyberController.StopScan();
-        }
-
-        private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
-        {
-            RFData rfData = new RFData();
-            rfData.TimeCaptured = spectraCyberResponse.DateTimeCaptured;
-            rfData.Intensity = spectraCyberResponse.DecimalData;
-            // TODO: set ID
-            return rfData;
-        }
-
-        private static List<RFData> GenerateRFDataList(List<SpectraCyberResponse> spectraCyberResponses)
-        {
-            List<RFData> rfDataList = new List<RFData>();
-            foreach (SpectraCyberResponse response in spectraCyberResponses)
-            {
-                rfDataList.Add(GenerateRFData(response));
-            }
-
-            return rfDataList;
-        }
-
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id")]
@@ -71,16 +29,8 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         [Column("current_orientation")]
         public Orientation CurrentOrientation { get; set; }
 
-        public AbstractPLC Plc { get; set; }
         public PLCController PlcController { get; set; }
-        public AbstractSpectraCyber SpectraCyber { get; set; }
-        public SpectraCyberController SpectraCyberController { get; set; }
+        public AbstractSpectraCyberController SpectraCyberController { get; set; }
         public Orientation CalibrationOrientation { get; set; }
-        public int AppId { get; set; }
-
-        internal void StartScheduledIntegration(int intervalMS, int delayMS, bool startAfterDelay)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
