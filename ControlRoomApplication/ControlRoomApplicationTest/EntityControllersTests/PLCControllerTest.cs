@@ -23,25 +23,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestCalibrateTelescope()
         {
-            Assert.AreEqual("Radio Telescope successfully calibrated", testcontroller.CalibrateRT(test));
+            Assert.AreEqual("Radio Telescope successfully calibrated", testcontroller.CalibrateRT());
         }
 
         [TestMethod]
         public void TestShutdown()
         {
-            Assert.AreEqual("Radio Telescope successfully shut down", testcontroller.CalibrateRT(test));
+            Assert.AreEqual("Radio Telescope successfully shut down", testcontroller.ShutdownRT());
         }
 
         [TestMethod]
         public void TestMoveTelescope()
         {
-            Assert.AreEqual("Oh yea we received a message from the Radio Telescope boyo", testcontroller.CalibrateRT(test));
+            Coordinate hold = new Coordinate();
+            Assert.AreEqual("Oh yea we received a message from the Radio Telescope boyo", testcontroller.MoveTelescope(hold));
         }
 
         [TestMethod]
         public void TestMoveScaleModel()
         {
-            Assert.AreEqual("Oh yea we received a message from the Radio Telescope boyo", testcontroller.CalibrateRT(test));
+            Assert.AreEqual("Oh yea we received a message from the Radio Telescope boyo", testcontroller.MoveScaleModel("I am a Com Port", true));
         }
 
     }
