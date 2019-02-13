@@ -74,6 +74,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
     <Compile Include="EntitiesTests\AppointmentTest.cs" />
     <Compile Include="EntitiesTests\ControlRoomTest.cs" />
     <Compile Include="EntitiesTests\CoordinateTest.cs" />

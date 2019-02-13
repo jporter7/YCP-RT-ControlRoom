@@ -110,6 +110,7 @@
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberSimulatorController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberTestController.cs" />
+    <Compile Include="Database\Operations\DatabaseOperations.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Command\Commmand.cs" />
