@@ -3,6 +3,7 @@ using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities.RadioTelescope;
@@ -20,10 +21,15 @@ namespace ControlRoomApplication.Main
             // Instantiate the configuration manager and the database being used.
             ConfigManager = new ConfigurationManager();
             RTDbContext dbContext = new RTDbContext();
+
+            DatabaseOperations.InitializeLocalConnectionOnly();
+            DatabaseOperations.PopulateLocalDatabase();
+            Console.WriteLine("Local database populated.");
+            Console.WriteLine("Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
+
             AbstractPLC plc;
             AbstractSpectraCyberController spectraCyberController;
             AbstractRadioTelescope radioTelescope;
-
 
             if (args.Length > 0)
             {
@@ -59,6 +65,9 @@ namespace ControlRoomApplication.Main
             ControlRoom cRoom = new ControlRoom(rtController, dbContext);
             ControlRoomController crController = new ControlRoomController(cRoom);
             crController.Start();
+
+            dbContext.Dispose();
+            DatabaseOperations.DisposeLocalDatabaseOnly();
 
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");

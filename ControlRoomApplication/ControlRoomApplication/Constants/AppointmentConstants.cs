@@ -7,5 +7,14 @@
         public static readonly string IN_PROGRESS = "IN_PROGRESS";
         public static readonly string CANCELLED = "CANCELLED";
         public static readonly string COMPLETED = "COMPLETED";
+
+        public static readonly string[] AppointmentStatuses =
+        {
+            REQUESTED,
+            SCHEDULED,
+            IN_PROGRESS,
+            CANCELLED,
+            COMPLETED
+        };
     }
 }

@@ -8,7 +8,7 @@ using System.Data.Entity;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
-    public abstract class AbstractSpectraCyberController
+    public abstract class AbstractSpectraCyberController : HeartbeatInterface
     {
         protected AbstractRadioTelescope Parent { get; set; }
         protected AbstractSpectraCyber SpectraCyber { get; set; }
@@ -126,7 +126,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         }
 
         // Perform a single scan, based on current mode
-        private SpectraCyberResponse DoSpectraCyberScan()
+        protected SpectraCyberResponse DoSpectraCyberScan()
         {
             SpectraCyberResponse Response = new SpectraCyberResponse();
 
@@ -264,6 +264,11 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             CommunicationMutex.ReleaseMutex();
 
             CommunicationThread.Join();
+        }
+
+        protected override bool KillHeartbeatComponent()
+        {
+            return BringDown();
         }
 
         private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, int appId)

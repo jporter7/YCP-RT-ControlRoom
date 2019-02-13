@@ -1,4 +1,5 @@
 using System.Data.Entity.Migrations;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Migrations
 {

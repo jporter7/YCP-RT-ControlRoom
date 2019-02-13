@@ -6,6 +6,8 @@ namespace ControlRoomApplication.Entities
     {
         private SpectraCyberScanScheduleMode Mode { get; set; }
         private double ScanDelayMS { get; set; }
+        // If this is true, that means the scanning starts after ScanDelayMS time has passed
+        // Otherwise, an amount of time equal to ScanIntervalMS has to pass again, then it starts scanning
         private bool StartScanAfterDelay { get; set; }
         private double ScanIntervalMS { get; set; }
         private DateTime LastConsumeTick { get; set; }
@@ -42,6 +44,21 @@ namespace ControlRoomApplication.Entities
             StartScanAfterDelay = startAfterDelay;
         }
 
+        public SpectraCyberScanScheduleMode GetMode()
+        {
+            return Mode;
+        }
+
+        public int GetScanIntervalMS()
+        {
+            return (int)ScanIntervalMS;
+        }
+
+        public DateTime GetLastConsumeTick()
+        {
+            return LastConsumeTick;
+        }
+
         public void Consume()
         {
             LastConsumeTick = DateTime.Now;
@@ -49,6 +66,37 @@ namespace ControlRoomApplication.Entities
             if (Mode == SpectraCyberScanScheduleMode.SINGLE_SCAN)
             {
                 SetModeOff();
+            }
+        }
+
+        // Note: For the cases of SINGLE_SCAN and CONTINUOUS_SCAN, the returned time of 0 does not take into account any time the SpectraCyber needs to "rest" between scans
+        public int TimeUntilReadyMS()
+        {
+            switch (Mode)
+            {
+                case SpectraCyberScanScheduleMode.SINGLE_SCAN:
+                case SpectraCyberScanScheduleMode.CONTINUOUS_SCAN:
+                    return 0;
+
+                case SpectraCyberScanScheduleMode.SCHEDULED_SCAN:
+                    if (ScanDelayMS > 0)
+                    {
+                        double TotalTimeMS = ScanDelayMS;
+
+                        if (!StartScanAfterDelay)
+                        {
+                            TotalTimeMS += ScanIntervalMS;
+                        }
+
+                        return (int)(TotalTimeMS);
+                    }
+                    else
+                    {
+                        return (int)(ScanIntervalMS - (DateTime.Now - LastConsumeTick).TotalMilliseconds);
+                    }
+
+                default:
+                    return -1;
             }
         }
 
@@ -62,6 +110,7 @@ namespace ControlRoomApplication.Entities
                 case SpectraCyberScanScheduleMode.SINGLE_SCAN:
                 case SpectraCyberScanScheduleMode.CONTINUOUS_SCAN:
                     return true;
+
                 case SpectraCyberScanScheduleMode.SCHEDULED_SCAN:
                     if (ScanDelayMS > 0)
                     {
@@ -85,6 +134,7 @@ namespace ControlRoomApplication.Entities
                     }
 
                     return totalMS >= ScanIntervalMS;
+
                 default:
                     return false;
             }
