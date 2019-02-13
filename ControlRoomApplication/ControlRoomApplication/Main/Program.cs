@@ -23,7 +23,6 @@ namespace ControlRoomApplication.Main
             RTDbContext dbContext = new RTDbContext();
 
             DatabaseOperations.InitializeLocalConnectionOnly();
-            //DatabaseOperations.DeleteLocalDatabase();
             DatabaseOperations.PopulateLocalDatabase();
             Console.WriteLine("Local database populated.");
             Console.WriteLine("Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
