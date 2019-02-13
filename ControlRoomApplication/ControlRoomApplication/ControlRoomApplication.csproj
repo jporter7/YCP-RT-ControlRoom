@@ -89,7 +89,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\AASharpConstants.cs" />
     <Compile Include="Constants\AbstractSpectraCyberConstants.cs" />
+    <Compile Include="Constants\AppointmentTypeConstants .cs" />
     <Compile Include="Constants\AppointmentConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
@@ -140,9 +142,9 @@
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
     <Compile Include="Main\RTDbContext.cs" />
-    <Compile Include="Migrations\201902010427496_Jan31.cs" />
-    <Compile Include="Migrations\201902010427496_Jan31.Designer.cs">
-      <DependentUpon>201902010427496_Jan31.cs</DependentUpon>
+    <Compile Include="Migrations\201902122217398_Feb12.cs" />
+    <Compile Include="Migrations\201902122217398_Feb12.Designer.cs">
+      <DependentUpon>201902122217398_Feb12.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -161,12 +163,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201902010427496_Jan31.resx">
-      <DependentUpon>201902010427496_Jan31.cs</DependentUpon>
+    <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201902122217398_Feb12.resx">
+      <DependentUpon>201902122217398_Feb12.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+    <Content Include="Migrations\README.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

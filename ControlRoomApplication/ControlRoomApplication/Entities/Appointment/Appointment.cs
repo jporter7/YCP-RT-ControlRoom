@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -46,27 +47,39 @@ namespace ControlRoomApplication.Entities
         public DateTime EndTime { get; set; }
 
         /// <summary>
-        /// The getter/setter for the coordinate asscociated with this Appointment.
+        /// The getter/setter for the celestial bodies asscociated with this Appointment.
         /// </summary>
         [Required]
-        [Column("coordinate_id")]
-        public int CoordinateId { get; set; }
+        [Column("celestial_bodies")]
+        public virtual ICollection<CelestialBody> CelestialBodies { get; set; }
 
+        /// <summary>
+        /// The getter/setter for the coordinates asscociated with this Appointment.
+        /// </summary>
+        [Required]
+        [Column("coordinates")]
+        public virtual ICollection<Coordinate> Coordinates { get; set; }
+
+        /// <summary>
+        /// The getter/setter for the telescope asscociated with this Appointment.
+        /// </summary>
         [Required]
         [Column("telescope_id")]
         public int TelescopeId { get; set; }
 
-        //[Required]
-        //[Column("status")]
-        //[EnumDataType(typeof(AppointmentStatusEnum))]
-        //public AppointmentStatusEnum Status { //get; set;
-        //    get { return Status; }
-        //    set { Status = (AppointmentStatusEnum)value; }
-        //}
-
+        /// <summary>
+        /// The getter/setter for the status asscociated with this Appointment.
+        /// </summary>
         [Required]
         [Column("status")]
         public string Status { get; set; }
+
+        /// <summary>
+        /// The getter/setter for the Appointment type.
+        /// </summary>
+        [Required]
+        [Column("type")]
+        public string Type { get; set; }
 
         /// <summary>
         /// Compares the current Appointment to another object and it
