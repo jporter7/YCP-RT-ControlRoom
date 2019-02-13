@@ -9,6 +9,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
     public class SpectraCyberController : AbstractSpectraCyberController
     {
+        private bool SerialCommsFailed;
+
         public SpectraCyberController(SpectraCyber spectraCyber, RTDbContext context) : base(spectraCyber, context)
         {
             
@@ -95,7 +97,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return true;
         }
 
-        public override bool BringDownSpectraCyber()
+        public override bool BringDown()
         {
             try
             {
@@ -155,7 +157,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 // Termination, safely end communication
                 case SpectraCyberCommandTypeEnum.TERMINATE:
-                    BringDownSpectraCyber();
+                    BringDown();
                     break;
 
                 // TODO: implement this case further probably
