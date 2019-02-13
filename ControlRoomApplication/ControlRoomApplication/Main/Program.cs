@@ -65,6 +65,50 @@ namespace ControlRoomApplication.Main
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Console.ReadKey();
+
+            /*
+			Console.WriteLine("Starting...");
+			Console.WriteLine("Initial number of children: " + HeartbeatTrackerContainer.GetNumberOfChildren().ToString());
+			
+			Console.WriteLine("Creating actual SpectraCyber controller...");
+			SpectraCyberController controller0 = new SpectraCyberController(new SpectraCyber(), null, -1);
+			controller0.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+			controller0.BringUp(0);
+			controller0.ScheduleScan(400, 1000, false);
+			
+			Console.WriteLine("Creating simulated SpectraCyber controller...");
+			FailableSpectraCyberSimulatorController controller1 = new FailableSpectraCyberSimulatorController(new SpectraCyberSimulator(), null, -1);
+			controller1.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+			controller1.BringUp(0);
+			controller1.StartScan();
+			
+			Console.WriteLine("Number of children now: " + HeartbeatTrackerContainer.GetNumberOfChildren().ToString());
+			Thread.Sleep(1000);
+			
+			int MSCheckRate = 250;
+			Console.WriteLine("Checking for status every " + MSCheckRate.ToString() + " milliseconds...");
+			while (true)
+			{
+				Thread.Sleep(MSCheckRate);
+			
+				bool ChildrenAreAlive = HeartbeatTrackerContainer.ChildrenAreAlive();
+				Console.WriteLine("Alive [" + HeartbeatTrackerContainer.GetNumberOfChildren().ToString() + "]: " + ChildrenAreAlive.ToString());
+			
+				if (!ChildrenAreAlive)
+				{
+					Console.WriteLine("ERROR: not all children are alive.");
+					break;
+				}
+			}
+			
+			Thread.Sleep(1000);
+			Console.WriteLine("Attempting to kill remaining component(s)...");
+			Thread.Sleep(1000);
+			
+			HeartbeatTrackerContainer.SafelyKillHeartbeatComponents();
+			Console.WriteLine("Successfull...");
+			Thread.Sleep(3000);
+			*/
         }
 
         private static ConfigurationManager ConfigManager;

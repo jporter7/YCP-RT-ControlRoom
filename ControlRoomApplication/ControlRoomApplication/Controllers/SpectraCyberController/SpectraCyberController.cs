@@ -11,9 +11,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     {
         private bool SerialCommsFailed;
 
-        public SpectraCyberController(SpectraCyber spectraCyber, RTDbContext context, int appId) : base(spectraCyber, context, appId)
+        public SpectraCyberController(SpectraCyber spectraCyber, RTDbContext context) : base(spectraCyber, context)
         {
-            AppId = appId;
             SerialCommsFailed = false;
         }
 

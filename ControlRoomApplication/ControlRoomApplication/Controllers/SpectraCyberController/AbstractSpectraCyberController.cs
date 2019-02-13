@@ -268,7 +268,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
         protected override bool KillHeartbeatComponent()
         {
-            return BringDownSpectraCyber();
+            return BringDown();
         }
 
         private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, int appId)
