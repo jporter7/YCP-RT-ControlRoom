@@ -2,6 +2,7 @@
 using System;
 using AASharp;
 using ControlRoomApplication.Constants;
+using System.Linq;
 
 namespace ControlRoomApplication.Controllers.AASharpControllers
 {
@@ -12,21 +13,43 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
         }
 
-        public Coordinate CalculateCoordinates(string celestialBody, DateTime date)
+        public Coordinate CalculateCoordinates(Appointment appt)
+        {
+            Coordinate coordinate;
+            switch (appt.Type)
+            {
+                case ("POINT"):
+                    coordinate = appt.Coordinates.ToList()[0];
+                    break;
+                case ("CELESTIAL_BODY"):
+                    coordinate = GetCelestialBodyCoordinate(appt.CelestialBody, DateTime.Now);
+                    break;
+                case ("RASTER"):
+                    throw new NotImplementedException();
+                default:
+                    coordinate = new Coordinate(0.0, 0.0);
+                    break;
+            }
+            return coordinate;
+
+            
+        }
+
+        public Coordinate GetCelestialBodyCoordinate(string celestialBody, DateTime date)
         {
             Coordinate coordinate = new Coordinate(0.0, 0.0);
-            switch(celestialBody)
+            switch (celestialBody)
             {
-                case "sun":
+                case "SUN":
                     SunCoordinateCalculator sunCoordinateCalculator = new SunCoordinateCalculator(date);
                     coordinate.RightAscension = sunCoordinateCalculator.GetEquatorialElevation();
                     coordinate.Declination = sunCoordinateCalculator.GetEquatorialAzimuth();
 
                     return coordinate;
-                case "moon":
-                    
+                case "MOON":
+                    throw new NotImplementedException();
                 default:
-                    return new Coordinate(0.0,0.0);
+                    return new Coordinate(0.0, 0.0);
             }
         }
 

@@ -4,6 +4,7 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 
 namespace ControlRoomApplicationTest.DatabaseOperationsTests
 {
@@ -53,21 +54,27 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt1.StartTime = date;
             appt1.EndTime = date.AddHours(1);
             appt1.Status = AppointmentConstants.IN_PROGRESS;
-            appt1.CoordinateId = 1;
+            appt1.Type = AppointmentTypeConstants.POINT;
+            appt1.Coordinates = new List<Coordinate>();
+            appt1.CelestialBody = CelestialBodyConstants.NONE;
             appt1.TelescopeId = 1;
             appt1.UserId = 1;
 
             appt2.StartTime = date.AddHours(2);
             appt2.EndTime = date.AddHours(3);
             appt2.Status = AppointmentConstants.REQUESTED;
-            appt2.CoordinateId = 1;
+            appt2.Type = AppointmentTypeConstants.POINT;
+            appt2.Coordinates = new List<Coordinate>();
+            appt2.CelestialBody = CelestialBodyConstants.NONE;
             appt2.TelescopeId = 1;
             appt2.UserId = 1;
 
             appt3.StartTime = date.AddHours(3);
             appt3.EndTime = date.AddHours(4);
             appt3.Status = AppointmentConstants.REQUESTED;
-            appt3.CoordinateId = 1;
+            appt3.Type = AppointmentTypeConstants.POINT;
+            appt3.Coordinates = new List<Coordinate>();
+            appt3.CelestialBody = CelestialBodyConstants.NONE;
             appt3.TelescopeId = 1;
             appt3.UserId = 1;
         }

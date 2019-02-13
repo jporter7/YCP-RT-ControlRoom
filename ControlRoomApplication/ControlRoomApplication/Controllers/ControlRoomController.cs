@@ -4,7 +4,6 @@ using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace ControlRoomApplication.Controllers
@@ -24,18 +23,8 @@ namespace ControlRoomApplication.Controllers
         {
             while (true)
             {
-                Appointment app = WaitingForNextAppointment();
-                Coordinate coordinate;
-                switch (app.Type)
-                {
-                    case ("POINT"):
-                        coordinate = CRoom.Context.Coordinates.ToList()[0];
-                        break;
-                    default:
-                        coordinate = CRoom.Context.Coordinates.ToList()[0];
-                        break;
-                }
-                
+                Appointment appt = WaitingForNextAppointment();
+                Coordinate coordinate = coordinateController.CalculateCoordinates(appt);
 
                 if (coordinate != null)
                 {
@@ -46,15 +35,15 @@ namespace ControlRoomApplication.Controllers
                     CalibrateRadioTelescope();
 
                     // Start movement thread
-                    Thread movementThread = new Thread(() => StartRadioTelescope(app, orientation));
+                    Thread movementThread = new Thread(() => StartRadioTelescope(appt, orientation));
                     movementThread.Start();
 
                     // Start SpectraCyber
-                    //StartReadingData(app);
+                    StartReadingData(appt);
 
                     // End PLC thread & SpectraCyber 
                     movementThread.Join();
-                    //StopReadingRFData();
+                    StopReadingRFData();
 
                     // Stow Telescope
                     EndAppointment();
@@ -77,26 +66,26 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
         public Appointment WaitingForNextAppointment()
         {
-            Appointment app = null;
-            while (app == null)
+            Appointment appt = null;
+            while (appt == null)
             {
-                app = GetNextAppointment();
-                if (app == null)
+                appt = GetNextAppointment();
+                if (appt == null)
                 {
                     Thread.Sleep(5000); // delay between checking database for new appointments
                 }
             }
 
-            TimeSpan diff = app.StartTime - DateTime.Now;
+            TimeSpan diff = appt.StartTime - DateTime.Now;
 
             logger.Info("Waiting for the next appointment to be within 10 minutes.");
             while (diff.TotalMinutes > 10)
             {
-                diff = app.StartTime - DateTime.Now;
+                diff = appt.StartTime - DateTime.Now;
             }
 
             logger.Info("The next appointment is now within the correct timeframe.");
-            return app;
+            return appt;
         }
 
         /// <summary>
@@ -113,8 +102,14 @@ namespace ControlRoomApplication.Controllers
             logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
             if (appointments.Count > 0)
             {
-                appointment = appointments[0];
-                appointment = (appointment.Status == AppointmentConstants.COMPLETED) ? null : appointment;
+                int index = 0;
+                do
+                {
+                    appointment = appointments[index];
+                    appointment = (appointment.Status == AppointmentConstants.COMPLETED) ? null : appointment;
+                    index++;
+                }
+                while (index < appointments.Count && appointment == null);
             }
             else
             {
@@ -140,15 +135,15 @@ namespace ControlRoomApplication.Controllers
         /// it needs to go to. This will have to be refactored to work with a 
         /// set of Orientations as opposed to one orientation.
         /// </summary>
-        /// <param name="app"> The appointment that is currently running. </param>
+        /// <param name="appt"> The appointment that is currently running. </param>
         /// <param name="orientation"> The orientation that the RT is going to. </param>
-        public void StartRadioTelescope(Appointment app, Orientation orientation)
+        public void StartRadioTelescope(Appointment appt, Orientation orientation)
         {
-            app.Status = AppointmentConstants.IN_PROGRESS;
+            appt.Status = AppointmentConstants.IN_PROGRESS;
             CRoom.Context.SaveChanges();
             CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
             CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation = orientation;
-            app.Status = AppointmentConstants.COMPLETED;
+            appt.Status = AppointmentConstants.COMPLETED;
             CRoom.Context.SaveChanges();
         }
 
@@ -166,9 +161,9 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Calls the SpectraCyber controller to start the SpectraCyber readings.
         /// </summary>
-        public void StartReadingData(Appointment app)
+        public void StartReadingData(Appointment appt)
         {
-            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringUp(app.Id);
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringUp(appt.Id);
             CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.StartScan();
         }
 
