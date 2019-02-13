@@ -86,7 +86,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants\AbstractSpectraCyberConstants.cs" />
     <Compile Include="Constants\AppointmentConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
@@ -94,6 +93,7 @@
     <Compile Include="Constants\HeartbeatConstants.cs" />
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\RadioTelescopeConstants.cs" />
+    <Compile Include="Constants\SpectraCyberConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateTransformation.cs" />
     <Compile Include="Controllers\AASharpControllers\MoonCoordinateCalculator.cs" />
@@ -106,6 +106,7 @@
     <Compile Include="Controllers\RadioTelescopeControllers\RadioTelescopeController.cs" />
     <Compile Include="Controllers\ScheduleController\ScheduleController.cs" />
     <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
+    <Compile Include="Controllers\SpectraCyberController\FailableSpectraCyberSimulatorController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberController\SpectraCyberSimulatorController.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />

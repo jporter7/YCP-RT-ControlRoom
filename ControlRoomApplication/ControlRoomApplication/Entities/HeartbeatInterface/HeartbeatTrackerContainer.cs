@@ -1,4 +1,6 @@
-﻿namespace ControlRoomApplication.Entities
+﻿using System;
+
+namespace ControlRoomApplication.Entities
 {
     public static class HeartbeatTrackerContainer
     {
@@ -28,6 +30,7 @@
             {
                 if (!HeartbeatTracker.GetInterfaceAt(i).IsConsideredAlive())
                 {
+                    Console.WriteLine("Interface " + i.ToString() + " was DEAD.");
                     return false;
                 }
             }
@@ -35,7 +38,7 @@
             return true;
         }
 
-        internal static void DafelyKillHeartbeatComponents()
+        internal static void SafelyKillHeartbeatComponents()
         {
             for (int i = 0; i < HeartbeatTracker.GetNumberOfChildren(); i++)
             {

@@ -2,7 +2,7 @@
 
 namespace ControlRoomApplication.Constants
 {
-    public sealed class AbstractSpectraCyberConstants
+    public sealed class SpectraCyberConstants
     {
         public static readonly int BAUD_RATE = 2400;
         public static readonly int DATA_BITS = 8;
@@ -17,5 +17,7 @@ namespace ControlRoomApplication.Constants
         public static readonly double SIMULATED_RF_INTENSITY_MINIMUM = 0.0;
         public static readonly double SIMULATED_RF_INTENSITY_MAXIMUM = 10.0;
         public static readonly double SIMULATED_RF_INTENSITY_DISCRETIZATION = 0.001;
+
+        public static readonly double FAILABLE_SPECTRA_CYBER_FAILURE_DEFAULT_PROBABILITY = 0.015;
     }
 }

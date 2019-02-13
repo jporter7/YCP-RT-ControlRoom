@@ -202,7 +202,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         {
             if (numChars <= 0)
             {
-                numChars = AbstractSpectraCyberConstants.BUFFER_SIZE;
+                numChars = SpectraCyberConstants.BUFFER_SIZE;
             }
 
             // Based on the current mode, create the proper command string
@@ -278,9 +278,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             //
             // Add to database
             //
-            rfData.Id = appId;
-            Context.RFDatas.Add(rfData);
-            Context.SaveChanges();
+            if (Context != null)
+            {
+                rfData.Id = appId;
+                Context.RFDatas.Add(rfData);
+                Context.SaveChanges();
+            }
 
             return rfData;
         }

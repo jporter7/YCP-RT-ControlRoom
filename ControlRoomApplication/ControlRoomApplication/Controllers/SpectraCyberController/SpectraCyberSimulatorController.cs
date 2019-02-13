@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
     public class SpectraCyberSimulatorController : AbstractSpectraCyberController
     {
-        private Random random;
+        protected Random random;
 
         public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator, RTDbContext context, int appId) : base(spectraCyberSimulator, context, appId)
         {
@@ -63,7 +63,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             response.RequestSuccessful = true;
 
             // Give the simulated SpectraCyber some time to process the command
-            Thread.Sleep(AbstractSpectraCyberConstants.WAIT_TIME_MS);
+            Thread.Sleep(SpectraCyberConstants.WAIT_TIME_MS);
 
             // Check for any significant cases
             switch (request.CommandType)
@@ -88,8 +88,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 response.SerialIdentifier = request.ResponseIdentifier;
 
                 // Generate random data
-                int minIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MINIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
-                int maxIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MAXIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
+                int minIntensityScaled = (int)(SpectraCyberConstants.SIMULATED_RF_INTENSITY_MINIMUM / SpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
+                int maxIntensityScaled = (int)(SpectraCyberConstants.SIMULATED_RF_INTENSITY_MAXIMUM / SpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
                 response.DecimalData = random.Next(minIntensityScaled, maxIntensityScaled + 1);
 
                 // Set the time captured to be as close to the (simulated) read as possible
@@ -101,7 +101,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
         protected override bool TestIfComponentIsAlive()
         {
-            return random.NextDouble() < 0.02;
+            return true;
         }
     }
 }

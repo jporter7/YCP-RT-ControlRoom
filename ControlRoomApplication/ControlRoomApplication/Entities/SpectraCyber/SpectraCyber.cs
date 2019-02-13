@@ -15,7 +15,7 @@ namespace ControlRoomApplication.Entities
 
         public SpectraCyber()
         {
-            CommPort = AbstractSpectraCyberConstants.DEFAULT_COMM_PORT;
+            CommPort = SpectraCyberConstants.DEFAULT_COMM_PORT;
         }
     }
 }

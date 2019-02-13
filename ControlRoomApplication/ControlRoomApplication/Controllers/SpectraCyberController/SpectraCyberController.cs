@@ -23,14 +23,14 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 ((SpectraCyber)SpectraCyber).SerialPort = new SerialPort(
                 ((SpectraCyber)SpectraCyber).CommPort,
-                AbstractSpectraCyberConstants.BAUD_RATE,
-                AbstractSpectraCyberConstants.PARITY_BITS,
-                AbstractSpectraCyberConstants.DATA_BITS,
-                AbstractSpectraCyberConstants.STOP_BITS
+                SpectraCyberConstants.BAUD_RATE,
+                SpectraCyberConstants.PARITY_BITS,
+                SpectraCyberConstants.DATA_BITS,
+                SpectraCyberConstants.STOP_BITS
                 )
                 {
-                    ReadTimeout = AbstractSpectraCyberConstants.TIMEOUT_MS,
-                    WriteTimeout = AbstractSpectraCyberConstants.TIMEOUT_MS
+                    ReadTimeout = SpectraCyberConstants.TIMEOUT_MS,
+                    WriteTimeout = SpectraCyberConstants.TIMEOUT_MS
                 };
             }
             catch (Exception e)
@@ -151,7 +151,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             response.RequestSuccessful = true;
 
             // Give the SpectraCyber some time to process the command
-            Thread.Sleep(AbstractSpectraCyberConstants.WAIT_TIME_MS);
+            Thread.Sleep(SpectraCyberConstants.WAIT_TIME_MS);
 
             // Check for any significant cases
             switch (request.CommandType)
@@ -187,7 +187,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                     string hexString;
 
                     // Read a number of characters in the buffer
-                    char[] charInBuffer = new char[AbstractSpectraCyberConstants.BUFFER_SIZE];
+                    char[] charInBuffer = new char[SpectraCyberConstants.BUFFER_SIZE];
 
                     int length = -1;
                     try
@@ -205,7 +205,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                     response.DateTimeCaptured = DateTime.Now;
 
                     // Clip the string to the exact number of bytes read
-                    if (AbstractSpectraCyberConstants.CLIP_BUFFER_RESPONSE && (length != AbstractSpectraCyberConstants.BUFFER_SIZE))
+                    if (SpectraCyberConstants.CLIP_BUFFER_RESPONSE && (length != SpectraCyberConstants.BUFFER_SIZE))
                     {
                         char[] actual = new char[length];
 
@@ -282,13 +282,13 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                             // high if it does fail, so assume it's ok for now
                             return true;
                         }
-                        else if (TimeRemainingMS > AbstractSpectraCyberConstants.WAIT_TIME_MS)
+                        else if (TimeRemainingMS > SpectraCyberConstants.WAIT_TIME_MS)
                         {
                             // The amount of time the schedule is waiting to do another scan is theoretically enough time for the SpectraCyber
                             // to do another scan and be ready for the scheduled scan, so do another scan to check its status
                             return DoSpectraCyberScan().Valid;
                         }
-                        else if (ScanIntervalMS < (2 * AbstractSpectraCyberConstants.WAIT_TIME_MS))
+                        else if (ScanIntervalMS < (2 * SpectraCyberConstants.WAIT_TIME_MS))
                         {
                             // There's no time to scan and let the schedule resume normally - again, assume the SerialPortCommsFailed flag will
                             // catch failures
