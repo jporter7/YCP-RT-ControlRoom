@@ -98,5 +98,10 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
             // Do nothing to purge a simulated buffer
         }
+
+        protected override bool TestIfComponentIsAlive()
+        {
+            return random.NextDouble() < 0.02;
+        }
     }
 }

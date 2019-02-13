@@ -95,7 +95,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return true;
         }
 
-        public override bool BringDown()
+        public override bool BringDownSpectraCyber()
         {
             try
             {
@@ -140,6 +140,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             catch (Exception)
             {
                 // Something went wrong, return the response
+                SerialCommsFailed = true;
                 return;
             }
 
@@ -154,7 +155,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 // Termination, safely end communication
                 case SpectraCyberCommandTypeEnum.TERMINATE:
-                    BringDown();
+                    BringDownSpectraCyber();
                     break;
 
                 // TODO: implement this case further probably
@@ -184,7 +185,18 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
                     // Read a number of characters in the buffer
                     char[] charInBuffer = new char[AbstractSpectraCyberConstants.BUFFER_SIZE];
-                    int length = ((SpectraCyber)SpectraCyber).SerialPort.Read(charInBuffer, 0, request.CharsToRead);
+
+                    int length = -1;
+                    try
+                    {
+                        length = ((SpectraCyber)SpectraCyber).SerialPort.Read(charInBuffer, 0, request.CharsToRead);
+                    }
+                    catch (Exception)
+                    {
+                        // Something went wrong, return the response
+                        SerialCommsFailed = true;
+                        return;
+                    }
 
                     // Set the time captured to be as close to the read as possible, in case it's valid
                     response.DateTimeCaptured = DateTime.Now;
@@ -230,6 +242,65 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
             // Clear the input buffer
             ((SpectraCyber)SpectraCyber).SerialPort.DiscardInBuffer();
+        }
+
+        // Test if the physical SpectraCyber is alive, while making sure to not interrupt the schedule
+        protected override bool TestIfComponentIsAlive()
+        {
+            // If the SpectraCyber has already told us it failed, then it's clearly not alive
+            if (SerialCommsFailed)
+            {
+                return false;
+            }
+
+            switch (Schedule.GetMode())
+            {
+                case SpectraCyberScanScheduleMode.UNKNOWN:
+                case SpectraCyberScanScheduleMode.OFF:
+                    return DoSpectraCyberScan().Valid;
+
+                case SpectraCyberScanScheduleMode.SINGLE_SCAN:
+                    return true;
+
+                case SpectraCyberScanScheduleMode.CONTINUOUS_SCAN:
+                    return true;
+
+                case SpectraCyberScanScheduleMode.SCHEDULED_SCAN:
+                    {
+                        CommunicationMutex.WaitOne();
+                        DateTime LastConsumeTick = Schedule.GetLastConsumeTick();
+                        int TimeRemainingMS = Schedule.TimeUntilReadyMS();
+                        int ScanIntervalMS = Schedule.GetScanIntervalMS();
+                        CommunicationMutex.ReleaseMutex();
+
+                        if ((DateTime.Now - LastConsumeTick).TotalMilliseconds < HeartbeatConstants.INTERFACE_CHECK_IN_RATE_MS)
+                        {
+                            // It was operable relatively recently, and the scheduled aspects of it means the SerialCommsFailed flag will go
+                            // high if it does fail, so assume it's ok for now
+                            return true;
+                        }
+                        else if (TimeRemainingMS > AbstractSpectraCyberConstants.WAIT_TIME_MS)
+                        {
+                            // The amount of time the schedule is waiting to do another scan is theoretically enough time for the SpectraCyber
+                            // to do another scan and be ready for the scheduled scan, so do another scan to check its status
+                            return DoSpectraCyberScan().Valid;
+                        }
+                        else if (ScanIntervalMS < (2 * AbstractSpectraCyberConstants.WAIT_TIME_MS))
+                        {
+                            // There's no time to scan and let the schedule resume normally - again, assume the SerialPortCommsFailed flag will
+                            // catch failures
+                            return true;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Unpredicted scheduling combination...");
+                            return true;
+                        }
+                    }
+
+                default:
+                    throw new ArgumentException("Illegal type of SpectraCyber scan schedule mode: " + Schedule.GetMode().ToString());
+            }
         }
     }
 }

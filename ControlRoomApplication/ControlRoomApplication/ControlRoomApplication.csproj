@@ -94,6 +94,7 @@
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
+    <Compile Include="Constants\HeartbeatConstants.cs" />
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\RadioTelescopeConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
@@ -116,6 +117,9 @@
     <Compile Include="Entities\Command\Commmand.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Coordinate\Coordinate.cs" />
+    <Compile Include="Entities\HeartbeatInterface\HeartbeatInterface.cs" />
+    <Compile Include="Entities\HeartbeatInterface\HeartbeatTracker.cs" />
+    <Compile Include="Entities\HeartbeatInterface\HeartbeatTrackerContainer.cs" />
     <Compile Include="Entities\Orientation\Orientation.cs" />
     <Compile Include="Entities\Plc\AbstractPLC.cs" />
     <Compile Include="Entities\Plc\TestPLC.cs" />
