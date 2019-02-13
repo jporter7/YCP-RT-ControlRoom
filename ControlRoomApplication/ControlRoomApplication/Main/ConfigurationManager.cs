@@ -1,5 +1,6 @@
 ﻿using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Entities.RadioTelescope;
@@ -96,6 +97,12 @@ namespace ControlRoomApplication.Main
                     // radiotelescope class implemented
                     return new ScaleRadioTelescope(spectraCyberController, plcController);
             }
+        }
+
+        public void ConfigureLocalDatabase()
+        {
+            DatabaseOperations.InitializeLocalConnectionOnly();
+            DatabaseOperations.PopulateLocalDatabase();
         }
     }
 }

@@ -17,6 +17,14 @@ namespace ControlRoomApplication.Database.Operations
         public static void InitializeConnections()
         {
             LocalContext = new RTDbContext();
+            if (LocalContext.Database.Exists())
+            {
+                LocalContext.Database.Delete();
+                LocalContext.SaveChanges();
+            }
+            LocalContext.Database.CreateIfNotExists();
+            LocalContext.SaveChanges();
+
             RemoteContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
         }
 
@@ -26,6 +34,14 @@ namespace ControlRoomApplication.Database.Operations
         public static void InitializeLocalConnectionOnly()
         {
             LocalContext = new RTDbContext();
+            if (LocalContext.Database.Exists())
+            {
+                LocalContext.Database.Delete();
+                LocalContext.SaveChanges();
+            }
+
+            LocalContext.Database.CreateIfNotExists();
+            LocalContext.SaveChanges();
         }
 
         /// <summary>
@@ -35,6 +51,92 @@ namespace ControlRoomApplication.Database.Operations
         public static void DisposeLocalDatabaseOnly()
         {
             LocalContext.Dispose();
+        }
+
+        /// <summary>
+        /// Populates the local database with 3 appointments and 3 coordinates
+        /// for testing purposes.
+        /// </summary>
+        public static void PopulateLocalDatabase()
+        {
+            if (LocalContext.Database.Exists())
+            {
+                DateTime date = DateTime.Now.AddMinutes(5);
+
+                Appointment appt1 = new Appointment();
+                Appointment appt2 = new Appointment();
+                Appointment appt3 = new Appointment();
+
+                Coordinate coordinate1 = new Coordinate();
+                Coordinate coordinate2 = new Coordinate();
+                Coordinate coordinate3 = new Coordinate();
+
+                coordinate1.RightAscension = 83.63;
+                coordinate1.Declination = 22.0;
+
+                coordinate2.RightAscension = 71.5;
+                coordinate2.Declination = 16.0;
+
+                coordinate3.RightAscension = 85.12;
+                coordinate3.Declination = 26.3;
+
+                List<Coordinate> coordinates = new List<Coordinate>()
+                {
+                    coordinate1,
+                    coordinate2,
+                    coordinate3
+                };
+
+                LocalContext.Coordinates.AddRange(coordinates);
+                LocalContext.SaveChanges();
+
+                appt1.StartTime = date;
+                appt1.EndTime = date.AddHours(1);
+                appt1.Status = AppointmentConstants.IN_PROGRESS;
+                appt1.CoordinateId = 1;
+                appt1.TelescopeId = 1;
+                appt1.UserId = 1;
+
+                appt2.StartTime = date.AddHours(2);
+                appt2.EndTime = date.AddHours(3);
+                appt2.Status = AppointmentConstants.REQUESTED;
+                appt2.CoordinateId = 2;
+                appt2.TelescopeId = 1;
+                appt2.UserId = 1;
+
+                appt3.StartTime = date.AddHours(3);
+                appt3.EndTime = date.AddHours(4);
+                appt3.Status = AppointmentConstants.REQUESTED;
+                appt3.CoordinateId = 3;
+                appt3.TelescopeId = 1;
+                appt3.UserId = 1;
+
+                List<Appointment> appts = new List<Appointment>()
+                {
+                    appt1,
+                    appt2,
+                    appt3,
+                };
+
+                LocalContext.Appointments.AddRange(appts);
+                LocalContext.SaveChanges();
+            }
+        }
+
+        /// <summary>
+        /// Deletes the local database, if it exists.
+        /// </summary>
+        public static void DeleteLocalDatabase()
+        {
+            if (LocalContext.Database.Exists())
+            {
+                LocalContext.Database.Delete();
+            }
+        }
+
+        public static List<Appointment> GetListOfAppointments()
+        {
+            return LocalContext.Appointments.ToList();
         }
 
         /// <summary>
