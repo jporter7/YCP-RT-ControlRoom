@@ -40,11 +40,11 @@ namespace ControlRoomApplication.Controllers
                     movementThread.Start();
 
                     // Start SpectraCyber
-                    //StartReadingData(app);
+                    StartReadingData(app);
 
                     // End PLC thread & SpectraCyber 
                     movementThread.Join();
-                    //StopReadingRFData();
+                    StopReadingRFData();
 
                     // Stow Telescope
                     EndAppointment();
@@ -99,6 +99,7 @@ namespace ControlRoomApplication.Controllers
             logger.Debug("Retrieving list of appointments.");
             List<Appointment> appointments = DatabaseOperations.GetListOfAppointments();
             appointments.Sort();
+            appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
             appointments.RemoveAll(x => x.StartTime < DateTime.Now);
             logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
             if (appointments.Count > 0)

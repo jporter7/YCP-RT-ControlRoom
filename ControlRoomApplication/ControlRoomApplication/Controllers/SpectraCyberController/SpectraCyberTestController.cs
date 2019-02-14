@@ -27,7 +27,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
         protected override bool TestIfComponentIsAlive()
         {
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
+            return true;
         }
     }
 }
