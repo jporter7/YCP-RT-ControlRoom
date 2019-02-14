@@ -4,8 +4,6 @@ using ControlRoomApplication.Main;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Database.Operations
 {
@@ -91,7 +89,7 @@ namespace ControlRoomApplication.Database.Operations
                 appt0.UserId = 1;
 
                 appt1.StartTime = date;
-                appt1.EndTime = date.AddHours(1);
+                appt1.EndTime = date.AddMinutes(1);
                 appt1.Status = AppointmentConstants.IN_PROGRESS;
                 appt1.Type = AppointmentTypeConstants.POINT;
                 appt1.Coordinates = new List<Coordinate>();
@@ -100,8 +98,8 @@ namespace ControlRoomApplication.Database.Operations
                 appt1.TelescopeId = 1;
                 appt1.UserId = 1;
 
-                appt2.StartTime = date.AddHours(2);
-                appt2.EndTime = date.AddHours(3);
+                appt2.StartTime = date.AddMinutes(2);
+                appt2.EndTime = date.AddMinutes(3);
                 appt2.Status = AppointmentConstants.REQUESTED;
                 appt2.Type = AppointmentTypeConstants.POINT;
                 appt2.Coordinates = new List<Coordinate>();
@@ -110,8 +108,8 @@ namespace ControlRoomApplication.Database.Operations
                 appt2.TelescopeId = 1;
                 appt2.UserId = 1;
 
-                appt3.StartTime = date.AddHours(3);
-                appt3.EndTime = date.AddHours(4);
+                appt3.StartTime = date.AddMinutes(3);
+                appt3.EndTime = date.AddMinutes(4);
                 appt3.Status = AppointmentConstants.REQUESTED;
                 appt3.Type = AppointmentTypeConstants.POINT;
                 appt3.Coordinates = new List<Coordinate>();
