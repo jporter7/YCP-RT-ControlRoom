@@ -98,18 +98,12 @@ namespace ControlRoomApplication.Controllers
             logger.Debug("Retrieving list of appointments.");
             List<Appointment> appointments = DatabaseOperations.GetListOfAppointments();
             appointments.Sort();
+            appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
             appointments.RemoveAll(x => x.StartTime < DateTime.Now);
             logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
             if (appointments.Count > 0)
             {
-                int index = 0;
-                do
-                {
-                    appointment = appointments[index];
-                    appointment = (appointment.Status == AppointmentConstants.COMPLETED) ? null : appointment;
-                    index++;
-                }
-                while (index < appointments.Count && appointment == null);
+                appointment = appointments[0];
             }
             else
             {
