@@ -24,18 +24,15 @@ namespace ControlRoomApplication.Controllers
             while (true)
             {
                 Appointment appt = WaitingForNextAppointment();
-                Coordinate coordinate = coordinateController.CalculateCoordinates(appt);
+                Dictionary<DateTime, Orientation> orientations = coordinateController.CalculateCoordinates(appt);
 
-                if (coordinate != null)
+                if (orientations.Count > 0)
                 {
-                    Orientation orientation = coordinateController.CoordinateToOrientation(coordinate, DateTime.Now);
-                    logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");
-
                     // Calibrate telescope
                     CalibrateRadioTelescope();
 
                     // Start movement thread
-                    Thread movementThread = new Thread(() => StartRadioTelescope(appt, orientation));
+                    Thread movementThread = new Thread(() => StartRadioTelescope(appt, orientations));
                     movementThread.Start();
 
                     // Start SpectraCyber
@@ -131,12 +128,20 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="appt"> The appointment that is currently running. </param>
         /// <param name="orientation"> The orientation that the RT is going to. </param>
-        public void StartRadioTelescope(Appointment appt, Orientation orientation)
+        public void StartRadioTelescope(Appointment appt, Dictionary<DateTime, Orientation> orientations)
         {
             appt.Status = AppointmentConstants.IN_PROGRESS;
             CRoom.Context.SaveChanges();
-            CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
-            CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation = orientation;
+            foreach(DateTime datetime in orientations.Keys)
+            {
+                while(DateTime.Now < datetime)
+                {
+                    // wait for timestamp 
+                }
+                Orientation orientation = orientations[datetime];
+                CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
+                CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation = orientation;
+            }
             appt.Status = AppointmentConstants.COMPLETED;
             CRoom.Context.SaveChanges();
         }

@@ -3,6 +3,7 @@ using System;
 using AASharp;
 using ControlRoomApplication.Constants;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace ControlRoomApplication.Controllers.AASharpControllers
 {
@@ -13,35 +14,46 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
         }
 
-        public Coordinate CalculateCoordinates(Appointment appt)
+        public Dictionary<DateTime, Orientation> CalculateCoordinates(Appointment appt)
         {
-            Coordinate coordinate;
+            Dictionary<DateTime, Orientation> orientations = new Dictionary<DateTime, Orientation>();
+            TimeSpan length = appt.EndTime - appt.StartTime;
+            for (int i = 0; i < length.TotalMinutes; i++)
+            {
+                DateTime datetime = DateTime.Now.AddMinutes(i);
+                Coordinate coordinate = CalculateCoordinate(appt, datetime);
+                if(coordinate != null)
+                {
+                    Orientation orientation = CoordinateToOrientation(coordinate, datetime);
+                    orientations.Add(datetime, orientation);
+                }
+            }
+            return orientations;
+        }
+
+        public Coordinate CalculateCoordinate(Appointment appt, DateTime datetime)
+        {
             switch (appt.Type)
             {
                 case ("POINT"):
-                    coordinate = appt.Coordinates.ToList()[0];
-                    break;
+                    var coordinates = appt.Coordinates.ToList();
+                    return (coordinates.Count > 0) ? coordinates[0] : null;
                 case ("CELESTIAL_BODY"):
-                    coordinate = GetCelestialBodyCoordinate(appt.CelestialBody, DateTime.Now);
-                    break;
+                    return GetCelestialBodyCoordinate(appt.CelestialBody, datetime);
                 case ("RASTER"):
                     throw new NotImplementedException();
                 default:
-                    coordinate = new Coordinate(0.0, 0.0);
-                    break;
+                    return new Coordinate(0.0, 0.0);
             }
-            return coordinate;
-
-            
         }
 
-        public Coordinate GetCelestialBodyCoordinate(string celestialBody, DateTime date)
+        public Coordinate GetCelestialBodyCoordinate(string celestialBody, DateTime Date)
         {
             Coordinate coordinate = new Coordinate(0.0, 0.0);
             switch (celestialBody)
             {
                 case "SUN":
-                    SunCoordinateCalculator sunCoordinateCalculator = new SunCoordinateCalculator(date);
+                    SunCoordinateCalculator sunCoordinateCalculator = new SunCoordinateCalculator(Date);
                     coordinate.RightAscension = sunCoordinateCalculator.GetEquatorialElevation();
                     coordinate.Declination = sunCoordinateCalculator.GetEquatorialAzimuth();
 
