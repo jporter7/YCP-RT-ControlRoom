@@ -17,10 +17,10 @@ namespace ControlRoomApplication.Controllers.PLCController
         {
             PlcConnector = plcConnector;
             ConnectionEndpoint = plcConnector.ConnectionEndpoint;
-            TCPServer = new TcpListener(ConnectionEndpoint);
-            TCPServer.Start();
-            PlcConnector.TCPClient = TCPServer.AcceptTcpClient();
-            Stream = PlcConnector.TCPClient.GetStream();
+            Server = new TcpListener(ConnectionEndpoint);
+            Server.Start();
+            PlcConnector.Client = Server.AcceptTcpClient();
+            Stream = PlcConnector.Client.GetStream();
         }
 
         public string ReceiveMessage()
@@ -33,7 +33,6 @@ namespace ControlRoomApplication.Controllers.PLCController
                 Message = System.Text.Encoding.ASCII.GetString(Data, 0, i);
             }
 
-            StopServer();
             return Message;
         }
 
@@ -41,17 +40,16 @@ namespace ControlRoomApplication.Controllers.PLCController
         {
             Data = System.Text.Encoding.ASCII.GetBytes(message);
             Stream.Write(Data, 0, Data.Length);
-            StopServer();
         }
 
         public void StopServer()
         {
-            TCPServer.Stop();
+            Server.Stop();
         }
 
         // Getters/Setters
         public PLCConnector PlcConnector { get; set; }
-        public TcpListener TCPServer { get; set; }
+        public TcpListener Server { get; set; }
         public NetworkStream Stream { get; set; }
         public IPEndPoint ConnectionEndpoint { get; set; }
         public byte[] Data { get; set; }

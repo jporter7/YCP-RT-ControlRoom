@@ -88,6 +88,7 @@
     <Compile Include="EntityControllersTests\PLCControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UtilityTests\PLCConnectorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

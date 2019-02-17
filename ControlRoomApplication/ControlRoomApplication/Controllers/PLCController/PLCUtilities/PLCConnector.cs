@@ -16,7 +16,10 @@ namespace ControlRoomApplication.Controllers.PLCController
         public PLCConnector()
         {
             ConnectionEndpoint = new IPEndPoint(IPAddress.Parse(PLCConstants.LOCAL_HOST_IP), PLCConstants.PORT_8080);
-            TCPClient = new TcpClient();
+            Client = new TcpClient();
+
+            // Connect to the PLC
+            ConnectToPLC();
         }
 
         /// <summary>
@@ -51,7 +54,10 @@ namespace ControlRoomApplication.Controllers.PLCController
         {
             // Initialize Connector with information passed in
             ConnectionEndpoint = new IPEndPoint(IPAddress.Parse(ip), port);
-            TCPClient = new TcpClient();
+            Client = new TcpClient();
+
+            // Connect to the PLC
+            ConnectToPLC();
         }
 
         /// <summary>
@@ -63,15 +69,15 @@ namespace ControlRoomApplication.Controllers.PLCController
         {
             // This is one of 3 connect methods that must be used to connect the client 
             // instance with the endpoint (IP address and port number) listed.
-            TCPClient.Connect(ConnectionEndpoint);
+            Client.Connect(ConnectionEndpoint);
 
             // This gets the stream that the client is connected to above.
             // Stream is how we will write our data back and forth between
             // the PLC.
-            Stream = TCPClient.GetStream();
+            Stream = Client.GetStream();
 
             logger.Info($"Established TCP connection at ({ConnectionEndpoint.Address}, {ConnectionEndpoint.Port}).");
-            return TCPClient.Client.Connected;
+            return Client.Client.Connected;
         }
 
         /// <summary>
@@ -84,17 +90,15 @@ namespace ControlRoomApplication.Controllers.PLCController
             // Convert the message passed in into a byte[] array.
             Data = System.Text.Encoding.ASCII.GetBytes(message);
 
-            // If the connection to the PLC is successful, get the NetworkStream 
-            // that is being used and write to it.
-            if (ConnectToPLC())
+            // If the stream is writable and there is a message
+            // to send, write that message to the stream.
+            if (Stream.CanWrite && Data.Length > 0 && Client.Connected)
             {
                 try
-                {
-                    Stream = TCPClient.GetStream();
-
+                { 
                     Stream.Write(Data, 0, Data.Length);
 
-                    logger.Info("Sent message to PLC over TCP.");
+                    logger.Info($"Sent message ({message}) to PLC over TCP stream.");
                 }
                 catch(SocketException e)
                 {
@@ -111,17 +115,13 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// <returns> A string that indicates the state of the operation. </returns>
         public string ReceiveMessage()
         {
-            // Create a new byte[] array and initialize the string
-            // we will send back
-            Data = new byte[256];
-            string responseData = string.Empty;
-
-            if (ConnectToPLC())
+            if (Stream.CanRead && Stream.DataAvailable && Client.Connected)
             {
                 int i;
+                Data = new byte[Client.ReceiveBufferSize];
                 try
                 {
-                    while ((i = Stream.Read(Data, 0, Data.Length)) != 0)
+                    while((i = Stream.Read(Data, 0, Data.Length)) != 0)
                     {
                         Message = System.Text.Encoding.ASCII.GetString(Data, 0, i);
                     }
@@ -132,11 +132,6 @@ namespace ControlRoomApplication.Controllers.PLCController
                 {
                     Console.WriteLine("Encountered a socket exception.");
                     logger.Error($"There was an issue with the socket {e.Message}");
-                }
-                finally
-                {
-                    DisconnectFromPLC();
-                    logger.Info("Disconnected from PLC.");
                 }
             }
 
@@ -149,7 +144,8 @@ namespace ControlRoomApplication.Controllers.PLCController
         public void DisconnectFromPLC()
         {
             // Call the dispose() method to close the stream and connection.
-            TCPClient.Dispose();
+            Stream.Close();
+            Client.Dispose();
             logger.Info("Disposed of the TCP Client.");
         }
 
@@ -190,7 +186,7 @@ namespace ControlRoomApplication.Controllers.PLCController
         }
 
         // Getters/Setters for TCP/IP connection
-        public TcpClient TCPClient { get; set; }
+        public TcpClient Client { get; set; }
         public IPEndPoint ConnectionEndpoint { get; set; }
         public NetworkStream Stream { get; set; }
         public byte[] Data { get; set; }
