@@ -25,9 +25,19 @@ namespace ControlRoomApplication.Controllers
             while (true)
             {
                 Appointment app = WaitingForNextAppointment();
-                Coordinate coordinate = CRoom.Context.Coordinates.Find(app.CoordinateId);
+                Coordinate coordinate;
+                switch (app.Type)
+                {
+                    case ("POINT"):
+                        coordinate = CRoom.Context.Coordinates.ToList()[0];
+                        break;
+                    default:
+                        coordinate = CRoom.Context.Coordinates.ToList()[0];
+                        break;
+                }
                 
-                if(coordinate != null)
+
+                if (coordinate != null)
                 {
                     Orientation orientation = coordinateController.CoordinateToOrientation(coordinate, DateTime.Now);
                     logger.Info($"Calculated starting orientation ({orientation.Azimuth}, {orientation.Elevation}). Starting appointment.");

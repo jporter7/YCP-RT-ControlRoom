@@ -21,6 +21,10 @@ namespace ControlRoomApplication.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [ForeignKey("AppointmentId")]
+        public virtual Appointment Appointment { get; set; }
+        public int AppointmentId { get; set; }
+
         [Required]
         [Column("right_ascension")]
         public double RightAscension { get; set; }
