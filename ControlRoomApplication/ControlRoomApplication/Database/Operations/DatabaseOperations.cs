@@ -80,7 +80,7 @@ namespace ControlRoomApplication.Database.Operations
                 coordinate3.Declination = 26.3;
 
                 appt0.StartTime = date;
-                appt0.EndTime = date.AddHours(1);
+                appt0.EndTime = date.AddMinutes(1);
                 appt0.Status = AppointmentConstants.IN_PROGRESS;
                 appt0.Type = AppointmentTypeConstants.CELESTIAL_BODY;
                 appt0.Coordinates = new List<Coordinate>();
