@@ -1,11 +1,6 @@
-﻿using ControlRoomApplication.Constants;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Entities.RadioTelescope;
+﻿using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Main;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 
 namespace ControlRoomApplication.Entities
@@ -35,9 +30,9 @@ namespace ControlRoomApplication.Entities
             }
             set
             {
-                foreach(Appointment app in value)
+                foreach(Appointment appt in value)
                 {
-                    Context.Appointments.Add(app);
+                    Context.Appointments.Add(appt);
                     Context.SaveChanges();
                 }
             }

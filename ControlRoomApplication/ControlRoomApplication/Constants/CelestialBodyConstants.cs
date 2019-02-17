@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Constants
 {
-    public sealed class AASharpConstants
+    public sealed class CelestialBodyConstants
     {
         public static readonly string NONE = "NONE";
         public static readonly string SUN = "SUN";

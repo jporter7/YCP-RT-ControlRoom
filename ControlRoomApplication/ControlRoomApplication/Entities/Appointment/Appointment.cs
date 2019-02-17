@@ -47,11 +47,11 @@ namespace ControlRoomApplication.Entities
         public DateTime EndTime { get; set; }
 
         /// <summary>
-        /// The getter/setter for the celestial bodies asscociated with this Appointment.
+        /// The getter/setter for the celestial body asscociated with this Appointment.
         /// </summary>
         [Required]
-        [Column("celestial_bodies")]
-        public virtual ICollection<CelestialBody> CelestialBodies { get; set; }
+        [Column("celestial_body")]
+        public string CelestialBody { get; set; }
 
         /// <summary>
         /// The getter/setter for the coordinates asscociated with this Appointment.

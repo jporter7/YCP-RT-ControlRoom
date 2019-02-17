@@ -2,6 +2,8 @@
 using System;
 using AASharp;
 using ControlRoomApplication.Constants;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace ControlRoomApplication.Controllers.AASharpControllers
 {
@@ -12,21 +14,54 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
         }
 
-        public Coordinate CalculateCoordinates(string celestialBody, DateTime date)
+        public Dictionary<DateTime, Orientation> CalculateCoordinates(Appointment appt)
+        {
+            Dictionary<DateTime, Orientation> orientations = new Dictionary<DateTime, Orientation>();
+            TimeSpan length = appt.EndTime - appt.StartTime;
+            for (int i = 0; i < length.TotalMinutes; i++)
+            {
+                DateTime datetime = DateTime.Now.AddMinutes(i);
+                Coordinate coordinate = CalculateCoordinate(appt, datetime);
+                if(coordinate != null)
+                {
+                    Orientation orientation = CoordinateToOrientation(coordinate, datetime);
+                    orientations.Add(datetime, orientation);
+                }
+            }
+            return orientations;
+        }
+
+        public Coordinate CalculateCoordinate(Appointment appt, DateTime datetime)
+        {
+            switch (appt.Type)
+            {
+                case ("POINT"):
+                    var coordinates = appt.Coordinates.ToList();
+                    return (coordinates.Count > 0) ? coordinates[0] : null;
+                case ("CELESTIAL_BODY"):
+                    return GetCelestialBodyCoordinate(appt.CelestialBody, datetime);
+                case ("RASTER"):
+                    throw new NotImplementedException();
+                default:
+                    return new Coordinate(0.0, 0.0);
+            }
+        }
+
+        public Coordinate GetCelestialBodyCoordinate(string celestialBody, DateTime Date)
         {
             Coordinate coordinate = new Coordinate(0.0, 0.0);
-            switch(celestialBody)
+            switch (celestialBody)
             {
-                case "sun":
-                    SunCoordinateCalculator sunCoordinateCalculator = new SunCoordinateCalculator(date);
+                case "SUN":
+                    SunCoordinateCalculator sunCoordinateCalculator = new SunCoordinateCalculator(Date);
                     coordinate.RightAscension = sunCoordinateCalculator.GetEquatorialElevation();
                     coordinate.Declination = sunCoordinateCalculator.GetEquatorialAzimuth();
 
                     return coordinate;
-                case "moon":
-                    
+                case "MOON":
+                    throw new NotImplementedException();
                 default:
-                    return new Coordinate(0.0,0.0);
+                    return new Coordinate(0.0, 0.0);
             }
         }
 
