@@ -61,6 +61,7 @@ namespace ControlRoomApplication.Database.Operations
             {
                 DateTime date = DateTime.Now.AddMinutes(5);
 
+                Appointment appt0 = new Appointment();
                 Appointment appt1 = new Appointment();
                 Appointment appt2 = new Appointment();
                 Appointment appt3 = new Appointment();
@@ -78,39 +79,48 @@ namespace ControlRoomApplication.Database.Operations
                 coordinate3.RightAscension = 85.12;
                 coordinate3.Declination = 26.3;
 
-                List<Coordinate> coordinates = new List<Coordinate>()
-                {
-                    coordinate1,
-                    coordinate2,
-                    coordinate3
-                };
-
-                LocalContext.Coordinates.AddRange(coordinates);
-                LocalContext.SaveChanges();
+                appt0.StartTime = date;
+                appt0.EndTime = date.AddHours(1);
+                appt0.Status = AppointmentConstants.IN_PROGRESS;
+                appt0.Type = AppointmentTypeConstants.CELESTIAL_BODY;
+                appt0.Coordinates = new List<Coordinate>();
+                appt0.CelestialBody = CelestialBodyConstants.SUN;
+                appt0.TelescopeId = 1;
+                appt0.UserId = 1;
 
                 appt1.StartTime = date;
                 appt1.EndTime = date.AddMinutes(1);
                 appt1.Status = AppointmentConstants.IN_PROGRESS;
-                appt1.CoordinateId = 1;
+                appt1.Type = AppointmentTypeConstants.POINT;
+                appt1.Coordinates = new List<Coordinate>();
+                appt1.Coordinates.Add(coordinate1);
+                appt1.CelestialBody = CelestialBodyConstants.NONE;
                 appt1.TelescopeId = 1;
                 appt1.UserId = 1;
 
                 appt2.StartTime = date.AddMinutes(2);
                 appt2.EndTime = date.AddMinutes(3);
                 appt2.Status = AppointmentConstants.REQUESTED;
-                appt2.CoordinateId = 2;
+                appt2.Type = AppointmentTypeConstants.POINT;
+                appt2.Coordinates = new List<Coordinate>();
+                appt2.Coordinates.Add(coordinate2);
+                appt2.CelestialBody = CelestialBodyConstants.NONE;
                 appt2.TelescopeId = 1;
                 appt2.UserId = 1;
 
                 appt3.StartTime = date.AddMinutes(3);
                 appt3.EndTime = date.AddMinutes(4);
                 appt3.Status = AppointmentConstants.REQUESTED;
-                appt3.CoordinateId = 3;
+                appt3.Type = AppointmentTypeConstants.POINT;
+                appt3.Coordinates = new List<Coordinate>();
+                appt3.Coordinates.Add(coordinate3);
+                appt3.CelestialBody = CelestialBodyConstants.NONE;
                 appt3.TelescopeId = 1;
                 appt3.UserId = 1;
 
                 List<Appointment> appts = new List<Appointment>()
                 {
+                    appt0,
                     appt1,
                     appt2,
                     appt3,
