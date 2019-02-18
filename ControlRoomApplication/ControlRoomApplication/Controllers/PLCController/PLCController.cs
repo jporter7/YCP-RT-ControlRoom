@@ -73,7 +73,7 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// If it is vrPLC it shuts down the namedPipeServer.
         /// </summary>
         /// <returns> A string representing the state of the operation. </returns>
-        public string ShutdownRT(AbstractPLC plc)
+        public string ShutdownRT()
         {
             switch (Plc)
             {
@@ -109,7 +109,7 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// </summary>
         /// <param name="azimuth"> The azimuth that the PLC should move the radiotelescope to. </param>
         /// <returns> A string that indicates the state of the operation. </returns>
-        public string MoveTelescope(AbstractPLC plc, Coordinate coordinate) //long azimuthOffset)
+        public string MoveTelescope(Coordinate coordinate) //long azimuthOffset)
         {
             switch(Plc)
             {
