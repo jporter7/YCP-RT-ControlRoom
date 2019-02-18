@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Sockets;
 
 namespace ControlRoomApplication.Entities.Plc
 {
@@ -10,6 +11,7 @@ namespace ControlRoomApplication.Entities.Plc
         }
 
         public IPEndPoint IpEndpoint { get; set; }
+        public TcpListener Server { get; set; }
         public string ComPort { get; set; }
         public string OutgoingMessage { get; set; }
         public string IncomingState { get; set; }

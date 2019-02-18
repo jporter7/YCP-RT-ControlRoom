@@ -1,26 +1,19 @@
-﻿using ControlRoomApplication.Entities.Plc;
+﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Entities.Plc;
 using System;
 using System.Net;
 using System.Net.Sockets;
 
 namespace ControlRoomApplication.Controllers.PLCController
 {
-    public class PLCSimulator
+    public class PLCSimulator : AbstractPLC
     {
-        /// <summary>
-        /// Takes a PLC object and establishes a connection with it. After calling the constructor,
-        /// you can call the simple methods to send/receive info with the control room application 
-        /// software that is meant to connect to the PLC software.This class is a simulator for that.
-        /// </summary>
-        /// <param name="plc"></param>
-        public PLCSimulator(PLCConnector plcConnector)
+        public PLCSimulator()
         {
-            PlcConnector = plcConnector;
-            ConnectionEndpoint = plcConnector.ConnectionEndpoint;
+            ConnectionEndpoint = new IPEndPoint(IPAddress.Any, PLCConstants.PORT_5012);
             Server = new TcpListener(ConnectionEndpoint);
-            Server.Start();
-            PlcConnector.Client = Server.AcceptTcpClient();
-            Stream = PlcConnector.Client.GetStream();
+
+            Server.Start(1);
         }
 
         public string ReceiveMessage()
@@ -48,8 +41,6 @@ namespace ControlRoomApplication.Controllers.PLCController
         }
 
         // Getters/Setters
-        public PLCConnector PlcConnector { get; set; }
-        public TcpListener Server { get; set; }
         public NetworkStream Stream { get; set; }
         public IPEndPoint ConnectionEndpoint { get; set; }
         public byte[] Data { get; set; }

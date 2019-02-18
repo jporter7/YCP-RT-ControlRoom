@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using ControlRoomApplication.Controllers.PLCController;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -13,8 +14,16 @@ namespace ControlRoomApplicationTest.UtilityTests
         [TestInitialize]
         public void BuildUp()
         {
-            connector = new PLCConnector();
-            simulator = new PLCSimulator(connector);
+            //Thread t1 = new Thread(() => simulator = new PLCSimulator()); 
+            //Thread t2 = new Thread(() => connector = new PLCConnector(simulator));
+
+            //t1.Start();
+            //t1.Join();
+            //t2.Start();
+            //t2.Join();
+            simulator = new PLCSimulator();
+            connector = new PLCConnector(simulator);
+
         }
 
         [TestCleanup]
@@ -27,12 +36,12 @@ namespace ControlRoomApplicationTest.UtilityTests
         [TestMethod]
         public void TestWriteMessage()
         {
-            var message = "Test message.";
+            var message = "This is a test message.";
             connector.WriteMessage(message);
 
-            var testMessage = simulator.ReceiveMessage();
+            byte[] testMessage = System.Text.Encoding.ASCII.GetBytes(message);
 
-            Assert.AreEqual(message, testMessage);
+            Assert.IsTrue(connector.Stream.DataAvailable);
         }
     }
 }

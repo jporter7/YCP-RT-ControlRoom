@@ -4,6 +4,7 @@ using System.Net;
 using System.IO.Ports;
 using System.Threading;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Entities.Plc;
 
 namespace ControlRoomApplication.Controllers.PLCController
 {
@@ -15,11 +16,7 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// </summary>
         public PLCConnector()
         {
-            ConnectionEndpoint = new IPEndPoint(IPAddress.Parse(PLCConstants.LOCAL_HOST_IP), PLCConstants.PORT_8080);
-            Client = new TcpClient();
-
-            // Connect to the PLC
-            ConnectToPLC();
+            // Empty constructor
         }
 
         /// <summary>
@@ -50,34 +47,22 @@ namespace ControlRoomApplication.Controllers.PLCController
         /// </summary>
         /// <param name="ip"> The IP address, in string format, that should be connected to. </param>
         /// <param name="port"> The port that should be connected to. </param>
-        public PLCConnector(string ip, int port)
+        public PLCConnector(AbstractPLC plc)
         {
             // Initialize Connector with information passed in
-            ConnectionEndpoint = new IPEndPoint(IPAddress.Parse(ip), port);
+            //ConnectionEndpoint = new IPEndPoint(plc.IpEndpoint.Address, plc.IpEndpoint.Port);
             Client = new TcpClient();
+            Client.Connect(IPAddress.Parse(PLCConstants.LOCAL_HOST_IP), PLCConstants.PORT_5012);
 
-            // Connect to the PLC
-            ConnectToPLC();
-        }
+            Client.NoDelay = true;
+            Client.Client.NoDelay = true;
 
-        /// <summary>
-        /// Connects the control room application to the PLC software through a TCPConnection
-        /// that is established over ethernet.
-        /// </summary>
-        /// <returns> Returns a bool indicating whether or not the connection established successfully. </returns>
-        private bool ConnectToPLC()
-        {
-            // This is one of 3 connect methods that must be used to connect the client 
-            // instance with the endpoint (IP address and port number) listed.
-            Client.Connect(ConnectionEndpoint);
-
-            // This gets the stream that the client is connected to above.
-            // Stream is how we will write our data back and forth between
-            // the PLC.
             Stream = Client.GetStream();
+            Stream.WriteTimeout = 30;
+            Stream.ReadTimeout = 30;
 
+            ConnectionEndpoint = plc.Server.Server.LocalEndPoint as IPEndPoint;
             logger.Info($"Established TCP connection at ({ConnectionEndpoint.Address}, {ConnectionEndpoint.Port}).");
-            return Client.Client.Connected;
         }
 
         /// <summary>
@@ -95,7 +80,7 @@ namespace ControlRoomApplication.Controllers.PLCController
             if (Stream.CanWrite && Data.Length > 0 && Client.Connected)
             {
                 try
-                { 
+                {
                     Stream.Write(Data, 0, Data.Length);
 
                     logger.Info($"Sent message ({message}) to PLC over TCP stream.");
@@ -144,12 +129,11 @@ namespace ControlRoomApplication.Controllers.PLCController
         public void DisconnectFromPLC()
         {
             // Call the dispose() method to close the stream and connection.
-            Stream.Close();
             Client.Dispose();
             logger.Info("Disposed of the TCP Client.");
         }
 
-        //*** These methods will be for the arduino scale model. ***//
+        //*** These methods are for the arduino scale model. ***//
 
         /// <summary>
         /// Closes the serial port that was opened in SPort.
