@@ -83,6 +83,7 @@
     <Compile Include="EntitiesTests\PLCTest.cs" />
     <Compile Include="EntitiesTests\RFDataTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberTest.cs" />
+    <Compile Include="EntityControllersTests\ControlRoomControllerTest.cs" />
     <Compile Include="EntityControllersTests\CoordinateCalculationControllerTest.cs" />
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCControllerTest.cs" />
