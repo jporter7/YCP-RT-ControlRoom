@@ -140,7 +140,6 @@ namespace ControlRoomApplication.Controllers
                 }
                 Orientation orientation = orientations[datetime];
                 CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
-                CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation = orientation;
             }
             appt.Status = AppointmentConstants.COMPLETED;
             CRoom.Context.SaveChanges();

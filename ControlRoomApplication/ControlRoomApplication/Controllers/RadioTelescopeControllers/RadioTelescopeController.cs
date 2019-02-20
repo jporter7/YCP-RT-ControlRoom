@@ -136,8 +136,13 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 
                 case "ProductionRadioTelescope":
                     // Add Code for production radiotelescope later
+                    return;
                 case "TestRadioTelescope":
                     // Add Code for test radiotelescope later
+                    RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
+                    RadioTelescope.CurrentOrientation = orientation;
+                    RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
+                    return;
                 default:
                     break;
             }
