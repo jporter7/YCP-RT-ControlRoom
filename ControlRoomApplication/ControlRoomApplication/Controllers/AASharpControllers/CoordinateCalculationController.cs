@@ -20,7 +20,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             TimeSpan length = appt.EndTime - appt.StartTime;
             for (int i = 0; i < length.TotalMinutes; i++)
             {
-                DateTime datetime = DateTime.Now.AddMinutes(i);
+                DateTime datetime = appt.StartTime.AddMinutes(i);
                 Coordinate coordinate = CalculateCoordinate(appt, datetime);
                 if(coordinate != null)
                 {
@@ -41,10 +41,71 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
                 case ("CELESTIAL_BODY"):
                     return GetCelestialBodyCoordinate(appt.CelestialBody, datetime);
                 case ("RASTER"):
-                    throw new NotImplementedException();
+                    return GetRasterCoordinate(appt, datetime);
                 default:
                     return new Coordinate(0.0, 0.0);
             }
+        }
+
+        public Coordinate GetRasterCoordinate(Appointment appt, DateTime datetime)
+        {
+            // Get start and end coordinates
+            List<Coordinate> coords = appt.Coordinates.ToList();
+            Coordinate start_coord = coords[0];
+            Coordinate end_coord = coords[1];
+
+            // Make sure the coordinates do not overlap
+            if( start_coord.RightAscension == end_coord.RightAscension ||
+                start_coord.Declination == end_coord.Declination)
+            {
+                throw new ArgumentException("Coordinates cannot overlap");
+            }
+
+            // Find the width and the height of the square in points (minutes),
+            // rounded down to an integer
+            double num_points = (appt.EndTime - appt.StartTime).TotalMinutes;
+            double point_width = Math.Floor(Math.Sqrt(num_points));
+            double point_height = Math.Floor(Math.Sqrt(num_points));
+
+            // Find the width and the height of the square in coordinates
+            double coord_width = end_coord.RightAscension - start_coord.RightAscension;
+            double coord_height = end_coord.Declination - start_coord.Declination;
+
+            // Find the coordinate increment per point 
+            // (x = RightAscension, y = Declination)
+            double x_increment = coord_width / point_width;
+            double y_increment = coord_height / point_height;
+
+            // Check if the point index is outside the bounds of the square
+            // (this can occur because of the rounding down that occurs when
+            // finding the point_width and point_height)
+            // If it is, just stay at the last point of the square
+            double max_point = point_width * point_height;
+            double point = (datetime - appt.StartTime).TotalMinutes;
+            if (point >= max_point)
+            {
+                point = max_point - 1;
+            }
+
+            // Find the point's x, y location, rounded down
+            // (x = RightAscension, y = Declination)
+            double point_x = Math.Floor(point / point_width);
+            double point_y = Math.Floor(point % point_height);
+
+            // Find the coordinate change in x and y
+            // (x = RightAscension, y = Declination)
+            double dx = (point_x * x_increment) % coord_width;
+            double dy = (point_y * y_increment) % coord_height;
+
+            // Find the new coordinate x and y
+            // (x = RightAscension, y = Declination)
+            double x = start_coord.RightAscension + dx;
+            double y = start_coord.Declination + dy;
+
+            // Return the new coordinate
+            // (x = RightAscension, y = Declination)
+            //Console.WriteLine(x + ", " + y); // (FOR TESTING)
+            return new Coordinate(x, y);
         }
 
         public Coordinate GetCelestialBodyCoordinate(string celestialBody, DateTime Date)

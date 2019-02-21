@@ -66,9 +66,13 @@ namespace ControlRoomApplication.Database.Operations
                 Appointment appt2 = new Appointment();
                 Appointment appt3 = new Appointment();
 
+                Coordinate coordinate0 = new Coordinate();
                 Coordinate coordinate1 = new Coordinate();
                 Coordinate coordinate2 = new Coordinate();
                 Coordinate coordinate3 = new Coordinate();
+
+                coordinate0.RightAscension = 50.8;
+                coordinate0.Declination = 10.3;
 
                 coordinate1.RightAscension = 83.63;
                 coordinate1.Declination = 22.0;
@@ -89,10 +93,11 @@ namespace ControlRoomApplication.Database.Operations
                 appt0.UserId = 1;
 
                 appt1.StartTime = date;
-                appt1.EndTime = date.AddMinutes(1);
+                appt1.EndTime = date.AddMinutes(480);
                 appt1.Status = AppointmentConstants.IN_PROGRESS;
-                appt1.Type = AppointmentTypeConstants.POINT;
+                appt1.Type = AppointmentTypeConstants.RASTER;
                 appt1.Coordinates = new List<Coordinate>();
+                appt1.Coordinates.Add(coordinate0);
                 appt1.Coordinates.Add(coordinate1);
                 appt1.CelestialBody = CelestialBodyConstants.NONE;
                 appt1.TelescopeId = 1;
