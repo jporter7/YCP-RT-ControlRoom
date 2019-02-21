@@ -185,12 +185,13 @@ namespace ControlRoomApplication.Database.Operations
         {
             Appointment appointment = null;
             logger.Debug("Retrieving list of appointments.");
-            List<Appointment> appointments = LocalContext.Appointments.ToList();
+            List<Appointment> appointments = GetListOfAppointments();
 
             if (appointments.Count > 0)
             {
-                appointments.Sort();
                 appointments.RemoveAll(x => x.StartTime < DateTime.Now);
+                appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
+                appointments.Sort();
                 logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                 appointment = appointments[0];
             }
