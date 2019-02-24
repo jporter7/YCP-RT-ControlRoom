@@ -71,17 +71,17 @@ namespace ControlRoomApplication.Database.Operations
                 Coordinate coordinate2 = new Coordinate();
                 Coordinate coordinate3 = new Coordinate();
 
-                coordinate0.RightAscension = 50.8;
-                coordinate0.Declination = 10.3;
+                coordinate0.RightAscension = 10.3;
+                coordinate0.Declination = 50.8;
 
-                coordinate1.RightAscension = 83.63;
-                coordinate1.Declination = 22.0;
+                coordinate1.RightAscension = 22.0;
+                coordinate1.Declination = 83.63;
 
-                coordinate2.RightAscension = 71.5;
-                coordinate2.Declination = 16.0;
+                coordinate2.RightAscension = 16.0;
+                coordinate2.Declination = 71.5;
 
-                coordinate3.RightAscension = 85.12;
-                coordinate3.Declination = 26.3;
+                coordinate3.RightAscension = 26.3;
+                coordinate3.Declination = 85.12;
 
                 appt0.StartTime = date;
                 appt0.EndTime = date.AddMinutes(1);
