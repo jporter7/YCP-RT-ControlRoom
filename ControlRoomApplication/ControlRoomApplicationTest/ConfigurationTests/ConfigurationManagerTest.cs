@@ -19,7 +19,7 @@ namespace ControlRoomApplicationTest.ConfigurationTests
         [TestCleanup]
         public void TearDown()
         {
-            // Reset the classes we are testing
+            // Reset the classes we are testing to null
             PLC = null;
             SpectraCyber = null;
             RadioTelescope = null;
