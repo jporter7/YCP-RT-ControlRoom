@@ -263,3 +263,4 @@ __pycache__/
 # Keep that key safe
 AWSConstants.cs
 /ControlRoomApplication/ControlRoomApplication/Constants/AWSConstants.cs
+/ControlRoomApplication/results.xml
