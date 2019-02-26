@@ -66,7 +66,7 @@ namespace ControlRoomApplication.Controllers
             Appointment appt = null;
             while (appt == null)
             {
-                appt = GetNextAppointment();
+                appt = DatabaseOperations.GetNextAppointment();
                 if (appt == null)
                 {
                     Thread.Sleep(5000); // delay between checking database for new appointments
@@ -83,31 +83,6 @@ namespace ControlRoomApplication.Controllers
 
             logger.Info("The next appointment is now within the correct timeframe.");
             return appt;
-        }
-
-        /// <summary>
-        /// Gets the next appointment by chronological time.
-        /// </summary>
-        /// <returns> An appointment object that is the next in the database in chronological order. </returns>
-        public Appointment GetNextAppointment()
-        {
-            Appointment appointment = null;
-            logger.Debug("Retrieving list of appointments.");
-            List<Appointment> appointments = DatabaseOperations.GetListOfAppointments();
-            appointments.Sort();
-            appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
-            appointments.RemoveAll(x => x.StartTime < DateTime.Now);
-            logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
-            if (appointments.Count > 0)
-            {
-                appointment = appointments[0];
-            }
-            else
-            {
-                logger.Debug("No appointments found");
-            }
-
-            return appointment;
         }
 
         /// <summary>

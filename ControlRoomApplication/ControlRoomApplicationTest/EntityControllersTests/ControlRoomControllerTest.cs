@@ -55,16 +55,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         }
 
         [TestMethod]
-        public void TestGetNextAppointment()
-        {
-            Appointment appt = ControlRoomController.GetNextAppointment();
-
-            Assert.AreNotEqual(appt, null);
-            Assert.AreNotEqual(appt.Status, AppointmentConstants.COMPLETED);
-            Assert.IsTrue(appt.StartTime > DateTime.Now);
-        }
-
-        [TestMethod]
         public void TestCalibrateRadioTelescope()
         {
             ControlRoomController.CalibrateRadioTelescope();

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
+using System.Collections.Generic;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
@@ -13,6 +14,43 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public void Up()
         {
             CoordinateCalculationController = new CoordinateCalculationController();
+        }
+
+        [TestMethod]
+        public void TestCalculateCoordinates()
+        {
+            // Test point appointment
+            Appointment point_appt = new Appointment();
+            point_appt.StartTime = DateTime.Now.AddMinutes(1);
+            point_appt.EndTime = DateTime.Now.AddMinutes(60);
+            point_appt.Coordinates = new List<Coordinate>();
+            point_appt.Coordinates.Add(new Coordinate(0, 0));
+            var point_orientations = CoordinateCalculationController.CalculateCoordinates(point_appt);
+
+            Assert.IsTrue(point_orientations != null);
+            Assert.IsTrue(point_orientations.Count == 59);
+
+            // Test celesital body appointment
+            Appointment sun_appt = new Appointment();
+            sun_appt.StartTime = DateTime.Now.AddMinutes(1);
+            sun_appt.EndTime = DateTime.Now.AddMinutes(60);
+            sun_appt.CelestialBody = CelestialBodyConstants.SUN;
+            var sun_orientations = CoordinateCalculationController.CalculateCoordinates(sun_appt);
+
+            Assert.IsTrue(sun_orientations != null);
+            Assert.IsTrue(sun_orientations.Count == 59);
+
+            // Test raster appointment
+            Appointment raster_appt = new Appointment();
+            raster_appt.StartTime = DateTime.Now.AddMinutes(1);
+            raster_appt.EndTime = DateTime.Now.AddMinutes(60);
+            raster_appt.Coordinates = new List<Coordinate>();
+            raster_appt.Coordinates.Add(new Coordinate(0, 0));
+            raster_appt.Coordinates.Add(new Coordinate(5, 5));
+            var raster_orientations = CoordinateCalculationController.CalculateCoordinates(raster_appt);
+
+            Assert.IsTrue(raster_orientations != null);
+            Assert.IsTrue(raster_orientations.Count == 59);
         }
 
         [TestMethod]

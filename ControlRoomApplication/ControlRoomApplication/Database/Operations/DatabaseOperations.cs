@@ -66,18 +66,22 @@ namespace ControlRoomApplication.Database.Operations
                 Appointment appt2 = new Appointment();
                 Appointment appt3 = new Appointment();
 
+                Coordinate coordinate0 = new Coordinate();
                 Coordinate coordinate1 = new Coordinate();
                 Coordinate coordinate2 = new Coordinate();
                 Coordinate coordinate3 = new Coordinate();
 
-                coordinate1.RightAscension = 83.63;
-                coordinate1.Declination = 22.0;
+                coordinate0.RightAscension = 10.3;
+                coordinate0.Declination = 50.8;
 
-                coordinate2.RightAscension = 71.5;
-                coordinate2.Declination = 16.0;
+                coordinate1.RightAscension = 22.0;
+                coordinate1.Declination = 83.63;
 
-                coordinate3.RightAscension = 85.12;
-                coordinate3.Declination = 26.3;
+                coordinate2.RightAscension = 16.0;
+                coordinate2.Declination = 71.5;
+
+                coordinate3.RightAscension = 26.3;
+                coordinate3.Declination = 85.12;
 
                 appt0.StartTime = date;
                 appt0.EndTime = date.AddMinutes(1);
@@ -89,10 +93,11 @@ namespace ControlRoomApplication.Database.Operations
                 appt0.UserId = 1;
 
                 appt1.StartTime = date;
-                appt1.EndTime = date.AddMinutes(1);
+                appt1.EndTime = date.AddMinutes(480);
                 appt1.Status = AppointmentConstants.IN_PROGRESS;
-                appt1.Type = AppointmentTypeConstants.POINT;
+                appt1.Type = AppointmentTypeConstants.RASTER;
                 appt1.Coordinates = new List<Coordinate>();
+                appt1.Coordinates.Add(coordinate0);
                 appt1.Coordinates.Add(coordinate1);
                 appt1.CelestialBody = CelestialBodyConstants.NONE;
                 appt1.TelescopeId = 1;
@@ -180,12 +185,13 @@ namespace ControlRoomApplication.Database.Operations
         {
             Appointment appointment = null;
             logger.Debug("Retrieving list of appointments.");
-            List<Appointment> appointments = LocalContext.Appointments.ToList();
+            List<Appointment> appointments = GetListOfAppointments();
 
             if (appointments.Count > 0)
             {
-                appointments.Sort();
                 appointments.RemoveAll(x => x.StartTime < DateTime.Now);
+                appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
+                appointments.Sort();
                 logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                 appointment = appointments[0];
             }
