@@ -42,11 +42,11 @@ namespace ControlRoomApplication.Main
 
             if (args.Length > 1)
             {
-                spectraCyberController = ConfigManager.ConfigureSpectraCyberController(args[1], dbContext);
+                spectraCyberController = ConfigManager.ConfigureSpectraCyberController(args[1]);
             }
             else
             {
-                spectraCyberController = ConfigManager.ConfigureSpectraCyberController("", dbContext);
+                spectraCyberController = ConfigManager.ConfigureSpectraCyberController("");
             }
 
             if (args.Length > 2)

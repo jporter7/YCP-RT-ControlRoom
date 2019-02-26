@@ -53,7 +53,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
             PLCController PLCController = new PLCController(new TestPLC());
-            RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator(), new RTDbContext()), PLCController);
+            RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController);
             
             // Create the Orientation object that the Controller will tell the
             // Scale RadioTelescope to move to
@@ -79,7 +79,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
             PLCController PLCController = new PLCController(new TestPLC());
-            RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator(), new RTDbContext()), PLCController);
+            RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController);
 
             // Call the CalibrateRadioTelescope method
             RadioTelescopeController.CalibrateRadioTelescope();
@@ -100,7 +100,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
             PLCController PLCController = new PLCController(new TestPLC());
-            RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator(), new RTDbContext()), PLCController);
+            RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController);
 
             // Call the ShutdownRadioTelescope method
             RadioTelescopeController.ShutdownRadioTelescope();

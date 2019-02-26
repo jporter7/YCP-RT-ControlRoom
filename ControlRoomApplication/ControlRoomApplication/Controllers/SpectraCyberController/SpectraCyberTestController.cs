@@ -5,7 +5,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
     public class SpectraCyberTestController : AbstractSpectraCyberController
     {
-        public SpectraCyberTestController(SpectraCyberSimulator spectraCyberSimulator, RTDbContext context) : base(spectraCyberSimulator, context)
+        public SpectraCyberTestController(SpectraCyberSimulator spectraCyberSimulator) : base(spectraCyberSimulator)
         {
 
         }

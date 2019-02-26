@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Main;
-using System.Data.Entity;
+using ControlRoomApplication.Database.Operations;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
@@ -18,15 +18,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         protected bool KillCommunicationThreadFlag { get; set; }
         protected Mutex CommunicationMutex;
 
-        public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber, RTDbContext dBContext)
+        public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber)
         {
             SpectraCyber = spectraCyber;
             Schedule = new SpectraCyberScanSchedule(SpectraCyberScanScheduleMode.OFF);
             KillCommunicationThreadFlag = false;
             CommunicationMutex = new Mutex();
-
-            // Adding dbContext
-            Context = dBContext;
         }
 
         public AbstractRadioTelescope GetParent()
@@ -279,8 +276,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             // Add to database
             //
             rfData.Id = appId;
-            Context.RFDatas.Add(rfData);
-            Context.SaveChanges();
+            DatabaseOperations.CreateRFData(rfData);
 
             return rfData;
         }
@@ -353,7 +349,5 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             // Return it
             return strOutput;
         }
-
-        public RTDbContext Context { get; set; }
     }
 }

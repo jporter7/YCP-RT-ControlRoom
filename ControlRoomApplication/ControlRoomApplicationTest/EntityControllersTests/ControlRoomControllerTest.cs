@@ -29,7 +29,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             AbstractPLC plc = new TestPLC();
             PLCController plcController = new PLCController(plc);
-            AbstractSpectraCyberController spectraCyberController = new SpectraCyberTestController(new SpectraCyberSimulator(), dbContext);
+            AbstractSpectraCyberController spectraCyberController = new SpectraCyberTestController(new SpectraCyberSimulator());
             AbstractRadioTelescope radioTelescope = new TestRadioTelescope(spectraCyberController, plcController);
             RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
             ControlRoom cRoom = new ControlRoom(rtController, dbContext);

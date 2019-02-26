@@ -51,23 +51,23 @@ namespace ControlRoomApplication.Main
         /// <param name="arg1"> The second program argument passed in. </param>
         /// <param name="dbContext"> The database context </param>
         /// <returns> A concrete instance of a SpectraCyberController. </returns>
-        public AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1, RTDbContext dbContext)
+        public AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1)
         {
             switch(arg1.ToUpper())
             {
                 case "/PS":
-                    return new SpectraCyberController(new SpectraCyber(), dbContext);
+                    return new SpectraCyberController(new SpectraCyber());
 
                 case "/SS":
-                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator(), dbContext);
+                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
 
                 case "/TS":
-                    return new SpectraCyberTestController(new SpectraCyberSimulator(), dbContext);
+                    return new SpectraCyberTestController(new SpectraCyberSimulator());
 
                 default:
                     // If none of the switches match or there wasn't one declared
                     // for the spectraCyber, assume we are using the simulated/testing one.
-                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator(), dbContext);
+                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             }
         }
 
