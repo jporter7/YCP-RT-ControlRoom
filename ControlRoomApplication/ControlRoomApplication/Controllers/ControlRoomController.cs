@@ -76,7 +76,7 @@ namespace ControlRoomApplication.Controllers
             TimeSpan diff = appt.StartTime - DateTime.Now;
 
             logger.Info("Waiting for the next appointment to be within 10 minutes.");
-            while (diff.TotalMinutes > 10)
+            while (diff.TotalMinutes > 1)
             {
                 diff = appt.StartTime - DateTime.Now;
             }
@@ -136,8 +136,10 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public void StartReadingData(Appointment appt)
         {
-            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringUp(appt.Id);
-            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.StartScan();
+            var spectraCyberController = CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController;
+            spectraCyberController.SetSpectraCyberModeType(appt.SpectraCyberModeType);
+            spectraCyberController.BringUp(appt.Id);
+            spectraCyberController.StartScan();
         }
 
         /// <summary>
@@ -145,8 +147,10 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public void StopReadingRFData()
         {
-            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.StopScan();
-            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringDown();
+            var spectraCyberController = CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController;
+            spectraCyberController.StopScan();
+            spectraCyberController.BringDown();
+            spectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
         }
 
         public ControlRoom CRoom { get; set; }

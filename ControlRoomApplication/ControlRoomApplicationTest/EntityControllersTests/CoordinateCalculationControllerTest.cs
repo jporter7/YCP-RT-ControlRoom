@@ -21,9 +21,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             // Test point appointment
             Appointment point_appt = new Appointment();
+            point_appt.Type = AppointmentTypeConstants.POINT;
             point_appt.StartTime = DateTime.Now.AddMinutes(1);
             point_appt.EndTime = DateTime.Now.AddMinutes(60);
-            point_appt.Coordinates = new List<Coordinate>();
             point_appt.Coordinates.Add(new Coordinate(0, 0));
             var point_orientations = CoordinateCalculationController.CalculateCoordinates(point_appt);
 
@@ -32,6 +32,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test celesital body appointment
             Appointment sun_appt = new Appointment();
+            point_appt.Type = AppointmentTypeConstants.CELESTIAL_BODY;
             sun_appt.StartTime = DateTime.Now.AddMinutes(1);
             sun_appt.EndTime = DateTime.Now.AddMinutes(60);
             sun_appt.CelestialBody = CelestialBodyConstants.SUN;
@@ -42,15 +43,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test raster appointment
             Appointment raster_appt = new Appointment();
+            point_appt.Type = AppointmentTypeConstants.RASTER;
             raster_appt.StartTime = DateTime.Now.AddMinutes(1);
             raster_appt.EndTime = DateTime.Now.AddMinutes(60);
-            raster_appt.Coordinates = new List<Coordinate>();
             raster_appt.Coordinates.Add(new Coordinate(0, 0));
             raster_appt.Coordinates.Add(new Coordinate(5, 5));
             var raster_orientations = CoordinateCalculationController.CalculateCoordinates(raster_appt);
 
             Assert.IsTrue(raster_orientations != null);
             Assert.IsTrue(raster_orientations.Count == 59);
+
+            // Test orientation appointment
+            Appointment orientation_appt = new Appointment();
+            point_appt.Type = AppointmentTypeConstants.ORIENTATION;
+            orientation_appt.StartTime = DateTime.Now.AddMinutes(1);
+            orientation_appt.EndTime = DateTime.Now.AddMinutes(60);
+            orientation_appt.Orientation = new Orientation(30, 30);
+            var orientation_orientations = CoordinateCalculationController.CalculateCoordinates(raster_appt);
+
+            Assert.IsTrue(orientation_orientations != null);
+            Assert.IsTrue(orientation_orientations.Count == 59);
         }
 
         [TestMethod]

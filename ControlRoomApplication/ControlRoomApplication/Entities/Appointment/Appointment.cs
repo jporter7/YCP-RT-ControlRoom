@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlRoomApplication.Constants;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,7 +19,9 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public Appointment()
         {
-
+            Coordinates = new List<Coordinate>();
+            CelestialBody = CelestialBodyConstants.NONE;
+            Orientation = new Orientation(0, 0);
         }
 
         /// <summary>
@@ -54,6 +57,13 @@ namespace ControlRoomApplication.Entities
         public string CelestialBody { get; set; }
 
         /// <summary>
+        /// The getter/setter for the Orientation asscociated with this Appointment.
+        /// </summary>
+        [Required]
+        [Column("celestial_body")]
+        public Orientation Orientation { get; set; }
+
+        /// <summary>
         /// The getter/setter for the coordinates asscociated with this Appointment.
         /// </summary>
         [Required]
@@ -80,6 +90,13 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("type")]
         public string Type { get; set; }
+
+        /// <summary>
+        /// The getter/setter for the SpectraCyberMode type.
+        /// </summary>
+        [Required]
+        [Column("spectracyber_mode_type")]
+        public SpectraCyberModeTypeEnum SpectraCyberModeType { get; set; }
 
         /// <summary>
         /// Compares the current Appointment to another object and it

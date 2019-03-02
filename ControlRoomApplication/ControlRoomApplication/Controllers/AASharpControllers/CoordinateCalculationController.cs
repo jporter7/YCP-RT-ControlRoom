@@ -21,30 +21,48 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             for (int i = 0; i < length.TotalMinutes; i++)
             {
                 DateTime datetime = appt.StartTime.AddMinutes(i);
-                Coordinate coordinate = CalculateCoordinate(appt, datetime);
-                if(coordinate != null)
+                Orientation orientation = CalculateCoordinate(appt, datetime);
+                if(orientation != null)
                 {
-                    Orientation orientation = CoordinateToOrientation(coordinate, datetime);
                     orientations.Add(datetime, orientation);
                 }
             }
             return orientations;
         }
 
-        public Coordinate CalculateCoordinate(Appointment appt, DateTime datetime)
+        public Orientation CalculateCoordinate(Appointment appt, DateTime datetime)
         {
+            Coordinate coordinate = null;
+            Orientation orientation = null;
+
             switch (appt.Type)
             {
                 case ("POINT"):
                     var coordinates = appt.Coordinates.ToList();
-                    return (coordinates.Count > 0) ? coordinates[0] : null;
+                    coordinate = (coordinates.Count > 0) ? coordinates[0] : null;
+                    break;
                 case ("CELESTIAL_BODY"):
-                    return GetCelestialBodyCoordinate(appt.CelestialBody, datetime);
+                    coordinate = GetCelestialBodyCoordinate(appt.CelestialBody, datetime);
+                    break;
                 case ("RASTER"):
-                    return GetRasterCoordinate(appt, datetime);
+                    coordinate = GetRasterCoordinate(appt, datetime);
+                    break;
+                case ("ORIENTATION"):
+                    orientation = appt.Orientation;
+                    break;
+                case ("FREE_CONTROL"):
+                    throw new NotImplementedException();
                 default:
-                    return new Coordinate(0.0, 0.0);
+                    coordinate = new Coordinate(0.0, 0.0);
+                    break;
             }
+
+            if (coordinate != null)
+            {
+                orientation = CoordinateToOrientation(coordinate, datetime);
+            }
+
+            return orientation;
         }
 
         public Coordinate GetRasterCoordinate(Appointment appt, DateTime datetime)
