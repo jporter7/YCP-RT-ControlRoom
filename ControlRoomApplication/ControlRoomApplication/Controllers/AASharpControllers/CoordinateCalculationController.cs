@@ -60,7 +60,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             double SunRad = AASEarth.RadiusVector(JD, false);
             
             // This line gives us RA & Declination.
-            AAS2DCoordinate SunTopo = AASParallax.Equatorial2Topocentric(equatorial.X, equatorial.Y, SunRad, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, JD);
+            AAS2DCoordinate SunTopo = AASParallax.Equatorial2Topocentric(equatorial.X, equatorial.Y, SunRad, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_ALTITUDE, JD);
             double AST = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
             double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RadioTelescopeConstants.OBSERVATORY_LONGITUDE);
             double LocalHourAngle = AST - LongtitudeAsHourAngle - SunTopo.X;
@@ -91,7 +91,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             double MoonRad = AASMoon.RadiusVector(JD);
             MoonRad /= 149597870.691; //Convert KM to AU
 
-            AAS2DCoordinate MoonTopo = AASParallax.Equatorial2Topocentric(Equatorial.X, Equatorial.Y, MoonRad, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, JD);
+            AAS2DCoordinate MoonTopo = AASParallax.Equatorial2Topocentric(Equatorial.X, Equatorial.Y, MoonRad, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_ALTITUDE, JD);
             double AST = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
             double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RadioTelescopeConstants.OBSERVATORY_LONGITUDE);
             double LocalHourAngle = AST - LongtitudeAsHourAngle - MoonTopo.X;

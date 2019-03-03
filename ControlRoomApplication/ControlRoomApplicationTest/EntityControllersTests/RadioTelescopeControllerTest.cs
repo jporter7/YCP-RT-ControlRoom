@@ -4,8 +4,9 @@ using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ControlRoomApplication.Controllers.PLCController;
+using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Main;
 
@@ -52,7 +53,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Set the controller's RadioTelescope field to the ScaleRadioTelescope
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
-            PLCController PLCController = new PLCController(new TestPLC());
+            PLCCommunicationHandler PLCController = new PLCCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
             RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator(), new RTDbContext()), PLCController);
             
             // Create the Orientation object that the Controller will tell the
@@ -78,7 +79,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Set the controller's RadioTelescope field to the ScaleRadioTelescope
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
-            PLCController PLCController = new PLCController(new TestPLC());
+            PLCCommunicationHandler PLCController = new PLCCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
             RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator(), new RTDbContext()), PLCController);
 
             // Call the CalibrateRadioTelescope method
@@ -99,7 +100,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Set the controller's RadioTelescope field to the ScaleRadioTelescope
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
-            PLCController PLCController = new PLCController(new TestPLC());
+            PLCCommunicationHandler PLCController = new PLCCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
             RadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator(), new RTDbContext()), PLCController);
 
             // Call the ShutdownRadioTelescope method

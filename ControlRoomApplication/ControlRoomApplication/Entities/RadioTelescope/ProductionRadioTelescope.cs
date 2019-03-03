@@ -1,4 +1,4 @@
-﻿using ControlRoomApplication.Controllers.PLCController;
+﻿using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Main;
 
@@ -11,13 +11,13 @@ namespace ControlRoomApplication.Entities.RadioTelescope
             
         }
 
-        public ProductionRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCController plcController)
+        public ProductionRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCCommunicationHandler plcController)
         {
             PlcController = plcController;
             SpectraCyberController = spectraCyberController;
             CalibrationOrientation = new Orientation();
             Status = RadioTelescopeStatusEnum.UNKNOWN;
-            CurrentOrientation = PlcController.GetOrientation();
+            //CurrentOrientation = PlcController.GetOrientation();
         }
 
         public Orientation GetCurrentOrientation()
