@@ -90,6 +90,7 @@
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
+    <Compile Include="MCUTests\MCUTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
