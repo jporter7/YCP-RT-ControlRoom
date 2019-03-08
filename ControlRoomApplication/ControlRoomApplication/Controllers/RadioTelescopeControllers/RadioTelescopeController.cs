@@ -1,11 +1,10 @@
-﻿using ControlRoomApplication.Constants;
-using ControlRoomApplication.Controllers.PLCController;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO.Ports;
-using System.Threading;
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.AASharpControllers;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.Plc;
+using ControlRoomApplication.Entities.RadioTelescope;
 
 namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 {
@@ -30,12 +29,29 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         }
 
         /// <summary>
+        /// Gets the status of whether this RT is responding.
+        /// </summary>
+        /// <returns> Whethre or not its responding. </returns>
+        public bool TestRadioTelescopeCommunication()
+        {
+            byte[] ByteResponse = (byte[])RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.TEST_CONNECTION);
+            return (ByteResponse[2] == 0x1) && (ByteResponse[3] == 0x1);
+        }
+
+        /// <summary>
         /// Gets the current orientation of the radiotelescope in azimuth and elevation.
         /// </summary>
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-            return RadioTelescope.CurrentOrientation;
+            byte[] ByteResponse = (byte[])RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
+
+            if (ByteResponse[2] != 0x1)
+            {
+                return null;
+            }
+
+            return new Orientation(BitConverter.ToDouble(ByteResponse, 3), BitConverter.ToDouble(ByteResponse, 11));
         }
 
         /// <summary>
@@ -47,6 +63,8 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void ShutdownRadioTelescope()
         {
+            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SHUTDOWN);
+            /*
             switch (RadioTelescope.GetType().Name)
             {
                 case "ScaleRadioTelescope":
@@ -69,10 +87,13 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                 default:
                     break;
             }
+            */
         }
 
         public void MoveRadioTelescope(Orientation orientation)
         {
+            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation);
+            /*
             // Switch based on the type of radiotelescope that is being controlled by this controller.
             switch(RadioTelescope.GetType().Name)
             {
@@ -146,6 +167,21 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                 default:
                     break;
             }
+            */
+        }
+
+        public void MoveRadioTelescope(Coordinate coordinate)
+        {
+            RadioTelescope.PlcController.RequestMessageSend(
+                PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION,
+                CoordinateTransformation.CoordinateToOrientation(
+                    coordinate,
+                    RadioTelescopeConstants.OBSERVATORY_LONGITUDE,
+                    RadioTelescopeConstants.OBSERVATORY_LATITUDE,
+                    RadioTelescopeConstants.OBSERVATORY_ALTITUDE,
+                    DateTime.Now
+                )
+            );
         }
 
         /// <summary>
@@ -156,6 +192,8 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void CalibrateRadioTelescope()
         {
+            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE);
+            /*
             switch (RadioTelescope.GetType().Name)
             {
                 case "ScaleRadioTelescope":
@@ -180,7 +218,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
                 default:
                     break;
             }
-
+            */
         }
 
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)

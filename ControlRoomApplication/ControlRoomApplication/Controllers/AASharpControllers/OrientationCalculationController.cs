@@ -41,7 +41,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
                     1,
                     RadioTelescopeConstants.OBSERVATORY_LONGITUDE,
                     RadioTelescopeConstants.OBSERVATORY_LATITUDE,
-                    RadioTelescopeConstants.OBSERVATORY_HEIGHT,
+                    RadioTelescopeConstants.OBSERVATORY_ALTITUDE,
                     julianDay
                 );
 
