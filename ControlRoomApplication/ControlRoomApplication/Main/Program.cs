@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
@@ -15,63 +16,64 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            // Begin logging
-            logger.Info("<--------------- Control Room Application Started --------------->");
+            Application.Run(new MainForm());
+            //// Begin logging
+            //logger.Info("<--------------- Control Room Application Started --------------->");
 
-            // Instantiate the configuration manager and the database being used.
-            ConfigManager = new ConfigurationManager();
-            RTDbContext dbContext = new RTDbContext();
+            //// Instantiate the configuration manager and the database being used.
+            //ConfigManager = new ConfigurationManager();
+            //RTDbContext dbContext = new RTDbContext();
 
-            DatabaseOperations.InitializeLocalConnectionOnly();
-            DatabaseOperations.PopulateLocalDatabase();
-            Console.WriteLine("Local database populated.");
-            Console.WriteLine("Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
+            //DatabaseOperations.InitializeLocalConnectionOnly();
+            //DatabaseOperations.PopulateLocalDatabase();
+            //Console.WriteLine("Local database populated.");
+            //Console.WriteLine("Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
 
-            AbstractPLC plc;
-            AbstractSpectraCyberController spectraCyberController;
-            AbstractRadioTelescope radioTelescope;
+            //AbstractPLC plc;
+            //AbstractSpectraCyberController spectraCyberController;
+            //AbstractRadioTelescope radioTelescope;
 
-            if (args.Length > 0)
-            {
-                plc = ConfigManager.ConfigurePLC(args[0]);
-            }
-            else
-            {
-                plc = ConfigManager.ConfigurePLC("");
-            }
+            //if (args.Length > 0)
+            //{
+            //    plc = ConfigManager.ConfigurePLC(args[0]);
+            //}
+            //else
+            //{
+            //    plc = ConfigManager.ConfigurePLC("");
+            //}
 
-            if (args.Length > 1)
-            {
-                spectraCyberController = ConfigManager.ConfigureSpectraCyberController(args[1]);
-            }
-            else
-            {
-                spectraCyberController = ConfigManager.ConfigureSpectraCyberController("");
-            }
+            //if (args.Length > 1)
+            //{
+            //    spectraCyberController = ConfigManager.ConfigureSpectraCyberController(args[1]);
+            //}
+            //else
+            //{
+            //    spectraCyberController = ConfigManager.ConfigureSpectraCyberController("");
+            //}
 
-            if (args.Length > 2)
-            {
-                radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2], spectraCyberController, plc);
-            }
-            else
-            {
-                radioTelescope = ConfigManager.ConfigureRadioTelescope("", spectraCyberController, plc);
-            }
+            //if (args.Length > 2)
+            //{
+            //    radioTelescope = ConfigManager.ConfigureRadioTelescope(args[2], spectraCyberController, plc);
+            //}
+            //else
+            //{
+            //    radioTelescope = ConfigManager.ConfigureRadioTelescope("", spectraCyberController, plc);
+            //}
 
 
-            PLCController plcController = new PLCController(plc);
-            RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
+            //PLCController plcController = new PLCController(plc);
+            //RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
 
-            ControlRoom cRoom = new ControlRoom(rtController, dbContext);
-            ControlRoomController crController = new ControlRoomController(cRoom);
-            crController.Start();
+            //ControlRoom cRoom = new ControlRoom(rtController, dbContext);
+            //ControlRoomController crController = new ControlRoomController(cRoom);
+            //crController.Start();
 
-            dbContext.Dispose();
-            DatabaseOperations.DisposeLocalDatabaseOnly();
+            //dbContext.Dispose();
+            //DatabaseOperations.DisposeLocalDatabaseOnly();
 
-            // End logging
-            logger.Info("<--------------- Control Room Application Terminated --------------->");
-            Console.ReadKey();
+            //// End logging
+            //logger.Info("<--------------- Control Room Application Terminated --------------->");
+            //Console.ReadKey();
         }
 
         private static ConfigurationManager ConfigManager;
