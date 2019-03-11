@@ -24,12 +24,10 @@ namespace ControlRoomApplication.Main
                 case "/PS":
                     return new SpectraCyberController(new SpectraCyber(), dbContext);
 
-                case "/SS":
-                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator(), dbContext);
-
                 case "/TS":
                     return new SpectraCyberTestController(new SpectraCyberSimulator(), dbContext);
 
+                case "/SS":
                 default:
                     // If none of the switches match or there wasn't one declared
                     // for the spectraCyber, assume we are using the simulated/testing one.
@@ -48,16 +46,14 @@ namespace ControlRoomApplication.Main
             PLCCommunicationHandler PLCCommsHandler = new PLCCommunicationHandler(ip, int.Parse(port));
             switch (arg2.ToUpper())
             {
-                case "/SR":
-                    return new ScaleRadioTelescope(spectraCyberController, PLCCommsHandler);
-
-                case "/PR":
+                 case "/PR":
                     return new ProductionRadioTelescope(spectraCyberController, PLCCommsHandler);
 
                 case "/TR":
                     // Case for the test/simulated radiotelescope.
                     return new TestRadioTelescope(spectraCyberController, PLCCommsHandler);
 
+                case "/SR":
                 default:
                     // Should be changed once we have a simulated
                     // radiotelescope class implemented
@@ -75,17 +71,16 @@ namespace ControlRoomApplication.Main
             {
                 case "/PR":
                     // The production telescope
-                    return null;
-
-                case "/TR":
-                    // Case for the test/simulated radiotelescope.
-                    throw new NotImplementedException("There is not yet a Test/Simulation PLC.");
+                    throw new NotImplementedException("There is not yet communication for the real PLC.");
 
                 case "/SR":
-                default:
-                    // Should be changed once we have a simulated
-                    // radiotelescope class implemented
+                    // Case for the test/simulated radiotelescope.
                     return new ScaleModelPLCDriver(ip, int.Parse(port));
+
+                case "/TR":
+                default:
+                    // Should be changed once we have a simulated radiotelescope class implemented
+                    return new TestPLCDriver(ip, int.Parse(port));
             }
         }
 
@@ -117,14 +112,14 @@ namespace ControlRoomApplication.Main
             {
                 string[] RTArgs = args[i + 1].Split(',');
 
-                if (RTArgs.Length != 3)
+                if (RTArgs.Length != 4)
                 {
                     Console.WriteLine("Unexpected format for input #" + i.ToString() + "[" + args[i + 1] + "], skipping...");
                     continue;
                 }
                 
-                AbstractRadioTelescope ARadioTelescope = ConfigureRadioTelescope(RTArgs[0], ConfigureSpectraCyberController(RTArgs[0], dbContext), RTArgs[1], RTArgs[2]);
-                AbstractPLCDriver APLCDriver = ConfigureSimulatedPLCDriver(RTArgs[0], RTArgs[1], RTArgs[2]);
+                AbstractRadioTelescope ARadioTelescope = ConfigureRadioTelescope(RTArgs[0], ConfigureSpectraCyberController(RTArgs[1], dbContext), RTArgs[2], RTArgs[3]);
+                AbstractPLCDriver APLCDriver = ConfigureSimulatedPLCDriver(RTArgs[0], RTArgs[2], RTArgs[3]);
 
                 RTDriverPairList.Add(new KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
             }

@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             if (query.Length != ExpectedSize)
             {
                 throw new ArgumentException(
-                    "ScaleModelPLCDriverController read a package specifying a size [" + ExpectedSize.ToString() + "], but the actual size was different [" + query.Length + "]."
+                    "TestPLCDriverController read a package specifying a size [" + ExpectedSize.ToString() + "], but the actual size was different [" + query.Length + "]."
                 );
             }
 
@@ -97,6 +97,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                     case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                     case PLCCommandAndQueryTypeEnum.SHUTDOWN:
                     case PLCCommandAndQueryTypeEnum.CALIBRATE:
+                    case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                         {
                             break;
                         }

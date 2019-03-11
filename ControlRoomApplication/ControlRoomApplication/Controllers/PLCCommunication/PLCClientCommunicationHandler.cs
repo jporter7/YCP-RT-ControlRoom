@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Net.Sockets;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.Plc;
 
 namespace ControlRoomApplication.Controllers.PLCCommunication
 {
@@ -229,6 +228,8 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             }
             
             NetOutgoingMessage[2] += (byte)(PLCCommandResponseExpectationConversionHelper.ConvertToByte(ResponseExpectationValue) * 0x40);
+
+            Console.WriteLine("[PLCClientCommunicationHandler] About to send command " + MessageType.ToString());
 
             if (ResponseExpectationValue == PLCCommandResponseExpectationEnum.EXPECTING_RESPONSE)
             {

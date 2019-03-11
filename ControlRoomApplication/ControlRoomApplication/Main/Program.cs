@@ -43,9 +43,6 @@ namespace ControlRoomApplication.Main
 
                 ProgramRTControllerList[i].RadioTelescope.PlcController.ConnectToServer();
 
-                ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringUp(0);
-                ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-
                 ProgramControlRoomControllerList[i].Start();
             }
 

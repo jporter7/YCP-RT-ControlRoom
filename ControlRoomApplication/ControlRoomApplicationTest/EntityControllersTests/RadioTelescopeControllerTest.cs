@@ -7,7 +7,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Constants;
-using ControlRoomApplication.Entities.Plc;
 using ControlRoomApplication.Main;
 
 namespace ControlRoomApplicationTest.EntityControllersTests

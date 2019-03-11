@@ -160,6 +160,10 @@ namespace ControlRoomApplication.Controllers
         public void StartReadingData(Appointment app)
         {
             CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.BringUp(app.Id);
+
+            // TODO: This should be part of the appointment!
+            CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+
             CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController.StartScan();
         }
 

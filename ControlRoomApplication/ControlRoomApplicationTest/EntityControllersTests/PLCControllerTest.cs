@@ -1,7 +1,6 @@
 ﻿using System;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.Plc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
@@ -9,13 +8,10 @@ namespace ControlRoomApplicationTest.EntityControllersTests
     [TestClass]
     public class PLCControllerTest
     {
-        //Using TestPLC to ensure that all of the PLCController Messages are properly send and recieved
-        PLCCommunicationHandler testcontroller;
-
         [TestInitialize]
         public void BuildUp()
         {
-            
+
         }
 
         [TestMethod]
