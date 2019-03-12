@@ -5,7 +5,7 @@ using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Controllers.PLCCommunication
 {
-    public class PLCCommunicationHandler
+    public class PLCClientCommunicationHandler
     {
         private Thread StreamCommunicationThread;
         private Mutex StreamCommunicationThreadMutex;
@@ -20,7 +20,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
         private int ExpectedResponseDataSize { get; set; }
         private int ResponseTimeoutMS { get; set; }
 
-        public PLCCommunicationHandler(string ip, int port)
+        public PLCClientCommunicationHandler(string ip, int port)
         {
             StreamCommunicationThread = new Thread(() => RunTCPServer(ip, port));
             StreamCommunicationThreadMutex = new Mutex();
@@ -44,7 +44,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
         {
             if (HasActiveConnection)
             {
-                Console.WriteLine("Failed to connect to TCP server client while attempting to bring up PLC Controller: instance is busy");
+                Console.WriteLine("[PLCClientCommunicationHandler] Failed to connect to TCP server client while attempting to bring up PLC Controller: instance is busy");
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                     || (e is InvalidOperationException)
                     || (e is ObjectDisposedException))
                 {
-                    Console.WriteLine("Failed to connect to TCP server client while attempting to bring up PLC Controller: error establishing connection");
+                    Console.WriteLine("[PLCClientCommunicationHandler] Failed to connect to TCP server client while attempting to bring up PLC Controller: error establishing connection");
                     HasActiveConnection = false;
                     return;
                 }
@@ -95,7 +95,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
                     if (TotalRead != ExpectedResponseDataSize)
                     {
-                        Console.WriteLine("UH OH: " + TotalRead.ToString() + " vs. " + ExpectedResponseDataSize.ToString());
+                        Console.WriteLine("[PLCClientCommunicationHandler] UH OH: " + TotalRead.ToString() + " vs. " + ExpectedResponseDataSize.ToString());
                     }
 
                     IncomingData = TemporaryResponseBuffer;
@@ -106,7 +106,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                 {
                     if (OutgoingData.Length <= 0)
                     {
-                        Console.WriteLine("No data found to be sent.");
+                        Console.WriteLine("[PLCClientCommunicationHandler] No data found to be sent.");
                         OutgoingDataSet = false;
                     }
 
@@ -120,14 +120,14 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                 StreamCommunicationThreadMutex.ReleaseMutex();
             }
 
-            Console.WriteLine("Exited main loop.");
+            Console.WriteLine("[PLCClientCommunicationHandler] Exited main loop.");
         }
 
         private byte[] ReadResponse()
         {
             if (ExpectedResponseDataSize == 0)
             {
-                Console.WriteLine("WARNING: Expected message size was 0.");
+                Console.WriteLine("[PLCClientCommunicationHandler] WARNING: Expected message size was 0.");
                 return null;
             }
 
@@ -137,7 +137,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                 int AllowableTimeout = ResponseTimeoutMS - (int)((DateTime.Now - StartTime).TotalMilliseconds);
                 if (AllowableTimeout <= 0)
                 {
-                    Console.WriteLine("Timed out waiting for response.");
+                    Console.WriteLine("[PLCClientCommunicationHandler] Timed out waiting for response.");
                     return null;
                 }
 
@@ -147,6 +147,8 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                     {
                         byte[] DataCopy = new byte[IncomingData.Length];
                         Array.Copy(IncomingData, DataCopy, DataCopy.Length);
+
+                        IncomingDataSet = false;
 
                         StreamCommunicationThreadMutex.ReleaseMutex();
 
@@ -204,20 +206,9 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                 case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                 case PLCCommandAndQueryTypeEnum.SHUTDOWN:
                 case PLCCommandAndQueryTypeEnum.CALIBRATE:
-                    {
-                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.NOT_EXPECTING_RESPONSE;
-                        break;
-                    }
-
                 case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.NOT_EXPECTING_RESPONSE;
-
-                        Orientation ObjectiveOrientation = (Orientation)MessageParameters[0];
-
-                        Array.Copy(BitConverter.GetBytes(ObjectiveOrientation.Azimuth), 0, NetOutgoingMessage, 3, 8);
-                        Array.Copy(BitConverter.GetBytes(ObjectiveOrientation.Elevation), 0, NetOutgoingMessage, 11, 8);
-
                         break;
                     }
 
@@ -233,6 +224,8 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
             if (ResponseExpectationValue == PLCCommandResponseExpectationEnum.EXPECTING_RESPONSE)
             {
+                // This 0x13 is the expected response size of anything from the PLC (simulated or real)
+                // See the google sheets file describing this under Wiki Documentation -> Control Room in the shared GDrive
                 return SendMessageWithResponse(NetOutgoingMessage, 0x13);
             }
             else

@@ -43,7 +43,7 @@ namespace ControlRoomApplication.Main
         /// <returns> A concrete instance of a radio telescope. </returns>
         public static AbstractRadioTelescope ConfigureRadioTelescope(string arg2, AbstractSpectraCyberController spectraCyberController, string ip, string port)
         {
-            PLCCommunicationHandler PLCCommsHandler = new PLCCommunicationHandler(ip, int.Parse(port));
+            PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, int.Parse(port));
             switch (arg2.ToUpper())
             {
                  case "/PR":

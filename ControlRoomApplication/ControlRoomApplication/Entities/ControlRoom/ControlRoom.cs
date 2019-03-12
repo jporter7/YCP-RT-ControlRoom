@@ -12,17 +12,10 @@ namespace ControlRoomApplication.Entities
 {
     public class ControlRoom
     {
-        public ControlRoom( RadioTelescopeController controller, RTDbContext dbContext)
+        public ControlRoom(RadioTelescopeController controller, RTDbContext dbContext)
         {
             RadioTelescopeController = controller;
             Context = dbContext;
-        }
-
-        public ControlRoom()
-        {
-            // By default no radio telescope will be added to the radioTelescopeController
-            RadioTelescopeController =  new RadioTelescopeController();
-            Context = new RTDbContext();
         }
 
         public RadioTelescopeController RadioTelescopeController { get; set; }

@@ -62,14 +62,19 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
                     case PLCCommandAndQueryTypeEnum.GET_CURRENT_LIMIT_SWITCH_STATUSES:
                         {
-                            PLCLimitSwitchStatusEnum StatusElevation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
-                            PLCLimitSwitchStatusEnum StatusAzimuth = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
+                            PLCLimitSwitchStatusEnum StatusAzimuthUnderRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
+                            PLCLimitSwitchStatusEnum StatusAzimuthOverRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
+                            PLCLimitSwitchStatusEnum StatusElevationUnderRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
+                            PLCLimitSwitchStatusEnum StatusElevationOverRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
 
-                            FinalResponseContainer[3] =
-                                (byte)((PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusAzimuth) * 0x10)
-                                + PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusElevation))
+                            int PacketSum =
+                                PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusElevationOverRotation)
+                                 + (PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusElevationUnderRotation) * 0x4)
+                                 + (PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusAzimuthOverRotation) * 0x10)
+                                 + (PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusAzimuthUnderRotation) * 0x40)
                             ;
 
+                            FinalResponseContainer[3] = (byte)PacketSum;
                             FinalResponseContainer[2] = 0x1;
 
                             break;

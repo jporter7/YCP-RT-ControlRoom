@@ -23,7 +23,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
                 {
-                    Console.WriteLine("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread.");
+                    Console.WriteLine("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
                     return;
                 }
                 else
@@ -41,7 +41,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             {
                 if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException))
                 {
-                    Console.WriteLine("[AbstractPLCDriver] ERROR: failure starting PLC TCP server.");
+                    Console.WriteLine("[AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
                     return;
                 }
             }
@@ -115,11 +115,12 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
                             if (!ProcessRequest(ClientStream, ClippedData))
                             {
-                                Console.WriteLine("[AbstractPLCDriver] FAILED to write server!");
+                                Console.WriteLine("[AbstractPLCDriver] FAILED to write server.");
                             }
                             else
                             {
-                                Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
+                                //Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
+                                Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server!");
                             }
                         }
                         catch (Exception e)

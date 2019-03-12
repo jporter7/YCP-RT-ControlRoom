@@ -102,7 +102,7 @@
     <Compile Include="Controllers\AASharpControllers\MoonCoordinateCalculator.cs" />
     <Compile Include="Controllers\AASharpControllers\SunCoordinateCalculator.cs" />
     <Compile Include="Controllers\AASharpControllers\OrientationCalculationController.cs" />
-    <Compile Include="Controllers\ControlRoomController.cs" />
+    <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
@@ -113,10 +113,10 @@
     <Compile Include="Entities\Plc\PLCSafetyInterlockStatusEnum.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\AbstractPLCDriver.cs" />
     <Compile Include="Controllers\RadioTelescopeControllers\RadioTelescopeController.cs" />
-    <Compile Include="Controllers\SpectraCyberController\AbstractSpectraCyberController.cs" />
-    <Compile Include="Controllers\SpectraCyberController\SpectraCyberController.cs" />
-    <Compile Include="Controllers\SpectraCyberController\SpectraCyberSimulatorController.cs" />
-    <Compile Include="Controllers\SpectraCyberController\SpectraCyberTestController.cs" />
+    <Compile Include="Controllers\SpectraCyberControllers\AbstractSpectraCyberController.cs" />
+    <Compile Include="Controllers\SpectraCyberControllers\SpectraCyberController.cs" />
+    <Compile Include="Controllers\SpectraCyberControllers\SpectraCyberSimulatorController.cs" />
+    <Compile Include="Controllers\SpectraCyberControllers\SpectraCyberTestController.cs" />
     <Compile Include="Database\Operations\DatabaseOperations.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
@@ -175,5 +175,6 @@
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

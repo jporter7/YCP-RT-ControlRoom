@@ -4,11 +4,9 @@ using System.Threading;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
-using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Main
 {

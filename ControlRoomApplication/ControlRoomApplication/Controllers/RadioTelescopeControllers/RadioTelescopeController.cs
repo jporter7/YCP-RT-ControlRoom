@@ -9,17 +9,11 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 {
     public class RadioTelescopeController
     {
-        /// <summary>
-        /// Empty Constructor
-        /// </summary>
-        public RadioTelescopeController()
-        {
-
-        }
+        public AbstractRadioTelescope RadioTelescope { get; set; }
 
         /// <summary>
         /// Constructor that takes an AbstractRadioTelescope object and sets the
-        /// corresponding field
+        /// corresponding field.
         /// </summary>
         /// <param name="radioTelescope"></param>
         public RadioTelescopeController(AbstractRadioTelescope radioTelescope)
@@ -28,9 +22,22 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         }
 
         /// <summary>
-        /// Gets the status of whether this RT is responding.
+        /// A simple getter for the underlying abstract RT model.
         /// </summary>
-        /// <returns> Whethre or not its responding. </returns>
+        /// <returns> The abstarct RT that this instance is controlling </returns>
+        public AbstractRadioTelescope GetAbstractRadioTelescopeModel()
+        {
+            return RadioTelescope;
+        }
+
+        /// <summary>
+        /// Gets the status of whether this RT is responding.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        /// <returns> Whether or not the RT responded. </returns>
         public bool TestRadioTelescopeCommunication()
         {
             byte[] ByteResponse = (byte[])RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.TEST_CONNECTION);
@@ -39,6 +46,10 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 
         /// <summary>
         /// Gets the current orientation of the radiotelescope in azimuth and elevation.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
         /// </summary>
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
@@ -54,11 +65,25 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         }
 
         /// <summary>
+        /// Gets the current status of the four limit switches.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
+        public Orientation GetCurrentLimitSwitchStatuses()
+        {
+            return null;
+        }
+
+        /// <summary>
         /// Method used to shutdown the Radio Telescope in the case of inclement
-        /// weather, maintenance, etc.
-        /// This method functions differently depending on the Radio Telescope type.
-        /// Currently, only the ScaleModel scenario is implemented, and it will move
-        /// the CurrentOrientation to a straight upward position and set the status to shutdown.
+        /// weather, maintenance, etcetera.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
         /// </summary>
         public void ShutdownRadioTelescope()
         {
@@ -89,6 +114,14 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
             */
         }
 
+        /// <summary>
+        /// Method used to request to move the Radio Telescope to an objective
+        /// azimuth/elevation orientation.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
         public void MoveRadioTelescope(Orientation orientation)
         {
             RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation);
@@ -164,25 +197,31 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
             */
         }
 
+        /// <summary>
+        /// Method used to request to move the Radio Telescope to an objective
+        /// right ascension/declination coordinate pair.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
         public void MoveRadioTelescope(Coordinate coordinate)
         {
-            RadioTelescope.PlcController.RequestMessageSend(
-                PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION,
-                CoordinateTransformation.CoordinateToOrientation(
-                    coordinate,
-                    RadioTelescopeConstants.OBSERVATORY_LONGITUDE,
-                    RadioTelescopeConstants.OBSERVATORY_LATITUDE,
-                    RadioTelescopeConstants.OBSERVATORY_ALTITUDE,
-                    DateTime.Now
-                )
-            );
+            MoveRadioTelescope(CoordinateTransformation.CoordinateToOrientation(
+                coordinate,
+                RadioTelescopeConstants.OBSERVATORY_LONGITUDE,
+                RadioTelescopeConstants.OBSERVATORY_LATITUDE,
+                RadioTelescopeConstants.OBSERVATORY_ALTITUDE,
+                DateTime.Now
+            ));
         }
 
         /// <summary>
-        /// Method used to calibrate the Radio Telescope before each observation. It, like the 
-        /// MoveRadioTelescope method, is designed to function differently based on the type of
-        /// Radio Telescope in question. Currently, only the ScaleRadioTelescope scenario is designed 
-        /// with functionality, wherein it will set the Orientation to (0,0)
+        /// Method used to calibrate the Radio Telescope before each observation.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
         /// </summary>
         public void CalibrateRadioTelescope()
         {
@@ -220,7 +259,6 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
             RFData rfData = new RFData();
             rfData.TimeCaptured = spectraCyberResponse.DateTimeCaptured;
             rfData.Intensity = spectraCyberResponse.DecimalData;
-            // TODO: set ID
             return rfData;
         }
 
@@ -234,7 +272,5 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 
             return rfDataList;
         }
-
-        public AbstractRadioTelescope RadioTelescope { get; set; }
     }
 }

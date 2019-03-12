@@ -5,18 +5,13 @@ namespace ControlRoomApplication.Entities.RadioTelescope
 {
     public class ScaleRadioTelescope : AbstractRadioTelescope
     {
-        public ScaleRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCCommunicationHandler plcController)
+        public ScaleRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCClientCommunicationHandler plcController)
         {
             PlcController = plcController;
             SpectraCyberController = spectraCyberController;
             CalibrationOrientation = new Orientation();
             //Status = RadioTelescopeStatusEnum.UNKNOWN;
             //CurrentOrientation = PlcController.GetOrientation();
-        }
-
-        public ScaleRadioTelescope()
-        {
-
         }
     }
 }

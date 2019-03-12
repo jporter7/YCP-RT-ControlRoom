@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         [Column("current_orientation")]
         public Orientation CurrentOrientation { get; set; }
 
-        public PLCCommunicationHandler PlcController { get; set; }
+        public PLCClientCommunicationHandler PlcController { get; set; }
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
         public Orientation CalibrationOrientation { get; set; }
     }

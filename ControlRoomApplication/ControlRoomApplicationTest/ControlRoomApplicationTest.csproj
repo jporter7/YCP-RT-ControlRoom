@@ -79,13 +79,12 @@
     <Compile Include="EntitiesTests\ControlRoomTest.cs" />
     <Compile Include="EntitiesTests\CoordinateTest.cs" />
     <Compile Include="EntitiesTests\OrientationTest.cs" />
-    <Compile Include="EntitiesTests\AbstractRadioTelescopeTest.cs" />
     <Compile Include="EntitiesTests\PLCTest.cs" />
     <Compile Include="EntitiesTests\RFDataTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberTest.cs" />
     <Compile Include="EntityControllersTests\CoordinateCalculationControllerTest.cs" />
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
-    <Compile Include="EntityControllersTests\PLCControllerTest.cs" />
+    <Compile Include="EntityControllersTests\PLCClientAndDriverTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

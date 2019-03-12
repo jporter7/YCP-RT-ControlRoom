@@ -6,12 +6,7 @@ namespace ControlRoomApplication.Entities.RadioTelescope
 {
     public class ProductionRadioTelescope : AbstractRadioTelescope
     {
-        public ProductionRadioTelescope()
-        {
-            
-        }
-
-        public ProductionRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCCommunicationHandler plcController)
+        public ProductionRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCClientCommunicationHandler plcController)
         {
             PlcController = plcController;
             SpectraCyberController = spectraCyberController;
