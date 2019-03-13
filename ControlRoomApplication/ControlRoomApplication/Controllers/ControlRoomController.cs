@@ -10,7 +10,7 @@ namespace ControlRoomApplication.Controllers
 {
     public class ControlRoomController
     {
-        public ControlRoomController(ControlRoom controlRoom)
+        public ControlRoomController(ControlRoom controlRoom, CancellationToken token)
         {
             CRoom = controlRoom;
             coordinateController = new CoordinateCalculationController();
@@ -109,9 +109,13 @@ namespace ControlRoomApplication.Controllers
             CRoom.Context.SaveChanges();
             foreach(DateTime datetime in orientations.Keys)
             {
-                while(DateTime.Now < datetime)
+                while(DateTime.Now < datetime && !Token.IsCancellationRequested)
                 {
                     // wait for timestamp 
+                    if (Token.IsCancellationRequested)
+                    {
+                        return;
+                    }
                 }
                 Orientation orientation = orientations[datetime];
                 CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
@@ -151,6 +155,7 @@ namespace ControlRoomApplication.Controllers
 
         public ControlRoom CRoom { get; set; }
         public CoordinateCalculationController coordinateController { get; set; }
+        private CancellationToken Token { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }

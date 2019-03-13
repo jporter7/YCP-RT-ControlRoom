@@ -29,6 +29,9 @@ namespace ControlRoomApplication.Main
             //Console.SetOut(new ControlWriter(textBox1));
             DatabaseOperations.InitializeLocalConnectionOnly();
             DatabaseOperations.PopulateLocalDatabase();
+
+            CancellationSource = new CancellationTokenSource();
+            Token = CancellationSource.Token;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -42,15 +45,16 @@ namespace ControlRoomApplication.Main
                 RTController = new RadioTelescopeController(RadioTelescope);
 
                 ControlRoom cRoom = new ControlRoom(RTController, Context);
-                ControlRoomController crController = new ControlRoomController(cRoom);
-                Thread controlRoomThread = new Thread(() => crController.Start());
-                controlRoomThread.Start();
-                controlRoomThread.Join();
+                ControlRoomController crController = new ControlRoomController(cRoom, CancellationSource.Token);
+                ControlRoomThread = new Thread(() => crController.Start());
+                ControlRoomThread.Start();
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            CancellationSource.Cancel();
+            ControlRoomThread.Join();
             DatabaseOperations.DisposeLocalDatabaseOnly();
             Environment.Exit(0);
         }
@@ -151,6 +155,9 @@ namespace ControlRoomApplication.Main
         public AbstractRadioTelescope RadioTelescope { get; set; }
         public RadioTelescopeController RTController { get; set; }
         public ControlRoom CRoom { get; set; }
+        private Thread ControlRoomThread { get; set; }
+        private CancellationTokenSource CancellationSource { get; set; }
+        private CancellationToken Token { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
