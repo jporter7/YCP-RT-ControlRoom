@@ -103,9 +103,6 @@
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\RadioTelescopeConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
-    <Compile Include="Controllers\AASharpControllers\MoonCoordinateCalculator.cs" />
-    <Compile Include="Controllers\AASharpControllers\SunCoordinateCalculator.cs" />
-    <Compile Include="Controllers\AASharpControllers\OrientationCalculationController.cs" />
     <Compile Include="Controllers\ControlRoomController.cs" />
     <Compile Include="Controllers\PLCController\PLCController.cs" />
     <Compile Include="Controllers\PLCController\PLCUtilities\PLCConnector.cs" />

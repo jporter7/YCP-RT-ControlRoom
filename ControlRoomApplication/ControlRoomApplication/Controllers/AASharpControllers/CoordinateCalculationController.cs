@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             for (int i = 0; i < length.TotalMinutes; i++)
             {
                 DateTime datetime = appt.StartTime.AddMinutes(i);
-                Orientation orientation = CalculateCoordinate(appt, datetime);
+                Orientation orientation = CalculateOrientation(appt, datetime);
                 if(orientation != null)
                 {
                     orientations.Add(datetime, orientation);
@@ -30,45 +30,56 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return orientations;
         }
 
-        public Orientation CalculateCoordinate(Appointment appt, DateTime datetime)
+        public Orientation CalculateOrientation(Appointment appt, DateTime datetime)
         {
-            Coordinate coordinate = null;
-            Orientation orientation = null;
-
             switch (appt.Type)
             {
                 case ("POINT"):
-                    var coordinates = appt.Coordinates.ToList();
-                    coordinate = (coordinates.Count > 0) ? coordinates[0] : null;
-                    break;
+                    var point_coord = GetPointCoordinate(appt, datetime);
+                    return CoordinateToOrientation(point_coord, datetime);
                 case ("CELESTIAL_BODY"):
-                    coordinate = GetCelestialBodyCoordinate(appt.CelestialBody, datetime);
-                    break;
+                    var celestial_body_coord = GetCelestialBodyCoordinate(appt.CelestialBody, datetime);
+                    return CoordinateToOrientation(celestial_body_coord, datetime);
                 case ("RASTER"):
-                    coordinate = GetRasterCoordinate(appt, datetime);
-                    break;
+                    var raster_coord = GetRasterCoordinate(appt, datetime);
+                    return CoordinateToOrientation(raster_coord, datetime);
                 case ("ORIENTATION"):
-                    orientation = appt.Orientation;
-                    break;
+                    return appt.Orientation;
                 case ("FREE_CONTROL"):
                     throw new NotImplementedException();
                 default:
-                    coordinate = new Coordinate(0.0, 0.0);
-                    break;
+                    throw new ArgumentException("Invalid Appt type");
             }
+        }
 
-            if (coordinate != null)
+        public Coordinate GetPointCoordinate(Appointment appt, DateTime datetime)
+        {
+            var coords = appt.Coordinates.ToList();
+            if (coords.Count > 1)
             {
-                orientation = CoordinateToOrientation(coordinate, datetime);
+                throw new ArgumentException("Too many Coordinates for a Point");
+            }
+            else if (coords.Count < 1)
+            {
+                throw new ArgumentException("No Point Coordinate");
             }
 
-            return orientation;
+            return coords[0];
         }
 
         public Coordinate GetRasterCoordinate(Appointment appt, DateTime datetime)
         {
             // Get start and end coordinates
             List<Coordinate> coords = appt.Coordinates.ToList();
+
+            if (coords.Count > 2)
+            {
+                throw new ArgumentException("Too many Coordinates for a Raster Scan");
+            }
+            else if (coords.Count < 2)
+            {
+                throw new ArgumentException("Too few Coordinates for a Raster Scan");
+            }
             Coordinate start_coord = coords[0];
             Coordinate end_coord = coords[1];
 
@@ -120,52 +131,29 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             double x = start_coord.RightAscension + dx;
             double y = start_coord.Declination + dy;
 
-            // Return the new coordinate
-            // (x = RightAscension, y = Declination)
             //Console.WriteLine(x + ", " + y); // (FOR TESTING)
+
+            // Create the new coordinate
+            // (x = RightAscension, y = Declination)
             return new Coordinate(x, y);
         }
 
-        public Coordinate GetCelestialBodyCoordinate(string celestialBody, DateTime Date)
+        public Coordinate GetCelestialBodyCoordinate(string celestialBody, DateTime datetime)
         {
-            Coordinate coordinate = new Coordinate(0.0, 0.0);
             switch (celestialBody)
             {
                 case "SUN":
-                    SunCoordinateCalculator sunCoordinateCalculator = new SunCoordinateCalculator(Date);
-                    coordinate.RightAscension = sunCoordinateCalculator.GetEquatorialElevation();
-                    coordinate.Declination = sunCoordinateCalculator.GetEquatorialAzimuth();
-
-                    return coordinate;
+                    return GetSunCoordinate(datetime);
                 case "MOON":
-                    throw new NotImplementedException();
+                    return GetMoonCoordinate(datetime);
                 default:
-                    return new Coordinate(0.0, 0.0);
+                    throw new ArgumentException("Invalid Celestial Body");
             }
         }
 
-        public Orientation CoordinateToOrientation(Coordinate coordinate, DateTime Date)
+        public Coordinate GetSunCoordinate(DateTime datetime)
         {
-            AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
-            double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
-            
-            double AST = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
-            double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RadioTelescopeConstants.OBSERVATORY_LONGITUDE);
-            double LocalHourAngle = AST - LongtitudeAsHourAngle - coordinate.RightAscension;
-            AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, RadioTelescopeConstants.OBSERVATORY_LATITUDE);
-
-            Horizontal.X += 180;
-            if(Horizontal.X > 360)
-            {
-                Horizontal.X -= 180;
-            }
-
-            return new Orientation(Horizontal.X, Horizontal.Y);
-        }
-
-        public Orientation SunCoordinateToOrientation(DateTime Date)
-        {
-            AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
+            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
             double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
             double SunLong = AASSun.ApparentEclipticLongitude(JD, false);
             double SunLat = AASSun.ApparentEclipticLatitude(JD, false);
@@ -175,28 +163,13 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             
             // This line gives us RA & Declination.
             AAS2DCoordinate SunTopo = AASParallax.Equatorial2Topocentric(equatorial.X, equatorial.Y, SunRad, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, JD);
-            double AST = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
-            double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RadioTelescopeConstants.OBSERVATORY_LONGITUDE);
-            double LocalHourAngle = AST - LongtitudeAsHourAngle - SunTopo.X;
 
-            // This is supposed to give us azimuth & elevation
-            AAS2DCoordinate SunHorizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, SunTopo.Y, RadioTelescopeConstants.OBSERVATORY_LATITUDE);
-            SunHorizontal.Y += AASRefraction.RefractionFromTrue(SunHorizontal.Y, 1013, 10);
-
-            // AASharp considers South as 0, instead of North
-            SunHorizontal.X += 180;
-            if(SunHorizontal.X > 360)
-            {
-                SunHorizontal.X -= 360;
-            }
-
-            return new Orientation(SunHorizontal.X, SunHorizontal.Y);
+           return new Coordinate(SunTopo.X, SunTopo.Y);
         }
 
-        public Orientation MoonCoordinateToOrientation(DateTime Date)
+        public Coordinate GetMoonCoordinate(DateTime datetime)
         {
-
-            AASDate date = new AASDate(Date.Year, Date.Month, Date.Day, Date.Hour, Date.Minute, Date.Second, true);
+            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
             double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
             double MoonLong = AASMoon.EclipticLongitude(JD);
             double MoonLat = AASMoon.EclipticLatitude(JD);
@@ -206,22 +179,27 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             MoonRad /= 149597870.691; //Convert KM to AU
 
             AAS2DCoordinate MoonTopo = AASParallax.Equatorial2Topocentric(Equatorial.X, Equatorial.Y, MoonRad, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, JD);
-            double AST = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
+
+            return new Coordinate(MoonTopo.X, MoonTopo.Y);
+        }
+
+        public Orientation CoordinateToOrientation(Coordinate coordinate, DateTime datetime)
+        {
+            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
+
+            double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
             double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RadioTelescopeConstants.OBSERVATORY_LONGITUDE);
-            double LocalHourAngle = AST - LongtitudeAsHourAngle - MoonTopo.X;
+            double LocalHourAngle = ApparentGreenwichSiderealTime - LongtitudeAsHourAngle - coordinate.RightAscension;
+            AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, RadioTelescopeConstants.OBSERVATORY_LATITUDE);
 
-
-            AAS2DCoordinate MoonHorizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, MoonTopo.Y, RadioTelescopeConstants.OBSERVATORY_LATITUDE);
-            MoonHorizontal.Y += AASRefraction.RefractionFromTrue(MoonHorizontal.Y, 1013, 10);
-
-            // South is considered 0 instead of North
-            MoonHorizontal.X += 180;
-            if(MoonHorizontal.X > 360)
+            // Since AASharp considers south zero, flip the orientation 180 degrees
+            Horizontal.X += 180;
+            if (Horizontal.X > 360)
             {
-                MoonHorizontal.X -= 360;
+                Horizontal.X -= 360;
             }
 
-            return new Orientation(MoonHorizontal.X, MoonHorizontal.Y);
+            return new Orientation(Horizontal.X, Horizontal.Y);
         }
     }
 }
