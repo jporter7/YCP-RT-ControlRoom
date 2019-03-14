@@ -1,11 +1,10 @@
-﻿using ControlRoomApplication.Constants;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace ControlRoomApplication.Controllers
 {

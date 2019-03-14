@@ -120,7 +120,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                             else
                             {
                                 //Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
-                                Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server!");
+                                //Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server!");
                             }
                         }
                         catch (Exception e)

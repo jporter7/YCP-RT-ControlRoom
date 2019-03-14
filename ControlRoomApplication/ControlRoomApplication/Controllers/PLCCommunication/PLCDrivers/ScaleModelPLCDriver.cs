@@ -28,9 +28,11 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             PLCCommandAndQueryTypeEnum CommandQueryTypeEnum = PLCCommandAndQueryTypeConversionHelper.GetFromByte(CommandQueryTypeByte);
             PLCCommandResponseExpectationEnum ExpectedResponseStatusEnum = PLCCommandResponseExpectationConversionHelper.GetFromByte(ExpectedResponseStatusByte);
 
-            if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.EXPECTING_RESPONSE)
+            byte[] FinalResponseContainer;
+
+            if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.FULL_RESPONSE)
             {
-                byte[] FinalResponseContainer =
+                FinalResponseContainer = new byte[]
                 {
                     0x13, 0x0,
                     0x0,
@@ -92,11 +94,14 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                             throw new ArgumentException("Invalid PLCCommandAndQueryTypeEnum value seen while expecting a response: " + CommandQueryTypeEnum.ToString());
                         }
                 }
-
-                return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
             }
-            else
+            else if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.MINOR_RESPONSE)
             {
+                FinalResponseContainer = new byte[]
+                {
+                    0x3, 0x0, 0x0
+                };
+
                 switch (CommandQueryTypeEnum)
                 {
                     case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
@@ -104,6 +109,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                     case PLCCommandAndQueryTypeEnum.CALIBRATE:
                     case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                         {
+                            FinalResponseContainer[2] = 0x1;
                             break;
                         }
 
@@ -112,9 +118,13 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                             throw new ArgumentException("Invalid PLCCommandAndQueryTypeEnum value seen while NOT expecting a response: " + CommandQueryTypeEnum.ToString());
                         }
                 }
-
-                return true;
             }
+            else
+            {
+                throw new ArgumentException("Invalid PLCCommandResponseExpectationEnum value seen while processing client request in ScaleModelPLCDriver: " + ExpectedResponseStatusEnum.ToString());
+            }
+
+            return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
         }
     }
 }

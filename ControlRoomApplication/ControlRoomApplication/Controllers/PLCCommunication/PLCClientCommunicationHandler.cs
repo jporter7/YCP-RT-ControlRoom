@@ -95,7 +95,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
                     if (TotalRead != ExpectedResponseDataSize)
                     {
-                        Console.WriteLine("[PLCClientCommunicationHandler] UH OH: " + TotalRead.ToString() + " vs. " + ExpectedResponseDataSize.ToString());
+                        Console.WriteLine("[PLCClientCommunicationHandler] ERROR, inconsistent packet size: " + TotalRead.ToString() + " vs. " + ExpectedResponseDataSize.ToString());
                     }
 
                     IncomingData = TemporaryResponseBuffer;
@@ -162,6 +162,9 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             }
         }
 
+        // As far as I'm aware, this is not being used at the moment anymore. However, Garret had mentioned
+        // the desire for async functionality, so I won't get rid of this just yet. (And I'll leave
+        // SendMessageWithResponse how it for now as a result.)
         private void SendMessage(byte[] ByteData, int ExpectedResponseSize = 0, int TimeoutMS = 0)
         {
             StreamCommunicationThreadMutex.WaitOne();
@@ -180,7 +183,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             return ReadResponse();
         }
 
-        public object RequestMessageSend(PLCCommandAndQueryTypeEnum MessageType, params object[] MessageParameters)
+        public byte[] RequestMessageSend(PLCCommandAndQueryTypeEnum MessageType, params object[] MessageParameters)
         {
             byte[] NetOutgoingMessage =
             {
@@ -199,7 +202,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                 case PLCCommandAndQueryTypeEnum.GET_CURRENT_LIMIT_SWITCH_STATUSES:
                 case PLCCommandAndQueryTypeEnum.GET_CURRENT_SAFETY_INTERLOCK_STATUS:
                     {
-                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.EXPECTING_RESPONSE;
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.FULL_RESPONSE;
                         break;
                     }
 
@@ -208,7 +211,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                 case PLCCommandAndQueryTypeEnum.CALIBRATE:
                 case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                     {
-                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.NOT_EXPECTING_RESPONSE;
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
                         break;
                     }
 
@@ -220,19 +223,13 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             
             NetOutgoingMessage[2] += (byte)(PLCCommandResponseExpectationConversionHelper.ConvertToByte(ResponseExpectationValue) * 0x40);
 
-            Console.WriteLine("[PLCClientCommunicationHandler] About to send command " + MessageType.ToString());
+            //Console.WriteLine("[PLCClientCommunicationHandler] About to send command " + MessageType.ToString());
 
-            if (ResponseExpectationValue == PLCCommandResponseExpectationEnum.EXPECTING_RESPONSE)
-            {
-                // This 0x13 is the expected response size of anything from the PLC (simulated or real)
-                // See the google sheets file describing this under Wiki Documentation -> Control Room in the shared GDrive
-                return SendMessageWithResponse(NetOutgoingMessage, 0x13);
-            }
-            else
-            {
-                SendMessage(NetOutgoingMessage);
-                return true;
-            }
+            // This is the expected response size of anything from the PLC (simulated or real), minor or full response.
+            // See the TCP/IP packet contents google sheets file describing this under Wiki Documentation -> Control Room in the shared GDrive
+            byte ExpectedResponseSize = (ResponseExpectationValue == PLCCommandResponseExpectationEnum.FULL_RESPONSE) ? (byte)0x13 : (byte)0x3;
+
+            return SendMessageWithResponse(NetOutgoingMessage, ExpectedResponseSize);
         }
     }
 }
