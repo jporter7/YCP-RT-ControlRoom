@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Controllers.PLCController;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
@@ -27,6 +28,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         public RadioTelescopeController(AbstractRadioTelescope radioTelescope)
         {
             RadioTelescope = radioTelescope;
+            CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
         }
 
         /// <summary>
@@ -204,5 +206,6 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         }
 
         public AbstractRadioTelescope RadioTelescope { get; set; }
+        public CoordinateCalculationController CoordinateController { get; set; }
     }
 }

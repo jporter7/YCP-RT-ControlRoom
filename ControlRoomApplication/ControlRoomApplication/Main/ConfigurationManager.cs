@@ -79,23 +79,28 @@ namespace ControlRoomApplication.Main
         /// <returns> A concrete instance of a radio telescope. </returns>
         public AbstractRadioTelescope ConfigureRadioTelescope(string arg2, AbstractSpectraCyberController spectraCyberController, AbstractPLC plc)
         {
+            // Create PLCController
             PLCController plcController = new PLCController(plc);
+
+            // Create Radio Telescope Location
+            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+
             switch (arg2.ToUpper())
             {
                 case "/SR":
-                    return new ScaleRadioTelescope(spectraCyberController, plcController);
+                    return new ScaleRadioTelescope(spectraCyberController, plcController, location);
 
                 case "/PR":
-                    return new ProductionRadioTelescope(spectraCyberController, plcController);
+                    return new ProductionRadioTelescope(spectraCyberController, plcController, location);
 
                 case "/TR":
                     // Case for the test/simulated radiotelescope.
                     // Will need to be uncommented later.
-                    return new TestRadioTelescope(spectraCyberController, plcController);
+                    return new TestRadioTelescope(spectraCyberController, plcController, location);
                 default:
                     // Should be changed once we have a simulated
                     // radiotelescope class implemented
-                    return new ScaleRadioTelescope(spectraCyberController, plcController);
+                    return new ScaleRadioTelescope(spectraCyberController, plcController, location);
             }
         }
 

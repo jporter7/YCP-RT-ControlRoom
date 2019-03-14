@@ -9,9 +9,9 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 {
     public class CoordinateCalculationController
     {
-        public CoordinateCalculationController()
+        public CoordinateCalculationController(Location location)
         {
-
+            Location = location;
         }
 
         public Dictionary<DateTime, Orientation> CalculateCoordinates(Appointment appt)
@@ -162,7 +162,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             double SunRad = AASEarth.RadiusVector(JD, false);
             
             // This line gives us RA & Declination.
-            AAS2DCoordinate SunTopo = AASParallax.Equatorial2Topocentric(equatorial.X, equatorial.Y, SunRad, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, JD);
+            AAS2DCoordinate SunTopo = AASParallax.Equatorial2Topocentric(equatorial.X, equatorial.Y, SunRad, Location.Longitude, Location.Latitude, Location.Altitude, JD);
 
            return new Coordinate(SunTopo.X, SunTopo.Y);
         }
@@ -178,7 +178,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             double MoonRad = AASMoon.RadiusVector(JD);
             MoonRad /= 149597870.691; //Convert KM to AU
 
-            AAS2DCoordinate MoonTopo = AASParallax.Equatorial2Topocentric(Equatorial.X, Equatorial.Y, MoonRad, RadioTelescopeConstants.OBSERVATORY_LONGITUDE, RadioTelescopeConstants.OBSERVATORY_LATITUDE, RadioTelescopeConstants.OBSERVATORY_HEIGHT, JD);
+            AAS2DCoordinate MoonTopo = AASParallax.Equatorial2Topocentric(Equatorial.X, Equatorial.Y, MoonRad, Location.Longitude, Location.Latitude, Location.Altitude, JD);
 
             return new Coordinate(MoonTopo.X, MoonTopo.Y);
         }
@@ -188,9 +188,9 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
 
             double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
-            double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(RadioTelescopeConstants.OBSERVATORY_LONGITUDE);
+            double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(Location.Longitude);
             double LocalHourAngle = ApparentGreenwichSiderealTime - LongtitudeAsHourAngle - coordinate.RightAscension;
-            AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, RadioTelescopeConstants.OBSERVATORY_LATITUDE);
+            AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, Location.Latitude);
 
             // Since AASharp considers south zero, flip the orientation 180 degrees
             Horizontal.X += 180;
@@ -201,5 +201,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
             return new Orientation(Horizontal.X, Horizontal.Y);
         }
+
+        private Location Location { get; set; }
     }
 }

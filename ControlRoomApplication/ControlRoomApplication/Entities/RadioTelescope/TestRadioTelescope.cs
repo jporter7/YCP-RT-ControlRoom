@@ -13,13 +13,14 @@ namespace ControlRoomApplication.Entities.RadioTelescope
 
         }
 
-        public TestRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCController plcController)
+        public TestRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCController plcController, Location location)
         {
             PlcController = plcController;
             SpectraCyberController = spectraCyberController;
             CalibrationOrientation = new Orientation();
             Status = RadioTelescopeStatusEnum.UNKNOWN;
             CurrentOrientation = PlcController.GetOrientation();
+            Location Location = location;
         }
     }
 }

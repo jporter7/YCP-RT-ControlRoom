@@ -13,7 +13,6 @@ namespace ControlRoomApplication.Controllers
         public ControlRoomController(ControlRoom controlRoom)
         {
             CRoom = controlRoom;
-            coordinateController = new CoordinateCalculationController();
         }
 
         /// <summary>
@@ -24,7 +23,7 @@ namespace ControlRoomApplication.Controllers
             while (true)
             {
                 Appointment appt = WaitingForNextAppointment();
-                Dictionary<DateTime, Orientation> orientations = coordinateController.CalculateCoordinates(appt);
+                Dictionary<DateTime, Orientation> orientations = CRoom.RadioTelescopeController.CoordinateController.CalculateCoordinates(appt);
 
                 if (orientations.Count > 0)
                 {
@@ -154,7 +153,6 @@ namespace ControlRoomApplication.Controllers
         }
 
         public ControlRoom CRoom { get; set; }
-        public CoordinateCalculationController coordinateController { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
