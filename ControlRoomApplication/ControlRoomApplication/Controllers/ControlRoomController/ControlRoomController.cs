@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Threading;
 using ControlRoomApplication.Constants;
-using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace ControlRoomApplication.Controllers
 {
     public class ControlRoomController
     {
+        public ControlRoom CRoom { get; set; }
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public ControlRoomController(ControlRoom controlRoom)
         {
             CRoom = controlRoom;
-            coordinateController = new CoordinateCalculationController();
         }
 
         /// <summary>
@@ -27,27 +26,30 @@ namespace ControlRoomApplication.Controllers
             while (true)
             {
                 Appointment appt = WaitingForNextAppointment();
-                Dictionary<DateTime, Orientation> orientations = coordinateController.CalculateCoordinates(appt);
+                Dictionary<DateTime, Orientation> orientations = CRoom.RadioTelescopeController.CoordinateController.CalculateCoordinates(appt);
+                Console.WriteLine(orientations.Count);
 
                 if (orientations.Count > 0)
                 {
+                    Console.WriteLine("Starting appointment...");
+
                     // Calibrate telescope
                     CalibrateRadioTelescope();
-
+                    
                     // Start movement thread
                     Thread movementThread = new Thread(() => StartRadioTelescope(appt, orientations));
                     movementThread.Start();
-
                     // Start SpectraCyber
                     StartReadingData(appt);
-
+                    
                     // End PLC thread & SpectraCyber 
                     movementThread.Join();
                     StopReadingRFData();
-
+                    
                     // Stow Telescope
                     EndAppointment();
 
+                    Console.WriteLine("Appointment completed.");
                     logger.Info("Appointment completed.");
                 }
                 else
@@ -114,7 +116,8 @@ namespace ControlRoomApplication.Controllers
             {
                 while(DateTime.Now < datetime)
                 {
-                    // wait for timestamp 
+                    // wait for timestamp
+                    // Console.WriteLine(datetime.ToString() + " vs. " + DateTime.Now.ToString());
                 }
                 Orientation orientation = orientations[datetime];
                 CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
@@ -141,7 +144,7 @@ namespace ControlRoomApplication.Controllers
         {
             var spectraCyberController = CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController;
             spectraCyberController.SetSpectraCyberModeType(appt.SpectraCyberModeType);
-            spectraCyberController.BringUp(appt.Id);
+            spectraCyberController.SetActiveAppointmentID(appt.Id);
             spectraCyberController.StartScan();
         }
 
@@ -152,13 +155,8 @@ namespace ControlRoomApplication.Controllers
         {
             var spectraCyberController = CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController;
             spectraCyberController.StopScan();
-            spectraCyberController.BringDown();
+            spectraCyberController.RemoveActiveAppointmentID();
             spectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
         }
-
-        public ControlRoom CRoom { get; set; }
-        public CoordinateCalculationController coordinateController { get; set; }
-        private static readonly log4net.ILog logger =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

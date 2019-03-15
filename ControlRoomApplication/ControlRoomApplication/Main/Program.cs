@@ -26,7 +26,7 @@ namespace ControlRoomApplication.Main
             Console.WriteLine("Local database populated.");
             Console.WriteLine("Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
 
-            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args, dbContext);
+            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
             List<RadioTelescopeController> ProgramRTControllerList = new List<RadioTelescopeController>(AbstractRTDriverPairList.Count);
             List<AbstractPLCDriver> ProgramPLCDriverList = new List<AbstractPLCDriver>(AbstractRTDriverPairList.Count);
             List<ControlRoomController> ProgramControlRoomControllerList = new List<ControlRoomController>(AbstractRTDriverPairList.Count);

@@ -11,12 +11,9 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     {
         private bool SerialCommsFailed;
 
-        public SpectraCyberController(SpectraCyber spectraCyber) : base(spectraCyber)
-        {
-            
-        }
+        public SpectraCyberController(SpectraCyber spectraCyber) : base(spectraCyber) { }
 
-        public override bool BringUp(int appId)
+        public override bool BringUp()
         {
             try
             {
@@ -71,7 +68,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(() => RunCommunicationThread(appId));
+                CommunicationThread = new Thread(() => RunCommunicationThread());
                 CommunicationThread.Start();
             }
             catch (Exception e)

@@ -15,17 +15,13 @@ namespace ControlRoomApplication.Main
         /// application based on the second program argument passed in.
         /// </summary>
         /// <param name="arg1"> The second program argument passed in. </param>
-        /// <param name="dbContext"> The database context </param>
         /// <returns> A concrete instance of a SpectraCyberController. </returns>
-        public AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1)
+        public static AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1)
         {
             switch (arg1.ToUpper())
             {
                 case "/PS":
                     return new SpectraCyberController(new SpectraCyber());
-
-                case "/SS":
-                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
 
                 case "/TS":
                     return new SpectraCyberTestController(new SpectraCyberSimulator());
@@ -91,7 +87,7 @@ namespace ControlRoomApplication.Main
         /// Constructs a series of radio telescopes, given input parameters.
         /// </summary>
         /// <returns> A list of built instances of a radio telescope. </returns>
-        public static List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args, RTDbContext dbContext)
+        public static List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args)
         {
             int NumRTs;
             try
@@ -121,7 +117,7 @@ namespace ControlRoomApplication.Main
                     continue;
                 }
                 
-                AbstractRadioTelescope ARadioTelescope = ConfigureRadioTelescope(RTArgs[0], ConfigureSpectraCyberController(RTArgs[1], dbContext), RTArgs[2], RTArgs[3]);
+                AbstractRadioTelescope ARadioTelescope = ConfigureRadioTelescope(RTArgs[0], ConfigureSpectraCyberController(RTArgs[1]), RTArgs[2], RTArgs[3]);
                 AbstractPLCDriver APLCDriver = ConfigureSimulatedPLCDriver(RTArgs[0], RTArgs[2], RTArgs[3]);
 
                 RTDriverPairList.Add(new KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));

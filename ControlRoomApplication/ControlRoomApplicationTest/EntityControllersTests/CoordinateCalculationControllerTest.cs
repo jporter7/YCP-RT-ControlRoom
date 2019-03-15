@@ -13,7 +13,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestInitialize]
         public void Up()
         {
-            CoordinateCalculationController = new CoordinateCalculationController();
+            Location location = new Location(76.7046, 40.0244, 395.0);
+            CoordinateCalculationController = new CoordinateCalculationController(location);
         }
 
         [TestMethod]

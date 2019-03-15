@@ -1,5 +1,4 @@
 ﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
@@ -15,7 +14,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return true;
         }
 
-        public override bool BringUp(int appId)
+        public override bool BringUp()
         {
             return true;
         }
