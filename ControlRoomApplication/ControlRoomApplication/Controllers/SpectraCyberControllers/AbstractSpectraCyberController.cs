@@ -1,10 +1,9 @@
-﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Constants;
-using System;
+﻿using System;
 using System.Threading;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Main;
-using System.Data.Entity;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
@@ -17,6 +16,8 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         protected Thread CommunicationThread { get; set; }
         protected bool KillCommunicationThreadFlag { get; set; }
         protected Mutex CommunicationMutex;
+
+        private RTDbContext Context { get; set; }
 
         public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber, RTDbContext dBContext)
         {
@@ -353,7 +354,5 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             // Return it
             return strOutput;
         }
-
-        public RTDbContext Context { get; set; }
     }
 }

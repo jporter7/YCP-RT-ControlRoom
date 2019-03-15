@@ -1,7 +1,7 @@
-﻿using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Controllers.SpectraCyberController;
 
 namespace ControlRoomApplication.Entities.RadioTelescope
 {

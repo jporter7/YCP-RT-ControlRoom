@@ -1,6 +1,5 @@
 ﻿using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities.RadioTelescope
 {

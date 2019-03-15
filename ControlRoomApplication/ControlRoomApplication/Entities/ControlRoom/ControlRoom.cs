@@ -1,7 +1,7 @@
-﻿using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Main;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using ControlRoomApplication.Controllers.RadioTelescopeControllers;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities
 {

@@ -1,9 +1,9 @@
-﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Constants;
-using System;
+﻿using System;
 using System.IO.Ports;
 using System.Threading;
 using ControlRoomApplication.Main;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
