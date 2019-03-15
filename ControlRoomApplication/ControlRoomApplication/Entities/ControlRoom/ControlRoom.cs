@@ -1,25 +1,12 @@
-﻿using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Main;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using ControlRoomApplication.Controllers.RadioTelescopeControllers;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities
 {
     public class ControlRoom
     {
-        public ControlRoom( RadioTelescopeController controller, RTDbContext dbContext)
-        {
-            RadioTelescopeController = controller;
-            Context = dbContext;
-        }
-
-        public ControlRoom()
-        {
-            // By default no radio telescope will be added to the radioTelescopeController
-            RadioTelescopeController =  new RadioTelescopeController();
-            Context = new RTDbContext();
-        }
-
         public RadioTelescopeController RadioTelescopeController { get; set; }
         public RTDbContext Context { get; set; }
         public List<Appointment> Appointments
@@ -30,12 +17,18 @@ namespace ControlRoomApplication.Entities
             }
             set
             {
-                foreach(Appointment appt in value)
+                foreach (Appointment app in value)
                 {
                     Context.Appointments.Add(appt);
                     Context.SaveChanges();
                 }
             }
+        }
+
+        public ControlRoom(RadioTelescopeController controller, RTDbContext dbContext)
+        {
+            RadioTelescopeController = controller;
+            Context = dbContext;
         }
     }
 }

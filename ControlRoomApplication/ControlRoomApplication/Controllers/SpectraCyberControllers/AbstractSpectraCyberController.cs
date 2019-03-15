@@ -1,7 +1,7 @@
-﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Constants;
-using System;
+﻿using System;
 using System.Threading;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Main;
 using ControlRoomApplication.Database.Operations;
