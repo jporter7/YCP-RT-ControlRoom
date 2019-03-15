@@ -43,20 +43,23 @@ namespace ControlRoomApplication.Main
         public static AbstractRadioTelescope ConfigureRadioTelescope(string arg2, AbstractSpectraCyberController spectraCyberController, string ip, string port)
         {
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, int.Parse(port));
+
+            // Create Radio Telescope Location
+            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+
             switch (arg2.ToUpper())
             {
                  case "/PR":
-                    return new ProductionRadioTelescope(spectraCyberController, PLCCommsHandler);
+                    return new ProductionRadioTelescope(spectraCyberController, PLCCommsHandler, location);
 
                 case "/TR":
                     // Case for the test/simulated radiotelescope.
-                    return new TestRadioTelescope(spectraCyberController, PLCCommsHandler);
+                    return new TestRadioTelescope(spectraCyberController, PLCCommsHandler, location);
 
                 case "/SR":
                 default:
-                    // Should be changed once we have a simulated
-                    // radiotelescope class implemented
-                    return new ScaleRadioTelescope(spectraCyberController, PLCCommsHandler);
+                    // Should be changed once we have a simulated radiotelescope class implemented
+                    return new ScaleRadioTelescope(spectraCyberController, PLCCommsHandler, location);
             }
         }
 

@@ -58,7 +58,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
             PLCClientCommunicationHandler PLCController = new PLCClientCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
-            TestRadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController);
+            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
+            TestRadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController, location);
 
             // Create the Orientation object that the Controller will tell the
             // Scale RadioTelescope to move to
@@ -84,7 +85,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
             PLCClientCommunicationHandler PLCController = new PLCClientCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
-            TestRadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController);
+            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
+            TestRadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController, location);
 
             // Call the CalibrateRadioTelescope method
             TestRadioTelescopeController.CalibrateRadioTelescope();
@@ -105,7 +107,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Make sure to specify that we are just using the TestPLC since we do
             // not care if what the PLC does, just how this method responds
             PLCClientCommunicationHandler PLCController = new PLCClientCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
-            TestRadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController);
+            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
+            TestRadioTelescopeController.RadioTelescope = new ScaleRadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController, location);
 
             // Call the ShutdownRadioTelescope method
             TestRadioTelescopeController.ShutdownRadioTelescope();

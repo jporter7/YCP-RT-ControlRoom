@@ -27,7 +27,6 @@ namespace ControlRoomApplication.Controllers
             {
                 Appointment appt = WaitingForNextAppointment();
                 Dictionary<DateTime, Orientation> orientations = CRoom.RadioTelescopeController.CoordinateController.CalculateCoordinates(appt);
-                Console.WriteLine(orientations.Count);
 
                 if (orientations.Count > 0)
                 {

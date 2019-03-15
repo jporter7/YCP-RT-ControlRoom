@@ -30,7 +30,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             AbstractPLC plc = new TestPLC();
             PLCController plcController = new PLCController(plc);
             AbstractSpectraCyberController spectraCyberController = new SpectraCyberTestController(new SpectraCyberSimulator());
-            AbstractRadioTelescope radioTelescope = new TestRadioTelescope(spectraCyberController, plcController);
+            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
+            AbstractRadioTelescope radioTelescope = new TestRadioTelescope(spectraCyberController, plcController, location);
             RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
             ControlRoom cRoom = new ControlRoom(rtController, dbContext);
             ControlRoomController = new ControlRoomController(cRoom);

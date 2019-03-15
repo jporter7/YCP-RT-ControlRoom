@@ -9,7 +9,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 {
     public class CoordinateCalculationController
     {
-        private Location Location { get; set; }
+        private Location Location { get; }
 
         public CoordinateCalculationController(Location location)
         {

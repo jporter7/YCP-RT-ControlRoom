@@ -101,7 +101,6 @@
     <Compile Include="Constants\GenericConstants.cs" />
     <Compile Include="Constants\HeartbeatConstants.cs" />
     <Compile Include="Constants\PLCConstants.cs" />
-    <Compile Include="Constants\RadioTelescopeConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
@@ -127,6 +126,7 @@
     <Compile Include="Entities\HeartbeatInterface\HeartbeatInterface.cs" />
     <Compile Include="Entities\HeartbeatInterface\HeartbeatTracker.cs" />
     <Compile Include="Entities\HeartbeatInterface\HeartbeatTrackerContainer.cs" />
+    <Compile Include="Entities\Location\Location.cs" />
     <Compile Include="Entities\Orientation\Orientation.cs" />
     <Compile Include="Entities\RadioTelescope\AbstractRadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\ProductionRadioTelescope.cs" />
