@@ -15,9 +15,9 @@ namespace ControlRoomApplicationTest.MCUTests
         public void BuildUp()
         {
             AzEncoder = new AzimuthEncoder();
-            ElEncoder = new ElevationEncoder();
+            ElEncoder = new SimulationAbsoluteEncoder();
 
-            Mcu = new MotorControlUnit();
+            Mcu = new SimulationMCU();
             Mcu.AzEncoder = AzEncoder;
             Mcu.ElEncoder = ElEncoder;
         }
@@ -42,8 +42,8 @@ namespace ControlRoomApplicationTest.MCUTests
             Assert.AreEqual(300.0, Mcu.AzEncoder.Degree, 0.01);
         }
 
-        private MotorControlUnit Mcu { get; set; }
+        private SimulationMCU Mcu { get; set; }
         private AzimuthEncoder AzEncoder { get; set; }
-        private ElevationEncoder ElEncoder { get; set; }
+        private SimulationAbsoluteEncoder ElEncoder { get; set; }
     }
 }
