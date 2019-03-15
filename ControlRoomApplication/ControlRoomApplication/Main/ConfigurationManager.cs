@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Main
         /// <param name="arg1"> The second program argument passed in. </param>
         /// <param name="dbContext"> The database context </param>
         /// <returns> A concrete instance of a SpectraCyberController. </returns>
-        public AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1)
+        public static AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1)
         {
             switch (arg1.ToUpper())
             {
@@ -30,7 +30,6 @@ namespace ControlRoomApplication.Main
                 case "/TS":
                     return new SpectraCyberTestController(new SpectraCyberSimulator());
 
-                case "/SS":
                 default:
                     // If none of the switches match or there wasn't one declared
                     // for the spectraCyber, assume we are using the simulated/testing one.
@@ -121,7 +120,7 @@ namespace ControlRoomApplication.Main
                     continue;
                 }
                 
-                AbstractRadioTelescope ARadioTelescope = ConfigureRadioTelescope(RTArgs[0], ConfigureSpectraCyberController(RTArgs[1], dbContext), RTArgs[2], RTArgs[3]);
+                AbstractRadioTelescope ARadioTelescope = ConfigureRadioTelescope(RTArgs[0], ConfigureSpectraCyberController(RTArgs[1]), RTArgs[2], RTArgs[3]);
                 AbstractPLCDriver APLCDriver = ConfigureSimulatedPLCDriver(RTArgs[0], RTArgs[2], RTArgs[3]);
 
                 RTDriverPairList.Add(new KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));

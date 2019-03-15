@@ -5,9 +5,6 @@ using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -16,7 +13,7 @@ namespace ControlRoomApplication.Controllers
         public ControlRoomController(ControlRoom controlRoom)
         {
             CRoom = controlRoom;
-            coordinateController = new CoordinateCalculationController();
+            CoordinateController = new CoordinateCalculationController();
         }
 
         /// <summary>
@@ -27,7 +24,7 @@ namespace ControlRoomApplication.Controllers
             while (true)
             {
                 Appointment appt = WaitingForNextAppointment();
-                Dictionary<DateTime, Orientation> orientations = coordinateController.CalculateCoordinates(appt);
+                Dictionary<DateTime, Orientation> orientations = CoordinateController.CalculateCoordinates(appt);
 
                 if (orientations.Count > 0)
                 {
@@ -157,7 +154,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         public ControlRoom CRoom { get; set; }
-        public CoordinateCalculationController coordinateController { get; set; }
+        public CoordinateCalculationController CoordinateController { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
