@@ -124,6 +124,8 @@
     <Compile Include="Controllers\SpectraCyberControllers\SpectraCyberTestController.cs" />
     <Compile Include="Database\Operations\DatabaseOperations.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
+    <Compile Include="Entities\Camera\AbstractCamera.cs" />
+    <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Command\Commmand.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Coordinate\Coordinate.cs" />
