@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
@@ -90,30 +89,6 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         public void ShutdownRadioTelescope()
         {
             RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SHUTDOWN);
-            /*
-            switch (RadioTelescope.GetType().Name)
-            {
-                case "ScaleRadioTelescope":
-                    // Move the telescope to the "shutdown" position
-                    Orientation ShutdownOrientation = new Orientation(0.0, -90.0);
-                    RadioTelescope.PlcController.Plc.OutgoingOrientation = ShutdownOrientation;
-                    RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM3, true);
-                    RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM4, true);
-                    RadioTelescope.CurrentOrientation = ShutdownOrientation;
-
-                    // Set the status to shutdown
-                    RadioTelescope.Status = RadioTelescopeStatusEnum.SHUTDOWN;
-
-                    break;
-                case "ProductionRadioTelescope":
-                    // Add Code for production radiotelescope later
-                    break;
-                case "TestRadioTelescope":
-                    // Add Code for test radiotelescope later
-                default:
-                    break;
-            }
-            */
         }
 
         /// <summary>
@@ -127,81 +102,6 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         public void MoveRadioTelescope(Orientation orientation)
         {
             RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation);
-            /*
-            // Switch based on the type of radiotelescope that is being controlled by this controller.
-            switch(RadioTelescope.GetType().Name)
-            {
-                case "ScaleRadioTelescope":
-                    // Move the telescope to the orientation that it is supposed to be at
-                    RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
-
-                    RadioTelescope.PlcController.Plc.OutgoingOrientation = orientation;
-                    List<Orientation> cords = new List<Orientation>();
-                    Orientation computedO = new Orientation();
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Orientation ord = new Orientation();
-
-                        ord.Azimuth = 75 + (60 * i);
-                        ord.Elevation = 75 - (60 * i);
-                        cords.Add(ord);
-                    }
-
-                    int x = 0;
-                    foreach(Orientation ord in cords)
-                    {
-                        if (x > 0)
-                        {
-                            computedO.Azimuth = cords[x].Azimuth - cords[x - 1].Azimuth;
-                            computedO.Elevation = cords[x].Elevation - cords[x - 1].Elevation;
-                        } else
-                        {
-                            computedO.Azimuth = cords[x].Azimuth;
-                            computedO.Elevation = cords[x].Elevation;
-                        }
-
-
-                        RadioTelescope.PlcController.Plc.OutgoingOrientation = computedO;
-                        Thread t1, t2;
-                        if (x > 0)
-                        {
-                            t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM3, true));
-                            t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM4, true));
-                        }
-                        else
-                        {
-                            t1 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM3, true));
-                            t2 = new Thread(() => RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM4, true));
-                        }
-                        t1.Start();
-                        t2.Start();
-                        Console.WriteLine("Moving model.");
-                        t1.Join();
-                        t2.Join();
-                        Thread.Sleep(3000);
-                        HardwareFlags.COM3 = true;
-                        HardwareFlags.COM4 = true;
-                        x++;
-                    }
-                    
-                    RadioTelescope.CurrentOrientation = orientation;
-
-                    RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
-                    return;
-
-                case "ProductionRadioTelescope":
-                    // Add Code for production radiotelescope later
-                    return;
-                case "TestRadioTelescope":
-                    // Add Code for test radiotelescope later
-                    RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
-                    RadioTelescope.CurrentOrientation = orientation;
-                    RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
-                    return;
-                default:
-                    break;
-            }
-            */
         }
 
         /// <summary>
@@ -227,32 +127,6 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         public void CalibrateRadioTelescope()
         {
             RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE);
-            /*
-            switch (RadioTelescope.GetType().Name)
-            {
-                case "ScaleRadioTelescope":
-                    // Move the telescope to the orientation that it is supposed to calibrate at
-                    RadioTelescope.Status = RadioTelescopeStatusEnum.RUNNING;
-
-                    // For the Scale Model, just align the orientation at (0, 0)
-                    Orientation orientation = new Orientation();
-                    orientation.Azimuth = 0;
-                    orientation.Elevation = 0;
-                    RadioTelescope.PlcController.Plc.OutgoingOrientation = orientation;
-                    RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM3, true);
-                    RadioTelescope.PlcController.MoveScaleModel(PLCConstants.COM4, true);
-
-                    RadioTelescope.Status = RadioTelescopeStatusEnum.IDLE;
-                    break;
-                case "ProductionRadioTelescope":
-                    // Add Code for production radio-telescope later
-                    break;
-                case "TestRadioTelescope":
-                    // Add Code for test radiotelescope later
-                default:
-                    break;
-            }
-            */
         }
 
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
