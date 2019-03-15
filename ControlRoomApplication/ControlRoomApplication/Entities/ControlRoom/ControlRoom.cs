@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Entities
             }
             set
             {
-                foreach (Appointment app in value)
+                foreach (Appointment appt in value)
                 {
                     Context.Appointments.Add(appt);
                     Context.SaveChanges();

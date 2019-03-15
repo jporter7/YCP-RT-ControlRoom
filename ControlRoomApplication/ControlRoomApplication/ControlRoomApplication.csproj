@@ -100,12 +100,12 @@
     <Compile Include="Constants\GenericConstants.cs" />
     <Compile Include="Constants\HeartbeatConstants.cs" />
     <Compile Include="Constants\PLCConstants.cs" />
-    <Compile Include="Constants\RadioTelescopeConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
+    <Compile Include="Entities\Location\Location.cs" />
     <Compile Include="Entities\Plc\PLCCommandAndQueryTypeEnum.cs" />
     <Compile Include="Entities\Plc\PLCCommandResponseExpectationEnum.cs" />
     <Compile Include="Entities\Plc\PLCLimitSwitchStatusEnum.cs" />

@@ -15,7 +15,6 @@ namespace ControlRoomApplication.Main
         /// application based on the second program argument passed in.
         /// </summary>
         /// <param name="arg1"> The second program argument passed in. </param>
-        /// <param name="dbContext"> The database context </param>
         /// <returns> A concrete instance of a SpectraCyberController. </returns>
         public static AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1)
         {
@@ -23,9 +22,6 @@ namespace ControlRoomApplication.Main
             {
                 case "/PS":
                     return new SpectraCyberController(new SpectraCyber());
-
-                case "/SS":
-                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
 
                 case "/TS":
                     return new SpectraCyberTestController(new SpectraCyberSimulator());
@@ -46,20 +42,23 @@ namespace ControlRoomApplication.Main
         public static AbstractRadioTelescope ConfigureRadioTelescope(string arg2, AbstractSpectraCyberController spectraCyberController, string ip, string port)
         {
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, int.Parse(port));
+
+            // Create Radio Telescope Location
+            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+
             switch (arg2.ToUpper())
             {
                  case "/PR":
-                    return new ProductionRadioTelescope(spectraCyberController, PLCCommsHandler);
+                    return new ProductionRadioTelescope(spectraCyberController, PLCCommsHandler, location);
 
                 case "/TR":
                     // Case for the test/simulated radiotelescope.
-                    return new TestRadioTelescope(spectraCyberController, PLCCommsHandler);
+                    return new TestRadioTelescope(spectraCyberController, PLCCommsHandler, location);
 
                 case "/SR":
                 default:
-                    // Should be changed once we have a simulated
-                    // radiotelescope class implemented
-                    return new ScaleRadioTelescope(spectraCyberController, PLCCommsHandler);
+                    // Should be changed once we have a simulated radiotelescope class implemented
+                    return new ScaleRadioTelescope(spectraCyberController, PLCCommsHandler, location);
             }
         }
 
@@ -90,7 +89,7 @@ namespace ControlRoomApplication.Main
         /// Constructs a series of radio telescopes, given input parameters.
         /// </summary>
         /// <returns> A list of built instances of a radio telescope. </returns>
-        public static List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args, RTDbContext dbContext)
+        public static List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args)
         {
             int NumRTs;
             try

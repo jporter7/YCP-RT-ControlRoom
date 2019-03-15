@@ -10,6 +10,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
     public class RadioTelescopeController
     {
         public AbstractRadioTelescope RadioTelescope { get; set; }
+        public CoordinateCalculationController CoordinateController { get; set; }
 
         /// <summary>
         /// Constructor that takes an AbstractRadioTelescope object and sets the
@@ -19,6 +20,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         public RadioTelescopeController(AbstractRadioTelescope radioTelescope)
         {
             RadioTelescope = radioTelescope;
+            CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
         }
 
         /// <summary>
@@ -212,13 +214,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void MoveRadioTelescope(Coordinate coordinate)
         {
-            MoveRadioTelescope(CoordinateTransformation.CoordinateToOrientation(
-                coordinate,
-                RadioTelescopeConstants.OBSERVATORY_LONGITUDE,
-                RadioTelescopeConstants.OBSERVATORY_LATITUDE,
-                RadioTelescopeConstants.OBSERVATORY_ALTITUDE,
-                DateTime.Now
-            ));
+            MoveRadioTelescope(CoordinateController.CoordinateToOrientation(coordinate, DateTime.Now));
         }
 
         /// <summary>
