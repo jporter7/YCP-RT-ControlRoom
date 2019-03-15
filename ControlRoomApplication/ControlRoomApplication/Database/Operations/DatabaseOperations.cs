@@ -96,7 +96,7 @@ namespace ControlRoomApplication.Database.Operations
                 appt1.EndTime = date.AddMinutes(4);
                 appt1.Status = AppointmentConstants.IN_PROGRESS;
                 appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
-                appt1.CelestialBody = CelestialBodyConstants.SUN;
+                appt1.CelestialBody = "SUN";//CelestialBodyConstants.SUN;
                 appt1.SpectraCyberModeType = SpectraCyberModeTypeEnum.SPECTRAL;
                 appt1.TelescopeId = 1;
                 appt1.UserId = 1;
