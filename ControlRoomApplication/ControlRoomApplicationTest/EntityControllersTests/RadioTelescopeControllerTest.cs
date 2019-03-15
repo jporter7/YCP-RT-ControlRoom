@@ -4,7 +4,6 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Constants;
-using ControlRoomApplication.Main;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
@@ -23,7 +22,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             PLCClientCommunicationHandler PLCClientCommHandler = new PLCClientCommunicationHandler(ip, port);
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
-            TestRadioTelescope TestRT = new TestRadioTelescope(SCSimController, PLCClientCommHandler);
+            TestRadioTelescope TestRT = new TestRadioTelescope(SCSimController, PLCClientCommHandler, new Location(76.7046, 40.0244, 395.0)); // John Rudy Park
             TestRadioTelescopeController = new RadioTelescopeController(TestRT);
 
             TestRTPLC = new TestPLCDriver(ip, port);

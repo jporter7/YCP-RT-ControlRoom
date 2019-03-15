@@ -11,7 +11,6 @@ namespace ControlRoomApplication.Entities.RadioTelescope
             SpectraCyberController = spectraCyberController;
             CalibrationOrientation = new Orientation();
             Status = RadioTelescopeStatusEnum.UNKNOWN;
-            CurrentOrientation = PlcController.GetOrientation();
             Location Location = location;
         }
     }
