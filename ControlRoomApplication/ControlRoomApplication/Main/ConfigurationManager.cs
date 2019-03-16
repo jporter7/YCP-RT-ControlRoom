@@ -26,7 +26,6 @@ namespace ControlRoomApplication.Main
                 case "/TS":
                     return new SpectraCyberTestController(new SpectraCyberSimulator());
 
-                case "/SS":
                 default:
                     // If none of the switches match or there wasn't one declared
                     // for the spectraCyber, assume we are using the simulated/testing one.

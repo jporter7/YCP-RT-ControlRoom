@@ -20,7 +20,7 @@ namespace ControlRoomApplication.Entities
         public Appointment()
         {
             Coordinates = new List<Coordinate>();
-            CelestialBody = CelestialBodyConstants.NONE;
+            CelestialBody = "NONE";
             Orientation = new Orientation(0, 0);
         }
 
