@@ -22,7 +22,7 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         [Column("location")]
         public Location Location;
 
-        public PLCClientCommunicationHandler PlcController { get; set; }
+        public PLCClientCommunicationHandler PLCClient { get; set; }
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
         public Orientation CalibrationOrientation { get; set; }
     }

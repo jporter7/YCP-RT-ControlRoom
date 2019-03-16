@@ -20,34 +20,80 @@ namespace ControlRoomApplication.Main
 
             // Instantiate the database being used.
             RTDbContext dbContext = new RTDbContext();
+            ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom(dbContext));
 
             DatabaseOperations.InitializeLocalConnectionOnly();
             DatabaseOperations.PopulateLocalDatabase();
-            Console.WriteLine("Local database populated.");
-            Console.WriteLine("Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
+            Console.WriteLine("[Main] Local database populated. Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
+            //foreach (Appointment appt in DatabaseOperations.GetListOfAppointments())
+            //{
+            //    Console.WriteLine("\tStart Time: " + appt.StartTime.ToString());
+            //}
 
+            // Given the input command line arguments, generate the control room's RTs, its controllers, and the PLC drivers
             List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
+
+            // Initialize the lists that the input list will populate
             List<RadioTelescopeController> ProgramRTControllerList = new List<RadioTelescopeController>(AbstractRTDriverPairList.Count);
             List<AbstractPLCDriver> ProgramPLCDriverList = new List<AbstractPLCDriver>(AbstractRTDriverPairList.Count);
-            List<ControlRoomController> ProgramControlRoomControllerList = new List<ControlRoomController>(AbstractRTDriverPairList.Count);
 
+            // Populate those lists and call any bring up sequences
             for (int i = 0; i < AbstractRTDriverPairList.Count; i++)
             {
                 ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[i].Key));
                 ProgramPLCDriverList.Add(AbstractRTDriverPairList[i].Value);
-                ProgramControlRoomControllerList.Add(new ControlRoomController(new ControlRoom(ProgramRTControllerList[i], dbContext)));
 
+                ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringUp();
                 ProgramPLCDriverList[i].StartAsyncAcceptingClients();
+                ProgramRTControllerList[i].RadioTelescope.PLCClient.ConnectToServer();
 
-                ProgramRTControllerList[i].RadioTelescope.PlcController.ConnectToServer();
-
-                ProgramControlRoomControllerList[i].Start();
+                MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[i]);
             }
 
-            for (int i = 0; i < AbstractRTDriverPairList.Count; i++)
+            int ErrorIndex = -1;
+            // Start each RT controller's threaded management
+            int z = 0;
+            foreach (RadioTelescopeControllerManagementThread ManagementThread in MainControlRoomController.CRoom.RTControllerManagementThreads)
             {
+                if (ManagementThread.Start())
+                {
+                    Console.WriteLine("[Main] ERROR starting RT controller management thread at index " + z.ToString());
+                    ErrorIndex = z;
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("[Main] Successfully started RT controller management thread at index " + z.ToString());
+                }
+
+                z++;
+            }
+
+            int LoopIndex;
+            if (ErrorIndex != -1)
+            {
+                LoopIndex = ErrorIndex;
+            }
+            else
+            {
+                LoopIndex = AbstractRTDriverPairList.Count;
+                Console.WriteLine("Sleeping...");
+                Thread.Sleep(240000);
+            }
+
+            for (int i = 0; i < LoopIndex; i++)
+            {
+                if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, true))
+                {
+                    Console.WriteLine("[Main] ERROR killing RT controller at index " + i.ToString());
+                }
+                else
+                {
+                    Console.WriteLine("[Main] Successfully brought down RT controller t index " + i.ToString());
+                }
+
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
-                ProgramRTControllerList[i].RadioTelescope.PlcController.TerminateTCPServerConnection();
+                ProgramRTControllerList[i].RadioTelescope.PLCClient.TerminateTCPServerConnection();
                 ProgramPLCDriverList[i].RequestStopAsyncAcceptingClients();
             }
 

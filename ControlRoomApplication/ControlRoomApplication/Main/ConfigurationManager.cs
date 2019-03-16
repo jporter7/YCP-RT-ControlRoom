@@ -109,7 +109,7 @@ namespace ControlRoomApplication.Main
                 return null;
             }
 
-            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> RTDriverPairList = new List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>>(NumRTs);
+            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> RTDriverPairList = new List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>>();
             for (int i = 0; i < NumRTs; i++)
             {
                 string[] RTArgs = args[i + 1].Split(',');
