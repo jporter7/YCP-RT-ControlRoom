@@ -96,7 +96,6 @@
     <Compile Include="Constants\AppointmentTypeConstants .cs" />
     <Compile Include="Constants\AppointmentConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
-    <Compile Include="Constants\CelestialBodyConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
     <Compile Include="Constants\HeartbeatConstants.cs" />

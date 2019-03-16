@@ -43,7 +43,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             type_1 = AppointmentTypeConstants.POINT;
             coordinate_1 = new Coordinate(20, 20);
             orientation_1 = new Orientation(20, 20);
-            celestial_body_1 = CelestialBodyConstants.SUN;
+            celestial_body_1 = "SUN";//CelestialBodyConstants.SUN;
             specracyber_mode_type_1 = SpectraCyberModeTypeEnum.CONTINUUM;
             telescipe_id_1 = 1;
             user_id_1 = 1;
