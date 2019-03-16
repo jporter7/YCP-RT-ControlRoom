@@ -39,7 +39,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             sun_appt.Type = AppointmentTypeConstants.CELESTIAL_BODY;
             sun_appt.StartTime = start;
             sun_appt.EndTime = end;
-            sun_appt.CelestialBody = "SUN";//CelestialBodyConstants.SUN;
+            sun_appt.CelestialBody = CelestialBodyConstants.SUN;
             var sun_orientations = CoordinateCalculationController.CalculateCoordinates(sun_appt);
 
             Assert.IsTrue(sun_orientations != null);

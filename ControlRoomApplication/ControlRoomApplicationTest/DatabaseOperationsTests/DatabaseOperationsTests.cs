@@ -56,7 +56,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt1.Status = AppointmentConstants.IN_PROGRESS;
             appt1.Type = AppointmentTypeConstants.POINT;
             appt1.Coordinates = new List<Coordinate>();
-            appt1.CelestialBody = "NONE"; //CelestialBodyConstants.NONE;
+            appt1.CelestialBody = CelestialBodyConstants.NONE;
             appt1.TelescopeId = 1;
             appt1.UserId = 1;
 
@@ -65,7 +65,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt2.Status = AppointmentConstants.REQUESTED;
             appt2.Type = AppointmentTypeConstants.POINT;
             appt2.Coordinates = new List<Coordinate>();
-            appt2.CelestialBody = "NONE";// CelestialBodyConstants.NONE;
+            appt2.CelestialBody = CelestialBodyConstants.NONE;
             appt2.TelescopeId = 1;
             appt2.UserId = 1;
 
@@ -74,7 +74,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt3.Status = AppointmentConstants.REQUESTED;
             appt3.Type = AppointmentTypeConstants.POINT;
             appt3.Coordinates = new List<Coordinate>();
-            appt3.CelestialBody = "NONE";// CelestialBodyConstants.NONE;
+            appt3.CelestialBody = CelestialBodyConstants.NONE;
             appt3.TelescopeId = 1;
             appt3.UserId = 1;
         }
