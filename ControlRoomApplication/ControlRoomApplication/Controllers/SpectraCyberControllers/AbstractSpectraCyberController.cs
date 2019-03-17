@@ -9,7 +9,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
     public abstract class AbstractSpectraCyberController : HeartbeatInterface
     {
-        protected AbstractRadioTelescope Parent { get; set; }
+        protected RadioTelescope Parent { get; set; }
         protected AbstractSpectraCyber SpectraCyber { get; set; }
         protected SpectraCyberScanSchedule Schedule { get; set; }
 
@@ -25,12 +25,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             CommunicationMutex = new Mutex();
         }
 
-        public AbstractRadioTelescope GetParent()
+        public RadioTelescope GetParent()
         {
             return Parent;
         }
 
-        public void SetParent(AbstractRadioTelescope rt)
+        public void SetParent(RadioTelescope rt)
         {
             Parent = rt;
         }

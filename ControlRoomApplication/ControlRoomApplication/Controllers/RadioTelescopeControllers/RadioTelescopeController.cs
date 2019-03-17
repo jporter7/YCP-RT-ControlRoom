@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 {
     public class RadioTelescopeController
     {
-        public AbstractRadioTelescope RadioTelescope { get; set; }
+        public RadioTelescope RadioTelescope { get; set; }
         public CoordinateCalculationController CoordinateController { get; set; }
 
         /// <summary>
@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// corresponding field.
         /// </summary>
         /// <param name="radioTelescope"></param>
-        public RadioTelescopeController(AbstractRadioTelescope radioTelescope)
+        public RadioTelescopeController(RadioTelescope radioTelescope)
         {
             RadioTelescope = radioTelescope;
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
@@ -26,7 +26,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// A simple getter for the underlying abstract RT model.
         /// </summary>
         /// <returns> The abstarct RT that this instance is controlling </returns>
-        public AbstractRadioTelescope GetAbstractRadioTelescopeModel()
+        public RadioTelescope GetAbstractRadioTelescopeModel()
         {
             return RadioTelescope;
         }

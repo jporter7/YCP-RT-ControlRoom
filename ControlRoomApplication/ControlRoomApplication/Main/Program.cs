@@ -20,7 +20,7 @@ namespace ControlRoomApplication.Main
 
             // Instantiate the database being used.
             RTDbContext dbContext = new RTDbContext();
-            ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom(dbContext));
+            ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom());
 
             DatabaseOperations.InitializeLocalConnectionOnly();
             DatabaseOperations.PopulateLocalDatabase();
@@ -31,7 +31,7 @@ namespace ControlRoomApplication.Main
             //}
 
             // Given the input command line arguments, generate the control room's RTs, its controllers, and the PLC drivers
-            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
+            List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
 
             // Initialize the lists that the input list will populate
             List<RadioTelescopeController> ProgramRTControllerList = new List<RadioTelescopeController>(AbstractRTDriverPairList.Count);

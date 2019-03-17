@@ -22,7 +22,7 @@ namespace ControlRoomApplication.Controllers
                 return false;
             }
 
-            RadioTelescopeControllerManagementThread NewRTMT = new RadioTelescopeControllerManagementThread(rtController, CRoom.DBContext);
+            RadioTelescopeControllerManagementThread NewRTMT = new RadioTelescopeControllerManagementThread(rtController);
             CRoom.RTControllerManagementThreads.Add(NewRTMT);
             return NewRTMT.Start();
         }
