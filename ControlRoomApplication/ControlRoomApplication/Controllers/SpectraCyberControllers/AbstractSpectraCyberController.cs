@@ -249,7 +249,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 {
                     AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointmentID);
                     Schedule.Consume();
-                    Console.WriteLine("SC Scan");
+                    //Console.WriteLine("SC Scan");
                 }
 
                 // Tell the loop to break on its next pass (so the mutex is still released if the flag is high)

@@ -41,7 +41,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// <returns> Whether or not the RT responded. </returns>
         public bool TestRadioTelescopeCommunication()
         {
-            byte[] ByteResponse = RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.TEST_CONNECTION);
+            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TEST_CONNECTION);
             return (ByteResponse[2] == 0x1) && (ByteResponse[3] == 0x1);
         }
 
@@ -55,7 +55,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-            byte[] ByteResponse = RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
+            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
 
             if (ByteResponse[2] != 0x1)
             {
@@ -88,7 +88,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void ShutdownRadioTelescope()
         {
-            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SHUTDOWN);
+            RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SHUTDOWN);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void MoveRadioTelescope(Orientation orientation)
         {
-            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation);
+            RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </summary>
         public void CalibrateRadioTelescope()
         {
-            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE);
+            RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE);
         }
 
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)

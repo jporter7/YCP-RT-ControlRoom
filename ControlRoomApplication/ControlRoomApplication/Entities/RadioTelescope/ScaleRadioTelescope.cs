@@ -7,7 +7,7 @@ namespace ControlRoomApplication.Entities.RadioTelescope
     {
         public ScaleRadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCClientCommunicationHandler plcController, Location location)
         {
-            PlcController = plcController;
+            PLCClient = plcController;
             SpectraCyberController = spectraCyberController;
             CalibrationOrientation = new Orientation();
             Status = RadioTelescopeStatusEnum.UNKNOWN;

@@ -28,7 +28,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             TestRTPLC = new TestPLCDriver(ip, port);
 
             TestRTPLC.StartAsyncAcceptingClients();
-            TestRT.PlcController.ConnectToServer();
+            TestRT.PLCClient.ConnectToServer();
         }
 
         [TestMethod]
@@ -123,7 +123,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [ClassCleanup]
         public static void BringDown()
         {
-            TestRadioTelescopeController.RadioTelescope.PlcController.TerminateTCPServerConnection();
+            TestRadioTelescopeController.RadioTelescope.PLCClient.TerminateTCPServerConnection();
             TestRTPLC.RequestStopAsyncAcceptingClients();
         }
     }
