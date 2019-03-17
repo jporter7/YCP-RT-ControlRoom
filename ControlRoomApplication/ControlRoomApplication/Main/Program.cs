@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCCommunication;
@@ -15,10 +16,6 @@ namespace ControlRoomApplication.Main
         public static void Main(string[] args)
         {
             Application.Run(new MainForm());
-            //// Begin logging
-            //logger.Info("<--------------- Control Room Application Started --------------->");
-
-
 
             List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
             List<RadioTelescopeController> ProgramRTControllerList = new List<RadioTelescopeController>(AbstractRTDriverPairList.Count);
@@ -29,7 +26,7 @@ namespace ControlRoomApplication.Main
             {
                 ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[i].Key));
                 ProgramPLCDriverList.Add(AbstractRTDriverPairList[i].Value);
-                ProgramControlRoomControllerList.Add(new ControlRoomController(new ControlRoom(ProgramRTControllerList[i], dbContext)));
+                ProgramControlRoomControllerList.Add(new ControlRoomController(new ControlRoom(ProgramRTControllerList[i])));
 
                 ProgramPLCDriverList[i].StartAsyncAcceptingClients();
 
