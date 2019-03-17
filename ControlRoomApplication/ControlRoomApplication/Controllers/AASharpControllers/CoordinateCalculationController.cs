@@ -16,22 +16,6 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             Location = location;
         }
 
-        public Dictionary<DateTime, Orientation> CalculateCoordinates(Appointment appt)
-        {
-            Dictionary<DateTime, Orientation> orientations = new Dictionary<DateTime, Orientation>();
-            TimeSpan length = appt.EndTime - appt.StartTime;
-            for (int i = 0; i < length.TotalMinutes; i++)
-            {
-                DateTime datetime = appt.StartTime.AddMinutes(i);
-                Orientation orientation = CalculateOrientation(appt, datetime);
-                if(orientation != null)
-                {
-                    orientations.Add(datetime, orientation);
-                }
-            }
-            return orientations;
-        }
-
         public Orientation CalculateOrientation(Appointment appt, DateTime datetime)
         {
             switch (appt.Type)

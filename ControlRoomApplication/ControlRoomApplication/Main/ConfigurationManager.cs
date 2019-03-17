@@ -37,29 +37,16 @@ namespace ControlRoomApplication.Main
         /// Configures the type of radiotelescope that will be used in the rest
         /// of the application based on the third command line argument passed in.
         /// </summary>
-        /// <param name="arg2"> The third program argument passed in. </param>
         /// <returns> A concrete instance of a radio telescope. </returns>
-        public static AbstractRadioTelescope ConfigureRadioTelescope(string arg2, AbstractSpectraCyberController spectraCyberController, string ip, string port)
+        public static RadioTelescope ConfigureRadioTelescope(AbstractSpectraCyberController spectraCyberController, string ip, string port)
         {
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, int.Parse(port));
 
             // Create Radio Telescope Location
             Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
 
-            switch (arg2.ToUpper())
-            {
-                 case "/PR":
-                    return new ProductionRadioTelescope(spectraCyberController, PLCCommsHandler, location);
-
-                case "/TR":
-                    // Case for the test/simulated radiotelescope.
-                    return new TestRadioTelescope(spectraCyberController, PLCCommsHandler, location);
-
-                case "/SR":
-                default:
-                    // Should be changed once we have a simulated radiotelescope class implemented
-                    return new ScaleRadioTelescope(spectraCyberController, PLCCommsHandler, location);
-            }
+            // Return Radio Telescope
+            return new RadioTelescope(spectraCyberController, PLCCommsHandler, location);
         }
 
         /// <summary>
@@ -89,7 +76,7 @@ namespace ControlRoomApplication.Main
         /// Constructs a series of radio telescopes, given input parameters.
         /// </summary>
         /// <returns> A list of built instances of a radio telescope. </returns>
-        public static List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args)
+        public static List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args)
         {
             int NumRTs;
             try
@@ -108,7 +95,7 @@ namespace ControlRoomApplication.Main
                 return null;
             }
 
-            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> RTDriverPairList = new List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>>();
+            List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> RTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             for (int i = 0; i < NumRTs; i++)
             {
                 string[] RTArgs = args[i + 1].Split(',');
@@ -119,10 +106,10 @@ namespace ControlRoomApplication.Main
                     continue;
                 }
                 
-                AbstractRadioTelescope ARadioTelescope = ConfigureRadioTelescope(RTArgs[0], ConfigureSpectraCyberController(RTArgs[1]), RTArgs[2], RTArgs[3]);
+                RadioTelescope ARadioTelescope = ConfigureRadioTelescope(ConfigureSpectraCyberController(RTArgs[1]), RTArgs[2], RTArgs[3]);
                 AbstractPLCDriver APLCDriver = ConfigureSimulatedPLCDriver(RTArgs[0], RTArgs[2], RTArgs[3]);
 
-                RTDriverPairList.Add(new KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
+                RTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
             }
 
             return RTDriverPairList;

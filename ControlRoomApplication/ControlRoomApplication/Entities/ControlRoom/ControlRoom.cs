@@ -10,7 +10,6 @@ namespace ControlRoomApplication.Entities
     public class ControlRoom
     {
         public List<RadioTelescopeControllerManagementThread> RTControllerManagementThreads { get; }
-        public RTDbContext DBContext { get; }
 
         public List<RadioTelescopeController> RadioTelescopeControllers
         {
@@ -27,11 +26,11 @@ namespace ControlRoomApplication.Entities
             }
         }
 
-        public List<AbstractRadioTelescope> RadioTelescopes
+        public List<RadioTelescope.RadioTelescope> RadioTelescopes
         {
             get
             {
-                List<AbstractRadioTelescope> RTList = new List<AbstractRadioTelescope>();
+                List<RadioTelescope.RadioTelescope> RTList = new List<RadioTelescope.RadioTelescope>();
 
                 foreach (RadioTelescopeControllerManagementThread rtmt in RTControllerManagementThreads)
                 {
@@ -42,26 +41,9 @@ namespace ControlRoomApplication.Entities
             }
         }
 
-        public List<Appointment> Appointments
-        {
-            get
-            {
-                return DBContext.Appointments.ToList();
-            }
-            set
-            {
-                foreach (Appointment appt in value)
-                {
-                    DBContext.Appointments.Add(appt);
-                    DBContext.SaveChanges();
-                }
-            }
-        }
-
-        public ControlRoom(RTDbContext dbContext)
+        public ControlRoom()
         {
             RTControllerManagementThreads = new List<RadioTelescopeControllerManagementThread>();
-            DBContext = dbContext;
         }
     }
 }
