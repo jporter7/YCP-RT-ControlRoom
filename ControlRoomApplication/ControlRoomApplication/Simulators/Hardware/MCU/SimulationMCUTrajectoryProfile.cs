@@ -1,7 +1,7 @@
 ﻿using System;
 using ControlRoomApplication.Constants;
 
-namespace ControlRoomApplication.Hardware.MCU
+namespace ControlRoomApplication.Simulators.Hardware.MCU
 {
     public class SimulationMCUTrajectoryProfile
     {

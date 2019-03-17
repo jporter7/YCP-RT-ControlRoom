@@ -1,4 +1,4 @@
-﻿namespace ControlRoomApplication.Hardware.MCU
+﻿namespace ControlRoomApplication.Simulators.Hardware.MCU
 {
     public enum SimulationStopTypeEnum
     {

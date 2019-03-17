@@ -1,7 +1,7 @@
 ﻿using System;
 using ControlRoomApplication.Entities;
 
-namespace ControlRoomApplication.Hardware.MCU
+namespace ControlRoomApplication.Simulators.Hardware.MCU
 {
     public class SimulationMCU
     {
@@ -48,6 +48,10 @@ namespace ControlRoomApplication.Hardware.MCU
             {
                 RequestedStopType = SimulationStopTypeEnum.CONTROLLED;
             }
+            else
+            {
+                ConsumeRequestedStop();
+            }
         }
 
         public void ExecuteImmediateStop()
@@ -55,6 +59,10 @@ namespace ControlRoomApplication.Hardware.MCU
             if (HasActiveMove())
             {
                 RequestedStopType = SimulationStopTypeEnum.IMMEDIATE;
+            }
+            else
+            {
+                ConsumeRequestedStop();
             }
         }
 

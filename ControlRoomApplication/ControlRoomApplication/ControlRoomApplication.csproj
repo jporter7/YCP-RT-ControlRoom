@@ -147,11 +147,11 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimaultor.cs" />
-    <Compile Include="Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
-    <Compile Include="Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
-    <Compile Include="Hardware\MCU\SimulationAbsoluteEncoder.cs" />
-    <Compile Include="Hardware\MCU\SimulationMCU.cs" />
-    <Compile Include="Hardware\MCU\SimulationStopTypeEnum.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationAbsoluteEncoder.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationMCU.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationStopTypeEnum.cs" />
     <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Main\RTDbConfiguration.cs" />
@@ -186,6 +186,9 @@
     <EmbeddedResource Include="Migrations\201902132340492_Feb13.resx">
       <DependentUpon>201902132340492_Feb13.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Hardware\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
