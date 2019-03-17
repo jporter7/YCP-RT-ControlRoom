@@ -4,11 +4,9 @@ using System.Threading;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
-using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Main
 {
@@ -28,7 +26,7 @@ namespace ControlRoomApplication.Main
             Console.WriteLine("Local database populated.");
             Console.WriteLine("Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
 
-            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args, dbContext);
+            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
             List<RadioTelescopeController> ProgramRTControllerList = new List<RadioTelescopeController>(AbstractRTDriverPairList.Count);
             List<AbstractPLCDriver> ProgramPLCDriverList = new List<AbstractPLCDriver>(AbstractRTDriverPairList.Count);
             List<ControlRoomController> ProgramControlRoomControllerList = new List<ControlRoomController>(AbstractRTDriverPairList.Count);
@@ -42,9 +40,6 @@ namespace ControlRoomApplication.Main
                 ProgramPLCDriverList[i].StartAsyncAcceptingClients();
 
                 ProgramRTControllerList[i].RadioTelescope.PlcController.ConnectToServer();
-
-                ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringUp(0);
-                ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
 
                 ProgramControlRoomControllerList[i].Start();
             }

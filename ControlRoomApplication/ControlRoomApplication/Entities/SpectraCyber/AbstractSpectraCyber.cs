@@ -4,11 +4,13 @@
     {
         public SpectraCyberModeTypeEnum CurrentModeType { get; set; }
         public SpectraCyberRequest CurrentSpectraCyberRequest { get; set; }
+        public int ActiveAppointmentID { get; set; }
 
         public AbstractSpectraCyber()
         {
             CurrentModeType = SpectraCyberModeTypeEnum.UNKNOWN;
             CurrentSpectraCyberRequest = SpectraCyberRequest.GetNewEmpty();
+            ActiveAppointmentID = -1;
         }
     }
 }

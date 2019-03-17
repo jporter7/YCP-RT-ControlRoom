@@ -1,5 +1,6 @@
 ﻿using System;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
 
 namespace ControlRoomApplication.Simulators.Hardware.MCU
 {

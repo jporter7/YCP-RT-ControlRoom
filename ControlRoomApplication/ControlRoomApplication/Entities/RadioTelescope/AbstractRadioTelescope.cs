@@ -1,7 +1,7 @@
-﻿using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Controllers.SpectraCyberController;
 
 namespace ControlRoomApplication.Entities.RadioTelescope
 {
@@ -19,7 +19,10 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         [Column("current_orientation")]
         public Orientation CurrentOrientation { get; set; }
 
-        public PLCCommunicationHandler PlcController { get; set; }
+        [Column("location")]
+        public Location Location;
+
+        public PLCClientCommunicationHandler PlcController { get; set; }
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
         public Orientation CalibrationOrientation { get; set; }
     }

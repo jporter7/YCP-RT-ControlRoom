@@ -23,7 +23,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
                 {
-                    Console.WriteLine("ERROR: failure creating PLC TCP server or management thread.");
+                    Console.WriteLine("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
                     return;
                 }
                 else
@@ -41,7 +41,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             {
                 if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException))
                 {
-                    Console.WriteLine("ERROR: failure starting PLC TCP server.");
+                    Console.WriteLine("[AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
                     return;
                 }
             }
@@ -70,7 +70,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException) || (e is System.IO.IOException) || (e is ObjectDisposedException))
                 {
-                    Console.WriteLine("ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
+                    Console.WriteLine("[AbstractPLCDriver] ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
                     return false;
                 }
             }
@@ -89,19 +89,14 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                 if (PLCTCPListener.Pending())
                 {
                     AcceptedClient = PLCTCPListener.AcceptTcpClient();
-                    Console.WriteLine("Connected to new client.");
+                    Console.WriteLine("[AbstractPLCDriver] Connected to new client.");
 
                     NetworkStream ClientStream = AcceptedClient.GetStream();
 
                     int Fd;
                     while ((!KillClientManagementThreadFlag) && (ClientStream != null))
                     {
-                        if (!ClientStream.CanRead)
-                        {
-                            Console.WriteLine("UH OH");
-                        }
-
-                        if (!ClientStream.DataAvailable)
+                        if ((!ClientStream.CanRead) || (!ClientStream.DataAvailable))
                         {
                             continue;
                         }
@@ -120,11 +115,12 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
                             if (!ProcessRequest(ClientStream, ClippedData))
                             {
-                                Console.WriteLine("Failed to write server!");
+                                Console.WriteLine("[AbstractPLCDriver] FAILED to write server.");
                             }
                             else
                             {
-                                Console.WriteLine("Successfully wrote to server.");
+                                //Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
+                                //Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server!");
                             }
                         }
                         catch (Exception e)
@@ -136,7 +132,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                                 || (e is ArgumentOutOfRangeException)
                                 || (e is ArgumentException))
                             {
-                                Console.WriteLine("ERROR: copying buffer array into clipped array {" + Fd + "}, skipping... [" + e.ToString());
+                                Console.WriteLine("[AbstractPLCDriver] ERROR: copying buffer array into clipped array {" + Fd + "}, skipping... [" + e.ToString());
                                 continue;
                             }
                             else

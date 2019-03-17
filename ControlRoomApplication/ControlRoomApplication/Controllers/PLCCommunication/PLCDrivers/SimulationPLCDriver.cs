@@ -35,7 +35,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             PLCCommandAndQueryTypeEnum CommandQueryTypeEnum = PLCCommandAndQueryTypeConversionHelper.GetFromByte(CommandQueryTypeByte);
             PLCCommandResponseExpectationEnum ExpectedResponseStatusEnum = PLCCommandResponseExpectationConversionHelper.GetFromByte(ExpectedResponseStatusByte);
 
-            if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.EXPECTING_RESPONSE)
+            if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.FULL_RESPONSE)
             {
                 byte[] FinalResponseContainer =
                 {

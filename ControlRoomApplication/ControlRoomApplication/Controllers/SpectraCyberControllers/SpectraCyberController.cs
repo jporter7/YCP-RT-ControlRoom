@@ -1,9 +1,9 @@
-﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Constants;
-using System;
+﻿using System;
 using System.IO.Ports;
 using System.Threading;
 using ControlRoomApplication.Main;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
@@ -11,12 +11,9 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     {
         private bool SerialCommsFailed;
 
-        public SpectraCyberController(SpectraCyber spectraCyber) : base(spectraCyber)
-        {
-            
-        }
+        public SpectraCyberController(SpectraCyber spectraCyber) : base(spectraCyber) { }
 
-        public override bool BringUp(int appId)
+        public override bool BringUp()
         {
             try
             {
@@ -71,7 +68,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(() => RunCommunicationThread(appId));
+                CommunicationThread = new Thread(() => RunCommunicationThread());
                 CommunicationThread.Start();
             }
             catch (Exception e)

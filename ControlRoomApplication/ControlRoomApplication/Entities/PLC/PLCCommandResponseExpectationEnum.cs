@@ -5,8 +5,8 @@ namespace ControlRoomApplication.Entities
     public enum PLCCommandResponseExpectationEnum : byte
     {
         UNDEFINED = 0x0,
-        NOT_EXPECTING_RESPONSE = 0x1,
-        EXPECTING_RESPONSE = 0x2
+        MINOR_RESPONSE = 0x1,
+        FULL_RESPONSE = 0x2
     }
 
     public class PLCCommandResponseExpectationConversionHelper

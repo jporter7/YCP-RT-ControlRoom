@@ -1,9 +1,8 @@
-﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Constants;
-using System;
+﻿using System;
 using System.Threading;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities.RadioTelescope;
-using ControlRoomApplication.Main;
 using ControlRoomApplication.Database.Operations;
 
 namespace ControlRoomApplication.Controllers.SpectraCyberController
@@ -31,19 +30,27 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             return Parent;
         }
 
-        public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
-        {
-            SpectraCyber.CurrentModeType = type;
-        }
-
         public void SetParent(AbstractRadioTelescope rt)
         {
             Parent = rt;
         }
 
-        public abstract bool BringUp(int appId);
-        public abstract bool BringDown();
-        protected abstract void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response);
+        public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
+        {
+            SpectraCyber.CurrentModeType = type;
+        }
+
+        public void SetActiveAppointmentID(int apptId)
+        {
+            CommunicationMutex.WaitOne();
+            SpectraCyber.ActiveAppointmentID = apptId;
+            CommunicationMutex.ReleaseMutex();
+        }
+
+        public void RemoveActiveAppointmentID()
+        {
+            SetActiveAppointmentID(-1);
+        }
 
         public void TestCommunication()
         {
@@ -216,7 +223,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             else
             {
                 // Unknown current mode type
-                throw new Exception();
+                throw new ArgumentException("Invalid SpectraCyber mode type: " + SpectraCyber.CurrentModeType.ToString());
             }
 
             return new SpectraCyberRequest(
@@ -227,7 +234,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             );
         }
 
-        public void RunCommunicationThread(int appId)
+        public void RunCommunicationThread()
         {
             bool KeepRunningCommsThread = true;
 
@@ -240,7 +247,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
                 if (Schedule.PollReadiness())
                 {
-                    AddToRFDataDatabase(DoSpectraCyberScan(), appId);
+                    AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointmentID);
                     Schedule.Consume();
                     Console.WriteLine("SC Scan");
                 }
@@ -280,6 +287,10 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
             return rfData;
         }
+
+        public abstract bool BringUp();
+        public abstract bool BringDown();
+        protected abstract void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response);
 
         // TODO: implement proper error handling if ch is out of acceptable range
         protected static int HexCharToInt(char ch)
