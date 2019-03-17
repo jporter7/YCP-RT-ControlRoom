@@ -19,16 +19,15 @@ namespace ControlRoomApplication.Main
             logger.Info("<--------------- Control Room Application Started --------------->");
 
             // Instantiate the database being used.
-            RTDbContext dbContext = new RTDbContext();
             ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom());
 
             DatabaseOperations.InitializeLocalConnectionOnly();
             DatabaseOperations.PopulateLocalDatabase();
             Console.WriteLine("[Main] Local database populated. Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
-            //foreach (Appointment appt in DatabaseOperations.GetListOfAppointments())
-            //{
-            //    Console.WriteLine("\tStart Time: " + appt.StartTime.ToString());
-            //}
+            foreach (Appointment appt in DatabaseOperations.GetListOfAppointments())
+            {
+                Console.WriteLine("\tStart Time: " + appt.StartTime.ToString());
+            }
 
             // Given the input command line arguments, generate the control room's RTs, its controllers, and the PLC drivers
             List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
@@ -89,7 +88,7 @@ namespace ControlRoomApplication.Main
                 }
                 else
                 {
-                    Console.WriteLine("[Main] Successfully brought down RT controller t index " + i.ToString());
+                    Console.WriteLine("[Main] Successfully brought down RT controller at index " + i.ToString());
                 }
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
@@ -97,7 +96,6 @@ namespace ControlRoomApplication.Main
                 ProgramPLCDriverList[i].RequestStopAsyncAcceptingClients();
             }
 
-            dbContext.Dispose();
             DatabaseOperations.DisposeLocalDatabaseOnly();
 
             // End logging
