@@ -9,7 +9,7 @@ namespace ControlRoomApplication.Constants
         public static readonly string SHUTDOWN = "shutdown";
         public static readonly string COM3 = "COM3";
         public static readonly string COM4 = "COM4";
-        public static readonly string LOCAL_HOST_IP = "80.80.80.80";
+        public static readonly string LOCAL_HOST_IP = "127.0.0.1";
 
         // Constant ints for PLC-related classes
         public static readonly int PORT_5012 = 5012;
