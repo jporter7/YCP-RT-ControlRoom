@@ -14,12 +14,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             random = new Random();
         }
 
-        public override bool BringUp(int appId)
+        public override bool BringUp()
         {
             try
             {
                 // Initialize thread and start it
-                CommunicationThread = new Thread(() => RunCommunicationThread(appId));
+                CommunicationThread = new Thread(() => RunCommunicationThread());
                 CommunicationThread.Start();
             }
             catch (Exception e)

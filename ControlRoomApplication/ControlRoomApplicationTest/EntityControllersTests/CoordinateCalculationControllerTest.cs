@@ -13,120 +13,192 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestInitialize]
         public void Up()
         {
-            CoordinateCalculationController = new CoordinateCalculationController();
+            Location location = new Location(76.7046, 40.0244, 395.0);
+            CoordinateCalculationController = new CoordinateCalculationController(location);
         }
 
         [TestMethod]
         public void TestCalculateCoordinates()
         {
+            DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
+            DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
+
             // Test point appointment
             Appointment point_appt = new Appointment();
-            point_appt.StartTime = DateTime.Now.AddMinutes(1);
-            point_appt.EndTime = DateTime.Now.AddMinutes(60);
-            point_appt.Coordinates = new List<Coordinate>();
+            point_appt.Type = AppointmentTypeConstants.POINT;
+            point_appt.StartTime = start;
+            point_appt.EndTime = end;
             point_appt.Coordinates.Add(new Coordinate(0, 0));
             var point_orientations = CoordinateCalculationController.CalculateCoordinates(point_appt);
 
             Assert.IsTrue(point_orientations != null);
-            Assert.IsTrue(point_orientations.Count == 59);
+            Assert.IsTrue(point_orientations.Count == 60);
 
             // Test celesital body appointment
             Appointment sun_appt = new Appointment();
-            sun_appt.StartTime = DateTime.Now.AddMinutes(1);
-            sun_appt.EndTime = DateTime.Now.AddMinutes(60);
+            sun_appt.Type = AppointmentTypeConstants.CELESTIAL_BODY;
+            sun_appt.StartTime = start;
+            sun_appt.EndTime = end;
             sun_appt.CelestialBody = CelestialBodyConstants.SUN;
             var sun_orientations = CoordinateCalculationController.CalculateCoordinates(sun_appt);
 
             Assert.IsTrue(sun_orientations != null);
-            Assert.IsTrue(sun_orientations.Count == 59);
+            Assert.IsTrue(sun_orientations.Count == 60);
 
             // Test raster appointment
             Appointment raster_appt = new Appointment();
-            raster_appt.StartTime = DateTime.Now.AddMinutes(1);
-            raster_appt.EndTime = DateTime.Now.AddMinutes(60);
-            raster_appt.Coordinates = new List<Coordinate>();
+            raster_appt.Type = AppointmentTypeConstants.RASTER;
+            raster_appt.StartTime = start;
+            raster_appt.EndTime = end;
             raster_appt.Coordinates.Add(new Coordinate(0, 0));
             raster_appt.Coordinates.Add(new Coordinate(5, 5));
             var raster_orientations = CoordinateCalculationController.CalculateCoordinates(raster_appt);
 
             Assert.IsTrue(raster_orientations != null);
-            Assert.IsTrue(raster_orientations.Count == 59);
+            Assert.IsTrue(raster_orientations.Count == 60);
+
+            // Test orientation appointment
+            Appointment orientation_appt = new Appointment();
+            orientation_appt.Type = AppointmentTypeConstants.ORIENTATION;
+            orientation_appt.StartTime = start;
+            orientation_appt.EndTime = end;
+            orientation_appt.Orientation = new Orientation(30, 30);
+            var orientation_orientations = CoordinateCalculationController.CalculateCoordinates(raster_appt);
+
+            Assert.IsTrue(orientation_orientations != null);
+            Assert.IsTrue(orientation_orientations.Count == 60);
         }
 
         [TestMethod]
-        public void TestCalculateSunCoorindates()
+        public void TestGetPointCoordinate()
         {
             DateTime time = new DateTime(2018, 10, 30, 12, 0, 0);
-            Coordinate = CoordinateCalculationController.GetCelestialBodyCoordinate(CelestialBodyConstants.SUN, time);
+            var appt = new Appointment();
+            appt.Coordinates = new List<Coordinate>();
+            var coord_1 = new Coordinate(12, 12);
+            appt.Coordinates.Add(coord_1);
+            Coordinate output_coord_1 = CoordinateCalculationController.GetPointCoordinate(appt, time);
 
-            Assert.AreEqual(24.476, Coordinate.RightAscension, 0.05);
-            Assert.AreEqual(218.75, Coordinate.Declination, 0.05);
+            Assert.AreEqual(coord_1.RightAscension, output_coord_1.RightAscension, 0.05);
+            Assert.AreEqual(coord_1.Declination, output_coord_1.Declination, 0.05);
         }
 
         [TestMethod]
+        public void TestGetRasterCoordinate()
+        {
+            DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
+            DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
+            var appt = new Appointment();
+            appt.StartTime = start;
+            appt.EndTime = end;
+            appt.Coordinates = new List<Coordinate>();
+            var coord_1 = new Coordinate(12, 12);
+            var coord_2 = new Coordinate(15, 15);
+            appt.Coordinates.Add(coord_1);
+            appt.Coordinates.Add(coord_2);
+            Coordinate output_coord_1 = CoordinateCalculationController.GetRasterCoordinate(appt, start);
+            Coordinate output_coord_2 = CoordinateCalculationController.GetRasterCoordinate(appt, end);
+
+            Assert.AreEqual(coord_1.RightAscension, output_coord_1.RightAscension, 0.05);
+            Assert.AreEqual(coord_1.Declination, output_coord_1.Declination, 0.05);
+
+            Assert.IsTrue(coord_2.RightAscension > output_coord_2.RightAscension);
+            Assert.IsTrue(coord_2.Declination > output_coord_2.Declination);
+        }
+
+        [TestMethod]
+        public void TestGetCelestialBodyCoordinate()
+        {
+            // Test at noon local time, highest elevation (Converted to UTC) 
+            DateTime date = new DateTime(2018, 12, 14, 17, 0, 0);
+            Coordinate output_coord_1 = CoordinateCalculationController.GetCelestialBodyCoordinate("SUN", date); // CelestialBodyConstants.SUN, date);
+
+            Assert.AreEqual(17.4508, output_coord_1.RightAscension, 0.05);
+            Assert.AreEqual(-23.2207, output_coord_1.Declination, 0.05);
+        }
+
+        [TestMethod]
+        public void TestGetSunCoordinate()
+        {
+            // Test at noon local time, highest elevation (Converted to UTC) 
+            DateTime date = new DateTime(2018, 12, 14, 17, 0, 0);
+            Coordinate output_coord_1 = CoordinateCalculationController.GetSunCoordinate(date);
+
+            Assert.AreEqual(17.4508, output_coord_1.RightAscension, 0.05);
+            Assert.AreEqual(-23.2207, output_coord_1.Declination, 0.05);
+
+            // Test at sunrise local time (Converted to UTC)  
+            date = new DateTime(2018, 12, 14, 12, 0, 0);
+            Coordinate output_coord_2 = CoordinateCalculationController.GetSunCoordinate(date);
+
+            Assert.AreEqual(17.4354, output_coord_2.RightAscension, 0.05);
+            Assert.AreEqual(-23.2085, output_coord_2.Declination, 0.05);
+
+            // Test at sunset local time (Converted to UTC)  
+            date = new DateTime(2018, 12, 14, 22, 0, 0);
+            Coordinate output_coord_3 = CoordinateCalculationController.GetSunCoordinate(date);
+
+            Assert.AreEqual(17.4661, output_coord_3.RightAscension, 0.05);
+            Assert.AreEqual(-23.2327, output_coord_3.Declination, 0.05);
+        }
+
+        [TestMethod]
+        public void TestGetMoonCoordinate()
+        {
+            // Test at 1:00pm local time (Converted to UTC)
+            DateTime date = new DateTime(2018, 12, 14, 18, 0, 0);
+            Coordinate output_coord_1 = CoordinateCalculationController.GetMoonCoordinate(date);
+
+            Assert.AreEqual(23.1637847, output_coord_1.RightAscension, 1);
+            Assert.AreEqual(-9.5685756655, output_coord_1.Declination, 1);
+
+            // Test at sunset local time (Converted to UTC)  
+            date = new DateTime(2018, 12, 14, 22, 0, 0);
+            Coordinate output_coord_2 = CoordinateCalculationController.GetMoonCoordinate(date);
+
+            Assert.AreEqual(23.2914, output_coord_2.RightAscension, 1);
+            Assert.AreEqual(-8.9042, output_coord_2.Declination, 1);
+
+            // Test at moonrise local time (Converted to UTC)
+            date = new DateTime(2018, 12, 15, 0, 0, 0);
+            Coordinate output_coord_3 = CoordinateCalculationController.GetMoonCoordinate(date);
+
+            Assert.AreEqual(23.3550, output_coord_3.RightAscension, 1);
+            Assert.AreEqual(-8.565285, output_coord_3.Declination, 1);
+        }
+
+        [TestMethod]
+
         public void TestCoordinateToOrientation()
         {
-            DateTime date = new DateTime(2018, 12, 14, 7, 0, 0);
-            Coordinate = new Coordinate(0.0, 0.0);
-            Orientation = CoordinateCalculationController.CoordinateToOrientation(Coordinate, date);
+            // Test at 10:01:43 PM local time (Converted to UTC) 
+            DateTime date_1 = new DateTime(2018, 6, 23, 2, 1, 43);
+            Coordinate coord_1 = new Coordinate(1, 1);
+            Orientation test_orientation_1 = new Orientation(40.81, -40.75);
+            Orientation output_orientation_1 = CoordinateCalculationController.CoordinateToOrientation(coord_1, date_1);
 
-            //Assert.AreEqual(205.731, Orientation.Azimuth, 1);
-            Assert.AreEqual(47.008, Orientation.Elevation, 1);
+            Assert.AreEqual(test_orientation_1.Azimuth, output_orientation_1.Azimuth, 0.5);
+            Assert.AreEqual(test_orientation_1.Elevation, output_orientation_1.Elevation, 0.5);
 
-        }
+            // Test at 6:00:00 AM local time (Converted to UTC)
+            DateTime date_2 = new DateTime(2018, 12, 14, 11, 0, 0);
+            Coordinate coord_2 = new Coordinate(12, 1);
+            Orientation test_orientation_2 = new Orientation(166.09, 50.04);
+            Orientation output_orientation_2 = CoordinateCalculationController.CoordinateToOrientation(coord_2, date_2);
 
-        [TestMethod]
-        public void TestSunCoordinateToOrienation()
-        {
-            // Test at noon (highest elevation)
-            DateTime date = new DateTime(2018, 12, 14, 7, 0, 0);
-            //date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(date);
-            Assert.AreEqual(26.8, Orientation.Elevation, 1);
-            Assert.AreEqual(179.6, Orientation.Azimuth, 3);
+            Assert.AreEqual(test_orientation_2.Azimuth, output_orientation_2.Azimuth, 0.5);
+            Assert.AreEqual(test_orientation_2.Elevation, output_orientation_2.Elevation, 0.5);
 
-            // Test at sunrise
-            date = new DateTime(2018, 12, 14, 2, 0, 0);
-            //date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(date);
-            Assert.AreEqual(-4.3, Orientation.Elevation, 3);
-            Assert.AreEqual(116.9, Orientation.Azimuth, 2);
+            // Test at 5:55:02 PM local time (Converted to UTC)
+            DateTime date_3 = new DateTime(2018, 2, 3, 22, 55, 2);
+            Coordinate coord_3 = new Coordinate(23, 80);
+            Orientation test_orientation_3 = new Orientation(348.36, 45.00);
+            Orientation output_orientation_3 = CoordinateCalculationController.CoordinateToOrientation(coord_3, date_3);
 
-            // Test at sunset
-            date = new DateTime(2018, 12, 14, 12, 0, 0);
-            //date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.SunCoordinateToOrientation(date);
-            Assert.AreEqual(-3.8, Orientation.Elevation, 1);
-            Assert.AreEqual(242.6, Orientation.Azimuth, 2);
-        }
-
-        [TestMethod]
-        public void TestMoonCoordinateToOrientation()
-        {
-            // Test at 11:00pm
-            DateTime date = new DateTime(2018, 12, 14, 18, 0, 0);
-            // date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(date);
-            Assert.AreEqual(5.4, Orientation.Elevation, 6);
-            Assert.AreEqual(254.2, Orientation.Azimuth, 4);
-
-            // Test at sunset
-            date = new DateTime(2018, 12, 14, 12, 0, 0);
-            // date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(date);
-            Assert.AreEqual(39.1, Orientation.Elevation, 1);
-            Assert.AreEqual(164.0, Orientation.Azimuth, 10);
-
-            // Test at moonrise
-            date = new DateTime(2018, 12, 14, 7, 0, 0);
-            // date = date.ToUniversalTime();
-            Orientation = CoordinateCalculationController.MoonCoordinateToOrientation(date);
-            Assert.AreEqual(-3.5, Orientation.Elevation, 5);
-            Assert.AreEqual(100.6, Orientation.Azimuth, 6);
+            Assert.AreEqual(test_orientation_3.Azimuth, output_orientation_3.Azimuth, 0.5);
+            Assert.AreEqual(test_orientation_3.Elevation, output_orientation_3.Elevation, 0.5);
         }
 
         public CoordinateCalculationController CoordinateCalculationController { get; set; }
-        public Coordinate Coordinate { get; set; }
-        public Orientation Orientation { get; set; }
     }
 }

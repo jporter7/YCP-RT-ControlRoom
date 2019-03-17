@@ -1,5 +1,5 @@
-﻿using ControlRoomApplication.Constants;
-using System.IO.Ports;
+﻿using System.IO.Ports;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Entities
 {

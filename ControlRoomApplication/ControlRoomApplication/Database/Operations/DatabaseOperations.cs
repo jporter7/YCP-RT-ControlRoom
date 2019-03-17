@@ -59,7 +59,7 @@ namespace ControlRoomApplication.Database.Operations
         {
             if (LocalContext.Database.Exists())
             {
-                DateTime date = DateTime.Now.AddMinutes(5);
+                DateTime date = DateTime.Now;
 
                 Appointment appt0 = new Appointment();
                 Appointment appt1 = new Appointment();
@@ -83,43 +83,40 @@ namespace ControlRoomApplication.Database.Operations
                 coordinate3.RightAscension = 26.3;
                 coordinate3.Declination = 85.12;
 
-                appt0.StartTime = date;
-                appt0.EndTime = date.AddMinutes(1);
-                appt0.Status = AppointmentConstants.IN_PROGRESS;
-                appt0.Type = AppointmentTypeConstants.CELESTIAL_BODY;
-                appt0.Coordinates = new List<Coordinate>();
-                appt0.CelestialBody = CelestialBodyConstants.SUN;
+                appt0.StartTime = date.AddMinutes(1);
+                appt0.EndTime = date.AddMinutes(2);
+                appt0.Status = AppointmentConstants.REQUESTED;
+                appt0.Type = AppointmentTypeConstants.ORIENTATION;
+                appt0.Orientation = new Orientation(30, 30);
+                appt0.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
                 appt0.TelescopeId = 1;
                 appt0.UserId = 1;
 
-                appt1.StartTime = date;
-                appt1.EndTime = date.AddMinutes(480);
+                appt1.StartTime = date.AddMinutes(3);
+                appt1.EndTime = date.AddMinutes(4);
                 appt1.Status = AppointmentConstants.IN_PROGRESS;
-                appt1.Type = AppointmentTypeConstants.RASTER;
-                appt1.Coordinates = new List<Coordinate>();
-                appt1.Coordinates.Add(coordinate0);
-                appt1.Coordinates.Add(coordinate1);
-                appt1.CelestialBody = CelestialBodyConstants.NONE;
+                appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
+                appt1.CelestialBody = CelestialBodyConstants.SUN;
+                appt1.SpectraCyberModeType = SpectraCyberModeTypeEnum.SPECTRAL;
                 appt1.TelescopeId = 1;
                 appt1.UserId = 1;
 
-                appt2.StartTime = date.AddMinutes(2);
-                appt2.EndTime = date.AddMinutes(3);
+                appt2.StartTime = date.AddMinutes(5);
+                appt2.EndTime = date.AddMinutes(6);
                 appt2.Status = AppointmentConstants.REQUESTED;
                 appt2.Type = AppointmentTypeConstants.POINT;
-                appt2.Coordinates = new List<Coordinate>();
                 appt2.Coordinates.Add(coordinate2);
-                appt2.CelestialBody = CelestialBodyConstants.NONE;
+                appt2.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
                 appt2.TelescopeId = 1;
                 appt2.UserId = 1;
 
-                appt3.StartTime = date.AddMinutes(3);
-                appt3.EndTime = date.AddMinutes(4);
-                appt3.Status = AppointmentConstants.REQUESTED;
-                appt3.Type = AppointmentTypeConstants.POINT;
-                appt3.Coordinates = new List<Coordinate>();
-                appt3.Coordinates.Add(coordinate3);
-                appt3.CelestialBody = CelestialBodyConstants.NONE;
+                appt3.StartTime = date.AddMinutes(7);
+                appt3.EndTime = date.AddMinutes(480);
+                appt3.Status = AppointmentConstants.IN_PROGRESS;
+                appt3.Type = AppointmentTypeConstants.RASTER;
+                appt3.Coordinates.Add(coordinate0);
+                appt3.Coordinates.Add(coordinate1);
+                appt3.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
                 appt3.TelescopeId = 1;
                 appt3.UserId = 1;
 
@@ -193,7 +190,7 @@ namespace ControlRoomApplication.Database.Operations
                 appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
                 appointments.Sort();
                 logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
-                appointment = appointments[0];
+                appointment = appointments.Count > 0 ? appointments[0]: null;
             }
             else
             {
