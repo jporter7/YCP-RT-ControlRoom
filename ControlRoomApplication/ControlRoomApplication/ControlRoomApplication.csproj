@@ -110,6 +110,7 @@
     <Compile Include="Controllers\ControlRoomController.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Entities\Plc\PLCCommandAndQueryTypeEnum.cs" />
     <Compile Include="Entities\Plc\PLCCommandResponseExpectationEnum.cs" />
@@ -149,7 +150,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimaultor.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
-    <Compile Include="Simulators\Hardware\MCU\SimulationAbsoluteEncoder.cs" />
+    <Compile Include="Simulators\Hardware\AbsoluteEncoder\SimulationAbsoluteEncoder.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCU.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationStopTypeEnum.cs" />
     <Compile Include="Main\ConfigurationManager.cs" />

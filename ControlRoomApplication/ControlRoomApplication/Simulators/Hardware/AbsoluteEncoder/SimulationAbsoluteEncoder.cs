@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ControlRoomApplication.Simulators.Hardware.MCU
+namespace ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder
 {
     public class SimulationAbsoluteEncoder
     {
