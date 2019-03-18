@@ -58,10 +58,8 @@ namespace ControlRoomApplication.Main
             // Notify cancellation token
             CancellationSource.Cancel();
 
-            //
-            
-
             ControlRoomThread.Join();
+            CancellationSource.Dispose();
             DatabaseOperations.DisposeLocalDatabaseOnly();
             Environment.Exit(0);
         }
@@ -115,6 +113,7 @@ namespace ControlRoomApplication.Main
                     return new TestRadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
 
                 case 2:
+                    return new TestRadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
                 default:
                     // Should be changed once we have a simulated radiotelescope class implemented
                     return new ScaleRadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
@@ -151,6 +150,7 @@ namespace ControlRoomApplication.Main
                     return new ScaleModelPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
 
                 case 2:
+                    return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
                 default:
                     // Should be changed once we have a simulated radiotelescope class implemented
                     return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));

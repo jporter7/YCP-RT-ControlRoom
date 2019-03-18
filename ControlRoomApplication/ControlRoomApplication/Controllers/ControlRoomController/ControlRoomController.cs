@@ -25,7 +25,7 @@ namespace ControlRoomApplication.Controllers
         public void Start(CancellationToken token)
         {
             Token = token;
-            while (true)
+            while (true && !Token.IsCancellationRequested)
             {
                 Appointment appt = WaitingForNextAppointment();
                 Dictionary<DateTime, Orientation> orientations = CRoom.RadioTelescopeController.CoordinateController.CalculateCoordinates(appt);
@@ -56,8 +56,7 @@ namespace ControlRoomApplication.Controllers
                 else
                 {
                     logger.Info("Appointment coordinate is null.");
-                }
-                
+                }  
             }
         }
 
