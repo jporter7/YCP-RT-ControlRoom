@@ -23,13 +23,12 @@ namespace ControlRoomApplication.Main
             DatabaseOperations.InitializeLocalConnectionOnly();
             DatabaseOperations.PopulateLocalDatabase();
 
-            List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = new List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>>();
-            List<RadioTelescopeController> ProgramRTControllerList = new List<RadioTelescopeController>();
-            List<AbstractPLCDriver> ProgramPLCDriverList = new List<AbstractPLCDriver>();
-            List<ControlRoomController> ProgramControlRoomControllerList = new List<ControlRoomController>();
+            AbstractRTDriverPairList = new List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>>();
+            ProgramRTControllerList = new List<RadioTelescopeController>();
+            ProgramPLCDriverList = new List<AbstractPLCDriver>();
+            ProgramControlRoomControllerList = new List<ControlRoomController>();
 
             CancellationSource = new CancellationTokenSource();
-            Token = CancellationSource.Token;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -43,13 +42,14 @@ namespace ControlRoomApplication.Main
                 AbstractPLCDriver APLCDriver = BuildPLCDriver();
 
                 AbstractRTDriverPairList.Add(new KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
-                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[AbstractRTDriverPairList.Count].Key));
+                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[AbstractRTDriverPairList.Count - 1].Key));
                 ProgramPLCDriverList.Add(APLCDriver);
-                ProgramControlRoomControllerList.Add(new ControlRoomController(new ControlRoom(ProgramRTControllerList[ProgramRTControllerList.Count])));
+                ProgramControlRoomControllerList.Add(new ControlRoomController(new ControlRoom(ProgramRTControllerList[ProgramRTControllerList.Count - 1])));
 
-                ProgramPLCDriverList[ProgramPLCDriverList.Count].StartAsyncAcceptingClients();
-                ProgramRTControllerList[ProgramRTControllerList.Count].RadioTelescope.PlcController.ConnectToServer();
-                ProgramControlRoomControllerList[ProgramControlRoomControllerList.Count].Start();
+                ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
+                ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PlcController.ConnectToServer();
+                ControlRoomThread = new Thread(() => ProgramControlRoomControllerList[ProgramControlRoomControllerList.Count - 1].Start(CancellationSource.Token));
+                ControlRoomThread.Start();
             }
         }
 
@@ -89,9 +89,9 @@ namespace ControlRoomApplication.Main
         {
             string[] row1 = { "Current Appointment ID:", "1" };
             string[] row2 = { "Current RT Azimuth:",
-                CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth.ToString() };
+                "123.2" };// CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth.ToString() };
             string[] row3 = { "Current RT Elevation:",
-                CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation.ToString() };
+                "12.123" };// CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation.ToString() };
 
             dataGridView1.Rows.Add(row1);
             dataGridView1.Rows.Add(row2);

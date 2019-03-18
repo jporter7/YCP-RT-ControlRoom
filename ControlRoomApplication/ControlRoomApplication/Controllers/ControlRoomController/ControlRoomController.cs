@@ -10,6 +10,7 @@ namespace ControlRoomApplication.Controllers
     public class ControlRoomController
     {
         public ControlRoom CRoom { get; set; }
+        public CancellationToken Token { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -21,8 +22,9 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Starts the next appointment based on chronological order.
         /// </summary>
-        public void Start()
+        public void Start(CancellationToken token)
         {
+            Token = token;
             while (true)
             {
                 Appointment appt = WaitingForNextAppointment();
@@ -110,19 +112,21 @@ namespace ControlRoomApplication.Controllers
         public void StartRadioTelescope(Appointment appt, Dictionary<DateTime, Orientation> orientations)
         {
             appt.Status = AppointmentConstants.IN_PROGRESS;
-            CRoom.Context.SaveChanges();
             foreach(DateTime datetime in orientations.Keys)
             {
                 while(DateTime.Now < datetime)
                 {
                     // wait for timestamp
                     // Console.WriteLine(datetime.ToString() + " vs. " + DateTime.Now.ToString());
+                    if (Token.IsCancellationRequested)
+                    {
+                        return;
+                    }
                 }
                 Orientation orientation = orientations[datetime];
                 CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
             }
             appt.Status = AppointmentConstants.COMPLETED;
-            CRoom.Context.SaveChanges();
         }
 
         /// <summary>
