@@ -96,8 +96,6 @@ namespace ControlRoomApplication.Main
                 ProgramPLCDriverList[i].RequestStopAsyncAcceptingClients();
             }
 
-            DatabaseOperations.DisposeLocalDatabaseOnly();
-
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Console.ReadKey();
