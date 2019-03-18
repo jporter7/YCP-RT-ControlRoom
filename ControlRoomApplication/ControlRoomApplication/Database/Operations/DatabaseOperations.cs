@@ -15,14 +15,8 @@ namespace ControlRoomApplication.Database.Operations
         public static void InitializeConnections()
         {
             LocalContext = new RTDbContext();
-            if (LocalContext.Database.Exists())
-            {
-                LocalContext.Database.Delete();
-                LocalContext.SaveChanges();
-            }
             LocalContext.Database.CreateIfNotExists();
             LocalContext.SaveChanges();
-
             RemoteContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
         }
 
@@ -32,12 +26,6 @@ namespace ControlRoomApplication.Database.Operations
         public static void InitializeLocalConnectionOnly()
         {
             LocalContext = new RTDbContext();
-            if (LocalContext.Database.Exists())
-            {
-                LocalContext.Database.Delete();
-                LocalContext.SaveChanges();
-            }
-
             LocalContext.Database.CreateIfNotExists();
             LocalContext.SaveChanges();
         }
@@ -57,80 +45,80 @@ namespace ControlRoomApplication.Database.Operations
         /// </summary>
         public static void PopulateLocalDatabase()
         {
-            if (LocalContext.Database.Exists())
+            InitializeLocalConnectionOnly();
+
+            DateTime date = DateTime.Now;
+
+            Appointment appt0 = new Appointment();
+            Appointment appt1 = new Appointment();
+            Appointment appt2 = new Appointment();
+            Appointment appt3 = new Appointment();
+
+            Coordinate coordinate0 = new Coordinate();
+            Coordinate coordinate1 = new Coordinate();
+            Coordinate coordinate2 = new Coordinate();
+            Coordinate coordinate3 = new Coordinate();
+
+            coordinate0.RightAscension = 10.3;
+            coordinate0.Declination = 50.8;
+
+            coordinate1.RightAscension = 22.0;
+            coordinate1.Declination = 83.63;
+
+            coordinate2.RightAscension = 16.0;
+            coordinate2.Declination = 71.5;
+
+            coordinate3.RightAscension = 26.3;
+            coordinate3.Declination = 85.12;
+
+            appt0.StartTime = date.AddMinutes(1);
+            appt0.EndTime = date.AddMinutes(2);
+            appt0.Status = AppointmentConstants.REQUESTED;
+            appt0.Type = AppointmentTypeConstants.ORIENTATION;
+            appt0.Orientation = new Orientation(30, 30);
+            appt0.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+            appt0.TelescopeId = 1;
+            appt0.UserId = 1;
+
+            appt1.StartTime = date.AddMinutes(3);
+            appt1.EndTime = date.AddMinutes(4);
+            appt1.Status = AppointmentConstants.IN_PROGRESS;
+            appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
+            appt1.CelestialBody = CelestialBodyConstants.SUN;
+            appt1.SpectraCyberModeType = SpectraCyberModeTypeEnum.SPECTRAL;
+            appt1.TelescopeId = 1;
+            appt1.UserId = 1;
+
+            appt2.StartTime = date.AddMinutes(5);
+            appt2.EndTime = date.AddMinutes(6);
+            appt2.Status = AppointmentConstants.REQUESTED;
+            appt2.Type = AppointmentTypeConstants.POINT;
+            appt2.Coordinates.Add(coordinate2);
+            appt2.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+            appt2.TelescopeId = 1;
+            appt2.UserId = 1;
+
+            appt3.StartTime = date.AddMinutes(7);
+            appt3.EndTime = date.AddMinutes(480);
+            appt3.Status = AppointmentConstants.IN_PROGRESS;
+            appt3.Type = AppointmentTypeConstants.RASTER;
+            appt3.Coordinates.Add(coordinate0);
+            appt3.Coordinates.Add(coordinate1);
+            appt3.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+            appt3.TelescopeId = 1;
+            appt3.UserId = 1;
+
+            List<Appointment> appts = new List<Appointment>()
             {
-                DateTime date = DateTime.Now;
+                appt0,
+                appt1,
+                appt2,
+                appt3,
+            };
 
-                Appointment appt0 = new Appointment();
-                Appointment appt1 = new Appointment();
-                Appointment appt2 = new Appointment();
-                Appointment appt3 = new Appointment();
-
-                Coordinate coordinate0 = new Coordinate();
-                Coordinate coordinate1 = new Coordinate();
-                Coordinate coordinate2 = new Coordinate();
-                Coordinate coordinate3 = new Coordinate();
-
-                coordinate0.RightAscension = 10.3;
-                coordinate0.Declination = 50.8;
-
-                coordinate1.RightAscension = 22.0;
-                coordinate1.Declination = 83.63;
-
-                coordinate2.RightAscension = 16.0;
-                coordinate2.Declination = 71.5;
-
-                coordinate3.RightAscension = 26.3;
-                coordinate3.Declination = 85.12;
-
-                appt0.StartTime = date.AddMinutes(1);
-                appt0.EndTime = date.AddMinutes(2);
-                appt0.Status = AppointmentConstants.REQUESTED;
-                appt0.Type = AppointmentTypeConstants.ORIENTATION;
-                appt0.Orientation = new Orientation(30, 30);
-                appt0.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
-                appt0.TelescopeId = 1;
-                appt0.UserId = 1;
-
-                appt1.StartTime = date.AddMinutes(3);
-                appt1.EndTime = date.AddMinutes(4);
-                appt1.Status = AppointmentConstants.IN_PROGRESS;
-                appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
-                appt1.CelestialBody = CelestialBodyConstants.SUN;
-                appt1.SpectraCyberModeType = SpectraCyberModeTypeEnum.SPECTRAL;
-                appt1.TelescopeId = 1;
-                appt1.UserId = 1;
-
-                appt2.StartTime = date.AddMinutes(5);
-                appt2.EndTime = date.AddMinutes(6);
-                appt2.Status = AppointmentConstants.REQUESTED;
-                appt2.Type = AppointmentTypeConstants.POINT;
-                appt2.Coordinates.Add(coordinate2);
-                appt2.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
-                appt2.TelescopeId = 1;
-                appt2.UserId = 1;
-
-                appt3.StartTime = date.AddMinutes(7);
-                appt3.EndTime = date.AddMinutes(480);
-                appt3.Status = AppointmentConstants.IN_PROGRESS;
-                appt3.Type = AppointmentTypeConstants.RASTER;
-                appt3.Coordinates.Add(coordinate0);
-                appt3.Coordinates.Add(coordinate1);
-                appt3.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
-                appt3.TelescopeId = 1;
-                appt3.UserId = 1;
-
-                List<Appointment> appts = new List<Appointment>()
-                {
-                    appt0,
-                    appt1,
-                    appt2,
-                    appt3,
-                };
-
-                LocalContext.Appointments.AddRange(appts);
-                LocalContext.SaveChanges();
-            }
+            LocalContext.Appointments.AddRange(appts);
+            LocalContext.SaveChanges();
+            DisposeLocalDatabaseOnly();
         }
 
         /// <summary>
@@ -138,15 +126,18 @@ namespace ControlRoomApplication.Database.Operations
         /// </summary>
         public static void DeleteLocalDatabase()
         {
-            if (LocalContext.Database.Exists())
-            {
-                LocalContext.Database.Delete();
-            }
+            InitializeLocalConnectionOnly();
+            LocalContext.Database.Delete();
+            LocalContext.SaveChanges();
+            DisposeLocalDatabaseOnly();
         }
 
         public static List<Appointment> GetListOfAppointments()
         {
-            return LocalContext.Appointments.ToList();
+            InitializeLocalConnectionOnly();
+            var appts = LocalContext.Appointments.ToList();
+            DisposeLocalDatabaseOnly();
+            return appts;
         }
 
         /// <summary>
@@ -155,11 +146,13 @@ namespace ControlRoomApplication.Database.Operations
         /// <param name="data">The RFData reading to be created/stored.</param>
         public static void CreateRFData(RFData data)
         {
+            InitializeLocalConnectionOnly();
             if (VerifyRFData(data))
             {
                 LocalContext.RFDatas.Add(data);
                 LocalContext.SaveChanges();
             }
+            DisposeLocalDatabaseOnly();
         }
 
         /// <summary>
@@ -168,10 +161,12 @@ namespace ControlRoomApplication.Database.Operations
         /// <param name="appt"> The appt that is being updated. </param>
         public static void UpdateAppointmentStatus(Appointment appt)
         {
+            InitializeLocalConnectionOnly();
             if (VerifyAppointmentStatus(appt))
             {
                 LocalContext.SaveChanges();
             }
+            DisposeLocalDatabaseOnly();
         }
 
         /// <summary>
@@ -180,6 +175,7 @@ namespace ControlRoomApplication.Database.Operations
         /// <returns></returns>
         public static Appointment GetNextAppointment()
         {
+            InitializeLocalConnectionOnly();
             Appointment appointment = null;
             logger.Debug("Retrieving list of appointments.");
             List<Appointment> appointments = GetListOfAppointments();
@@ -196,6 +192,8 @@ namespace ControlRoomApplication.Database.Operations
             {
                 logger.Debug("No appointments found");
             }
+
+            DisposeLocalDatabaseOnly();
 
             return appointment;
         }

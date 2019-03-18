@@ -117,7 +117,7 @@ namespace ControlRoomApplication.Main
 
         public static void ConfigureLocalDatabase()
         {
-            DatabaseOperations.InitializeLocalConnectionOnly();
+            DatabaseOperations.DeleteLocalDatabase();
             DatabaseOperations.PopulateLocalDatabase();
         }
     }
