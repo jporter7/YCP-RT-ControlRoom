@@ -53,23 +53,119 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
 
         public int InterpretAt(DateTime startTime, DateTime evaluationTime)
         {
-            //double timeElapsed = (evaluationTime - startTime).TotalSeconds;
-            //double displacement = 0.0;
-            //
-            //switch (ProfileType)
-            //{
-            //    case SimulationMCUTrajectoryProfileTypeEnum.NEGLIGIBLE:
-            //    {
-            //        return ObjectiveStep;
-            //    }
-            //
-            //    case SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRAPEZOIDAL:
-            //    {
-            //        
-            //    }
-            //}
+            double timeElapsed = (evaluationTime - startTime).TotalSeconds;
 
-            throw new NotImplementedException("Hold your horses!");
+            switch (ProfileType)
+            {
+                case SimulationMCUTrajectoryProfileTypeEnum.NEGLIGIBLE:
+                    {
+                        return ObjectiveStep;
+                    }
+
+                case SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRAPEZOIDAL:
+                    {
+                        double t1 = TrajectoryPeakAcceleration / TrajectoryJerk;
+                        if (timeElapsed < t1)
+                        {
+                            return GetTickTranslation(TrajectoryJerk, 0, 0, timeElapsed);
+                        }
+
+                        int cumulativeDisplacement = GetTickTranslation(TrajectoryJerk, 0, 0, t1);
+                        int cumulativeVelocity = GetTickVelocityChange(TrajectoryJerk, 0, t1);
+                        double t2 = ((TrajectoryPeakVelocity - (2 * cumulativeVelocity)) / TrajectoryPeakAcceleration) + t1;
+                        if (timeElapsed < t2)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(0, TrajectoryPeakAcceleration, cumulativeVelocity, timeElapsed - t1);
+                        }
+
+                        cumulativeDisplacement += GetTickTranslation(0, TrajectoryPeakAcceleration, cumulativeVelocity, t2 - t1);
+                        cumulativeVelocity += GetTickVelocityChange(0, TrajectoryPeakAcceleration, t2 - t1);
+                        double t3 = t2 + t1;
+                        if (timeElapsed < t3)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(-TrajectoryJerk, TrajectoryPeakAcceleration, cumulativeVelocity, timeElapsed - t1);
+                        }
+
+                        cumulativeDisplacement += GetTickTranslation(-TrajectoryJerk, TrajectoryPeakAcceleration, cumulativeVelocity, timeElapsed - t2);
+                        cumulativeVelocity += GetTickVelocityChange(-TrajectoryJerk, TrajectoryPeakAcceleration, timeElapsed - t2);
+                        double t4 = TotalTime - (2 * t3);
+                        if (timeElapsed < t4)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(0, 0, cumulativeVelocity, timeElapsed - t3);
+                        }
+
+                        cumulativeDisplacement += GetTickTranslation(0, 0, cumulativeVelocity, t4 - t3);
+                        cumulativeVelocity += GetTickVelocityChange(0, 0, t4 - t3);
+                        double t5 = t4 + t1;
+                        if (timeElapsed < t5)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(-TrajectoryJerk, 0, cumulativeVelocity, timeElapsed - t4);
+                        }
+
+                        cumulativeDisplacement += GetTickTranslation(-TrajectoryJerk, 0, cumulativeVelocity, t5 - t4);
+                        cumulativeVelocity += GetTickVelocityChange(-TrajectoryJerk, 0, t5 - t4);
+                        double t6 = t4 + t2;
+                        if (timeElapsed < t6)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(0, -TrajectoryPeakAcceleration, cumulativeVelocity, timeElapsed - t5);
+                        }
+
+                        cumulativeDisplacement += GetTickTranslation(0, -TrajectoryPeakAcceleration, cumulativeVelocity, t6 - t5);
+                        cumulativeVelocity += GetTickVelocityChange(0, -TrajectoryPeakAcceleration, t6 - t5);
+                        if (timeElapsed < TotalTime)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(TrajectoryJerk, -TrajectoryPeakAcceleration, cumulativeVelocity, timeElapsed - t6);
+                        }
+
+                        return ObjectiveStep;
+                    }
+
+                case SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR_FULL:
+                case SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR_PARTIAL:
+                    {
+                        double t1 = TotalTime / 4;
+                        if (timeElapsed < t1)
+                        {
+                            return GetTickTranslation(TrajectoryJerk, 0, 0, timeElapsed);
+                        }
+
+                        int cumulativeDisplacement = GetTickTranslation(TrajectoryJerk, 0, 0, t1);
+                        int cumulativeVelocity = GetTickVelocityChange(TrajectoryJerk, 0, t1);
+                        double t2 = t1;
+
+                        double t3 = 2 * t1;
+                        if (timeElapsed < t3)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(-TrajectoryJerk, TrajectoryPeakAcceleration, cumulativeVelocity, timeElapsed - t1);
+                        }
+
+                        cumulativeDisplacement += GetTickTranslation(-TrajectoryJerk, TrajectoryPeakAcceleration, cumulativeVelocity, timeElapsed - t2);
+                        cumulativeVelocity += GetTickVelocityChange(-TrajectoryJerk, TrajectoryPeakAcceleration, timeElapsed - t2);
+                        double t4 = t3;
+
+                        double t5 = 3 * t1;
+                        if (timeElapsed < t5)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(-TrajectoryJerk, 0, cumulativeVelocity, timeElapsed - t4);
+                        }
+
+                        cumulativeDisplacement += GetTickTranslation(-TrajectoryJerk, 0, cumulativeVelocity, t5 - t4);
+                        cumulativeVelocity += GetTickVelocityChange(-TrajectoryJerk, 0, t5 - t4);
+                        double t6 = t5;
+
+                        if (timeElapsed < TotalTime)
+                        {
+                            return cumulativeDisplacement + GetTickTranslation(TrajectoryJerk, -TrajectoryPeakAcceleration, cumulativeVelocity, timeElapsed - t6);
+                        }
+
+                        return ObjectiveStep;
+                    }
+
+                default:
+                    {
+                        throw new InvalidOperationException("This profile is of an unrecognized type: " + ProfileType.ToString());
+                    }
+            }
         }
 
         private static int GetTickTranslation(double j, double a, double v, double dt)
@@ -77,8 +173,14 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             return (int)(((((j * dt / 6) + (a / 2)) * dt) + v) * dt);
         }
 
+        private static int GetTickVelocityChange(double j, double a, double dt)
+        {
+            return (int)(((j * dt / 2) + a) * dt);
+        }
+
         // This factory function utilizes the equations on page 20 and 21 of the 2-axis MCU docuemtation to calculate the type of
         // trajectory profile associated with the possible move type, as well as the characteristics of said profile
+        // This assumes 0 initial velocity, for now.
         public static SimulationMCUTrajectoryProfile calculateInstance(
             SimulationAbsoluteEncoder axisEncoder,
             double initialVelocity,
@@ -88,7 +190,7 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             double axisObjectiveDegrees)
         {
             int axisObjectiveSteps= axisEncoder.GetEquivalentEncoderTicksFromDegrees(axisObjectiveDegrees);
-            int changeInAxisSteps = axisObjectiveSteps - axisEncoder.GetCurrentPositionTicks();
+            int changeInAxisSteps = axisObjectiveSteps - axisEncoder.CurrentPositionTicks;
 
             SimulationMCUTrajectoryProfile resultingProfile;
 
@@ -113,7 +215,7 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
 
                     resultingProfile = new SimulationMCUTrajectoryProfile(
                         SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRAPEZOIDAL,
-                        axisEncoder.GetCurrentInstantaneousVelocity(),
+                        0.0,
                         peakVelocity,
                         peakAcceleration,
                         jerk,
@@ -127,8 +229,8 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
                 else if (Math.Abs(changeInAxisSteps - actualDistanceRequired) < 0.001)
                 {
                     resultingProfile = new SimulationMCUTrajectoryProfile(
-                        SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR,
-                        axisEncoder.GetCurrentInstantaneousVelocity(),
+                        SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR_FULL,
+                        0.0,
                         peakVelocity,
                         peakAcceleration,
                         jerk,
@@ -144,8 +246,8 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
                     double fixedTimeRequiredForAcceleration = 4.0 / 3 * (fixedPeakVelocity - initialVelocity) / peakAcceleration;
 
                     resultingProfile = new SimulationMCUTrajectoryProfile(
-                        SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRAPEZOIDAL_PARTIAL,
-                        axisEncoder.GetCurrentInstantaneousVelocity(),
+                        SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR_PARTIAL,
+                        0.0,
                         fixedPeakVelocity,
                         peakAcceleration,
                         jerk,

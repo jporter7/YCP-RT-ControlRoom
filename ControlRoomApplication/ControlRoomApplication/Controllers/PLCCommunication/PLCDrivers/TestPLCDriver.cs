@@ -163,6 +163,8 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                             // Otherwise, this is valid
                             CurrentOrientation = new Orientation(NextAZ, NextEL);
 
+                            Console.WriteLine("[TestPLCDriver] Setting current orientation to {" + CurrentOrientation.Azimuth.ToString() + ", " + CurrentOrientation.Elevation.ToString() + "}");
+
                             FinalResponseContainer[2] = 0x1;
                             break;
                         }

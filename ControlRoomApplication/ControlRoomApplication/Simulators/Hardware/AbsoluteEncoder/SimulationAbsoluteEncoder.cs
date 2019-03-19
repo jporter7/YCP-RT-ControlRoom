@@ -6,31 +6,43 @@ namespace ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder
     {
         // This defines the number of bits that can be used to represent the position ticks
         // If this value was 10, the number of possible positions would be 2^10 = 1024
-        private int BitsOfPrecision;
+        public int BitsOfPrecision { get; }
 
         // This describes some simulated error between where the encoder should be and where it "actually" is
         // This value is assumed to be the magnitude of a standard deviation in a Gaussian distribution with mean of 0 (no error)
         // In other words, this means that about 63.0% of all samples of the error will be in the range [-ErrorStandardDeviation : +ErrorStandardDeviation]
         // ------------------------------------- 95.0% of all samples of the error will be in the range [-2 * ErrorStandardDeviation : +2 * ErrorStandardDeviation]
         // ------------------------------------- 99.7% of all samples of the error will be in the range [-3 * ErrorStandardDeviation : +3 * ErrorStandardDeviation]
-        // For more information, for now, either Google a Gaussian distribution or ask Nick
-        private int ErrorStandardDeviation;
+        // For more information, for now, either Google a Gaussian distribution or ask Nick Vandemark
+        public int ErrorStandardDeviation { get; }
 
         // This is the position that the simulation is saying that this encoder is reading, in encoder ticks
-        private int CurrentPositionTicks;
+        public int CurrentPositionTicks { get; private set; }
 
-        // This is the instantaneous velocity that this encoder is currently seeing
-        // This is in ticks/second
-        private double CurrentInstantaneousVelocity;
+        // This is the position that the simulation is saying that this encoder is reading, in degrees
+        public double CurrentPositionDegrees
+        {
+            get
+            {
+                return GetEquivalentDegreesFromEncoderTicks(CurrentPositionTicks);
+            }
+
+            private set
+            {
+                CurrentPositionTicks = GetEquivalentEncoderTicksFromDegrees(value);
+            }
+        }
+
+        // These are the number of values that this encoder could see, so the range of values are [0 : NumberOfEncoderTickPositions-1]
+        public int NumberOfEncoderTickPositions { get; }
 
         // This input position is in degrees
         public SimulationAbsoluteEncoder(int bits, int error, double position)
         {
             BitsOfPrecision = bits;
+            NumberOfEncoderTickPositions = (int)Math.Pow(2, BitsOfPrecision);
             ErrorStandardDeviation = error;
-            CurrentInstantaneousVelocity = 0.0;
-
-            SetPositionFromDegrees(position);
+            CurrentPositionDegrees = position;
         }
 
         public SimulationAbsoluteEncoder(int bits, double position) : this(bits, 0, position) { }
@@ -39,29 +51,14 @@ namespace ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder
 
         public SimulationAbsoluteEncoder(int bits) : this(bits, 0, 0.0) { }
 
-        public int GetBitsOfPrecision()
-        {
-            return BitsOfPrecision;
-        }
-
-        public int GetErrorStandardDeviation()
-        {
-            return ErrorStandardDeviation;
-        }
-
-        public int GetCurrentPositionTicks()
-        {
-            return CurrentPositionTicks;
-        }
-
-        public double GetCurrentInstantaneousVelocity()
-        {
-            return CurrentInstantaneousVelocity;
-        }
-
         public int GetEquivalentEncoderTicksFromDegrees(double positionDegrees)
         {
-            return (int)(((positionDegrees % 360) / 360) * Math.Pow(2, BitsOfPrecision));
+            while (positionDegrees < 0)
+            {
+                positionDegrees += 360;
+            }
+
+            return (int)(((positionDegrees % 360) / 360.0) * NumberOfEncoderTickPositions);
         }
 
         public double GetEquivalentDegreesFromEncoderTicks(int positionTicks)
@@ -71,14 +68,14 @@ namespace ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder
 
         private void SetPositionFromEncoderTicks(int newPosition, bool allowTurnover)
         {
-            if ((newPosition < 0) || (newPosition >= (int)Math.Pow(2, BitsOfPrecision)))
+            if ((newPosition < 0) || (newPosition >= NumberOfEncoderTickPositions))
             {
                 if (allowTurnover)
                 {
-                    newPosition %= (int)Math.Pow(2, BitsOfPrecision);
+                    newPosition %= NumberOfEncoderTickPositions;
                     if (newPosition < 0)
                     {
-                        newPosition += (int)Math.Pow(2, BitsOfPrecision);
+                        newPosition += NumberOfEncoderTickPositions;
                     }
                 }
                 else
@@ -92,7 +89,7 @@ namespace ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder
 
         public void SetPositionFromDegrees(double newPosition)
         {
-            CurrentPositionTicks = GetEquivalentEncoderTicksFromDegrees(newPosition);
+            CurrentPositionDegrees = newPosition;
         }
 
         public void SetPositionFromEncoderTicks(int newPosition)
@@ -105,9 +102,9 @@ namespace ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder
             SetPositionFromEncoderTicks(CurrentPositionTicks + changeInTicks, true);
         }
 
-        public double GetCurrentPositionInDegrees()
+        public void TranslateDegrees(double changeInDegrees)
         {
-            return GetEquivalentDegreesFromEncoderTicks(CurrentPositionTicks);
+            TranslateEncoderTicks(GetEquivalentEncoderTicksFromDegrees(changeInDegrees));
         }
     }
 }

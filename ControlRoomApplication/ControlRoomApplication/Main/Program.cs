@@ -12,6 +12,8 @@ namespace ControlRoomApplication.Main
 {
     public class Program
     {
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         [STAThread]
         public static void Main(string[] args)
         {
@@ -25,10 +27,10 @@ namespace ControlRoomApplication.Main
             DatabaseOperations.InitializeLocalConnectionOnly();
             DatabaseOperations.PopulateLocalDatabase();
             Console.WriteLine("[Main] Local database populated. Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
-            //foreach (Appointment appt in DatabaseOperations.GetListOfAppointments())
-            //{
-            //    Console.WriteLine("\tStart Time: " + appt.StartTime.ToString());
-            //}
+            foreach (Appointment appt in DatabaseOperations.GetListOfAppointments())
+            {
+                Console.WriteLine("\tStart Time: " + appt.StartTime.ToString());
+            }
 
             // Given the input command line arguments, generate the control room's RTs, its controllers, and the PLC drivers
             List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
@@ -77,7 +79,7 @@ namespace ControlRoomApplication.Main
             else
             {
                 LoopIndex = AbstractRTDriverPairList.Count;
-                Console.WriteLine("Sleeping...");
+                Console.WriteLine("[Main] Sleeping...");
                 Thread.Sleep(240000);
             }
 
@@ -89,7 +91,7 @@ namespace ControlRoomApplication.Main
                 }
                 else
                 {
-                    Console.WriteLine("[Main] Successfully brought down RT controller t index " + i.ToString());
+                    Console.WriteLine("[Main] Successfully brought down RT controller at index " + i.ToString());
                 }
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
@@ -106,7 +108,5 @@ namespace ControlRoomApplication.Main
 
             Thread.Sleep(5000);
         }
-        
-        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

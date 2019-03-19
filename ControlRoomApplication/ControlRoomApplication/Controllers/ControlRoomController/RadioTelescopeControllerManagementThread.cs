@@ -150,10 +150,10 @@ namespace ControlRoomApplication.Controllers
             {
                 ManagementMutex.WaitOne();
 
-                Appointment appt = WaitingForNextAppointment();
-                Dictionary<DateTime, Orientation> orientations = RTController.CoordinateController.CalculateCoordinates(appt);
+                Appointment NextAppointment = WaitingForNextAppointment();
+                Dictionary<DateTime, Orientation> ObjectiveOrientationAtDateTimePairs = RTController.CoordinateController.CalculateCoordinates(NextAppointment);
 
-                if (orientations.Count > 0)
+                if (ObjectiveOrientationAtDateTimePairs.Count > 0)
                 {
                     Console.WriteLine("[RadioTelescopeControllerManagementThread] Starting appointment [" + DebugRTControllerIndex + "]...");
 
@@ -161,19 +161,19 @@ namespace ControlRoomApplication.Controllers
                     CalibrateRadioTelescope();
 
                     // Create movement thread
-                    Thread movementThread = new Thread(() => StartRadioTelescope(appt, orientations))
+                    Thread AppointmentMovementThread = new Thread(() => PerformAppointment(NextAppointment, ObjectiveOrientationAtDateTimePairs))
                     {
-                        Name = "RadioTelescopeControllerManagementThread intermediate movement thread"
+                        Name = "RadioTelescopeControllerManagementThread next appointment movement thread"
                     };
 
                     // Start SpectraCyber
-                    StartReadingData(appt);
+                    StartReadingData(NextAppointment);
 
                     // Start movement thread
-                    movementThread.Start();
+                    AppointmentMovementThread.Start();
 
                     // End PLC thread & SpectraCyber 
-                    movementThread.Join();
+                    AppointmentMovementThread.Join();
                     StopReadingRFData();
 
                     // Stow Telescope
@@ -237,23 +237,20 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// Starts movement of the RT by updating the appointment status and
-        /// then calling the RT controller to move the RT to the orientation
-        /// it needs to go to. This will have to be refactored to work with a 
-        /// set of Orientations as opposed to one orientation.
+        /// Starts movement of the RT by updating the appointment status and then calling the RT controller to move the RT to the orientation it needs to go to.
         /// </summary>
-        /// <param name="appt"> The appointment that is currently running. </param>
-        /// <param name="orientation"> The orientation that the RT is going to. </param>
-        public void StartRadioTelescope(Appointment appt, Dictionary<DateTime, Orientation> orientations)
+        /// <param name="NextAppointment"> The appointment that is currently running. </param>
+        /// <param name="ObjectiveOrientationAtDateTimePairs"> The orientations that the RT is going to with corresponding date/times that it should start. </param>
+        public void PerformAppointment(Appointment NextAppointment, Dictionary<DateTime, Orientation> ObjectiveOrientationAtDateTimePairs)
         {
-            appt.Status = AppointmentConstants.IN_PROGRESS;
+            NextAppointment.Status = AppointmentConstants.IN_PROGRESS;
             Context.SaveChanges();
 
-            foreach (DateTime datetime in orientations.Keys)
+            foreach (DateTime MoveStartTime in ObjectiveOrientationAtDateTimePairs.Keys)
             {
-                NextObjective = orientations[datetime];
+                NextObjective = ObjectiveOrientationAtDateTimePairs[MoveStartTime];
                 
-                while (DateTime.Now < datetime)
+                while (DateTime.Now < MoveStartTime)
                 {
                     if (InterruptAppointmentFlag)
                     {
@@ -269,22 +266,22 @@ namespace ControlRoomApplication.Controllers
 
                 if (InterruptAppointmentFlag)
                 {
-                    NextObjective = null;
                     break;
                 }
 
                 RTController.MoveRadioTelescope(NextObjective);
-                NextObjective = null;
             }
+
+            NextObjective = null;
 
             if (InterruptAppointmentFlag)
             {
-                appt.Status = AppointmentConstants.CANCELLED;
+                NextAppointment.Status = AppointmentConstants.CANCELLED;
                 InterruptAppointmentFlag = false;
             }
             else
             {
-                appt.Status = AppointmentConstants.COMPLETED;
+                NextAppointment.Status = AppointmentConstants.COMPLETED;
             }
 
             Context.SaveChanges();

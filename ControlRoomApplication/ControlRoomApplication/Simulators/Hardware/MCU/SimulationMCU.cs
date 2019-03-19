@@ -38,7 +38,7 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
 
         public Orientation GetCurrentOrientationInDegrees()
         {
-            return new Orientation(AzEncoder.GetCurrentPositionInDegrees(), ElEncoder.GetCurrentPositionInDegrees());
+            return new Orientation(AzEncoder.CurrentPositionDegrees, ElEncoder.CurrentPositionDegrees);
         }
 
         public void ConsumeRequestedStop()
@@ -74,11 +74,6 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
         {
             ConsumeRequestedStop();
             ActiveObjectiveOrientation = orientationDegrees;
-        }
-
-        public void HandleMoveRoutine()
-        {
-            throw new NotImplementedException("Hold your horses!");
         }
     }
 }
