@@ -58,7 +58,10 @@ namespace ControlRoomApplication.Main
             // Notify cancellation token
             CancellationSource.Cancel();
 
-            ControlRoomThread.Join();
+            if (ControlRoomThread != null)
+            {
+                ControlRoomThread.Join();
+            }
             CancellationSource.Dispose();
             DatabaseOperations.DisposeLocalDatabaseOnly();
             Environment.Exit(0);
