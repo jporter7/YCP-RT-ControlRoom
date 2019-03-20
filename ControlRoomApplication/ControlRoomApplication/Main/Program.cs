@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Main
             // Instantiate the database being used.
             ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom());
 
-            DatabaseOperations.InitializeLocalConnectionOnly();
+            DatabaseOperations.DeleteLocalDatabase();
             DatabaseOperations.PopulateLocalDatabase();
             Console.WriteLine("[Main] Local database populated. Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
             foreach (Appointment appt in DatabaseOperations.GetListOfAppointments())
@@ -95,8 +95,6 @@ namespace ControlRoomApplication.Main
                 ProgramRTControllerList[i].RadioTelescope.PLCClient.TerminateTCPServerConnection();
                 ProgramPLCDriverList[i].RequestStopAsyncAcceptingClients();
             }
-
-            DatabaseOperations.DisposeLocalDatabaseOnly();
 
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");

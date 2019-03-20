@@ -3,133 +3,116 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 
 namespace ControlRoomApplication.Database.Operations
 {
     public static class DatabaseOperations
     {
+        private static readonly bool USING_REMOTE_DATABASE = false;
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         /// <summary>
-        /// Initialize the local and remote database contexts/connections.
+        /// Return the appropriate database context
         /// </summary>
-        public static void InitializeConnections()
+        public static RTDbContext InitializeDatabaseContext()
         {
-            LocalContext = new RTDbContext();
-            if (LocalContext.Database.Exists())
+            if (USING_REMOTE_DATABASE)
             {
-                LocalContext.Database.Delete();
-                LocalContext.SaveChanges();
+                return new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
             }
-            LocalContext.Database.CreateIfNotExists();
-            LocalContext.SaveChanges();
-
-            RemoteContext = new RTDbContext(AWSConstants.REMOTE_CONNECTION_STRING);
-        }
-
-        /// <summary>
-        /// Initialize only the local database, for testing purposes only.
-        /// </summary>
-        public static void InitializeLocalConnectionOnly()
-        {
-            LocalContext = new RTDbContext();
-            if (LocalContext.Database.Exists())
+            else
             {
-                LocalContext.Database.Delete();
-                LocalContext.SaveChanges();
+                RTDbContext LocalContext = new RTDbContext();
+                LocalContext.Database.CreateIfNotExists();
+                SaveContext(LocalContext);
+                return LocalContext;
             }
-
-            LocalContext.Database.CreateIfNotExists();
-            LocalContext.SaveChanges();
         }
 
         /// <summary>
-        /// Clean up the local database resources/connections, 
-        /// for testing purposes only.
-        /// </summary>
-        public static void DisposeLocalDatabaseOnly()
-        {
-            LocalContext.Dispose();
-        }
-
-        /// <summary>
-        /// Populates the local database with 3 appointments and 3 coordinates
-        /// for testing purposes.
+        /// Populates the local database with 4 appointments for testing purposes.
         /// </summary>
         public static void PopulateLocalDatabase()
         {
-            if (LocalContext.Database.Exists())
+            if (!USING_REMOTE_DATABASE)
             {
-                DateTime date = DateTime.Now;
-
-                Appointment appt0 = new Appointment();
-                Appointment appt1 = new Appointment();
-                Appointment appt2 = new Appointment();
-                Appointment appt3 = new Appointment();
-
-                Coordinate coordinate0 = new Coordinate();
-                Coordinate coordinate1 = new Coordinate();
-                Coordinate coordinate2 = new Coordinate();
-                Coordinate coordinate3 = new Coordinate();
-
-                coordinate0.RightAscension = 10.3;
-                coordinate0.Declination = 50.8;
-
-                coordinate1.RightAscension = 22.0;
-                coordinate1.Declination = 83.63;
-
-                coordinate2.RightAscension = 16.0;
-                coordinate2.Declination = 71.5;
-
-                coordinate3.RightAscension = 26.3;
-                coordinate3.Declination = 85.12;
-
-                appt0.StartTime = date.AddMinutes(1);
-                appt0.EndTime = date.AddMinutes(2);
-                appt0.Status = AppointmentConstants.REQUESTED;
-                appt0.Type = AppointmentTypeConstants.ORIENTATION;
-                appt0.Orientation = new Orientation(30, 30);
-                appt0.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
-                appt0.TelescopeId = 1;
-                appt0.UserId = 1;
-
-                appt1.StartTime = date.AddMinutes(3);
-                appt1.EndTime = date.AddMinutes(4);
-                appt1.Status = AppointmentConstants.IN_PROGRESS;
-                appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
-                appt1.CelestialBody = CelestialBodyConstants.SUN;
-                appt1.SpectraCyberModeType = SpectraCyberModeTypeEnum.SPECTRAL;
-                appt1.TelescopeId = 1;
-                appt1.UserId = 1;
-
-                appt2.StartTime = date.AddMinutes(5);
-                appt2.EndTime = date.AddMinutes(6);
-                appt2.Status = AppointmentConstants.REQUESTED;
-                appt2.Type = AppointmentTypeConstants.POINT;
-                appt2.Coordinates.Add(coordinate2);
-                appt2.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
-                appt2.TelescopeId = 1;
-                appt2.UserId = 1;
-
-                appt3.StartTime = date.AddMinutes(7);
-                appt3.EndTime = date.AddMinutes(480);
-                appt3.Status = AppointmentConstants.IN_PROGRESS;
-                appt3.Type = AppointmentTypeConstants.RASTER;
-                appt3.Coordinates.Add(coordinate0);
-                appt3.Coordinates.Add(coordinate1);
-                appt3.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
-                appt3.TelescopeId = 1;
-                appt3.UserId = 1;
-
-                List<Appointment> appts = new List<Appointment>()
+                using (RTDbContext Context = InitializeDatabaseContext())
                 {
-                    appt0,
-                    appt1,
-                    appt2,
-                    appt3,
-                };
+                    DateTime date = DateTime.Now;
 
-                LocalContext.Appointments.AddRange(appts);
-                LocalContext.SaveChanges();
+                    Appointment appt0 = new Appointment();
+                    Appointment appt1 = new Appointment();
+                    Appointment appt2 = new Appointment();
+                    Appointment appt3 = new Appointment();
+
+                    Coordinate coordinate0 = new Coordinate();
+                    Coordinate coordinate1 = new Coordinate();
+                    Coordinate coordinate2 = new Coordinate();
+                    Coordinate coordinate3 = new Coordinate();
+
+                    coordinate0.RightAscension = 10.3;
+                    coordinate0.Declination = 50.8;
+
+                    coordinate1.RightAscension = 22.0;
+                    coordinate1.Declination = 83.63;
+
+                    coordinate2.RightAscension = 16.0;
+                    coordinate2.Declination = 71.5;
+
+                    coordinate3.RightAscension = 26.3;
+                    coordinate3.Declination = 85.12;
+
+                    appt0.StartTime = date.AddMinutes(1);
+                    appt0.EndTime = date.AddMinutes(2);
+                    appt0.Status = AppointmentConstants.REQUESTED;
+                    appt0.Type = AppointmentTypeConstants.ORIENTATION;
+                    appt0.Orientation = new Orientation(30, 30);
+                    appt0.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+                    appt0.TelescopeId = 1;
+                    appt0.UserId = 1;
+
+                    appt1.StartTime = date.AddMinutes(3);
+                    appt1.EndTime = date.AddMinutes(4);
+                    appt1.Status = AppointmentConstants.REQUESTED;
+                    appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
+                    appt1.CelestialBody = CelestialBodyConstants.SUN;
+                    appt1.SpectraCyberModeType = SpectraCyberModeTypeEnum.SPECTRAL;
+                    appt1.TelescopeId = 1;
+                    appt1.UserId = 1;
+
+                    appt2.StartTime = date.AddMinutes(5);
+                    appt2.EndTime = date.AddMinutes(6);
+                    appt2.Status = AppointmentConstants.REQUESTED;
+                    appt2.Type = AppointmentTypeConstants.POINT;
+                    appt2.Coordinates.Add(coordinate2);
+                    appt2.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+                    appt2.TelescopeId = 1;
+                    appt2.UserId = 1;
+
+                    appt3.StartTime = date.AddMinutes(7);
+                    appt3.EndTime = date.AddMinutes(480);
+                    appt3.Status = AppointmentConstants.REQUESTED;
+                    appt3.Type = AppointmentTypeConstants.RASTER;
+                    appt3.Coordinates.Add(coordinate0);
+                    appt3.Coordinates.Add(coordinate1);
+                    appt3.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+                    appt3.TelescopeId = 1;
+                    appt3.UserId = 1;
+
+                    List<Appointment> appts = new List<Appointment>()
+                    {
+                        appt0,
+                        appt1,
+                        appt2,
+                        appt3,
+                    };
+
+                    Context.Appointments.AddRange(appts);
+                    SaveContext(Context);
+                }
             }
         }
 
@@ -138,15 +121,63 @@ namespace ControlRoomApplication.Database.Operations
         /// </summary>
         public static void DeleteLocalDatabase()
         {
-            if (LocalContext.Database.Exists())
+            if (!USING_REMOTE_DATABASE)
             {
-                LocalContext.Database.Delete();
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    Context.Database.Delete();
+                    SaveContext(Context);
+                }
             }
         }
 
-        public static List<Appointment> GetListOfAppointments()
+        /// <summary>
+        /// Updates the appointment status by saving the appt passed in.
+        /// </summary>
+        /// <param name="Context"> The Context that is being saved. </param>
+        public static void SaveContext(RTDbContext Context)
         {
-            return LocalContext.Appointments.ToList();
+            bool saveFailed;
+            do
+            {
+                saveFailed = false;
+
+                try
+                {
+                    Context.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Update the values of the entity that failed to save from the store
+                    if (ex.Entries.ToList().Count > 0)
+                    {
+                        saveFailed = true;
+                        ex.Entries.Single().Reload();
+                    }
+                }
+
+            } while (saveFailed);
+        }
+
+            /// <summary>
+            /// Returns the list of Appointments from the database.
+            /// </summary>
+            public static List<Appointment> GetListOfAppointments()
+        {
+            List<Appointment> appts = new List<Appointment>();
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                foreach (var appt in Context.Appointments.ToList())
+                {
+                    // Copy Coordinates over to a new appointment object
+                    // so appt list is valid after context is disposed
+                    var coords = appt.Coordinates;
+                    var new_appt = appt;
+                    new_appt.Coordinates = coords;
+                    appts.Add(appt);
+                }
+            }
+            return appts;
         }
 
         /// <summary>
@@ -155,10 +186,14 @@ namespace ControlRoomApplication.Database.Operations
         /// <param name="data">The RFData reading to be created/stored.</param>
         public static void CreateRFData(RFData data)
         {
+            
             if (VerifyRFData(data))
             {
-                LocalContext.RFDatas.Add(data);
-                LocalContext.SaveChanges();
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    Context.RFDatas.Add(data);
+                    SaveContext(Context);
+                }
             }
         }
 
@@ -167,10 +202,16 @@ namespace ControlRoomApplication.Database.Operations
         /// </summary>
         /// <param name="appt"> The appt that is being updated. </param>
         public static void UpdateAppointmentStatus(Appointment appt)
-        {
+        { 
             if (VerifyAppointmentStatus(appt))
             {
-                LocalContext.SaveChanges();
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    // Update database appt with new status
+                    var db_appt = Context.Appointments.Find(appt.Id);
+                    db_appt.Status = appt.Status;
+                    SaveContext(Context);
+                }
             }
         }
 
@@ -181,22 +222,25 @@ namespace ControlRoomApplication.Database.Operations
         public static Appointment GetNextAppointment()
         {
             Appointment appointment = null;
-            logger.Debug("Retrieving list of appointments.");
-            List<Appointment> appointments = GetListOfAppointments();
-
-            if (appointments.Count > 0)
+            using (RTDbContext Context = InitializeDatabaseContext())
             {
-                appointments.RemoveAll(x => x.StartTime < DateTime.Now);
-                appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
-                appointments.Sort();
-                logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
-                appointment = appointments.Count > 0 ? appointments[0]: null;
-            }
-            else
-            {
-                logger.Debug("No appointments found");
-            }
+                logger.Debug("Retrieving list of appointments.");
+                List<Appointment> appointments = GetListOfAppointments();
 
+                if (appointments.Count > 0)
+                {
+                    appointments.RemoveAll(x => x.StartTime < DateTime.Now);
+                    appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
+                    appointments.Sort();
+                    logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
+                    appointment = appointments.Count > 0 ? appointments[0] : null;
+                }
+                else
+                {
+                    logger.Debug("No appointments found");
+                }
+            }
+            
             return appointment;
         }
 
@@ -232,10 +276,5 @@ namespace ControlRoomApplication.Database.Operations
         {
             return AppointmentConstants.AppointmentStatuses.Any(appt.Status.Contains);
         }
-
-        private static RTDbContext LocalContext { get; set; }
-        private static RTDbContext RemoteContext { get; set; }
-        private static readonly log4net.ILog logger =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

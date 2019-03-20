@@ -28,7 +28,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         public void BuildUp()
         {
             // Initialize context and test context
-            DatabaseOperations.InitializeLocalConnectionOnly();
+            DatabaseOperations.InitializeDatabaseContext();
             testContext = new RTDbContext();
 
             // RFData initialization
@@ -82,9 +82,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestCleanup]
         public void TearDown()
         {
-            DatabaseOperations.DisposeLocalDatabaseOnly();
-            testContext.Database.Delete();
-            testContext.Dispose();
+            DatabaseOperations.DeleteLocalDatabase();
         }
 
         [TestMethod]

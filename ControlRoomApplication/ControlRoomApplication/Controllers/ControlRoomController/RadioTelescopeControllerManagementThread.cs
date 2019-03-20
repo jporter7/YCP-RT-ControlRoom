@@ -245,7 +245,7 @@ namespace ControlRoomApplication.Controllers
             appt.Status = AppointmentConstants.IN_PROGRESS;
             DatabaseOperations.UpdateAppointmentStatus(appt);
 
-            //Console.WriteLine("Appt. Type: " + appt.Type);
+            Console.WriteLine("Appt. Type: " + appt.Type);
 
             // Loop through each minute of the appointment 
             TimeSpan length = appt.EndTime - appt.StartTime;
@@ -264,7 +264,7 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
-                    //Console.WriteLine(datetime.ToString() + " vs. " + DateTime.Now.ToString());
+                    // Console.WriteLine(datetime.ToString() + " vs. " + DateTime.Now.ToString());
 
                     Thread.Sleep(1000);
                 }
@@ -278,7 +278,7 @@ namespace ControlRoomApplication.Controllers
                 // Move to orientation
                 if(NextObjective != null)
                 {
-                    //Console.WriteLine("Moving to Next Objective: Az = " + NextObjective.Azimuth + ", El = " + NextObjective.Elevation);
+                    Console.WriteLine("Moving to Next Objective: Az = " + NextObjective.Azimuth + ", El = " + NextObjective.Elevation);
                     RTController.MoveRadioTelescope(NextObjective);
                     NextObjective = null;
                 }
