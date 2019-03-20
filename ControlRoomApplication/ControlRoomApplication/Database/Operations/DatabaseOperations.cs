@@ -3,6 +3,7 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 
 namespace ControlRoomApplication.Database.Operations
@@ -26,7 +27,7 @@ namespace ControlRoomApplication.Database.Operations
             {
                 RTDbContext LocalContext = new RTDbContext();
                 LocalContext.Database.CreateIfNotExists();
-                LocalContext.SaveChanges();
+                SaveContext(LocalContext);
                 return LocalContext;
             }
         }
@@ -110,7 +111,7 @@ namespace ControlRoomApplication.Database.Operations
                     };
 
                     Context.Appointments.AddRange(appts);
-                    Context.SaveChanges();
+                    SaveContext(Context);
                 }
             }
         }
@@ -125,15 +126,43 @@ namespace ControlRoomApplication.Database.Operations
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     Context.Database.Delete();
-                    Context.SaveChanges();
+                    SaveContext(Context);
                 }
             }
         }
 
         /// <summary>
-        /// Returns the list of Appointments from the database.
+        /// Updates the appointment status by saving the appt passed in.
         /// </summary>
-        public static List<Appointment> GetListOfAppointments()
+        /// <param name="Context"> The Context that is being saved. </param>
+        public static void SaveContext(RTDbContext Context)
+        {
+            bool saveFailed;
+            do
+            {
+                saveFailed = false;
+
+                try
+                {
+                    Context.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Update the values of the entity that failed to save from the store
+                    if (ex.Entries.ToList().Count > 0)
+                    {
+                        saveFailed = true;
+                        ex.Entries.Single().Reload();
+                    }
+                }
+
+            } while (saveFailed);
+        }
+
+            /// <summary>
+            /// Returns the list of Appointments from the database.
+            /// </summary>
+            public static List<Appointment> GetListOfAppointments()
         {
             List<Appointment> appts = new List<Appointment>();
             using (RTDbContext Context = InitializeDatabaseContext())
@@ -163,7 +192,7 @@ namespace ControlRoomApplication.Database.Operations
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     Context.RFDatas.Add(data);
-                    Context.SaveChanges();
+                    SaveContext(Context);
                 }
             }
         }
@@ -181,7 +210,7 @@ namespace ControlRoomApplication.Database.Operations
                     // Update database appt with new status
                     var db_appt = Context.Appointments.Find(appt.Id);
                     db_appt.Status = appt.Status;
-                    Context.SaveChanges();
+                    SaveContext(Context);
                 }
             }
         }
