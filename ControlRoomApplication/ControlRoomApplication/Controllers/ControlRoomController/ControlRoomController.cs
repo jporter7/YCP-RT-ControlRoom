@@ -22,9 +22,8 @@ namespace ControlRoomApplication.Controllers
                 return false;
             }
 
-            RadioTelescopeControllerManagementThread NewRTMT = new RadioTelescopeControllerManagementThread(rtController);
-            CRoom.RTControllerManagementThreads.Add(NewRTMT);
-            return NewRTMT.Start();
+            CRoom.RTControllerManagementThreads.Add(new RadioTelescopeControllerManagementThread(rtController));
+            return true;
         }
 
         public bool AddRadioTelescopeControllerAndStart(RadioTelescopeController rtController)

@@ -6,14 +6,11 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Database.Operations;
-using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Controllers
 {
     public class RadioTelescopeControllerManagementThread
     {
-        private static int NumInstances = 0;
-
         public RadioTelescopeController RTController { get; private set; }
         private Thread ManagementThread;
         private Mutex ManagementMutex;
@@ -22,8 +19,13 @@ namespace ControlRoomApplication.Controllers
         private Orientation NextObjective;
         private bool InterruptAppointmentFlag;
 
-        // This is a temporary addition, this should just be synced with the DB's index
-        private int DebugRTControllerIndex;
+        public int RadioTelescopeID
+        {
+            get
+            {
+                return RTController.RadioTelescope.Id;
+            }
+        }
 
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -62,14 +64,12 @@ namespace ControlRoomApplication.Controllers
             RTController = controller;
 
             ManagementThread = new Thread(new ThreadStart(SpinRoutine));
-            ManagementThread.Name = "RadioTelescopeControllerManagementThread overarching management thread";
+            ManagementThread.Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") overarching management thread";
 
             ManagementMutex = new Mutex();
             KeepThreadAlive = false;
             NextObjective = null;
             InterruptAppointmentFlag = false;
-
-            DebugRTControllerIndex = NumInstances++;
         }
 
         public bool Start()
@@ -148,11 +148,11 @@ namespace ControlRoomApplication.Controllers
             {
                 ManagementMutex.WaitOne();
 
-                Appointment appt = WaitingForNextAppointment();
+                Appointment appt = WaitForNextAppointment();
 
                 if (appt != null)
                 {
-                    Console.WriteLine("[RadioTelescopeControllerManagementThread] Starting appointment [" + DebugRTControllerIndex + "]...");
+                    Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Starting appointment...");
 
                     // Calibrate telescope
                     CalibrateRadioTelescope();
@@ -160,7 +160,7 @@ namespace ControlRoomApplication.Controllers
                     // Create movement thread
                     Thread movementThread = new Thread(() => StartRadioTelescope(appt))
                     {
-                        Name = "RadioTelescopeControllerManagementThread intermediate movement thread"
+                        Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") intermediate movement thread"
                     };
 
                     // Start SpectraCyber
@@ -176,12 +176,12 @@ namespace ControlRoomApplication.Controllers
                     // Stow Telescope
                     EndAppointment();
 
-                    Console.WriteLine("[RadioTelescopeControllerManagementThread] Appointment completed [" + DebugRTControllerIndex + "].");
+                    Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment completed.");
                     logger.Info("Appointment completed.");
                 }
                 else
                 {
-                    Console.WriteLine("[RadioTelescopeControllerManagementThread] Appointment does not have an orientation associated with it [" + DebugRTControllerIndex + "].");
+                    Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment does not have an orientation associated with it.");
                     logger.Info("Appointment does not have an orientation associated with it.");
                 }
 
@@ -199,24 +199,20 @@ namespace ControlRoomApplication.Controllers
         /// we should begin operations such as calibration.
         /// </summary>
         /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
-        public Appointment WaitingForNextAppointment()
+        public Appointment WaitForNextAppointment()
         {
-            Appointment appt = null;
-            while (appt == null)
+            Appointment appt;
+            while ((appt = DatabaseOperations.GetNextAppointment(RadioTelescopeID)) == null)
             {
-                appt = DatabaseOperations.GetNextAppointment();
-                if (appt == null)
-                {
-                    Thread.Sleep(5000); // delay between checking database for new appointments
-                }
+                // Delay between checking database for new appointments
+                Thread.Sleep(1000);
             }
 
-            TimeSpan diff = appt.StartTime - DateTime.Now;
-
             logger.Info("Waiting for the next appointment to be within 10 minutes.");
-            while (diff.TotalMinutes > 1)
+            TimeSpan diff;
+            while ((diff = appt.StartTime - DateTime.Now).TotalMinutes > 1)
             {
-                diff = appt.StartTime - DateTime.Now;
+                // Wait more
             }
 
             logger.Info("The next appointment is now within the correct timeframe.");
@@ -245,7 +241,7 @@ namespace ControlRoomApplication.Controllers
             appt.Status = AppointmentConstants.IN_PROGRESS;
             DatabaseOperations.UpdateAppointmentStatus(appt);
 
-            Console.WriteLine("Appt. Type: " + appt.Type);
+            Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment Type: " + appt.Type);
 
             // Loop through each minute of the appointment 
             TimeSpan length = appt.EndTime - appt.StartTime;
@@ -278,7 +274,7 @@ namespace ControlRoomApplication.Controllers
                 // Move to orientation
                 if(NextObjective != null)
                 {
-                    Console.WriteLine("Moving to Next Objective: Az = " + NextObjective.Azimuth + ", El = " + NextObjective.Elevation);
+                    Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + NextObjective.Azimuth + ", El = " + NextObjective.Elevation);
                     RTController.MoveRadioTelescope(NextObjective);
                     NextObjective = null;
                 }

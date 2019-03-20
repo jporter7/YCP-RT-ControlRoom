@@ -65,14 +65,14 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             SendCommand(Request, ref Response);
 
             string ResponseData = Response.SerialIdentifier + Response.DecimalData.ToString("X3");
-            Console.WriteLine("Attempted RESET with command \"!R000\", heard back: " + ResponseData);
+            Console.WriteLine("[AbstractSpectraCyberController] Attempted RESET with command \"!R000\", heard back: " + ResponseData);
         }
 
         private bool SetSomeOffsetVoltage(double offset, char identifier)
         {
             if ((offset < 0.0) || (offset > 4.095))
             {
-                Console.WriteLine("ERROR: input voltage outside of range [0, 4.095]");
+                Console.WriteLine("[AbstractSpectraCyberController] ERROR: input voltage outside of range [0, 4.095]");
                 return false;
             }
 
@@ -249,7 +249,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 {
                     AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointmentID);
                     Schedule.Consume();
-                    //Console.WriteLine("SC Scan");
+                    //Console.WriteLine("[AbstractSpectraCyberController] SC Scan");
                 }
 
                 // Tell the loop to break on its next pass (so the mutex is still released if the flag is high)

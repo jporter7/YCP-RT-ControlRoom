@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities
 {

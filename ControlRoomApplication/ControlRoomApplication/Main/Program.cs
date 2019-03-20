@@ -12,6 +12,8 @@ namespace ControlRoomApplication.Main
 {
     public class Program
     {
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         [STAThread]
         public static void Main(string[] args)
         {
@@ -21,16 +23,11 @@ namespace ControlRoomApplication.Main
             // Instantiate the database being used.
             ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom());
 
-            DatabaseOperations.DeleteLocalDatabase();
-            DatabaseOperations.PopulateLocalDatabase();
-            Console.WriteLine("[Main] Local database populated. Number of Appointments: " + DatabaseOperations.GetListOfAppointments().Count);
-            foreach (Appointment appt in DatabaseOperations.GetListOfAppointments())
-            {
-                Console.WriteLine("\tStart Time: " + appt.StartTime.ToString());
-            }
-
             // Given the input command line arguments, generate the control room's RTs, its controllers, and the PLC drivers
-            List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args);
+            List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList = ConfigurationManager.BuildRadioTelescopeSeries(args, true);
+
+            ConfigurationManager.ConfigureLocalDatabase(AbstractRTDriverPairList.Count);
+            Console.WriteLine("[Program] Local database populated. Number of Appointments: " + DatabaseOperations.GetTotalAppointmentCount());
 
             // Initialize the lists that the input list will populate
             List<RadioTelescopeController> ProgramRTControllerList = new List<RadioTelescopeController>(AbstractRTDriverPairList.Count);
@@ -54,15 +51,25 @@ namespace ControlRoomApplication.Main
             int z = 0;
             foreach (RadioTelescopeControllerManagementThread ManagementThread in MainControlRoomController.CRoom.RTControllerManagementThreads)
             {
+                int RT_ID = ManagementThread.RadioTelescopeID;
+                List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
+
+                Console.WriteLine("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+
+                foreach (Appointment appt in AllAppointments)
+                {
+                    Console.WriteLine("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
+                }
+
                 if (ManagementThread.Start())
                 {
-                    Console.WriteLine("[Main] ERROR starting RT controller management thread at index " + z.ToString());
-                    ErrorIndex = z;
-                    break;
+                    Console.WriteLine("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
                 }
                 else
                 {
-                    Console.WriteLine("[Main] Successfully started RT controller management thread at index " + z.ToString());
+                    Console.WriteLine("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "] [" + z.ToString() + "]");
+                    ErrorIndex = z;
+                    break;
                 }
 
                 z++;
@@ -76,19 +83,19 @@ namespace ControlRoomApplication.Main
             else
             {
                 LoopIndex = AbstractRTDriverPairList.Count;
-                Console.WriteLine("Sleeping...");
-                Thread.Sleep(240000);
+                Console.WriteLine("[Program] Sleeping...");
+                Thread.Sleep(960000);
             }
 
             for (int i = 0; i < LoopIndex; i++)
             {
                 if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, true))
                 {
-                    Console.WriteLine("[Main] ERROR killing RT controller at index " + i.ToString());
+                    Console.WriteLine("[Program] Successfully brought down RT controller at index " + i.ToString());
                 }
                 else
                 {
-                    Console.WriteLine("[Main] Successfully brought down RT controller at index " + i.ToString());
+                    Console.WriteLine("[Program] ERROR killing RT controller at index " + i.ToString());
                 }
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
@@ -102,7 +109,5 @@ namespace ControlRoomApplication.Main
 
             Thread.Sleep(5000);
         }
-        
-        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 }

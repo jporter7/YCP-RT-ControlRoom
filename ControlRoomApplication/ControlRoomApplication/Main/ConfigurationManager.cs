@@ -10,6 +10,8 @@ namespace ControlRoomApplication.Main
 {
     public static class ConfigurationManager
     {
+        private static int NumLocalDBRTInstancesCreated = 1;
+
         /// <summary>
         /// Configures the type of SpectraCyberController to be used in the rest of the 
         /// application based on the second program argument passed in.
@@ -38,7 +40,7 @@ namespace ControlRoomApplication.Main
         /// of the application based on the third command line argument passed in.
         /// </summary>
         /// <returns> A concrete instance of a radio telescope. </returns>
-        public static RadioTelescope ConfigureRadioTelescope(AbstractSpectraCyberController spectraCyberController, string ip, string port)
+        public static RadioTelescope ConfigureRadioTelescope(AbstractSpectraCyberController spectraCyberController, string ip, string port, bool usingLocalDB)
         {
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, int.Parse(port));
 
@@ -46,7 +48,14 @@ namespace ControlRoomApplication.Main
             Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
 
             // Return Radio Telescope
-            return new RadioTelescope(spectraCyberController, PLCCommsHandler, location);
+            if (usingLocalDB)
+            {
+                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, NumLocalDBRTInstancesCreated++);
+            }
+            else
+            {
+                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location);
+            }
         }
 
         /// <summary>
@@ -76,20 +85,20 @@ namespace ControlRoomApplication.Main
         /// Constructs a series of radio telescopes, given input parameters.
         /// </summary>
         /// <returns> A list of built instances of a radio telescope. </returns>
-        public static List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args)
+        public static List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args, bool usingLocalDB)
         {
             int NumRTs;
             try
             {
                 NumRTs = int.Parse(args[0]);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Console.WriteLine("Invalid first input argument, an int was expected.");
                 return null;
             }
 
-            if (NumRTs != args.Length- 1)
+            if (NumRTs != args.Length - 1)
             {
                 Console.WriteLine("The requested number of RTs doesn't match the number of input arguments.");
                 return null;
@@ -105,8 +114,8 @@ namespace ControlRoomApplication.Main
                     Console.WriteLine("Unexpected format for input #" + i.ToString() + "[" + args[i + 1] + "], skipping...");
                     continue;
                 }
-                
-                RadioTelescope ARadioTelescope = ConfigureRadioTelescope(ConfigureSpectraCyberController(RTArgs[1]), RTArgs[2], RTArgs[3]);
+
+                RadioTelescope ARadioTelescope = ConfigureRadioTelescope(ConfigureSpectraCyberController(RTArgs[1]), RTArgs[2], RTArgs[3], usingLocalDB);
                 AbstractPLCDriver APLCDriver = ConfigureSimulatedPLCDriver(RTArgs[0], RTArgs[2], RTArgs[3]);
 
                 RTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
@@ -115,10 +124,10 @@ namespace ControlRoomApplication.Main
             return RTDriverPairList;
         }
 
-        public static void ConfigureLocalDatabase()
+        public static void ConfigureLocalDatabase(int NumRTInstances)
         {
             DatabaseOperations.DeleteLocalDatabase();
-            DatabaseOperations.PopulateLocalDatabase();
+            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
         }
     }
 }
