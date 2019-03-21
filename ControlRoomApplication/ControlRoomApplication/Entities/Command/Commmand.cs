@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    [Table("Commands")]
+    [Table("command")]
     public class Command
     {
         public Command()

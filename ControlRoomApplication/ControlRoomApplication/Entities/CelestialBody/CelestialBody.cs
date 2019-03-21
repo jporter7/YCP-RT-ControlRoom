@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    [Table("celestialbody")]
+    [Table("celestial_body")]
     [Serializable]
     public class CelestialBody
     {
