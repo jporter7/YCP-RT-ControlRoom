@@ -168,7 +168,12 @@ namespace ControlRoomApplication.Database.Operations
             using (RTDbContext Context = InitializeDatabaseContext())
             {
                 // Use Include method to load related entities from the database
-                appts = Context.Appointments.Include("Coordinates").Include("CelestialBody").Include("Orientation").Where(x => x.TelescopeId == radioTelescopeId).ToList();
+                appts = Context.Appointments.Include("Coordinates")
+                                            .Include("CelestialBody")
+                                            .Include("Orientation")
+                                            .Include("RFDatas")
+                                            .Where(x => x.TelescopeId == radioTelescopeId)
+                                            .ToList();
             }
             return appts;
         }
