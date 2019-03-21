@@ -59,8 +59,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             // Test at noon local time, highest elevation (Converted to UTC) 
             DateTime date = new DateTime(2018, 12, 14, 17, 0, 0);
-            var celestial_body = new CelestialBody(CelestialBodyConstants.SUN);
-            Coordinate output_coord_1 = CoordinateCalculationController.GetCelestialBodyCoordinate(celestial_body, date);
+            var appt = new Appointment();
+            appt.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
+            Coordinate output_coord_1 = CoordinateCalculationController.GetCelestialBodyCoordinate(appt, date);
 
             Assert.AreEqual(17.4508, output_coord_1.RightAscension, 0.05);
             Assert.AreEqual(-23.2207, output_coord_1.Declination, 0.05);
