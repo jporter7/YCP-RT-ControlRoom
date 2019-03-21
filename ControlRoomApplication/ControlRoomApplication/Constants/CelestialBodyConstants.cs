@@ -8,8 +8,8 @@ namespace ControlRoomApplication.Constants
 {
     public sealed class CelestialBodyConstants
     {
-        public static readonly string NONE = "NONE";
-        public static readonly string SUN = "SUN";
-        public static readonly string MOON = "MOON";
+        public const string NONE = "NONE";
+        public const string SUN = "SUN";
+        public const string MOON = "MOON";
     }
 }

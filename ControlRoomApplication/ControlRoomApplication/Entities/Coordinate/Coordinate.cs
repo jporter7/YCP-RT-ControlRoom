@@ -12,10 +12,7 @@ namespace ControlRoomApplication.Entities
             Declination = declination;
         }
 
-        public Coordinate()
-        {
-
-        }
+        public Coordinate() : this(0, 0) { }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -23,7 +20,7 @@ namespace ControlRoomApplication.Entities
 
         [ForeignKey("AppointmentId")]
         public virtual Appointment Appointment { get; set; }
-        public int AppointmentId { get; set; }
+        public int? AppointmentId { get; set; }
 
         [Required]
         [Column("right_ascension")]

@@ -101,7 +101,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
                         appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
                         appt0.Status = AppointmentConstants.REQUESTED;
-                        appt0.Type = AppointmentTypeConstants.ORIENTATION;
+                        appt0.Type = AppointmentTypeConstants.DRIFT_SCAN;
                         appt0.Orientation = new Orientation(30, 30);
                         appt0.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
                         appt0.TelescopeId = i + 1;
@@ -111,7 +111,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
                         appt1.Status = AppointmentConstants.REQUESTED;
                         appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
-                        appt1.CelestialBody = CelestialBodyConstants.SUN;
+                        appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
                         appt1.SpectraCyberModeType = SpectraCyberModeTypeEnum.SPECTRAL;
                         appt1.TelescopeId = i + 1;
                         appt1.UserId = 1;
@@ -125,7 +125,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt2.TelescopeId = i + 1;
                         appt2.UserId = 1;
 
-                        appt3.StartTime = appt2.EndTime.AddMinutes(20 + rand.Next(30));
+                        appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
                         appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
                         appt3.Status = AppointmentConstants.REQUESTED;
                         appt3.Type = AppointmentTypeConstants.RASTER;
@@ -167,18 +167,8 @@ namespace ControlRoomApplication.Database.Operations
             List<Appointment> appts = new List<Appointment>();
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                foreach (var appt in Context.Appointments.ToList())
-                {
-                    if (appt.TelescopeId == radioTelescopeId)
-                    {
-                        // Copy Coordinates over to a new appointment object
-                        // so appt list is valid after context is disposed
-                        var coords = appt.Coordinates;
-                        var new_appt = appt;
-                        new_appt.Coordinates = coords;
-                        appts.Add(appt);
-                    }
-                }
+                // Use Include method to load related entities from the database
+                appts = Context.Appointments.Include("Coordinates").Include("CelestialBody").Include("Orientation").Where(x => x.TelescopeId == radioTelescopeId).ToList();
             }
             return appts;
         }
@@ -202,14 +192,15 @@ namespace ControlRoomApplication.Database.Operations
         /// Creates and stores and RFData reading in the local database.
         /// </summary>
         /// <param name="data">The RFData reading to be created/stored.</param>
-        public static void CreateRFData(RFData data)
+        public static void CreateRFData(int apptId, RFData data)
         {
             
             if (VerifyRFData(data))
             {
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
-                    Context.RFDatas.Add(data);
+                    var appt = Context.Appointments.Find(apptId);
+                    appt.RFDatas.Add(data);
                     SaveContext(Context);
                 }
             }
@@ -247,8 +238,7 @@ namespace ControlRoomApplication.Database.Operations
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x.StartTime < DateTime.Now);
-                    appointments.RemoveAll(x => x.Status == AppointmentConstants.COMPLETED);
+                    appointments.RemoveAll(x => x.StartTime < DateTime.Now || x.Status == AppointmentConstants.COMPLETED);
                     appointments.Sort();
                     logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;

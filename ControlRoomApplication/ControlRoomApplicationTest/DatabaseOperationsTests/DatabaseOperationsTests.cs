@@ -56,7 +56,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt1.Status = AppointmentConstants.IN_PROGRESS;
             appt1.Type = AppointmentTypeConstants.POINT;
             appt1.Coordinates = new List<Coordinate>();
-            appt1.CelestialBody = CelestialBodyConstants.NONE;
+            appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.NONE);
             appt1.TelescopeId = 1;
             appt1.UserId = 1;
 
@@ -65,7 +65,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt2.Status = AppointmentConstants.REQUESTED;
             appt2.Type = AppointmentTypeConstants.POINT;
             appt2.Coordinates = new List<Coordinate>();
-            appt2.CelestialBody = CelestialBodyConstants.NONE;
+            appt2.CelestialBody = new CelestialBody(CelestialBodyConstants.NONE);
             appt2.TelescopeId = 1;
             appt2.UserId = 1;
 
@@ -74,7 +74,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt3.Status = AppointmentConstants.REQUESTED;
             appt3.Type = AppointmentTypeConstants.POINT;
             appt3.Coordinates = new List<Coordinate>();
-            appt3.CelestialBody = CelestialBodyConstants.NONE;
+            appt3.CelestialBody = new CelestialBody(CelestialBodyConstants.NONE);
             appt3.TelescopeId = 1;
             appt3.UserId = 1;
         }
@@ -88,9 +88,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestCreateRFData()
         {
-            DatabaseOperations.CreateRFData(data1);
-            DatabaseOperations.CreateRFData(data2);
-            DatabaseOperations.CreateRFData(data3);
+            DatabaseOperations.CreateRFData(appt1.Id, data1);
+            DatabaseOperations.CreateRFData(appt1.Id, data2);
+            DatabaseOperations.CreateRFData(appt1.Id, data3);
 
             Assert.AreEqual(testContext.RFDatas.Find(1).Intensity, data1.Intensity);
             Assert.AreEqual(testContext.RFDatas.Find(2).Intensity, data2.Intensity);
@@ -106,7 +106,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             data1.TimeCaptured = DateTime.Now.AddDays(1);
 
-            DatabaseOperations.CreateRFData(data1);
+            DatabaseOperations.CreateRFData(appt1.Id, data1);
 
             RFData testData = testContext.RFDatas.Find(1);
 
@@ -118,7 +118,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             data1.Intensity = -239458;
 
-            DatabaseOperations.CreateRFData(data1);
+            DatabaseOperations.CreateRFData(appt1.Id, data1);
 
             RFData testData = testContext.RFDatas.Find(1);
 

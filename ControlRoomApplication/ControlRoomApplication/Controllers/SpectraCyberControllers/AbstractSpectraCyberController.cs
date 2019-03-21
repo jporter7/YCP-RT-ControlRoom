@@ -282,8 +282,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             //
             // Add to database
             //
-            rfData.Id = appId;
-            DatabaseOperations.CreateRFData(rfData);
+            DatabaseOperations.CreateRFData(appId, rfData);
 
             return rfData;
         }
