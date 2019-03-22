@@ -20,18 +20,18 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
         {
             switch (appt.Type)
             {
-                case ("POINT"):
+                case (AppointmentTypeConstants.POINT):
                     var point_coord = GetPointCoordinate(appt, datetime);
                     return CoordinateToOrientation(point_coord, datetime);
-                case ("CELESTIAL_BODY"):
-                    var celestial_body_coord = GetCelestialBodyCoordinate(appt.CelestialBody, datetime);
+                case (AppointmentTypeConstants.CELESTIAL_BODY):
+                    var celestial_body_coord = GetCelestialBodyCoordinate(appt, datetime);
                     return CoordinateToOrientation(celestial_body_coord, datetime);
-                case ("RASTER"):
+                case (AppointmentTypeConstants.RASTER):
                     var raster_coord = GetRasterCoordinate(appt, datetime);
                     return CoordinateToOrientation(raster_coord, datetime);
-                case ("ORIENTATION"):
+                case (AppointmentTypeConstants.DRIFT_SCAN):
                     return appt.Orientation;
-                case ("FREE_CONTROL"):
+                case (AppointmentTypeConstants.FREE_CONTROL):
                     throw new NotImplementedException();
                 default:
                     throw new ArgumentException("Invalid Appt type");
@@ -81,6 +81,10 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             double num_points = (appt.EndTime - appt.StartTime).TotalMinutes;
             double point_width = Math.Floor(Math.Sqrt(num_points));
             double point_height = Math.Floor(Math.Sqrt(num_points));
+            if (point_width == 0 || point_height == 0)
+            {
+                throw new ArgumentException("Appointment duration is too short");
+            }
 
             // Find the width and the height of the square in coordinates
             double coord_width = end_coord.RightAscension - start_coord.RightAscension;
@@ -124,16 +128,26 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(x, y);
         }
 
-        public Coordinate GetCelestialBodyCoordinate(string celestialBody, DateTime datetime)
+        public Coordinate GetCelestialBodyCoordinate(Appointment appt, DateTime datetime)
         {
-            switch (celestialBody)
+            switch (appt.CelestialBody.Name)
             {
-                case "SUN":
+                case CelestialBodyConstants.SUN:
                     return GetSunCoordinate(datetime);
-                case "MOON":
+                case CelestialBodyConstants.MOON:
                     return GetMoonCoordinate(datetime);
-                default:
+                case CelestialBodyConstants.NONE:
+                case null:
                     throw new ArgumentException("Invalid Celestial Body");
+                default:
+                    if (appt.CelestialBody.Coordinate != null)
+                    {
+                        return appt.CelestialBody.Coordinate;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Invalid Celestial Body Coordinate");
+                    }
             }
         }
 
