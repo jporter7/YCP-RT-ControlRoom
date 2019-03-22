@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Constants
 {
     public static class HardwareFlags
     {
-        public static bool COM3 = false;
-        public static bool COM4 = false;
+        public const bool COM3 = false;
+        public const bool COM4 = false;
     }
 }
