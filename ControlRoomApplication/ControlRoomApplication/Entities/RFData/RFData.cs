@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Entities
 
         [ForeignKey("appointment_id")]
         public virtual Appointment Appointment { get; set; }
-        public int? AppointmentId { get; set; }
+        public int? appointment_id { get; set; }
 
         [Required]
         [Column("time_captured")]
