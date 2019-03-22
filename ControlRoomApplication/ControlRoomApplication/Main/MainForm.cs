@@ -1,4 +1,5 @@
-﻿using ControlRoomApplication.Controllers;
+﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Controllers.SpectraCyberController;
@@ -19,7 +20,6 @@ namespace ControlRoomApplication.Main
             InitializeComponent();
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 2;
-            //Console.SetOut(new ControlWriter(textBox1));
             DatabaseOperations.InitializeLocalConnectionOnly();
             DatabaseOperations.PopulateLocalDatabase();
 
@@ -49,6 +49,7 @@ namespace ControlRoomApplication.Main
                 ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
                 ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PlcController.ConnectToServer();
                 ControlRoomThread = new Thread(() => ProgramControlRoomControllerList[ProgramControlRoomControllerList.Count - 1].Start(CancellationSource.Token));
+                ControlRoomThread.Name = ThreadNameConstants.CONTROL_ROOM_LOGIC_THREAD_NAME;
                 ControlRoomThread.Start();
             }
         }
@@ -64,6 +65,9 @@ namespace ControlRoomApplication.Main
             }
             CancellationSource.Dispose();
             DatabaseOperations.DisposeLocalDatabaseOnly();
+
+            // End logging
+            logger.Info("<--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
         }
 
@@ -97,6 +101,9 @@ namespace ControlRoomApplication.Main
             dataGridView1.Rows.Add(row1);
             dataGridView1.Rows.Add(row2);
             dataGridView1.Rows.Add(row3);
+
+            dataGridView1.Update();
+            dataGridView1.Refresh();
         }
 
         public AbstractRadioTelescope BuildRT()
@@ -167,7 +174,6 @@ namespace ControlRoomApplication.Main
 
         private Thread ControlRoomThread { get; set; }
         private CancellationTokenSource CancellationSource { get; set; }
-        private CancellationToken Token { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }

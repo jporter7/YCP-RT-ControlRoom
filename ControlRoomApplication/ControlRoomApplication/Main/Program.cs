@@ -16,9 +16,6 @@ namespace ControlRoomApplication.Main
         public static void Main(string[] args)
         {
             Application.Run(new MainForm());
-
-            // End logging
-            logger.Info("<--------------- Control Room Application Terminated --------------->");
         }
         
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
