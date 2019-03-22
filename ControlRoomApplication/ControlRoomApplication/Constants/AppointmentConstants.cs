@@ -2,11 +2,11 @@
 {
     public sealed class AppointmentConstants
     {
-        public static readonly string REQUESTED = "REQUESTED";
-        public static readonly string SCHEDULED = "SCHEDULED";
-        public static readonly string IN_PROGRESS = "IN_PROGRESS";
-        public static readonly string CANCELLED = "CANCELLED";
-        public static readonly string COMPLETED = "COMPLETED";
+        public const string REQUESTED = "REQUESTED";
+        public const string SCHEDULED = "SCHEDULED";
+        public const string IN_PROGRESS = "IN_PROGRESS";
+        public const string CANCELLED = "CANCELLED";
+        public const string COMPLETED = "COMPLETED";
 
         public static readonly string[] AppointmentStatuses =
         {
