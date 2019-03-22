@@ -8,5 +8,7 @@
 
         public static readonly double SIMULATION_MCU_PEAK_VELOCITY = 22.5; // steps/s
         public static readonly double SIMULATION_MCU_PEAK_ACCELERATION = 32.0; // steps/s^2
+
+        public static readonly double WEATHER_STATION_MAXIMUM_ALLOWABLE_WIND_SPEED_MPH = 110.0;
     }
 }

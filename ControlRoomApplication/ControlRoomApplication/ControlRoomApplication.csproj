@@ -97,7 +97,7 @@
     <Compile Include="Constants\AppointmentConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\CelestialBodyConstants.cs" />
-	<Compile Include="Constants\HardwareConstants.cs" />
+    <Compile Include="Constants\HardwareConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
     <Compile Include="Constants\HeartbeatConstants.cs" />
@@ -109,6 +109,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
+    <Compile Include="Entities\AbstractWeatherStation.cs" />
     <Compile Include="Entities\Location\Location.cs" />
     <Compile Include="Entities\Plc\PLCCommandAndQueryTypeEnum.cs" />
     <Compile Include="Entities\Plc\PLCCommandResponseExpectationEnum.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="RemoteDb\RemoteDbConfiguration.cs" />
     <Compile Include="Simulators\BackEndSim\BackEndSim.cs" />
     <Compile Include="Simulators\FrontEndSim\FrontEndSim.cs" />
+    <Compile Include="Simulators\Hardware\WeatherStation\SimulationWeatherStation.cs" />
     <Compile Include="Simulators\Server\Server.cs" />
   </ItemGroup>
   <ItemGroup>
