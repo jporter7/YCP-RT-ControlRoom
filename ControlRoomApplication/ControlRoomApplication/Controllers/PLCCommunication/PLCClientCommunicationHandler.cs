@@ -209,9 +209,20 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                 case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                 case PLCCommandAndQueryTypeEnum.SHUTDOWN:
                 case PLCCommandAndQueryTypeEnum.CALIBRATE:
+                    {
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+                        break;
+                    }
+
+
                 case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+
+                        Orientation ObjectiveOrientation = (Orientation)MessageParameters[0];
+                        Array.Copy(BitConverter.GetBytes(ObjectiveOrientation.Azimuth), 0, NetOutgoingMessage, 3, 8);
+                        Array.Copy(BitConverter.GetBytes(ObjectiveOrientation.Elevation), 0, NetOutgoingMessage, 11, 8);
+
                         break;
                     }
 

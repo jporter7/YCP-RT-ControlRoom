@@ -148,9 +148,9 @@ namespace ControlRoomApplication.Controllers
             {
                 ManagementMutex.WaitOne();
 
-                Appointment appt = WaitForNextAppointment();
+                Appointment NextAppointment = WaitForNextAppointment();
 
-                if (appt != null)
+                if (NextAppointment != null)
                 {
                     Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Starting appointment...");
 
@@ -158,19 +158,19 @@ namespace ControlRoomApplication.Controllers
                     CalibrateRadioTelescope();
 
                     // Create movement thread
-                    Thread movementThread = new Thread(() => StartRadioTelescope(appt))
+                    Thread AppointmentMovementThread = new Thread(() => PerformRadioTelescopeMovement(NextAppointment))
                     {
                         Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") intermediate movement thread"
                     };
 
                     // Start SpectraCyber
-                    StartReadingData(appt);
+                    StartReadingData(NextAppointment);
 
                     // Start movement thread
-                    movementThread.Start();
+                    AppointmentMovementThread.Start();
 
                     // End PLC thread & SpectraCyber 
-                    movementThread.Join();
+                    AppointmentMovementThread.Join();
                     StopReadingRFData();
 
                     // Stow Telescope
@@ -234,22 +234,21 @@ namespace ControlRoomApplication.Controllers
         /// then calling the RT controller to move the RT to the orientation
         /// it needs to go to.
         /// </summary>
-        /// <param name="appt"> The appointment that is currently running. </param>
-        /// <param name="orientation"> The orientation that the RT is going to. </param>
-        public void StartRadioTelescope(Appointment appt)
+        /// <param name="NextAppointment"> The appointment that is currently running. </param>
+        public void PerformRadioTelescopeMovement(Appointment NextAppointment)
         {
-            appt.Status = AppointmentConstants.IN_PROGRESS;
-            DatabaseOperations.UpdateAppointmentStatus(appt);
+            NextAppointment.Status = AppointmentConstants.IN_PROGRESS;
+            DatabaseOperations.UpdateAppointmentStatus(NextAppointment);
 
-            Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment Type: " + appt.Type);
+            Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment Type: " + NextAppointment.Type);
 
             // Loop through each minute of the appointment 
-            TimeSpan length = appt.EndTime - appt.StartTime;
+            TimeSpan length = NextAppointment.EndTime - NextAppointment.StartTime;
             for (int i = 0; i < length.TotalMinutes; i++)
             {
                 // Get orientation for current datetime
-                DateTime datetime = appt.StartTime.AddMinutes(i);
-                NextObjective = RTController.CoordinateController.CalculateOrientation(appt, datetime);
+                DateTime datetime = NextAppointment.StartTime.AddMinutes(i);
+                NextObjective = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
 
                 // Wait for datetime
                 while (DateTime.Now < datetime)
@@ -267,7 +266,6 @@ namespace ControlRoomApplication.Controllers
 
                 if (InterruptAppointmentFlag)
                 {
-                    NextObjective = null;
                     break;
                 }
 
@@ -282,14 +280,15 @@ namespace ControlRoomApplication.Controllers
 
             if (InterruptAppointmentFlag)
             {
-                appt.Status = AppointmentConstants.CANCELLED;
+                NextAppointment.Status = AppointmentConstants.CANCELLED;
                 InterruptAppointmentFlag = false;
             }
             else
             {
-                appt.Status = AppointmentConstants.COMPLETED;
+                NextAppointment.Status = AppointmentConstants.COMPLETED;
             }
-            DatabaseOperations.UpdateAppointmentStatus(appt);
+
+            DatabaseOperations.UpdateAppointmentStatus(NextAppointment);
         }
 
         /// <summary>

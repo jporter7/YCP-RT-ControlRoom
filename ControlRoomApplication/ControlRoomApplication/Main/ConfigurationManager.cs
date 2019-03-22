@@ -25,6 +25,9 @@ namespace ControlRoomApplication.Main
                 case "/PS":
                     return new SpectraCyberController(new SpectraCyber());
 
+                case "/SS":
+                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
+
                 case "/TS":
                     return new SpectraCyberTestController(new SpectraCyberSimulator());
 
