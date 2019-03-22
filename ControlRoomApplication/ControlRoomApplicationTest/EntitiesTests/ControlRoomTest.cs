@@ -1,10 +1,7 @@
-﻿using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Main;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplicationTest.EntitiesTests
 {
@@ -19,13 +16,11 @@ namespace ControlRoomApplicationTest.EntitiesTests
             //Initialize control room object
             controlRoom = new ControlRoom();
         }
-
         
         [TestMethod]
         public void TestMethods()
         {
             throw new NotImplementedException();
-
         }
     }
 }
