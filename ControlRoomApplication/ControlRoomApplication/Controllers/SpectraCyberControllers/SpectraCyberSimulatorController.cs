@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
@@ -8,6 +9,16 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     public class SpectraCyberSimulatorController : AbstractSpectraCyberController
     {
         private Random random;
+
+/*        private int[][] ReadGrid()
+        {
+            int[][] grid = null;
+
+            var reader = new StreamReader("ControlRoom")
+
+            return grid;
+        }
+        */
 
         public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator) : base(spectraCyberSimulator)
         {
