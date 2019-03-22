@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
@@ -10,37 +9,6 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
     {
         private Random random;
 
-        private int[,] grid;
-
-
-        // Unique to the Simulator
-        // Reads the CSV file and returns a 2D int array that has a value for:
-        // * Every .5 degree value Elevation (Altitude)
-        // * Every .5 degree value Azimuth 
-        // ** The first element is "0" for (El = 0, Az = 0) -- Zenith
-
-        private int[,] ReadGrid()
-        {
-            int[,] grid = new int[181, 720];
-            grid[0, 0] = 0;
-
-            var reader = new StreamReader(@"ControlRoomApplication\ControlRoomApplication\Simulators\CSV\Spectra_Cyber_Sim_CSV.csv");
-            for(int i = 1; !reader.EndOfStream; i++)
-            {
-                var line = reader.ReadLine();
-                var values = line.Split(',');
-                
-                for(int j = 0; j < 720; j++)
-                {
-                    // convert to an int and subtract 32 (the value of ASCII '0' is 32)
-                    grid[i, j] = values[j].ToCharArray()[0] - 32;
-                }
-            }
-
-            return grid;
-        }
-        
-
         public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator) : base(spectraCyberSimulator)
         {
             random = new Random();
@@ -50,9 +18,6 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         {
             try
             {
-                // Initialize the grid, read from the CSV
-                this.grid = ReadGrid();
-
                 // Initialize thread and start it
                 CommunicationThread = new Thread(() => RunCommunicationThread());
                 CommunicationThread.Start();

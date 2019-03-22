@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Controllers.PLCCommunication
 {
     public class TestPLCDriver : AbstractPLCDriver
     {
-        public TestPLCDriver(IPAddress ip_address, int port) : base(ip_address, port) { }
+        public Orientation CurrentOrientation { get; private set; }
+
+        public TestPLCDriver(IPAddress ip_address, int port) : base(ip_address, port)
+        {
+            CurrentOrientation = new Orientation();
+        }
 
         public TestPLCDriver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
 
@@ -51,11 +57,8 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
                     case PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS:
                         {
-                            double TestAzimuth = 180.0;
-                            double TestElevation = 42.0;
-
-                            Array.Copy(BitConverter.GetBytes(TestAzimuth), 0, FinalResponseContainer, 3, 8);
-                            Array.Copy(BitConverter.GetBytes(TestElevation), 0, FinalResponseContainer, 11, 8);
+                            Array.Copy(BitConverter.GetBytes(CurrentOrientation.Azimuth), 0, FinalResponseContainer, 3, 8);
+                            Array.Copy(BitConverter.GetBytes(CurrentOrientation.Elevation), 0, FinalResponseContainer, 11, 8);
 
                             FinalResponseContainer[2] = 0x1;
 
@@ -64,10 +67,17 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
                     case PLCCommandAndQueryTypeEnum.GET_CURRENT_LIMIT_SWITCH_STATUSES:
                         {
-                            PLCLimitSwitchStatusEnum StatusAzimuthUnderRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
-                            PLCLimitSwitchStatusEnum StatusAzimuthOverRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
-                            PLCLimitSwitchStatusEnum StatusElevationUnderRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
-                            PLCLimitSwitchStatusEnum StatusElevationOverRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
+                            double CurrentAZ = CurrentOrientation.Azimuth;
+                            double CurrentEL = CurrentOrientation.Elevation;
+
+                            double ThresholdAZ = HardwareConstants.LIMIT_SWITCH_AZ_THRESHOLD_DEGREES;
+                            double ThresholdEL = HardwareConstants.LIMIT_SWITCH_EL_THRESHOLD_DEGREES;
+
+                            // Subtracting out those 2 degrees is because of our actual rotational limits of (-2 : 362) and (-2 : 92) degrees in azimuth and elevation respectively
+                            PLCLimitSwitchStatusEnum StatusAzimuthUnderRotation = (CurrentAZ < (ThresholdAZ - 2.0)) ? PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS : PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
+                            PLCLimitSwitchStatusEnum StatusAzimuthOverRotation = (CurrentAZ > (360 + ThresholdAZ - 2.0)) ? PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS : PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
+                            PLCLimitSwitchStatusEnum StatusElevationUnderRotation = (CurrentEL < (ThresholdEL - 2.0)) ? PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS : PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
+                            PLCLimitSwitchStatusEnum StatusElevationOverRotation = (CurrentEL > (90 + ThresholdEL - 2.0)) ? PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS : PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
 
                             int PacketSum =
                                 PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusElevationOverRotation)
@@ -107,8 +117,54 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
                     case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                     case PLCCommandAndQueryTypeEnum.SHUTDOWN:
                     case PLCCommandAndQueryTypeEnum.CALIBRATE:
+                        {
+                            FinalResponseContainer[2] = 0x1;
+                            break;
+                        }
+
                     case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                         {
+                            double NextAZ, NextEL;
+
+                            try
+                            {
+                                NextAZ = BitConverter.ToDouble(query, 3);
+                                NextEL = BitConverter.ToDouble(query, 11);
+                            }
+                            catch (Exception e)
+                            {
+                                if ((e is ArgumentException) || (e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
+                                {
+                                    // This error code means that the data could not be converted into a double-precision floating point
+                                    FinalResponseContainer[2] = 0x2;
+                                    break;
+                                }
+                                else
+                                {
+                                    // Unexpected exception
+                                    throw e;
+                                }
+                            }
+
+                            if ((NextAZ < 0) || (NextAZ > 360))
+                            {
+                                // This error code means that the objective azimuth position is invalid
+                                FinalResponseContainer[2] = 0x3;
+                                break;
+                            }
+
+                            if ((NextEL < 0) || (NextEL > 90))
+                            {
+                                // This error code means that the objective elevation position is invalid
+                                FinalResponseContainer[2] = 0x4;
+                                break;
+                            }
+
+                            // Otherwise, this is valid
+                            CurrentOrientation = new Orientation(NextAZ, NextEL);
+
+                            Console.WriteLine("[TestPLCDriver] Setting current orientation to {" + CurrentOrientation.Azimuth.ToString() + ", " + CurrentOrientation.Elevation.ToString() + "}");
+
                             FinalResponseContainer[2] = 0x1;
                             break;
                         }
