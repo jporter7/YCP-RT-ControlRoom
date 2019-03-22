@@ -91,6 +91,7 @@
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimulatorTests\SimulationAbsoluteEncoderTests.cs" />
+    <Compile Include="SimulatorTests\SimulationMCUTrajectoryProfileTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
