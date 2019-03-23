@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
+using ControlRoomApplication.Database.Operations;
+using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplication.Main
 {
@@ -14,13 +15,13 @@ namespace ControlRoomApplication.Main
 
         /// <summary>
         /// Configures the type of SpectraCyberController to be used in the rest of the 
-        /// application based on the second program argument passed in.
+        /// application based on the program argument passed in for it.
         /// </summary>
-        /// <param name="arg1"> The second program argument passed in. </param>
+        /// <param name="argS"> The program argument passed in for the SpectraCyber. </param>
         /// <returns> A concrete instance of a SpectraCyberController. </returns>
-        public static AbstractSpectraCyberController ConfigureSpectraCyberController(string arg1)
+        public static AbstractSpectraCyberController ConfigureSpectraCyberController(string argS)
         {
-            switch (arg1.ToUpper())
+            switch (argS.ToUpper())
             {
                 case "/PS":
                     return new SpectraCyberController(new SpectraCyber());
@@ -39,13 +40,35 @@ namespace ControlRoomApplication.Main
         }
 
         /// <summary>
+        /// Configures the type of WeatherStation to be used in the rest of the 
+        /// application based on the program argument passed in for it.
+        /// </summary>
+        /// <param name="argW"> The program argument passed in for the weather station. </param>
+        /// <returns> A concrete instance of a WeatherStation. </returns>
+        public static AbstractWeatherStation ConfigureWeatherStation(string argW)
+        {
+            switch (argW.ToUpper())
+            {
+                case "/PW":
+                    throw new NotImplementedException("The production weather station is not yet supported.");
+
+                case "/SW":
+                    return new SimulationWeatherStation(1000);
+
+                default:
+                case "/TW":
+                    throw new NotImplementedException("The test weather station is not yet supported.");
+            }
+        }
+
+        /// <summary>
         /// Configures the type of radiotelescope that will be used in the rest
         /// of the application based on the third command line argument passed in.
         /// </summary>
         /// <returns> A concrete instance of a radio telescope. </returns>
-        public static RadioTelescope ConfigureRadioTelescope(AbstractSpectraCyberController spectraCyberController, string ip, string port, bool usingLocalDB)
+        public static RadioTelescope ConfigureRadioTelescope(AbstractSpectraCyberController spectraCyberController, string ip, int port, bool usingLocalDB)
         {
-            PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, int.Parse(port));
+            PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, port);
 
             // Create Radio Telescope Location
             Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
@@ -64,10 +87,10 @@ namespace ControlRoomApplication.Main
         /// <summary>
         /// Configures the type of PLC driver to simulate, based on the type of radio telescope being used.
         /// </summary>
-        /// <returns> An instance of the proper PLC driver. </returns>
-        public static AbstractPLCDriver ConfigureSimulatedPLCDriver(string arg2, string ip, string port)
+        /// <returns> An instance of the proper derived PLC driver. </returns>
+        public static AbstractPLCDriver ConfigureSimulatedPLCDriver(string argP, string ip, int port)
         {
-            switch (arg2.ToUpper())
+            switch (argP.ToUpper())
             {
                 case "/PR":
                     // The production telescope
@@ -75,20 +98,20 @@ namespace ControlRoomApplication.Main
 
                 case "/SR":
                     // Case for the test/simulated radiotelescope.
-                    return new ScaleModelPLCDriver(ip, int.Parse(port));
+                    return new ScaleModelPLCDriver(ip, port);
 
                 case "/TR":
                 default:
                     // Should be changed once we have a simulated radiotelescope class implemented
-                    return new TestPLCDriver(ip, int.Parse(port));
+                    return new TestPLCDriver(ip, port);
             }
         }
 
         /// <summary>
-        /// Constructs a series of radio telescopes, given input parameters.
+        /// Constructs a series of radio telescopes and its RF integrators, as well as a weather station, given a list of inputs.
         /// </summary>
-        /// <returns> A list of built instances of a radio telescope. </returns>
-        public static List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> BuildRadioTelescopeSeries(string[] args, bool usingLocalDB)
+        /// <returns> A list of built instances of a radio telescope and its derived PLC driver, as well as a weather station. </returns>
+        public static (List<(RadioTelescope, AbstractPLCDriver)>, AbstractWeatherStation) BuildRadioTelescopeSeries(string[] args, bool usingLocalDB)
         {
             int NumRTs;
             try
@@ -97,34 +120,37 @@ namespace ControlRoomApplication.Main
             }
             catch (Exception)
             {
-                Console.WriteLine("Invalid first input argument, an int was expected.");
-                return null;
+                Console.WriteLine("[ConfigurationManager] Invalid first input argument, an int was expected.");
+                return (null, null);
             }
 
-            if (NumRTs != args.Length - 1)
+            if (NumRTs != args.Length - 2)
             {
-                Console.WriteLine("The requested number of RTs doesn't match the number of input arguments.");
-                return null;
+                Console.WriteLine("[ConfigurationManager] The requested number of RTs doesn't match the number of input arguments.");
+                return (null, null);
             }
 
-            List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> RTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
+            List<(RadioTelescope, AbstractPLCDriver)> RTDerivedDriverPairList = new List<(RadioTelescope, AbstractPLCDriver)>();
             for (int i = 0; i < NumRTs; i++)
             {
-                string[] RTArgs = args[i + 1].Split(',');
+                string[] RTArgs = args[i + 2].Split(',');
 
                 if (RTArgs.Length != 4)
                 {
-                    Console.WriteLine("Unexpected format for input #" + i.ToString() + "[" + args[i + 1] + "], skipping...");
+                    Console.WriteLine("[ConfigurationManager] Unexpected format for input #" + i.ToString() + " [" + args[i + 2] + "], skipping...");
                     continue;
                 }
 
-                RadioTelescope ARadioTelescope = ConfigureRadioTelescope(ConfigureSpectraCyberController(RTArgs[1]), RTArgs[2], RTArgs[3], usingLocalDB);
-                AbstractPLCDriver APLCDriver = ConfigureSimulatedPLCDriver(RTArgs[0], RTArgs[2], RTArgs[3]);
+                string ip = RTArgs[2];
+                int port = int.Parse(RTArgs[3]);
 
-                RTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
+                AbstractPLCDriver GeneratedPLCDriver = ConfigureSimulatedPLCDriver(RTArgs[0], ip, port);
+                RadioTelescope GeneratedRadioTelescope = ConfigureRadioTelescope(ConfigureSpectraCyberController(RTArgs[1]), ip, port, usingLocalDB);
+
+                RTDerivedDriverPairList.Add((GeneratedRadioTelescope, GeneratedPLCDriver));
             }
 
-            return RTDriverPairList;
+            return (RTDerivedDriverPairList, ConfigureWeatherStation(args[1]));
         }
 
         public static void ConfigureLocalDatabase(int NumRTInstances)

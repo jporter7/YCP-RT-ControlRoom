@@ -7,6 +7,7 @@ namespace ControlRoomApplication.Entities
     public class ControlRoom
     {
         public List<RadioTelescopeControllerManagementThread> RTControllerManagementThreads { get; }
+        public AbstractWeatherStation WeatherStation { get; }
 
         public List<RadioTelescopeController> RadioTelescopeControllers
         {
@@ -38,9 +39,10 @@ namespace ControlRoomApplication.Entities
             }
         }
 
-        public ControlRoom()
+        public ControlRoom(AbstractWeatherStation weatherStation)
         {
             RTControllerManagementThreads = new List<RadioTelescopeControllerManagementThread>();
+            WeatherStation = weatherStation;
         }
     }
 }

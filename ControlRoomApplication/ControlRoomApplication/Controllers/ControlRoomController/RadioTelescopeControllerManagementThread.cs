@@ -63,8 +63,10 @@ namespace ControlRoomApplication.Controllers
         {
             RTController = controller;
 
-            ManagementThread = new Thread(new ThreadStart(SpinRoutine));
-            ManagementThread.Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") overarching management thread";
+            ManagementThread = new Thread(new ThreadStart(SpinRoutine))
+            {
+                Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") overarching management thread"
+            };
 
             ManagementMutex = new Mutex();
             KeepThreadAlive = false;
@@ -105,10 +107,8 @@ namespace ControlRoomApplication.Controllers
 
         public void KillWithHardInterrupt()
         {
-            ManagementMutex.WaitOne();
-            InterruptAppointmentFlag = true;
             KeepThreadAlive = false;
-            ManagementMutex.ReleaseMutex();
+            InterruptAppointmentFlag = true;
         }
 
         public bool WaitToJoin()
@@ -184,6 +184,14 @@ namespace ControlRoomApplication.Controllers
                 }
                 else
                 {
+                    if (InterruptAppointmentFlag)
+                    {
+                        Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment interrupted in loading routine.");
+                        logger.Info("Appointment interrupted in loading routine.");
+
+                        InterruptAppointmentFlag = false;
+                    }
+
                     Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment does not have an orientation associated with it.");
                     logger.Info("Appointment does not have an orientation associated with it.");
                 }
@@ -204,22 +212,32 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
         public Appointment WaitForNextAppointment()
         {
-            Appointment appt;
-            while ((appt = DatabaseOperations.GetNextAppointment(RadioTelescopeID)) == null)
+            Appointment NextAppointment;
+            while ((NextAppointment = DatabaseOperations.GetNextAppointment(RadioTelescopeID)) == null)
             {
+                if (InterruptAppointmentFlag)
+                {
+                    return null;
+                }
+
                 // Delay between checking database for new appointments
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
 
             logger.Info("Waiting for the next appointment to be within 10 minutes.");
             TimeSpan diff;
-            while ((diff = appt.StartTime - DateTime.Now).TotalMinutes > 1)
+            while ((diff = NextAppointment.StartTime - DateTime.Now).TotalMinutes > 1)
             {
+                if (InterruptAppointmentFlag)
+                {
+                    return null;
+                }
+
                 // Wait more
             }
 
             logger.Info("The next appointment is now within the correct timeframe.");
-            return appt;
+            return NextAppointment;
         }
 
         /// <summary>
@@ -248,7 +266,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     if (InterruptAppointmentFlag)
                     {
-                        // Console.WriteLine("Interrupted appointment appt.Id at " + DateTime.Now.ToString());
+                        Console.WriteLine("Interrupted appointment [" + NextAppointment.Id.ToString() +"] at " + DateTime.Now.ToString());
                         break;
                     }
 
@@ -263,7 +281,7 @@ namespace ControlRoomApplication.Controllers
                 }
 
                 // Move to orientation
-                if(NextObjective != null)
+                if (NextObjective != null)
                 {
                     Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + NextObjective.Azimuth + ", El = " + NextObjective.Elevation);
                     RTController.MoveRadioTelescope(NextObjective);
@@ -274,6 +292,7 @@ namespace ControlRoomApplication.Controllers
             if (InterruptAppointmentFlag)
             {
                 NextAppointment.Status = AppointmentConstants.CANCELLED;
+                NextObjective = null;
                 InterruptAppointmentFlag = false;
             }
             else
