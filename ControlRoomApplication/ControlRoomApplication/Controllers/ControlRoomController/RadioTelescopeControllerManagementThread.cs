@@ -155,7 +155,10 @@ namespace ControlRoomApplication.Controllers
                     Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Starting appointment...");
 
                     // Calibrate telescope
-                    CalibrateRadioTelescope();
+                    if (NextAppointment.Type != AppointmentTypeConstants.FREE_CONTROL)
+                    {
+                        RTController.CalibrateRadioTelescope();
+                    }
 
                     // Create movement thread
                     Thread AppointmentMovementThread = new Thread(() => PerformRadioTelescopeMovement(NextAppointment))
@@ -220,16 +223,6 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// Ends an appointment by returning the RT to the stow position.
-        /// This probably does not need to be done if an appointment is within
-        /// ????? amount of minutes/hours but that can be determined later.
-        /// </summary>
-        public void CalibrateRadioTelescope()
-        {
-            RTController.CalibrateRadioTelescope();
-        }
-
-        /// <summary>
         /// Starts movement of the RT by updating the appointment status and
         /// then calling the RT controller to move the RT to the orientation
         /// it needs to go to.
@@ -238,7 +231,7 @@ namespace ControlRoomApplication.Controllers
         public void PerformRadioTelescopeMovement(Appointment NextAppointment)
         {
             NextAppointment.Status = AppointmentConstants.IN_PROGRESS;
-            DatabaseOperations.UpdateAppointmentStatus(NextAppointment);
+            DatabaseOperations.UpdateAppointment(NextAppointment);
 
             Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment Type: " + NextAppointment.Type);
 
@@ -288,7 +281,7 @@ namespace ControlRoomApplication.Controllers
                 NextAppointment.Status = AppointmentConstants.COMPLETED;
             }
 
-            DatabaseOperations.UpdateAppointmentStatus(NextAppointment);
+            DatabaseOperations.UpdateAppointment(NextAppointment);
         }
 
         /// <summary>

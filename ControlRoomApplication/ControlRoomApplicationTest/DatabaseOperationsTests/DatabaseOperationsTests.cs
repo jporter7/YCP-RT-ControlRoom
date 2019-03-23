@@ -105,7 +105,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             appt.Status = AppointmentConstants.IN_PROGRESS;
 
-            DatabaseOperations.UpdateAppointmentStatus(appt);
+            DatabaseOperations.UpdateAppointment(appt);
             
             // update appt
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
@@ -119,7 +119,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             appt.Status = "INVALID_STATUS";
 
-            DatabaseOperations.UpdateAppointmentStatus(appt);
+            DatabaseOperations.UpdateAppointment(appt);
 
             // update appt
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);

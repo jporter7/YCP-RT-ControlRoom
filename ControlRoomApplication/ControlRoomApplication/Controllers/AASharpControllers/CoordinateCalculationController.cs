@@ -4,6 +4,7 @@ using AASharp;
 using ControlRoomApplication.Constants;
 using System.Linq;
 using System.Collections.Generic;
+using ControlRoomApplication.Database.Operations;
 
 namespace ControlRoomApplication.Controllers.AASharpControllers
 {
@@ -16,26 +17,48 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             Location = location;
         }
 
+        public Orientation CoordinateToOrientation(Coordinate coordinate, DateTime datetime)
+        {
+            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
+
+            double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
+            double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(Location.Longitude);
+            double LocalHourAngle = ApparentGreenwichSiderealTime - LongtitudeAsHourAngle - coordinate.RightAscension;
+            AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, Location.Latitude);
+
+            // Since AASharp considers south zero, flip the orientation 180 degrees
+            Horizontal.X += 180;
+            if (Horizontal.X > 360)
+            {
+                Horizontal.X -= 360;
+            }
+
+            return new Orientation(Horizontal.X, Horizontal.Y);
+        }
+
         public Orientation CalculateOrientation(Appointment appt, DateTime datetime)
         {
             switch (appt.Type)
             {
                 case (AppointmentTypeConstants.POINT):
-                    var point_coord = GetPointCoordinate(appt, datetime);
-                    return CoordinateToOrientation(point_coord, datetime);
+                    return GetPointOrientation(appt, datetime);
                 case (AppointmentTypeConstants.CELESTIAL_BODY):
-                    var celestial_body_coord = GetCelestialBodyCoordinate(appt, datetime);
-                    return CoordinateToOrientation(celestial_body_coord, datetime);
+                    return GetCelestialBodyOrientation(appt, datetime);
                 case (AppointmentTypeConstants.RASTER):
-                    var raster_coord = GetRasterCoordinate(appt, datetime);
-                    return CoordinateToOrientation(raster_coord, datetime);
+                    return GetRasterOrientation(appt, datetime);
                 case (AppointmentTypeConstants.DRIFT_SCAN):
-                    return appt.Orientation;
+                    return GetDriftScanOrienation(appt, datetime);
                 case (AppointmentTypeConstants.FREE_CONTROL):
-                    throw new NotImplementedException();
+                    return GetFreeControlOrientation(appt, datetime);
                 default:
                     throw new ArgumentException("Invalid Appt type");
             }
+        }
+
+        public Orientation GetPointOrientation(Appointment appt, DateTime datetime)
+        {
+            var point_coord = GetPointCoordinate(appt, datetime);
+            return CoordinateToOrientation(point_coord, datetime);
         }
 
         public Coordinate GetPointCoordinate(Appointment appt, DateTime datetime)
@@ -51,6 +74,73 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             }
 
             return coords[0];
+        }
+
+        public Orientation GetCelestialBodyOrientation(Appointment appt, DateTime datetime)
+        {
+            var celestial_body_coord = GetCelestialBodyCoordinate(appt, datetime);
+            return CoordinateToOrientation(celestial_body_coord, datetime);
+        }
+
+        public Coordinate GetCelestialBodyCoordinate(Appointment appt, DateTime datetime)
+        {
+            switch (appt.CelestialBody.Name)
+            {
+                case CelestialBodyConstants.SUN:
+                    return GetSunCoordinate(datetime);
+                case CelestialBodyConstants.MOON:
+                    return GetMoonCoordinate(datetime);
+                case CelestialBodyConstants.NONE:
+                case null:
+                    throw new ArgumentException("Invalid Celestial Body");
+                default:
+                    if (appt.CelestialBody.Coordinate != null)
+                    {
+                        return appt.CelestialBody.Coordinate;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Invalid Celestial Body Coordinate");
+                    }
+            }
+        }
+
+        public Coordinate GetSunCoordinate(DateTime datetime)
+        {
+            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
+            double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
+            double SunLong = AASSun.ApparentEclipticLongitude(JD, false);
+            double SunLat = AASSun.ApparentEclipticLatitude(JD, false);
+
+            AAS2DCoordinate equatorial = AASCoordinateTransformation.Ecliptic2Equatorial(SunLong, SunLat, AASNutation.TrueObliquityOfEcliptic(JD));
+            double SunRad = AASEarth.RadiusVector(JD, false);
+
+            // This line gives us RA & Declination.
+            AAS2DCoordinate SunTopo = AASParallax.Equatorial2Topocentric(equatorial.X, equatorial.Y, SunRad, Location.Longitude, Location.Latitude, Location.Altitude, JD);
+
+            return new Coordinate(SunTopo.X, SunTopo.Y);
+        }
+
+        public Coordinate GetMoonCoordinate(DateTime datetime)
+        {
+            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
+            double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
+            double MoonLong = AASMoon.EclipticLongitude(JD);
+            double MoonLat = AASMoon.EclipticLatitude(JD);
+
+            AAS2DCoordinate Equatorial = AASCoordinateTransformation.Ecliptic2Equatorial(MoonLong, MoonLat, AASNutation.TrueObliquityOfEcliptic(JD));
+            double MoonRad = AASMoon.RadiusVector(JD);
+            MoonRad /= 149597870.691; //Convert KM to AU
+
+            AAS2DCoordinate MoonTopo = AASParallax.Equatorial2Topocentric(Equatorial.X, Equatorial.Y, MoonRad, Location.Longitude, Location.Latitude, Location.Altitude, JD);
+
+            return new Coordinate(MoonTopo.X, MoonTopo.Y);
+        }
+
+        public Orientation GetRasterOrientation(Appointment appt, DateTime datetime)
+        {
+            var raster_coord = GetRasterCoordinate(appt, datetime);
+            return CoordinateToOrientation(raster_coord, datetime);
         }
 
         public Coordinate GetRasterCoordinate(Appointment appt, DateTime datetime)
@@ -128,78 +218,34 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(x, y);
         }
 
-        public Coordinate GetCelestialBodyCoordinate(Appointment appt, DateTime datetime)
+        public Orientation GetDriftScanOrienation(Appointment appt, DateTime datetime)
         {
-            switch (appt.CelestialBody.Name)
+            return appt.Orientation;
+        }
+
+        public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
+        {
+            if (appt.Orientation != null)
             {
-                case CelestialBodyConstants.SUN:
-                    return GetSunCoordinate(datetime);
-                case CelestialBodyConstants.MOON:
-                    return GetMoonCoordinate(datetime);
-                case CelestialBodyConstants.NONE:
-                case null:
-                    throw new ArgumentException("Invalid Celestial Body");
-                default:
-                    if (appt.CelestialBody.Coordinate != null)
-                    {
-                        return appt.CelestialBody.Coordinate;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Invalid Celestial Body Coordinate");
-                    }
+                var free_coord = GetFreeControlCoordinate(appt, datetime);
+                return CoordinateToOrientation(free_coord, datetime);
+            }
+            else
+            {
+                return appt.Orientation;
             }
         }
 
-        public Coordinate GetSunCoordinate(DateTime datetime)
+        public Coordinate GetFreeControlCoordinate(Appointment appt, DateTime datetime)
         {
-            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
-            double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
-            double SunLong = AASSun.ApparentEclipticLongitude(JD, false);
-            double SunLat = AASSun.ApparentEclipticLatitude(JD, false);
-            
-            AAS2DCoordinate equatorial = AASCoordinateTransformation.Ecliptic2Equatorial(SunLong, SunLat, AASNutation.TrueObliquityOfEcliptic(JD));
-            double SunRad = AASEarth.RadiusVector(JD, false);
-            
-            // This line gives us RA & Declination.
-            AAS2DCoordinate SunTopo = AASParallax.Equatorial2Topocentric(equatorial.X, equatorial.Y, SunRad, Location.Longitude, Location.Latitude, Location.Altitude, JD);
-
-           return new Coordinate(SunTopo.X, SunTopo.Y);
-        }
-
-        public Coordinate GetMoonCoordinate(DateTime datetime)
-        {
-            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
-            double JD = date.Julian + AASDynamicalTime.DeltaT(date.Julian) / 86400.0;
-            double MoonLong = AASMoon.EclipticLongitude(JD);
-            double MoonLat = AASMoon.EclipticLatitude(JD);
-
-            AAS2DCoordinate Equatorial = AASCoordinateTransformation.Ecliptic2Equatorial(MoonLong, MoonLat, AASNutation.TrueObliquityOfEcliptic(JD));
-            double MoonRad = AASMoon.RadiusVector(JD);
-            MoonRad /= 149597870.691; //Convert KM to AU
-
-            AAS2DCoordinate MoonTopo = AASParallax.Equatorial2Topocentric(Equatorial.X, Equatorial.Y, MoonRad, Location.Longitude, Location.Latitude, Location.Altitude, JD);
-
-            return new Coordinate(MoonTopo.X, MoonTopo.Y);
-        }
-
-        public Orientation CoordinateToOrientation(Coordinate coordinate, DateTime datetime)
-        {
-            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
-
-            double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
-            double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(Location.Longitude);
-            double LocalHourAngle = ApparentGreenwichSiderealTime - LongtitudeAsHourAngle - coordinate.RightAscension;
-            AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, Location.Latitude);
-
-            // Since AASharp considers south zero, flip the orientation 180 degrees
-            Horizontal.X += 180;
-            if (Horizontal.X > 360)
+            Coordinate free_coord = null;
+            if(appt.Coordinates.Count > 0)
             {
-                Horizontal.X -= 360;
+                free_coord = appt.Coordinates.First();
+                appt.Coordinates.Remove(free_coord);
+                DatabaseOperations.UpdateAppointment(appt);
             }
-
-            return new Orientation(Horizontal.X, Horizontal.Y);
+            return free_coord;
         }
     }
 }

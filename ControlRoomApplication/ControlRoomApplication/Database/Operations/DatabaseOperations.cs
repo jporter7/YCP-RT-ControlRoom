@@ -212,10 +212,10 @@ namespace ControlRoomApplication.Database.Operations
         }
 
         /// <summary>
-        /// Updates the appointment status by saving the appt passed in.
+        /// Updates the appointment by saving the appt passed in.
         /// </summary>
         /// <param name="appt"> The appt that is being updated. </param>
-        public static void UpdateAppointmentStatus(Appointment appt)
+        public static void UpdateAppointment(Appointment appt)
         { 
             if (VerifyAppointmentStatus(appt))
             {
@@ -223,8 +223,12 @@ namespace ControlRoomApplication.Database.Operations
                 {
                     // Update database appt with new status
                     var db_appt = Context.Appointments.Find(appt.Id);
-                    db_appt.Status = appt.Status;
-                    SaveContext(Context);
+                    if (db_appt != null)
+                    {
+                        DbEntityEntry<Appointment> appt_entry = Context.Entry(db_appt);
+                        appt_entry.CurrentValues.SetValues(appt);
+                        SaveContext(Context);
+                    }
                 }
             }
         }
