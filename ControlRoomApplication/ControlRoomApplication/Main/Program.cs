@@ -96,9 +96,9 @@ namespace ControlRoomApplication.Main
                     SIGINTEvent.Set();
                 };
 
-                SIGINTEvent.WaitOne();
-
                 Console.WriteLine("[Program] Sleeping... Issue SIGINT (CTRL+C) to quit.");
+
+                SIGINTEvent.WaitOne();
             }
 
             if (MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
@@ -112,7 +112,7 @@ namespace ControlRoomApplication.Main
 
             for (int i = 0; i < LoopIndex; i++)
             {
-                if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, true))
+                if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, false))
                 {
                     Console.WriteLine("[Program] Successfully brought down RT controller at index " + i.ToString());
                 }
