@@ -4,7 +4,6 @@ using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Entities
 {
-    // This is an incomplete implementation at the moment, but will be expanded on in immediate scope
     public abstract class AbstractWeatherStation : HeartbeatInterface
     {
         protected Mutex OperatingMutex;
@@ -44,17 +43,52 @@ namespace ControlRoomApplication.Entities
             KeepOperatingThreadAlive = false;
         }
 
-        public void Start()
+        public bool Start()
         {
             KeepOperatingThreadAlive = true;
-            OperatingThread.Start();
+
+            try
+            {
+                OperatingThread.Start();
+            }
+            catch (Exception e)
+            {
+                if ((e is ThreadStateException) || (e is OutOfMemoryException))
+                {
+                    return false;
+                }
+                else
+                {
+                    // Unexpected exception
+                    throw e;
+                }
+            }
+
+            return true;
         }
 
-        public void RequestKill()
+        public bool RequestKill()
         {
-            OperatingMutex.WaitOne();
-            KeepOperatingThreadAlive = false;
-            OperatingMutex.ReleaseMutex();
+            try
+            {
+                OperatingMutex.WaitOne();
+                KeepOperatingThreadAlive = false;
+                OperatingMutex.ReleaseMutex();
+            }
+            catch (Exception e)
+            {
+                if ((e is ObjectDisposedException) || (e is AbandonedMutexException) || (e is InvalidOperationException) | (e is ApplicationException))
+                {
+                    return false;
+                }
+                else
+                {
+                    // Unexpected exception
+                    throw e;
+                }
+            }
+
+            return true;
         }
 
         public void OperationLoop()

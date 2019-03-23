@@ -63,8 +63,10 @@ namespace ControlRoomApplication.Controllers
         {
             RTController = controller;
 
-            ManagementThread = new Thread(new ThreadStart(SpinRoutine));
-            ManagementThread.Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") overarching management thread";
+            ManagementThread = new Thread(new ThreadStart(SpinRoutine))
+            {
+                Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") overarching management thread"
+            };
 
             ManagementMutex = new Mutex();
             KeepThreadAlive = false;
