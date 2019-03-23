@@ -225,15 +225,21 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
         public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
         {
-            if (appt.Orientation != null)
+            Orientation free_orientation = null;
+            if (appt.Orientation == null)
             {
                 var free_coord = GetFreeControlCoordinate(appt, datetime);
-                return CoordinateToOrientation(free_coord, datetime);
+                if(free_coord != null)
+                {
+                    free_orientation = CoordinateToOrientation(free_coord, datetime);
+                }
+                
             }
             else
             {
-                return appt.Orientation;
+                free_orientation = appt.Orientation;
             }
+            return free_orientation;
         }
 
         public Coordinate GetFreeControlCoordinate(Appointment appt, DateTime datetime)
