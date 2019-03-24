@@ -101,7 +101,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
                         appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
                         appt0.Status = AppointmentConstants.REQUESTED;
-                        appt0.Type = AppointmentTypeConstants.DRIFT_SCAN;
+                        appt0.Type = AppointmentTypeConstants.FREE_CONTROL;
                         appt0.Orientation = new Orientation(30, 30);
                         appt0.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
                         appt0.TelescopeId = i + 1;
