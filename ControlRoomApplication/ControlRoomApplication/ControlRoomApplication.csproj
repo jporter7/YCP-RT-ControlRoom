@@ -152,15 +152,14 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimulator.cs" />
     <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\Program.cs" />
-    <Compile Include="Main\RTDbConfiguration.cs" />
-    <Compile Include="Main\RTDbContext.cs" />
+    <Compile Include="Database\RTDbContext.cs" />
     <Compile Include="Migrations\201902132340492_Feb13.cs" />
     <Compile Include="Migrations\201902132340492_Feb13.designer.cs">
       <DependentUpon>201902132340492_Feb13.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteDb\RemoteDbConfiguration.cs" />
+    <Compile Include="Database\RemoteDb\RemoteDbConfiguration.cs" />
     <Compile Include="Simulators\Hardware\WeatherStation\SimulationWeatherStation.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -184,9 +183,7 @@
       <DependentUpon>201902132340492_Feb13.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Hardware\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

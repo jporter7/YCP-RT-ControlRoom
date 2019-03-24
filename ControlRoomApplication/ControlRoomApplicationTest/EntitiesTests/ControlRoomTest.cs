@@ -14,7 +14,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void BuildUp()
         {
             //Initialize control room object
-            controlRoom = new ControlRoom();
+            //controlRoom = new ControlRoom();
         }
         
         [TestMethod]
