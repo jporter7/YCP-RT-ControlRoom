@@ -57,7 +57,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.DeleteLocalDatabase();
             DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(appt_count, 4 * NumRTInstances);
+            Assert.AreEqual(4 * NumRTInstances, appt_count);
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             DatabaseOperations.DeleteLocalDatabase();
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(appt_count, 0);
+            Assert.AreEqual(0, appt_count);
             DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
         }
 
@@ -73,14 +73,14 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         public void TestGetListOfAppointmentsForRadioTelescope()
         {
             var appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances);
-            Assert.AreEqual(appts.Count, 4 * NumRTInstances);
+            Assert.AreEqual(4 * NumRTInstances, appts.Count);
         }
 
         [TestMethod]
         public void TestGetTotalAppointmentCount()
         {
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(appt_count, 4 * NumRTInstances);
+            Assert.AreEqual(4 * NumRTInstances, appt_count);
         }
 
         [TestMethod]

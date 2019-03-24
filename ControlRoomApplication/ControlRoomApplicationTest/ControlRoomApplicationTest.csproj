@@ -77,6 +77,8 @@
   <ItemGroup>
     <Compile Include="ConfigurationManagerTests\ConfigurationManagerTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
+    <Compile Include="EntitiesTests\LocationTest.cs" />
+    <Compile Include="EntitiesTests\CelestialBodyTest.cs" />
     <Compile Include="EntitiesTests\AppointmentTest.cs" />
     <Compile Include="EntitiesTests\ControlRoomTest.cs" />
     <Compile Include="EntitiesTests\CoordinateTest.cs" />

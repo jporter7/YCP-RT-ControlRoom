@@ -267,8 +267,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             drift_scan_appt.Orientation = test_orientation;
 
             var orientation_orientation = CoordinateCalculationController.CalculateOrientation(drift_scan_appt, date);
-            Assert.AreEqual(orientation_orientation.Elevation, test_orientation.Elevation, 0.05);
-            Assert.AreEqual(orientation_orientation.Azimuth, test_orientation.Azimuth, 0.05);
+            Assert.AreEqual(test_orientation.Elevation, orientation_orientation.Elevation, 0.05);
+            Assert.AreEqual(test_orientation.Azimuth, orientation_orientation.Azimuth, 0.05);
         }
 
         [TestMethod]
@@ -292,8 +292,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Test free control move
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
             var free_control_orientation_2 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
-            Assert.AreEqual(free_control_orientation_2.Elevation, -37.14, 0.05);
-            Assert.AreEqual(free_control_orientation_2.Azimuth, 309.5, 0.05);
+            Assert.AreEqual(-37.14, free_control_orientation_2.Elevation, 0.05);
+            Assert.AreEqual(309.5, free_control_orientation_2.Azimuth, 0.05);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
 
             // Test free control move without coords
@@ -313,8 +313,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test free control move
             var free_control_coordinate_1 = CoordinateCalculationController.GetFreeControlCoordinate(free_control_appt);
-            Assert.AreEqual(free_control_coordinate_1.RightAscension, 0, 0.05);
-            Assert.AreEqual(free_control_coordinate_1.Declination, 0, 0.05);
+            Assert.AreEqual(0, free_control_coordinate_1.RightAscension, 0.05);
+            Assert.AreEqual(0, free_control_coordinate_1.Declination, 0.05);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
 
             // Test free control move without coords
