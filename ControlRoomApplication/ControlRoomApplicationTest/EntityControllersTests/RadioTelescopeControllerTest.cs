@@ -5,13 +5,14 @@ using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Constants;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
     [TestClass]
     public class RadioTelescopeControllerTest
     {
-        private static string ip = PLCConstants.LOCAL_HOST_IP;
+        private static string ip = "127.0.0.1";
         private static int port = PLCConstants.PORT_8080;
 
         private static RadioTelescopeController TestRadioTelescopeController;
@@ -22,13 +23,20 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             PLCClientCommunicationHandler PLCClientCommHandler = new PLCClientCommunicationHandler(ip, port);
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
-            RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCClientCommHandler, new Location(76.7046, 40.0244, 395.0)); // John Rudy Park
+            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
+            RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCClientCommHandler, location);
             TestRadioTelescopeController = new RadioTelescopeController(TestRT);
 
             TestRTPLC = new TestPLCDriver(ip, port);
-
             TestRTPLC.StartAsyncAcceptingClients();
             TestRT.PLCClient.ConnectToServer();
+        }
+
+        [TestMethod]
+        public void TestTestCommunication()
+        {
+            var test_result = TestRadioTelescopeController.TestCommunication();
+            Assert.IsTrue(test_result);
         }
 
         [TestMethod]
@@ -36,88 +44,94 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             // Create an Orientation object with an azimuth of 311 and elevation of 42
             Orientation Orientation = new Orientation(311.0, 42.0);
-            Orientation.Id = 1;
 
             // Set the RadioTelescope's CurrentOrientation field
-            TestRadioTelescopeController.RadioTelescope.CurrentOrientation = Orientation;
+            var response = TestRadioTelescopeController.MoveRadioTelescope(Orientation);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
 
             // Ensure the objects are identical
-            Assert.AreEqual(Orientation.Id, CurrentOrientation.Id);
+            Assert.IsTrue(response);
             Assert.AreEqual(Orientation.Azimuth, CurrentOrientation.Azimuth);
             Assert.AreEqual(Orientation.Elevation, CurrentOrientation.Elevation);
         }
 
         [TestMethod]
-        public void TestMoveScaleRadioTelescope()
+        public void TestGetCurrentLimitSwitchStatuses()
         {
-            // Set the controller's RadioTelescope field to the ScaleRadioTelescope
-            // Make sure to specify that we are just using the TestPLC since we do
-            // not care if what the PLC does, just how this method responds
-            PLCClientCommunicationHandler PLCController = new PLCClientCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
-            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
-            TestRadioTelescopeController.RadioTelescope = new RadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController, location);
-
-            // Create the Orientation object that the Controller will tell the
-            // Scale RadioTelescope to move to
-            Orientation MoveTo = new Orientation(311.0, 42.0);
-
-            // Call the MoveRadioTelescope method
-            TestRadioTelescopeController.MoveRadioTelescope(MoveTo);
-
-            // The Radio Telescope should now have a CurrentOrientation field that 
-            // is equivalent to the MoveTo Orientation
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Id, MoveTo.Id);
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth, MoveTo.Azimuth);
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation, MoveTo.Elevation);
-
-            // It should now be in an idle state
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.Status, RadioTelescopeStatusEnum.IDLE);
+            // Test the limit switch statuses
+            var responses = TestRadioTelescopeController.GetCurrentLimitSwitchStatuses();
+            
+            // Make sure each limit switch is online
+            foreach(var response in responses)
+            {
+                Assert.IsTrue(response);
+            }
         }
 
         [TestMethod]
-        public void TestCalibrateScaleRadioTelescope()
+        public void TestGetCurrentSafetyInterlockStatus()
         {
-            // Set the controller's RadioTelescope field to the ScaleRadioTelescope
-            // Make sure to specify that we are just using the TestPLC since we do
-            // not care if what the PLC does, just how this method responds
-            PLCClientCommunicationHandler PLCController = new PLCClientCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
-            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
-            TestRadioTelescopeController.RadioTelescope = new RadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController, location);
+            // Test the safety interlock status
+            var response = TestRadioTelescopeController.GetCurrentSafetyInterlockStatus();
 
-            // Call the CalibrateRadioTelescope method
-            TestRadioTelescopeController.CalibrateRadioTelescope();
-
-            // The Radio Telescope should now have a CurrentOrienation of (0,0)
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth, 0.0);
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation, 0.0);
-
-            // It should also now be in an idle state
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.Status, RadioTelescopeStatusEnum.IDLE);
-
+            // Make sure safety interlock is online
+            Assert.IsTrue(response);
         }
 
         [TestMethod]
-        public void TestShutdownScaleRadioTelescope()
+        public void TestCancelCurrentMoveCommand()
         {
-            // Set the controller's RadioTelescope field to the ScaleRadioTelescope
-            // Make sure to specify that we are just using the TestPLC since we do
-            // not care if what the PLC does, just how this method responds
-            PLCClientCommunicationHandler PLCController = new PLCClientCommunicationHandler(PLCConstants.LOCAL_HOST_IP, PLCConstants.PORT_8080);
-            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
-            TestRadioTelescopeController.RadioTelescope = new RadioTelescope(new SpectraCyberTestController(new SpectraCyberSimulator()), PLCController, location);
+            // Test canceling the the current move command
+            TestRadioTelescopeController.MoveRadioTelescope(new Orientation(0, 0));
+            var response = TestRadioTelescopeController.CancelCurrentMoveCommand();
 
+            // Make sure it was successful
+            Assert.IsTrue(response);
+        }
+
+        [TestMethod]
+        public void TestShutdownRadioTelescope()
+        {
             // Call the ShutdownRadioTelescope method
-            TestRadioTelescopeController.ShutdownRadioTelescope();
+            var response = TestRadioTelescopeController.ShutdownRadioTelescope();
+            Orientation orientation = TestRadioTelescopeController.GetCurrentOrientation();
 
             // The Radio Telescope should now have a CurrentOrientation of (0, -90)
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth, 0.0);
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation, -90.0);
+            Assert.IsTrue(response);
+            Assert.AreEqual(orientation.Azimuth, 0.0);
+            Assert.AreEqual(orientation.Elevation, 0.0);
+        }
 
-            // It should also now be in a shutdown state
-            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.Status, RadioTelescopeStatusEnum.SHUTDOWN);
+        [TestMethod]
+        public void TestCalibrateRadioTelescope()
+        {
+            // Call the CalibrateRadioTelescope method
+            var response = TestRadioTelescopeController.CalibrateRadioTelescope();
+
+            // The Radio Telescope should now have a CurrentOrienation of (0,0)
+            Assert.IsTrue(response);
+            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth, 0.0);
+            Assert.AreEqual(TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation, 0.0);
+        }
+
+        [TestMethod]
+        public void TestMoveRadioTelescope()
+        {
+            // Create an Orientation object with an azimuth of 311 and elevation of 42
+            Orientation Orientation = new Orientation(311.0, 42.0);
+
+            // Set the RadioTelescope's CurrentOrientation field
+            var response = TestRadioTelescopeController.MoveRadioTelescope(Orientation);
+
+            // Call the GetCurrentOrientationMethod
+            Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+
+            // Ensure the objects are identical
+            Assert.IsTrue(response);
+            Assert.AreEqual(Orientation.Azimuth, CurrentOrientation.Azimuth);
+            Assert.AreEqual(Orientation.Elevation, CurrentOrientation.Elevation);
         }
 
         [ClassCleanup]

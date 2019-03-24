@@ -14,7 +14,6 @@ namespace ControlRoomApplication.Entities.RadioTelescope
             SpectraCyberController = spectraCyberController;
             CurrentOrientation = new Orientation();
             CalibrationOrientation = new Orientation();
-            Status = RadioTelescopeStatusEnum.UNKNOWN;
             Location = location;
         }
 
@@ -31,9 +30,6 @@ namespace ControlRoomApplication.Entities.RadioTelescope
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id")]
         public int Id { get; }
-
-        [Column("status")]
-        public RadioTelescopeStatusEnum Status { get; set; }
 
         [Column("current_orientation")]
         public Orientation CurrentOrientation { get; set; }
