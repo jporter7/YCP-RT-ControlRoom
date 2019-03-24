@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Database.Operations
         /// Updates the appointment status by saving the appt passed in.
         /// </summary>
         /// <param name="Context"> The Context that is being saved. </param>
-        public static void SaveContext(RTDbContext Context)
+        private static void SaveContext(RTDbContext Context)
         {
             bool saveFailed;
             do
@@ -44,7 +44,7 @@ namespace ControlRoomApplication.Database.Operations
         /// <summary>
         /// Return the appropriate database context
         /// </summary>
-        public static RTDbContext InitializeDatabaseContext()
+        private static RTDbContext InitializeDatabaseContext()
         {
             if (USING_REMOTE_DATABASE)
             {
@@ -98,15 +98,17 @@ namespace ControlRoomApplication.Database.Operations
                         coordinate3.RightAscension = 26.3;
                         coordinate3.Declination = 85.12;
 
+                        // Add drift scan appointment
                         appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
                         appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
                         appt0.Status = AppointmentConstants.REQUESTED;
-                        appt0.Type = AppointmentTypeConstants.FREE_CONTROL;
+                        appt0.Type = AppointmentTypeConstants.DRIFT_SCAN;
                         appt0.Orientation = new Orientation(30, 30);
                         appt0.SpectraCyberModeType = SpectraCyberModeTypeEnum.CONTINUUM;
                         appt0.TelescopeId = i + 1;
                         appt0.UserId = 1;
 
+                        // Add celesital body appointment
                         appt1.StartTime = appt0.EndTime.AddSeconds(20 + rand.Next(30));
                         appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
                         appt1.Status = AppointmentConstants.REQUESTED;
@@ -116,6 +118,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt1.TelescopeId = i + 1;
                         appt1.UserId = 1;
 
+                        // Add point appointment
                         appt2.StartTime = appt1.EndTime.AddSeconds(20 + rand.Next(30));
                         appt2.EndTime = appt2.StartTime.AddSeconds(10 + rand.Next(90));
                         appt2.Status = AppointmentConstants.REQUESTED;
@@ -125,6 +128,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt2.TelescopeId = i + 1;
                         appt2.UserId = 1;
 
+                        // Add raster appointment
                         appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
                         appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
                         appt3.Status = AppointmentConstants.REQUESTED;

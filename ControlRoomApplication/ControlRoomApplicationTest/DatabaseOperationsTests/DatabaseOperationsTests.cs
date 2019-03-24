@@ -52,6 +52,38 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         }
 
         [TestMethod]
+        public void TestPopulateLocalDatabase()
+        {
+            DatabaseOperations.DeleteLocalDatabase();
+            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
+            var appt_count = DatabaseOperations.GetTotalAppointmentCount();
+            Assert.AreEqual(appt_count, 4 * NumRTInstances);
+        }
+
+        [TestMethod]
+        public void TestDeleteLocalDatabase()
+        {
+            DatabaseOperations.DeleteLocalDatabase();
+            var appt_count = DatabaseOperations.GetTotalAppointmentCount();
+            Assert.AreEqual(appt_count, 0);
+            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
+        }
+
+        [TestMethod]
+        public void TestGetListOfAppointmentsForRadioTelescope()
+        {
+            var appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances);
+            Assert.AreEqual(appts.Count, 4 * NumRTInstances);
+        }
+
+        [TestMethod]
+        public void TestGetTotalAppointmentCount()
+        {
+            var appt_count = DatabaseOperations.GetTotalAppointmentCount();
+            Assert.AreEqual(appt_count, 4 * NumRTInstances);
+        }
+
+        [TestMethod]
         public void TestCreateRFData()
         {
             DatabaseOperations.CreateRFData(appt.Id, data1);
@@ -126,6 +158,15 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             var testStatus = appt.Status;
 
             Assert.AreNotEqual(AppointmentConstants.IN_PROGRESS, testStatus);
+        }
+
+        [TestMethod]
+        public void TestGetNextAppointment()
+        {
+            var appt = DatabaseOperations.GetNextAppointment(NumRTInstances);
+            Assert.IsTrue(appt != null);
+            Assert.IsTrue(appt.StartTime > DateTime.Now);
+            Assert.IsTrue(appt.Status != AppointmentConstants.COMPLETED);
         }
     }
 }

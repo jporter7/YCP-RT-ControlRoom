@@ -265,8 +265,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             drift_scan_appt.Status = AppointmentConstants.REQUESTED;
             Orientation test_orientation = new Orientation(30, 30);
             drift_scan_appt.Orientation = test_orientation;
-            var orientation_orientation = CoordinateCalculationController.CalculateOrientation(drift_scan_appt, date);
 
+            var orientation_orientation = CoordinateCalculationController.CalculateOrientation(drift_scan_appt, date);
             Assert.AreEqual(orientation_orientation.Elevation, test_orientation.Elevation, 0.05);
             Assert.AreEqual(orientation_orientation.Azimuth, test_orientation.Azimuth, 0.05);
         }
@@ -282,21 +282,22 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             free_control_appt.Status = AppointmentConstants.REQUESTED;
             Orientation test_orientation = new Orientation(30, 30);
             free_control_appt.Orientation = test_orientation;
-            var free_control_orientation_1 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
 
+            // Test free control calibration
+            var free_control_orientation_1 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
             Assert.IsTrue(free_control_orientation_1.Elevation == test_orientation.Elevation);
             Assert.IsTrue(free_control_orientation_1.Azimuth == test_orientation.Azimuth);
             Assert.IsTrue(free_control_appt.Orientation == null);
 
+            // Test free control move
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
             var free_control_orientation_2 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
-
             Assert.AreEqual(free_control_orientation_2.Elevation, -37.14, 0.05);
             Assert.AreEqual(free_control_orientation_2.Azimuth, 309.5, 0.05);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
 
+            // Test free control move without coords
             var free_control_orientation_3 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
-
             Assert.IsTrue(free_control_orientation_3 == null);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
         }
@@ -310,14 +311,14 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             free_control_appt.Status = AppointmentConstants.REQUESTED;
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
 
+            // Test free control move
             var free_control_coordinate_1 = CoordinateCalculationController.GetFreeControlCoordinate(free_control_appt);
-
             Assert.AreEqual(free_control_coordinate_1.RightAscension, 0, 0.05);
             Assert.AreEqual(free_control_coordinate_1.Declination, 0, 0.05);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
 
+            // Test free control move without coords
             var free_control_coordinate_2 = CoordinateCalculationController.GetFreeControlCoordinate(free_control_appt);
-
             Assert.IsTrue(free_control_coordinate_2 == null);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
         }
