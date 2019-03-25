@@ -1,14 +1,12 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Main;
 
 namespace ControlRoomApplicationTest.EntitiesTests
 {
     [TestClass]
     public class ControlRoomTest
     {
-        ControlRoom controlRoom;
+        //ControlRoom controlRoom;
 
         [TestInitialize]
         public void BuildUp()

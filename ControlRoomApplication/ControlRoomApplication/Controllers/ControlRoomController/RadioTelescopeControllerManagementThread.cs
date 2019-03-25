@@ -12,10 +12,10 @@ namespace ControlRoomApplication.Controllers
     public class RadioTelescopeControllerManagementThread
     {
         public RadioTelescopeController RTController { get; private set; }
+        public CancellationToken Token { get; set; }
         private Thread ManagementThread;
         private Mutex ManagementMutex;
         private bool KeepThreadAlive;
-
         private Orientation NextObjective;
         private bool InterruptAppointmentFlag;
 
@@ -59,7 +59,7 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        public RadioTelescopeControllerManagementThread(RadioTelescopeController controller)
+        public RadioTelescopeControllerManagementThread(RadioTelescopeController controller, CancellationToken token)
         {
             RTController = controller;
 
@@ -215,7 +215,7 @@ namespace ControlRoomApplication.Controllers
             Appointment NextAppointment;
             while ((NextAppointment = DatabaseOperations.GetNextAppointment(RadioTelescopeID)) == null)
             {
-                if (InterruptAppointmentFlag)
+                if (InterruptAppointmentFlag )
                 {
                     return null;
                 }
@@ -266,7 +266,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     if (InterruptAppointmentFlag)
                     {
-                        Console.WriteLine("Interrupted appointment [" + NextAppointment.Id.ToString() +"] at " + DateTime.Now.ToString());
+                        Console.WriteLine("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                         break;
                     }
 
@@ -278,6 +278,11 @@ namespace ControlRoomApplication.Controllers
                 if (InterruptAppointmentFlag)
                 {
                     break;
+                }
+
+                if (Token.IsCancellationRequested)
+                {
+                    RequestToKill();
                 }
 
                 // Move to orientation

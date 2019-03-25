@@ -6,6 +6,7 @@ using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -15,15 +16,15 @@ namespace ControlRoomApplication.Main
 {
     public partial class MainForm : Form
     {
+        private static int numLocalDBRTInstancesCreated = 1;
         public MainForm()
         {
             InitializeComponent();
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 2;
-            DatabaseOperations.InitializeLocalConnectionOnly();
-            DatabaseOperations.PopulateLocalDatabase();
+            DatabaseOperations.InitializeDatabaseContext();
 
-            AbstractRTDriverPairList = new List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>>();
+            AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
@@ -35,36 +36,90 @@ namespace ControlRoomApplication.Main
         {
             if (textBox1.Text != null 
                 && textBox2.Text != null 
-                && comboBox3.SelectedIndex > -1
                 && comboBox1.SelectedIndex > -1)
             {
-                AbstractRadioTelescope ARadioTelescope = BuildRT();
+                RadioTelescope ARadioTelescope = BuildRT();
                 AbstractPLCDriver APLCDriver = BuildPLCDriver();
 
-                AbstractRTDriverPairList.Add(new KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
+                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
                 ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[AbstractRTDriverPairList.Count - 1].Key));
                 ProgramPLCDriverList.Add(APLCDriver);
-                ProgramControlRoomControllerList.Add(new ControlRoomController(new ControlRoom(ProgramRTControllerList[ProgramRTControllerList.Count - 1])));
+                ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()), CancellationSource.Token);
 
                 ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
-                ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PlcController.ConnectToServer();
-                ControlRoomThread = new Thread(() => ProgramControlRoomControllerList[ProgramControlRoomControllerList.Count - 1].Start(CancellationSource.Token));
-                ControlRoomThread.Name = ThreadNameConstants.CONTROL_ROOM_LOGIC_THREAD_NAME;
-                ControlRoomThread.Start();
+                ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PLCClient.ConnectToServer();
+
+                MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
+
+                if (numLocalDBRTInstancesCreated == 1)
+                {
+                    MainControlRoomController.StartWeatherMonitoringRoutine();
+                }
+
+                int ErrorIndex = -1;
+                // Start each RT controller's threaded management
+                int z = 0;
+                foreach (RadioTelescopeControllerManagementThread ManagementThread in MainControlRoomController.CRoom.RTControllerManagementThreads)
+                {
+                    int RT_ID = ManagementThread.RadioTelescopeID;
+                    List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
+
+                    Console.WriteLine("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+
+                    foreach (Appointment appt in AllAppointments)
+                    {
+                        Console.WriteLine("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
+                    }
+
+                    if (ManagementThread.Start())
+                    {
+                        numLocalDBRTInstancesCreated++;
+                        Console.WriteLine("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+                    }
+                    else
+                    {
+                        Console.WriteLine("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "] [" + z.ToString() + "]");
+                        ErrorIndex = z;
+                        break;
+                    }
+
+                    z++;
+                }
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             // Notify cancellation token
-            CancellationSource.Cancel();
+            //CancellationSource.Cancel();
 
-            if (ControlRoomThread != null)
+            if (MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
-                ControlRoomThread.Join();
+                Console.WriteLine("[Program] Successfully shut down weather monitoring routine.");
             }
+            else
+            {
+                Console.WriteLine("[Program] ERROR shutting down weather monitoring routine!");
+            }
+
+            for (int i = 0; i < numLocalDBRTInstancesCreated; i++)
+            {
+                if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, false))
+                {
+                    Console.WriteLine("[Program] Successfully brought down RT controller at index " + i.ToString());
+                }
+                else
+                {
+                    Console.WriteLine("[Program] ERROR killing RT controller at index " + i.ToString());
+                }
+
+                ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
+                ProgramRTControllerList[i].RadioTelescope.PLCClient.TerminateTCPServerConnection();
+                ProgramPLCDriverList[i].RequestStopAsyncAcceptingClients();
+            }
+
             CancellationSource.Dispose();
-            DatabaseOperations.DisposeLocalDatabaseOnly();
+            DatabaseOperations.DeleteLocalDatabase();
 
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
@@ -106,27 +161,22 @@ namespace ControlRoomApplication.Main
             dataGridView1.Refresh();
         }
 
-        public AbstractRadioTelescope BuildRT()
+        public RadioTelescope BuildRT()
         {
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
 
             // Create Radio Telescope Location
             Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
 
-            switch (comboBox3.SelectedIndex)
+
+            // Return Radio Telescope
+            if (checkBox1.Checked)
             {
-                case 0:
-                    return new ProductionRadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
-
-                case 1:
-                    // Case for the test/simulated radiotelescope.
-                    return new TestRadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
-
-                case 2:
-                    return new TestRadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
-                default:
-                    // Should be changed once we have a simulated radiotelescope class implemented
-                    return new ScaleRadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, numLocalDBRTInstancesCreated++);
+            }
+            else
+            {
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
             }
         }
 
@@ -167,11 +217,29 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        public List<KeyValuePair<AbstractRadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList { get; set; }
+        public AbstractWeatherStation BuildWeatherStation()
+        {
+            switch (comboBox2.SelectedIndex)
+            {
+                case 0:
+                    throw new NotImplementedException("The production weather station is not yet supported.");
+
+                case 1:
+                    return new SimulationWeatherStation(1000);
+
+                case 2:
+                    throw new NotImplementedException("The test weather station is not yet supported.");
+
+                default:
+                    return new SimulationWeatherStation(100);
+            }
+        }
+
+        public List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList { get; set; }
         public List<RadioTelescopeController> ProgramRTControllerList { get; set; }
         public List<AbstractPLCDriver> ProgramPLCDriverList { get; set; }
         public List<ControlRoomController> ProgramControlRoomControllerList { get; set; }
-
+        private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         private CancellationTokenSource CancellationSource { get; set; }
         private static readonly log4net.ILog logger =
