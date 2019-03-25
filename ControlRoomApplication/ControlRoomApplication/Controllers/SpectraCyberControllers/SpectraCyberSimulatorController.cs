@@ -26,12 +26,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             {
                 if (e is ArgumentNullException)
                 {
-                    Console.WriteLine("Failed creating communication thread.");
+                    Console.WriteLine("[SpectraCyberSimulatorController] Failed creating communication thread.");
                     return false;
                 }
                 else if (e is ThreadStartException || e is OutOfMemoryException)
                 {
-                    Console.WriteLine("Failed starting communication thread.");
+                    Console.WriteLine("[SpectraCyberSimulatorController] Failed starting communication thread.");
                     return false;
                 }
                 else
@@ -41,7 +41,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 }
             }
 
-            Console.WriteLine("Successfully started SpectraCyber communication and communication thread.");
+            Console.WriteLine("[SpectraCyberSimulatorController] Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
 
@@ -49,7 +49,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         {
             KillCommunicationThreadAndWait();
 
-            Console.WriteLine("Successfully killed SpectraCyber communication and communication thread.");
+            Console.WriteLine("[SpectraCyberSimulatorController] Successfully killed SpectraCyber communication and communication thread.");
             return true;
         }
 

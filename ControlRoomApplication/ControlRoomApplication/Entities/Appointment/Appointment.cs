@@ -1,5 +1,4 @@
-﻿using ControlRoomApplication.Constants;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,8 +19,7 @@ namespace ControlRoomApplication.Entities
         public Appointment()
         {
             Coordinates = new List<Coordinate>();
-            CelestialBody = "NONE";
-            Orientation = new Orientation(0, 0);
+            RFDatas = new List<RFData>();
         }
 
         /// <summary>
@@ -52,15 +50,13 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the celestial body asscociated with this Appointment.
         /// </summary>
-        [Required]
         [Column("celestial_body")]
-        public string CelestialBody { get; set; }
+        public CelestialBody CelestialBody { get; set; }
 
         /// <summary>
         /// The getter/setter for the Orientation asscociated with this Appointment.
         /// </summary>
-        [Required]
-        [Column("celestial_body")]
+        [Column("orientation")]
         public Orientation Orientation { get; set; }
 
         /// <summary>
@@ -69,6 +65,13 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("coordinates")]
         public virtual ICollection<Coordinate> Coordinates { get; set; }
+
+        /// <summary>
+        /// The getter/setter for the RFData asscociated with this Appointment.
+        /// </summary>
+        [Required]
+        [Column("rf_datas")]
+        public virtual ICollection<RFData> RFDatas { get; set; }
 
         /// <summary>
         /// The getter/setter for the telescope asscociated with this Appointment.
@@ -114,7 +117,7 @@ namespace ControlRoomApplication.Entities
             {
                 throw new ArgumentException("A Appointment object is required for comparison.", "obj");
             }
-            return this.CompareTo(other);
+            return CompareTo(other);
         }
 
         /// <summary>
@@ -124,12 +127,12 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public int CompareTo(Appointment other)
         {
-            if (object.ReferenceEquals(other, null))
+            if (ReferenceEquals(other, null))
             {
                 return 1;
             }
             // Use the DateTime Compare method to compare StartTimes
-            return DateTime.Compare(this.StartTime, other.StartTime);
+            return DateTime.Compare(StartTime, other.StartTime);
         }
 
         /// <summary>
@@ -140,11 +143,11 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public static int Compare(Appointment left, Appointment right)
         {
-            if (object.ReferenceEquals(left, right))
+            if (ReferenceEquals(left, right))
             {
                 return 0;
             }
-            if (object.ReferenceEquals(left, null))
+            if (ReferenceEquals(left, null))
             {
                 return -1;
             }
@@ -159,11 +162,11 @@ namespace ControlRoomApplication.Entities
         public override bool Equals(object obj)
         {
             Appointment other = obj as Appointment; //avoid double casting
-            if (object.ReferenceEquals(other, null))
+            if (ReferenceEquals(other, null))
             {
                 return false;
             }
-            return this.CompareTo(other) == 0;
+            return CompareTo(other) == 0;
         }
 
         /// <summary>
@@ -172,7 +175,7 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public override int GetHashCode()
         {
-            return this.StartTime.GetHashCode();
+            return StartTime.GetHashCode();
         }
 
         /// <summary>
@@ -182,9 +185,9 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public static bool operator ==(Appointment left, Appointment right)
         {
-            if (object.ReferenceEquals(left, null))
+            if (ReferenceEquals(left, null))
             {
-                return object.ReferenceEquals(right, null);
+                return ReferenceEquals(right, null);
             }
             return left.Equals(right);
         }

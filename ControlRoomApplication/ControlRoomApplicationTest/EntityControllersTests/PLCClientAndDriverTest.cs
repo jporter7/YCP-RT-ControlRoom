@@ -39,22 +39,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         }
 
         [TestMethod]
-        public void TestGetCurrentAZELPosition()
-        {
-            byte[] expectedResponse = new byte[] { 0x13, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
-            double expectedAZ = 180.0, expectedEL = 42.0;
-            Array.Copy(BitConverter.GetBytes(expectedAZ), 0, expectedResponse, 3, 8);
-            Array.Copy(BitConverter.GetBytes(expectedEL), 0, expectedResponse, 11, 8);
-
-            byte[] actualResponse = CommsHandler.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
-
-            Console.WriteLine("Get Current AZ/EL (expected): [{0}]", string.Join(", ", expectedResponse));
-            Console.WriteLine("Get Current AZ/EL (actual): [{0}]", string.Join(", ", actualResponse));
-
-            CollectionAssert.AreEqual(expectedResponse, actualResponse);
-        }
-
-        [TestMethod]
         public void TestGetCurrentLimitSwitchStatuses()
         {
             byte[] expectedResponse = new byte[] { 0x13, 0x0, 0x1, 0x55, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
@@ -115,13 +99,31 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         }
 
         [TestMethod]
-        public void TestSetObjectiveAZELPosition()
+        public void TestSetAndGetObjectiveAZELPosition()
         {
-            byte[] expectedResponse = new byte[] { 0x3, 0x0, 0x1 };
-            byte[] actualResponse = CommsHandler.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION);
+            double NewAzimuth = 23.4;
+            double NewElevation = 55.0;
 
-            Console.WriteLine("Test Setting Active Objective AZ EL Position (actual): [{0}]", string.Join(", ", actualResponse));
-            Console.WriteLine("Test Setting Active Objective AZ EL Position (expected): [{0}]", string.Join(", ", expectedResponse));
+            byte[] expectedResponse = new byte[] { 0x3, 0x0, 0x1 };
+            byte[] actualResponse = CommsHandler.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, new Orientation(NewAzimuth, NewElevation));
+
+            Console.WriteLine("Test Set Active Objective AZ/EL (actual): [{0}]", string.Join(", ", actualResponse));
+            Console.WriteLine("Test Set Active Objective AZ/EL (expected): [{0}]", string.Join(", ", expectedResponse));
+
+            CollectionAssert.AreEqual(expectedResponse, actualResponse);
+
+            Orientation NewOrientation = TestDriver.CurrentOrientation;
+            Assert.AreEqual(NewAzimuth, NewOrientation.Azimuth);
+            Assert.AreEqual(NewElevation, NewOrientation.Elevation);
+
+            expectedResponse = new byte[] { 0x13, 0x0, 0x1, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
+            Array.Copy(BitConverter.GetBytes(NewAzimuth), 0, expectedResponse, 3, 8);
+            Array.Copy(BitConverter.GetBytes(NewElevation), 0, expectedResponse, 11, 8);
+
+            actualResponse = CommsHandler.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
+
+            Console.WriteLine("Get Current AZ/EL (expected): [{0}]", string.Join(", ", expectedResponse));
+            Console.WriteLine("Get Current AZ/EL (actual): [{0}]", string.Join(", ", actualResponse));
 
             CollectionAssert.AreEqual(expectedResponse, actualResponse);
         }

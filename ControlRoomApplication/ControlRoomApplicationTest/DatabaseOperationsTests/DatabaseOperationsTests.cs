@@ -1,35 +1,29 @@
 ﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Main;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace ControlRoomApplicationTest.DatabaseOperationsTests
 {
     [TestClass]
     public class DatabaseOperationsTests
     {
-        // Test database context
-        private RTDbContext testContext;
-
         // Test RFData objects
         private RFData data1;
         private RFData data2;
         private RFData data3;
 
         // Test Appointment objects
-        private Appointment appt1;
-        private Appointment appt2;
-        private Appointment appt3;
+        private Appointment appt;
+        private int NumRTInstances = 1;
 
         [TestInitialize]
         public void BuildUp()
         {
-            // Initialize context and test context
-            DatabaseOperations.InitializeLocalConnectionOnly();
-            testContext = new RTDbContext();
+            // Initialize context
+            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
 
             // RFData initialization
             data1 = new RFData();
@@ -46,61 +40,34 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             data3.Intensity = 12987;
             data3.TimeCaptured = date.AddSeconds(10);
 
-            // Appointment initialization
-            appt1 = new Appointment();
-            appt2 = new Appointment();
-            appt3 = new Appointment();
+            // Init appt
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances)[0];
 
-            appt1.StartTime = date;
-            appt1.EndTime = date.AddHours(1);
-            appt1.Status = AppointmentConstants.IN_PROGRESS;
-            appt1.Type = AppointmentTypeConstants.POINT;
-            appt1.Coordinates = new List<Coordinate>();
-            appt1.CelestialBody = CelestialBodyConstants.NONE;
-            appt1.TelescopeId = 1;
-            appt1.UserId = 1;
-
-            appt2.StartTime = date.AddHours(2);
-            appt2.EndTime = date.AddHours(3);
-            appt2.Status = AppointmentConstants.REQUESTED;
-            appt2.Type = AppointmentTypeConstants.POINT;
-            appt2.Coordinates = new List<Coordinate>();
-            appt2.CelestialBody = CelestialBodyConstants.NONE;
-            appt2.TelescopeId = 1;
-            appt2.UserId = 1;
-
-            appt3.StartTime = date.AddHours(3);
-            appt3.EndTime = date.AddHours(4);
-            appt3.Status = AppointmentConstants.REQUESTED;
-            appt3.Type = AppointmentTypeConstants.POINT;
-            appt3.Coordinates = new List<Coordinate>();
-            appt3.CelestialBody = CelestialBodyConstants.NONE;
-            appt3.TelescopeId = 1;
-            appt3.UserId = 1;
         }
 
         [TestCleanup]
         public void TearDown()
         {
-            DatabaseOperations.DisposeLocalDatabaseOnly();
-            testContext.Database.Delete();
-            testContext.Dispose();
+            DatabaseOperations.DeleteLocalDatabase();
         }
 
         [TestMethod]
         public void TestCreateRFData()
         {
-            DatabaseOperations.CreateRFData(data1);
-            DatabaseOperations.CreateRFData(data2);
-            DatabaseOperations.CreateRFData(data3);
+            DatabaseOperations.CreateRFData(appt.Id, data1);
+            DatabaseOperations.CreateRFData(appt.Id, data2);
+            DatabaseOperations.CreateRFData(appt.Id, data3);
 
-            Assert.AreEqual(testContext.RFDatas.Find(1).Intensity, data1.Intensity);
-            Assert.AreEqual(testContext.RFDatas.Find(2).Intensity, data2.Intensity);
-            Assert.AreEqual(testContext.RFDatas.Find(3).Intensity, data3.Intensity);
+            // update appt
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
 
-            Assert.AreEqual(testContext.RFDatas.Find(1).TimeCaptured.Date, data1.TimeCaptured.Date);
-            Assert.AreEqual(testContext.RFDatas.Find(2).TimeCaptured.Date, data2.TimeCaptured.Date);
-            Assert.AreEqual(testContext.RFDatas.Find(3).TimeCaptured.Date, data3.TimeCaptured.Date);
+            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data1.Id).Intensity, data1.Intensity);
+            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data2.Id).Intensity, data2.Intensity);
+            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data3.Id).Intensity, data3.Intensity);
+
+            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data1.Id).TimeCaptured.Date, data1.TimeCaptured.Date);
+            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data2.Id).TimeCaptured.Date, data2.TimeCaptured.Date);
+            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data3.Id).TimeCaptured.Date, data3.TimeCaptured.Date);
         }
 
         [TestMethod]
@@ -108,9 +75,12 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             data1.TimeCaptured = DateTime.Now.AddDays(1);
 
-            DatabaseOperations.CreateRFData(data1);
+            DatabaseOperations.CreateRFData(appt.Id, data1);
 
-            RFData testData = testContext.RFDatas.Find(1);
+            // update appt
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+
+            RFData testData = appt.RFDatas.ToList().Find(x => x.Id == data1.Id);
 
             Assert.AreEqual(null, testData);
         }
@@ -120,9 +90,12 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             data1.Intensity = -239458;
 
-            DatabaseOperations.CreateRFData(data1);
+            DatabaseOperations.CreateRFData(appt.Id, data1);
 
-            RFData testData = testContext.RFDatas.Find(1);
+            // update appt
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+
+            RFData testData = appt.RFDatas.ToList().Find(x => x.Id == data1.Id);
 
             Assert.AreEqual(null, testData);
         }
@@ -130,14 +103,13 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestUpdateAppointmentStatus()
         {
-            testContext.Appointments.Add(appt1);
-            testContext.SaveChanges();
+            appt.Status = AppointmentConstants.IN_PROGRESS;
 
-            appt1.Status = AppointmentConstants.IN_PROGRESS;
-
-            DatabaseOperations.UpdateAppointmentStatus(appt1);
-
-            var testStatus = testContext.Appointments.Find(1).Status;
+            DatabaseOperations.UpdateAppointment(appt);
+            
+            // update appt
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+            var testStatus = appt.Status;
 
             Assert.AreEqual(AppointmentConstants.IN_PROGRESS, testStatus);
         }
@@ -145,14 +117,13 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestUpdateAppointmentStatus_InvalidStatus()
         {
-            testContext.Appointments.Add(appt1);
-            testContext.SaveChanges();
+            appt.Status = "INVALID_STATUS";
 
-            appt1.Status = "INVALID_STATUS";
+            DatabaseOperations.UpdateAppointment(appt);
 
-            DatabaseOperations.UpdateAppointmentStatus(appt1);
-
-            var testStatus = testContext.Appointments.Find(1).Status;
+            // update appt
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+            var testStatus = appt.Status;
 
             Assert.AreNotEqual(AppointmentConstants.IN_PROGRESS, testStatus);
         }

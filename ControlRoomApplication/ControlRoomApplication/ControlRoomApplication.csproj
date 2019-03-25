@@ -99,6 +99,7 @@
     <Compile Include="Constants\AppointmentConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\CelestialBodyConstants.cs" />
+    <Compile Include="Constants\HardwareConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
     <Compile Include="Constants\GenericConstants.cs" />
     <Compile Include="Constants\HeartbeatConstants.cs" />
@@ -106,10 +107,14 @@
     <Compile Include="Constants\ThreadNameConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
+    <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\GUI\MainFormController.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
+    <Compile Include="Entities\WeatherStation\AbstractWeatherStation.cs" />
+    <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Location\Location.cs" />
     <Compile Include="Entities\Plc\PLCCommandAndQueryTypeEnum.cs" />
     <Compile Include="Entities\Plc\PLCCommandResponseExpectationEnum.cs" />
@@ -125,18 +130,14 @@
     <Compile Include="Database\Operations\DatabaseOperations.cs" />
     <Compile Include="Entities\Appointment\Appointment.cs" />
     <Compile Include="Entities\Camera\AbstractCamera.cs" />
-    <Compile Include="Entities\Command\Commmand.cs" />
     <Compile Include="Entities\ControlRoom\ControlRoom.cs" />
     <Compile Include="Entities\Coordinate\Coordinate.cs" />
     <Compile Include="Entities\HeartbeatInterface\HeartbeatInterface.cs" />
     <Compile Include="Entities\HeartbeatInterface\HeartbeatTracker.cs" />
     <Compile Include="Entities\HeartbeatInterface\HeartbeatTrackerContainer.cs" />
     <Compile Include="Entities\Orientation\Orientation.cs" />
-    <Compile Include="Entities\RadioTelescope\AbstractRadioTelescope.cs" />
-    <Compile Include="Entities\RadioTelescope\ProductionRadioTelescope.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescope.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeStatusEnum.cs" />
-    <Compile Include="Entities\RadioTelescope\ScaleRadioTelescope.cs" />
-    <Compile Include="Entities\RadioTelescope\TestRadioTelescope.cs" />
     <Compile Include="Entities\RFData\RFData.cs" />
     <Compile Include="Entities\SpectraCyber\AbstractSpectraCyber.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyber.cs" />
@@ -147,7 +148,12 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
-    <Compile Include="Entities\SpectraCyber\SpectraCyberSimaultor.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
+    <Compile Include="Simulators\Hardware\AbsoluteEncoder\SimulationAbsoluteEncoder.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationMCU.cs" />
+    <Compile Include="Simulators\Hardware\MCU\SimulationStopTypeEnum.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberSimulator.cs" />
     <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\ControlWriter.cs" />
     <Compile Include="Main\MainForm.cs">
@@ -157,18 +163,15 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Main\Program.cs" />
-    <Compile Include="Main\RTDbConfiguration.cs" />
-    <Compile Include="Main\RTDbContext.cs" />
+    <Compile Include="Database\RTDbContext.cs" />
     <Compile Include="Migrations\201902132340492_Feb13.cs" />
-    <Compile Include="Migrations\201902132340492_Feb13.Designer.cs">
+    <Compile Include="Migrations\201902132340492_Feb13.designer.cs">
       <DependentUpon>201902132340492_Feb13.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteDb\RemoteDbConfiguration.cs" />
-    <Compile Include="Simulators\BackEndSim\BackEndSim.cs" />
-    <Compile Include="Simulators\FrontEndSim\FrontEndSim.cs" />
-    <Compile Include="Simulators\Server\Server.cs" />
+    <Compile Include="Database\RemoteDb\RemoteDbConfiguration.cs" />
+    <Compile Include="Simulators\Hardware\WeatherStation\SimulationWeatherStation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -178,6 +181,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Simulators\CSV\Spectra_Cyber_Sim_CSV.csv" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />

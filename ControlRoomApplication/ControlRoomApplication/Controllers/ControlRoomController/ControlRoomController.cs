@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
-using ControlRoomApplication.Constants;
-using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -14,151 +12,140 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private Thread WeatherMonitoringThread;
+        private bool KeepWeatherMonitoringThreadAlive;
+
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public ControlRoomController(ControlRoom controlRoom)
         {
-            CRoom = controlRoom;
+            ControlRoom = controlRoom;
+            WeatherMonitoringThread = new Thread(new ThreadStart(WeatherMonitoringRoutine));
+            KeepWeatherMonitoringThreadAlive = false;
         }
 
-        /// <summary>
-        /// Starts the next appointment based on chronological order.
-        /// </summary>
-        public void Start(CancellationToken token)
+        public bool StartWeatherMonitoringRoutine()
         {
             Token = token;
-            while (true && !Token.IsCancellationRequested)
+            KeepWeatherMonitoringThreadAlive = true;
+
+            try
             {
-                Appointment appt = WaitingForNextAppointment();
-                Dictionary<DateTime, Orientation> orientations = CRoom.RadioTelescopeController.CoordinateController.CalculateCoordinates(appt);
-
-                if (orientations.Count > 0)
+                if (!ControlRoom.WeatherStation.Start())
                 {
-                    Console.WriteLine("Starting appointment...");
+                    return false;
+                }
 
-                    // Calibrate telescope
-                    CalibrateRadioTelescope();
-                    
-                    // Start movement thread
-                    Thread movementThread = new Thread(() => StartRadioTelescope(appt, orientations));
-                    movementThread.Start();
-                    // Start SpectraCyber
-                    StartReadingData(appt);
-                    
-                    // End PLC thread & SpectraCyber 
-                    movementThread.Join();
-                    StopReadingRFData();
-                    
-                    // Stow Telescope
-                    EndAppointment();
-
-                    Console.WriteLine("Appointment completed.");
-                    logger.Info("Appointment completed.");
+                WeatherMonitoringThread.Start();
+            }
+            catch (Exception e)
+            {
+                if ((e is ThreadStateException) || (e is OutOfMemoryException))
+                {
+                    return false;
                 }
                 else
                 {
-                    logger.Info("Appointment coordinate is null.");
-                }  
-            }
-        }
-
-        /// <summary>
-        /// Waits for the next chronological appointment's start time to be less than 10 minutes
-        /// from the current time of day. Once we are 10 minutes from the appointment's start time
-        /// we should begin operations such as calibration.
-        /// </summary>
-        /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
-        public Appointment WaitingForNextAppointment()
-        {
-            Appointment appt = null;
-            while (appt == null)
-            {
-                appt = DatabaseOperations.GetNextAppointment();
-                if (appt == null)
-                {
-                    Thread.Sleep(5000); // delay between checking database for new appointments
+                    // Unexpected exception
+                    throw e;
                 }
             }
 
-            TimeSpan diff = appt.StartTime - DateTime.Now;
+            return true;
+        }
 
-            logger.Info("Waiting for the next appointment to be within 10 minutes.");
-            while (diff.TotalMinutes > 1)
+        public bool RequestToKillWeatherMonitoringRoutine()
+        {
+            KeepWeatherMonitoringThreadAlive = false;
+
+            try
             {
-                diff = appt.StartTime - DateTime.Now;
+                WeatherMonitoringThread.Join();
             }
-
-            logger.Info("The next appointment is now within the correct timeframe.");
-            return appt;
-        }
-
-        /// <summary>
-        /// Ends an appointment by returning the RT to the stow position.
-        /// This probably does not need to be done if an appointment is within
-        /// ????? amount of minutes/hours but that can be determined later.
-        /// </summary>
-        public void CalibrateRadioTelescope()
-        {
-            CRoom.RadioTelescopeController.CalibrateRadioTelescope();
-        }
-
-        /// <summary>
-        /// Starts movement of the RT by updating the appointment status and
-        /// then calling the RT controller to move the RT to the orientation
-        /// it needs to go to. This will have to be refactored to work with a 
-        /// set of Orientations as opposed to one orientation.
-        /// </summary>
-        /// <param name="appt"> The appointment that is currently running. </param>
-        /// <param name="orientation"> The orientation that the RT is going to. </param>
-        public void StartRadioTelescope(Appointment appt, Dictionary<DateTime, Orientation> orientations)
-        {
-            appt.Status = AppointmentConstants.IN_PROGRESS;
-            foreach(DateTime datetime in orientations.Keys)
+            catch (Exception e)
             {
-                while(DateTime.Now < datetime)
+                if ((e is ThreadStateException) || (e is ThreadInterruptedException))
                 {
-                    // wait for timestamp
-                    // Console.WriteLine(datetime.ToString() + " vs. " + DateTime.Now.ToString());
-                    if (Token.IsCancellationRequested)
-                    {
-                        return;
-                    }
+                    return false;
                 }
-                Orientation orientation = orientations[datetime];
-                CRoom.RadioTelescopeController.MoveRadioTelescope(orientation);
+                else
+                {
+                    // Unexpected exception
+                    throw e;
+                }
             }
-            appt.Status = AppointmentConstants.COMPLETED;
+
+            return true;
         }
 
-        /// <summary>
-        /// Ends an appointment by returning the RT to the stow position.
-        /// This probably does not need to be done if an appointment is within
-        /// ????? amount of minutes/hours but that can be determined later.
-        /// </summary>
-        public void EndAppointment()
+        public void WeatherMonitoringRoutine()
         {
-            Orientation stow = new Orientation(0, 90);
-            CRoom.RadioTelescopeController.MoveRadioTelescope(stow);
+            while (KeepWeatherMonitoringThreadAlive)
+            {
+                Console.WriteLine("[ControlRoomController] Weather station reading: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
+                if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
+                {
+                    Console.WriteLine("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                }
+
+                Thread.Sleep(1000);
+            }
         }
 
-        /// <summary>
-        /// Calls the SpectraCyber controller to start the SpectraCyber readings.
-        /// </summary>
-        public void StartReadingData(Appointment appt)
+        public bool AddRadioTelescopeController(RadioTelescopeController rtController)
         {
-            var spectraCyberController = CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController;
-            spectraCyberController.SetSpectraCyberModeType(appt.SpectraCyberModeType);
-            spectraCyberController.SetActiveAppointmentID(appt.Id);
-            spectraCyberController.StartScan();
+            if (ControlRoom.RadioTelescopes.Contains(rtController.RadioTelescope))
+            {
+                return false;
+            }
+
+            ControlRoom.RTControllerManagementThreads.Add(new RadioTelescopeControllerManagementThread(rtController));
+            return true;
         }
 
-        /// <summary>
-        /// Calls the SpectraCyber controller to stop the SpectraCyber readings.
-        /// </summary>
-        public void StopReadingRFData()
+        public bool AddRadioTelescopeControllerAndStart(RadioTelescopeController rtController)
         {
-            var spectraCyberController = CRoom.RadioTelescopeController.RadioTelescope.SpectraCyberController;
-            spectraCyberController.StopScan();
-            spectraCyberController.RemoveActiveAppointmentID();
-            spectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
+            if (AddRadioTelescopeController(rtController))
+            {
+                return ControlRoom.RTControllerManagementThreads[ControlRoom.RTControllerManagementThreads.Count - 1].Start();
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool RemoveRadioTelescopeControllerAt(int rtControllerIndex, bool waitForAnyTasks)
+        {
+            if ((rtControllerIndex < 0) || (rtControllerIndex >= ControlRoom.RTControllerManagementThreads.Count))
+            {
+                return false;
+            }
+
+            RadioTelescopeControllerManagementThread ToBeRemovedRTMT = ControlRoom.RTControllerManagementThreads[rtControllerIndex];
+
+            if (ToBeRemovedRTMT.Busy && (!waitForAnyTasks))
+            {
+                ToBeRemovedRTMT.KillWithHardInterrupt();
+            }
+            else
+            {
+                ToBeRemovedRTMT.RequestToKill();
+            }
+
+            if (ToBeRemovedRTMT.WaitToJoin())
+            {
+                return ControlRoom.RTControllerManagementThreads.Remove(ToBeRemovedRTMT);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool RemoveRadioTelescopeController(RadioTelescopeController rtController, bool waitForAnyTasks)
+        {
+            return RemoveRadioTelescopeControllerAt(ControlRoom.RadioTelescopeControllers.IndexOf(rtController), waitForAnyTasks);
         }
     }
 }

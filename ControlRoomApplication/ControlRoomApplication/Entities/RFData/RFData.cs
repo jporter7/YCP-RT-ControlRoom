@@ -17,6 +17,10 @@ namespace ControlRoomApplication.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [ForeignKey("appointment_id")]
+        public virtual Appointment Appointment { get; set; }
+        public int? appointment_id { get; set; }
+
         [Required]
         [Column("time_captured")]
         public DateTime TimeCaptured { get; set; }

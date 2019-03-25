@@ -1,34 +1,48 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Entities
 {
     public class ControlRoom
     {
-        public RadioTelescopeController RadioTelescopeController { get; set; }
-        //public RTDbContext Context { get; set; }
-        //public List<Appointment> Appointments
-        //{
-        //    get
-        //    {
-        //        return Context.Appointments.ToList();
-        //    }
-        //    set
-        //    {
-        //        foreach (Appointment appt in value)
-        //        {
-        //            Context.Appointments.Add(appt);
-        //            Context.SaveChanges();
-        //        }
-        //    }
-        //}
+        public List<RadioTelescopeControllerManagementThread> RTControllerManagementThreads { get; }
+        public AbstractWeatherStation WeatherStation { get; }
 
-        public ControlRoom(RadioTelescopeController controller)
+        public List<RadioTelescopeController> RadioTelescopeControllers
         {
-            RadioTelescopeController = controller;
-            //Context = dbContext;
+            get
+            {
+                List<RadioTelescopeController> rtControllers = new List<RadioTelescopeController>();
+
+                foreach (RadioTelescopeControllerManagementThread rtmt in RTControllerManagementThreads)
+                {
+                    rtControllers.Add(rtmt.RTController);
+                }
+
+                return rtControllers;
+            }
+        }
+
+        public List<RadioTelescope.RadioTelescope> RadioTelescopes
+        {
+            get
+            {
+                List<RadioTelescope.RadioTelescope> RTList = new List<RadioTelescope.RadioTelescope>();
+
+                foreach (RadioTelescopeControllerManagementThread rtmt in RTControllerManagementThreads)
+                {
+                    RTList.Add(rtmt.RTController.RadioTelescope);
+                }
+
+                return RTList;
+            }
+        }
+
+        public ControlRoom(AbstractWeatherStation weatherStation)
+        {
+            RTControllerManagementThreads = new List<RadioTelescopeControllerManagementThread>();
+            WeatherStation = weatherStation;
         }
     }
 }

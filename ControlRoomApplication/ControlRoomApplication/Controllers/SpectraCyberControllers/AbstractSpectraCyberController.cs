@@ -9,7 +9,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 {
     public abstract class AbstractSpectraCyberController : HeartbeatInterface
     {
-        protected AbstractRadioTelescope Parent { get; set; }
+        protected RadioTelescope Parent { get; set; }
         protected AbstractSpectraCyber SpectraCyber { get; set; }
         protected SpectraCyberScanSchedule Schedule { get; set; }
 
@@ -26,12 +26,12 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             SpectraCyber.CurrentModeType = SpectraCyberModeTypeEnum.CONTINUUM;
         }
 
-        public AbstractRadioTelescope GetParent()
+        public RadioTelescope GetParent()
         {
             return Parent;
         }
 
-        public void SetParent(AbstractRadioTelescope rt)
+        public void SetParent(RadioTelescope rt)
         {
             Parent = rt;
         }
@@ -66,14 +66,14 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             SendCommand(Request, ref Response);
 
             string ResponseData = Response.SerialIdentifier + Response.DecimalData.ToString("X3");
-            Console.WriteLine("Attempted RESET with command \"!R000\", heard back: " + ResponseData);
+            Console.WriteLine("[AbstractSpectraCyberController] Attempted RESET with command \"!R000\", heard back: " + ResponseData);
         }
 
         private bool SetSomeOffsetVoltage(double offset, char identifier)
         {
             if ((offset < 0.0) || (offset > 4.095))
             {
-                Console.WriteLine("ERROR: input voltage outside of range [0, 4.095]");
+                Console.WriteLine("[AbstractSpectraCyberController] ERROR: input voltage outside of range [0, 4.095]");
                 return false;
             }
 
@@ -250,7 +250,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 {
                     AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointmentID);
                     Schedule.Consume();
-                    Console.WriteLine("SC Scan");
+                    //Console.WriteLine("[AbstractSpectraCyberController] SC Scan");
                 }
 
                 // Tell the loop to break on its next pass (so the mutex is still released if the flag is high)
@@ -283,8 +283,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             //
             // Add to database
             //
-            rfData.Id = appId;
-            DatabaseOperations.CreateRFData(rfData);
+            DatabaseOperations.CreateRFData(appId, rfData);
 
             return rfData;
         }

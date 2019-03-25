@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 {
     public class RadioTelescopeController
     {
-        public AbstractRadioTelescope RadioTelescope { get; set; }
+        public RadioTelescope RadioTelescope { get; set; }
         public CoordinateCalculationController CoordinateController { get; set; }
 
         /// <summary>
@@ -16,19 +16,10 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// corresponding field.
         /// </summary>
         /// <param name="radioTelescope"></param>
-        public RadioTelescopeController(AbstractRadioTelescope radioTelescope)
+        public RadioTelescopeController(RadioTelescope radioTelescope)
         {
             RadioTelescope = radioTelescope;
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
-        }
-
-        /// <summary>
-        /// A simple getter for the underlying abstract RT model.
-        /// </summary>
-        /// <returns> The abstarct RT that this instance is controlling </returns>
-        public AbstractRadioTelescope GetAbstractRadioTelescopeModel()
-        {
-            return RadioTelescope;
         }
 
         /// <summary>
@@ -39,10 +30,10 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
         /// <returns> Whether or not the RT responded. </returns>
-        public bool TestRadioTelescopeCommunication()
+        public bool TestCommunication()
         {
-            byte[] ByteResponse = RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.TEST_CONNECTION);
-            return (ByteResponse[2] == 0x1) && (ByteResponse[3] == 0x1);
+            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TEST_CONNECTION);
+            return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
         }
 
         /// <summary>
@@ -55,9 +46,9 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-            byte[] ByteResponse = RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
+            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
 
-            if (ByteResponse[2] != 0x1)
+            if (!ResponseMetBasicExpectations(ByteResponse, 0x13))
             {
                 return null;
             }
@@ -72,10 +63,76 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
-        public Orientation GetCurrentLimitSwitchStatuses()
+        /// <returns>
+        ///     An array of four booleans, where "true" means that the limit switch was triggered, and "false" means otherwise.
+        ///     The order of the limit switches are as follows:
+        ///         0: Under rotation for azimuth
+        ///         1: Over rotation for azimuth
+        ///         2: Under rotation for elevation
+        ///         3: Over rotation for elevation
+        /// </returns>
+        public bool[] GetCurrentLimitSwitchStatuses()
         {
-            return null;
+            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
+
+            if (!ResponseMetBasicExpectations(ByteResponse, 0x13))
+            {
+                return null;
+            }
+
+            bool[] Statuses = new bool[4];
+
+            byte DataByte = ByteResponse[3];
+            for (int i = 0; i < 4; i++)
+            {
+                switch (PLCLimitSwitchStatusConversionHelper.GetFromByte((byte)(DataByte >> (2 * (3 - i)))))
+                {
+                    case PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS:
+                        {
+                            Statuses[i] = true;
+                            break;
+                        }
+
+                    case PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS:
+                        {
+                            Statuses[i] = false;
+                            break;
+                        }
+
+                    default:
+                        {
+                            throw new NotImplementedException("Unrecognized/Invalid response for byte-casted limit switch status.");
+                        }
+                }
+            }
+
+            return Statuses;
+        }
+
+        /// <summary>
+        /// Gets the status of the interlock system associated with this Radio Telescope.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        /// <returns> Returns true if the safety interlock system is still secured, false otherwise. </returns>
+        public bool GetCurrentSafetyInterlockStatus()
+        {
+            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_SAFETY_INTERLOCK_STATUS);
+            return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
+        }
+
+        /// <summary>
+        /// Method used to cancel this Radio Telescope's current attempt to change orientation.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool CancelCurrentMoveCommand()
+        {
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION));
         }
 
         /// <summary>
@@ -86,9 +143,21 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public void ShutdownRadioTelescope()
+        public bool ShutdownRadioTelescope()
         {
-            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SHUTDOWN);
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SHUTDOWN));
+        }
+
+        /// <summary>
+        /// Method used to calibrate the Radio Telescope before each observation.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool CalibrateRadioTelescope()
+        {
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE));
         }
 
         /// <summary>
@@ -99,9 +168,9 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public void MoveRadioTelescope(Orientation orientation)
+        public bool MoveRadioTelescope(Orientation orientation)
         {
-            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation);
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation));
         }
 
         /// <summary>
@@ -112,21 +181,19 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public void MoveRadioTelescope(Coordinate coordinate)
+        public bool MoveRadioTelescope(Coordinate coordinate)
         {
-            MoveRadioTelescope(CoordinateController.CoordinateToOrientation(coordinate, DateTime.Now));
+            return MoveRadioTelescope(CoordinateController.CoordinateToOrientation(coordinate, DateTime.Now));
         }
 
-        /// <summary>
-        /// Method used to calibrate the Radio Telescope before each observation.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        public void CalibrateRadioTelescope()
+        private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
         {
-            RadioTelescope.PlcController.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE);
+            return ((ResponseBytes[0] + (ResponseBytes[1] * 16)) == ExpectedSize) && (ResponseBytes[2] == 0x1);
+        }
+
+        private static bool MinorResponseIsValid(byte[] MinorResponseBytes)
+        {
+            return ResponseMetBasicExpectations(MinorResponseBytes, 0x3);
         }
 
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
