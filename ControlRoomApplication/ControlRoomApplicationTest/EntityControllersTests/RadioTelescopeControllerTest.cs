@@ -24,7 +24,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             PLCClientCommunicationHandler PLCClientCommHandler = new PLCClientCommunicationHandler(ip, port);
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
-            RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCClientCommHandler, location);
+            RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCClientCommHandler, location, new Orientation(0, 0));
             TestRadioTelescopeController = new RadioTelescopeController(TestRT);
 
             TestRTPLC = new TestPLCDriver(ip, port);
