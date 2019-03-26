@@ -23,11 +23,11 @@ namespace ControlRoomApplicationTest.EntitiesTests
             rtManagementThreads = new List<RadioTelescopeControllerManagementThread>()
             {
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location(), new Orientation(0,0)))),
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location(), new Orientation(0,0)))),
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location(), new Orientation(0,0)))),
             };
 
             controlRoom = new ControlRoom(weatherStation);
