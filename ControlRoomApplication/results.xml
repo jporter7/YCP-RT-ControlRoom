@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CoverageSession xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Version="4.7.922.0">
+  <Summary numSequencePoints="0" visitedSequencePoints="0" numBranchPoints="0" visitedBranchPoints="0" sequenceCoverage="0" branchCoverage="0" maxCyclomaticComplexity="0" minCyclomaticComplexity="0" maxCrapScore="0" minCrapScore="0" visitedClasses="0" numClasses="0" visitedMethods="0" numMethods="0" />
+  <Modules>
+    <Module skippedDueTo="Filter" hash="58-BD-AB-C6-79-45-26-8A-DD-DB-04-BD-C6-FD-3C-BE-C7-BA-B2-04">
+      <ModulePath>C:\WINDOWS\Microsoft.Net\assembly\GAC_32\mscorlib\v4.0_4.0.0.0__b77a5c561934e089\mscorlib.dll</ModulePath>
+      <ModuleTime>2019-01-08T03:05:36.8223303Z</ModuleTime>
+      <ModuleName>mscorlib</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="2B-57-28-48-4B-F1-70-06-20-31-2C-41-13-9F-C4-08-F9-BA-B0-FA">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\vstest.console.exe</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>vstest.console</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="0A-C1-B4-28-34-56-20-41-1A-9C-A4-EB-7E-A1-15-87-7F-93-99-11">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.TestPlatform.CoreUtilities.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.TestPlatform.CoreUtilities</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="B2-06-7D-FB-E9-C5-90-1F-12-4D-6E-5D-37-9A-91-73-FE-58-BB-39">
+      <ModulePath>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System\v4.0_4.0.0.0__b77a5c561934e089\System.dll</ModulePath>
+      <ModuleTime>2019-01-08T03:05:36.6973284Z</ModuleTime>
+      <ModuleName>System</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="E2-9B-76-52-06-68-31-0A-F2-13-8D-E5-66-4B-CB-72-54-F5-25-91">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.ObjectModel</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="52-F0-BD-73-C3-DF-89-35-A8-A7-C7-A3-98-07-E8-AD-FC-2A-D5-71">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.VisualStudio.TestPlatform.Client.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Client</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="BE-0B-4C-76-65-A6-CD-34-75-43-CD-C1-38-AD-9D-90-4F-8C-A9-17">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.VisualStudio.TestPlatform.Common.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Common</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="B9-05-2F-F0-B5-34-29-CD-73-A5-65-7D-D6-7B-7B-2F-20-82-C5-E4">
+      <ModulePath>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Core\v4.0_4.0.0.0__b77a5c561934e089\System.Core.dll</ModulePath>
+      <ModuleTime>2019-01-08T03:05:37.3692153Z</ModuleTime>
+      <ModuleName>System.Core</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="7F-EE-8E-97-FA-E2-59-75-F0-CF-46-F0-A9-DD-9B-6C-27-65-2E-71">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.TestPlatform.PlatformAbstractions.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.TestPlatform.PlatformAbstractions</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="F2-26-5B-FA-55-E9-5B-BC-DD-3A-32-56-2C-38-71-11-1A-8E-6D-32">
+      <ModulePath>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Xml\v4.0_4.0.0.0__b77a5c561934e089\System.Xml.dll</ModulePath>
+      <ModuleTime>2018-04-11T23:35:17.0290261Z</ModuleTime>
+      <ModuleName>System.Xml</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="33-56-B1-17-80-A6-AB-B9-BB-55-98-0E-59-4F-65-9E-16-CF-71-DE">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.TestPlatform.Utilities.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.TestPlatform.Utilities</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="2A-F4-1C-14-5D-7A-74-B3-03-8B-1D-2A-59-DC-B6-BE-1D-C8-EF-54">
+      <ModulePath>C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.Configuration\v4.0_4.0.0.0__b03f5f7f11d50a3a\System.Configuration.dll</ModulePath>
+      <ModuleTime>2018-04-11T23:35:16.9508953Z</ModuleTime>
+      <ModuleName>System.Configuration</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="C3-35-A9-06-AC-22-F7-86-70-9B-D5-E1-5E-33-7A-FB-CC-11-9F-E7">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.TestPlatform.CrossPlatEngine.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.TestPlatform.CrossPlatEngine</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="71-C1-7F-AB-9A-C2-9C-16-19-B9-17-D8-2C-82-92-BF-AF-45-9C-E8">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.TestPlatform.Extensions.BlameDataCollector.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.TestPlatform.Extensions.BlameDataCollector</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="8E-44-CC-3A-84-B7-A1-24-B1-4B-C9-E7-62-E3-BB-D7-3B-4E-C1-B6">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.TestPlatform.Extensions.EventLogCollector.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.TestPlatform.Extensions.EventLogCollector</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="C4-C4-2C-2F-E3-10-7D-18-4B-53-DA-3A-DA-71-BB-1B-60-1B-70-93">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.TestPlatform.TestHostRuntimeProvider</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="C2-DB-57-F7-50-B2-1E-38-93-84-80-58-0A-80-AA-3F-3B-C9-9E-61">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.CodedWebTestAdapter.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Extensions.CodedWebTestAdapter</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="F1-6D-C1-3F-0F-18-3E-4E-9F-CE-2A-37-F2-E9-57-05-A9-99-AC-7E">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.TmiAdapter.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Extensions.TmiAdapter</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="37-A8-55-F2-CE-4E-22-F4-32-B8-F8-E7-F6-D9-A6-40-D7-BF-44-DD">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.VisualStudio.QualityTools.Common.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.QualityTools.Common</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="02-BC-E3-E3-AD-60-EA-F1-B9-A5-D9-07-88-35-C8-45-54-2D-E6-7D">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.GenericTestAdapter.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Extensions.GenericTestAdapter</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="7A-83-1A-2B-22-AF-71-58-DE-50-7C-BA-2D-1E-89-7E-B1-61-7C-FB">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.OrderedTestAdapter.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Extensions.OrderedTestAdapter</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="A4-28-17-EB-B6-3D-37-78-C1-B4-34-17-70-DC-45-69-BA-4D-D0-78">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="96-64-E1-45-83-51-90-AF-5E-EE-09-BC-84-C5-B9-D7-C0-BE-11-7E">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.VSTestIntegration.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Extensions.VSTestIntegration</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="C8-3A-41-D7-09-CD-46-03-34-ED-CC-45-80-CD-E2-EE-A0-CB-77-E0">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.QualityTools.UnitTestFramework</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="Filter" hash="81-DE-20-6D-F7-FE-B6-53-CF-0D-4F-C8-06-44-8E-18-D6-1D-D4-22">
+      <ModulePath>C:\WINDOWS\Microsoft.Net\assembly\GAC_32\System.Data\v4.0_4.0.0.0__b77a5c561934e089\System.Data.dll</ModulePath>
+      <ModuleTime>2018-10-11T03:09:37.2288781Z</ModuleTime>
+      <ModuleName>System.Data</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="67-E6-B1-AA-8A-95-A9-9A-FA-8D-13-0A-58-46-54-46-FB-94-B4-E5">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.WebTestAdapter.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestPlatform.Extensions.WebTestAdapter</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="59-CA-45-36-9A-7C-27-D2-4A-4D-ED-5E-A1-34-41-51-B8-C0-C8-F9">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestTools.CppUnitTestFramework.ComInterfaces.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestTools.CppUnitTestFramework.ComInterfaces</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="EE-3E-97-E7-E5-4D-5C-91-62-C8-CE-55-BF-9A-F1-89-5D-82-F8-C0">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestTools.CppUnitTestFramework.CppUnitTestExtension.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestTools.CppUnitTestFramework.CppUnitTestExtension</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="DE-AD-F8-A7-5B-A6-B2-20-83-FF-43-4C-BD-0C-B8-97-E8-1A-31-09">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestTools.DataCollection.MediaRecorder.Model.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestTools.DataCollection.MediaRecorder.Model</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="DB-63-2E-94-89-FF-65-9C-6E-56-44-F9-02-E9-48-F0-0D-F4-C3-BE">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestTools.DataCollection.VideoRecorderCollector.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TestTools.DataCollection.VideoRecorderCollector</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="BC-A1-30-20-B3-AA-35-97-7A-BB-96-A5-F7-7D-38-CD-FA-68-2D-98">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TraceDataCollector.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.TraceDataCollector</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="1C-DA-AB-10-50-27-F0-09-E2-42-3A-D9-73-AF-7A-F6-5A-53-2B-83">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.VisualStudio.ArchitectureTools.PEReader.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.ArchitectureTools.PEReader</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="20-E8-10-CB-98-99-87-05-0F-6F-62-47-86-5B-0A-6A-60-4D-6E-9A">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.IntelliTrace.Core.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.IntelliTrace.Core</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="7A-DA-18-9A-A4-16-B6-54-CE-97-4A-A9-36-E4-F3-CA-EC-26-7D-D9">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.UwpTestHostRuntimeProvider.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.UwpTestHostRuntimeProvider</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="A9-2D-60-47-E9-62-46-61-02-F7-F7-63-F2-F0-B8-AF-33-73-05-29">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\PrivateAssemblies\Microsoft.VisualStudio.Telemetry.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.Telemetry</ModuleName>
+      <Classes />
+    </Module>
+    <Module skippedDueTo="MissingPdb" hash="A8-36-98-B2-C8-7B-B8-7B-33-42-15-84-6C-E4-31-A7-C8-ED-D9-A7">
+      <ModulePath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\Extensions\TestPlatform\Microsoft.VisualStudio.UwpTestHostRuntimeProvider.Deployment.dll</ModulePath>
+      <ModuleTime>2018-09-05T18:05:36.5287204Z</ModuleTime>
+      <ModuleName>Microsoft.VisualStudio.UwpTestHostRuntimeProvider.Deployment</ModuleName>
+      <Classes />
+    </Module>
+  </Modules>
+</CoverageSession>
