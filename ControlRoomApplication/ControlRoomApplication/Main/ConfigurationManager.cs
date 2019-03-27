@@ -76,11 +76,11 @@ namespace ControlRoomApplication.Main
             // Return Radio Telescope
             if (usingLocalDB)
             {
-                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, NumLocalDBRTInstancesCreated++);
+                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, new Orientation(0,0), NumLocalDBRTInstancesCreated++);
             }
             else
             {
-                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location);
+                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, new Orientation(0, 0));
             }
         }
 
