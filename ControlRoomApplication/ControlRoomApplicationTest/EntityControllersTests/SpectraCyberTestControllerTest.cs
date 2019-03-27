@@ -24,7 +24,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
         }
 
-        [TestCleanup]
+        [TestMethod]
         public void TestInitialization()
         {
             Assert.IsNotNull(spectraCyberTestController);
@@ -40,12 +40,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public void TestBringDown()
         {
             Assert.IsTrue(spectraCyberTestController.BringDown());
-        }
-
-        [TestMethod]
-        public void TestIfComponentIsAlive()
-        {
-
         }
     }
 }
