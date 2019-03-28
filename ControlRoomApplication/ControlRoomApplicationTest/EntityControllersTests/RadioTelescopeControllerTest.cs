@@ -124,7 +124,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static void BringDown()
         {
             TestRadioTelescopeController.RadioTelescope.PLCClient.TerminateTCPServerConnection();
-            TestRTPLC.RequestStopAsyncAcceptingClients();
+            TestRTPLC.RequestStopAsyncAcceptingClientsAndJoin();
         }
     }
 }

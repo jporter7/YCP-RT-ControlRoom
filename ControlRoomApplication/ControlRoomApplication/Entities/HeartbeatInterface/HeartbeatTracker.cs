@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ControlRoomApplication.Entities
 {
@@ -15,11 +16,21 @@ namespace ControlRoomApplication.Entities
 
         public void AddChild(HeartbeatInterface Child)
         {
+            if (Children.Contains(Child))
+            {
+                throw new ArgumentException("Error trying to add a heartbeat child: this heartbeat-tracker already contains this instance.");
+            }
+
             Children.Add(Child);
         }
 
         public void RemoveChild(HeartbeatInterface Child)
         {
+            if (!Children.Contains(Child))
+            {
+                throw new ArgumentException("Error trying to remove a heartbeat child: this heartbeat-tracker does not contain this instance.");
+            }
+
             Children.Remove(Child);
         }
 

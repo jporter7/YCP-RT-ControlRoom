@@ -80,12 +80,17 @@
     <Compile Include="EntitiesTests\AppointmentTest.cs" />
     <Compile Include="EntitiesTests\ControlRoomTest.cs" />
     <Compile Include="EntitiesTests\CoordinateTest.cs" />
+    <Compile Include="EntitiesTests\HeartbeatTrackerContainerTest.cs" />
     <Compile Include="EntitiesTests\OrientationTest.cs" />
+    <Compile Include="EntitiesTests\PLCCommandResponseExpectationEnumTest.cs" />
     <Compile Include="EntitiesTests\PLCTest.cs" />
     <Compile Include="EntitiesTests\RFDataTest.cs" />
+    <Compile Include="EntitiesTests\SpectraCyberResponseTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberTest.cs" />
+    <Compile Include="EntityControllersTests\AbstractPLCDriverTest.cs" />
     <Compile Include="EntityControllersTests\ControlRoomControllerTest.cs" />
     <Compile Include="EntityControllersTests\CoordinateCalculationControllerTest.cs" />
+    <Compile Include="EntityControllersTests\RadioTelescopeControllerManagementThreadTest.cs" />
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCClientAndDriverTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />

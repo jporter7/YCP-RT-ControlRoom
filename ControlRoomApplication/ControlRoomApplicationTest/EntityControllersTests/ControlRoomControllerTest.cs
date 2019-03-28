@@ -1,38 +1,43 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
     [TestClass]
     public class ControlRoomControllerTest
     {
-        private static ControlRoomController CRController;
-
-        private static RadioTelescopeController RTController0;
-        private static RadioTelescopeController RTController1;
-        private static RadioTelescopeController RTController2;
-
-        private static Location JohnRudyPark = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
-        private static ControlRoom CRoom = new ControlRoom();
+        public static ControlRoomController CRController;
+        public static ControlRoom ControlRoom;
+        public static Location JohnRudyPark;
+        public static string IP = PLCConstants.LOCAL_HOST_IP;
+        public static int Port = PLCConstants.PORT_8080;
+        public static RadioTelescopeController RTController0;
+        public static RadioTelescopeController RTController1;
+        public static RadioTelescopeController RTController2;
 
         [ClassInitialize]
         public static void BringUp(TestContext context)
         {
-            CRController = new ControlRoomController(CRoom);
+            ControlRoom = new ControlRoom(new SimulationWeatherStation(100));
+            CRController = new ControlRoomController(ControlRoom);
+            JohnRudyPark = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+        }
 
-            string ip = "127.0.0.1";
-            int port = 8080;
-
+        [TestInitialize]
+        public void ReinitializeRTs()
+        {
             RTController0 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new PLCClientCommunicationHandler(ip, port),
+                    new PLCClientCommunicationHandler(IP, Port),
                     JohnRudyPark
                 )
             );
@@ -40,7 +45,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController1 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new PLCClientCommunicationHandler(ip, port),
+                    new PLCClientCommunicationHandler(IP, Port),
                     JohnRudyPark
                 )
             );
@@ -48,7 +53,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController2 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new PLCClientCommunicationHandler(ip, port),
+                    new PLCClientCommunicationHandler(IP, Port),
                     JohnRudyPark
                 )
             );
@@ -57,7 +62,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestConstructorAndProperties()
         {
-            Assert.AreEqual(CRController.CRoom, CRoom);
+            Assert.AreEqual(ControlRoom, CRController.ControlRoom);
         }
 
         [TestMethod]
@@ -77,6 +82,12 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController0));
             Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController1));
             Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController2));
+
+            foreach (RadioTelescopeControllerManagementThread ManagementThread in CRController.ControlRoom.RTControllerManagementThreads)
+            {
+                ManagementThread.Start();
+            }
+
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController0, true));
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController1, true));
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController2, true));
@@ -85,9 +96,16 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestAddRTControllerAndHardRemoveIndex()
         {
-            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController0));
-            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController1));
-            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController2));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController0));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController1));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController2));
+
+            foreach (RadioTelescopeControllerManagementThread ManagementThread in CRController.ControlRoom.RTControllerManagementThreads)
+            {
+                ManagementThread.Start();
+            }
+
+
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, false));
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, false));
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, false));

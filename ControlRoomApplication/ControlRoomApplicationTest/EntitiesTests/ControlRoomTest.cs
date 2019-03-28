@@ -8,19 +8,19 @@ namespace ControlRoomApplicationTest.EntitiesTests
     [TestClass]
     public class ControlRoomTest
     {
-        ControlRoom controlRoom;
+        //ControlRoom controlRoom;
 
-        [TestInitialize]
-        public void BuildUp()
-        {
-            //Initialize control room object
-            controlRoom = new ControlRoom();
-        }
+        //[TestInitialize]
+        //public void BuildUp()
+        //{
+        //    //Initialize control room object
+        //    controlRoom = new ControlRoom();
+        //}
         
-        [TestMethod]
-        public void TestMethods()
-        {
-            throw new NotImplementedException();
-        }
+        //[TestMethod]
+        //public void TestMethods()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

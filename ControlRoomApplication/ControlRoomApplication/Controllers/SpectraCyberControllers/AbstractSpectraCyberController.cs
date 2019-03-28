@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
         protected bool KillCommunicationThreadFlag { get; set; }
         protected Mutex CommunicationMutex;
 
-        public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber)
+        public AbstractSpectraCyberController(AbstractSpectraCyber spectraCyber) : base()
         {
             SpectraCyber = spectraCyber;
             Schedule = new SpectraCyberScanSchedule(SpectraCyberScanScheduleMode.OFF);
