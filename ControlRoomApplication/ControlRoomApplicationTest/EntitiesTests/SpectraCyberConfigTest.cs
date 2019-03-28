@@ -7,30 +7,47 @@ namespace ControlRoomApplicationTest.EntitiesTests
     public class SpectraCyberConfigTest
     {
         // Class being tested
-        private SpectraCyberConfig spectraCyberConfig;
+        private SpectraCyberConfig spectraCyberConfig_1;
+        private SpectraCyberConfig spectraCyberConfig_2;
+        private SpectraCyberConfig spectraCyberConfig_3;
         private SpectraCyberModeTypeEnum mode = SpectraCyberModeTypeEnum.CONTINUUM;
         private SpectraCyberIntegrationTimeEnum integration_time = SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN;
-        private double offset_voltage = 0.4;
+        private double offset_voltage_1 = 0.4;
+        private double offset_voltage_2 = 0;
         private double if_gain = 1;
-        private double dc_gain = 1;
-        private double bandwidth = 3;
+        private SpectraCyberDCGainEnum dc_gain = SpectraCyberDCGainEnum.X5;
+        private SpectraCyberBandwidthEnum bandwidth = SpectraCyberBandwidthEnum.SMALL_BANDWIDTH;
 
         [TestInitialize]
         public void BuildUp()
         {
             // Initialize appointment entity
-            spectraCyberConfig = new SpectraCyberConfig(mode, integration_time, offset_voltage, if_gain, dc_gain, bandwidth);
+            spectraCyberConfig_1 = new SpectraCyberConfig(mode, integration_time, offset_voltage_1, if_gain, dc_gain, bandwidth);
+            spectraCyberConfig_2 = new SpectraCyberConfig(mode, integration_time, offset_voltage_1, if_gain, dc_gain, bandwidth);
+            spectraCyberConfig_3 = new SpectraCyberConfig(mode, integration_time, offset_voltage_2, if_gain, dc_gain, bandwidth);
         }
 
         [TestMethod]
         public void TestGettersAndSetters()
         {
-            Assert.AreEqual(mode, spectraCyberConfig.Mode);
-            Assert.AreEqual(integration_time, spectraCyberConfig.IntegrationTime);
-            Assert.AreEqual(offset_voltage, spectraCyberConfig.OffsetVoltage);
-            Assert.AreEqual(if_gain, spectraCyberConfig.IFGain);
-            Assert.AreEqual(dc_gain, spectraCyberConfig.DCGain);
-            Assert.AreEqual(bandwidth, spectraCyberConfig.Bandwidth);
+            Assert.AreEqual(mode, spectraCyberConfig_1.Mode);
+            Assert.AreEqual(integration_time, spectraCyberConfig_1.IntegrationTime);
+            Assert.AreEqual(offset_voltage_1, spectraCyberConfig_1.OffsetVoltage);
+            Assert.AreEqual(if_gain, spectraCyberConfig_1.IFGain);
+            Assert.AreEqual(dc_gain, spectraCyberConfig_1.DCGain);
+            Assert.AreEqual(bandwidth, spectraCyberConfig_1.Bandwidth);
+        }
+
+        [TestMethod]
+        public void TestEquals()
+        {
+            Assert.IsTrue(spectraCyberConfig_1.Equals(spectraCyberConfig_2));
+        }
+
+        [TestMethod]
+        public void TestNotEquals()
+        {
+            Assert.IsFalse(spectraCyberConfig_1.Equals(spectraCyberConfig_3));
         }
     }
 }

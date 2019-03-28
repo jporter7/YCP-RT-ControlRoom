@@ -20,7 +20,7 @@
                 case SpectraCyberIntegrationTimeEnum.LONG_TIME_SPAN:
                     return '2';
                 default:
-                    throw new System.Exception();
+                    throw new System.Exception("Unexpected SpectraCyberIntegrationTimeEnum type");
             }
         }
     }

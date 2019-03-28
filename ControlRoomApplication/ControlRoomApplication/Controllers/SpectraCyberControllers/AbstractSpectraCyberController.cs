@@ -35,6 +35,29 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             Parent = rt;
         }
 
+        public bool SetApptConfig(Appointment appt)
+        {
+            bool success = false;
+            SetActiveAppointmentID(appt.Id);
+            SpectraCyberConfig config = appt.SpectraCyberConfig;
+            SetSpectraCyberModeType(config.Mode);
+            if(config.Mode == SpectraCyberModeTypeEnum.CONTINUUM)
+            {
+                success = SetContinuumIntegrationTime(config.IntegrationTime) && SetContinuumOffsetVoltage(config.OffsetVoltage);
+            }
+            else if(config.Mode == SpectraCyberModeTypeEnum.SPECTRAL)
+            {
+                success = SetSpectralOffsetVoltage(config.OffsetVoltage) && SetSpectralIntegrationTime(config.IntegrationTime);
+            }
+            else
+            {
+                // Unknown current mode type
+                Console.WriteLine("[AbstractSpectraCyberController] ERROR: invalid SpectraCyber mode type: " + SpectraCyber.CurrentModeType.ToString());
+            }
+            return success;
+
+        }
+
         public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
         {
             SpectraCyber.CurrentModeType = type;

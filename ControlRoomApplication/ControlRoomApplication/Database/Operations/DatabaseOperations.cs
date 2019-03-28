@@ -104,7 +104,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt0.Status = AppointmentConstants.REQUESTED;
                         appt0.Type = AppointmentTypeConstants.DRIFT_SCAN;
                         appt0.Orientation = new Orientation(30, 30);
-                        appt0.SpectraCyberConfig.Mode = SpectraCyberModeTypeEnum.CONTINUUM;
+                        appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                         appt0.TelescopeId = i + 1;
                         appt0.UserId = 1;
 
@@ -114,7 +114,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt1.Status = AppointmentConstants.REQUESTED;
                         appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
                         appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
-                        appt1.SpectraCyberConfig.Mode = SpectraCyberModeTypeEnum.SPECTRAL;
+                        appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
                         appt1.TelescopeId = i + 1;
                         appt1.UserId = 1;
 
@@ -124,7 +124,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt2.Status = AppointmentConstants.REQUESTED;
                         appt2.Type = AppointmentTypeConstants.POINT;
                         appt2.Coordinates.Add(coordinate2);
-                        appt2.SpectraCyberConfig.Mode = SpectraCyberModeTypeEnum.CONTINUUM;
+                        appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                         appt2.TelescopeId = i + 1;
                         appt2.UserId = 1;
 
@@ -135,7 +135,7 @@ namespace ControlRoomApplication.Database.Operations
                         appt3.Type = AppointmentTypeConstants.RASTER;
                         appt3.Coordinates.Add(coordinate0);
                         appt3.Coordinates.Add(coordinate1);
-                        appt3.SpectraCyberConfig.Mode = SpectraCyberModeTypeEnum.CONTINUUM;
+                        appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                         appt3.TelescopeId = i + 1;
                         appt3.UserId = 1;
 

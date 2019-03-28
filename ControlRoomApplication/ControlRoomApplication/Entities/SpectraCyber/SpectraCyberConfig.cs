@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,7 +10,7 @@ namespace ControlRoomApplication.Entities
     public class SpectraCyberConfig
     {
         public SpectraCyberConfig(SpectraCyberModeTypeEnum mode, SpectraCyberIntegrationTimeEnum integration_time, 
-                                  double offset_voltage, double if_gain, double dc_gain, double bandwidth)
+                                  double offset_voltage, double if_gain, SpectraCyberDCGainEnum dc_gain, SpectraCyberBandwidthEnum bandwidth)
         {
             Mode = mode;
             IntegrationTime = integration_time;
@@ -19,10 +20,17 @@ namespace ControlRoomApplication.Entities
             Bandwidth = bandwidth;
         }
 
-        public SpectraCyberConfig()
+        public SpectraCyberConfig(SpectraCyberModeTypeEnum mode)
         {
-            Mode = SpectraCyberModeTypeEnum.UNKNOWN;
+            Mode = mode;
+            IntegrationTime = SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN;
+            OffsetVoltage = 0;
+            IFGain = 10;
+            DCGain = SpectraCyberDCGainEnum.X1;
+            Bandwidth = SpectraCyberBandwidthEnum.SMALL_BANDWIDTH;
         }
+
+        public SpectraCyberConfig() : this(SpectraCyberModeTypeEnum.UNKNOWN) { }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -46,11 +54,37 @@ namespace ControlRoomApplication.Entities
 
         [Required]
         [Column("dc_gain")]
-        public double DCGain { get; set; }
+        public SpectraCyberDCGainEnum DCGain { get; set; }
 
         [Required]
         [Column("bandwidth")]
-        public double Bandwidth { get; set; }
+        public SpectraCyberBandwidthEnum Bandwidth { get; set; }
 
+        /// <summary>
+        /// Checks if the current SpectraCyberConfig is Equal to another SpectraCyberConfig  
+        /// and it checks if the other SpectraCyberConfig is null
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            SpectraCyberConfig other = obj as SpectraCyberConfig; //avoid double casting
+            if (ReferenceEquals(other, null))
+            {
+                return false;
+            }
+            return  Mode == other.Mode && 
+                    IntegrationTime == other.IntegrationTime && 
+                    OffsetVoltage == other.OffsetVoltage && 
+                    IFGain == other.IFGain && 
+                    DCGain == other.DCGain && 
+                    Bandwidth == other.Bandwidth;
+        }
+
+        /// <summary>
+        /// Returns the HashCode of the Orientation's Id
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }
