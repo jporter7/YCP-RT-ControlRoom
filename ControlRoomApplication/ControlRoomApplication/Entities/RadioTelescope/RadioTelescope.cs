@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 
-namespace ControlRoomApplication.Entities.RadioTelescope
+namespace ControlRoomApplication.Entities
 {
     [Table("radio_telescope")]
     public class RadioTelescope

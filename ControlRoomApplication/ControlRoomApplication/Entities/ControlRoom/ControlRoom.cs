@@ -24,11 +24,11 @@ namespace ControlRoomApplication.Entities
             }
         }
 
-        public List<RadioTelescope.RadioTelescope> RadioTelescopes
+        public List<RadioTelescope> RadioTelescopes
         {
             get
             {
-                List<RadioTelescope.RadioTelescope> RTList = new List<RadioTelescope.RadioTelescope>();
+                List<RadioTelescope> RTList = new List<RadioTelescope>();
 
                 foreach (RadioTelescopeControllerManagementThread rtmt in RTControllerManagementThreads)
                 {

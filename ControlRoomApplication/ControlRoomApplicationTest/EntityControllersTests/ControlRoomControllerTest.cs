@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Controllers.SpectraCyberController;
