@@ -70,6 +70,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
@@ -77,10 +78,15 @@
   <ItemGroup>
     <Compile Include="ConfigurationManagerTests\ConfigurationManagerTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
+    <Compile Include="EntitiesTests\LocationTest.cs" />
+    <Compile Include="EntitiesTests\CelestialBodyTest.cs" />
+    <Compile Include="DatabaseOperationsTests\RTDbContextTests.cs" />
     <Compile Include="EntitiesTests\AppointmentTest.cs" />
     <Compile Include="EntitiesTests\ControlRoomTest.cs" />
     <Compile Include="EntitiesTests\CoordinateTest.cs" />
-    <Compile Include="EntitiesTests\HeartbeatTrackerContainerTest.cs" />
+    <Compile Include="EntitiesTests\HeartbeatInterfaceTests\ConcreteHeartbeatTestClass.cs" />
+    <Compile Include="EntitiesTests\HeartbeatInterfaceTests\HeartbeatInterfaceTest.cs" />
+	<Compile Include="EntitiesTests\HeartbeatTrackerContainerTest.cs" />
     <Compile Include="EntitiesTests\OrientationTest.cs" />
     <Compile Include="EntitiesTests\PLCCommandResponseExpectationEnumTest.cs" />
     <Compile Include="EntitiesTests\PLCTest.cs" />
@@ -94,6 +100,7 @@
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCClientAndDriverTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
+    <Compile Include="EntityControllersTests\SpectraCyberTestControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimulatorTests\SimulationAbsoluteEncoderTests.cs" />
     <Compile Include="SimulatorTests\SimulationMCUTrajectoryProfileTests.cs" />

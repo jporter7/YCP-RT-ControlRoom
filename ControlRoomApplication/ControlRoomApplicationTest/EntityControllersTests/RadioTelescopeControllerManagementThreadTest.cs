@@ -19,6 +19,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         private int Port1;
 
         private Location JohnRudyPark;
+        private Orientation CalibrationOrientation;
 
         private PLCClientCommunicationHandler PLCCCH0;
         private PLCClientCommunicationHandler PLCCCH1;
@@ -37,13 +38,14 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Port1 = 8081;
 
             JohnRudyPark = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+            CalibrationOrientation = new Orientation(0, 90);
 
             PLCCCH0 = new PLCClientCommunicationHandler(IP, Port0);
-            RTC0 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH0, JohnRudyPark, 1));
+            RTC0 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH0, JohnRudyPark, CalibrationOrientation, 1));
             RTCMT0 = new RadioTelescopeControllerManagementThread(RTC0);
 
             PLCCCH1 = new PLCClientCommunicationHandler(IP, Port1);
-            RTC1 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH1, JohnRudyPark, 2));
+            RTC1 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH1, JohnRudyPark, CalibrationOrientation, 2));
             RTCMT1 = new RadioTelescopeControllerManagementThread(RTC1);
         }
 

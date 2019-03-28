@@ -17,6 +17,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static ControlRoomController CRController;
         public static ControlRoom ControlRoom;
         public static Location JohnRudyPark;
+        public static Orientation CalibrationOrientation;
         public static string IP = PLCConstants.LOCAL_HOST_IP;
         public static int Port = PLCConstants.PORT_8080;
         public static RadioTelescopeController RTController0;
@@ -29,6 +30,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             ControlRoom = new ControlRoom(new SimulationWeatherStation(100));
             CRController = new ControlRoomController(ControlRoom);
             JohnRudyPark = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+            CalibrationOrientation = new Orientation(0, 90);
         }
 
         [TestInitialize]
@@ -38,7 +40,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
                     new PLCClientCommunicationHandler(IP, Port),
-                    JohnRudyPark
+                    JohnRudyPark,
+                    CalibrationOrientation
                 )
             );
 
@@ -46,7 +49,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
                     new PLCClientCommunicationHandler(IP, Port),
-                    JohnRudyPark
+                    JohnRudyPark,
+                    CalibrationOrientation
                 )
             );
 
@@ -54,7 +58,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
                     new PLCClientCommunicationHandler(IP, Port),
-                    JohnRudyPark
+                    JohnRudyPark,
+                    CalibrationOrientation
                 )
             );
         }
