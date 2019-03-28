@@ -109,6 +109,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
     <Compile Include="Entities\WeatherStation\AbstractWeatherStation.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Location\Location.cs" />

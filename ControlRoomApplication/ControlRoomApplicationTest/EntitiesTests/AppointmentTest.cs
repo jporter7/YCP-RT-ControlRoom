@@ -65,7 +65,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             appointment_1.TelescopeId = telescope_id;
             appointment_1.Status = status;
             appointment_1.Type = type;
-            appointment_1.SpectraCyberModeType = spectracyber_mode_type;
+            appointment_1.SpectraCyberConfig.Mode = spectracyber_mode_type;
 
             appointment_2.StartTime = startTime_2;
             appointment_2.EndTime = endTime_2;
@@ -84,7 +84,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreEqual(telescope_id, appointment_1.TelescopeId);
             Assert.AreEqual(status, appointment_1.Status);
             Assert.AreEqual(type, appointment_1.Type);
-            Assert.AreEqual(spectracyber_mode_type, appointment_1.SpectraCyberModeType);
+            Assert.AreEqual(spectracyber_mode_type, appointment_1.SpectraCyberConfig.Mode);
         }
 
         [TestMethod]

@@ -334,7 +334,7 @@ namespace ControlRoomApplication.Controllers
         public void StartReadingData(Appointment appt)
         {
             var spectraCyberController = RTController.RadioTelescope.SpectraCyberController;
-            spectraCyberController.SetSpectraCyberModeType(appt.SpectraCyberModeType);
+            spectraCyberController.SetSpectraCyberModeType(appt.SpectraCyberConfig.Mode);
             spectraCyberController.SetActiveAppointmentID(appt.Id);
             spectraCyberController.StartScan();
         }
