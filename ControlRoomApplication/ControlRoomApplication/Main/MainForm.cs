@@ -1,5 +1,4 @@
-﻿using ControlRoomApplication.Constants;
-using ControlRoomApplication.Controllers;
+﻿using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Controllers.SpectraCyberController;
@@ -21,7 +20,6 @@ namespace ControlRoomApplication.Main
             InitializeComponent();
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 2;
-            DatabaseOperations.InitializeDatabaseContext();
 
             AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
@@ -44,6 +42,11 @@ namespace ControlRoomApplication.Main
                 ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[AbstractRTDriverPairList.Count - 1].Key));
                 ProgramPLCDriverList.Add(APLCDriver);
 
+                if (checkBox1.Checked)
+                {
+                    ConfigurationManager.ConfigureLocalDatabase(1);
+                }
+
                 ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()), CancellationSource.Token);
 
                 ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
@@ -59,7 +62,7 @@ namespace ControlRoomApplication.Main
                 int ErrorIndex = -1;
                 // Start each RT controller's threaded management
                 int z = 0;
-                foreach (RadioTelescopeControllerManagementThread ManagementThread in MainControlRoomController.CRoom.RTControllerManagementThreads)
+                foreach (RadioTelescopeControllerManagementThread ManagementThread in MainControlRoomController.ControlRoom.RTControllerManagementThreads)
                 {
                     int RT_ID = ManagementThread.RadioTelescopeID;
                     List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
@@ -172,11 +175,11 @@ namespace ControlRoomApplication.Main
             // Return Radio Telescope
             if (checkBox1.Checked)
             {
-                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, numLocalDBRTInstancesCreated++);
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,0), numLocalDBRTInstancesCreated++);
             }
             else
             {
-                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location);
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0, 0));
             }
         }
 

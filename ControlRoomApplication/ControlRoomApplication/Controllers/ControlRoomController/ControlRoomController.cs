@@ -7,7 +7,7 @@ namespace ControlRoomApplication.Controllers
 {
     public class ControlRoomController
     {
-        public ControlRoom CRoom { get; set; }
+        public ControlRoom ControlRoom { get; set; }
         public CancellationToken Token { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Controllers
 
         public ControlRoomController(ControlRoom controlRoom, CancellationToken token)
         {
-            CRoom = controlRoom;
+            ControlRoom = controlRoom;
             WeatherMonitoringThread = new Thread(new ThreadStart(WeatherMonitoringRoutine));
             KeepWeatherMonitoringThreadAlive = false;
             Token = Token;
@@ -28,7 +28,7 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
-                if (!CRoom.WeatherStation.Start())
+                if (!ControlRoom.WeatherStation.Start())
                 {
                     return false;
                 }
@@ -82,7 +82,7 @@ namespace ControlRoomApplication.Controllers
                 // Console.WriteLine("[ControlRoomController] Weather station reading: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
                 if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
                 {
-                    Console.WriteLine("[ControlRoomController] Wind speeds were too high: " + CRoom.WeatherStation.CurrentWindSpeedMPH);
+                    Console.WriteLine("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
                 }
 
                 Thread.Sleep(1000);
@@ -91,12 +91,12 @@ namespace ControlRoomApplication.Controllers
 
         public bool AddRadioTelescopeController(RadioTelescopeController rtController)
         {
-            if (CRoom.RadioTelescopes.Contains(rtController.RadioTelescope))
+            if (ControlRoom.RadioTelescopes.Contains(rtController.RadioTelescope))
             {
                 return false;
             }
 
-            CRoom.RTControllerManagementThreads.Add(new RadioTelescopeControllerManagementThread(rtController, Token));
+            ControlRoom.RTControllerManagementThreads.Add(new RadioTelescopeControllerManagementThread(rtController));
             return true;
         }
 
@@ -104,7 +104,7 @@ namespace ControlRoomApplication.Controllers
         {
             if (AddRadioTelescopeController(rtController))
             {
-                return CRoom.RTControllerManagementThreads[CRoom.RTControllerManagementThreads.Count - 1].Start();
+                return ControlRoom.RTControllerManagementThreads[ControlRoom.RTControllerManagementThreads.Count - 1].Start();
             }
             else
             {
@@ -114,12 +114,12 @@ namespace ControlRoomApplication.Controllers
 
         public bool RemoveRadioTelescopeControllerAt(int rtControllerIndex, bool waitForAnyTasks)
         {
-            if ((rtControllerIndex < 0) || (rtControllerIndex >= CRoom.RTControllerManagementThreads.Count))
+            if ((rtControllerIndex < 0) || (rtControllerIndex >= ControlRoom.RTControllerManagementThreads.Count))
             {
                 return false;
             }
 
-            RadioTelescopeControllerManagementThread ToBeRemovedRTMT = CRoom.RTControllerManagementThreads[rtControllerIndex];
+            RadioTelescopeControllerManagementThread ToBeRemovedRTMT = ControlRoom.RTControllerManagementThreads[rtControllerIndex];
 
             if (ToBeRemovedRTMT.Busy && (!waitForAnyTasks))
             {
@@ -132,7 +132,7 @@ namespace ControlRoomApplication.Controllers
 
             if (ToBeRemovedRTMT.WaitToJoin())
             {
-                return CRoom.RTControllerManagementThreads.Remove(ToBeRemovedRTMT);
+                return ControlRoom.RTControllerManagementThreads.Remove(ToBeRemovedRTMT);
             }
             else
             {
@@ -142,7 +142,7 @@ namespace ControlRoomApplication.Controllers
 
         public bool RemoveRadioTelescopeController(RadioTelescopeController rtController, bool waitForAnyTasks)
         {
-            return RemoveRadioTelescopeControllerAt(CRoom.RadioTelescopeControllers.IndexOf(rtController), waitForAnyTasks);
+            return RemoveRadioTelescopeControllerAt(ControlRoom.RadioTelescopeControllers.IndexOf(rtController), waitForAnyTasks);
         }
     }
 }
