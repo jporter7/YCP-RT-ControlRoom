@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Entities;
 using System.Collections.Generic;
 using ControlRoomApplication.Controllers;

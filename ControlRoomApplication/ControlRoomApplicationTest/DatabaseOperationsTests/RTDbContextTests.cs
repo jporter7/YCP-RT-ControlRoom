@@ -1,7 +1,4 @@
-﻿using System.Data.Entity;
-using ControlRoomApplication;
-using ControlRoomApplication.Constants;
-using ControlRoomApplication.Entities;
+﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Main;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
