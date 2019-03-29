@@ -13,11 +13,6 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         private RTDbContext context1;
         private RTDbContext context2;
 
-        private DbSet<Appointment> appointments;
-        private DbSet<RFData> rfdatas;
-        private DbSet<Orientation> orientations;
-        private DbSet<Coordinate> coordinates;
-
         [TestInitialize]
         public void BuildUp()
         {
