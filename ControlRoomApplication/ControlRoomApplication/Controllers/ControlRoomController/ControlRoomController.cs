@@ -79,8 +79,8 @@ namespace ControlRoomApplication.Controllers
         {
             while (KeepWeatherMonitoringThreadAlive)
             {
-                Console.WriteLine("[ControlRoomController] Weather station reading: " + CRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
-                if (!CRoom.WeatherStation.CurrentWindSpeedIsAllowable)
+                // Console.WriteLine("[ControlRoomController] Weather station reading: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
+                if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
                 {
                     Console.WriteLine("[ControlRoomController] Wind speeds were too high: " + CRoom.WeatherStation.CurrentWindSpeedMPH);
                 }

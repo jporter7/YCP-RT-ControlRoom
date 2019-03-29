@@ -6,7 +6,6 @@ using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
 
 namespace ControlRoomApplication.Main
 {

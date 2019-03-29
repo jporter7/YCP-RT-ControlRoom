@@ -3,7 +3,6 @@ using System.Threading;
 using System.Collections.Generic;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Database.Operations;
 
@@ -253,9 +252,10 @@ namespace ControlRoomApplication.Controllers
 
             Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment Type: " + NextAppointment.Type);
 
-            // Loop through each minute of the appointment 
+            // Loop through each second or minute of the appointment (depending on appt type)
             TimeSpan length = NextAppointment.EndTime - NextAppointment.StartTime;
-            for (int i = 0; i < length.TotalMinutes; i++)
+            double duration = NextAppointment.Type == AppointmentTypeConstants.FREE_CONTROL ? length.TotalSeconds : length.TotalMinutes;
+            for (int i = 0; i <= (int) duration; i++)
             {
                 // Get orientation for current datetime
                 DateTime datetime = NextAppointment.StartTime.AddMinutes(i);
@@ -271,7 +271,6 @@ namespace ControlRoomApplication.Controllers
                     }
 
                     // Console.WriteLine(datetime.ToString() + " vs. " + DateTime.Now.ToString());
-
                     Thread.Sleep(1000);
                 }
 
@@ -290,6 +289,23 @@ namespace ControlRoomApplication.Controllers
                 {
                     Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + NextObjective.Azimuth + ", El = " + NextObjective.Elevation);
                     RTController.MoveRadioTelescope(NextObjective);
+
+                    // Wait until telescope reaches destination
+                    Orientation currentOrientation;
+                    do
+                    {
+                        if (InterruptAppointmentFlag)
+                        {
+                            Console.WriteLine("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
+                            break;
+                        }
+
+                        currentOrientation = RTController.GetCurrentOrientation();
+                        Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                        Thread.Sleep(100);
+                    }
+                    while (!NextObjective.Equals(currentOrientation));
+
                     NextObjective = null;
                 }
             }

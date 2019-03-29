@@ -19,6 +19,11 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
         public Orientation CoordinateToOrientation(Coordinate coordinate, DateTime datetime)
         {
+            if(coordinate == null)
+            {
+                throw new ArgumentException("Coordinate Cannot be null");
+            }
+
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
 
             double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
@@ -47,7 +52,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
                 case (AppointmentTypeConstants.RASTER):
                     return GetRasterOrientation(appt, datetime);
                 case (AppointmentTypeConstants.DRIFT_SCAN):
-                    return GetDriftScanOrienation(appt, datetime);
+                    return GetDriftScanOrienation(appt);
                 case (AppointmentTypeConstants.FREE_CONTROL):
                     return GetFreeControlOrientation(appt, datetime);
                 default:
@@ -57,11 +62,11 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
 
         public Orientation GetPointOrientation(Appointment appt, DateTime datetime)
         {
-            var point_coord = GetPointCoordinate(appt, datetime);
+            var point_coord = GetPointCoordinate(appt);
             return CoordinateToOrientation(point_coord, datetime);
         }
 
-        public Coordinate GetPointCoordinate(Appointment appt, DateTime datetime)
+        public Coordinate GetPointCoordinate(Appointment appt)
         {
             var coords = appt.Coordinates.ToList();
             if (coords.Count > 1)
@@ -72,7 +77,6 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             {
                 throw new ArgumentException("No Point Coordinate");
             }
-
             return coords[0];
         }
 
@@ -218,7 +222,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             return new Coordinate(x, y);
         }
 
-        public Orientation GetDriftScanOrienation(Appointment appt, DateTime datetime)
+        public Orientation GetDriftScanOrienation(Appointment appt)
         {
             return appt.Orientation;
         }
@@ -228,21 +232,22 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
             Orientation free_orientation = null;
             if (appt.Orientation == null)
             {
-                var free_coord = GetFreeControlCoordinate(appt, datetime);
+                var free_coord = GetFreeControlCoordinate(appt);
                 if(free_coord != null)
                 {
                     free_orientation = CoordinateToOrientation(free_coord, datetime);
-                }
-                
+                } 
             }
             else
             {
                 free_orientation = appt.Orientation;
+                appt.Orientation = null;
+                DatabaseOperations.UpdateAppointment(appt);
             }
             return free_orientation;
         }
 
-        public Coordinate GetFreeControlCoordinate(Appointment appt, DateTime datetime)
+        public Coordinate GetFreeControlCoordinate(Appointment appt)
         {
             Coordinate free_coord = null;
             if(appt.Coordinates.Count > 0)

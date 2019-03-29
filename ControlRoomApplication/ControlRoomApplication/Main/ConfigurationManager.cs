@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;
@@ -76,11 +75,11 @@ namespace ControlRoomApplication.Main
             // Return Radio Telescope
             if (usingLocalDB)
             {
-                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, NumLocalDBRTInstancesCreated++);
+                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, new Orientation(0,0), NumLocalDBRTInstancesCreated++);
             }
             else
             {
-                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location);
+                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, new Orientation(0, 0));
             }
         }
 

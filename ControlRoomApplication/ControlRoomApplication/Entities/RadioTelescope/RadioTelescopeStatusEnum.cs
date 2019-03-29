@@ -1,4 +1,4 @@
-﻿namespace ControlRoomApplication.Entities.RadioTelescope
+﻿namespace ControlRoomApplication.Entities
 {
     public enum RadioTelescopeStatusEnum
     {
