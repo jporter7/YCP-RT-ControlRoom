@@ -58,7 +58,7 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        public RadioTelescopeControllerManagementThread(RadioTelescopeController controller, CancellationToken token)
+        public RadioTelescopeControllerManagementThread(RadioTelescopeController controller)
         {
             RTController = controller;
 

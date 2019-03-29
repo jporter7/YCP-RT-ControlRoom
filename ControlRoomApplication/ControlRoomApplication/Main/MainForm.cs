@@ -5,7 +5,6 @@ using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System;
 using System.Collections.Generic;
