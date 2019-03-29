@@ -1,5 +1,4 @@
 ﻿using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.SpectraCyberController;

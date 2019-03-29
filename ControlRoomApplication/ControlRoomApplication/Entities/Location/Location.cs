@@ -1,5 +1,4 @@
-﻿using ControlRoomApplication.Entities.RadioTelescope;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities

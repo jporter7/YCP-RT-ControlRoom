@@ -3,7 +3,6 @@ using ControlRoomApplication.Entities;
 using System.Collections.Generic;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Controllers.PLCCommunication;
 
