@@ -66,7 +66,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Make sure each limit switch is online
             foreach(var response in responses)
             {
-                Assert.IsTrue(response);
+                Assert.IsFalse(response);
             }
         }
 

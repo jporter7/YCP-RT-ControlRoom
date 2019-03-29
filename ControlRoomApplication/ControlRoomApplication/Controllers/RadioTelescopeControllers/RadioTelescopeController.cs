@@ -73,7 +73,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
         /// </returns>
         public bool[] GetCurrentLimitSwitchStatuses()
         {
-            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
+            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_LIMIT_SWITCH_STATUSES);
 
             if (!ResponseMetBasicExpectations(ByteResponse, 0x13))
             {
@@ -85,7 +85,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
             byte DataByte = ByteResponse[3];
             for (int i = 0; i < 4; i++)
             {
-                switch (PLCLimitSwitchStatusConversionHelper.GetFromByte((byte)(DataByte >> (2 * (3 - i)))))
+                switch (PLCLimitSwitchStatusConversionHelper.GetFromByte((byte)((DataByte >> (2 * (3 - i))) & 0x3)))
                 {
                     case PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS:
                         {
