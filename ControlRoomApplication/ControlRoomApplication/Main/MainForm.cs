@@ -44,6 +44,7 @@ namespace ControlRoomApplication.Main
                 AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
                 ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[AbstractRTDriverPairList.Count - 1].Key));
                 ProgramPLCDriverList.Add(APLCDriver);
+
                 ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()), CancellationSource.Token);
 
                 ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
@@ -231,7 +232,7 @@ namespace ControlRoomApplication.Main
                     throw new NotImplementedException("The test weather station is not yet supported.");
 
                 default:
-                    return new SimulationWeatherStation(100);
+                    return new SimulationWeatherStation(1000);
             }
         }
 
