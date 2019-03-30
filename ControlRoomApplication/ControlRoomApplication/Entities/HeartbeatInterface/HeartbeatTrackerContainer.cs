@@ -4,17 +4,17 @@
     {
         static HeartbeatTracker HeartbeatTracker = HeartbeatTracker.GetInstance();
 
-        internal static void StartTracking(HeartbeatInterface Child)
+        public static void StartTracking(HeartbeatInterface Child)
         {
             HeartbeatTracker.AddChild(Child);
         }
 
-        internal static void StopTracking(HeartbeatInterface Child)
+        public static void StopTracking(HeartbeatInterface Child)
         {
             HeartbeatTracker.RemoveChild(Child);
         }
 
-        internal static void StartHeartbeatRoutine()
+        public static void StartHeartbeatRoutine()
         {
             for (int i = 0; i < HeartbeatTracker.GetNumberOfChildren(); i++)
             {
@@ -22,7 +22,7 @@
             }
         }
 
-        internal static bool ChildrenAreAlive()
+        public static bool ChildrenAreAlive()
         {
             for (int i = 0; i < HeartbeatTracker.GetNumberOfChildren(); i++)
             {
@@ -35,7 +35,7 @@
             return true;
         }
 
-        internal static void DafelyKillHeartbeatComponents()
+        public static void SafelyKillHeartbeatComponents()
         {
             for (int i = 0; i < HeartbeatTracker.GetNumberOfChildren(); i++)
             {
@@ -43,7 +43,7 @@
             }
         }
 
-        internal static int GetNumberOfChildren()
+        public static int GetNumberOfChildren()
         {
             return HeartbeatTracker.GetNumberOfChildren();
         }

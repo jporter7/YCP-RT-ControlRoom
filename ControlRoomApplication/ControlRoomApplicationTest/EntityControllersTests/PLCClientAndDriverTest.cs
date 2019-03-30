@@ -132,7 +132,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static void Cleanup()
         {
             CommsHandler.TerminateTCPServerConnection();
-            TestDriver.RequestStopAsyncAcceptingClients();
+            TestDriver.RequestStopAsyncAcceptingClientsAndJoin();
         }
     }
 }

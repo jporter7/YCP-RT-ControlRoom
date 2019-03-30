@@ -65,7 +65,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             // Make sure each limit switch is online
             foreach(var response in responses)
             {
-                Assert.IsTrue(response);
+                Assert.IsFalse(response);
             }
         }
 
@@ -137,7 +137,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static void BringDown()
         {
             TestRadioTelescopeController.RadioTelescope.PLCClient.TerminateTCPServerConnection();
-            TestRTPLC.RequestStopAsyncAcceptingClients();
+            TestRTPLC.RequestStopAsyncAcceptingClientsAndJoin();
         }
     }
 }

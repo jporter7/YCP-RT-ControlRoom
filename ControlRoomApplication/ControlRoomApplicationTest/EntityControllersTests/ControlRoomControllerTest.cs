@@ -1,107 +1,146 @@
 ﻿using System;
-using System.Collections.Generic;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Main;
-using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.RadioTelescope;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Controllers.RadioTelescopeControllers;
+using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
-    /*
-     * We're gonna have to redo this....
     [TestClass]
     public class ControlRoomControllerTest
     {
-        public ControlRoomController ControlRoomController { get; set; }
+        public static ControlRoomController CRController;
+        public static ControlRoom ControlRoom;
+        public static Location JohnRudyPark;
+        public static Orientation CalibrationOrientation;
+        public static string IP = PLCConstants.LOCAL_HOST_IP;
+        public static int Port = PLCConstants.PORT_8080;
+        public static RadioTelescopeController RTController0;
+        public static RadioTelescopeController RTController1;
+        public static RadioTelescopeController RTController2;
+
+        [ClassInitialize]
+        public static void BringUp(TestContext context)
+        {
+            ControlRoom = new ControlRoom(new SimulationWeatherStation(100));
+            CRController = new ControlRoomController(ControlRoom);
+            JohnRudyPark = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+            CalibrationOrientation = new Orientation(0, 90);
+        }
 
         [TestInitialize]
-        public void SetUp()
+        public void ReinitializeRTs()
         {
-            // Instantiate the controller
-            RTDbContext dbContext = new RTDbContext();
-            DatabaseOperations.InitializeLocalConnectionOnly();
-            DatabaseOperations.PopulateLocalDatabase();
+            RTController0 = new RadioTelescopeController(
+                new RadioTelescope(
+                    new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
+                    new PLCClientCommunicationHandler(IP, Port),
+                    JohnRudyPark,
+                    CalibrationOrientation
+                )
+            );
 
-            AbstractPLC plc = new TestPLC();
-            PLCController plcController = new PLCController(plc);
-            AbstractSpectraCyberController spectraCyberController = new SpectraCyberTestController(new SpectraCyberSimulator());
-            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
-            AbstractRadioTelescope radioTelescope = new TestRadioTelescope(spectraCyberController, plcController, location);
-            RadioTelescopeController rtController = new RadioTelescopeController(radioTelescope);
-            ControlRoom cRoom = new ControlRoom(rtController, dbContext);
-            ControlRoomController = new ControlRoomController(cRoom);
-        }
+            RTController1 = new RadioTelescopeController(
+                new RadioTelescope(
+                    new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
+                    new PLCClientCommunicationHandler(IP, Port),
+                    JohnRudyPark,
+                    CalibrationOrientation
+                )
+            );
 
-        [TestCleanup]
-        public void TearDown()
-        {
-            DatabaseOperations.DisposeLocalDatabaseOnly();
-            ControlRoomController.CRoom.Context.Database.Delete();
-            ControlRoomController.CRoom.Context.Dispose();
-        }
-
-        [TestMethod]
-        public void TestWaitingForNextAppointment()
-        {
-            Appointment appt = ControlRoomController.WaitingForNextAppointment();
-            TimeSpan diff = appt.StartTime - DateTime.Now;
-
-            Assert.AreNotEqual(appt, null);
-            Assert.IsTrue(diff.TotalMinutes < 10);
+            RTController2 = new RadioTelescopeController(
+                new RadioTelescope(
+                    new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
+                    new PLCClientCommunicationHandler(IP, Port),
+                    JohnRudyPark,
+                    CalibrationOrientation
+                )
+            );
         }
 
         [TestMethod]
-        public void TestCalibrateRadioTelescope()
+        public void TestConstructorAndProperties()
         {
-            ControlRoomController.CalibrateRadioTelescope();
-
-            // Add more checks later
+            Assert.AreEqual(ControlRoom, CRController.ControlRoom);
         }
 
         [TestMethod]
-        public void TestStartRadioTelescope()
+        public void TestAddRTControllerAndStartAndHardRemoveInstance()
         {
-            Appointment appt = new Appointment();
-            Dictionary<DateTime, Orientation> orientations = new Dictionary<DateTime, Orientation>();
-            Orientation orientation = new Orientation(0, 0);
-            orientations.Add(DateTime.Now.AddSeconds(3), orientation);
-            ControlRoomController.StartRadioTelescope(appt, orientations);
-
-            Assert.AreEqual(appt.Status, AppointmentConstants.COMPLETED);
-            Assert.AreEqual(ControlRoomController.CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation, orientation.Elevation);
-            Assert.AreEqual(ControlRoomController.CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth, orientation.Azimuth);
+            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController0));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController1));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController2));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController0, false));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController1, false));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController2, false));
         }
 
         [TestMethod]
-        public void TestEndAppointment()
+        public void TestAddRTControllerAndSoftRemoveInstance()
         {
-            Orientation orientation = new Orientation(0, 90);
-            ControlRoomController.EndAppointment();
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController0));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController1));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController2));
 
-            Assert.AreEqual(ControlRoomController.CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation, orientation.Elevation);
-            Assert.AreEqual(ControlRoomController.CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth, orientation.Azimuth);
+            foreach (RadioTelescopeControllerManagementThread ManagementThread in CRController.ControlRoom.RTControllerManagementThreads)
+            {
+                ManagementThread.Start();
+            }
+
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController0, true));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController1, true));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController2, true));
         }
 
         [TestMethod]
-        public void TestStartReadingData()
+        public void TestAddRTControllerAndHardRemoveIndex()
         {
-            Appointment appt = new Appointment();
-            ControlRoomController.StartReadingData(appt);
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController0));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController1));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeController(RTController2));
 
-            // Add more checks later
+            foreach (RadioTelescopeControllerManagementThread ManagementThread in CRController.ControlRoom.RTControllerManagementThreads)
+            {
+                ManagementThread.Start();
+            }
+
+
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, false));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, false));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, false));
         }
 
         [TestMethod]
-        public void TestStopReadingRFData()
+        public void TestAddRTControllerAndStartAndSoftRemoveIndex()
         {
-            ControlRoomController.StopReadingRFData();
+            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController0));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController1));
+            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController2));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(2, true));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(1, true));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, true));
+        }
 
-            // Add more checks later
+        [TestMethod]
+        public void TestPreventAddMultipleTimes()
+        {
+            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController0));
+            Assert.AreEqual(false, CRController.AddRadioTelescopeControllerAndStart(RTController0));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController0, true));
+        }
+
+        [TestMethod]
+        public void TestPreventRemoveMultipleTimes()
+        {
+            Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController0));
+            Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController0, true));
+            Assert.AreEqual(false, CRController.RemoveRadioTelescopeController(RTController0, true));
         }
     }
-    */
 }
