@@ -3,7 +3,6 @@ using System.Threading;
 using System.Collections.Generic;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 using ControlRoomApplication.Database.Operations;
 

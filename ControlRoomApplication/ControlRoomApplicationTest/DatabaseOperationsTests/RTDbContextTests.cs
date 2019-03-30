@@ -1,7 +1,4 @@
-﻿using System.Data.Entity;
-using ControlRoomApplication;
-using ControlRoomApplication.Constants;
-using ControlRoomApplication.Entities;
+﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Main;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,11 +9,6 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
     {
         private RTDbContext context1;
         private RTDbContext context2;
-
-        private DbSet<Appointment> appointments;
-        private DbSet<RFData> rfdatas;
-        private DbSet<Orientation> orientations;
-        private DbSet<Coordinate> coordinates;
 
         [TestInitialize]
         public void BuildUp()

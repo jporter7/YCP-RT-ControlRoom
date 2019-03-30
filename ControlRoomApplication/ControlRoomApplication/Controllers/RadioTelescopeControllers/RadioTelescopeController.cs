@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
 
 namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 {
