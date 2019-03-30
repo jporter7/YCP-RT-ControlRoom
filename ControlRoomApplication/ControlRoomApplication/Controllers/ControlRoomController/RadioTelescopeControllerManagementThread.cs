@@ -16,8 +16,8 @@ namespace ControlRoomApplication.Controllers
 
         private Thread ManagementThread;
         private Mutex ManagementMutex;
-        private bool KeepThreadAlive;
-        private bool InterruptAppointmentFlag;
+        private volatile bool KeepThreadAlive;
+        private volatile bool InterruptAppointmentFlag;
         private Orientation _NextObjectiveOrientation;
 
         public Orientation NextObjectiveOrientation
@@ -33,7 +33,7 @@ namespace ControlRoomApplication.Controllers
                 ManagementMutex.ReleaseMutex();
             }
         }
-
+        
         public int RadioTelescopeID
         {
             get
@@ -46,12 +46,12 @@ namespace ControlRoomApplication.Controllers
         {
             get
             {
-                if (!ManagementMutex.WaitOne(10))
+                if (!ManagementMutex.WaitOne(100))
                 {
                     return true;
                 }
 
-                bool busy = _NextObjectiveOrientation == null;
+                bool busy = _NextObjectiveOrientation != null;
                 ManagementMutex.ReleaseMutex();
 
                 return busy;
@@ -99,9 +99,7 @@ namespace ControlRoomApplication.Controllers
 
         public void RequestToKill()
         {
-            ManagementMutex.WaitOne();
             KeepThreadAlive = false;
-            ManagementMutex.ReleaseMutex();
         }
 
         public void KillWithHardInterrupt()
@@ -134,12 +132,10 @@ namespace ControlRoomApplication.Controllers
 
         public void InterruptOnce()
         {
-            ManagementMutex.WaitOne();
             InterruptAppointmentFlag = true;
-            ManagementMutex.ReleaseMutex();
         }
 
-        public void SpinRoutine()
+        private void SpinRoutine()
         {
             bool KeepAlive = KeepThreadAlive;
             
@@ -209,12 +205,12 @@ namespace ControlRoomApplication.Controllers
         /// we should begin operations such as calibration.
         /// </summary>
         /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
-        public Appointment WaitForNextAppointment()
+        private Appointment WaitForNextAppointment()
         {
             Appointment NextAppointment;
             while ((NextAppointment = DatabaseOperations.GetNextAppointment(RadioTelescopeID)) == null)
             {
-                if (InterruptAppointmentFlag)
+                if (InterruptAppointmentFlag || (!KeepThreadAlive))
                 {
                     return null;
                 }
@@ -227,7 +223,7 @@ namespace ControlRoomApplication.Controllers
             TimeSpan diff;
             while ((diff = NextAppointment.StartTime - DateTime.Now).TotalMinutes > 1)
             {
-                if (InterruptAppointmentFlag)
+                if (InterruptAppointmentFlag || (!KeepThreadAlive))
                 {
                     return null;
                 }
@@ -245,7 +241,7 @@ namespace ControlRoomApplication.Controllers
         /// it needs to go to.
         /// </summary>
         /// <param name="NextAppointment"> The appointment that is currently running. </param>
-        public void PerformRadioTelescopeMovement(Appointment NextAppointment)
+        private void PerformRadioTelescopeMovement(Appointment NextAppointment)
         {
             NextAppointment.Status = AppointmentConstants.IN_PROGRESS;
             DatabaseOperations.UpdateAppointment(NextAppointment);
@@ -322,7 +318,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Ends an appointment by returning the RT to the stow position.
         /// </summary>
-        public void EndAppointment()
+        private void EndAppointment()
         {
             RTController.MoveRadioTelescope(new Orientation(0, 90));
         }
@@ -330,7 +326,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Calls the SpectraCyber controller to start the SpectraCyber readings.
         /// </summary>
-        public void StartReadingData(Appointment appt)
+        private void StartReadingData(Appointment appt)
         {
             RTController.RadioTelescope.SpectraCyberController.SetApptConfig(appt);
             RTController.RadioTelescope.SpectraCyberController.StartScan();
@@ -339,7 +335,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Calls the SpectraCyber controller to stop the SpectraCyber readings.
         /// </summary>
-        public void StopReadingRFData()
+        private void StopReadingRFData()
         {
             RTController.RadioTelescope.SpectraCyberController.StopScan();
             RTController.RadioTelescope.SpectraCyberController.RemoveActiveAppointmentID();

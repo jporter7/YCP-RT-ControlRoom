@@ -7,10 +7,9 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 {
     public abstract class AbstractPLCDriver
     {
-        private TcpListener PLCTCPListener { get; }
-
-        private Thread ClientManagmentThread { get; }
-        private bool KillClientManagementThreadFlag { get; set; }
+        private TcpListener PLCTCPListener;
+        private Thread ClientManagmentThread;
+        private volatile bool KillClientManagementThreadFlag;
 
         public AbstractPLCDriver(IPAddress ip_address, int port)
         {
@@ -49,15 +48,52 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
         public AbstractPLCDriver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
 
-        public void StartAsyncAcceptingClients()
+        public bool StartAsyncAcceptingClients()
         {
             KillClientManagementThreadFlag = false;
-            ClientManagmentThread.Start();
+
+            try
+            {
+                ClientManagmentThread.Start();
+            }
+            catch (Exception e)
+            {
+                if ((e is ThreadStateException) || (e is OutOfMemoryException))
+                {
+                    return false;
+                }
+                else
+                {
+                    // Unexpected exception
+                    throw e;
+                }
+            }
+
+            return true;
         }
 
-        public void RequestStopAsyncAcceptingClients()
+        public bool RequestStopAsyncAcceptingClientsAndJoin()
         {
             KillClientManagementThreadFlag = true;
+
+            try
+            {
+                ClientManagmentThread.Join();
+            }
+            catch (Exception e)
+            {
+                if ((e is ThreadStateException) || (e is ThreadStartException))
+                {
+                    return false;
+                }
+                else
+                {
+                    // Unexpected exception
+                    throw e;
+                }
+            }
+
+            return true;
         }
 
         protected bool AttemptToWriteDataToServer(NetworkStream ActiveClientStream, byte[] ResponseData)
@@ -78,7 +114,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
             return true;
         }
 
-        public void HandleClientManagementThread()
+        private void HandleClientManagementThread()
         {
             TcpClient AcceptedClient = null;
             byte[] StreamBuffer = new byte[256];

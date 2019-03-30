@@ -18,7 +18,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         /// <param name="argS"> The program argument passed in for the SpectraCyber. </param>
         /// <returns> A concrete instance of a SpectraCyberController. </returns>
-        public static AbstractSpectraCyberController ConfigureSpectraCyberController(string argS)
+        private static AbstractSpectraCyberController ConfigureSpectraCyberController(string argS)
         {
             switch (argS.ToUpper())
             {
@@ -32,9 +32,7 @@ namespace ControlRoomApplication.Main
                     return new SpectraCyberTestController(new SpectraCyberSimulator());
 
                 default:
-                    // If none of the switches match or there wasn't one declared
-                    // for the spectraCyber, assume we are using the simulated/testing one.
-                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
+                    throw new ArgumentException("Invalid SpectraCyber controller configuration input: " + argS);
             }
         }
 
@@ -44,7 +42,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         /// <param name="argW"> The program argument passed in for the weather station. </param>
         /// <returns> A concrete instance of a WeatherStation. </returns>
-        public static AbstractWeatherStation ConfigureWeatherStation(string argW)
+        private static AbstractWeatherStation ConfigureWeatherStation(string argW)
         {
             switch (argW.ToUpper())
             {
@@ -54,9 +52,11 @@ namespace ControlRoomApplication.Main
                 case "/SW":
                     return new SimulationWeatherStation(1000);
 
-                default:
                 case "/TW":
                     throw new NotImplementedException("The test weather station is not yet supported.");
+
+                default:
+                    throw new ArgumentException("Invalid weather station configuration input: " + argW);
             }
         }
 
@@ -65,7 +65,7 @@ namespace ControlRoomApplication.Main
         /// of the application based on the third command line argument passed in.
         /// </summary>
         /// <returns> A concrete instance of a radio telescope. </returns>
-        public static RadioTelescope ConfigureRadioTelescope(AbstractSpectraCyberController spectraCyberController, string ip, int port, bool usingLocalDB)
+        private static RadioTelescope ConfigureRadioTelescope(AbstractSpectraCyberController spectraCyberController, string ip, int port, bool usingLocalDB)
         {
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, port);
 
@@ -87,7 +87,7 @@ namespace ControlRoomApplication.Main
         /// Configures the type of PLC driver to simulate, based on the type of radio telescope being used.
         /// </summary>
         /// <returns> An instance of the proper derived PLC driver. </returns>
-        public static AbstractPLCDriver ConfigureSimulatedPLCDriver(string argP, string ip, int port)
+        private static AbstractPLCDriver ConfigureSimulatedPLCDriver(string argP, string ip, int port)
         {
             switch (argP.ToUpper())
             {
@@ -96,13 +96,15 @@ namespace ControlRoomApplication.Main
                     throw new NotImplementedException("There is not yet communication for the real PLC.");
 
                 case "/SR":
-                    // Case for the test/simulated radiotelescope.
+                    // Case for the scale model telescope
                     return new ScaleModelPLCDriver(ip, port);
 
                 case "/TR":
-                default:
-                    // Should be changed once we have a simulated radiotelescope class implemented
+                    // Case for the testing PLC
                     return new TestPLCDriver(ip, port);
+
+                default:
+                    throw new ArgumentException("Invalid input for determining the PLC client type: " + argP);
             }
         }
 
@@ -119,14 +121,12 @@ namespace ControlRoomApplication.Main
             }
             catch (Exception)
             {
-                Console.WriteLine("[ConfigurationManager] Invalid first input argument, an int was expected.");
-                return (null, null);
+                throw new ArgumentException("Invalid first input argument, an int was expected [" + args[0] + "].");
             }
 
             if (NumRTs != args.Length - 2)
             {
-                Console.WriteLine("[ConfigurationManager] The requested number of RTs doesn't match the number of input arguments.");
-                return (null, null);
+                throw new ArgumentException("Invalid number of radio telescope definitions, expected " + NumRTs.ToString() + " but got " + (args.Length - 2).ToString() + ".");
             }
 
             List<(RadioTelescope, AbstractPLCDriver)> RTDerivedDriverPairList = new List<(RadioTelescope, AbstractPLCDriver)>();

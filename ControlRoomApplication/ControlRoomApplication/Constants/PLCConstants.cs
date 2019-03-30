@@ -9,7 +9,7 @@ namespace ControlRoomApplication.Constants
         public const string SHUTDOWN = "shutdown";
         public const string COM3 = "COM3";
         public const string COM4 = "COM4";
-        public const string LOCAL_HOST_IP = "80.80.80.80";
+        public const string LOCAL_HOST_IP = "127.0.0.1";
 
         // Constant ints for PLC-related classes
         public const int PORT_5012 = 5012;
