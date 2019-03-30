@@ -15,11 +15,14 @@ namespace ControlRoomApplication.Main
     public partial class MainForm : Form
     {
         private static int numLocalDBRTInstancesCreated = 1;
+
         public MainForm()
         {
             InitializeComponent();
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 2;
+            dataGridView1.Columns[0].HeaderText = "PLC IP";
+            dataGridView1.Columns[1].HeaderText = "PLC Port";
 
             AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
@@ -52,10 +55,7 @@ namespace ControlRoomApplication.Main
 
                 MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
 
-                if (numLocalDBRTInstancesCreated == 1)
-                {
-                    MainControlRoomController.StartWeatherMonitoringRoutine();
-                }
+                MainControlRoomController.StartWeatherMonitoringRoutine();
 
                 int ErrorIndex = -1;
                 // Start each RT controller's threaded management
@@ -93,7 +93,7 @@ namespace ControlRoomApplication.Main
 
         public void AddConfigurationToDataGrid()
         {
-            string[] row = { MainControlRoomController.ControlRoom.RadioTelescopes[MainControlRoomController.ControlRoom.RadioTelescopes.Count - 1].GetType().ToString() };
+            string[] row = { textBox2.Text, textBox1.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -101,7 +101,7 @@ namespace ControlRoomApplication.Main
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
+            if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
                 Console.WriteLine("[Program] Successfully shut down weather monitoring routine.");
             }
