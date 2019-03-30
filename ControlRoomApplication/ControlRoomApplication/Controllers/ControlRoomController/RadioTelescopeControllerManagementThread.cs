@@ -10,35 +10,35 @@ namespace ControlRoomApplication.Controllers
 {
     public class RadioTelescopeControllerManagementThread
     {
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public RadioTelescopeController RTController { get; private set; }
+
         private Thread ManagementThread;
         private Mutex ManagementMutex;
         private bool KeepThreadAlive;
-
-        private Orientation NextObjective;
         private bool InterruptAppointmentFlag;
+        private Orientation _NextObjectiveOrientation;
+
+        public Orientation NextObjectiveOrientation
+        {
+            get
+            {
+                return _NextObjectiveOrientation;
+            }
+            set
+            {
+                ManagementMutex.WaitOne();
+                _NextObjectiveOrientation = value;
+                ManagementMutex.ReleaseMutex();
+            }
+        }
 
         public int RadioTelescopeID
         {
             get
             {
                 return RTController.RadioTelescope.Id;
-            }
-        }
-
-        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        public Orientation NextObjectiveOrientation
-        {
-            get
-            {
-                return NextObjective;
-            }
-            set
-            {
-                ManagementMutex.WaitOne();
-                NextObjective = value;
-                ManagementMutex.ReleaseMutex();
             }
         }
 
@@ -51,7 +51,7 @@ namespace ControlRoomApplication.Controllers
                     return true;
                 }
 
-                bool busy = NextObjective == null;
+                bool busy = _NextObjectiveOrientation == null;
                 ManagementMutex.ReleaseMutex();
 
                 return busy;
@@ -69,7 +69,7 @@ namespace ControlRoomApplication.Controllers
 
             ManagementMutex = new Mutex();
             KeepThreadAlive = false;
-            NextObjective = null;
+            _NextObjectiveOrientation = null;
             InterruptAppointmentFlag = false;
         }
 
@@ -259,7 +259,7 @@ namespace ControlRoomApplication.Controllers
             {
                 // Get orientation for current datetime
                 DateTime datetime = NextAppointment.StartTime.AddMinutes(i);
-                NextObjective = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
+                NextObjectiveOrientation = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
 
                 // Wait for datetime
                 while (DateTime.Now < datetime)
@@ -280,10 +280,10 @@ namespace ControlRoomApplication.Controllers
                 }
 
                 // Move to orientation
-                if (NextObjective != null)
+                if (NextObjectiveOrientation != null)
                 {
-                    Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + NextObjective.Azimuth + ", El = " + NextObjective.Elevation);
-                    RTController.MoveRadioTelescope(NextObjective);
+                    Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + _NextObjectiveOrientation.Azimuth + ", El = " + _NextObjectiveOrientation.Elevation);
+                    RTController.MoveRadioTelescope(NextObjectiveOrientation);
 
                     // Wait until telescope reaches destination
                     Orientation currentOrientation;
@@ -299,16 +299,16 @@ namespace ControlRoomApplication.Controllers
                         Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
                         Thread.Sleep(100);
                     }
-                    while (!NextObjective.Equals(currentOrientation));
+                    while (!NextObjectiveOrientation.Equals(currentOrientation));
 
-                    NextObjective = null;
+                    NextObjectiveOrientation = null;
                 }
             }
 
             if (InterruptAppointmentFlag)
             {
                 NextAppointment.Status = AppointmentConstants.CANCELLED;
-                NextObjective = null;
+                NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
             }
             else
