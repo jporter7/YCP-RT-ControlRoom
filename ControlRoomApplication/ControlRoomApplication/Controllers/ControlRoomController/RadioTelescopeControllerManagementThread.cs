@@ -278,8 +278,8 @@ namespace ControlRoomApplication.Controllers
                 // Move to orientation
                 if (_NextObjectiveOrientation != null)
                 {
-                    Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + NextObjective.Azimuth + ", El = " + NextObjective.Elevation);
-                    RTController.MoveRadioTelescope(NextObjective);
+                    Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + _NextObjectiveOrientation.Azimuth + ", El = " + _NextObjectiveOrientation.Elevation);
+                    RTController.MoveRadioTelescope(_NextObjectiveOrientation);
 
                     // Wait until telescope reaches destination
                     Orientation currentOrientation;
@@ -295,9 +295,9 @@ namespace ControlRoomApplication.Controllers
                         Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
                         Thread.Sleep(100);
                     }
-                    while (!NextObjective.Equals(currentOrientation));
+                    while (!_NextObjectiveOrientation.Equals(currentOrientation));
 
-                    NextObjective = null;
+                    _NextObjectiveOrientation = null;
                 }
             }
 
