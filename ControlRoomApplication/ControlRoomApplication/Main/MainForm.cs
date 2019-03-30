@@ -153,18 +153,7 @@ namespace ControlRoomApplication.Main
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            string[] row1 = { "Current Appointment ID:", "1" };
-            string[] row2 = { "Current RT Azimuth:",
-                "123.2" };// CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth.ToString() };
-            string[] row3 = { "Current RT Elevation:",
-                "12.123" };// CRoom.RadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation.ToString() };
 
-            dataGridView1.Rows.Add(row1);
-            dataGridView1.Rows.Add(row2);
-            dataGridView1.Rows.Add(row3);
-
-            dataGridView1.Update();
-            dataGridView1.Refresh();
         }
 
         public RadioTelescope BuildRT()
