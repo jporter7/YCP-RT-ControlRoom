@@ -45,7 +45,8 @@ namespace ControlRoomApplication.Main
 
                 if (checkBox1.Checked)
                 {
-                    ConfigurationManager.ConfigureLocalDatabase(1);
+                    ConfigurationManager.ConfigureLocalDatabase(numLocalDBRTInstancesCreated);
+                    numLocalDBRTInstancesCreated++;
                 }
 
                 MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
@@ -130,6 +131,16 @@ namespace ControlRoomApplication.Main
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
+        }
+
+        private void textBox2_Focus(object sender, EventArgs e)
+        {
+            textBox2.Text = "";
+        }
+
+        private void textBox1_Focus(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
         }
 
         private void MainForm_Load(object sender, EventArgs e)

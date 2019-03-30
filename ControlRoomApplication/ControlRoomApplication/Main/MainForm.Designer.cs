@@ -85,6 +85,7 @@
             this.textBox1.Size = new System.Drawing.Size(100, 22);
             this.textBox1.TabIndex = 10;
             this.textBox1.Text = "PLC Port";
+            this.textBox1.GotFocus += new System.EventHandler(this.textBox1_Focus);
             // 
             // comboBox1
             // 
@@ -105,6 +106,7 @@
             this.textBox2.Size = new System.Drawing.Size(100, 22);
             this.textBox2.TabIndex = 12;
             this.textBox2.Text = "PLC IP";
+            this.textBox2.GotFocus += new System.EventHandler(this.textBox2_Focus);
             // 
             // comboBox2
             // 
