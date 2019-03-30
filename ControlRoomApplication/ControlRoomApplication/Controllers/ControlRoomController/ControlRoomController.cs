@@ -8,18 +8,16 @@ namespace ControlRoomApplication.Controllers
     public class ControlRoomController
     {
         public ControlRoom ControlRoom { get; set; }
-        public CancellationToken Token { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Thread WeatherMonitoringThread;
         private bool KeepWeatherMonitoringThreadAlive;
 
-        public ControlRoomController(ControlRoom controlRoom, CancellationToken token)
+        public ControlRoomController(ControlRoom controlRoom)
         {
             ControlRoom = controlRoom;
             WeatherMonitoringThread = new Thread(new ThreadStart(WeatherMonitoringRoutine));
             KeepWeatherMonitoringThreadAlive = false;
-            Token = Token;
         }
 
         public bool StartWeatherMonitoringRoutine()

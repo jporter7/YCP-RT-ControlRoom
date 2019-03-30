@@ -25,8 +25,6 @@ namespace ControlRoomApplication.Main
             ProgramRTControllerList = new List<RadioTelescopeController>();
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
-
-            CancellationSource = new CancellationTokenSource();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -47,7 +45,7 @@ namespace ControlRoomApplication.Main
                     ConfigurationManager.ConfigureLocalDatabase(1);
                 }
 
-                ControlRoomController MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()), CancellationSource.Token);
+                MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
 
                 ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
                 ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PLCClient.ConnectToServer();
@@ -88,14 +86,21 @@ namespace ControlRoomApplication.Main
 
                     z++;
                 }
+
+                AddConfigurationToDataGrid();
             }
+        }
+
+        public void AddConfigurationToDataGrid()
+        {
+            string[] row = { MainControlRoomController.ControlRoom.RadioTelescopes[MainControlRoomController.ControlRoom.RadioTelescopes.Count - 1].GetType().ToString() };
+
+            dataGridView1.Rows.Add(row);
+            dataGridView1.Update();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Notify cancellation token
-            //CancellationSource.Cancel();
-
             if (MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
                 Console.WriteLine("[Program] Successfully shut down weather monitoring routine.");
@@ -105,7 +110,7 @@ namespace ControlRoomApplication.Main
                 Console.WriteLine("[Program] ERROR shutting down weather monitoring routine!");
             }
 
-            for (int i = 0; i < numLocalDBRTInstancesCreated; i++)
+            for (int i = 0; i < ProgramRTControllerList.Count; i++)
             {
                 if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, false))
                 {
@@ -120,8 +125,6 @@ namespace ControlRoomApplication.Main
                 ProgramRTControllerList[i].RadioTelescope.PLCClient.TerminateTCPServerConnection();
                 ProgramPLCDriverList[i].RequestStopAsyncAcceptingClients();
             }
-
-            CancellationSource.Dispose();
             DatabaseOperations.DeleteLocalDatabase();
 
             // End logging
@@ -170,7 +173,6 @@ namespace ControlRoomApplication.Main
 
             // Create Radio Telescope Location
             Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
-
 
             // Return Radio Telescope
             if (checkBox1.Checked)
