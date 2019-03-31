@@ -149,7 +149,7 @@ namespace ControlRoomApplication.Controllers
                     Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Starting appointment...");
 
                     // Calibrate telescope
-                    if (NextAppointment.Type != AppointmentTypeConstants.FREE_CONTROL)
+                    if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL)
                     {
                         RTController.CalibrateRadioTelescope();
                     }
@@ -242,14 +242,14 @@ namespace ControlRoomApplication.Controllers
         /// <param name="NextAppointment"> The appointment that is currently running. </param>
         private void PerformRadioTelescopeMovement(Appointment NextAppointment)
         {
-            NextAppointment.Status = AppointmentConstants.IN_PROGRESS;
+            NextAppointment.Status = AppointmentStatusEnum.IN_PROGRESS;
             DatabaseOperations.UpdateAppointment(NextAppointment);
 
             Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment Type: " + NextAppointment.Type);
 
             // Loop through each second or minute of the appointment (depending on appt type)
             TimeSpan length = NextAppointment.EndTime - NextAppointment.StartTime;
-            double duration = NextAppointment.Type == AppointmentTypeConstants.FREE_CONTROL ? length.TotalSeconds : length.TotalMinutes;
+            double duration = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? length.TotalSeconds : length.TotalMinutes;
             for (int i = 0; i <= (int) duration; i++)
             {
                 // Get orientation for current datetime
@@ -302,13 +302,13 @@ namespace ControlRoomApplication.Controllers
 
             if (InterruptAppointmentFlag)
             {
-                NextAppointment.Status = AppointmentConstants.CANCELLED;
+                NextAppointment.Status = AppointmentStatusEnum.CANCELLED;
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
             }
             else
             {
-                NextAppointment.Status = AppointmentConstants.COMPLETED;
+                NextAppointment.Status = AppointmentStatusEnum.COMPLETED;
             }
 
             DatabaseOperations.UpdateAppointment(NextAppointment);

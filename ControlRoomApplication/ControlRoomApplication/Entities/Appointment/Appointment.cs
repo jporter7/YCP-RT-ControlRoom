@@ -86,14 +86,14 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         [Required]
         [Column("status")]
-        public string Status { get; set; }
+        public AppointmentStatusEnum Status { get; set; }
 
         /// <summary>
         /// The getter/setter for the Appointment type.
         /// </summary>
         [Required]
         [Column("type")]
-        public string Type { get; set; }
+        public AppointmentTypeEnum Type { get; set; }
 
         /// <summary>
         /// The getter/setter for the SpectraCyberConfig type.

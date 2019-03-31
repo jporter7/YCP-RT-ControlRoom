@@ -56,8 +56,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test point appointment
             Appointment point_appt = new Appointment();
-            point_appt.Type = AppointmentTypeConstants.POINT;
-            point_appt.Status = AppointmentConstants.REQUESTED;
+            point_appt.Type = AppointmentTypeEnum.POINT;
+            point_appt.Status = AppointmentStatusEnum.REQUESTED;
             point_appt.StartTime = start;
             point_appt.EndTime = end;
             point_appt.Coordinates.Add(new Coordinate(0, 0));
@@ -67,8 +67,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test celesital body appointment
             Appointment sun_appt = new Appointment();
-            sun_appt.Type = AppointmentTypeConstants.CELESTIAL_BODY;
-            sun_appt.Status = AppointmentConstants.REQUESTED;
+            sun_appt.Type = AppointmentTypeEnum.CELESTIAL_BODY;
+            sun_appt.Status = AppointmentStatusEnum.REQUESTED;
             sun_appt.StartTime = start;
             sun_appt.EndTime = end;
             sun_appt.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
@@ -78,8 +78,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test raster appointment
             Appointment raster_appt = new Appointment();
-            raster_appt.Type = AppointmentTypeConstants.RASTER;
-            raster_appt.Status = AppointmentConstants.REQUESTED;
+            raster_appt.Type = AppointmentTypeEnum.RASTER;
+            raster_appt.Status = AppointmentStatusEnum.REQUESTED;
             raster_appt.StartTime = start;
             raster_appt.EndTime = end;
             raster_appt.Coordinates.Add(new Coordinate(0, 0));
@@ -90,8 +90,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test drift scan appointment
             Appointment drift_scan_appt = new Appointment();
-            drift_scan_appt.Type = AppointmentTypeConstants.DRIFT_SCAN;
-            drift_scan_appt.Status = AppointmentConstants.REQUESTED;
+            drift_scan_appt.Type = AppointmentTypeEnum.DRIFT_SCAN;
+            drift_scan_appt.Status = AppointmentStatusEnum.REQUESTED;
             drift_scan_appt.StartTime = start;
             drift_scan_appt.EndTime = end;
             drift_scan_appt.Orientation = new Orientation(30, 30);
@@ -101,8 +101,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test free control appointment
             Appointment free_control_appt = new Appointment();
-            free_control_appt.Type = AppointmentTypeConstants.FREE_CONTROL;
-            free_control_appt.Status = AppointmentConstants.REQUESTED;
+            free_control_appt.Type = AppointmentTypeEnum.FREE_CONTROL;
+            free_control_appt.Status = AppointmentStatusEnum.REQUESTED;
             free_control_appt.StartTime = start;
             free_control_appt.EndTime = end;
             free_control_appt.Orientation = new Orientation(30, 30);
@@ -261,8 +261,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             DateTime date = new DateTime(2018, 10, 30, 12, 0, 0);
 
             Appointment drift_scan_appt = new Appointment();
-            drift_scan_appt.Type = AppointmentTypeConstants.DRIFT_SCAN;
-            drift_scan_appt.Status = AppointmentConstants.REQUESTED;
+            drift_scan_appt.Type = AppointmentTypeEnum.DRIFT_SCAN;
+            drift_scan_appt.Status = AppointmentStatusEnum.REQUESTED;
             Orientation test_orientation = new Orientation(30, 30);
             drift_scan_appt.Orientation = test_orientation;
 
@@ -278,8 +278,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test free control appointment
             Appointment free_control_appt = new Appointment();
-            free_control_appt.Type = AppointmentTypeConstants.FREE_CONTROL;
-            free_control_appt.Status = AppointmentConstants.REQUESTED;
+            free_control_appt.Type = AppointmentTypeEnum.FREE_CONTROL;
+            free_control_appt.Status = AppointmentStatusEnum.REQUESTED;
             Orientation test_orientation = new Orientation(30, 30);
             free_control_appt.Orientation = test_orientation;
 
@@ -307,8 +307,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             // Test free control appointment
             Appointment free_control_appt = new Appointment();
-            free_control_appt.Type = AppointmentTypeConstants.FREE_CONTROL;
-            free_control_appt.Status = AppointmentConstants.REQUESTED;
+            free_control_appt.Type = AppointmentTypeEnum.FREE_CONTROL;
+            free_control_appt.Status = AppointmentStatusEnum.REQUESTED;
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
 
             // Test free control move
