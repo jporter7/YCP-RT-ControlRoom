@@ -67,17 +67,20 @@ namespace ControlRoomApplication.Entities
             return true;
         }
 
-        public bool RequestKill()
+        public bool RequestKillAndJoin()
         {
             try
             {
                 OperatingMutex.WaitOne();
                 KeepOperatingThreadAlive = false;
                 OperatingMutex.ReleaseMutex();
+
+                OperatingThread.Join();
             }
             catch (Exception e)
             {
-                if ((e is ObjectDisposedException) || (e is AbandonedMutexException) || (e is InvalidOperationException) | (e is ApplicationException))
+                if ((e is ObjectDisposedException) || (e is AbandonedMutexException) || (e is InvalidOperationException)
+                    || (e is ApplicationException) || (e is ThreadStateException) | (e is ThreadInterruptedException))
                 {
                     return false;
                 }
@@ -110,29 +113,7 @@ namespace ControlRoomApplication.Entities
 
         protected override bool KillHeartbeatComponent()
         {
-            try
-            {
-                OperatingMutex.WaitOne();
-                KeepOperatingThreadAlive = false;
-                OperatingMutex.ReleaseMutex();
-
-                OperatingThread.Join();
-            }
-            catch (Exception e)
-            {
-                if ((e is ObjectDisposedException) || (e is AbandonedMutexException) || (e is InvalidOperationException)
-                    || (e is ApplicationException) || (e is ThreadStateException) || (e is ThreadInterruptedException))
-                {
-                    return false;
-                }
-                else
-                {
-                    // Unexpected exception
-                    throw e;
-                }
-            }
-
-            return true;
+            return RequestKillAndJoin();
         }
 
         protected abstract double ReadCurrentWindSpeedMPH();

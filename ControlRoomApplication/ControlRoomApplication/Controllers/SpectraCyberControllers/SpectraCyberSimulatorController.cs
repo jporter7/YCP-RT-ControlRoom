@@ -100,7 +100,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
 
         protected override bool TestIfComponentIsAlive()
         {
-            return random.NextDouble() < 0.02;
+            return true;
         }
     }
 }

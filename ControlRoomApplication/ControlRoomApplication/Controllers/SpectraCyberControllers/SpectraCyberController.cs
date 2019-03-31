@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO.Ports;
 using System.Threading;
-using ControlRoomApplication.Main;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
 
@@ -90,7 +89,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
                 }
             }
 
-            //Console.WriteLine("[SpectraCyberController] Successfully started SpectraCyber communication and communication thread.");
+            Console.WriteLine("[SpectraCyberController] Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
 
