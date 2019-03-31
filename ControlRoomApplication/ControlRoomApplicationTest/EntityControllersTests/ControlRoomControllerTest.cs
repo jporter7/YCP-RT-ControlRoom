@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.RadioTelescope;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Controllers.RadioTelescopeControllers;
