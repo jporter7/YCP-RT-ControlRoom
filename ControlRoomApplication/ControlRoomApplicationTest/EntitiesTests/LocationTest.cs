@@ -1,8 +1,5 @@
-﻿using ControlRoomApplication.Constants;
-using ControlRoomApplication.Entities;
+﻿using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
 
 namespace ControlRoomApplicationTest.EntitiesTests
 {

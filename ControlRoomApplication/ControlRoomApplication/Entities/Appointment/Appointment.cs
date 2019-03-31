@@ -20,6 +20,7 @@ namespace ControlRoomApplication.Entities
         {
             Coordinates = new List<Coordinate>();
             RFDatas = new List<RFData>();
+            SpectraCyberConfig = new SpectraCyberConfig();
         }
 
         /// <summary>
@@ -95,11 +96,11 @@ namespace ControlRoomApplication.Entities
         public string Type { get; set; }
 
         /// <summary>
-        /// The getter/setter for the SpectraCyberMode type.
+        /// The getter/setter for the SpectraCyberConfig type.
         /// </summary>
         [Required]
-        [Column("spectracyber_mode_type")]
-        public SpectraCyberModeTypeEnum SpectraCyberModeType { get; set; }
+        [Column("spectracyber_config")]
+        public SpectraCyberConfig SpectraCyberConfig { get; set; }
 
         /// <summary>
         /// Compares the current Appointment to another object and it

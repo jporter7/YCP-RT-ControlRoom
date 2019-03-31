@@ -275,10 +275,10 @@ namespace ControlRoomApplication.Controllers
                 }
 
                 // Move to orientation
-                if (_NextObjectiveOrientation != null)
+                if (NextObjectiveOrientation != null)
                 {
                     Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + _NextObjectiveOrientation.Azimuth + ", El = " + _NextObjectiveOrientation.Elevation);
-                    RTController.MoveRadioTelescope(_NextObjectiveOrientation);
+                    RTController.MoveRadioTelescope(NextObjectiveOrientation);
 
                     // Wait until telescope reaches destination
                     Orientation currentOrientation;
@@ -294,9 +294,9 @@ namespace ControlRoomApplication.Controllers
                         Console.WriteLine("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
                         Thread.Sleep(100);
                     }
-                    while (!_NextObjectiveOrientation.Equals(currentOrientation));
+                    while (!NextObjectiveOrientation.Equals(currentOrientation));
 
-                    _NextObjectiveOrientation = null;
+                    NextObjectiveOrientation = null;
                 }
             }
 
@@ -327,10 +327,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         private void StartReadingData(Appointment appt)
         {
-            var spectraCyberController = RTController.RadioTelescope.SpectraCyberController;
-            spectraCyberController.SetSpectraCyberModeType(appt.SpectraCyberModeType);
-            spectraCyberController.SetActiveAppointmentID(appt.Id);
-            spectraCyberController.StartScan();
+            RTController.RadioTelescope.SpectraCyberController.SetApptConfig(appt);
+            RTController.RadioTelescope.SpectraCyberController.StartScan();
         }
 
         /// <summary>
@@ -338,10 +336,9 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         private void StopReadingRFData()
         {
-            var spectraCyberController = RTController.RadioTelescope.SpectraCyberController;
-            spectraCyberController.StopScan();
-            spectraCyberController.RemoveActiveAppointmentID();
-            spectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
+            RTController.RadioTelescope.SpectraCyberController.StopScan();
+            RTController.RadioTelescope.SpectraCyberController.RemoveActiveAppointmentID();
+            RTController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
         }
 
         public static int IndexOf(List<RadioTelescopeControllerManagementThread> ThreadList, RadioTelescope RadioTelescope)
