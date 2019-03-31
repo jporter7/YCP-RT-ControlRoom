@@ -275,11 +275,6 @@ namespace ControlRoomApplication.Controllers
                     break;
                 }
 
-                if (Token.IsCancellationRequested)
-                {
-                    RequestToKill();
-                }
-
                 // Move to orientation
                 if (_NextObjectiveOrientation != null)
                 {

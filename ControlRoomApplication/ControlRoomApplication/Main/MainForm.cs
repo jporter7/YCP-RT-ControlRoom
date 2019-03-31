@@ -124,7 +124,7 @@ namespace ControlRoomApplication.Main
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
                 ProgramRTControllerList[i].RadioTelescope.PLCClient.TerminateTCPServerConnection();
-                ProgramPLCDriverList[i].RequestStopAsyncAcceptingClients();
+                ProgramPLCDriverList[i].RequestStopAsyncAcceptingClientsAndJoin();
             }
             DatabaseOperations.DeleteLocalDatabase();
 
