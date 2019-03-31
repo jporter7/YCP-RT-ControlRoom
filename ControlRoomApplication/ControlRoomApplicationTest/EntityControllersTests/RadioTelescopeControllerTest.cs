@@ -1,17 +1,15 @@
-﻿using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Constants;
+﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
     [TestClass]
     public class RadioTelescopeControllerTest
     {
-        private static string ip = "127.0.0.1";
+        private static string ip = PLCConstants.LOCAL_HOST_IP;
         private static int port = PLCConstants.PORT_8080;
 
         private static RadioTelescopeController TestRadioTelescopeController;
@@ -22,7 +20,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             PLCClientCommunicationHandler PLCClientCommHandler = new PLCClientCommunicationHandler(ip, port);
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
-            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park
+            Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCClientCommHandler, location, new Orientation(0, 0));
             TestRadioTelescopeController = new RadioTelescopeController(TestRT);
 

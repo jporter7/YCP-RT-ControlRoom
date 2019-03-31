@@ -1,6 +1,6 @@
 ﻿using ControlRoomApplication.Entities;
 
-namespace ControlRoomApplication.Controllers.SpectraCyberController
+namespace ControlRoomApplication.Controllers
 {
     public class SpectraCyberTestController : AbstractSpectraCyberController
     {

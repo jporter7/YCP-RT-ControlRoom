@@ -3,8 +3,7 @@ using System.Threading;
 using System.Collections.Generic;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Database.Operations;
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplication.Controllers
 {

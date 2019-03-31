@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Threading;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
-namespace ControlRoomApplication.Controllers.PLCCommunication
+namespace ControlRoomApplication.Controllers
 {
     public abstract class AbstractPLCDriver
     {

@@ -4,6 +4,11 @@
     {
         static HeartbeatTracker HeartbeatTracker = HeartbeatTracker.GetInstance();
 
+        public static bool IsTracking(HeartbeatInterface Child)
+        {
+            return HeartbeatTracker.ContainsChild(Child);
+        }
+
         public static void StartTracking(HeartbeatInterface Child)
         {
             HeartbeatTracker.AddChild(Child);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 
 namespace ControlRoomApplication.Controllers
 {

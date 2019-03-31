@@ -1,7 +1,7 @@
 ﻿using System;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
@@ -16,12 +16,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             spectraCyberSimulator = new SpectraCyberSimulator();
             spectraCyberTestController = new SpectraCyberTestController(spectraCyberSimulator);
-        }
-
-        [TestCleanup]
-        public void TearDown()
-        {
-
         }
 
         [TestMethod]

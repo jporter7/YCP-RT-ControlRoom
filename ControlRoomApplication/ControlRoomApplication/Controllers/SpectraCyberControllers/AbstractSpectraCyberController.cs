@@ -2,9 +2,9 @@
 using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
-using ControlRoomApplication.Database.Operations;
+using ControlRoomApplication.Database;
 
-namespace ControlRoomApplication.Controllers.SpectraCyberController
+namespace ControlRoomApplication.Controllers
 {
     public abstract class AbstractSpectraCyberController : HeartbeatInterface
     {

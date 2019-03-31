@@ -14,6 +14,11 @@ namespace ControlRoomApplication.Entities
             Children = new List<HeartbeatInterface>();
         }
 
+        public bool ContainsChild(HeartbeatInterface Child)
+        {
+            return Children.Contains(Child);
+        }
+
         public void AddChild(HeartbeatInterface Child)
         {
             if (Children.Contains(Child))

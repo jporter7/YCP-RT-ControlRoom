@@ -1,10 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Entities;
-using System.Collections.Generic;
 using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplicationTest.EntitiesTests
 {
@@ -18,26 +16,22 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestInitialize]
         public void BuildUp()
         {
+            string IP = PLCConstants.LOCAL_HOST_IP;
+
             rtManagementThreads = new List<RadioTelescopeControllerManagementThread>()
             {
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler(IP, 8080), new Location(), new Orientation()))),
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler(IP, 8081), new Location(), new Orientation()))),
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler("127.0.0.1", 8080), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new PLCClientCommunicationHandler(IP, 8082), new Location(), new Orientation()))),
             };
 
             controlRoom = new ControlRoom(weatherStation);
             controlRoom.RTControllerManagementThreads.Add(rtManagementThreads[0]);
             controlRoom.RTControllerManagementThreads.Add(rtManagementThreads[1]);
             controlRoom.RTControllerManagementThreads.Add(rtManagementThreads[2]);
-        }
-
-        [TestCleanup]
-        public void TearDown()
-        {
-
         }
         
         [TestMethod]

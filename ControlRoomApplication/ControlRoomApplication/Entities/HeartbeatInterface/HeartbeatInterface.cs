@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-
 using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Entities
@@ -22,6 +21,14 @@ namespace ControlRoomApplication.Entities
 
             KeepAlive = true;
             HeartbeatThread.Start();
+        }
+
+        ~HeartbeatInterface()
+        {
+            if (HeartbeatTrackerContainer.IsTracking(this))
+            {
+                HeartbeatTrackerContainer.StopTracking(this);
+            }
         }
 
         public void AcquireControl()

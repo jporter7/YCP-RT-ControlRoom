@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Database.Operations;
-using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplication.Main
@@ -50,7 +50,7 @@ namespace ControlRoomApplication.Main
                     throw new NotImplementedException("The production weather station is not yet supported.");
 
                 case "/SW":
-                    return new SimulationWeatherStation(1000);
+                    return new SimulationWeatherStation(HardwareConstants.WEATHER_STATION_DEFAULT_CHECKIN_FREQUENCY_MS);
 
                 case "/TW":
                     throw new NotImplementedException("The test weather station is not yet supported.");
@@ -70,7 +70,7 @@ namespace ControlRoomApplication.Main
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(ip, port);
 
             // Create Radio Telescope Location
-            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+            Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
 
             // Return Radio Telescope
             if (usingLocalDB)

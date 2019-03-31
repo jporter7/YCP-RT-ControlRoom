@@ -4,9 +4,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Controllers.PLCCommunication;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
@@ -36,7 +33,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Port0 = 8080;
             Port1 = 8081;
 
-            JohnRudyPark = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+            JohnRudyPark = MiscellaneousConstants.JOHN_RUDY_PARK;
             CalibrationOrientation = new Orientation(0, 90);
 
             PLCCCH0 = new PLCClientCommunicationHandler(IP, Port0);

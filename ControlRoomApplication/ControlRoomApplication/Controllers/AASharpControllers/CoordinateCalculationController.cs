@@ -1,12 +1,12 @@
-﻿using ControlRoomApplication.Entities;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using AASharp;
 using ControlRoomApplication.Constants;
-using System.Linq;
-using System.Collections.Generic;
-using ControlRoomApplication.Database.Operations;
+using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities;
 
-namespace ControlRoomApplication.Controllers.AASharpControllers
+namespace ControlRoomApplication.Controllers
 {
     public class CoordinateCalculationController
     {
@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Controllers.AASharpControllers
         {
             if(coordinate == null)
             {
-                throw new ArgumentException("Coordinate Cannot be null");
+                throw new ArgumentException("Coordinate cannot be null");
             }
 
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);

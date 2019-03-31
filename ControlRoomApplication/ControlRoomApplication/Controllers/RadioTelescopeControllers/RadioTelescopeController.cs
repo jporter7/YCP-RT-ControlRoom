@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using ControlRoomApplication.Controllers.AASharpControllers;
 using ControlRoomApplication.Entities;
 
-namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
+namespace ControlRoomApplication.Controllers
 {
     public class RadioTelescopeController
     {
@@ -187,7 +186,7 @@ namespace ControlRoomApplication.Controllers.RadioTelescopeControllers
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
         {
-            return ((ResponseBytes[0] + (ResponseBytes[1] * 16)) == ExpectedSize) && (ResponseBytes[2] == 0x1);
+            return ((ResponseBytes[0] + (ResponseBytes[1] * 256)) == ExpectedSize) && (ResponseBytes[2] == 0x1);
         }
 
         private static bool MinorResponseIsValid(byte[] MinorResponseBytes)

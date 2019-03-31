@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
 
 namespace ControlRoomApplication.Entities
 {

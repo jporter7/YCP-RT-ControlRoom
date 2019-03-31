@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using ControlRoomApplication.Entities;
 
-namespace ControlRoomApplication.Controllers.PLCCommunication
+namespace ControlRoomApplication.Controllers
 {
     public class ScaleModelPLCDriver : AbstractPLCDriver
     {
@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication
 
         protected override bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
         {
-            int ExpectedSize = query[0] + (16 * query[1]);
+            int ExpectedSize = query[0] + (256 * query[1]);
             if (query.Length != ExpectedSize)
             {
                 throw new ArgumentException(

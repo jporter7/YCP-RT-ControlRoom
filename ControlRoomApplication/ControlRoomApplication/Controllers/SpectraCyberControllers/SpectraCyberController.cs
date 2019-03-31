@@ -4,7 +4,7 @@ using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
 
-namespace ControlRoomApplication.Controllers.SpectraCyberController
+namespace ControlRoomApplication.Controllers
 {
     public class SpectraCyberController : AbstractSpectraCyberController
     {

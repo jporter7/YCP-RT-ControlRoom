@@ -25,10 +25,10 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.IsTrue(context1.Orientations != null);
             Assert.IsTrue(context1.Coordinates != null);
 
-            Assert.AreEqual(GenericConstants.LOCAL_DATABASE_NAME.ToLower(), context1.Database.Connection.Database.ToLower());
+            Assert.AreEqual(MiscellaneousConstants.LOCAL_DATABASE_NAME.ToLower(), context1.Database.Connection.Database.ToLower());
             Assert.AreEqual("localhost", context1.Database.Connection.DataSource);
 
-            Assert.AreEqual(GenericConstants.LOCAL_DATABASE_NAME.ToLower(), context2.Database.Connection.Database.ToLower());
+            Assert.AreEqual(MiscellaneousConstants.LOCAL_DATABASE_NAME.ToLower(), context2.Database.Connection.Database.ToLower());
             Assert.IsFalse(context2.Configuration.LazyLoadingEnabled);
         }
     }

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Net.Sockets;
 using ControlRoomApplication.Entities;
 
-namespace ControlRoomApplication.Controllers.PLCCommunication
+namespace ControlRoomApplication.Controllers
 {
     public class PLCClientCommunicationHandler
     {

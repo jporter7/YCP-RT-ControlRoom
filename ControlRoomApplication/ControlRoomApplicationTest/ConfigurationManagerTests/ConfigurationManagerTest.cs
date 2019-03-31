@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Main;
+using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplicationTest.ConfigurationTests

@@ -1,14 +1,12 @@
-﻿using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Database.Operations;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Simulators.Hardware.WeatherStation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplication.Main
 {
@@ -172,7 +170,7 @@ namespace ControlRoomApplication.Main
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
 
             // Create Radio Telescope Location
-            Location location = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
+            Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
 
             // Return Radio Telescope
             if (checkBox1.Checked)

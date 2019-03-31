@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace ControlRoomApplication.Entities.Camera
+namespace ControlRoomApplication.Entities
 {
-    class AbstractCamera
+    public class AbstractCamera
     {
+        public int CameraId { get; private set; }
+
         public AbstractCamera()
         {
 
         }
-
-        int CameraId { get; set; }
     }
 }

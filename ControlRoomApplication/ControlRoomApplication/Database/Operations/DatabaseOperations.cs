@@ -6,7 +6,7 @@ using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 
-namespace ControlRoomApplication.Database.Operations
+namespace ControlRoomApplication.Database
 {
     public static class DatabaseOperations
     {

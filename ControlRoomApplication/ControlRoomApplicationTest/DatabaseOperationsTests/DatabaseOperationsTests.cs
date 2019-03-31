@@ -1,9 +1,9 @@
-﻿using ControlRoomApplication.Constants;
-using ControlRoomApplication.Database.Operations;
-using ControlRoomApplication.Entities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplicationTest.DatabaseOperationsTests
 {

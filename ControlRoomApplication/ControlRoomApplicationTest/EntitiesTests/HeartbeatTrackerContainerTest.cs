@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Controllers.SpectraCyberController;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplicationTest.EntitiesTests

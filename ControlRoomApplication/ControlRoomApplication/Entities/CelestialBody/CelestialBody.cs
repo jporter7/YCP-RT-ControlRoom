@@ -1,7 +1,7 @@
-﻿using ControlRoomApplication.Constants;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Entities
 {

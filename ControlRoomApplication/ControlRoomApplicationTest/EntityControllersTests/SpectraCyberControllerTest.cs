@@ -1,7 +1,6 @@
-﻿
-using ControlRoomApplication.Controllers.SpectraCyberController;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Entities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {

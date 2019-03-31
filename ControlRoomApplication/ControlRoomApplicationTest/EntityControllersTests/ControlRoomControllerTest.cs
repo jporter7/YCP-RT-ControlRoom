@@ -1,11 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
@@ -15,7 +12,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
     {
         public static ControlRoomController CRController;
         public static ControlRoom ControlRoom;
-        public static Location JohnRudyPark;
         public static Orientation CalibrationOrientation;
         public static string IP = PLCConstants.LOCAL_HOST_IP;
         public static int Port = PLCConstants.PORT_8080;
@@ -28,7 +24,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             ControlRoom = new ControlRoom(new SimulationWeatherStation(100));
             CRController = new ControlRoomController(ControlRoom);
-            JohnRudyPark = new Location(76.7046, 40.0244, 395.0); // John Rudy Park hardcoded for now
             CalibrationOrientation = new Orientation(0, 90);
         }
 
@@ -39,7 +34,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
                     new PLCClientCommunicationHandler(IP, Port),
-                    JohnRudyPark,
+                    MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
             );
@@ -48,7 +43,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
                     new PLCClientCommunicationHandler(IP, Port),
-                    JohnRudyPark,
+                    MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
             );
@@ -57,7 +52,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
                     new PLCClientCommunicationHandler(IP, Port),
-                    JohnRudyPark,
+                    MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
             );

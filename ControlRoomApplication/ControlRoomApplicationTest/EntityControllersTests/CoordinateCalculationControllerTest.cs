@@ -1,9 +1,9 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ControlRoomApplication.Controllers.AASharpControllers;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Constants;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
@@ -13,7 +13,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestInitialize]
         public void Up()
         {
-            Location location = new Location(76.7046, 40.0244, 395.0);
+            Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             CoordinateCalculationController = new CoordinateCalculationController(location);
         }
 
