@@ -7,12 +7,11 @@ namespace ControlRoomApplication.Controllers
 {
     public class ControlRoomController
     {
-        public ControlRoom ControlRoom { get; }
-
+        public ControlRoom ControlRoom { get; set; }
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Thread WeatherMonitoringThread;
         private bool KeepWeatherMonitoringThreadAlive;
-
-        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public ControlRoomController(ControlRoom controlRoom)
         {

@@ -22,6 +22,7 @@ namespace ControlRoomApplication.Controllers.SpectraCyberController
             Schedule = new SpectraCyberScanSchedule(SpectraCyberScanScheduleMode.OFF);
             KillCommunicationThreadFlag = false;
             CommunicationMutex = new Mutex();
+            SpectraCyber.CurrentModeType = SpectraCyberModeTypeEnum.CONTINUUM;
         }
 
         public RadioTelescope GetParent()

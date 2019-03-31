@@ -262,7 +262,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     if (InterruptAppointmentFlag)
                     {
-                        Console.WriteLine("Interrupted appointment [" + NextAppointment.Id.ToString() +"] at " + DateTime.Now.ToString());
+                        Console.WriteLine("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                         break;
                     }
 
