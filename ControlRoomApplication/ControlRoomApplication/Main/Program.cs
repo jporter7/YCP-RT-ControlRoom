@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Database.Operations;
-using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Main
 {
