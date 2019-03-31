@@ -20,9 +20,10 @@ namespace ControlRoomApplication.Main
         {
             InitializeComponent();
             logger.Info("<--------------- Control Room Application Started --------------->");
-            dataGridView1.ColumnCount = 2;
-            dataGridView1.Columns[0].HeaderText = "PLC IP";
-            dataGridView1.Columns[1].HeaderText = "PLC Port";
+            dataGridView1.ColumnCount = 3;
+            dataGridView1.Columns[0].HeaderText = "ID";
+            dataGridView1.Columns[1].HeaderText = "PLC IP";
+            dataGridView1.Columns[2].HeaderText = "PLC Port";
 
             AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
@@ -46,7 +47,6 @@ namespace ControlRoomApplication.Main
                 if (checkBox1.Checked)
                 {
                     ConfigurationManager.ConfigureLocalDatabase(numLocalDBRTInstancesCreated);
-                    numLocalDBRTInstancesCreated++;
                 }
 
                 MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
@@ -94,7 +94,7 @@ namespace ControlRoomApplication.Main
 
         public void AddConfigurationToDataGrid()
         {
-            string[] row = { textBox2.Text, textBox1.Text };
+            string[] row = { (numLocalDBRTInstancesCreated - 1).ToString(), textBox2.Text, textBox1.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -177,7 +177,7 @@ namespace ControlRoomApplication.Main
             // Return Radio Telescope
             if (checkBox1.Checked)
             {
-                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,0), numLocalDBRTInstancesCreated++);
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,0), numLocalDBRTInstancesCreated);
             }
             else
             {
