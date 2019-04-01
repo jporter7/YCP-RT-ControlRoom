@@ -150,6 +150,12 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
+    <Compile Include="Main\FreeControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main\FreeControlForm.Designer.cs">
+      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
     <Compile Include="Simulators\Hardware\AbsoluteEncoder\SimulationAbsoluteEncoder.cs" />
@@ -192,6 +198,9 @@
     <Content Include="Migrations\README.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Main\FreeControlForm.resx">
+      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Main\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

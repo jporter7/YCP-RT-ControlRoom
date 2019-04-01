@@ -247,5 +247,11 @@ namespace ControlRoomApplication.Main
         private CancellationTokenSource CancellationSource { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private void FreeControl_Click(object sender, EventArgs e)
+        {
+            FreeControlForm freeControlWindow = new FreeControlForm();
+            freeControlWindow.ShowDialog();
+        }
     }
 }
