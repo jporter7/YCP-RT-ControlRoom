@@ -101,8 +101,8 @@ namespace ControlRoomApplication.Database
                         // Add drift scan appointment
                         appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
                         appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
-                        appt0.Status = AppointmentConstants.REQUESTED;
-                        appt0.Type = AppointmentTypeConstants.DRIFT_SCAN;
+                        appt0.Status = AppointmentStatusEnum.REQUESTED;
+                        appt0.Type = AppointmentTypeEnum.DRIFT_SCAN;
                         appt0.Orientation = new Orientation(30, 30);
                         appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                         appt0.TelescopeId = i + 1;
@@ -111,8 +111,8 @@ namespace ControlRoomApplication.Database
                         // Add celesital body appointment
                         appt1.StartTime = appt0.EndTime.AddSeconds(20 + rand.Next(30));
                         appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
-                        appt1.Status = AppointmentConstants.REQUESTED;
-                        appt1.Type = AppointmentTypeConstants.CELESTIAL_BODY;
+                        appt1.Status = AppointmentStatusEnum.REQUESTED;
+                        appt1.Type = AppointmentTypeEnum.CELESTIAL_BODY;
                         appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
                         appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
                         appt1.TelescopeId = i + 1;
@@ -121,8 +121,8 @@ namespace ControlRoomApplication.Database
                         // Add point appointment
                         appt2.StartTime = appt1.EndTime.AddSeconds(20 + rand.Next(30));
                         appt2.EndTime = appt2.StartTime.AddSeconds(10 + rand.Next(90));
-                        appt2.Status = AppointmentConstants.REQUESTED;
-                        appt2.Type = AppointmentTypeConstants.POINT;
+                        appt2.Status = AppointmentStatusEnum.REQUESTED;
+                        appt2.Type = AppointmentTypeEnum.POINT;
                         appt2.Coordinates.Add(coordinate2);
                         appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                         appt2.TelescopeId = i + 1;
@@ -131,8 +131,8 @@ namespace ControlRoomApplication.Database
                         // Add raster appointment
                         appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
                         appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
-                        appt3.Status = AppointmentConstants.REQUESTED;
-                        appt3.Type = AppointmentTypeConstants.RASTER;
+                        appt3.Status = AppointmentStatusEnum.REQUESTED;
+                        appt3.Type = AppointmentTypeEnum.RASTER;
                         appt3.Coordinates.Add(coordinate0);
                         appt3.Coordinates.Add(coordinate1);
                         appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
@@ -252,7 +252,7 @@ namespace ControlRoomApplication.Database
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x.StartTime < DateTime.Now || x.Status == AppointmentConstants.COMPLETED);
+                    appointments.RemoveAll(x => x.StartTime < DateTime.Now || x.Status == AppointmentStatusEnum.COMPLETED);
                     appointments.Sort();
                     logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;
@@ -296,7 +296,11 @@ namespace ControlRoomApplication.Database
         /// <returns> A boolean indicating whether or not the status is valid.</returns>
         private static bool VerifyAppointmentStatus(Appointment appt)
         {
-            return AppointmentConstants.AppointmentStatuses.Any(appt.Status.Contains);
+            return  appt.Status.Equals(AppointmentStatusEnum.CANCELLED) || 
+                    appt.Status.Equals(AppointmentStatusEnum.COMPLETED) ||
+                    appt.Status.Equals(AppointmentStatusEnum.IN_PROGRESS) ||
+                    appt.Status.Equals(AppointmentStatusEnum.REQUESTED) ||
+                    appt.Status.Equals(AppointmentStatusEnum.SCHEDULED);
         }
     }
 }

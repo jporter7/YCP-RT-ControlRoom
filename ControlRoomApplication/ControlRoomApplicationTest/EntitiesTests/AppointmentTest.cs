@@ -22,8 +22,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
         private Coordinate coordinate;
         private RFData rf_data;
         private int telescope_id;
-        private string status;
-        private string type;
+        private AppointmentStatusEnum status;
+        private AppointmentTypeEnum type;
         private SpectraCyberConfig spectracyber_config;
 
         private DateTime startTime_2;
@@ -47,8 +47,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
             rf_data = new RFData();
             rf_data.Intensity = 100;
             telescope_id = 1;
-            status = AppointmentConstants.REQUESTED;
-            type = AppointmentTypeConstants.POINT;
+            status = AppointmentStatusEnum.REQUESTED;
+            type = AppointmentTypeEnum.POINT;
             spectracyber_config = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
 
             startTime_2 = DateTime.Now.AddDays(1);

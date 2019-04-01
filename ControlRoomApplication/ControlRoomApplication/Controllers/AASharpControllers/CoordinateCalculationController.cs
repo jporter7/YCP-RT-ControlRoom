@@ -45,15 +45,15 @@ namespace ControlRoomApplication.Controllers
         {
             switch (appt.Type)
             {
-                case (AppointmentTypeConstants.POINT):
+                case (AppointmentTypeEnum.POINT):
                     return GetPointOrientation(appt, datetime);
-                case (AppointmentTypeConstants.CELESTIAL_BODY):
+                case (AppointmentTypeEnum.CELESTIAL_BODY):
                     return GetCelestialBodyOrientation(appt, datetime);
-                case (AppointmentTypeConstants.RASTER):
+                case (AppointmentTypeEnum.RASTER):
                     return GetRasterOrientation(appt, datetime);
-                case (AppointmentTypeConstants.DRIFT_SCAN):
+                case (AppointmentTypeEnum.DRIFT_SCAN):
                     return GetDriftScanOrienation(appt);
-                case (AppointmentTypeConstants.FREE_CONTROL):
+                case (AppointmentTypeEnum.FREE_CONTROL):
                     return GetFreeControlOrientation(appt, datetime);
                 default:
                     throw new ArgumentException("Invalid Appt type");

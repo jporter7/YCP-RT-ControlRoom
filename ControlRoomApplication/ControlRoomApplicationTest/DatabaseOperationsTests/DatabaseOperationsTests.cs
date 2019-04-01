@@ -135,7 +135,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestUpdateAppointmentStatus()
         {
-            appt.Status = AppointmentConstants.IN_PROGRESS;
+            appt.Status = AppointmentStatusEnum.IN_PROGRESS;
 
             DatabaseOperations.UpdateAppointment(appt);
             
@@ -143,21 +143,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
             var testStatus = appt.Status;
 
-            Assert.AreEqual(AppointmentConstants.IN_PROGRESS, testStatus);
-        }
-
-        [TestMethod]
-        public void TestUpdateAppointmentStatus_InvalidStatus()
-        {
-            appt.Status = "INVALID_STATUS";
-
-            DatabaseOperations.UpdateAppointment(appt);
-
-            // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
-            var testStatus = appt.Status;
-
-            Assert.AreNotEqual(AppointmentConstants.IN_PROGRESS, testStatus);
+            Assert.AreEqual(AppointmentStatusEnum.IN_PROGRESS, testStatus);
         }
 
         [TestMethod]
@@ -166,7 +152,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             var appt = DatabaseOperations.GetNextAppointment(NumRTInstances);
             Assert.IsTrue(appt != null);
             Assert.IsTrue(appt.StartTime > DateTime.Now);
-            Assert.IsTrue(appt.Status != AppointmentConstants.COMPLETED);
+            Assert.IsTrue(appt.Status != AppointmentStatusEnum.COMPLETED);
         }
     }
 }
