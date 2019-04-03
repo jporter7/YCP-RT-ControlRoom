@@ -15,7 +15,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
 		[ClassInitialize]
 		public static void BuildUp(TestContext testContext)
-		{
+		{ 
 			string ip = PLCConstants.LOCAL_HOST_IP;
 			int port = PLCConstants.PORT_8080;
 
@@ -81,7 +81,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 			sendcoords(0, 90);
 		}
 		
-
 		private void sendcoords(Double NewAzimuth, Double NewElevation)
 		{
 			CommsHandler.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, new Orientation(NewAzimuth, NewElevation));
