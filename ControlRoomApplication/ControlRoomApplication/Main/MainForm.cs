@@ -214,6 +214,11 @@ namespace ControlRoomApplication.Main
 
                 case 2:
                     return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+
+				case 3:
+					// Case for the VR PLC Driver
+					return new VRPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+
                 default:
                     // Should be changed once we have a simulated radiotelescope class implemented
                     return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));

@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using System.IO.Pipes;
-namespace ControlRoomApplication.Controllers.PLCCommunication
+namespace ControlRoomApplication.Controllers
 {
 	public class VRPLCDriver : AbstractPLCDriver
 	{
