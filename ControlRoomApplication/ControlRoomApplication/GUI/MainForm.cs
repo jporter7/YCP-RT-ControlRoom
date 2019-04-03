@@ -50,7 +50,11 @@ namespace ControlRoomApplication.Main
                     ConfigurationManager.ConfigureLocalDatabase(numLocalDBRTInstancesCreated);
                 }
 
-                MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                if (MainControlRoomController == null)
+                {
+                    MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                }
+                
 
                 ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
                 ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PLCClient.ConnectToServer();

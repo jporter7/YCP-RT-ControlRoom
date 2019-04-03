@@ -15,7 +15,7 @@ namespace ControlRoomApplication.GUI
     {
         private ControlRoom controlRoom;
         private int rtId;
-        private string[] statuses = { "Offline", "Offline"};
+        private string[] statuses = { "Offline", "Offline" };
 
         public DiagnosticsForm(ControlRoom controlRoom, int rtId)
         {
