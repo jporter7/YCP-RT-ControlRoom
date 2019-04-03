@@ -262,7 +262,7 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
-                    logger.Debug(datetime.ToString() + " vs. " + DateTime.Now.ToString());
+                    //logger.Debug(datetime.ToString() + " vs. " + DateTime.Now.ToString());
                     Thread.Sleep(1000);
                 }
 

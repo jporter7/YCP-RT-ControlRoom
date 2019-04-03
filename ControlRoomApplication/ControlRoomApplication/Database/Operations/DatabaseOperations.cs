@@ -64,7 +64,6 @@ namespace ControlRoomApplication.Database
         /// </summary>
         public static void PopulateLocalDatabase(int NumRTInstances)
         {
-            
             if (!USING_REMOTE_DATABASE)
             {
                 Random rand = new Random();
@@ -147,7 +146,6 @@ namespace ControlRoomApplication.Database
                     SaveContext(Context);
                 }
             }
-            
         }
 
         /// <summary>
