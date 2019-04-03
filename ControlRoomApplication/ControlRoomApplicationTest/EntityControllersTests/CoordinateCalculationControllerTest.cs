@@ -50,6 +50,40 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         }
 
         [TestMethod]
+        public void TestOrientationToCoordinate()
+        {
+            // Test at 10:01:43 PM local time (Converted to UTC) 
+            DateTime date_1 = new DateTime(2018, 6, 23, 2, 1, 43);
+            Coordinate coord_1 = new Coordinate(1, 1);
+            Orientation test_orientation_1 = new Orientation(40.81, -40.75);
+            Orientation output_orientation_1 = CoordinateCalculationController.CoordinateToOrientation(coord_1, date_1);
+            Coordinate output_coordinate_1 = CoordinateCalculationController.OrientationToCoordinate(output_orientation_1, date_1);
+
+            Assert.AreEqual(coord_1.RightAscension, output_coordinate_1.RightAscension, 0.5);
+            Assert.AreEqual(coord_1.Declination, output_coordinate_1.Declination, 0.5);
+
+            // Test at 6:00:00 AM local time (Converted to UTC)
+            DateTime date_2 = new DateTime(2018, 12, 14, 11, 0, 0);
+            Coordinate coord_2 = new Coordinate(12, 1);
+            Orientation test_orientation_2 = new Orientation(166.09, 50.04);
+            Orientation output_orientation_2 = CoordinateCalculationController.CoordinateToOrientation(coord_2, date_2);
+            Coordinate output_coordinate_2 = CoordinateCalculationController.OrientationToCoordinate(output_orientation_2, date_2);
+
+            Assert.AreEqual(coord_2.RightAscension, output_coordinate_2.RightAscension, 0.5);
+            Assert.AreEqual(coord_2.Declination, output_coordinate_2.Declination, 0.5);
+
+            // Test at 5:55:02 PM local time (Converted to UTC)
+            DateTime date_3 = new DateTime(2018, 2, 3, 22, 55, 2);
+            Coordinate coord_3 = new Coordinate(23, 80);
+            Orientation test_orientation_3 = new Orientation(348.36, 45.00);
+            Orientation output_orientation_3 = CoordinateCalculationController.CoordinateToOrientation(coord_3, date_3);
+            Coordinate output_coordinate_3 = CoordinateCalculationController.OrientationToCoordinate(output_orientation_3, date_3);
+
+            Assert.AreEqual(coord_3.RightAscension, output_coordinate_3.RightAscension, 0.5);
+            Assert.AreEqual(coord_3.Declination, output_coordinate_3.Declination, 0.5);
+        }
+
+        [TestMethod]
         public void TestCalculateOrientation()
         {
             DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
