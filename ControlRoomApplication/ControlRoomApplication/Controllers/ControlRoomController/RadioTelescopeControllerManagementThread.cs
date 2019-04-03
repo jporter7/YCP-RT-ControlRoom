@@ -172,21 +172,18 @@ namespace ControlRoomApplication.Controllers
                     EndAppointment();
 
                     logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment completed.");
-                    logger.Info("Appointment completed.");
                 }
                 else
                 {
                     if (InterruptAppointmentFlag)
                     {
                         logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment interrupted in loading routine.");
-                        logger.Info("Appointment interrupted in loading routine.");
                         ManagementMutex.WaitOne();
                         InterruptAppointmentFlag = false;
                         ManagementMutex.ReleaseMutex();
                     }
 
                     logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment does not have an orientation associated with it.");
-                    logger.Info("Appointment does not have an orientation associated with it.");
                 }
 
                 KeepAlive = KeepThreadAlive;

@@ -179,7 +179,7 @@ namespace ControlRoomApplication.Main
             }
             else
             {
-                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0, 0));
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0, 0), numLocalDBRTInstancesCreated);
             }
         }
 
@@ -250,7 +250,7 @@ namespace ControlRoomApplication.Main
 
         private void FreeControl_Click(object sender, EventArgs e)
         {
-            FreeControlForm freeControlWindow = new FreeControlForm();
+            FreeControlForm freeControlWindow = new FreeControlForm(ProgramRTControllerList.Count, MiscellaneousConstants.JOHN_RUDY_PARK);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {
