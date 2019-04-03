@@ -8,6 +8,9 @@ namespace ControlRoomApplication.Controllers
 {
     public abstract class AbstractSpectraCyberController : HeartbeatInterface
     {
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         protected RadioTelescope Parent { get; set; }
         protected AbstractSpectraCyber SpectraCyber { get; set; }
         protected SpectraCyberScanSchedule Schedule { get; set; }
@@ -52,7 +55,7 @@ namespace ControlRoomApplication.Controllers
             else
             {
                 // Unknown current mode type
-                Console.WriteLine("[AbstractSpectraCyberController] ERROR: invalid SpectraCyber mode type: " + SpectraCyber.CurrentModeType.ToString());
+                logger.Info("[AbstractSpectraCyberController] ERROR: invalid SpectraCyber mode type: " + SpectraCyber.CurrentModeType.ToString());
             }
             return success;
 
@@ -88,14 +91,14 @@ namespace ControlRoomApplication.Controllers
             SendCommand(Request, ref Response);
 
             string ResponseData = Response.SerialIdentifier + Response.DecimalData.ToString("X3");
-            Console.WriteLine("[AbstractSpectraCyberController] Attempted RESET with command \"!R000\", heard back: " + ResponseData);
+            logger.Info("[AbstractSpectraCyberController] Attempted RESET with command \"!R000\", heard back: " + ResponseData);
         }
 
         private bool SetSomeOffsetVoltage(double offset, char identifier)
         {
             if ((offset < 0.0) || (offset > 4.095))
             {
-                Console.WriteLine("[AbstractSpectraCyberController] ERROR: input voltage outside of range [0, 4.095]");
+                logger.Info("[AbstractSpectraCyberController] ERROR: input voltage outside of range [0, 4.095]");
                 return false;
             }
 
@@ -272,7 +275,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointmentID);
                     Schedule.Consume();
-                    //Console.WriteLine("[AbstractSpectraCyberController] SC Scan");
+                    //logger.Info("[AbstractSpectraCyberController] SC Scan");
                 }
 
                 // Tell the loop to break on its next pass (so the mutex is still released if the flag is high)

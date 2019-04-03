@@ -64,6 +64,7 @@ namespace ControlRoomApplication.Database
         /// </summary>
         public static void PopulateLocalDatabase(int NumRTInstances)
         {
+            
             if (!USING_REMOTE_DATABASE)
             {
                 Random rand = new Random();
@@ -146,6 +147,22 @@ namespace ControlRoomApplication.Database
                     SaveContext(Context);
                 }
             }
+            
+        }
+
+        /// <summary>
+        /// Adds an appointment to the database
+        /// </summary>
+        public static void AddAppointment(Appointment appt)
+        {
+            if (!USING_REMOTE_DATABASE)
+            {
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    Context.Appointments.Add(appt);
+                    SaveContext(Context);
+                }
+            }
         }
 
         /// <summary>
@@ -173,7 +190,7 @@ namespace ControlRoomApplication.Database
             {
                 // Use Include method to load related entities from the database
                 appts = Context.Appointments.Include("Coordinates")
-                                            .Include("CelestialBody")
+                                            .Include("CelestialBody.Coordinate")
                                             .Include("Orientation")
                                             .Include("RFDatas")
                                             .Include("SpectraCyberConfig")
@@ -181,6 +198,27 @@ namespace ControlRoomApplication.Database
                                             .ToList();
             }
             return appts;
+        }
+
+        /// <summary>
+        /// Returns the updated Appointment from the database.
+        /// </summary>
+        public static Appointment GetUpdatedAppointment(int appt_id)
+        {
+            Appointment appt;
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                List<Appointment> appts = new List<Appointment>();
+                // Use Include method to load related entities from the database
+                appts = Context.Appointments.Include("Coordinates")
+                                            .Include("CelestialBody.Coordinate")
+                                            .Include("Orientation")
+                                            .Include("RFDatas")
+                                            .Include("SpectraCyberConfig")
+                                            .ToList();
+                appt = appts.Find(x => x.Id == appt_id);
+            }
+            return appt;
         }
 
         /// <summary>
@@ -230,8 +268,17 @@ namespace ControlRoomApplication.Database
                     var db_appt = Context.Appointments.Find(appt.Id);
                     if (db_appt != null)
                     {
-                        DbEntityEntry<Appointment> appt_entry = Context.Entry(db_appt);
-                        appt_entry.CurrentValues.SetValues(appt);
+                        db_appt.CelestialBody = appt.CelestialBody;
+                        db_appt.Coordinates = appt.Coordinates;
+                        db_appt.EndTime = appt.EndTime;
+                        db_appt.Orientation = appt.Orientation;
+                        db_appt.RFDatas = appt.RFDatas;
+                        db_appt.SpectraCyberConfig = appt.SpectraCyberConfig;
+                        db_appt.StartTime = appt.StartTime;
+                        db_appt.Status = appt.Status;
+                        db_appt.TelescopeId = appt.TelescopeId;
+                        db_appt.Type = appt.Type;
+                        db_appt.UserId = appt.UserId;
                         SaveContext(Context);
                     }
                 }

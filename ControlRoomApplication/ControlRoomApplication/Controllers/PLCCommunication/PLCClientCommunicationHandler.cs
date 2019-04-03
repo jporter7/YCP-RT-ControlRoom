@@ -7,6 +7,9 @@ namespace ControlRoomApplication.Controllers
 {
     public class PLCClientCommunicationHandler
     {
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private Thread StreamCommunicationThread;
         private Mutex StreamCommunicationThreadMutex;
         private bool KillStreamCommunicationThreadFlag;
@@ -44,7 +47,7 @@ namespace ControlRoomApplication.Controllers
         {
             if (HasActiveConnection)
             {
-                Console.WriteLine("[PLCClientCommunicationHandler] Failed to connect to TCP server client while attempting to bring up PLC Controller: instance is busy");
+                logger.Info("[PLCClientCommunicationHandler] Failed to connect to TCP server client while attempting to bring up PLC Controller: instance is busy");
                 return;
             }
 
@@ -63,7 +66,7 @@ namespace ControlRoomApplication.Controllers
                     || (e is InvalidOperationException)
                     || (e is ObjectDisposedException))
                 {
-                    Console.WriteLine("[PLCClientCommunicationHandler] Failed to connect to TCP server client while attempting to bring up PLC Controller: error establishing connection");
+                    logger.Info("[PLCClientCommunicationHandler] Failed to connect to TCP server client while attempting to bring up PLC Controller: error establishing connection");
                     HasActiveConnection = false;
                     return;
                 }
@@ -95,7 +98,7 @@ namespace ControlRoomApplication.Controllers
 
                     if (TotalRead != ExpectedResponseDataSize)
                     {
-                        Console.WriteLine("[PLCClientCommunicationHandler] ERROR, inconsistent packet size: " + TotalRead.ToString() + " vs. " + ExpectedResponseDataSize.ToString());
+                        logger.Info("[PLCClientCommunicationHandler] ERROR, inconsistent packet size: " + TotalRead.ToString() + " vs. " + ExpectedResponseDataSize.ToString());
                     }
 
                     IncomingData = TemporaryResponseBuffer;
@@ -106,7 +109,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     if (OutgoingData.Length <= 0)
                     {
-                        Console.WriteLine("[PLCClientCommunicationHandler] No data found to be sent.");
+                        logger.Info("[PLCClientCommunicationHandler] No data found to be sent.");
                         OutgoingDataSet = false;
                     }
 
@@ -120,14 +123,14 @@ namespace ControlRoomApplication.Controllers
                 StreamCommunicationThreadMutex.ReleaseMutex();
             }
 
-            Console.WriteLine("[PLCClientCommunicationHandler] Exited main loop.");
+            logger.Info("[PLCClientCommunicationHandler] Exited main loop.");
         }
 
         private byte[] ReadResponse()
         {
             if (ExpectedResponseDataSize == 0)
             {
-                Console.WriteLine("[PLCClientCommunicationHandler] WARNING: Expected message size was 0.");
+                logger.Info("[PLCClientCommunicationHandler] WARNING: Expected message size was 0.");
                 return null;
             }
 
@@ -137,7 +140,7 @@ namespace ControlRoomApplication.Controllers
                 int AllowableTimeout = ResponseTimeoutMS - (int)((DateTime.Now - StartTime).TotalMilliseconds);
                 if (AllowableTimeout <= 0)
                 {
-                    Console.WriteLine("[PLCClientCommunicationHandler] Timed out waiting for response.");
+                    logger.Info("[PLCClientCommunicationHandler] Timed out waiting for response.");
                     return null;
                 }
 
@@ -234,7 +237,7 @@ namespace ControlRoomApplication.Controllers
             
             NetOutgoingMessage[2] += (byte)(PLCCommandResponseExpectationConversionHelper.ConvertToByte(ResponseExpectationValue) * 0x40);
 
-            //Console.WriteLine("[PLCClientCommunicationHandler] About to send command " + MessageType.ToString());
+            //logger.Info("[PLCClientCommunicationHandler] About to send command " + MessageType.ToString());
 
             // This is the expected response size of anything from the PLC (simulated or real), minor or full response.
             // See the TCP/IP packet contents google sheets file describing this under Wiki Documentation -> Control Room in the shared GDrive

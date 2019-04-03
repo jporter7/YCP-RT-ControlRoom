@@ -8,6 +8,9 @@ namespace ControlRoomApplication.Controllers
 {
     public class TestPLCDriver : AbstractPLCDriver
     {
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public Orientation CurrentOrientation { get; private set; }
 
         public TestPLCDriver(IPAddress ip_address, int port) : base(ip_address, port)
@@ -163,7 +166,7 @@ namespace ControlRoomApplication.Controllers
                             // Otherwise, this is valid
                             CurrentOrientation = new Orientation(NextAZ, NextEL);
 
-                            Console.WriteLine("[TestPLCDriver] Setting current orientation to {" + CurrentOrientation.Azimuth.ToString() + ", " + CurrentOrientation.Elevation.ToString() + "}");
+                            logger.Info("[TestPLCDriver] Setting current orientation to {" + CurrentOrientation.Azimuth.ToString() + ", " + CurrentOrientation.Elevation.ToString() + "}");
 
                             FinalResponseContainer[2] = 0x1;
                             break;

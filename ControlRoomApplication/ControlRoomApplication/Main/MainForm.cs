@@ -64,21 +64,21 @@ namespace ControlRoomApplication.Main
                     int RT_ID = ManagementThread.RadioTelescopeID;
                     List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
 
-                    Console.WriteLine("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+                    logger.Info("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
 
                     foreach (Appointment appt in AllAppointments)
                     {
-                        Console.WriteLine("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
+                        logger.Info("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
                     }
 
                     if (ManagementThread.Start())
                     {
                         numLocalDBRTInstancesCreated++;
-                        Console.WriteLine("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+                        logger.Info("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
                     }
                     else
                     {
-                        Console.WriteLine("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "] [" + z.ToString() + "]");
+                        logger.Info("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "] [" + z.ToString() + "]");
                         ErrorIndex = z;
                         break;
                     }
@@ -102,22 +102,22 @@ namespace ControlRoomApplication.Main
         {
             if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
-                Console.WriteLine("[Program] Successfully shut down weather monitoring routine.");
+                logger.Info("[Program] Successfully shut down weather monitoring routine.");
             }
             else
             {
-                Console.WriteLine("[Program] ERROR shutting down weather monitoring routine!");
+                logger.Info("[Program] ERROR shutting down weather monitoring routine!");
             }
 
             for (int i = 0; i < ProgramRTControllerList.Count; i++)
             {
                 if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, false))
                 {
-                    Console.WriteLine("[Program] Successfully brought down RT controller at index " + i.ToString());
+                    logger.Info("[Program] Successfully brought down RT controller at index " + i.ToString());
                 }
                 else
                 {
-                    Console.WriteLine("[Program] ERROR killing RT controller at index " + i.ToString());
+                    logger.Info("[Program] ERROR killing RT controller at index " + i.ToString());
                 }
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
@@ -251,7 +251,12 @@ namespace ControlRoomApplication.Main
         private void FreeControl_Click(object sender, EventArgs e)
         {
             FreeControlForm freeControlWindow = new FreeControlForm();
-            freeControlWindow.ShowDialog();
+            // Create free control thread
+            Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
+            {
+                Name = "FreeControlThread started"
+            };
+            FreeControlThread.Start();
         }
     }
 }

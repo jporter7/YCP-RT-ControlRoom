@@ -77,6 +77,24 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         }
 
         [TestMethod]
+        public void TestAddAppointment()
+        {
+            var new_appt = new Appointment();
+            new_appt.StartTime = DateTime.Now;
+            new_appt.EndTime = DateTime.Now.AddMinutes(1);
+            new_appt.Status = AppointmentStatusEnum.REQUESTED;
+            new_appt.Type = AppointmentTypeEnum.POINT;
+            new_appt.Coordinates.Add(new Coordinate(0,0));
+            new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+            new_appt.TelescopeId = 1;
+            new_appt.UserId = 1;
+
+            DatabaseOperations.AddAppointment(new_appt);
+            var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(1);
+            Assert.IsTrue(1 == output_appts.Where(x => x.Id == new_appt.Id).Count());
+        }
+
+        [TestMethod]
         public void TestGetTotalAppointmentCount()
         {
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
@@ -144,6 +162,23 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             var testStatus = appt.Status;
 
             Assert.AreEqual(AppointmentStatusEnum.IN_PROGRESS, testStatus);
+        }
+
+        [TestMethod]
+        public void TestUpdateAppointmentCoordinates()
+        {
+            var origCoord = new Coordinate(0, 0);
+            appt.Coordinates.Add(origCoord);
+
+            DatabaseOperations.UpdateAppointment(appt);
+
+            // update appt
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+
+            var testCoord = appt.Coordinates.First();
+
+            Assert.AreEqual(origCoord.RightAscension, testCoord.RightAscension);
+            Assert.AreEqual(origCoord.Declination, testCoord.Declination);
         }
 
         [TestMethod]

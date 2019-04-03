@@ -10,6 +10,9 @@ namespace ControlRoomApplication.Main
 {
     public static class ConfigurationManager
     {
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private static int NumLocalDBRTInstancesCreated = 1;
 
         /// <summary>
@@ -136,7 +139,7 @@ namespace ControlRoomApplication.Main
 
                 if (RTArgs.Length != 4)
                 {
-                    Console.WriteLine("[ConfigurationManager] Unexpected format for input #" + i.ToString() + " [" + args[i + 2] + "], skipping...");
+                    logger.Info("[ConfigurationManager] Unexpected format for input #" + i.ToString() + " [" + args[i + 2] + "], skipping...");
                     continue;
                 }
 

@@ -215,7 +215,7 @@ namespace ControlRoomApplication.Controllers
             double x = start_coord.RightAscension + dx;
             double y = start_coord.Declination + dy;
 
-            //Console.WriteLine(x + ", " + y); // (FOR TESTING)
+            //logger.Info(x + ", " + y); // (FOR TESTING)
 
             // Create the new coordinate
             // (x = RightAscension, y = Declination)
@@ -229,6 +229,7 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
         {
+            appt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
             Orientation free_orientation = null;
             if (appt.Orientation == null)
             {
