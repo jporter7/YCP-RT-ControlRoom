@@ -55,13 +55,16 @@ namespace ControlRoomApplication.Controllers
                 horizantal.Azimuth -= 360;
             }
             
-            AAS2DCoordinate equatorial = AASCoordinateTransformation.Horizontal2Equatorial(horizantal.Azimuth, horizantal.Elevation, Location.Longitude);
+            AAS2DCoordinate equatorial = AASCoordinateTransformation.Horizontal2Equatorial(horizantal.Azimuth, horizantal.Elevation, Location.Latitude);
 
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
             double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
             double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(Location.Longitude);
             double RightAscension = ApparentGreenwichSiderealTime - LongtitudeAsHourAngle - equatorial.X;
-
+            if(RightAscension < 0)
+            {
+                RightAscension += 24;
+            }
             return new Coordinate(RightAscension, equatorial.Y);
         }
 
