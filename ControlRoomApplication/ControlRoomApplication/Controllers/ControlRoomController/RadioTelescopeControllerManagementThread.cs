@@ -141,7 +141,6 @@ namespace ControlRoomApplication.Controllers
             
             while (KeepAlive)
             {
-                ManagementMutex.WaitOne();
 
                 Appointment NextAppointment = WaitForNextAppointment();
 
@@ -193,7 +192,6 @@ namespace ControlRoomApplication.Controllers
 
                 KeepAlive = KeepThreadAlive;
 
-                ManagementMutex.ReleaseMutex();
 
                 Thread.Sleep(100);
             }
