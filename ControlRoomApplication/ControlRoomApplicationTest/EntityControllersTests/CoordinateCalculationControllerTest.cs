@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
@@ -106,14 +107,18 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             free_control_appt.StartTime = start;
             free_control_appt.EndTime = end;
             free_control_appt.Orientation = new Orientation(30, 30);
+            DatabaseOperations.AddAppointment(free_control_appt);
             var free_control_orientation_1 = CoordinateCalculationController.CalculateOrientation(free_control_appt, start);
 
+            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.IsTrue(free_control_orientation_1 != null);
             Assert.IsTrue(free_control_appt.Orientation == null);
 
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
+            DatabaseOperations.UpdateAppointment(free_control_appt);
             var free_control_orientation_2 = CoordinateCalculationController.CalculateOrientation(free_control_appt, end);
-            
+
+            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.IsTrue(free_control_orientation_2 != null);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
         }
@@ -282,22 +287,27 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             free_control_appt.Status = AppointmentStatusEnum.REQUESTED;
             Orientation test_orientation = new Orientation(30, 30);
             free_control_appt.Orientation = test_orientation;
+            DatabaseOperations.AddAppointment(free_control_appt);
 
             // Test free control calibration
             var free_control_orientation_1 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
+            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.IsTrue(free_control_orientation_1.Elevation == test_orientation.Elevation);
             Assert.IsTrue(free_control_orientation_1.Azimuth == test_orientation.Azimuth);
             Assert.IsTrue(free_control_appt.Orientation == null);
 
             // Test free control move
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
+            DatabaseOperations.UpdateAppointment(free_control_appt);
             var free_control_orientation_2 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
+            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.AreEqual(-37.14, free_control_orientation_2.Elevation, 0.05);
             Assert.AreEqual(309.5, free_control_orientation_2.Azimuth, 0.05);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
 
             // Test free control move without coords
             var free_control_orientation_3 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
+            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.IsTrue(free_control_orientation_3 == null);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
         }

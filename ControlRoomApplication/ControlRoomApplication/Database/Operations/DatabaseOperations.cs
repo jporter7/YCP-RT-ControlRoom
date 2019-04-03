@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using ControlRoomApplication.Constants;
@@ -179,21 +180,28 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// Returns the list of Appointments from the database.
+        /// Returns the list of Appointments from the given context.
         /// </summary>
-        public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
+        private static DbQuery<Appointment> QueryAppointments(RTDbContext Context)
+        {
+            // Use Include method to load related entities from the database
+            return Context.Appointments.Include("Coordinates")
+                                        .Include("CelestialBody.Coordinate")
+                                        .Include("Orientation")
+                                        .Include("RFDatas")
+                                        .Include("SpectraCyberConfig");
+        }
+
+            /// <summary>
+            /// Returns the list of Appointments from the database.
+            /// </summary>
+            public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
         {
             List<Appointment> appts = new List<Appointment>();
             using (RTDbContext Context = InitializeDatabaseContext())
             {
                 // Use Include method to load related entities from the database
-                appts = Context.Appointments.Include("Coordinates")
-                                            .Include("CelestialBody.Coordinate")
-                                            .Include("Orientation")
-                                            .Include("RFDatas")
-                                            .Include("SpectraCyberConfig")
-                                            .Where(x => x.TelescopeId == radioTelescopeId)
-                                            .ToList();
+                appts = QueryAppointments(Context).Where(x => x.TelescopeId == radioTelescopeId).ToList();
             }
             return appts;
         }
@@ -208,12 +216,7 @@ namespace ControlRoomApplication.Database
             {
                 List<Appointment> appts = new List<Appointment>();
                 // Use Include method to load related entities from the database
-                appts = Context.Appointments.Include("Coordinates")
-                                            .Include("CelestialBody.Coordinate")
-                                            .Include("Orientation")
-                                            .Include("RFDatas")
-                                            .Include("SpectraCyberConfig")
-                                            .ToList();
+                appts = QueryAppointments(Context).ToList();
                 appt = appts.Find(x => x.Id == appt_id);
             }
             return appt;
@@ -263,7 +266,7 @@ namespace ControlRoomApplication.Database
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     // Update database appt with new status
-                    var db_appt = Context.Appointments.Find(appt.Id);
+                    var db_appt = QueryAppointments(Context).ToList().Find(x => x.Id == appt.Id);
                     if (db_appt != null)
                     {
                         db_appt.CelestialBody = appt.CelestialBody;
