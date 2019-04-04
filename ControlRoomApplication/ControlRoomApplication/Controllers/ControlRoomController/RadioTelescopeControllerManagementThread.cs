@@ -144,7 +144,7 @@ namespace ControlRoomApplication.Controllers
 
                 if (NextAppointment != null)
                 {
-                    logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Starting appointment...");
+                    logger.Info("Starting appointment...");
 
                     // Calibrate telescope
                     if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL)
@@ -171,19 +171,19 @@ namespace ControlRoomApplication.Controllers
                     // Stow Telescope
                     EndAppointment();
 
-                    logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment completed.");
+                    logger.Info("Appointment completed.");
                 }
                 else
                 {
                     if (InterruptAppointmentFlag)
                     {
-                        logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment interrupted in loading routine.");
+                        logger.Info("Appointment interrupted in loading routine.");
                         ManagementMutex.WaitOne();
                         InterruptAppointmentFlag = false;
                         ManagementMutex.ReleaseMutex();
                     }
 
-                    logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment does not have an orientation associated with it.");
+                    logger.Info("Appointment does not have an orientation associated with it.");
                 }
 
                 KeepAlive = KeepThreadAlive;
@@ -239,7 +239,7 @@ namespace ControlRoomApplication.Controllers
             NextAppointment.Status = AppointmentStatusEnum.IN_PROGRESS;
             DatabaseOperations.UpdateAppointment(NextAppointment);
 
-            logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Appointment Type: " + NextAppointment.Type);
+            logger.Info("Appointment Type: " + NextAppointment.Type);
 
             // Loop through each second or minute of the appointment (depending on appt type)
             TimeSpan length = NextAppointment.EndTime - NextAppointment.StartTime;
@@ -273,12 +273,12 @@ namespace ControlRoomApplication.Controllers
                 {
                     if (NextObjectiveOrientation.Azimuth < 0 || NextObjectiveOrientation.Elevation < 0)
                     {
-                        logger.Warn("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                        logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                         InterruptAppointmentFlag = true;
                         break;
                     }
 
-                    logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                    logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                     RTController.MoveRadioTelescope(NextObjectiveOrientation);
 
                     // Wait until telescope reaches destination
@@ -291,7 +291,7 @@ namespace ControlRoomApplication.Controllers
                         }
 
                         currentOrientation = RTController.GetCurrentOrientation();
-                        logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                        logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
                         Thread.Sleep(100);
                     }
                     while (!NextObjectiveOrientation.Equals(currentOrientation));

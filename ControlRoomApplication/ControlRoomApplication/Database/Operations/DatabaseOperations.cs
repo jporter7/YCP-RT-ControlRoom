@@ -63,7 +63,7 @@ namespace ControlRoomApplication.Database
         /// <summary>
         /// Populates the local database with 4 appointments for testing purposes.
         /// </summary>
-        public static void PopulateLocalDatabase(int NumRTInstances)
+        public static void PopulateLocalDatabase(int RT_id)
         {
             if (!USING_REMOTE_DATABASE)
             {
@@ -75,73 +75,70 @@ namespace ControlRoomApplication.Database
 
                     DateTime DateTimeUniversalStart = DateTime.Now.AddMinutes(1);
 
-                    for (int i = 0; i < NumRTInstances; i++)
-                    {
-                        Appointment appt0 = new Appointment();
-                        Appointment appt1 = new Appointment();
-                        Appointment appt2 = new Appointment();
-                        Appointment appt3 = new Appointment();
+                    Appointment appt0 = new Appointment();
+                    Appointment appt1 = new Appointment();
+                    Appointment appt2 = new Appointment();
+                    Appointment appt3 = new Appointment();
 
-                        Coordinate coordinate0 = new Coordinate();
-                        Coordinate coordinate1 = new Coordinate();
-                        Coordinate coordinate2 = new Coordinate();
-                        Coordinate coordinate3 = new Coordinate();
+                    Coordinate coordinate0 = new Coordinate();
+                    Coordinate coordinate1 = new Coordinate();
+                    Coordinate coordinate2 = new Coordinate();
+                    Coordinate coordinate3 = new Coordinate();
 
-                        coordinate0.RightAscension = 10.3;
-                        coordinate0.Declination = 50.8;
+                    coordinate0.RightAscension = 10.3;
+                    coordinate0.Declination = 50.8;
 
-                        coordinate1.RightAscension = 22.0;
-                        coordinate1.Declination = 83.63;
+                    coordinate1.RightAscension = 22.0;
+                    coordinate1.Declination = 83.63;
 
-                        coordinate2.RightAscension = 16.0;
-                        coordinate2.Declination = 71.5;
+                    coordinate2.RightAscension = 16.0;
+                    coordinate2.Declination = 71.5;
 
-                        coordinate3.RightAscension = 26.3;
-                        coordinate3.Declination = 85.12;
+                    coordinate3.RightAscension = 26.3;
+                    coordinate3.Declination = 85.12;
 
-                        // Add drift scan appointment
-                        appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
-                        appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
-                        appt0.Status = AppointmentStatusEnum.REQUESTED;
-                        appt0.Type = AppointmentTypeEnum.DRIFT_SCAN;
-                        appt0.Orientation = new Orientation(30, 30);
-                        appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                        appt0.TelescopeId = i + 1;
-                        appt0.UserId = 1;
+                    // Add drift scan appointment
+                    appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
+                    appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
+                    appt0.Status = AppointmentStatusEnum.REQUESTED;
+                    appt0.Type = AppointmentTypeEnum.DRIFT_SCAN;
+                    appt0.Orientation = new Orientation(30, 30);
+                    appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+                    appt0.TelescopeId = RT_id;
+                    appt0.UserId = 1;
 
-                        // Add celesital body appointment
-                        appt1.StartTime = appt0.EndTime.AddSeconds(20 + rand.Next(30));
-                        appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
-                        appt1.Status = AppointmentStatusEnum.REQUESTED;
-                        appt1.Type = AppointmentTypeEnum.CELESTIAL_BODY;
-                        appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
-                        appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
-                        appt1.TelescopeId = i + 1;
-                        appt1.UserId = 1;
+                    // Add celesital body appointment
+                    appt1.StartTime = appt0.EndTime.AddSeconds(20 + rand.Next(30));
+                    appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
+                    appt1.Status = AppointmentStatusEnum.REQUESTED;
+                    appt1.Type = AppointmentTypeEnum.CELESTIAL_BODY;
+                    appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
+                    appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
+                    appt1.TelescopeId = RT_id;
+                    appt1.UserId = 1;
 
-                        // Add point appointment
-                        appt2.StartTime = appt1.EndTime.AddSeconds(20 + rand.Next(30));
-                        appt2.EndTime = appt2.StartTime.AddSeconds(10 + rand.Next(90));
-                        appt2.Status = AppointmentStatusEnum.REQUESTED;
-                        appt2.Type = AppointmentTypeEnum.POINT;
-                        appt2.Coordinates.Add(coordinate2);
-                        appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                        appt2.TelescopeId = i + 1;
-                        appt2.UserId = 1;
+                    // Add point appointment
+                    appt2.StartTime = appt1.EndTime.AddSeconds(20 + rand.Next(30));
+                    appt2.EndTime = appt2.StartTime.AddSeconds(10 + rand.Next(90));
+                    appt2.Status = AppointmentStatusEnum.REQUESTED;
+                    appt2.Type = AppointmentTypeEnum.POINT;
+                    appt2.Coordinates.Add(coordinate2);
+                    appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+                    appt2.TelescopeId = RT_id;
+                    appt2.UserId = 1;
 
-                        // Add raster appointment
-                        appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
-                        appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
-                        appt3.Status = AppointmentStatusEnum.REQUESTED;
-                        appt3.Type = AppointmentTypeEnum.RASTER;
-                        appt3.Coordinates.Add(coordinate0);
-                        appt3.Coordinates.Add(coordinate1);
-                        appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                        appt3.TelescopeId = i + 1;
-                        appt3.UserId = 1;
+                    // Add raster appointment
+                    appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
+                    appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
+                    appt3.Status = AppointmentStatusEnum.REQUESTED;
+                    appt3.Type = AppointmentTypeEnum.RASTER;
+                    appt3.Coordinates.Add(coordinate0);
+                    appt3.Coordinates.Add(coordinate1);
+                    appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+                    appt3.TelescopeId = RT_id;
+                    appt3.UserId = 1;
 
-                        appts.AddRange(new Appointment[] { appt0, appt1, appt2, appt3 });
-                    }
+                    appts.AddRange(new Appointment[] { appt0, appt1, appt2, appt3 });
 
                     Context.Appointments.AddRange(appts);
                     SaveContext(Context);

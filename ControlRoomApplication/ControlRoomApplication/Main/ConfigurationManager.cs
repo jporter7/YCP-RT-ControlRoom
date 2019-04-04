@@ -78,11 +78,11 @@ namespace ControlRoomApplication.Main
             // Return Radio Telescope
             if (usingLocalDB)
             {
-                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, new Orientation(0,0), NumLocalDBRTInstancesCreated++);
+                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, new Orientation(0,90), NumLocalDBRTInstancesCreated++);
             }
             else
             {
-                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, new Orientation(0, 0));
+                return new RadioTelescope(spectraCyberController, PLCCommsHandler, location, new Orientation(0, 90));
             }
         }
 
@@ -155,10 +155,14 @@ namespace ControlRoomApplication.Main
             return (RTDerivedDriverPairList, ConfigureWeatherStation(args[1]));
         }
 
-        public static void ConfigureLocalDatabase(int NumRTInstances)
+        public static void ConfigureLocalDatabase(int RT_id)
+        {
+            DatabaseOperations.PopulateLocalDatabase(RT_id);
+        }
+
+        public static void ClearLocalDatabase()
         {
             DatabaseOperations.DeleteLocalDatabase();
-            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
         }
     }
 }

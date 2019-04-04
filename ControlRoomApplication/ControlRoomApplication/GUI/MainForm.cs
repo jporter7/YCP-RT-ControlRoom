@@ -29,6 +29,7 @@ namespace ControlRoomApplication.Main
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
+            ConfigurationManager.ClearLocalDatabase();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -128,7 +129,6 @@ namespace ControlRoomApplication.Main
                 ProgramRTControllerList[i].RadioTelescope.PLCClient.TerminateTCPServerConnection();
                 ProgramPLCDriverList[i].RequestStopAsyncAcceptingClientsAndJoin();
             }
-            DatabaseOperations.DeleteLocalDatabase();
 
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
