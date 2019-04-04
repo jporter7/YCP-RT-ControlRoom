@@ -156,10 +156,10 @@
     <Compile Include="GUI\DiagnosticsForm.Designer.cs">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Main\FreeControlForm.cs">
+    <Compile Include="GUI\FreeControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main\FreeControlForm.Designer.cs">
+    <Compile Include="GUI\FreeControlForm.Designer.cs">
       <DependentUpon>FreeControlForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
@@ -207,11 +207,10 @@
     <EmbeddedResource Include="GUI\DiagnosticsForm.resx">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\MainForm.resx">
-    <EmbeddedResource Include="Main\FreeControlForm.resx">
+    <EmbeddedResource Include="GUI\FreeControlForm.resx">
       <DependentUpon>FreeControlForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Main\MainForm.resx">
+    <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902132340492_Feb13.resx">

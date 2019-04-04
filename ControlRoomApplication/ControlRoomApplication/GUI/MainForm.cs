@@ -1,8 +1,4 @@
 ﻿using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.PLCCommunication;
-using ControlRoomApplication.Controllers.RadioTelescopeControllers;
-using ControlRoomApplication.Controllers.SpectraCyberController;
-using ControlRoomApplication.Database.Operations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
@@ -11,10 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using ControlRoomApplication.Constants;
-using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Database;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplication.Main
 {
@@ -263,7 +256,7 @@ namespace ControlRoomApplication.Main
 
         private void FreeControl_Click(object sender, EventArgs e)
         {
-            FreeControlForm freeControlWindow = new FreeControlForm(ProgramRTControllerList.Count, MiscellaneousConstants.JOHN_RUDY_PARK);
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, 1);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {

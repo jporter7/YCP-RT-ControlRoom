@@ -118,7 +118,7 @@ namespace ControlRoomApplication.Controllers
 
             RadioTelescopeControllerManagementThread ToBeRemovedRTMT = ControlRoom.RTControllerManagementThreads[rtControllerIndex];
 
-            if (ToBeRemovedRTMT.Busy && (!waitForAnyTasks))
+            if (!waitForAnyTasks)
             {
                 ToBeRemovedRTMT.KillWithHardInterrupt();
             }

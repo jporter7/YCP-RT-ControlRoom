@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -35,8 +36,8 @@ namespace ControlRoomApplication.GUI
             dataGridView1.Rows.Add(weatherStationRow);
             dataGridView1.Update();
 
-            label3.Text = controlRoom.RadioTelescopes[rtId].CurrentOrientation.Azimuth.ToString();
-            label3.Text = controlRoom.RadioTelescopes[rtId].CurrentOrientation.Elevation.ToString();
+            label3.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString();
+            label4.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString();
         }
 
         private void GetStatuses()
