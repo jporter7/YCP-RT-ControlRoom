@@ -47,6 +47,11 @@ namespace ControlRoomApplication.Main
                 {
                     ConfigurationManager.ConfigureLocalDatabase(numLocalDBRTInstancesCreated);
                 }
+                else
+                {
+                    //Enable Free Control Button
+                    FreeControl.Enabled = true;
+                }
 
                 if (MainControlRoomController == null)
                 {
@@ -256,7 +261,7 @@ namespace ControlRoomApplication.Main
 
         private void FreeControl_Click(object sender, EventArgs e)
         {
-            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, 1);
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, ProgramRTControllerList.Count);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {

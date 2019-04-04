@@ -35,9 +35,9 @@ namespace ControlRoomApplication.Main
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
             CurrentAppointment.TelescopeId = rtId;
             CurrentAppointment.UserId = 1;
-            TargetCoordinate = new Coordinate(0, 0);
-            CurrentAppointment.Coordinates.Add(TargetCoordinate);
             DatabaseOperations.AddAppointment(CurrentAppointment);
+            // Calibrate Telescope
+            CalibrateMove();
         }
 
         private void PosDecButton_Click(object sender, EventArgs e)
@@ -86,12 +86,12 @@ namespace ControlRoomApplication.Main
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            SetTargetRAText(TargetCoordinate.RightAscension.ToString());
-            SetTargetDecText(TargetCoordinate.Declination.ToString());
+            SetTargetRAText(TargetCoordinate.RightAscension.ToString("0.##"));
+            SetTargetDecText(TargetCoordinate.Declination.ToString("0.##"));
             Entities.Orientation currentOrienation = controlRoom.RadioTelescopeControllers[rtId - 1].GetCurrentOrientation();
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.Now);
-            SetActualRAText(ConvertedPosition.RightAscension.ToString());
-            SetActualDecText(ConvertedPosition.Declination.ToString());
+            SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
+            SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
         }
 
         delegate void SetTargetRATextCallback(string text);
