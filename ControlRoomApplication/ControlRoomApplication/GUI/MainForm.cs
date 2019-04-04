@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Main
 {
     public partial class MainForm : Form
     {
-        private static int numLocalDBRTInstancesCreated = 1;
+        private static int current_rt_id;
 
         public MainForm()
         {
@@ -28,6 +28,7 @@ namespace ControlRoomApplication.Main
             ProgramRTControllerList = new List<RadioTelescopeController>();
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
+            current_rt_id = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -36,20 +37,21 @@ namespace ControlRoomApplication.Main
                 && textBox2.Text != null 
                 && comboBox1.SelectedIndex > -1)
             {
+                current_rt_id++;
                 RadioTelescope ARadioTelescope = BuildRT();
                 AbstractPLCDriver APLCDriver = BuildPLCDriver();
 
                 AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
-                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[AbstractRTDriverPairList.Count - 1].Key));
+                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
                 ProgramPLCDriverList.Add(APLCDriver);
 
                 if (checkBox1.Checked)
                 {
-                    ConfigurationManager.ConfigureLocalDatabase(numLocalDBRTInstancesCreated);
+                    ConfigurationManager.ConfigureLocalDatabase(current_rt_id);
+                    FreeControl.Enabled = false;
                 }
                 else
                 {
-                    //Enable Free Control Button
                     FreeControl.Enabled = true;
                 }
 
@@ -59,41 +61,33 @@ namespace ControlRoomApplication.Main
                 }
                 
 
-                ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
-                ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PLCClient.ConnectToServer();
+                ProgramPLCDriverList[current_rt_id - 1].StartAsyncAcceptingClients();
+                ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();
 
-                MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
+                MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
 
                 MainControlRoomController.StartWeatherMonitoringRoutine();
 
-                int ErrorIndex = -1;
-                // Start each RT controller's threaded management
-                int z = 0;
-                foreach (RadioTelescopeControllerManagementThread ManagementThread in MainControlRoomController.ControlRoom.RTControllerManagementThreads)
+                // Start RT controller's threaded management
+                RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];
+
+                int RT_ID = ManagementThread.RadioTelescopeID;
+                List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
+
+                logger.Info("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+
+                foreach (Appointment appt in AllAppointments)
                 {
-                    int RT_ID = ManagementThread.RadioTelescopeID;
-                    List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
+                    logger.Info("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
+                }
 
-                    logger.Info("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
-
-                    foreach (Appointment appt in AllAppointments)
-                    {
-                        logger.Info("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
-                    }
-
-                    if (ManagementThread.Start())
-                    {
-                        numLocalDBRTInstancesCreated++;
-                        logger.Info("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
-                    }
-                    else
-                    {
-                        logger.Info("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "] [" + z.ToString() + "]");
-                        ErrorIndex = z;
-                        break;
-                    }
-
-                    z++;
+                if (ManagementThread.Start())
+                {
+                    logger.Info("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+                }
+                else
+                {
+                    logger.Info("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "]" );
                 }
 
                 AddConfigurationToDataGrid();
@@ -102,7 +96,7 @@ namespace ControlRoomApplication.Main
 
         public void AddConfigurationToDataGrid()
         {
-            string[] row = { (numLocalDBRTInstancesCreated - 1).ToString(), textBox2.Text, textBox1.Text };
+            string[] row = { (current_rt_id - 1).ToString(), textBox2.Text, textBox1.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -186,11 +180,11 @@ namespace ControlRoomApplication.Main
             // Return Radio Telescope
             if (checkBox1.Checked)
             {
-                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,0), numLocalDBRTInstancesCreated);
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,90), current_rt_id);
             }
             else
             {
-                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0, 0), numLocalDBRTInstancesCreated);
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0, 90), current_rt_id);
             }
         }
 
@@ -261,7 +255,7 @@ namespace ControlRoomApplication.Main
 
         private void FreeControl_Click(object sender, EventArgs e)
         {
-            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, ProgramRTControllerList.Count);
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, current_rt_id);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {

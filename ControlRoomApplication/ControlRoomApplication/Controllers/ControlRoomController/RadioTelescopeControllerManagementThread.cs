@@ -271,7 +271,14 @@ namespace ControlRoomApplication.Controllers
                 // Move to orientation
                 if (NextObjectiveOrientation != null)
                 {
-                    logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + _NextObjectiveOrientation.Azimuth + ", El = " + _NextObjectiveOrientation.Elevation);
+                    if (NextObjectiveOrientation.Azimuth < 0 || NextObjectiveOrientation.Elevation < 0)
+                    {
+                        logger.Warn("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                        InterruptAppointmentFlag = true;
+                        break;
+                    }
+
+                    logger.Info("[RadioTelescopeControllerManagementThread : ID=" + RadioTelescopeID.ToString() + "] Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                     RTController.MoveRadioTelescope(NextObjectiveOrientation);
 
                     // Wait until telescope reaches destination
@@ -280,7 +287,6 @@ namespace ControlRoomApplication.Controllers
                     {
                         if (InterruptAppointmentFlag)
                         {
-                            logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                             break;
                         }
 
@@ -296,6 +302,7 @@ namespace ControlRoomApplication.Controllers
 
             if (InterruptAppointmentFlag)
             {
+                logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                 NextAppointment.Status = AppointmentStatusEnum.CANCELLED;
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
