@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="ConfigurationManagerTests\ConfigurationManagerTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
+    <Compile Include="EntitiesTests\PLCCommandAndQueryTypeEnumTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />
     <Compile Include="EntitiesTests\LocationTest.cs" />
     <Compile Include="EntitiesTests\CelestialBodyTest.cs" />
