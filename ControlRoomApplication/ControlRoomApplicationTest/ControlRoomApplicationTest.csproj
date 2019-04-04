@@ -103,6 +103,7 @@
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCClientAndDriverTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
+    <Compile Include="EntityControllersTests\SpectraCyberSimulatorControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberTestControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimulatorTests\SimulationAbsoluteEncoderTests.cs" />
