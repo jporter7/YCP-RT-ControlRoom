@@ -1,4 +1,12 @@
-﻿using System;
+﻿using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Controllers.RadioTelescopeControllers;
+using ControlRoomApplication.Controllers.SpectraCyberController;
+using ControlRoomApplication.Database.Operations;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.GUI;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
@@ -47,7 +55,11 @@ namespace ControlRoomApplication.Main
                     ConfigurationManager.ConfigureLocalDatabase(numLocalDBRTInstancesCreated);
                 }
 
-                MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                if (MainControlRoomController == null)
+                {
+                    MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                }
+                
 
                 ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
                 ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PLCClient.ConnectToServer();
@@ -162,7 +174,8 @@ namespace ControlRoomApplication.Main
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, dataGridView1.CurrentCell.RowIndex);
+            diagnosticForm.Show();
         }
 
         public RadioTelescope BuildRT()

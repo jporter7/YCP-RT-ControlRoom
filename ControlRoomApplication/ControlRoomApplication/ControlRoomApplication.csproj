@@ -150,6 +150,12 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
+    <Compile Include="GUI\DiagnosticsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\DiagnosticsForm.Designer.cs">
+      <DependentUpon>DiagnosticsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Main\FreeControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -164,10 +170,10 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimulator.cs" />
     <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\ControlWriter.cs" />
-    <Compile Include="Main\MainForm.cs">
+    <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main\MainForm.Designer.cs">
+    <Compile Include="GUI\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Main\Program.cs" />
@@ -198,6 +204,10 @@
     <Content Include="Migrations\README.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="GUI\DiagnosticsForm.resx">
+      <DependentUpon>DiagnosticsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MainForm.resx">
     <EmbeddedResource Include="Main\FreeControlForm.resx">
       <DependentUpon>FreeControlForm.cs</DependentUpon>
     </EmbeddedResource>
