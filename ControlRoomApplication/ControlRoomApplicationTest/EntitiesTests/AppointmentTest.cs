@@ -24,6 +24,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         private int telescope_id;
         private AppointmentStatusEnum status;
         private AppointmentTypeEnum type;
+        private AppointmentPriorityEnum priority;
         private SpectraCyberConfig spectracyber_config;
 
         private DateTime startTime_2;
@@ -49,6 +50,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             telescope_id = 1;
             status = AppointmentStatusEnum.REQUESTED;
             type = AppointmentTypeEnum.POINT;
+            priority = AppointmentPriorityEnum.SECONDARY;
             spectracyber_config = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
 
             startTime_2 = DateTime.Now.AddDays(1);
@@ -66,6 +68,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             appointment_1.Status = status;
             appointment_1.Type = type;
             appointment_1.SpectraCyberConfig = spectracyber_config;
+            appointment_1.Priority = priority;
 
             appointment_2.StartTime = startTime_2;
             appointment_2.EndTime = endTime_2;
@@ -84,6 +87,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreEqual(telescope_id, appointment_1.TelescopeId);
             Assert.AreEqual(status, appointment_1.Status);
             Assert.AreEqual(type, appointment_1.Type);
+            Assert.AreEqual(priority, appointment_1.Priority);
             Assert.AreEqual(spectracyber_config, appointment_1.SpectraCyberConfig);
         }
 
