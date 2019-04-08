@@ -103,6 +103,13 @@ namespace ControlRoomApplication.Entities
         public SpectraCyberConfig SpectraCyberConfig { get; set; }
 
         /// <summary>
+        /// The getter/setter for the Priority of the appointment.
+        /// </summary>
+        [Required]
+        [Column("appointment_priority")]
+        public AppointmentPriorityEnum Priority { get; set; }
+
+        /// <summary>
         /// Compares the current Appointment to another object and it
         /// throws an error if the other object is not an Appointment.
         /// (Implemention of the IComparable Interface)
