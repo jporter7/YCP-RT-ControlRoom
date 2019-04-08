@@ -189,10 +189,10 @@ namespace ControlRoomApplication.Database
                                         .Include("SpectraCyberConfig");
         }
 
-            /// <summary>
-            /// Returns the list of Appointments from the database.
-            /// </summary>
-            public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
+        /// <summary>
+        /// Returns the list of Appointments from the database, ordered by priority
+        /// </summary>
+        public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
         {
             List<Appointment> appts = new List<Appointment>();
             using (RTDbContext Context = InitializeDatabaseContext())
@@ -200,7 +200,26 @@ namespace ControlRoomApplication.Database
                 // Use Include method to load related entities from the database
                 appts = QueryAppointments(Context).Where(x => x.TelescopeId == radioTelescopeId).ToList();
             }
-            return appts;
+            // Order the List.  First by Priority then by StartTime
+            appts.OrderBy(a => a.Priority).ToList();
+
+            List<Appointment> orderedList = new List<Appointment>();
+            try
+            {
+                orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.MANUAL).OrderBy(a => a.StartTime));
+                orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.PRIMARY).OrderBy(a => a.StartTime));
+                orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.SECONDARY).OrderBy(a => a.StartTime));
+            }
+            catch (Exception e)
+            {
+                if(e is ArgumentNullException)
+                {
+                    //throw new ArgumentNullException("Error in sorting the Appointment list:  Does the database contain appointments?");
+                    return appts;
+                }
+            }
+
+            return orderedList; 
         }
 
         /// <summary>
