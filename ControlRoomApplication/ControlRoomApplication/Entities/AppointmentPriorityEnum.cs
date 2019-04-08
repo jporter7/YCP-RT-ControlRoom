@@ -2,10 +2,8 @@
 {
     public enum AppointmentPriorityEnum
     {
-        HIGHEST,
-        HIGH,
-        MODERATE,
-        LOW,
-        LOWEST
+        SECONDARY,
+        PRIMARY,
+        MANUAL
     }
 }
