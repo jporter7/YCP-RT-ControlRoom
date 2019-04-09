@@ -27,7 +27,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             appt = new Appointment();
             apptId = 1;
             appt.Id = apptId;
-            DateTime start = DateTime.Now;
+            DateTime start = DateTime.UtcNow;
             appt.StartTime = start;
         }
 
@@ -54,7 +54,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void TestGenerateFrom()
         {
             SpectraCyberResponse response = new SpectraCyberResponse();
-            DateTime date = DateTime.Now;
+            DateTime date = DateTime.UtcNow;
             response.DateTimeCaptured = date;
             response.DecimalData = 15;
             response.RequestSuccessful = true;
@@ -74,7 +74,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             SpectraCyberResponse response1 = new SpectraCyberResponse();
             SpectraCyberResponse response2 = new SpectraCyberResponse();
             SpectraCyberResponse response3 = new SpectraCyberResponse();
-            DateTime date1 = DateTime.Now;
+            DateTime date1 = DateTime.UtcNow;
             DateTime date2 = date1.AddHours(1);
             DateTime date3 = date2.AddMinutes(30);
 
