@@ -114,7 +114,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void AddConfigurationToDataGrid()
         {
-            string[] row = { (current_rt_id - 1).ToString(), textBox2.Text, textBox1.Text };
+            string[] row = { (current_rt_id).ToString(), textBox2.Text, textBox1.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
