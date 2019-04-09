@@ -18,6 +18,9 @@ namespace ControlRoomApplication.GUI
         private int rtId;
         private string[] statuses = { "Offline", "Offline" };
 
+        /// <summary>
+        /// Initializes the diagnostic form based off of the specified configuration.
+        /// </summary>
         public DiagnosticsForm(ControlRoom controlRoom, int rtId)
         {
             InitializeComponent();
@@ -40,6 +43,9 @@ namespace ControlRoomApplication.GUI
             label4.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString();
         }
 
+        /// <summary>
+        /// Gets and displays the current statuses of the hardware components for the specified configuration.
+        /// </summary>
         private void GetStatuses()
         {
             if (controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive())
@@ -51,6 +57,11 @@ namespace ControlRoomApplication.GUI
             {
                 statuses[1] = "Online";
             }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }
