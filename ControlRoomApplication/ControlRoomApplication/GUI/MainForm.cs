@@ -29,7 +29,7 @@ namespace ControlRoomApplication.Main
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
-            ConfigurationManager.ClearLocalDatabase();
+            DatabaseOperations.DeleteLocalDatabase();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -48,7 +48,7 @@ namespace ControlRoomApplication.Main
 
                 if (checkBox1.Checked)
                 {
-                    ConfigurationManager.ConfigureLocalDatabase(current_rt_id);
+                    DatabaseOperations.PopulateLocalDatabase(current_rt_id);
                     FreeControl.Enabled = false;
                 }
                 else
