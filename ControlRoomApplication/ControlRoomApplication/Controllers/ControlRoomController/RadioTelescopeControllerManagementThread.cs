@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Collections.Generic;
-using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Database;
 
@@ -18,6 +17,11 @@ namespace ControlRoomApplication.Controllers
         private volatile bool KeepThreadAlive;
         private volatile bool InterruptAppointmentFlag;
         private Orientation _NextObjectiveOrientation;
+        private int _currentAppointmentID;
+
+        // Sleep time for the thread that scans for higher priority appointments
+        // Used in 
+        private const int SLEEP_TIME = 1000;
 
         public Orientation NextObjectiveOrientation
         {
@@ -146,6 +150,8 @@ namespace ControlRoomApplication.Controllers
                 {
                     logger.Info("Starting appointment...");
 
+                    _currentAppointmentID = NextAppointment.Id;
+
                     // Calibrate telescope
                     if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL)
                     {
@@ -164,12 +170,23 @@ namespace ControlRoomApplication.Controllers
                     // Start movement thread
                     AppointmentMovementThread.Start();
 
+                    // Create and start thread that ensures the current appointment is the highest priority
+                    Thread EnsureHighestPriorityAppointmentThread = new Thread(() => EnsureCurrentAppointmentIsHighestPriority(NextAppointment))
+                    {
+                        Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") appointment priority tracking thread"
+                    };
+                    EnsureHighestPriorityAppointmentThread.Start();
+
                     // End PLC thread & SpectraCyber 
                     AppointmentMovementThread.Join();
                     StopReadingRFData();
-
+            
                     // Stow Telescope
                     EndAppointment();
+
+                    // Notify all threads that this appointment is no longer active so they may join
+                    _currentAppointmentID = -1;
+                    EnsureHighestPriorityAppointmentThread.Join();
 
                     logger.Info("Appointment completed.");
                 }
@@ -192,6 +209,32 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
+        /// <summary>
+        /// Checks the priority of the currently active appointment against the priorities of
+        /// all other appointments in the database and sends an interrupt if the current
+        /// appointment is not the highest priority.
+        /// Called in SpinRoutine()
+        /// </summary>
+        /// <param name="currentAppointment"></param>
+        private void EnsureCurrentAppointmentIsHighestPriority(Appointment currentAppointment) 
+        {
+            // Continue to loop until this appointment is no longer active
+            while (_currentAppointmentID == currentAppointment.Id)
+            {
+                List<Appointment> appointmentList = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(currentAppointment.TelescopeId);
+                if (currentAppointment.Priority != appointmentList[0].Priority)
+                {
+                    // Send interrupt: The current appointment must be changed
+                    logger.Info("Higher Priority Appointment Found. Calling InterruptOnce()");
+                    InterruptOnce();
+                }
+                else
+                {
+                    Thread.Sleep(SLEEP_TIME);
+                }
+            }
+            return;
+        }
         /// <summary>
         /// Waits for the next chronological appointment's start time to be less than 10 minutes
         /// from the current time of day. Once we are 10 minutes from the appointment's start time
