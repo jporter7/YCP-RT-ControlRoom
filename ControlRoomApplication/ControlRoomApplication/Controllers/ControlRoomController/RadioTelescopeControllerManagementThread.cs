@@ -213,7 +213,7 @@ namespace ControlRoomApplication.Controllers
         /// Checks the priority of the currently active appointment against the priorities of
         /// all other appointments in the database and sends an interrupt if the current
         /// appointment is not the highest priority.
-        /// Called in SpinRoutine()
+        /// Called in SpinRoutine(), enacted by a Thread
         /// </summary>
         /// <param name="currentAppointment"></param>
         private void EnsureCurrentAppointmentIsHighestPriority(Appointment currentAppointment) 
