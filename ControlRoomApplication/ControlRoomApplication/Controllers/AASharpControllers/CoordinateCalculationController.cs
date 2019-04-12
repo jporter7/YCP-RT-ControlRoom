@@ -41,19 +41,46 @@ namespace ControlRoomApplication.Controllers
             return new Orientation(Horizontal.X, Horizontal.Y);
         }
 
+        public Coordinate OrientationToCoordinate(Orientation horizantal, DateTime datetime)
+        {
+            if (horizantal == null)
+            {
+                throw new ArgumentException("Orientation cannot be null");
+            }
+
+            // Since AASharp considers south zero, flip the orientation 180 degrees
+            horizantal.Azimuth += 180;
+            if (horizantal.Azimuth > 360)
+            {
+                horizantal.Azimuth -= 360;
+            }
+            
+            AAS2DCoordinate equatorial = AASCoordinateTransformation.Horizontal2Equatorial(horizantal.Azimuth, horizantal.Elevation, Location.Latitude);
+
+            AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
+            double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
+            double LongtitudeAsHourAngle = AASCoordinateTransformation.DegreesToHours(Location.Longitude);
+            double RightAscension = ApparentGreenwichSiderealTime - LongtitudeAsHourAngle - equatorial.X;
+            if(RightAscension < 0)
+            {
+                RightAscension += 24;
+            }
+            return new Coordinate(RightAscension, equatorial.Y);
+        }
+
         public Orientation CalculateOrientation(Appointment appt, DateTime datetime)
         {
             switch (appt.Type)
             {
-                case (AppointmentTypeConstants.POINT):
+                case (AppointmentTypeEnum.POINT):
                     return GetPointOrientation(appt, datetime);
-                case (AppointmentTypeConstants.CELESTIAL_BODY):
+                case (AppointmentTypeEnum.CELESTIAL_BODY):
                     return GetCelestialBodyOrientation(appt, datetime);
-                case (AppointmentTypeConstants.RASTER):
+                case (AppointmentTypeEnum.RASTER):
                     return GetRasterOrientation(appt, datetime);
-                case (AppointmentTypeConstants.DRIFT_SCAN):
+                case (AppointmentTypeEnum.DRIFT_SCAN):
                     return GetDriftScanOrienation(appt);
-                case (AppointmentTypeConstants.FREE_CONTROL):
+                case (AppointmentTypeEnum.FREE_CONTROL):
                     return GetFreeControlOrientation(appt, datetime);
                 default:
                     throw new ArgumentException("Invalid Appt type");
@@ -215,7 +242,7 @@ namespace ControlRoomApplication.Controllers
             double x = start_coord.RightAscension + dx;
             double y = start_coord.Declination + dy;
 
-            //Console.WriteLine(x + ", " + y); // (FOR TESTING)
+            //logger.Info(x + ", " + y); // (FOR TESTING)
 
             // Create the new coordinate
             // (x = RightAscension, y = Declination)
@@ -229,6 +256,7 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
         {
+            appt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
             Orientation free_orientation = null;
             if (appt.Orientation == null)
             {

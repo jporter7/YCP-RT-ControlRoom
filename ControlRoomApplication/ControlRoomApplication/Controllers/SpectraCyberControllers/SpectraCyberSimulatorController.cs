@@ -7,6 +7,9 @@ namespace ControlRoomApplication.Controllers
 {
     public class SpectraCyberSimulatorController : AbstractSpectraCyberController
     {
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private Random random;
 
         public SpectraCyberSimulatorController(SpectraCyberSimulator spectraCyberSimulator) : base(spectraCyberSimulator)
@@ -26,12 +29,12 @@ namespace ControlRoomApplication.Controllers
             {
                 if (e is ArgumentNullException)
                 {
-                    Console.WriteLine("[SpectraCyberSimulatorController] Failed creating communication thread.");
+                    logger.Info("[SpectraCyberSimulatorController] Failed creating communication thread.");
                     return false;
                 }
                 else if (e is ThreadStartException || e is OutOfMemoryException)
                 {
-                    Console.WriteLine("[SpectraCyberSimulatorController] Failed starting communication thread.");
+                    logger.Info("[SpectraCyberSimulatorController] Failed starting communication thread.");
                     return false;
                 }
                 else
@@ -41,7 +44,7 @@ namespace ControlRoomApplication.Controllers
                 }
             }
 
-            Console.WriteLine("[SpectraCyberSimulatorController] Successfully started SpectraCyber communication and communication thread.");
+            logger.Info("[SpectraCyberSimulatorController] Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
 
@@ -49,7 +52,7 @@ namespace ControlRoomApplication.Controllers
         {
             KillCommunicationThreadAndWait();
 
-            Console.WriteLine("[SpectraCyberSimulatorController] Successfully killed SpectraCyber communication and communication thread.");
+            logger.Info("[SpectraCyberSimulatorController] Successfully killed SpectraCyber communication and communication thread.");
             return true;
         }
 

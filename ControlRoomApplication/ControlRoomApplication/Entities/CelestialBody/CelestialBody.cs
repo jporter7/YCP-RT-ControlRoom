@@ -31,6 +31,6 @@ namespace ControlRoomApplication.Entities
         public string Name { get; set; }
 
         [Column("coordinate")]
-        public virtual Coordinate Coordinate { get; set; }
+        public Coordinate Coordinate { get; set; }
     }
 }

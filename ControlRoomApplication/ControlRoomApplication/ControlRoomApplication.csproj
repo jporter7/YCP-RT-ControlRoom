@@ -95,8 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\AbstractSpectraCyberConstants.cs" />
-    <Compile Include="Constants\AppointmentTypeConstants .cs" />
-    <Compile Include="Constants\AppointmentConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\CelestialBodyConstants.cs" />
     <Compile Include="Constants\HardwareConstants.cs" />
@@ -112,6 +110,11 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
+    <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
+    <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberBandwidthEnum.cs" />
+    <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />
     <Compile Include="Entities\WeatherStation\AbstractWeatherStation.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Location\Location.cs" />
@@ -147,18 +150,29 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
+    <Compile Include="GUI\DiagnosticsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\DiagnosticsForm.Designer.cs">
+      <DependentUpon>DiagnosticsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\FreeControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\FreeControlForm.Designer.cs">
+      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
     <Compile Include="Simulators\Hardware\AbsoluteEncoder\SimulationAbsoluteEncoder.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCU.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationStopTypeEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimulator.cs" />
-    <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\ControlWriter.cs" />
-    <Compile Include="Main\MainForm.cs">
+    <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main\MainForm.Designer.cs">
+    <Compile Include="GUI\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Main\Program.cs" />
@@ -189,7 +203,13 @@
     <Content Include="Migrations\README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Main\MainForm.resx">
+    <EmbeddedResource Include="GUI\DiagnosticsForm.resx">
+      <DependentUpon>DiagnosticsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\FreeControlForm.resx">
+      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902132340492_Feb13.resx">

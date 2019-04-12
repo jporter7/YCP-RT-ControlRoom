@@ -69,8 +69,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             Thread.Sleep(100);
 
-            Assert.AreEqual(true, RTCMT0.Busy);
-            Assert.AreEqual(true, RTCMT1.Busy);
+            Assert.AreEqual(false, RTCMT0.Busy);
+            Assert.AreEqual(false, RTCMT1.Busy);
 
             RTCMT0.KillWithHardInterrupt();
             Assert.AreEqual(true, RTCMT0.WaitToJoin());

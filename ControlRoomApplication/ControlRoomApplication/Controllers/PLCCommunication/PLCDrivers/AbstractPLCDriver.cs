@@ -7,6 +7,9 @@ namespace ControlRoomApplication.Controllers
 {
     public abstract class AbstractPLCDriver
     {
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private TcpListener PLCTCPListener;
         private Thread ClientManagmentThread;
         private volatile bool KillClientManagementThreadFlag;
@@ -22,7 +25,7 @@ namespace ControlRoomApplication.Controllers
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
                 {
-                    Console.WriteLine("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
+                    logger.Info("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
                     return;
                 }
                 else
@@ -40,7 +43,7 @@ namespace ControlRoomApplication.Controllers
             {
                 if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException))
                 {
-                    Console.WriteLine("[AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
+                    logger.Info("[AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
                     return;
                 }
             }
@@ -106,7 +109,7 @@ namespace ControlRoomApplication.Controllers
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException) || (e is System.IO.IOException) || (e is ObjectDisposedException))
                 {
-                    Console.WriteLine("[AbstractPLCDriver] ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
+                    logger.Info("[AbstractPLCDriver] ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
                     return false;
                 }
             }
@@ -125,7 +128,7 @@ namespace ControlRoomApplication.Controllers
                 if (PLCTCPListener.Pending())
                 {
                     AcceptedClient = PLCTCPListener.AcceptTcpClient();
-                    Console.WriteLine("[AbstractPLCDriver] Connected to new client.");
+                    logger.Info("[AbstractPLCDriver] Connected to new client.");
 
                     NetworkStream ClientStream = AcceptedClient.GetStream();
 
@@ -151,12 +154,12 @@ namespace ControlRoomApplication.Controllers
 
                             if (!ProcessRequest(ClientStream, ClippedData))
                             {
-                                Console.WriteLine("[AbstractPLCDriver] FAILED to write server.");
+                                logger.Info("[AbstractPLCDriver] FAILED to write server.");
                             }
                             else
                             {
-                                //Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
-                                //Console.WriteLine("[AbstractPLCDriver] Successfully wrote to server!");
+                                //logger.Info("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
+                                //logger.Info("[AbstractPLCDriver] Successfully wrote to server!");
                             }
                         }
                         catch (Exception e)
@@ -168,7 +171,7 @@ namespace ControlRoomApplication.Controllers
                                 || (e is ArgumentOutOfRangeException)
                                 || (e is ArgumentException))
                             {
-                                Console.WriteLine("[AbstractPLCDriver] ERROR: copying buffer array into clipped array {" + Fd + "}, skipping... [" + e.ToString());
+                                logger.Info("[AbstractPLCDriver] ERROR: copying buffer array into clipped array {" + Fd + "}, skipping... [" + e.ToString());
                                 continue;
                             }
                             else

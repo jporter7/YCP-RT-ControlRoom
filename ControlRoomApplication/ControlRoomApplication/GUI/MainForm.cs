@@ -1,19 +1,25 @@
-﻿using System;
+﻿using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.GUI;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using ControlRoomApplication.Constants;
-using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Database;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplication.Main
 {
     public partial class MainForm : Form
     {
-        private static int numLocalDBRTInstancesCreated = 1;
+        private static int current_rt_id;
 
+        /// <summary>
+        /// Constructor for the main GUI form. Initializes the GUI form by calling the
+        /// initialization method in another partial class. Initializes the datagridview
+        /// and the lists that track telescope configurations.
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();
@@ -27,115 +33,140 @@ namespace ControlRoomApplication.Main
             ProgramRTControllerList = new List<RadioTelescopeController>();
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
+            current_rt_id = 0;
+            DatabaseOperations.DeleteLocalDatabase();
         }
 
+        /// <summary>
+        /// Eventhandler for the start button on the main GUI form. This method creates and
+        /// initializes the configuration that is specified on the main GUI form if the correct
+        /// fields are populated.
+        /// </summary>
+        /// <param name="sender"> Object specifying the sender of this Event. </param>
+        /// <param name="e"> The eventargs from the button being clicked on the GUI. </param>
         private void button1_Click(object sender, EventArgs e)
         {
             if (textBox1.Text != null 
                 && textBox2.Text != null 
                 && comboBox1.SelectedIndex > -1)
             {
+                current_rt_id++;
                 RadioTelescope ARadioTelescope = BuildRT();
                 AbstractPLCDriver APLCDriver = BuildPLCDriver();
 
+                // Add the RT/PLC driver pair and the RT controller to their respective lists
                 AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
-                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[AbstractRTDriverPairList.Count - 1].Key));
+                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
                 ProgramPLCDriverList.Add(APLCDriver);
 
                 if (checkBox1.Checked)
                 {
-                    ConfigurationManager.ConfigureLocalDatabase(numLocalDBRTInstancesCreated);
+                    DatabaseOperations.PopulateLocalDatabase(current_rt_id);
+                    FreeControl.Enabled = false;
+                }
+                else
+                {
+                    FreeControl.Enabled = true;
                 }
 
-                MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                // If the main control room controller hasn't been initialized, initialize it.
+                if (MainControlRoomController == null)
+                {
+                    MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                }
+                
+                // Start plc server and attempt to connect to it.
+                ProgramPLCDriverList[current_rt_id - 1].StartAsyncAcceptingClients();
+                ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();
 
-                ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
-                ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PLCClient.ConnectToServer();
-
-                MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
+                MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
 
                 MainControlRoomController.StartWeatherMonitoringRoutine();
 
-                int ErrorIndex = -1;
-                // Start each RT controller's threaded management
-                int z = 0;
-                foreach (RadioTelescopeControllerManagementThread ManagementThread in MainControlRoomController.ControlRoom.RTControllerManagementThreads)
+                // Start RT controller's threaded management
+                RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];
+
+                int RT_ID = ManagementThread.RadioTelescopeID;
+                List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
+
+                logger.Info("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+
+                foreach (Appointment appt in AllAppointments)
                 {
-                    int RT_ID = ManagementThread.RadioTelescopeID;
-                    List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
+                    logger.Info("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
+                }
 
-                    Console.WriteLine("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
-
-                    foreach (Appointment appt in AllAppointments)
-                    {
-                        Console.WriteLine("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
-                    }
-
-                    if (ManagementThread.Start())
-                    {
-                        numLocalDBRTInstancesCreated++;
-                        Console.WriteLine("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
-                    }
-                    else
-                    {
-                        Console.WriteLine("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "] [" + z.ToString() + "]");
-                        ErrorIndex = z;
-                        break;
-                    }
-
-                    z++;
+                if (ManagementThread.Start())
+                {
+                    logger.Info("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+                }
+                else
+                {
+                    logger.Info("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "]" );
                 }
 
                 AddConfigurationToDataGrid();
             }
         }
 
-        public void AddConfigurationToDataGrid()
+        /// <summary>
+        /// Adds the configuration specified with the main GUI form to the datagridview.
+        /// </summary>
+        private void AddConfigurationToDataGrid()
         {
-            string[] row = { (numLocalDBRTInstancesCreated - 1).ToString(), textBox2.Text, textBox1.Text };
+            string[] row = { (current_rt_id).ToString(), textBox2.Text, textBox1.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
         }
 
+        /// <summary>
+        /// Brings down each telescope instance and exits from the GUI cleanly.
+        /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
             if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
-                Console.WriteLine("[Program] Successfully shut down weather monitoring routine.");
+                logger.Info("[Program] Successfully shut down weather monitoring routine.");
             }
             else
             {
-                Console.WriteLine("[Program] ERROR shutting down weather monitoring routine!");
+                logger.Info("[Program] ERROR shutting down weather monitoring routine!");
             }
 
+            // Loop through the list of telescope controllers and call their respective bring down sequences.
             for (int i = 0; i < ProgramRTControllerList.Count; i++)
             {
                 if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, false))
                 {
-                    Console.WriteLine("[Program] Successfully brought down RT controller at index " + i.ToString());
+                    logger.Info("[Program] Successfully brought down RT controller at index " + i.ToString());
                 }
                 else
                 {
-                    Console.WriteLine("[Program] ERROR killing RT controller at index " + i.ToString());
+                    logger.Info("[Program] ERROR killing RT controller at index " + i.ToString());
                 }
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
                 ProgramRTControllerList[i].RadioTelescope.PLCClient.TerminateTCPServerConnection();
                 ProgramPLCDriverList[i].RequestStopAsyncAcceptingClientsAndJoin();
             }
-            DatabaseOperations.DeleteLocalDatabase();
 
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
         }
 
+        /// <summary>
+        /// Erases the current text in the plc port textbox. 
+        /// </summary>
         private void textBox2_Focus(object sender, EventArgs e)
         {
             textBox2.Text = "";
         }
 
+        /// <summary>
+        /// Erases the current text in the plc IP address textbox.
+        /// </summary>
         private void textBox1_Focus(object sender, EventArgs e)
         {
             textBox1.Text = "";
@@ -160,11 +191,20 @@ namespace ControlRoomApplication.Main
 
         }
 
+        /// <summary>
+        /// Generates a diagnostic form for whichever telescope configuration is chosen
+        /// from the GUI.
+        /// </summary>
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, dataGridView1.CurrentCell.RowIndex);
+            diagnosticForm.Show();
         }
 
+        /// <summary>
+        /// Builds a radio telescope instance based off of the input from the GUI form.
+        /// </summary>
+        /// <returns> A radio telescope instance representing the configuration chosen. </returns>
         public RadioTelescope BuildRT()
         {
             PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
@@ -175,14 +215,18 @@ namespace ControlRoomApplication.Main
             // Return Radio Telescope
             if (checkBox1.Checked)
             {
-                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,0), numLocalDBRTInstancesCreated);
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,90), current_rt_id);
             }
             else
             {
-                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0, 0));
+                return new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0, 90), current_rt_id);
             }
         }
 
+        /// <summary>
+        /// Builds a spectracyber instance based off of the input from the GUI.
+        /// </summary>
+        /// <returns> A spectracyber instance based off of the configuration specified by the GUI. </returns>
         public AbstractSpectraCyberController BuildSpectraCyber()
         {
             switch (comboBox1.SelectedIndex)
@@ -200,6 +244,10 @@ namespace ControlRoomApplication.Main
             }
         }
 
+        /// <summary>
+        /// Builds a PLC driver based off of the input from the GUI.
+        /// </summary>
+        /// <returns> A plc driver based off of the configuration specified by the GUI. </returns>
         public AbstractPLCDriver BuildPLCDriver()
         {
             switch (comboBox3.SelectedIndex)
@@ -220,6 +268,10 @@ namespace ControlRoomApplication.Main
             }
         }
 
+        /// <summary>
+        /// Build a weather station based off of the input from the GUI form.
+        /// </summary>
+        /// <returns> A weather station instance based off of the configuration specified. </returns>
         public AbstractWeatherStation BuildWeatherStation()
         {
             switch (comboBox2.SelectedIndex)
@@ -247,5 +299,20 @@ namespace ControlRoomApplication.Main
         private CancellationTokenSource CancellationSource { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        /// <summary>
+        /// Generates a free control form that allows free control access to a radio telescope
+        /// instance through the generated form.
+        /// </summary>
+        private void FreeControl_Click(object sender, EventArgs e)
+        {
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+            // Create free control thread
+            Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
+            {
+                Name = "FreeControlThread started"
+            };
+            FreeControlThread.Start();
+        }
     }
 }

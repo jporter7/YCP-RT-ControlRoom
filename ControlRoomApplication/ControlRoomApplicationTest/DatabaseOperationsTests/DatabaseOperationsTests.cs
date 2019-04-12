@@ -77,6 +77,24 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         }
 
         [TestMethod]
+        public void TestAddAppointment()
+        {
+            var new_appt = new Appointment();
+            new_appt.StartTime = DateTime.Now;
+            new_appt.EndTime = DateTime.Now.AddMinutes(1);
+            new_appt.Status = AppointmentStatusEnum.REQUESTED;
+            new_appt.Type = AppointmentTypeEnum.POINT;
+            new_appt.Coordinates.Add(new Coordinate(0,0));
+            new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+            new_appt.TelescopeId = 1;
+            new_appt.UserId = 1;
+
+            DatabaseOperations.AddAppointment(new_appt);
+            var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(1);
+            Assert.IsTrue(1 == output_appts.Where(x => x.Id == new_appt.Id).Count());
+        }
+
+        [TestMethod]
         public void TestGetTotalAppointmentCount()
         {
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
@@ -135,7 +153,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestUpdateAppointmentStatus()
         {
-            appt.Status = AppointmentConstants.IN_PROGRESS;
+            appt.Status = AppointmentStatusEnum.IN_PROGRESS;
 
             DatabaseOperations.UpdateAppointment(appt);
             
@@ -143,21 +161,24 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
             var testStatus = appt.Status;
 
-            Assert.AreEqual(AppointmentConstants.IN_PROGRESS, testStatus);
+            Assert.AreEqual(AppointmentStatusEnum.IN_PROGRESS, testStatus);
         }
 
         [TestMethod]
-        public void TestUpdateAppointmentStatus_InvalidStatus()
+        public void TestUpdateAppointmentCoordinates()
         {
-            appt.Status = "INVALID_STATUS";
+            var origCoord = new Coordinate(0, 0);
+            appt.Coordinates.Add(origCoord);
 
             DatabaseOperations.UpdateAppointment(appt);
 
             // update appt
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
-            var testStatus = appt.Status;
 
-            Assert.AreNotEqual(AppointmentConstants.IN_PROGRESS, testStatus);
+            var testCoord = appt.Coordinates.First();
+
+            Assert.AreEqual(origCoord.RightAscension, testCoord.RightAscension);
+            Assert.AreEqual(origCoord.Declination, testCoord.Declination);
         }
 
         [TestMethod]
@@ -166,7 +187,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             var appt = DatabaseOperations.GetNextAppointment(NumRTInstances);
             Assert.IsTrue(appt != null);
             Assert.IsTrue(appt.StartTime > DateTime.Now);
-            Assert.IsTrue(appt.Status != AppointmentConstants.COMPLETED);
+            Assert.IsTrue(appt.Status != AppointmentStatusEnum.COMPLETED);
         }
     }
 }

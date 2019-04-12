@@ -76,10 +76,10 @@ namespace ControlRoomApplication.Controllers
         {
             while (KeepWeatherMonitoringThreadAlive)
             {
-                // Console.WriteLine("[ControlRoomController] Weather station reading: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
+                // logger.Info("[ControlRoomController] Weather station reading: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
                 if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
                 {
-                    Console.WriteLine("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
                 }
 
                 Thread.Sleep(1000);
@@ -118,7 +118,7 @@ namespace ControlRoomApplication.Controllers
 
             RadioTelescopeControllerManagementThread ToBeRemovedRTMT = ControlRoom.RTControllerManagementThreads[rtControllerIndex];
 
-            if (ToBeRemovedRTMT.Busy && (!waitForAnyTasks))
+            if (!waitForAnyTasks)
             {
                 ToBeRemovedRTMT.KillWithHardInterrupt();
             }

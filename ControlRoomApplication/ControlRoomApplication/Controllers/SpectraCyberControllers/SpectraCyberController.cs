@@ -8,6 +8,9 @@ namespace ControlRoomApplication.Controllers
 {
     public class SpectraCyberController : AbstractSpectraCyberController
     {
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private bool SerialCommsFailed;
 
         public SpectraCyberController(SpectraCyber spectraCyber) : base(spectraCyber) { }
@@ -32,7 +35,7 @@ namespace ControlRoomApplication.Controllers
             {
                 if (e is System.IO.IOException)
                 {
-                    Console.WriteLine("[SpectraCyberController] Failed creating serial port connection.");
+                    logger.Info("[SpectraCyberController] Failed creating serial port connection.");
                     return false;
                 }
                 else
@@ -54,7 +57,7 @@ namespace ControlRoomApplication.Controllers
                     || e is ArgumentException
                     || e is UnauthorizedAccessException)
                 {
-                    Console.WriteLine("[SpectraCyberController] Failed opening serial communication.");
+                    logger.Info("[SpectraCyberController] Failed opening serial communication.");
                     return false;
                 }
                 else
@@ -74,12 +77,12 @@ namespace ControlRoomApplication.Controllers
             {
                 if (e is ArgumentNullException)
                 {
-                    Console.WriteLine("[SpectraCyberController] Failed creating communication thread.");
+                    logger.Info("[SpectraCyberController] Failed creating communication thread.");
                     return false;
                 }
                 else if (e is ThreadStartException || e is OutOfMemoryException)
                 {
-                    Console.WriteLine("[SpectraCyberController] Failed starting communication thread.");
+                    logger.Info("[SpectraCyberController] Failed starting communication thread.");
                     return false;
                 }
                 else
@@ -89,7 +92,7 @@ namespace ControlRoomApplication.Controllers
                 }
             }
 
-            Console.WriteLine("[SpectraCyberController] Successfully started SpectraCyber communication and communication thread.");
+            logger.Info("[SpectraCyberController] Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
 
@@ -117,7 +120,7 @@ namespace ControlRoomApplication.Controllers
 
             KillCommunicationThreadAndWait();
 
-            Console.WriteLine("[SpectraCyberController] Successfully killed SpectraCyber communication and communication thread.");
+            logger.Info("[SpectraCyberController] Successfully killed SpectraCyber communication and communication thread.");
             return true;
         }
 
@@ -233,7 +236,7 @@ namespace ControlRoomApplication.Controllers
                 catch (Exception e)
                 {
                     // Something went wrong, the response isn't valid
-                    Console.WriteLine("[SpectraCyberController] Failed to receive a response: " + e.ToString());
+                    logger.Info("[SpectraCyberController] Failed to receive a response: " + e.ToString());
                     response.Valid = false;
                 }
             }
@@ -291,7 +294,7 @@ namespace ControlRoomApplication.Controllers
                         }
                         else
                         {
-                            Console.WriteLine("[SpectraCyberController] Unpredicted scheduling combination...");
+                            logger.Info("[SpectraCyberController] Unpredicted scheduling combination...");
                             return true;
                         }
                     }
