@@ -129,52 +129,52 @@ namespace ControlRoomApplication.Controllers
 
                     case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                         {
-                            //if (CurrentOrientation != null)
-                            //{
-                            //    // This error code means that there's already an active objective orientation
-                            //    // A CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION command should have been issued first
-                            //    FinalResponseContainer[2] = 0x2;
-                            //    break;
-                            //}
+                            if (SimMCU.HasActiveMove())
+                            {
+                                // This error code means that there's already an active objective orientation
+                                // A CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION command should have been issued first
+                                FinalResponseContainer[2] = 0x2;
+                                break;
+                            }
 
-                            //double NextAZ, NextEL;
+                            double NextAZ, NextEL;
 
-                            //try
-                            //{
-                            //    NextAZ = BitConverter.ToDouble(query, 3);
-                            //    NextEL = BitConverter.ToDouble(query, 11);
-                            //}
-                            //catch (Exception e)
-                            //{
-                            //    if ((e is ArgumentException) || (e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
-                            //    {
-                            //        // This error code means that the data could not be converted into a double-precision floating point
-                            //        FinalResponseContainer[2] = 0x3;
-                            //        break;
-                            //    }
-                            //    else
-                            //    {
-                            //        // Unexpected exception
-                            //        throw e;
-                            //    }
-                            //}
+                            try
+                            {
+                                NextAZ = BitConverter.ToDouble(query, 3);
+                                NextEL = BitConverter.ToDouble(query, 11);
+                            }
+                            catch (Exception e)
+                            {
+                                if ((e is ArgumentException) || (e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
+                                {
+                                    // This error code means that the data could not be converted into a double-precision floating point
+                                    FinalResponseContainer[2] = 0x3;
+                                    break;
+                                }
+                                else
+                                {
+                                    // Unexpected exception
+                                    throw e;
+                                }
+                            }
 
-                            //if ((NextAZ < 0) || (NextAZ > 360))
-                            //{
-                            //    // This error code means that the objective azimuth position is invalid
-                            //    FinalResponseContainer[2] = 0x4;
-                            //    break;
-                            //}
+                            if ((NextAZ < 0) || (NextAZ > 360))
+                            {
+                                // This error code means that the objective azimuth position is invalid
+                                FinalResponseContainer[2] = 0x4;
+                                break;
+                            }
 
-                            //if ((NextEL < 0) || (NextEL > 90))
-                            //{
-                            //    // This error code means that the objective elevation position is invalid
-                            //    FinalResponseContainer[2] = 0x5;
-                            //    break;
-                            //}
+                            if ((NextEL < 0) || (NextEL > 90))
+                            {
+                                // This error code means that the objective elevation position is invalid
+                                FinalResponseContainer[2] = 0x5;
+                                break;
+                            }
 
-                            //// Otherwise, this is valid
-                            //CurrentOrientation = new Orientation(NextAZ, NextEL);
+                            // Otherwise, this is valid
+                            SimMCU.SetActiveObjectiveOrientationAndStartMove(new Orientation(NextAZ, NextEL));
 
                             FinalResponseContainer[2] = 0x1;
                             break;

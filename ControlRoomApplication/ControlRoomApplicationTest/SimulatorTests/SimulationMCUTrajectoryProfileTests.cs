@@ -9,7 +9,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
     [TestClass]
     public class SimulationMCUTrajectoryProfileTests
     {
-        private static double DOUBLE_EPSILON = 0.000000001;
+        private static double DOUBLE_EPSILON = 0.000001;
 
         private static SimulationAbsoluteEncoder Encoder;
 
@@ -17,6 +17,8 @@ namespace ControlRoomApplicationTest.SimulatorTests
         private static SimulationMCUTrajectoryProfile ProfileSCurveTriangularPartial;
         private static SimulationMCUTrajectoryProfile ProfileSCurveTriangularFull;
         private static SimulationMCUTrajectoryProfile ProfileSCurveTrapezoidal;
+        private static SimulationMCUTrajectoryProfile ProfileLinearFull;
+        private static SimulationMCUTrajectoryProfile ProfileLinearPartial;
 
         [ClassInitialize]
         public static void BuildUp(TestContext testContext)
@@ -57,6 +59,24 @@ namespace ControlRoomApplicationTest.SimulatorTests
                 HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
                 HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
                 HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES / 2
+            );
+
+            ProfileLinearFull = SimulationMCUTrajectoryProfile.ForceLinearInstance(
+                Encoder,
+                0.0,
+                0.0,
+                HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                Encoder.GetEquivalentDegreesFromEncoderTicks(20)
+            );
+
+            ProfileLinearPartial = SimulationMCUTrajectoryProfile.ForceLinearInstance(
+                Encoder,
+                0.0,
+                0.0,
+                HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                Encoder.GetEquivalentDegreesFromEncoderTicks(10)
             );
         }
 
@@ -103,14 +123,14 @@ namespace ControlRoomApplicationTest.SimulatorTests
             Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(1.85), ProfileSCurveTriangularFull.ObjectiveStep);
         }
 
-        [TestMethod]
-        public void TestFullTriangularSCurveProfileGoodInterpretation()
-        {
-            DateTime StartTime = DateTime.Now;
-            double initialPosition = Encoder.GetEquivalentEncoderTicksFromDegrees(00.0);
+        //[TestMethod]
+        //public void TestFullTriangularSCurveProfileGoodInterpretation()
+        //{
+        //    DateTime StartTime = DateTime.Now;
+        //    double initialPosition = Encoder.GetEquivalentEncoderTicksFromDegrees(00.0);
 
             
-        }
+        //}
 
         //[TestMethod]
         //public void TestPartialTriangularSCurveProfileConstructorAndProperties()
@@ -118,6 +138,8 @@ namespace ControlRoomApplicationTest.SimulatorTests
         //    Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR_PARTIAL, ProfileSCurveTriangularPartial.ProfileType);
         //    Assert.AreEqual(0.0, ProfileSCurveTriangularPartial.InitialVelocity, DOUBLE_EPSILON);
         //    Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY / Math.Sqrt(2), ProfileSCurveTriangularPartial.TrajectoryPeakVelocity, DOUBLE_EPSILON);
+      
+            
         //    Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileSCurveTriangularPartial.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
         //    Assert.AreEqual(0.3125, ProfileSCurveTriangularPartial.TotalTime, DOUBLE_EPSILON);
         //    Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(60.0), ProfileSCurveTriangularPartial.InitialStep);
@@ -144,6 +166,70 @@ namespace ControlRoomApplicationTest.SimulatorTests
         {
             DateTime StartTime = DateTime.Now;
             ProfileSCurveTriangularPartial.InterpretAt(StartTime, StartTime.AddSeconds(-1));
+        }
+
+        [TestMethod]
+        public void TestFullLinearProfileConstructorAndProperties()
+        {
+            Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.LINEAR_FULL, ProfileLinearFull.ProfileType);
+            Assert.AreEqual(0.0, ProfileLinearFull.InitialVelocity, DOUBLE_EPSILON);
+            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileLinearFull.TrajectoryPeakVelocity, DOUBLE_EPSILON);
+            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileLinearFull.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
+            Assert.AreEqual(1.6729167, ProfileLinearFull.TotalTime, DOUBLE_EPSILON);
+            Assert.AreEqual(0, ProfileLinearFull.InitialStep);
+            Assert.AreEqual(20, ProfileLinearFull.ObjectiveStep);
+        }
+
+        [TestMethod]
+        public void TestFullLinearProfileGoodInterpretation()
+        {
+            DateTime StartTime = DateTime.Now;
+
+            Assert.AreEqual(ProfileLinearFull.InitialStep + 7, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddSeconds(0.703125)));
+            Assert.AreEqual(ProfileLinearFull.InitialStep + 11, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddSeconds(0.883125)));
+            Assert.AreEqual(ProfileLinearFull.InitialStep + 13, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddSeconds(0.96979167)));
+            Assert.AreEqual(ProfileLinearFull.InitialStep + 18, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddSeconds(1.25)));
+            Assert.AreEqual(ProfileLinearFull.ObjectiveStep, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddYears(10)));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TestFulllLinearProfileBadInterpretation()
+        {
+            DateTime StartTime = DateTime.Now;
+            ProfileLinearFull.InterpretAt(StartTime, StartTime.AddMilliseconds(-100));
+        }
+
+        [TestMethod]
+        public void TestPartialLinearProfileConstructorAndProperties()
+        {
+            Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.LINEAR_PARTIAL, ProfileLinearPartial.ProfileType);
+            Assert.AreEqual(0.0, ProfileLinearPartial.InitialVelocity, DOUBLE_EPSILON);
+            Assert.AreEqual(17.8885438, ProfileLinearPartial.TrajectoryPeakVelocity, DOUBLE_EPSILON);
+            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileLinearPartial.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
+            Assert.AreEqual(1.1180339, ProfileLinearPartial.TotalTime, DOUBLE_EPSILON);
+            Assert.AreEqual(0, ProfileLinearPartial.InitialStep);
+            Assert.AreEqual(10, ProfileLinearPartial.ObjectiveStep);
+        }
+
+        [TestMethod]
+        public void TestPartialLinearProfileGoodInterpretation()
+        {
+            DateTime StartTime = DateTime.Now;
+
+            Assert.AreEqual(ProfileLinearPartial.InitialStep + 1, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddSeconds(0.25)));
+            Assert.AreEqual(ProfileLinearPartial.InitialStep + 4, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddSeconds(0.5)));
+            Assert.AreEqual(ProfileLinearPartial.InitialStep + 5, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddSeconds(0.56)));
+            Assert.AreEqual(ProfileLinearPartial.InitialStep + 7, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddSeconds(0.76)));
+            Assert.AreEqual(ProfileLinearPartial.ObjectiveStep, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddYears(10)));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void TestPartiallLinearProfileBadInterpretation()
+        {
+            DateTime StartTime = DateTime.Now;
+            ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddTicks(-10));
         }
     }
 }

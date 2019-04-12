@@ -41,39 +41,26 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             return new Orientation(AzEncoder.CurrentPositionDegrees, ElEncoder.CurrentPositionDegrees);
         }
 
-        public void ConsumeRequestedStop()
+        private void TryStop(SimulationStopTypeEnum stopType)
         {
-            RequestedStopType = SimulationStopTypeEnum.NONE;
+            RequestedStopType = HasActiveMove() ? stopType : SimulationStopTypeEnum.NONE;
         }
 
         public void ExecuteControlledStop()
         {
-            if (HasActiveMove())
-            {
-                RequestedStopType = SimulationStopTypeEnum.CONTROLLED;
-            }
-            else
-            {
-                ConsumeRequestedStop();
-            }
+            TryStop(SimulationStopTypeEnum.CONTROLLED);
         }
 
         public void ExecuteImmediateStop()
         {
-            if (HasActiveMove())
-            {
-                RequestedStopType = SimulationStopTypeEnum.IMMEDIATE;
-            }
-            else
-            {
-                ConsumeRequestedStop();
-            }
+            TryStop(SimulationStopTypeEnum.IMMEDIATE);
         }
 
         public void SetActiveObjectiveOrientationAndStartMove(Orientation orientationDegrees)
         {
-            ConsumeRequestedStop();
+            RequestedStopType = SimulationStopTypeEnum.NONE;
             ActiveObjectiveOrientation = orientationDegrees;
+            ActiveObjectiveOrientationMoveStart = DateTime.UtcNow;
         }
     }
 }
