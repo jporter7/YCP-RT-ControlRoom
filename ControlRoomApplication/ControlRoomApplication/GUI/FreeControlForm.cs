@@ -28,8 +28,8 @@ namespace ControlRoomApplication.Main
             Increment = 1;
             // Add free control appt
             CurrentAppointment = new Appointment();
-            CurrentAppointment.StartTime = DateTime.Now.AddSeconds(5);
-            CurrentAppointment.EndTime = DateTime.Now.AddMinutes(15);
+            CurrentAppointment.StartTime = DateTime.UtcNow.AddSeconds(5);
+            CurrentAppointment.EndTime = DateTime.UtcNow.AddMinutes(15);
             CurrentAppointment.Status = AppointmentStatusEnum.REQUESTED;
             CurrentAppointment.Type = AppointmentTypeEnum.FREE_CONTROL;
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
@@ -74,7 +74,7 @@ namespace ControlRoomApplication.Main
             CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Orientation = new Entities.Orientation(0, 90);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
-            TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.Now);
+            TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
         }
 
         private void CoordMove()
@@ -89,7 +89,7 @@ namespace ControlRoomApplication.Main
             SetTargetRAText(TargetCoordinate.RightAscension.ToString("0.##"));
             SetTargetDecText(TargetCoordinate.Declination.ToString("0.##"));
             Entities.Orientation currentOrienation = controlRoom.RadioTelescopeControllers[rtId - 1].GetCurrentOrientation();
-            Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.Now);
+            Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
             SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
             SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
         }

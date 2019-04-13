@@ -75,7 +75,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         [TestMethod]
         public void TestNegligibleProfileGoodInterpretation()
         {
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.UtcNow;
 
             Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretAt(StartTime, StartTime.AddSeconds(10)));
             Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretAt(StartTime, StartTime.AddMilliseconds(1)));
@@ -87,7 +87,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         [ExpectedException(typeof(ArgumentException))]
         public void TestNegligibleProfileBadInterpretation()
         {
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.UtcNow;
             ProfileNegligible.InterpretAt(StartTime, StartTime.AddMilliseconds(-100));
         }
 
@@ -106,7 +106,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         [TestMethod]
         public void TestFullTriangularSCurveProfileGoodInterpretation()
         {
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.UtcNow;
             double initialPosition = Encoder.GetEquivalentEncoderTicksFromDegrees(00.0);
 
             
@@ -127,7 +127,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         //[TestMethod]
         //public void TestPartialTriangularSCurveProfileGoodInterpretation()
         //{
-        //    DateTime StartTime = DateTime.Now;
+        //    DateTime StartTime = DateTime.UtcNow;
         //    double initialPosition = Encoder.GetEquivalentEncoderTicksFromDegrees(60.0);
 
         //    //Assert.AreEqual(initialPosition, ProfileSCurveTriangularPartial.InterpretAt(StartTime, StartTime));
@@ -142,7 +142,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         [ExpectedException(typeof(ArgumentException))]
         public void TestPartialTriangularSCurveProfileBadInterpretation()
         {
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.UtcNow;
             ProfileSCurveTriangularPartial.InterpretAt(StartTime, StartTime.AddSeconds(-1));
         }
     }
