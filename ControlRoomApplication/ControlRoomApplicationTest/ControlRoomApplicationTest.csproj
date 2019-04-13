@@ -76,8 +76,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationManagerTests\ConfigurationManagerTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
+    <Compile Include="EntitiesTests\PLCCommandAndQueryTypeEnumTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />
     <Compile Include="EntitiesTests\LocationTest.cs" />
     <Compile Include="EntitiesTests\CelestialBodyTest.cs" />
@@ -87,11 +87,12 @@
     <Compile Include="EntitiesTests\CoordinateTest.cs" />
     <Compile Include="EntitiesTests\HeartbeatInterfaceTests\ConcreteHeartbeatTestClass.cs" />
     <Compile Include="EntitiesTests\HeartbeatInterfaceTests\HeartbeatInterfaceTest.cs" />
-	<Compile Include="EntitiesTests\HeartbeatTrackerContainerTest.cs" />
+    <Compile Include="EntitiesTests\HeartbeatTrackerContainerTest.cs" />
     <Compile Include="EntitiesTests\OrientationTest.cs" />
     <Compile Include="EntitiesTests\PLCCommandResponseExpectationEnumTest.cs" />
     <Compile Include="EntitiesTests\PLCTest.cs" />
     <Compile Include="EntitiesTests\RFDataTest.cs" />
+    <Compile Include="EntitiesTests\SpectraCyberIntegratioinTimeEnumTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberResponseTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberTest.cs" />
     <Compile Include="EntityControllersTests\AbstractPLCDriverTest.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCClientAndDriverTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
+    <Compile Include="EntityControllersTests\SpectraCyberSimulatorControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberTestControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimulatorTests\SimulationAbsoluteEncoderTests.cs" />

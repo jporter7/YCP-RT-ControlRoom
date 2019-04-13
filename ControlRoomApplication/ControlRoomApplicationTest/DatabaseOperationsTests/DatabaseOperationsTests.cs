@@ -29,7 +29,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             data1 = new RFData();
             data2 = new RFData();
             data3 = new RFData();
-            DateTime date = DateTime.Now;
+            DateTime date = DateTime.UtcNow;
 
             data1.Intensity = 9234875;
             data1.TimeCaptured = date;
@@ -80,8 +80,8 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         public void TestAddAppointment()
         {
             var new_appt = new Appointment();
-            new_appt.StartTime = DateTime.Now;
-            new_appt.EndTime = DateTime.Now.AddMinutes(1);
+            new_appt.StartTime = DateTime.UtcNow;
+            new_appt.EndTime = DateTime.UtcNow.AddMinutes(1);
             new_appt.Status = AppointmentStatusEnum.REQUESTED;
             new_appt.Type = AppointmentTypeEnum.POINT;
             new_appt.Coordinates.Add(new Coordinate(0,0));
@@ -123,7 +123,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestCreateRFData_InvalidDate()
         {
-            data1.TimeCaptured = DateTime.Now.AddDays(1);
+            data1.TimeCaptured = DateTime.UtcNow.AddDays(1);
 
             DatabaseOperations.CreateRFData(appt.Id, data1);
 
@@ -186,7 +186,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             var appt = DatabaseOperations.GetNextAppointment(NumRTInstances);
             Assert.IsTrue(appt != null);
-            Assert.IsTrue(appt.StartTime > DateTime.Now);
+            Assert.IsTrue(appt.StartTime > DateTime.UtcNow);
             Assert.IsTrue(appt.Status != AppointmentStatusEnum.COMPLETED);
         }
     }

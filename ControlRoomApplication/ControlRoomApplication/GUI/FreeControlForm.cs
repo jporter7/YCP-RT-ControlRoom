@@ -30,8 +30,8 @@ namespace ControlRoomApplication.Main
             UpdateIncrementButtons();
             // Add free control appt
             CurrentAppointment = new Appointment();
-            CurrentAppointment.StartTime = DateTime.Now.AddSeconds(5);
-            CurrentAppointment.EndTime = DateTime.Now.AddMinutes(15);
+            CurrentAppointment.StartTime = DateTime.UtcNow.AddSeconds(5);
+            CurrentAppointment.EndTime = DateTime.UtcNow.AddMinutes(15);
             CurrentAppointment.Status = AppointmentStatusEnum.REQUESTED;
             CurrentAppointment.Type = AppointmentTypeEnum.FREE_CONTROL;
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
@@ -134,7 +134,7 @@ namespace ControlRoomApplication.Main
         private void timer1_Tick(object sender, EventArgs e)
         {
             Entities.Orientation currentOrienation = controlRoom.RadioTelescopeControllers[rtId - 1].GetCurrentOrientation();
-            Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.Now);
+            Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
             SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
             SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
         }

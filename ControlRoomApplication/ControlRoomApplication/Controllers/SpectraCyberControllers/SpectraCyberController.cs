@@ -200,7 +200,7 @@ namespace ControlRoomApplication.Controllers
                     }
 
                     // Set the time captured to be as close to the read as possible, in case it's valid
-                    response.DateTimeCaptured = DateTime.Now;
+                    response.DateTimeCaptured = DateTime.UtcNow;
 
                     // Clip the string to the exact number of bytes read
                     if (AbstractSpectraCyberConstants.CLIP_BUFFER_RESPONSE && (length != AbstractSpectraCyberConstants.BUFFER_SIZE))
@@ -274,7 +274,7 @@ namespace ControlRoomApplication.Controllers
                         int ScanIntervalMS = Schedule.GetScanIntervalMS();
                         CommunicationMutex.ReleaseMutex();
 
-                        if ((DateTime.Now - LastConsumeTick).TotalMilliseconds < HeartbeatConstants.INTERFACE_CHECK_IN_RATE_MS)
+                        if ((DateTime.UtcNow - LastConsumeTick).TotalMilliseconds < HeartbeatConstants.INTERFACE_CHECK_IN_RATE_MS)
                         {
                             // It was operable relatively recently, and the scheduled aspects of it means the SerialCommsFailed flag will go
                             // high if it does fail, so assume it's ok for now
