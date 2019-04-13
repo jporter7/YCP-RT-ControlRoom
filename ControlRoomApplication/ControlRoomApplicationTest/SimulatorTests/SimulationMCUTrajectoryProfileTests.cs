@@ -97,10 +97,10 @@ namespace ControlRoomApplicationTest.SimulatorTests
         {
             DateTime StartTime = DateTime.Now;
 
-            Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretAt(StartTime, StartTime.AddSeconds(10)));
-            Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretAt(StartTime, StartTime.AddMilliseconds(1)));
-            Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretAt(StartTime, StartTime.AddMinutes(2)));
-            Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretAt(StartTime, StartTime.AddYears(10)));
+            Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(10)));
+            Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretEncoderTicksAt(StartTime, StartTime.AddMilliseconds(1)));
+            Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretEncoderTicksAt(StartTime, StartTime.AddMinutes(2)));
+            Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretEncoderTicksAt(StartTime, StartTime.AddYears(10)));
         }
 
         [TestMethod]
@@ -108,7 +108,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         public void TestNegligibleProfileBadInterpretation()
         {
             DateTime StartTime = DateTime.Now;
-            ProfileNegligible.InterpretAt(StartTime, StartTime.AddMilliseconds(-100));
+            ProfileNegligible.InterpretEncoderTicksAt(StartTime, StartTime.AddMilliseconds(-100));
         }
 
         [TestMethod]
@@ -165,7 +165,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         public void TestPartialTriangularSCurveProfileBadInterpretation()
         {
             DateTime StartTime = DateTime.Now;
-            ProfileSCurveTriangularPartial.InterpretAt(StartTime, StartTime.AddSeconds(-1));
+            ProfileSCurveTriangularPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(-1));
         }
 
         [TestMethod]
@@ -185,11 +185,11 @@ namespace ControlRoomApplicationTest.SimulatorTests
         {
             DateTime StartTime = DateTime.Now;
 
-            Assert.AreEqual(ProfileLinearFull.InitialStep + 7, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddSeconds(0.703125)));
-            Assert.AreEqual(ProfileLinearFull.InitialStep + 11, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddSeconds(0.883125)));
-            Assert.AreEqual(ProfileLinearFull.InitialStep + 13, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddSeconds(0.96979167)));
-            Assert.AreEqual(ProfileLinearFull.InitialStep + 18, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddSeconds(1.25)));
-            Assert.AreEqual(ProfileLinearFull.ObjectiveStep, ProfileLinearFull.InterpretAt(StartTime, StartTime.AddYears(10)));
+            Assert.AreEqual(ProfileLinearFull.InitialStep + 7, ProfileLinearFull.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(0.703125)));
+            Assert.AreEqual(ProfileLinearFull.InitialStep + 11, ProfileLinearFull.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(0.883125)));
+            Assert.AreEqual(ProfileLinearFull.InitialStep + 13, ProfileLinearFull.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(0.96979167)));
+            Assert.AreEqual(ProfileLinearFull.InitialStep + 18, ProfileLinearFull.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(1.25)));
+            Assert.AreEqual(ProfileLinearFull.ObjectiveStep, ProfileLinearFull.InterpretEncoderTicksAt(StartTime, StartTime.AddYears(10)));
         }
 
         [TestMethod]
@@ -197,7 +197,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         public void TestFulllLinearProfileBadInterpretation()
         {
             DateTime StartTime = DateTime.Now;
-            ProfileLinearFull.InterpretAt(StartTime, StartTime.AddMilliseconds(-100));
+            ProfileLinearFull.InterpretEncoderTicksAt(StartTime, StartTime.AddMilliseconds(-100));
         }
 
         [TestMethod]
@@ -217,11 +217,11 @@ namespace ControlRoomApplicationTest.SimulatorTests
         {
             DateTime StartTime = DateTime.Now;
 
-            Assert.AreEqual(ProfileLinearPartial.InitialStep + 1, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddSeconds(0.25)));
-            Assert.AreEqual(ProfileLinearPartial.InitialStep + 4, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddSeconds(0.5)));
-            Assert.AreEqual(ProfileLinearPartial.InitialStep + 5, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddSeconds(0.56)));
-            Assert.AreEqual(ProfileLinearPartial.InitialStep + 7, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddSeconds(0.76)));
-            Assert.AreEqual(ProfileLinearPartial.ObjectiveStep, ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddYears(10)));
+            Assert.AreEqual(ProfileLinearPartial.InitialStep + 1, ProfileLinearPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(0.25)));
+            Assert.AreEqual(ProfileLinearPartial.InitialStep + 4, ProfileLinearPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(0.5)));
+            Assert.AreEqual(ProfileLinearPartial.InitialStep + 5, ProfileLinearPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(0.56)));
+            Assert.AreEqual(ProfileLinearPartial.InitialStep + 7, ProfileLinearPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(0.76)));
+            Assert.AreEqual(ProfileLinearPartial.ObjectiveStep, ProfileLinearPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddYears(10)));
         }
 
         [TestMethod]
@@ -229,7 +229,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         public void TestPartiallLinearProfileBadInterpretation()
         {
             DateTime StartTime = DateTime.Now;
-            ProfileLinearPartial.InterpretAt(StartTime, StartTime.AddTicks(-10));
+            ProfileLinearPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddTicks(-10));
         }
     }
 }

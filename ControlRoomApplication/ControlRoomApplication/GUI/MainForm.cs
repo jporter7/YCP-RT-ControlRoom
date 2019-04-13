@@ -253,18 +253,21 @@ namespace ControlRoomApplication.Main
             switch (comboBox3.SelectedIndex)
             {
                 case 0:
-                    // The production telescope
+                    // Case for the production telescope.
                     throw new NotImplementedException("There is not yet communication for the real PLC.");
 
                 case 1:
-                    // Case for the test/simulated radiotelescope.
+                    // Case for the simulated radiotelescope.
                     return new ScaleModelPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
 
+                case 3:
+                    // Case for the test radiotelescope.
+                    return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+
                 case 2:
-                    return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
                 default:
-                    // Should be changed once we have a simulated radiotelescope class implemented
-                    return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    // Case for the simulation telescope.
+                    return new SimulationPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
             }
         }
 
@@ -279,12 +282,10 @@ namespace ControlRoomApplication.Main
                 case 0:
                     throw new NotImplementedException("The production weather station is not yet supported.");
 
-                case 1:
-                    return new SimulationWeatherStation(1000);
-
                 case 2:
                     throw new NotImplementedException("The test weather station is not yet supported.");
 
+                case 1:
                 default:
                     return new SimulationWeatherStation(1000);
             }

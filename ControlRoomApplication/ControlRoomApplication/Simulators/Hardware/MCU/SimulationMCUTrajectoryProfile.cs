@@ -63,7 +63,12 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             ObjectiveStep = objectiveStep;
         }
 
-        public int InterpretAt(DateTime startTime, DateTime evaluationTime)
+        public double InterpretDegreesAt(SimulationAbsoluteEncoder motorEncoder, DateTime startTime, DateTime evaluationTime)
+        {
+            return motorEncoder.GetEquivalentDegreesFromEncoderTicks(InterpretEncoderTicksAt(startTime, evaluationTime));
+        }
+
+        public int InterpretEncoderTicksAt(DateTime startTime, DateTime evaluationTime)
         {
             double timeElapsed = (evaluationTime - startTime).TotalSeconds;
 
