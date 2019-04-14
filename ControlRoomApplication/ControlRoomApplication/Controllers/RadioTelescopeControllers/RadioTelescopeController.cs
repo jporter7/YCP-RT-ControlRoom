@@ -159,6 +159,24 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// Method used to request to set configuration of elements of the RT.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ConfigureRadioTelescope(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        {
+            if ((startSpeedAzimuth < 1) || (startSpeedElevation < 1) || (homeTimeoutAzimuth < 0) || (homeTimeoutElevation < 0)
+                || (startSpeedAzimuth > 1000000) || (startSpeedElevation > 1000000) || (homeTimeoutAzimuth > 300) || (homeTimeoutElevation > 300))
+            {
+                return false;
+            }
+
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_CONFIGURATION, startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation));
+        }
+
+        /// <summary>
         /// Method used to request to move the Radio Telescope to an objective
         /// azimuth/elevation orientation.
         /// 

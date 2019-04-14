@@ -218,6 +218,35 @@ namespace ControlRoomApplication.Controllers
                     }
 
 
+                case PLCCommandAndQueryTypeEnum.SET_CONFIGURATION:
+                    {
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+
+                        int StartSpeedAzimuth = (int)MessageParameters[0];
+                        int StartSpeedElevation = (int)MessageParameters[1];
+                        int HomeTimeoutAzimuth = (int)MessageParameters[2];
+                        int HomeTimeoutElevation = (int)MessageParameters[3];
+
+                        NetOutgoingMessage[3] = 0x0;
+                        NetOutgoingMessage[4] = (byte)(StartSpeedAzimuth / 0xFFFF);
+                        NetOutgoingMessage[5] = (byte)((StartSpeedAzimuth / 0xFF) & 0xFF);
+                        NetOutgoingMessage[6] = (byte)(StartSpeedAzimuth & 0xFF);
+
+                        NetOutgoingMessage[7] = 0x0;
+                        NetOutgoingMessage[8] = (byte)(StartSpeedElevation / 0xFFFF);
+                        NetOutgoingMessage[9] = (byte)((StartSpeedElevation / 0xFF) & 0xFF);
+                        NetOutgoingMessage[10] = (byte)(StartSpeedElevation & 0xFF);
+
+                        NetOutgoingMessage[11] = (byte)(HomeTimeoutAzimuth >> 8);
+                        NetOutgoingMessage[12] = (byte)(HomeTimeoutAzimuth & 0xFF);
+
+                        NetOutgoingMessage[13] = (byte)(HomeTimeoutElevation >> 8);
+                        NetOutgoingMessage[14] = (byte)(HomeTimeoutElevation & 0xFF);
+
+                        break;
+                    }
+
+
                 case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
