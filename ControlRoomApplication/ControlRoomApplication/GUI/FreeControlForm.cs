@@ -267,8 +267,17 @@ namespace ControlRoomApplication.Main
                 double newDec;
                 Double.TryParse(TargetRATextBox.Text, out newRA);
                 Double.TryParse(TargetDecTextBox.Text, out newDec);
-                TargetCoordinate = new Coordinate(newRA, newDec);
-                CoordMove();
+                Coordinate new_coord = new Coordinate(newRA, newDec);
+                Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
+                if (test_orientation.Azimuth >= 0 && test_orientation.Elevation >= 0)
+                {
+                    TargetCoordinate = new_coord;
+                    CoordMove();
+                }
+                else
+                {
+                    errorLabel.Text = "Invalid Coordinate: orienation out of range";
+                }
             }
             else
             {
