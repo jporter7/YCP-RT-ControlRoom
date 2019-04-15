@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.Log;
 
 namespace ControlRoomApplication.Main
 {
@@ -21,5 +22,6 @@ namespace ControlRoomApplication.Main
         public DbSet<RFData> RFDatas { get; set; }
         public DbSet<Orientation> Orientations { get; set; }
         public DbSet<Coordinate> Coordinates { get; set; }
+        public DbSet<Log> Logs { get; set; }
     }
 }
