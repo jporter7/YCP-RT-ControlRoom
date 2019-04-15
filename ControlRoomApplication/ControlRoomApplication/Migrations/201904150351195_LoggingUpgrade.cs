@@ -3,7 +3,7 @@ namespace ControlRoomApplication.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Feb13 : DbMigration
+    public partial class LoggingUpgrade : DbMigration
     {
         public override void Up()
         {
