@@ -23,6 +23,7 @@ namespace ControlRoomApplication.Main
         public MainForm()
         {
             InitializeComponent();
+            DatabaseOperations.DeleteLocalDatabase();
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 3;
             dataGridView1.Columns[0].HeaderText = "ID";
@@ -34,7 +35,6 @@ namespace ControlRoomApplication.Main
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
-            DatabaseOperations.DeleteLocalDatabase();
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace ControlRoomApplication.Main
                 int RT_ID = ManagementThread.RadioTelescopeID;
                 List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
 
-                logger.Info("[Program] Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+                logger.Info("Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
 
                 foreach (Appointment appt in AllAppointments)
                 {
@@ -98,11 +98,11 @@ namespace ControlRoomApplication.Main
 
                 if (ManagementThread.Start())
                 {
-                    logger.Info("[Program] Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+                    logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
                 }
                 else
                 {
-                    logger.Info("[Program] ERROR starting RT controller management thread [" + RT_ID.ToString() + "]" );
+                    logger.Info("ERROR starting RT controller management thread [" + RT_ID.ToString() + "]" );
                 }
 
                 AddConfigurationToDataGrid();
@@ -127,28 +127,28 @@ namespace ControlRoomApplication.Main
         {
             if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
-                logger.Info("[Program] Successfully shut down weather monitoring routine.");
+                logger.Info("Successfully shut down weather monitoring routine.");
             }
             else
             {
-                logger.Info("[Program] ERROR shutting down weather monitoring routine!");
+                logger.Info("ERROR shutting down weather monitoring routine!");
             }
 
             // Loop through the list of telescope controllers and call their respective bring down sequences.
             for (int i = 0; i < ProgramRTControllerList.Count; i++)
             {
-                if (MainControlRoomController.RemoveRadioTelescopeControllerAt(i, false))
+                if (MainControlRoomController.RemoveRadioTelescopeControllerAt(0, false))
                 {
-                    logger.Info("[Program] Successfully brought down RT controller at index " + i.ToString());
+                    logger.Info("Successfully brought down RT controller at index " + i.ToString());
                 }
                 else
                 {
-                    logger.Info("[Program] ERROR killing RT controller at index " + i.ToString());
+                    logger.Info("ERROR killing RT controller at index " + i.ToString());
                 }
 
-                ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
-                ProgramRTControllerList[i].RadioTelescope.PLCClient.TerminateTCPServerConnection();
-                ProgramPLCDriverList[i].RequestStopAsyncAcceptingClientsAndJoin();
+                ProgramRTControllerList[0].RadioTelescope.SpectraCyberController.BringDown();
+                ProgramRTControllerList[0].RadioTelescope.PLCClient.TerminateTCPServerConnection();
+                ProgramPLCDriverList[0].RequestStopAsyncAcceptingClientsAndJoin();
             }
 
             // End logging
@@ -310,7 +310,7 @@ namespace ControlRoomApplication.Main
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {
-                Name = "FreeControlThread started"
+                Name = "Free Control Thread"
             };
             FreeControlThread.Start();
         }
