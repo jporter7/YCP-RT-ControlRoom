@@ -16,20 +16,21 @@ namespace ControlRoomApplication.Main
         {
             //Application.Run(new MainForm());
 
-            string ip = PLCConstants.LOCAL_HOST_IP;
-            int port = 8080;
+            string localhostIP = PLCConstants.LOCAL_HOST_IP;
+            int localhostPort = PLCConstants.PORT_8080;
+            string mcuIP = MCUConstants.ACTUAL_MCU_IP_ADDRESS;
+            int mcuPort = MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT;
 
             RadioTelescopeController RTController = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new PLCClientCommunicationHandler(ip, port),
+                    new PLCClientCommunicationHandler(localhostIP, localhostPort),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     new Orientation(0, 90)
                 )
             );
 
-            IntoTheSpiderversePLCDriver PLCDriver = new IntoTheSpiderversePLCDriver(ip, port, "192.168.0.50", 29999);
-            PLCDriver.StartMCUCommsThreadRoutine();
+            IntoTheSpiderversePLCDriver PLCDriver = new IntoTheSpiderversePLCDriver(localhostIP, localhostPort);
 
             if (!PLCDriver.StartAsyncAcceptingClients())
             {
@@ -38,16 +39,58 @@ namespace ControlRoomApplication.Main
             }
 
             RTController.RadioTelescope.PLCClient.ConnectToServer();
+            Thread.Sleep(100);
 
-            Thread.Sleep(1000);
+            PLCDriver.FetchMCUModbusSlave(mcuIP, mcuPort);
+            Thread.Sleep(100);
 
-            if (!RTController.ConfigureRadioTelescope(500, 500, 210, 210))
+            if (RTController.TestCommunication())
             {
-                Console.WriteLine("[Program] ERROR sending configuration to MCU.");
+                Console.WriteLine("[Program] Successfully communicated with MCU over Modbus TCP/IP!");
+            }
+            else
+            {
+                Console.WriteLine("[Program] ERROR communicating with MCU over Modbus TCP/IP.");
                 return;
             }
 
-            Console.WriteLine("Done.");
+            Thread.Sleep(100);
+
+            if (RTController.ConfigureRadioTelescope(100, 100, 210, 210))
+            {
+                Console.WriteLine("[Program] Successfully configured MCU over Modbus TCP/IP!");
+            }
+            else
+            {
+                Console.WriteLine("[Program] ERROR configuring MCU over Modbus TCP/IP.");
+                return;
+            }
+
+            Thread.Sleep(4000);
+
+            if (RTController.MoveRadioTelescope(new Orientation(30, 0)))
+            {
+                Console.WriteLine("[Program] Successfully sent relative move request to MCU over Modbus TCP/IP!");
+            }
+            else
+            {
+                Console.WriteLine("[Program] ERROR sending relative move request to MCU over Modbus TCP/IP.");
+                return;
+            }
+
+            Thread.Sleep(2500);
+
+            if (PLCDriver.SendHoldMoveCommand())
+            {
+                Console.WriteLine("[Program] Successfully sent hold move request to MCU over Modbus TCP/IP!");
+            }
+            else
+            {
+                Console.WriteLine("[Program] ERROR sending hold move request to MCU over Modbus TCP/IP.");
+                return;
+            }
+
+            Console.WriteLine("[Program] Done.");
         }
     }
 }

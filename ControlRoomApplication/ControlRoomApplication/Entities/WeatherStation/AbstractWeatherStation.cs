@@ -30,7 +30,7 @@ namespace ControlRoomApplication.Entities
         {
             get
             {
-                return CurrentWindSpeedMPH <= HardwareConstants.WEATHER_STATION_MAXIMUM_ALLOWABLE_WIND_SPEED_MPH;
+                return CurrentWindSpeedMPH <= MiscellaneousHardwareConstants.WEATHER_STATION_MAXIMUM_ALLOWABLE_WIND_SPEED_MPH;
             }
         }
 

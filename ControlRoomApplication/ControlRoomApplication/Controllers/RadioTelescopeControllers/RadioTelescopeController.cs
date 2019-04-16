@@ -173,7 +173,13 @@ namespace ControlRoomApplication.Controllers
                 return false;
             }
 
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_CONFIGURATION, startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation));
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(
+                PLCCommandAndQueryTypeEnum.SET_CONFIGURATION,
+                startSpeedAzimuth,
+                startSpeedElevation,
+                homeTimeoutAzimuth,
+                homeTimeoutElevation
+            ));
         }
 
         /// <summary>

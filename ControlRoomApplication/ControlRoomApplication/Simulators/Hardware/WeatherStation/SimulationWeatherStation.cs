@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             double rand2 = 1 - Rand.NextDouble();
 
             double randStdNorm = Math.Sqrt(-2 * Math.Log(rand1)) * Math.Sin(2 * Math.PI * rand2);
-            double randNormValue = HardwareConstants.SIMULATION_WEATHER_STATION_AVERAGE_WIND_SPEED_MPH + (HardwareConstants.SIMULATION_WEATHER_STATION_MAXIMUM_ALLOWABLE_WIND_SPEED_MPH_STD_DEV * randStdNorm);
+            double randNormValue = MiscellaneousHardwareConstants.SIMULATION_WEATHER_STATION_AVERAGE_WIND_SPEED_MPH + (MiscellaneousHardwareConstants.SIMULATION_WEATHER_STATION_MAXIMUM_ALLOWABLE_WIND_SPEED_MPH_STD_DEV * randStdNorm);
 
             if (randNormValue < 0)
             {

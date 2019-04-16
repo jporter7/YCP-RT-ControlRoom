@@ -208,7 +208,7 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             SimulationMCUTrajectoryProfile resultingProfile;
 
             // See if this move is even worth the effort of TRYING to move
-            if (Math.Abs(axisEncoder.GetEquivalentDegreesFromEncoderTicks(changeInAxisSteps)) < HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES)
+            if (Math.Abs(axisEncoder.GetEquivalentDegreesFromEncoderTicks(changeInAxisSteps)) < MiscellaneousConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES)
             {
                 resultingProfile = new SimulationMCUTrajectoryProfile(SimulationMCUTrajectoryProfileTypeEnum.NEGLIGIBLE, initialVelocity, peakVelocity, peakAcceleration, 0.0, 0.0, axisInitialSteps, axisObjectiveSteps);
             }

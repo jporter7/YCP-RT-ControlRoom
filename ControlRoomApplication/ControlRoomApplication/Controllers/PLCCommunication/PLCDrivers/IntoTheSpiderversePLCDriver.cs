@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Threading;
 using System.Net.Sockets;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
+using Modbus.Device;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -10,146 +10,60 @@ namespace ControlRoomApplication.Controllers
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private enum DataTypeSet
+        private TcpClient MCUTCPClient;
+        private ModbusIpMaster MCUModbusMaster;
+
+        public IntoTheSpiderversePLCDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
         {
-            CONFIGURATION,
-            COMMAND
-        };
-
-        private Thread MCUCommsThread;
-        private Mutex MCUCommsMutex;
-        private volatile bool KeepMCUCommsThreadAlive;
-
-        private volatile bool IncomingDataSet;
-        private volatile bool OutgoingDataSet;
-        private byte[] InterprocessData;
-        private volatile DataTypeSet InterprocessDataType;
-
-        public IntoTheSpiderversePLCDriver(string ipLocal, int portLocal, string ipMCU, int portMCU) : base(ipLocal, portLocal)
-        {
-            MCUCommsThread = new Thread(() => MCUCommsThreadRoutine(ipMCU, portMCU))
-            {
-                Name = "MCU Communication Thread"
-            };
-            MCUCommsMutex = new Mutex();
-            KeepMCUCommsThreadAlive = false;
+            MCUTCPClient = null;
+            MCUModbusMaster = null;
         }
 
-        public void StartMCUCommsThreadRoutine()
+        ~IntoTheSpiderversePLCDriver()
         {
-            KeepMCUCommsThreadAlive = true;
-            MCUCommsThread.Start();
+            if (MCUTCPClient != null)
+            {
+                MCUTCPClient.Close();
+            }
         }
 
-        private void MCUCommsThreadRoutine(string ipMCU, int portMCU)
+        public void FetchMCUModbusSlave(string ipMCU, int portMCU)
         {
-            TcpClient MCUTCPClient;
-            NetworkStream MCUTCPStream;
+            MCUTCPClient = new TcpClient(ipMCU, portMCU);
+            MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
+        }
 
-            try
+        public void PrintReadInputRegsiterContents(string header)
+        {
+            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+            Console.WriteLine(header + ":");
+            foreach (ushort us in inputRegisters)
             {
-                MCUTCPClient = new TcpClient(ipMCU, portMCU);
-                MCUTCPStream = MCUTCPClient.GetStream();
+                string usString = Convert.ToString(us, 2);
+                usString = new string('0', 16 - usString.Length) + usString;
+                usString = usString.Insert(4, " ");
+                usString = usString.Insert(9, " ");
+                usString = usString.Insert(14, " ");
+
+                Console.WriteLine('\t'.ToString() + usString);
             }
-            catch (Exception e)
-            {
-                if ((e is ArgumentNullException)
-                    || (e is ArgumentOutOfRangeException)
-                    || (e is SocketException)
-                    || (e is InvalidOperationException)
-                    || (e is ObjectDisposedException))
-                {
-                    logger.Info("[IntoTheSpiderversePLCDriver] Failed to connect to MCU's TCP server client.");
-                    return;
-                }
-                else
-                {
-                    // Unexpected exception type
-                    throw e;
-                }
-            }
+        }
 
-            IncomingDataSet = false;
-            OutgoingDataSet = false;
-            InterprocessData = null;
+        public bool SendResetErrorsCommand()
+        {
+            PrintReadInputRegsiterContents("Before reset");
 
-            byte[] MCUCommsPacketBuffer;
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x0800, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
-            while (KeepMCUCommsThreadAlive)
-            {
-                if (IncomingDataSet)
-                {
-                    MCUCommsMutex.WaitOne();
+            PrintReadInputRegsiterContents("After reset");
 
-                    IncomingDataSet = false;
+            return true;
+        }
 
-                    MCUCommsPacketBuffer = null;
-
-                    if (InterprocessDataType == DataTypeSet.CONFIGURATION)
-                    {
-                        MCUCommsPacketBuffer = new byte[]
-                        {
-                            0x84, 0x00,
-                            0x00, 0x00,
-                            InterprocessData[0], InterprocessData[1],
-                            InterprocessData[2], InterprocessData[3],
-                            InterprocessData[4], InterprocessData[5],
-                            0x00, 0x00,
-                            0x00, 0x00,
-                            0x00, 0x00,
-                            0x00, 0x00,
-                            0x00, 0x00
-                        };
-                    }
-                    else if (InterprocessDataType == DataTypeSet.COMMAND)
-                    {
-                        int PeakSpeed = HardwareConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY;
-                        int Acceleration = HardwareConstants.ACTUAL_MCU_DEFAULT_ACCELERATION;
-
-                        //Array.Copy(BitConverter.GetBytes(CurrentOrientation.Azimuth), 0, FinalResponseContainer, 3, 8);
-
-                        MCUCommsPacketBuffer = new byte[]
-                        {
-                            0x00, 0x01,
-                            0x00, 0x03,
-                            InterprocessData[0], InterprocessData[1],
-                            InterprocessData[2], InterprocessData[3],
-                            InterprocessData[4], InterprocessData[5],
-                            InterprocessData[6], InterprocessData[7],
-                            InterprocessData[8], InterprocessData[9],
-                            InterprocessData[10], InterprocessData[11],
-                            0x00, 0x00,
-                            0x00, 0x00
-                        };
-                    }
-
-                    InterprocessData = null;
-
-                    try
-                    {
-                        MCUTCPStream.Write(MCUCommsPacketBuffer, 0, MCUCommsPacketBuffer.Length);
-                        InterprocessData = new byte[] { 0x1 };
-                    }
-                    catch (Exception e)
-                    {
-                        if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException) || (e is System.IO.IOException) || (e is ObjectDisposedException))
-                        {
-                            InterprocessData = new byte[] { 0x0 };
-                        }
-                        else
-                        {
-                            // Unexpected exception
-                            throw e;
-                        }
-                    }
-
-                    OutgoingDataSet = true;
-
-                    MCUCommsMutex.ReleaseMutex();
-                }
-
-                Thread.Sleep(5);
-            }
+        public bool SendHoldMoveCommand()
+        {
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x4, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
+            return true;
         }
 
         protected override bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
@@ -185,7 +99,10 @@ namespace ControlRoomApplication.Controllers
                 {
                     case PLCCommandAndQueryTypeEnum.TEST_CONNECTION:
                         {
-                            FinalResponseContainer[3] = 0x1;
+                            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_HEARTBEAT_ADDRESS, 1);
+                            ushort resultValue = (ushort)((inputRegisters.Length == 1) ? inputRegisters[0] : 0);
+                            FinalResponseContainer[3] = (byte)(((resultValue == 8192) || (resultValue == 24576)) ? 0x1 : 0x0);
+
                             FinalResponseContainer[2] = 0x1;
                             break;
                         }
@@ -207,64 +124,72 @@ namespace ControlRoomApplication.Controllers
                 {
                     case PLCCommandAndQueryTypeEnum.SET_CONFIGURATION:
                         {
-                            MCUCommsMutex.WaitOne();
-
-                            InterprocessData = new byte[]
+                            // Copy over data we care about, which for now is only the azimuth
+                            // We skip over the data concerning the elevation, hence the gap in element access for query
+                            ushort[] DataToWrite =
                             {
-                                query[3], query[4], query[5], query[6], query[11], query[12]
+                                (ushort)((256 * query[3]) + query[4]),
+                                (ushort)((256 * query[5]) + query[6]),
+                                (ushort)((256 * query[7]) + query[8]),
+                                (ushort)((256 * query[9]) + query[10]),
+                                (ushort)((256 * query[15]) + query[16]),
+                                0,
+                                0,
+                                0,
+                                0,
+                                0
                             };
 
-                            MCUCommsMutex.ReleaseMutex();
+                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
-                            InterprocessDataType = DataTypeSet.CONFIGURATION;
-                            IncomingDataSet = true;
+                            System.Threading.Thread.Sleep(500);
+                            PrintReadInputRegsiterContents("After setting configuration");
 
-                            while (!OutgoingDataSet)
+                            System.Threading.Thread.Sleep(500);
+                            if (!SendResetErrorsCommand())
                             {
-                                Thread.Sleep(5);
+                                Console.WriteLine("[IntoTheSpiderversePLCDriver] ERROR sending reset command.");
                             }
 
-                            OutgoingDataSet = false;
-
-                            MCUCommsMutex.WaitOne();
-                            FinalResponseContainer[2] = InterprocessData[0];
-                            InterprocessData = null;
-                            MCUCommsMutex.ReleaseMutex();
-
+                            FinalResponseContainer[2] = 0x1;
                             break;
                         }
                     
                     case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                         {
-                            byte[] translationBytes = BitConverter.GetBytes((int)(BitConverter.ToDouble(query, 3) * HardwareConstants.ACTUAL_MCU_STEPS_PER_DEGREE));
-                            byte[] speedBytes = BitConverter.GetBytes(HardwareConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY);
-                            byte[] accelerationBytes = BitConverter.GetBytes(HardwareConstants.ACTUAL_MCU_DEFAULT_ACCELERATION);
+                            System.Threading.Thread.Sleep(500);
+                            PrintReadInputRegsiterContents("Before setting objective position");
 
-                            MCUCommsMutex.WaitOne();
+                            // Copy over data we care about, so skip over the data concerning the elevation
+                            //double discrepancyMultiplier = 1.0;
+                            //double objectiveAZDouble = BitConverter.ToDouble(query, 3);
+                            //int stepChange = 5000; // (int)(discrepancyMultiplier * Math.Pow(2, MCUConstants.ACTUAL_MCU_AZIMUTH_ENCODER_BIT_RESOLUTION) * objectiveAZDouble / 360);
+                            //ushort stepChangeUShortMSW = (ushort)((stepChange >> 16) & 0xFFFF);
+                            //ushort stepChangeUShortLSW = (ushort)(stepChange & 0xFFFF);
 
-                            InterprocessData = new byte[12];
-                            Array.Copy(translationBytes, 0, InterprocessData, 0, 4);
-                            Array.Copy(speedBytes, 0, InterprocessData, 4, 4);
-                            Array.Copy(accelerationBytes, 0, InterprocessData, 8, 2);
-                            Array.Copy(accelerationBytes, 0, InterprocessData, 10, 2);
+                            int programmedPeakSpeed = MCUConstants.ACTUAL_MCU_MOVE_PEAK_VELOCITY_SPIDERVERSE;
+                            ushort programmedPeakSpeedUShortMSW = (ushort)((programmedPeakSpeed >> 16) & 0xFFFF);
+                            ushort programmedPeakSpeedUShortLSW = (ushort)(programmedPeakSpeed & 0xFFFF);
 
-                            MCUCommsMutex.ReleaseMutex();
-
-                            InterprocessDataType = DataTypeSet.COMMAND;
-                            IncomingDataSet = true;
-
-                            while (!OutgoingDataSet)
+                            ushort[] DataToWrite =
                             {
-                                Thread.Sleep(5);
-                            }
+                                0x80, // Denotes a jog move in command mode
+                                0x3, // Denotes a Trapezoidal S-Curve profile
+                                0,
+                                0,
+                                programmedPeakSpeedUShortMSW,
+                                programmedPeakSpeedUShortLSW,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                0,
+                                0
+                            };
 
-                            OutgoingDataSet = false;
+                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
-                            MCUCommsMutex.WaitOne();
-                            FinalResponseContainer[2] = InterprocessData[0];
-                            InterprocessData = null;
-                            MCUCommsMutex.ReleaseMutex();
+                            PrintReadInputRegsiterContents("After setting objective position");
 
+                            FinalResponseContainer[2] = 0x1;
                             break;
                         }
 

@@ -227,21 +227,26 @@ namespace ControlRoomApplication.Controllers
                         int HomeTimeoutAzimuth = (int)MessageParameters[2];
                         int HomeTimeoutElevation = (int)MessageParameters[3];
 
-                        NetOutgoingMessage[3] = 0x0;
-                        NetOutgoingMessage[4] = (byte)(StartSpeedAzimuth / 0xFFFF);
-                        NetOutgoingMessage[5] = (byte)((StartSpeedAzimuth / 0xFF) & 0xFF);
-                        NetOutgoingMessage[6] = (byte)(StartSpeedAzimuth & 0xFF);
+                        NetOutgoingMessage[3] = 0x84;
+                        NetOutgoingMessage[4] = 0x00;
+                        NetOutgoingMessage[5] = 0x00;
+                        NetOutgoingMessage[6] = 0x00;
 
                         NetOutgoingMessage[7] = 0x0;
-                        NetOutgoingMessage[8] = (byte)(StartSpeedElevation / 0xFFFF);
-                        NetOutgoingMessage[9] = (byte)((StartSpeedElevation / 0xFF) & 0xFF);
-                        NetOutgoingMessage[10] = (byte)(StartSpeedElevation & 0xFF);
+                        NetOutgoingMessage[8] = (byte)(StartSpeedAzimuth / 0xFFFF);
+                        NetOutgoingMessage[9] = (byte)((StartSpeedAzimuth >> 8) & 0xFF);
+                        NetOutgoingMessage[10] = (byte)(StartSpeedAzimuth & 0xFF);
 
-                        NetOutgoingMessage[11] = (byte)(HomeTimeoutAzimuth >> 8);
-                        NetOutgoingMessage[12] = (byte)(HomeTimeoutAzimuth & 0xFF);
+                        NetOutgoingMessage[11] = 0x0;
+                        NetOutgoingMessage[12] = (byte)(StartSpeedElevation / 0xFFFF);
+                        NetOutgoingMessage[13] = (byte)((StartSpeedElevation >> 8) & 0xFF);
+                        NetOutgoingMessage[14] = (byte)(StartSpeedElevation & 0xFF);
 
-                        NetOutgoingMessage[13] = (byte)(HomeTimeoutElevation >> 8);
-                        NetOutgoingMessage[14] = (byte)(HomeTimeoutElevation & 0xFF);
+                        NetOutgoingMessage[15] = (byte)(HomeTimeoutAzimuth >> 8);
+                        NetOutgoingMessage[16] = (byte)(HomeTimeoutAzimuth & 0xFF);
+
+                        NetOutgoingMessage[17] = (byte)(HomeTimeoutElevation >> 8);
+                        NetOutgoingMessage[18] = (byte)(HomeTimeoutElevation & 0xFF);
 
                         break;
                     }
