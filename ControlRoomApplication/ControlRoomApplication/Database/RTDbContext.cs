@@ -1,7 +1,6 @@
 ﻿using System.Data.Entity;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
-using ControlRoomApplication.Entities.Log;
 
 namespace ControlRoomApplication.Main
 {
