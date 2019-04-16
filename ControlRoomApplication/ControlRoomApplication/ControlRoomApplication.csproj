@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.props" Condition="Exists('..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.props')" />
   <Import Project="..\packages\ReportGenerator.4.0.13.1\build\netstandard2.0\ReportGenerator.props" Condition="Exists('..\packages\ReportGenerator.4.0.13.1\build\netstandard2.0\ReportGenerator.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -61,6 +62,12 @@
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MSTest.TestFramework.1.4.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MSTest.TestFramework.1.4.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data, Version=8.0.15.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.8.0.15\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
@@ -69,6 +76,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NModbus4, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NModbus4.2.1.0\lib\net40\NModbus4.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel" />
@@ -97,8 +107,9 @@
     <Compile Include="Constants\AbstractSpectraCyberConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\CelestialBodyConstants.cs" />
-    <Compile Include="Constants\HardwareConstants.cs" />
+    <Compile Include="Constants\MiscellaneousHardwareConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
+    <Compile Include="Constants\MCUConstants.cs" />
     <Compile Include="Constants\MiscellaneousConstants.cs" />
     <Compile Include="Constants\HeartbeatConstants.cs" />
     <Compile Include="Constants\PLCConstants.cs" />
@@ -107,12 +118,14 @@
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\IntoTheSpiderversePLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\Log\Log.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberBandwidthEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />
@@ -224,5 +237,8 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\ReportGenerator.4.0.13.1\build\netstandard2.0\ReportGenerator.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ReportGenerator.4.0.13.1\build\netstandard2.0\ReportGenerator.props'))" />
+    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.props'))" />
+    <Error Condition="!Exists('..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets'))" />
   </Target>
+  <Import Project="..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\packages\MSTest.TestAdapter.1.4.0\build\net45\MSTest.TestAdapter.targets')" />
 </Project>

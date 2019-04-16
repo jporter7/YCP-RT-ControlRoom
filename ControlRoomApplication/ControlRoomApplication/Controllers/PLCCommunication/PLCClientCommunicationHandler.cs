@@ -218,6 +218,40 @@ namespace ControlRoomApplication.Controllers
                     }
 
 
+                case PLCCommandAndQueryTypeEnum.SET_CONFIGURATION:
+                    {
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+
+                        int StartSpeedAzimuth = (int)MessageParameters[0];
+                        int StartSpeedElevation = (int)MessageParameters[1];
+                        int HomeTimeoutAzimuth = (int)MessageParameters[2];
+                        int HomeTimeoutElevation = (int)MessageParameters[3];
+
+                        NetOutgoingMessage[3] = 0x84;
+                        NetOutgoingMessage[4] = 0x00;
+                        NetOutgoingMessage[5] = 0x00;
+                        NetOutgoingMessage[6] = 0x00;
+
+                        NetOutgoingMessage[7] = 0x0;
+                        NetOutgoingMessage[8] = (byte)(StartSpeedAzimuth / 0xFFFF);
+                        NetOutgoingMessage[9] = (byte)((StartSpeedAzimuth >> 8) & 0xFF);
+                        NetOutgoingMessage[10] = (byte)(StartSpeedAzimuth & 0xFF);
+
+                        NetOutgoingMessage[11] = 0x0;
+                        NetOutgoingMessage[12] = (byte)(StartSpeedElevation / 0xFFFF);
+                        NetOutgoingMessage[13] = (byte)((StartSpeedElevation >> 8) & 0xFF);
+                        NetOutgoingMessage[14] = (byte)(StartSpeedElevation & 0xFF);
+
+                        NetOutgoingMessage[15] = (byte)(HomeTimeoutAzimuth >> 8);
+                        NetOutgoingMessage[16] = (byte)(HomeTimeoutAzimuth & 0xFF);
+
+                        NetOutgoingMessage[17] = (byte)(HomeTimeoutElevation >> 8);
+                        NetOutgoingMessage[18] = (byte)(HomeTimeoutElevation & 0xFF);
+
+                        break;
+                    }
+
+
                 case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;

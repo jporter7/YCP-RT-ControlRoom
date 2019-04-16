@@ -27,17 +27,17 @@ namespace ControlRoomApplicationTest.SimulatorTests
                 Encoder,
                 0.0,
                 0.0,
-                HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
-                HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES / 2
+                MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                MiscellaneousConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES / 2
             );
 
             ProfileSCurveTriangularFull = SimulationMCUTrajectoryProfile.CalculateInstance(
                 Encoder,
                 0.0,
                 0.0,
-                HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
                 1.85
             );
 
@@ -45,18 +45,18 @@ namespace ControlRoomApplicationTest.SimulatorTests
                 Encoder,
                 60.0,
                 0.0,
-                HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
-                60.0 + (HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES * 2)
+                MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                60.0 + (MiscellaneousConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES * 2)
             );
 
             ProfileSCurveTrapezoidal = SimulationMCUTrajectoryProfile.CalculateInstance(
                 Encoder,
                 0.0,
                 0.0,
-                HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
-                HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES / 2
+                MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                MiscellaneousConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES / 2
             );
         }
 
@@ -65,11 +65,11 @@ namespace ControlRoomApplicationTest.SimulatorTests
         {
             Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.NEGLIGIBLE, ProfileNegligible.ProfileType);
             Assert.AreEqual(0.0, ProfileNegligible.InitialVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileNegligible.TrajectoryPeakVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileNegligible.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
+            Assert.AreEqual(MCUConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileNegligible.TrajectoryPeakVelocity, DOUBLE_EPSILON);
+            Assert.AreEqual(MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileNegligible.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
             Assert.AreEqual(0.0, ProfileNegligible.TotalTime, DOUBLE_EPSILON);
             Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(0.0), ProfileNegligible.InitialStep);
-            Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES / 2), ProfileNegligible.ObjectiveStep);
+            Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(MiscellaneousConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES / 2), ProfileNegligible.ObjectiveStep);
         }
 
         [TestMethod]
@@ -96,8 +96,8 @@ namespace ControlRoomApplicationTest.SimulatorTests
         {
             Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR_FULL, ProfileSCurveTriangularFull.ProfileType);
             Assert.AreEqual(0.0, ProfileSCurveTriangularFull.InitialVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileSCurveTriangularFull.TrajectoryPeakVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileSCurveTriangularFull.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
+            Assert.AreEqual(MCUConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileSCurveTriangularFull.TrajectoryPeakVelocity, DOUBLE_EPSILON);
+            Assert.AreEqual(MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileSCurveTriangularFull.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
             Assert.AreEqual(1.875, ProfileSCurveTriangularFull.TotalTime, DOUBLE_EPSILON);
             Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(0.0), ProfileSCurveTriangularFull.InitialStep);
             Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(1.85), ProfileSCurveTriangularFull.ObjectiveStep);

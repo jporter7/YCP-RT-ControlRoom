@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities {
 
+namespace ControlRoomApplication.Entities
+{
   [Table("telescope_log")]
   public class Log {
   
