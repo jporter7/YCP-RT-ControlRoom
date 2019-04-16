@@ -1,36 +1,12 @@
-namespace ControlRoomApplication.Entities {
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-  [Table("telescope_log")]
-  public class Log {
-  
-    public Log() 
+namespace ControlRoomApplication.Entities
+{
+    class Log
     {
-      
     }
-    
-    [Required]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [Column("id")]
-    public int Id { get; set; }
-    
-    [Required]
-    [Column("log_date")]
-    public DateTime Date { get; set;}
-    
-    [Required]
-    [Column("log_level")]
-    public string LogLevel { get; set; }
-    
-    [Required]
-    [Column("thread")]
-    public string Thread { get; set; }
-    
-    [Required]
-    [Column("logger")]
-    public string Logger { get; set; }
-    
-    [Required]
-    [Column("message")]
-    public string Message { get; set; }
-  }
 }
