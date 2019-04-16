@@ -125,6 +125,7 @@
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\Log\Log.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberBandwidthEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />

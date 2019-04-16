@@ -278,7 +278,7 @@ namespace ControlRoomApplication.Controllers
                     }
 
                     logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                    RTController.MoveRadioTelescope(NextObjectiveOrientation);
+                    RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
 
                     // Wait until telescope reaches destination
                     Orientation currentOrientation;
@@ -319,7 +319,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         private void EndAppointment()
         {
-            RTController.MoveRadioTelescope(new Orientation(0, 90));
+            RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90));
         }
 
         /// <summary>

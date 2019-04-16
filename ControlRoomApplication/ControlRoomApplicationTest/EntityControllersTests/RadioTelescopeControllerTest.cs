@@ -43,7 +43,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Orientation Orientation = new Orientation(311.0, 42.0);
 
             // Set the RadioTelescope's CurrentOrientation field
-            var response = TestRadioTelescopeController.MoveRadioTelescope(Orientation);
+            var response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -81,7 +81,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public void TestCancelCurrentMoveCommand()
         {
             // Test canceling the the current move command
-            TestRadioTelescopeController.MoveRadioTelescope(new Orientation(0, 0));
+            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(new Orientation(0, 0));
             var response = TestRadioTelescopeController.CancelCurrentMoveCommand();
 
             // Make sure it was successful
@@ -120,7 +120,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Orientation Orientation = new Orientation(311.0, 42.0);
 
             // Set the RadioTelescope's CurrentOrientation field
-            var response = TestRadioTelescopeController.MoveRadioTelescope(Orientation);
+            var response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
