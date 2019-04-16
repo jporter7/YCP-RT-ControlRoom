@@ -134,10 +134,10 @@ namespace ControlRoomApplication.Controllers
                 return null;
             }
 
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.UtcNow;
             while (true)
             {
-                int AllowableTimeout = ResponseTimeoutMS - (int)((DateTime.Now - StartTime).TotalMilliseconds);
+                int AllowableTimeout = ResponseTimeoutMS - (int)((DateTime.UtcNow - StartTime).TotalMilliseconds);
                 if (AllowableTimeout <= 0)
                 {
                     logger.Info("[PLCClientCommunicationHandler] Timed out waiting for response.");

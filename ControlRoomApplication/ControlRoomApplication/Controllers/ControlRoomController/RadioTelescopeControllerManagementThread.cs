@@ -213,7 +213,7 @@ namespace ControlRoomApplication.Controllers
 
             logger.Info("Waiting for the next appointment to be within 10 minutes.");
             TimeSpan diff;
-            while ((diff = NextAppointment.StartTime - DateTime.Now).TotalMinutes > 1)
+            while ((diff = NextAppointment.StartTime - DateTime.UtcNow).TotalMinutes > 1)
             {
                 if (InterruptAppointmentFlag || (!KeepThreadAlive))
                 {
@@ -250,7 +250,7 @@ namespace ControlRoomApplication.Controllers
                 NextObjectiveOrientation = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
 
                 // Wait for datetime
-                while (DateTime.Now < datetime)
+                while (DateTime.UtcNow < datetime)
                 {
                     if (InterruptAppointmentFlag)
                     {
@@ -258,7 +258,7 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
-                    //logger.Debug(datetime.ToString() + " vs. " + DateTime.Now.ToString());
+                    //logger.Debug(datetime.ToString() + " vs. " + DateTime.UtcNow.ToString());
                     Thread.Sleep(1000);
                 }
 

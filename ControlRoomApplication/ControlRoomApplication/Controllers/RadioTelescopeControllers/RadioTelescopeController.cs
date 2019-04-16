@@ -205,7 +205,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool MoveRadioTelescope(Coordinate coordinate)
         {
-            return MoveRadioTelescope(CoordinateController.CoordinateToOrientation(coordinate, DateTime.Now));
+            return MoveRadioTelescope(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow));
         }
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)

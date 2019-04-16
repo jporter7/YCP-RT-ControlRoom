@@ -40,7 +40,7 @@ namespace ControlRoomApplication.Entities
             ScanIntervalMS = (double)intervalMS;
             ScanDelayMS = (double)delayMS;
             Mode = SpectraCyberScanScheduleMode.SCHEDULED_SCAN;
-            LastConsumeTick = DateTime.Now;
+            LastConsumeTick = DateTime.UtcNow;
             StartScanAfterDelay = startAfterDelay;
         }
 
@@ -61,7 +61,7 @@ namespace ControlRoomApplication.Entities
 
         public void Consume()
         {
-            LastConsumeTick = DateTime.Now;
+            LastConsumeTick = DateTime.UtcNow;
 
             if (Mode == SpectraCyberScanScheduleMode.SINGLE_SCAN)
             {
@@ -92,7 +92,7 @@ namespace ControlRoomApplication.Entities
                     }
                     else
                     {
-                        return (int)(ScanIntervalMS - (DateTime.Now - LastConsumeTick).TotalMilliseconds);
+                        return (int)(ScanIntervalMS - (DateTime.UtcNow - LastConsumeTick).TotalMilliseconds);
                     }
 
                 default:
@@ -102,7 +102,7 @@ namespace ControlRoomApplication.Entities
 
         public bool PollReadiness()
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             double totalMS = (now - LastConsumeTick).TotalMilliseconds;
 
             switch (Mode)

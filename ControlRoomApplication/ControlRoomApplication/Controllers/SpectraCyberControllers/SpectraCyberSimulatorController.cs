@@ -95,7 +95,7 @@ namespace ControlRoomApplication.Controllers
                 response.DecimalData = random.Next(minIntensityScaled, maxIntensityScaled + 1);
 
                 // Set the time captured to be as close to the (simulated) read as possible
-                response.DateTimeCaptured = DateTime.Now;
+                response.DateTimeCaptured = DateTime.UtcNow;
             }
 
             // Do nothing to purge a simulated buffer
