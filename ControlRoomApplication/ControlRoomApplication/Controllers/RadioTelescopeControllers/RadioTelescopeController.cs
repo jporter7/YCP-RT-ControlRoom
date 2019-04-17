@@ -218,7 +218,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
         {
-            return true;
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.START_JOG_MOVEMENT, axis, speed, clockwise));
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool HoldRadioTelescopeMove()
         {
-            return true;
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CONTROLLED_STOP_MOVEMENT));
         }
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)

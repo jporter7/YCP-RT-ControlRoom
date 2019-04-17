@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define SPIDERVERSE_DEBUG
+
+using System;
 using System.Net.Sockets;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
@@ -35,6 +37,8 @@ namespace ControlRoomApplication.Controllers
 
         public void PrintReadInputRegsiterContents(string header)
         {
+#if SPIDERVERSE_DEBUG
+
             ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
             Console.WriteLine(header + ":");
             foreach (ushort us in inputRegisters)
@@ -47,6 +51,7 @@ namespace ControlRoomApplication.Controllers
 
                 Console.WriteLine('\t'.ToString() + usString);
             }
+#endif
         }
 
         public bool SendResetErrorsCommand()
@@ -99,11 +104,28 @@ namespace ControlRoomApplication.Controllers
                 {
                     case PLCCommandAndQueryTypeEnum.TEST_CONNECTION:
                         {
+                            // Read the heartbeat register
                             ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_HEARTBEAT_ADDRESS, 1);
                             ushort resultValue = (ushort)((inputRegisters.Length == 1) ? inputRegisters[0] : 0);
                             FinalResponseContainer[3] = (byte)(((resultValue == 8192) || (resultValue == 24576)) ? 0x1 : 0x0);
 
                             FinalResponseContainer[2] = 0x1;
+                            break;
+                        }
+
+                    case PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS:
+                        {
+                            //PrintReadInputRegsiterContents("Before getting current position");
+
+                            //// Get the MCU's value for the displacement since its power cycle
+                            //ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_CURRENT_POSITION_ADDRESS, 2);
+                            //int currentStepForMCU = 0;
+                            
+                            //// Convert that step change into degrees
+                            //double currentAzimuth = 0;
+                            //Array.Copy(BitConverter.GetBytes(currentAzimuth), 0, FinalResponseContainer, 3, 8);
+
+                            //FinalResponseContainer[2] = 0x1;
                             break;
                         }
 
@@ -142,41 +164,54 @@ namespace ControlRoomApplication.Controllers
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
-                            System.Threading.Thread.Sleep(500);
+                            System.Threading.Thread.Sleep(50);
                             PrintReadInputRegsiterContents("After setting configuration");
-
-                            System.Threading.Thread.Sleep(500);
-                            if (!SendResetErrorsCommand())
+                            if (SendResetErrorsCommand())
                             {
-                                Console.WriteLine("[IntoTheSpiderversePLCDriver] ERROR sending reset command.");
+                                Console.WriteLine("[IntoTheSpiderversePLCDriver] Successfully sent reset command.");
+                                System.Threading.Thread.Sleep(50);
+                                PrintReadInputRegsiterContents("After sending reset command");
+                                FinalResponseContainer[2] = 0x1;
                             }
-
-                            FinalResponseContainer[2] = 0x1;
+                            else
+                            {
+                                // Send an error code
+                                Console.WriteLine("[IntoTheSpiderversePLCDriver] ERROR sending reset command.");
+                                FinalResponseContainer[2] = 0x2;
+                            }
+                            
                             break;
                         }
-                    
+
+                    case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP_MOVEMENT:
+                        {
+                            // There was already a helper function to execute a controlled stop, so just call that
+                            // Send an error code if there's a failure for some reason
+                            FinalResponseContainer[2] = (byte)(SendHoldMoveCommand() ? 0x1 : 0x2);
+                            break;
+                        }
+
                     case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                         {
-                            System.Threading.Thread.Sleep(500);
                             PrintReadInputRegsiterContents("Before setting objective position");
 
                             // Copy over data we care about, so skip over the data concerning the elevation
-                            //double discrepancyMultiplier = 1.0;
-                            //double objectiveAZDouble = BitConverter.ToDouble(query, 3);
-                            //int stepChange = 5000; // (int)(discrepancyMultiplier * Math.Pow(2, MCUConstants.ACTUAL_MCU_AZIMUTH_ENCODER_BIT_RESOLUTION) * objectiveAZDouble / 360);
-                            //ushort stepChangeUShortMSW = (ushort)((stepChange >> 16) & 0xFFFF);
-                            //ushort stepChangeUShortLSW = (ushort)(stepChange & 0xFFFF);
+                            double discrepancyMultiplier = 1.0;
+                            double objectiveAZDouble = BitConverter.ToDouble(query, 3);
+                            int stepChange = (int)(discrepancyMultiplier * Math.Pow(2, MCUConstants.ACTUAL_MCU_AZIMUTH_ENCODER_BIT_RESOLUTION) * objectiveAZDouble / 360);
+                            ushort stepChangeUShortMSW = (ushort)((stepChange >> 16) & 0xFFFF);
+                            ushort stepChangeUShortLSW = (ushort)(stepChange & 0xFFFF);
 
-                            int programmedPeakSpeed = MCUConstants.ACTUAL_MCU_MOVE_PEAK_VELOCITY_SPIDERVERSE;
+                            int programmedPeakSpeed = BitConverter.ToInt32(query, 7);
                             ushort programmedPeakSpeedUShortMSW = (ushort)((programmedPeakSpeed >> 16) & 0xFFFF);
                             ushort programmedPeakSpeedUShortLSW = (ushort)(programmedPeakSpeed & 0xFFFF);
 
                             ushort[] DataToWrite =
                             {
-                                0x80, // Denotes a jog move in command mode
+                                0x2, // Denotes a relative move in command mode
                                 0x3, // Denotes a Trapezoidal S-Curve profile
-                                0,
-                                0,
+                                stepChangeUShortMSW,
+                                stepChangeUShortLSW,
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
                                 MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
@@ -187,7 +222,65 @@ namespace ControlRoomApplication.Controllers
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
+                            System.Threading.Thread.Sleep(50);
                             PrintReadInputRegsiterContents("After setting objective position");
+
+                            FinalResponseContainer[2] = 0x1;
+                            break;
+                        }
+
+                    case PLCCommandAndQueryTypeEnum.START_JOG_MOVEMENT:
+                        {
+                            PrintReadInputRegsiterContents("Before starting jog command");
+
+                            // Make sure the command is intended for the azimuth
+                            if (query[3] != 0x1)
+                            {
+                                throw new ArgumentException("Unsupported value for axis specified in jog command for IntoTheSpiderversePLCDriver: " + query[3].ToString());
+                            }
+
+                            ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
+                            ushort programmedPeakSpeedUShortLSW = (ushort)((256 * query[6]) + query[7]);
+
+                            ushort commandCode;
+                            switch (query[8])
+                            {
+                                case 0x1:
+                                    {
+                                        commandCode = 0x80;
+                                        break;
+                                    }
+                                
+                                case 0x2:
+                                    {
+                                        commandCode = 0x100;
+                                        break;
+                                    }
+
+                                default:
+                                    {
+                                        throw new ArgumentException("Unsupported value for motor movement direction in jog command for IntoTheSpiderversePLCDriver: " + query[8].ToString());
+                                    }
+                            }
+
+                            ushort[] DataToWrite =
+                            {
+                                commandCode,  // Denotes a jog move, either CW or CCW, in command mode
+                                0x3,          // Denotes a Trapezoidal S-Curve profile
+                                0,            // Reserved to 0 for a jog command
+                                0,            // Reserved to 0 for a jog command
+                                programmedPeakSpeedUShortMSW,
+                                programmedPeakSpeedUShortLSW,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                0,
+                                0
+                            };
+
+                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+
+                            System.Threading.Thread.Sleep(50);
+                            PrintReadInputRegsiterContents("After starting jog command");
 
                             FinalResponseContainer[2] = 0x1;
                             break;
