@@ -23,6 +23,7 @@ namespace ControlRoomApplication.Main
             // Update Text
             UpdateText("Free Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
             // Set speed
+            comboBox1.Text = "0.1 RPM";
             speed = 16667;
         }
 
@@ -33,9 +34,9 @@ namespace ControlRoomApplication.Main
 
         private void NegButton_MouseDown(object sender, MouseEventArgs e)
         {
-            UpdateText("Moving");
+            UpdateText("Moving at -" + comboBox1.Text);
             // Start CCW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(100, false);
+            rt_controller.StartRadioTelescopeAzimuthJog(speed, false);
         }
 
         private void NegButton_MouseUp(object sender, MouseEventArgs e)
@@ -47,9 +48,9 @@ namespace ControlRoomApplication.Main
 
         private void PosButton_MouseDown(object sender, MouseEventArgs e)
         {
-            UpdateText("Moving");
+            UpdateText("Moving at " + comboBox1.Text);
             // Start CW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(100, true);
+            rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
         }
 
         private void PosButton_MouseUp(object sender, MouseEventArgs e)
