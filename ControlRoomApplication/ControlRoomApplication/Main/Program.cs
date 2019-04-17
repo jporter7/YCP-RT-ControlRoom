@@ -78,7 +78,11 @@ namespace ControlRoomApplication.Main
             //    return;
             //}
 
-            //Thread.Sleep(10000);
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    Thread.Sleep(2000);
+            //    Console.WriteLine("Current at i=" + i.ToString() + ": " + RTController.GetCurrentOrientation().Azimuth.ToString());
+            //}
 
             //if (PLCDriver.SendHoldMoveCommand())
             //{
