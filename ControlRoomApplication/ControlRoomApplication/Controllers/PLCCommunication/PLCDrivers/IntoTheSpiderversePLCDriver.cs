@@ -115,17 +115,19 @@ namespace ControlRoomApplication.Controllers
 
                     case PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS:
                         {
-                            //PrintReadInputRegsiterContents("Before getting current position");
+                            PrintReadInputRegsiterContents("Before getting current position");
 
-                            //// Get the MCU's value for the displacement since its power cycle
-                            //ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_CURRENT_POSITION_ADDRESS, 2);
-                            //int currentStepForMCU = 0;
-                            
-                            //// Convert that step change into degrees
-                            //double currentAzimuth = 0;
-                            //Array.Copy(BitConverter.GetBytes(currentAzimuth), 0, FinalResponseContainer, 3, 8);
+                            // Get the MCU's value for the displacement since its power cycle
+                            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_CURRENT_POSITION_ADDRESS, 2);
+                            int currentStepForMCU = (65536 * inputRegisters[0]) + inputRegisters[1];
 
-                            //FinalResponseContainer[2] = 0x1;
+                            PrintReadInputRegsiterContents("After getting current position");
+
+                            // Convert that step change into degrees and write the bytes to return
+                            Array.Copy(BitConverter.GetBytes(currentStepForMCU * 360 / 10000000.0), 0, FinalResponseContainer, 3, 8);
+                            Array.Copy(BitConverter.GetBytes(0.0), 0, FinalResponseContainer, 11, 8);
+
+                            FinalResponseContainer[2] = 0x1;
                             break;
                         }
 
