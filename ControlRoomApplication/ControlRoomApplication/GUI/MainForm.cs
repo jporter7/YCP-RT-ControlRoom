@@ -99,6 +99,11 @@ namespace ControlRoomApplication.Main
                 if (ManagementThread.Start())
                 {
                     logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+
+                    if (APLCDriver is IntoTheSpiderversePLCDriver)
+                    {
+                        ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(500, 500, 0, 0);
+                    }
                 }
                 else
                 {
@@ -254,7 +259,7 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     // The production telescope
-                    throw new NotImplementedException("There is not yet communication for the real PLC.");
+                    return new IntoTheSpiderversePLCDriver(textBox2.Text, int.Parse(textBox1.Text));
 
                 case 1:
                     // Case for the test/simulated radiotelescope.

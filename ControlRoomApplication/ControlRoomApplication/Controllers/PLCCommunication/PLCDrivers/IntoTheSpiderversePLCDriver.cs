@@ -17,8 +17,8 @@ namespace ControlRoomApplication.Controllers
 
         public IntoTheSpiderversePLCDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
         {
-            MCUTCPClient = null;
-            MCUModbusMaster = null;
+            MCUTCPClient = new TcpClient(MCUConstants.ACTUAL_MCU_IP_ADDRESS, MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
+            MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
         }
 
         ~IntoTheSpiderversePLCDriver()
@@ -29,15 +29,16 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        public void FetchMCUModbusSlave(string ipMCU, int portMCU)
-        {
-            MCUTCPClient = new TcpClient(ipMCU, portMCU);
-            MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
-        }
+        //public void FetchMCUModbusSlave(string ipMCU, int portMCU)
+        //{
+        //    MCUTCPClient = new TcpClient(ipMCU, portMCU);
+        //    MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
+        //}
 
         public void PrintReadInputRegsiterContents(string header)
         {
 #if SPIDERVERSE_DEBUG
+            System.Threading.Thread.Sleep(50);
 
             ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
             Console.WriteLine(header + ":");
@@ -67,7 +68,34 @@ namespace ControlRoomApplication.Controllers
 
         public bool SendHoldMoveCommand()
         {
+            PrintReadInputRegsiterContents("Before controlled stop");
+
             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x4, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
+
+            PrintReadInputRegsiterContents("After controlled stop");
+
+            return true;
+        }
+
+        public bool SendImmediateStopCommand()
+        {
+            PrintReadInputRegsiterContents("Before controlled stop");
+
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x10, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
+
+            PrintReadInputRegsiterContents("After controlled stop");
+
+            return true;
+        }
+
+        public bool SendEmptyMoveCommand()
+        {
+            PrintReadInputRegsiterContents("Before removing move bits");
+
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x0, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
+
+            PrintReadInputRegsiterContents("After removing move bits");
+
             return true;
         }
 
@@ -165,13 +193,11 @@ namespace ControlRoomApplication.Controllers
                             };
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
-
-                            System.Threading.Thread.Sleep(50);
+                            
                             PrintReadInputRegsiterContents("After setting configuration");
                             if (SendResetErrorsCommand())
                             {
                                 Console.WriteLine("[IntoTheSpiderversePLCDriver] Successfully sent reset command.");
-                                System.Threading.Thread.Sleep(50);
                                 PrintReadInputRegsiterContents("After sending reset command");
                                 FinalResponseContainer[2] = 0x1;
                             }
@@ -189,7 +215,7 @@ namespace ControlRoomApplication.Controllers
                         {
                             // There was already a helper function to execute a controlled stop, so just call that
                             // Send an error code if there's a failure for some reason
-                            FinalResponseContainer[2] = (byte)(SendHoldMoveCommand() ? 0x1 : 0x2);
+                            FinalResponseContainer[2] = (byte)(SendImmediateStopCommand() ? 0x1 : 0x2);
                             break;
                         }
 
@@ -224,7 +250,6 @@ namespace ControlRoomApplication.Controllers
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
-                            System.Threading.Thread.Sleep(50);
                             PrintReadInputRegsiterContents("After setting objective position");
 
                             FinalResponseContainer[2] = 0x1;
@@ -280,8 +305,7 @@ namespace ControlRoomApplication.Controllers
                             };
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
-
-                            System.Threading.Thread.Sleep(50);
+                            
                             PrintReadInputRegsiterContents("After starting jog command");
 
                             FinalResponseContainer[2] = 0x1;
