@@ -32,6 +32,8 @@
             this.PosButton = new System.Windows.Forms.Button();
             this.Title = new System.Windows.Forms.Label();
             this.errorLabel = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // NegButton
@@ -80,11 +82,34 @@
             this.errorLabel.TabIndex = 18;
             this.errorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "0.1 RPM",
+            "2 RPM"});
+            this.comboBox1.Location = new System.Drawing.Point(339, 114);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 19;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(339, 95);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(38, 13);
+            this.label1.TabIndex = 20;
+            this.label1.Text = "Speed";
+            // 
             // FreeControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.errorLabel);
             this.Controls.Add(this.Title);
             this.Controls.Add(this.PosButton);
@@ -101,5 +126,7 @@
         private System.Windows.Forms.Button PosButton;
         private System.Windows.Forms.Label Title;
         private System.Windows.Forms.Label errorLabel;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label1;
     }
 }
