@@ -13,7 +13,9 @@ namespace ControlRoomApplication.Entities
         SHUTDOWN = 0x6,
         CALIBRATE = 0x7,
         SET_CONFIGURATION = 0x8,
-        SET_OBJECTIVE_AZEL_POSITION = 0x9
+        CONTROLLED_STOP_MOVEMENT = 0x9,
+        SET_OBJECTIVE_AZEL_POSITION = 0xA,
+        START_JOG_MOVEMENT = 0xB
     }
 
     public class PLCCommandAndQueryTypeConversionHelper

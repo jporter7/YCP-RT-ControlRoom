@@ -7,8 +7,7 @@ namespace ControlRoomApplication.Controllers
 {
     public class PLCClientCommunicationHandler
     {
-        private static readonly log4net.ILog logger =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private Thread StreamCommunicationThread;
         private Mutex StreamCommunicationThreadMutex;
@@ -212,11 +211,11 @@ namespace ControlRoomApplication.Controllers
                 case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                 case PLCCommandAndQueryTypeEnum.SHUTDOWN:
                 case PLCCommandAndQueryTypeEnum.CALIBRATE:
+                case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP_MOVEMENT:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
                         break;
                     }
-
 
                 case PLCCommandAndQueryTypeEnum.SET_CONFIGURATION:
                     {
@@ -251,7 +250,6 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
-
                 case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
@@ -259,6 +257,44 @@ namespace ControlRoomApplication.Controllers
                         Orientation ObjectiveOrientation = (Orientation)MessageParameters[0];
                         Array.Copy(BitConverter.GetBytes(ObjectiveOrientation.Azimuth), 0, NetOutgoingMessage, 3, 8);
                         Array.Copy(BitConverter.GetBytes(ObjectiveOrientation.Elevation), 0, NetOutgoingMessage, 11, 8);
+
+                        break;
+                    }
+
+                case PLCCommandAndQueryTypeEnum.START_JOG_MOVEMENT:
+                    {
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+
+                        RadioTelescopeAxisEnum AxisEnum = (RadioTelescopeAxisEnum)MessageParameters[0];
+                        int AxisJogSpeed = (int)MessageParameters[1];
+                        bool JogClockwise = (bool)MessageParameters[2];
+
+                        switch (AxisEnum)
+                        {
+                            case RadioTelescopeAxisEnum.AZIMUTH:
+                                {
+                                    NetOutgoingMessage[3] = 0x1;
+                                    break;
+                                }
+
+                            case RadioTelescopeAxisEnum.ELEVATION:
+                                {
+                                    NetOutgoingMessage[3] = 0x2;
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    throw new ArgumentException("Invalid RadioTelescopeAxisEnum value seen while preparing jog movement bytes: " + AxisEnum.ToString());
+                                }
+                        }
+
+                        NetOutgoingMessage[4] = 0x0;
+                        NetOutgoingMessage[5] = (byte)(AxisJogSpeed / 0xFFFF);
+                        NetOutgoingMessage[6] = (byte)((AxisJogSpeed >> 8) & 0xFF);
+                        NetOutgoingMessage[7] = (byte)(AxisJogSpeed & 0xFF);
+
+                        NetOutgoingMessage[8] = (byte)(JogClockwise ? 0x1 : 0x2);
 
                         break;
                     }

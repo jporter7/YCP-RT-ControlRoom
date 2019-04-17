@@ -66,19 +66,19 @@ namespace ControlRoomApplication.Main
             //    return;
             //}
 
-            //Thread.Sleep(4000);
+            //Thread.Sleep(3000);
 
-            //if (RTController.MoveRadioTelescopeToOrientation(new Orientation(30, 0)))
+            //if (RTController.StartRadioTelescopeAzimuthJog(166667, false))
             //{
-            //    Console.WriteLine("[Program] Successfully sent relative move request to MCU over Modbus TCP/IP!");
+            //    Console.WriteLine("[Program] Successfully sent jog move request to MCU over Modbus TCP/IP!");
             //}
             //else
             //{
-            //    Console.WriteLine("[Program] ERROR sending relative move request to MCU over Modbus TCP/IP.");
+            //    Console.WriteLine("[Program] ERROR sending jog move request to MCU over Modbus TCP/IP.");
             //    return;
             //}
 
-            //Thread.Sleep(2500);
+            //Thread.Sleep(10000);
 
             //if (PLCDriver.SendHoldMoveCommand())
             //{
@@ -91,6 +91,8 @@ namespace ControlRoomApplication.Main
             //}
 
             //Console.WriteLine("[Program] Done.");
+
+            //Thread.Sleep(10000);
         }
     }
 }
