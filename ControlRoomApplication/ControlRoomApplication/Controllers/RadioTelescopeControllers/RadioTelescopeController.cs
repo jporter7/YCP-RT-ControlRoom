@@ -255,9 +255,22 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool HoldRadioTelescopeMove()
+        public bool ExecuteRadioTelescopeControlledStop()
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CONTROLLED_STOP_MOVEMENT));
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CONTROLLED_STOP));
+        }
+
+        /// <summary>
+        /// Method used to request that all of the Radio Telescope's movement comes
+        /// to an immediate stop.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ExecuteRadioTelescopeImmediateStop()
+        {
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP));
         }
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)

@@ -211,7 +211,15 @@ namespace ControlRoomApplication.Controllers
                             break;
                         }
 
-                    case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP_MOVEMENT:
+                    case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP:
+                        {
+                            // There was already a helper function to execute a controlled stop, so just call that
+                            // Send an error code if there's a failure for some reason
+                            FinalResponseContainer[2] = (byte)(SendEmptyMoveCommand() ? 0x1 : 0x2);
+                            break;
+                        }
+
+                    case PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP:
                         {
                             // There was already a helper function to execute a controlled stop, so just call that
                             // Send an error code if there's a failure for some reason

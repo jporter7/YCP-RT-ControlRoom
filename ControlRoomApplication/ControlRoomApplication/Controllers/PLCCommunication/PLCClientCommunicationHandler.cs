@@ -211,7 +211,8 @@ namespace ControlRoomApplication.Controllers
                 case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                 case PLCCommandAndQueryTypeEnum.SHUTDOWN:
                 case PLCCommandAndQueryTypeEnum.CALIBRATE:
-                case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP_MOVEMENT:
+                case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP:
+                case PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
                         break;
