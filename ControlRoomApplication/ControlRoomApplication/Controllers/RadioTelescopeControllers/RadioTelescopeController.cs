@@ -281,7 +281,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, decimal position)
+        public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, int position)
         {
             return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.START_RELATIVE_MOVE, axis, speed, position));
         }

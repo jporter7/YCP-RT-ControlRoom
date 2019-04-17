@@ -333,15 +333,18 @@ namespace ControlRoomApplication.Controllers
                             ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
                             ushort programmedPeakSpeedUShortLSW = (ushort)((256 * query[6]) + query[7]);
 
+                            ushort programmedPositionUShortMSW = (ushort)((256 * query[8]) + query[9]);
+                            ushort programmedPositionUShortLSW = (ushort)((256 * query[10]) + query[11]);
+
                             ushort commandCode = 0x2;
-                            ushort steps = (ushort)(MCUConstants.ACTUAL_MCU_STEPS_PER_DEGREE * query[8]);
+                            
 
                             ushort[] DataToWrite =
                             {
                                 commandCode,  // Denotes a relative move
                                 0x3,          // Denotes a Trapezoidal S-Curve profile
-                                0,            // MSW for Position
-                                steps,        // LSW for Position
+                                programmedPositionUShortMSW,            // MSW for Position
+                                programmedPositionUShortLSW,        // LSW for Position
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
                                 MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,

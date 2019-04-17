@@ -110,8 +110,8 @@ namespace ControlRoomApplication.Main
 
         private void button1_Click(object sender, EventArgs e)
         {
-
-            rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, numericUpDown1.Value);
+            int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
+            rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
         }
     }
 }

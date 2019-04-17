@@ -306,7 +306,7 @@ namespace ControlRoomApplication.Controllers
 
                         RadioTelescopeAxisEnum AxisEnum = (RadioTelescopeAxisEnum)MessageParameters[0];
                         int AxisJogSpeed = (int)MessageParameters[1];
-                        ushort position = (ushort)MessageParameters[2];
+                        int position = (int)MessageParameters[2];
 
                         switch (AxisEnum)
                         {
@@ -324,7 +324,7 @@ namespace ControlRoomApplication.Controllers
 
                             default:
                                 {
-                                    throw new ArgumentException("Invalid RadioTelescopeAxisEnum value seen while preparing jog movement bytes: " + AxisEnum.ToString());
+                                    throw new ArgumentException("Invalid RadioTelescopeAxisEnum value seen while preparing relative movement bytes: " + AxisEnum.ToString());
                                 }
                         }
 
@@ -333,7 +333,10 @@ namespace ControlRoomApplication.Controllers
                         NetOutgoingMessage[6] = (byte)((AxisJogSpeed >> 8) & 0xFF);
                         NetOutgoingMessage[7] = (byte)(AxisJogSpeed & 0xFF);
 
-                        NetOutgoingMessage[8] = (byte)(position);
+                        NetOutgoingMessage[8] = 0x0;
+                        NetOutgoingMessage[9] = (byte)(position / 0xFFFF);
+                        NetOutgoingMessage[10] = (byte)((position >> 8) & 0xFF);
+                        NetOutgoingMessage[11] = (byte)(position & 0xFF);
 
                         break;
                     }
