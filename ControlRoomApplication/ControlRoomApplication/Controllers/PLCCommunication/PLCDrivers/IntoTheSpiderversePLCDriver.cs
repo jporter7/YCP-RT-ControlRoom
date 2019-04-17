@@ -333,8 +333,8 @@ namespace ControlRoomApplication.Controllers
                             ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
                             ushort programmedPeakSpeedUShortLSW = (ushort)((256 * query[6]) + query[7]);
 
-                            ushort programmedPositionUShortMSW = (ushort)((256 * query[8]) + query[9]);
-                            ushort programmedPositionUShortLSW = (ushort)((256 * query[10]) + query[11]);
+                            short programmedPositionUShortMSW = (short)((256 * query[8]) + query[9]);
+                            short programmedPositionUShortLSW = (short)((256 * query[10]) + query[11]);
 
                             ushort commandCode = 0x2;
                             
@@ -343,8 +343,8 @@ namespace ControlRoomApplication.Controllers
                             {
                                 commandCode,  // Denotes a relative move
                                 0x3,          // Denotes a Trapezoidal S-Curve profile
-                                programmedPositionUShortMSW,            // MSW for Position
-                                programmedPositionUShortLSW,        // LSW for Position
+                                (ushort)programmedPositionUShortMSW,            // MSW for Position
+                                (ushort)programmedPositionUShortLSW,        // LSW for Position
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
                                 MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,

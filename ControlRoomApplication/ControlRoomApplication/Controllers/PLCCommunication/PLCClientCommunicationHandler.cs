@@ -332,11 +332,20 @@ namespace ControlRoomApplication.Controllers
                         NetOutgoingMessage[5] = (byte)(AxisJogSpeed / 0xFFFF);
                         NetOutgoingMessage[6] = (byte)((AxisJogSpeed >> 8) & 0xFF);
                         NetOutgoingMessage[7] = (byte)(AxisJogSpeed & 0xFF);
-
-                        NetOutgoingMessage[8] = 0x0;
-                        NetOutgoingMessage[9] = (byte)(position / 0xFFFF);
-                        NetOutgoingMessage[10] = (byte)((position >> 8) & 0xFF);
-                        NetOutgoingMessage[11] = (byte)(position & 0xFF);
+                        if (position > 0)
+                        {
+                            NetOutgoingMessage[8] = 0x0;
+                            NetOutgoingMessage[9] = (byte)(position / 0xFFFF);
+                            NetOutgoingMessage[10] = (byte)((position >> 8) & 0xFF);
+                            NetOutgoingMessage[11] = (byte)(position & 0xFF);
+                        }
+                        else
+                        {
+                            NetOutgoingMessage[8] = 0xFF;
+                            NetOutgoingMessage[9] = (byte)((position / 0xFFFF)-1);
+                            NetOutgoingMessage[10] = (byte)((position >> 8) & 0xFF);
+                            NetOutgoingMessage[11] = (byte)(position & 0xFF);
+                        }
 
                         break;
                     }
