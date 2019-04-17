@@ -16,7 +16,8 @@ namespace ControlRoomApplication.Entities
         CONTROLLED_STOP = 0x9,
         IMMEDIATE_STOP= 0xA,
         SET_OBJECTIVE_AZEL_POSITION = 0xB,
-        START_JOG_MOVEMENT = 0xC
+        START_JOG_MOVEMENT = 0xC,
+        START_RELATIVE_MOVE = 0xD
     }
 
     public class PLCCommandAndQueryTypeConversionHelper

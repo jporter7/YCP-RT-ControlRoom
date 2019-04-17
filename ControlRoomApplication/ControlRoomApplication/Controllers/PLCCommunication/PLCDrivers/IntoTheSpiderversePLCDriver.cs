@@ -320,6 +320,44 @@ namespace ControlRoomApplication.Controllers
                             break;
                         }
 
+                    case PLCCommandAndQueryTypeEnum.START_RELATIVE_MOVE:
+                        {
+                            PrintReadInputRegsiterContents("Before starting relative move");
+
+                            // Make sure the command is intended for the azimuth
+                            if (query[3] != 0x1)
+                            {
+                                throw new ArgumentException("Unsupported value for axis specified in move relative command for IntoTheSpiderversePLCDriver: " + query[3].ToString());
+                            }
+
+                            ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
+                            ushort programmedPeakSpeedUShortLSW = (ushort)((256 * query[6]) + query[7]);
+
+                            ushort commandCode = 0x2;
+                            ushort steps = (ushort)(MCUConstants.ACTUAL_MCU_STEPS_PER_DEGREE * query[8]);
+
+                            ushort[] DataToWrite =
+                            {
+                                commandCode,  // Denotes a relative move
+                                0x3,          // Denotes a Trapezoidal S-Curve profile
+                                0,            // MSW for Position
+                                steps,        // LSW for Position
+                                programmedPeakSpeedUShortMSW,
+                                programmedPeakSpeedUShortLSW,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                0,
+                                0
+                            };
+
+                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+
+                            PrintReadInputRegsiterContents("After starting relative move command");
+
+                            FinalResponseContainer[2] = 0x1;
+                            break;
+                        }
+
                     default:
                         {
                             throw new ArgumentException("Invalid PLCCommandAndQueryTypeEnum value seen while NOT expecting a response: " + CommandQueryTypeEnum.ToString());

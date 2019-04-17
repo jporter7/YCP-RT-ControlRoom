@@ -107,5 +107,11 @@ namespace ControlRoomApplication.Main
                 throw new Exception();
             }
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, numericUpDown1.Value);
+        }
     }
 }

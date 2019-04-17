@@ -300,6 +300,44 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
+                case PLCCommandAndQueryTypeEnum.START_RELATIVE_MOVE:
+                    {
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+
+                        RadioTelescopeAxisEnum AxisEnum = (RadioTelescopeAxisEnum)MessageParameters[0];
+                        int AxisJogSpeed = (int)MessageParameters[1];
+                        ushort position = (ushort)MessageParameters[2];
+
+                        switch (AxisEnum)
+                        {
+                            case RadioTelescopeAxisEnum.AZIMUTH:
+                                {
+                                    NetOutgoingMessage[3] = 0x1;
+                                    break;
+                                }
+
+                            case RadioTelescopeAxisEnum.ELEVATION:
+                                {
+                                    NetOutgoingMessage[3] = 0x2;
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    throw new ArgumentException("Invalid RadioTelescopeAxisEnum value seen while preparing jog movement bytes: " + AxisEnum.ToString());
+                                }
+                        }
+
+                        NetOutgoingMessage[4] = 0x0;
+                        NetOutgoingMessage[5] = (byte)(AxisJogSpeed / 0xFFFF);
+                        NetOutgoingMessage[6] = (byte)((AxisJogSpeed >> 8) & 0xFF);
+                        NetOutgoingMessage[7] = (byte)(AxisJogSpeed & 0xFF);
+
+                        NetOutgoingMessage[8] = (byte)(position);
+
+                        break;
+                    }
+
                 default:
                     {
                         throw new ArgumentException("Illegal PLCCommandAndQueryTypeEnum value: " + MessageType.ToString());

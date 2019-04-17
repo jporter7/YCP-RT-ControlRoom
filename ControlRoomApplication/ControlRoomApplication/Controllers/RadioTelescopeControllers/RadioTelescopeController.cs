@@ -273,6 +273,19 @@ namespace ControlRoomApplication.Controllers
             return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP));
         }
 
+        /// <summary>
+        /// Method used to request that all of the Radio Telescope's movement comes
+        /// to an immediate stop.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, decimal position)
+        {
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.START_RELATIVE_MOVE, axis, speed, position));
+        }
+
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
         {
             return ((ResponseBytes[0] + (ResponseBytes[1] * 256)) == ExpectedSize) && (ResponseBytes[2] == 0x1);
