@@ -5,13 +5,13 @@ using ControlRoomApplication.Controllers;
 
 namespace ControlRoomApplication.Main
 {
-    public partial class FreeControlForm : Form
+    public partial class ManualControlForm : Form
     {
         public RadioTelescopeController rt_controller { get; set; }
         public ControlRoom controlRoom { get; set; }
         public int speed { get; set; }
 
-        public FreeControlForm(ControlRoom new_controlRoom, int rtId)
+        public ManualControlForm(ControlRoom new_controlRoom, int rtId)
         {
             InitializeComponent();
 
@@ -22,11 +22,16 @@ namespace ControlRoomApplication.Main
             rt_controller = controlRoom.RadioTelescopeControllers[rtId - 1];
 
             // Update Text
-            UpdateText("Free Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+            UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Set speed
             comboBox1.Text = "0.1 RPM";
             speed = 16667;
+        }
+
+        private void ManualControlForm_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            timer1.Enabled = false;
         }
 
         private void UpdateText(string text)
@@ -44,7 +49,7 @@ namespace ControlRoomApplication.Main
 
         private void NegButton_MouseUp(object sender, MouseEventArgs e)
         {
-            UpdateText("Free Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+            UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Stop Move
             ExecuteCorrectStop();
@@ -60,7 +65,7 @@ namespace ControlRoomApplication.Main
 
         private void PosButton_MouseUp(object sender, MouseEventArgs e)
         {
-            UpdateText("Free Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+            UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Stop Move
             ExecuteCorrectStop();
@@ -112,6 +117,47 @@ namespace ControlRoomApplication.Main
         {
             int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
             rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            Entities.Orientation currentOrienation = rt_controller.GetCurrentOrientation();
+            SetActualAZText(currentOrienation.Azimuth.ToString("0.##"));
+            SetActualELText(currentOrienation.Elevation.ToString("0.##"));
+        }
+
+        delegate void SetActualAZTextCallback(string text);
+        private void SetActualAZText(string text)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (ActualAZTextBox.InvokeRequired)
+            {
+                SetActualAZTextCallback d = new SetActualAZTextCallback(SetActualAZText);
+                Invoke(d, new object[] { text });
+            }
+            else
+            {
+                ActualAZTextBox.Text = text;
+            }
+        }
+
+        delegate void SetActualELTextCallback(string text);
+        private void SetActualELText(string text)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (ActualELTextBox.InvokeRequired)
+            {
+                SetActualELTextCallback d = new SetActualELTextCallback(SetActualELText);
+                Invoke(d, new object[] { text });
+            }
+            else
+            {
+                ActualELTextBox.Text = text;
+            }
         }
     }
 }

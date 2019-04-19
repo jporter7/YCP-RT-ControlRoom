@@ -62,10 +62,12 @@ namespace ControlRoomApplication.Main
                 if (checkBox1.Checked)
                 {
                     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
+                    ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
                 }
                 else
                 {
+                    ManualControl.Enabled = true;
                     FreeControl.Enabled = true;
                 }
 
@@ -318,6 +320,21 @@ namespace ControlRoomApplication.Main
                 Name = "Free Control Thread"
             };
             FreeControlThread.Start();
+        }
+
+        /// <summary>
+        /// Generates a manual control form that allows manual control access to a radio telescope
+        /// instance through the generated form.
+        /// </summary>
+        private void ManualControl_Click(object sender, EventArgs e)
+        {
+            ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+            // Create free control thread
+            Thread ManualControlThread = new Thread(() => manualControlWindow.ShowDialog())
+            {
+                Name = "Manual Control Thread"
+            };
+            ManualControlThread.Start();
         }
     }
 }

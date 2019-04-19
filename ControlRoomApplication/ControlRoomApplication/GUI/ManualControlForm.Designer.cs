@@ -1,6 +1,6 @@
 ﻿namespace ControlRoomApplication.Main
 {
-    partial class FreeControlForm
+    partial class ManualControlForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.NegButton = new System.Windows.Forms.Button();
             this.PosButton = new System.Windows.Forms.Button();
             this.Title = new System.Windows.Forms.Label();
@@ -39,6 +40,12 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.ActualELLabel = new System.Windows.Forms.Label();
+            this.ActualAZLabel = new System.Windows.Forms.Label();
+            this.ActualPositionLabel = new System.Windows.Forms.Label();
+            this.ActualELTextBox = new System.Windows.Forms.TextBox();
+            this.ActualAZTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -73,9 +80,9 @@
             this.Title.Location = new System.Drawing.Point(297, 28);
             this.Title.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.Title.Name = "Title";
-            this.Title.Size = new System.Drawing.Size(242, 46);
+            this.Title.Size = new System.Drawing.Size(291, 46);
             this.Title.TabIndex = 15;
-            this.Title.Text = "Free Control";
+            this.Title.Text = "Manual Control";
             // 
             // errorLabel
             // 
@@ -134,9 +141,9 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(639, 219);
+            this.button1.Location = new System.Drawing.Point(640, 258);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 35);
+            this.button1.Size = new System.Drawing.Size(120, 24);
             this.button1.TabIndex = 23;
             this.button1.Text = "Move Relative";
             this.button1.UseVisualStyleBackColor = true;
@@ -145,15 +152,16 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(636, 168);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.label2.Location = new System.Drawing.Point(636, 161);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 13);
+            this.label2.Size = new System.Drawing.Size(115, 20);
             this.label2.TabIndex = 24;
-            this.label2.Text = "Pos (Degrees)";
+            this.label2.Text = "Target Position";
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(639, 193);
+            this.numericUpDown1.Location = new System.Drawing.Point(640, 209);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             90000,
             0,
@@ -168,11 +176,66 @@
             this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
             this.numericUpDown1.TabIndex = 25;
             // 
-            // FreeControlForm
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // ActualELLabel
+            // 
+            this.ActualELLabel.AutoSize = true;
+            this.ActualELLabel.Location = new System.Drawing.Point(63, 244);
+            this.ActualELLabel.Name = "ActualELLabel";
+            this.ActualELLabel.Size = new System.Drawing.Size(51, 13);
+            this.ActualELLabel.TabIndex = 30;
+            this.ActualELLabel.Text = "Elevation";
+            // 
+            // ActualAZLabel
+            // 
+            this.ActualAZLabel.AutoSize = true;
+            this.ActualAZLabel.Location = new System.Drawing.Point(63, 191);
+            this.ActualAZLabel.Name = "ActualAZLabel";
+            this.ActualAZLabel.Size = new System.Drawing.Size(44, 13);
+            this.ActualAZLabel.TabIndex = 29;
+            this.ActualAZLabel.Text = "Azimuth";
+            // 
+            // ActualPositionLabel
+            // 
+            this.ActualPositionLabel.AutoSize = true;
+            this.ActualPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            this.ActualPositionLabel.Location = new System.Drawing.Point(61, 161);
+            this.ActualPositionLabel.Name = "ActualPositionLabel";
+            this.ActualPositionLabel.Size = new System.Drawing.Size(114, 20);
+            this.ActualPositionLabel.TabIndex = 28;
+            this.ActualPositionLabel.Text = "Actual Position";
+            // 
+            // ActualELTextBox
+            // 
+            this.ActualELTextBox.Location = new System.Drawing.Point(65, 262);
+            this.ActualELTextBox.Name = "ActualELTextBox";
+            this.ActualELTextBox.ReadOnly = true;
+            this.ActualELTextBox.Size = new System.Drawing.Size(100, 20);
+            this.ActualELTextBox.TabIndex = 27;
+            // 
+            // ActualAZTextBox
+            // 
+            this.ActualAZTextBox.Location = new System.Drawing.Point(65, 209);
+            this.ActualAZTextBox.Name = "ActualAZTextBox";
+            this.ActualAZTextBox.ReadOnly = true;
+            this.ActualAZTextBox.Size = new System.Drawing.Size(100, 20);
+            this.ActualAZTextBox.TabIndex = 26;
+            // 
+            // ManualControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.ActualELLabel);
+            this.Controls.Add(this.ActualAZLabel);
+            this.Controls.Add(this.ActualPositionLabel);
+            this.Controls.Add(this.ActualELTextBox);
+            this.Controls.Add(this.ActualAZTextBox);
             this.Controls.Add(this.numericUpDown1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button1);
@@ -184,8 +247,8 @@
             this.Controls.Add(this.Title);
             this.Controls.Add(this.PosButton);
             this.Controls.Add(this.NegButton);
-            this.Name = "FreeControlForm";
-            this.Text = "FreeControlForm";
+            this.Name = "ManualControlForm";
+            this.Text = "ManualControlForm";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -204,5 +267,11 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label ActualELLabel;
+        private System.Windows.Forms.Label ActualAZLabel;
+        private System.Windows.Forms.Label ActualPositionLabel;
+        private System.Windows.Forms.TextBox ActualELTextBox;
+        private System.Windows.Forms.TextBox ActualAZTextBox;
     }
 }

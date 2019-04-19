@@ -170,6 +170,12 @@
     <Compile Include="GUI\DiagnosticsForm.Designer.cs">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\FreeControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\FreeControlForm.designer.cs">
+      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\ManualControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -219,6 +225,9 @@
   <ItemGroup>
     <EmbeddedResource Include="GUI\DiagnosticsForm.resx">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\FreeControlForm.resx">
+      <DependentUpon>FreeControlForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ManualControlForm.resx">
       <DependentUpon>ManualControlForm.cs</DependentUpon>
