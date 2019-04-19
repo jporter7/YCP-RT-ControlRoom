@@ -300,7 +300,7 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
-                case PLCCommandAndQueryTypeEnum.START_RELATIVE_MOVE:
+                case PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
 
@@ -332,6 +332,7 @@ namespace ControlRoomApplication.Controllers
                         NetOutgoingMessage[5] = (byte)(AxisJogSpeed / 0xFFFF);
                         NetOutgoingMessage[6] = (byte)((AxisJogSpeed >> 8) & 0xFF);
                         NetOutgoingMessage[7] = (byte)(AxisJogSpeed & 0xFF);
+
                         if (position > 0)
                         {
                             NetOutgoingMessage[8] = 0x0;
@@ -342,7 +343,7 @@ namespace ControlRoomApplication.Controllers
                         else
                         {
                             NetOutgoingMessage[8] = 0xFF;
-                            NetOutgoingMessage[9] = (byte)((position / 0xFFFF)-1);
+                            NetOutgoingMessage[9] = (byte)((position / 0xFFFF) - 1);
                             NetOutgoingMessage[10] = (byte)((position >> 8) & 0xFF);
                             NetOutgoingMessage[11] = (byte)(position & 0xFF);
                         }
@@ -357,8 +358,6 @@ namespace ControlRoomApplication.Controllers
             }
             
             NetOutgoingMessage[2] += (byte)(PLCCommandResponseExpectationConversionHelper.ConvertToByte(ResponseExpectationValue) * 0x40);
-
-            //logger.Info("[PLCClientCommunicationHandler] About to send command " + MessageType.ToString());
 
             // This is the expected response size of anything from the PLC (simulated or real), minor or full response.
             // See the TCP/IP packet contents google sheets file describing this under Wiki Documentation -> Control Room in the shared GDrive

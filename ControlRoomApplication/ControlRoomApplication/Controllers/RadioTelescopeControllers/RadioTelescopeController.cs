@@ -283,7 +283,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, int position)
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.START_RELATIVE_MOVE, axis, speed, position));
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION, axis, speed, position));
         }
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)

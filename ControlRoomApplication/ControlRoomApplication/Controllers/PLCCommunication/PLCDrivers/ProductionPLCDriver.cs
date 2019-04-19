@@ -1,4 +1,4 @@
-﻿#define SPIDERVERSE_DEBUG
+﻿#define PRODUCTION_PLC_DRIVER_DEBUG
 
 using System;
 using System.Net.Sockets;
@@ -8,20 +8,20 @@ using Modbus.Device;
 
 namespace ControlRoomApplication.Controllers
 {
-    public class IntoTheSpiderversePLCDriver : AbstractPLCDriver
+    public class ProductionPLCDriver : AbstractPLCDriver
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private TcpClient MCUTCPClient;
         private ModbusIpMaster MCUModbusMaster;
 
-        public IntoTheSpiderversePLCDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
+        public ProductionPLCDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
         {
             MCUTCPClient = new TcpClient(MCUConstants.ACTUAL_MCU_IP_ADDRESS, MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
         }
 
-        ~IntoTheSpiderversePLCDriver()
+        ~ProductionPLCDriver()
         {
             if (MCUTCPClient != null)
             {
@@ -29,15 +29,9 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        //public void FetchMCUModbusSlave(string ipMCU, int portMCU)
-        //{
-        //    MCUTCPClient = new TcpClient(ipMCU, portMCU);
-        //    MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
-        //}
-
         public void PrintReadInputRegsiterContents(string header)
         {
-#if SPIDERVERSE_DEBUG
+#if PRODUCTION_PLC_DRIVER_DEBUG
             System.Threading.Thread.Sleep(50);
 
             ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
@@ -105,7 +99,7 @@ namespace ControlRoomApplication.Controllers
             if (query.Length != ExpectedSize)
             {
                 throw new ArgumentException(
-                    "IntoTheSpiderversePLCDriver read a package specifying a size [" + ExpectedSize.ToString() + "], but the actual size was different [" + query.Length + "]."
+                    "ProductionPLCDriver read a package specifying a size [" + ExpectedSize.ToString() + "], but the actual size was different [" + query.Length + "]."
                 );
             }
 
@@ -197,14 +191,14 @@ namespace ControlRoomApplication.Controllers
                             PrintReadInputRegsiterContents("After setting configuration");
                             if (SendResetErrorsCommand())
                             {
-                                Console.WriteLine("[IntoTheSpiderversePLCDriver] Successfully sent reset command.");
+                                Console.WriteLine("[ProductionPLCDriver] Successfully sent reset command.");
                                 PrintReadInputRegsiterContents("After sending reset command");
                                 FinalResponseContainer[2] = 0x1;
                             }
                             else
                             {
                                 // Send an error code
-                                Console.WriteLine("[IntoTheSpiderversePLCDriver] ERROR sending reset command.");
+                                Console.WriteLine("[ProductionPLCDriver] ERROR sending reset command.");
                                 FinalResponseContainer[2] = 0x2;
                             }
                             
@@ -250,8 +244,8 @@ namespace ControlRoomApplication.Controllers
                                 stepChangeUShortLSW,
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                                 0,
                                 0
                             };
@@ -271,7 +265,7 @@ namespace ControlRoomApplication.Controllers
                             // Make sure the command is intended for the azimuth
                             if (query[3] != 0x1)
                             {
-                                throw new ArgumentException("Unsupported value for axis specified in jog command for IntoTheSpiderversePLCDriver: " + query[3].ToString());
+                                throw new ArgumentException("Unsupported value for axis specified in jog command for ProductionPLCDriver: " + query[3].ToString());
                             }
 
                             ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
@@ -294,7 +288,7 @@ namespace ControlRoomApplication.Controllers
 
                                 default:
                                     {
-                                        throw new ArgumentException("Unsupported value for motor movement direction in jog command for IntoTheSpiderversePLCDriver: " + query[8].ToString());
+                                        throw new ArgumentException("Unsupported value for motor movement direction in jog command for ProductionPLCDriver: " + query[8].ToString());
                                     }
                             }
 
@@ -306,8 +300,8 @@ namespace ControlRoomApplication.Controllers
                                 0,            // Reserved to 0 for a jog command
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                                 0,
                                 0
                             };
@@ -320,14 +314,14 @@ namespace ControlRoomApplication.Controllers
                             break;
                         }
 
-                    case PLCCommandAndQueryTypeEnum.START_RELATIVE_MOVE:
+                    case PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION:
                         {
                             PrintReadInputRegsiterContents("Before starting relative move");
 
                             // Make sure the command is intended for the azimuth
                             if (query[3] != 0x1)
                             {
-                                throw new ArgumentException("Unsupported value for axis specified in move relative command for IntoTheSpiderversePLCDriver: " + query[3].ToString());
+                                throw new ArgumentException("Unsupported value for axis specified in move relative command for ProductionPLCDriver: " + query[3].ToString());
                             }
 
                             ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
@@ -336,19 +330,16 @@ namespace ControlRoomApplication.Controllers
                             short programmedPositionUShortMSW = (short)((256 * query[8]) + query[9]);
                             short programmedPositionUShortLSW = (short)((256 * query[10]) + query[11]);
 
-                            ushort commandCode = 0x2;
-                            
-
                             ushort[] DataToWrite =
                             {
-                                commandCode,  // Denotes a relative move
-                                0x3,          // Denotes a Trapezoidal S-Curve profile
-                                (ushort)programmedPositionUShortMSW,            // MSW for Position
-                                (ushort)programmedPositionUShortLSW,        // LSW for Position
+                                0x2,                                    // Denotes a relative move
+                                0x3,                                    // Denotes a Trapezoidal S-Curve profile
+                                (ushort)programmedPositionUShortMSW,    // MSW for position
+                                (ushort)programmedPositionUShortLSW,    // LSW for position
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_SPIDERVERSE,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                                 0,
                                 0
                             };
@@ -369,7 +360,7 @@ namespace ControlRoomApplication.Controllers
             }
             else
             {
-                throw new ArgumentException("Invalid PLCCommandResponseExpectationEnum value seen while processing client request in IntoTheSpiderversePLCDriver: " + ExpectedResponseStatusEnum.ToString());
+                throw new ArgumentException("Invalid PLCCommandResponseExpectationEnum value seen while processing client request in ProductionPLCDriver: " + ExpectedResponseStatusEnum.ToString());
             }
 
             return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
