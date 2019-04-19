@@ -170,11 +170,11 @@
     <Compile Include="GUI\DiagnosticsForm.Designer.cs">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\FreeControlForm.cs">
+    <Compile Include="GUI\ManualControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\FreeControlForm.Designer.cs">
-      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    <Compile Include="GUI\ManualControlForm.Designer.cs">
+      <DependentUpon>ManualControlForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.cs" />
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.Designer.cs">
@@ -220,8 +220,8 @@
     <EmbeddedResource Include="GUI\DiagnosticsForm.resx">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\FreeControlForm.resx">
-      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\ManualControlForm.resx">
+      <DependentUpon>ManualControlForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
