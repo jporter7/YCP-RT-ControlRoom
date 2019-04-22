@@ -45,7 +45,7 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
 
         public Orientation GetCurrentOrientationInDegrees()
         {
-            return new Orientation(AzEncoder.CurrentPositionDegrees, ElEncoder.CurrentPositionDegrees);
+            return UpdatePositionsToNow();
         }
 
         private void TryStop(SimulationStopTypeEnum stopType)

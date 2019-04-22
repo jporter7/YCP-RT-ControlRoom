@@ -271,7 +271,11 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             int minimumTicksNeededForAcceleration = 2 * minimumTicksNeededToReachPeakSpeed;
 
             // Check to see if the programmed peak speed is reached or not
-            if (absoluteChangeInSteps >= minimumTicksNeededForAcceleration)
+            if (Math.Abs(motorEncoder.GetEquivalentDegreesFromEncoderTicks(changeInSteps)) < HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES)
+            {
+                return new SimulationMCUTrajectoryProfile(SimulationMCUTrajectoryProfileTypeEnum.NEGLIGIBLE, initialVelocity, peakVelocity, acceleration, 0.0, 0.0, initialSteps, objectiveSteps);
+            }
+            else if (absoluteChangeInSteps >= minimumTicksNeededForAcceleration)
             {
                 double timeRequiredForAcceleration = (peakVelocity - initialVelocity) / acceleration;
                 double totalTime = (2 * timeRequiredForAcceleration) + ((absoluteChangeInSteps - minimumTicksNeededForAcceleration) / peakVelocity);

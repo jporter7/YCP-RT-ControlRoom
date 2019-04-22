@@ -25,7 +25,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         {
             Encoder = new SimulationAbsoluteEncoder(12);
 
-            ProfileNegligible = SimulationMCUTrajectoryProfile.CalculateInstance(
+            ProfileNegligible = SimulationMCUTrajectoryProfile.ForceLinearInstance(
                 Encoder,
                 0.0,
                 0.0,
@@ -34,7 +34,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
                 HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES / 2
             );
 
-            ProfileSCurveTriangularFull = SimulationMCUTrajectoryProfile.CalculateInstance(
+            ProfileSCurveTriangularFull = SimulationMCUTrajectoryProfile.ForceLinearInstance(
                 Encoder,
                 0.0,
                 0.0,
@@ -43,7 +43,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
                 1.85
             );
 
-            ProfileSCurveTriangularPartial = SimulationMCUTrajectoryProfile.CalculateInstance(
+            ProfileSCurveTriangularPartial = SimulationMCUTrajectoryProfile.ForceLinearInstance(
                 Encoder,
                 60.0,
                 0.0,
@@ -52,7 +52,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
                 60.0 + (HardwareConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES * 2)
             );
 
-            ProfileSCurveTrapezoidal = SimulationMCUTrajectoryProfile.CalculateInstance(
+            ProfileSCurveTrapezoidal = SimulationMCUTrajectoryProfile.ForceLinearInstance(
                 Encoder,
                 0.0,
                 0.0,
@@ -95,7 +95,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         [TestMethod]
         public void TestNegligibleProfileGoodInterpretation()
         {
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.UtcNow;
 
             Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(10)));
             Assert.AreEqual(ProfileNegligible.ObjectiveStep, ProfileNegligible.InterpretEncoderTicksAt(StartTime, StartTime.AddMilliseconds(1)));
@@ -107,26 +107,26 @@ namespace ControlRoomApplicationTest.SimulatorTests
         [ExpectedException(typeof(ArgumentException))]
         public void TestNegligibleProfileBadInterpretation()
         {
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.UtcNow;
             ProfileNegligible.InterpretEncoderTicksAt(StartTime, StartTime.AddMilliseconds(-100));
         }
 
-        [TestMethod]
-        public void TestFullTriangularSCurveProfileConstructorAndProperties()
-        {
-            Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR_FULL, ProfileSCurveTriangularFull.ProfileType);
-            Assert.AreEqual(0.0, ProfileSCurveTriangularFull.InitialVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileSCurveTriangularFull.TrajectoryPeakVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileSCurveTriangularFull.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
-            Assert.AreEqual(1.875, ProfileSCurveTriangularFull.TotalTime, DOUBLE_EPSILON);
-            Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(0.0), ProfileSCurveTriangularFull.InitialStep);
-            Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(1.85), ProfileSCurveTriangularFull.ObjectiveStep);
-        }
+        //[TestMethod]
+        //public void TestFullTriangularSCurveProfileConstructorAndProperties()
+        //{
+        //    Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.S_CURVE_TRIANGULAR_FULL, ProfileSCurveTriangularFull.ProfileType);
+        //    Assert.AreEqual(0.0, ProfileSCurveTriangularFull.InitialVelocity, DOUBLE_EPSILON);
+        //    Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileSCurveTriangularFull.TrajectoryPeakVelocity, DOUBLE_EPSILON);
+        //    Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileSCurveTriangularFull.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
+        //    Assert.AreEqual(1.875, ProfileSCurveTriangularFull.TotalTime, DOUBLE_EPSILON);
+        //    Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(0.0), ProfileSCurveTriangularFull.InitialStep);
+        //    Assert.AreEqual(Encoder.GetEquivalentEncoderTicksFromDegrees(1.85), ProfileSCurveTriangularFull.ObjectiveStep);
+        //}
 
         //[TestMethod]
         //public void TestFullTriangularSCurveProfileGoodInterpretation()
         //{
-        //    DateTime StartTime = DateTime.Now;
+        //    DateTime StartTime = DateTime.UtcNow;
         //    double initialPosition = Encoder.GetEquivalentEncoderTicksFromDegrees(00.0);
 
             
@@ -149,7 +149,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         //[TestMethod]
         //public void TestPartialTriangularSCurveProfileGoodInterpretation()
         //{
-        //    DateTime StartTime = DateTime.Now;
+        //    DateTime StartTime = DateTime.UtcNow;
         //    double initialPosition = Encoder.GetEquivalentEncoderTicksFromDegrees(60.0);
 
         //    //Assert.AreEqual(initialPosition, ProfileSCurveTriangularPartial.InterpretAt(StartTime, StartTime));
@@ -160,13 +160,13 @@ namespace ControlRoomApplicationTest.SimulatorTests
         //    //Assert.AreEqual(0, ProfileSCurveTriangularPartial.InterpretAt(StartTime, StartTime.AddMilliseconds(1200)));
         //}
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestPartialTriangularSCurveProfileBadInterpretation()
-        {
-            DateTime StartTime = DateTime.Now;
-            ProfileSCurveTriangularPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(-1));
-        }
+        //[TestMethod]
+        //[ExpectedException(typeof(ArgumentException))]
+        //public void TestPartialTriangularSCurveProfileBadInterpretation()
+        //{
+        //    DateTime StartTime = DateTime.Now;
+        //    ProfileSCurveTriangularPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddSeconds(-1));
+        //}
 
         [TestMethod]
         public void TestFullLinearProfileConstructorAndProperties()
@@ -194,7 +194,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
-        public void TestFulllLinearProfileBadInterpretation()
+        public void TestFullLinearProfileBadInterpretation()
         {
             DateTime StartTime = DateTime.Now;
             ProfileLinearFull.InterpretEncoderTicksAt(StartTime, StartTime.AddMilliseconds(-100));
@@ -228,7 +228,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
         [ExpectedException(typeof(ArgumentException))]
         public void TestPartiallLinearProfileBadInterpretation()
         {
-            DateTime StartTime = DateTime.Now;
+            DateTime StartTime = DateTime.UtcNow;
             ProfileLinearPartial.InterpretEncoderTicksAt(StartTime, StartTime.AddTicks(-10));
         }
     }

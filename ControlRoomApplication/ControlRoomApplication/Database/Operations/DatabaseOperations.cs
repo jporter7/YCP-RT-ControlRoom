@@ -72,7 +72,7 @@ namespace ControlRoomApplication.Database
                 {
                     List<Appointment> appts = new List<Appointment>();
 
-                    DateTime DateTimeUniversalStart = DateTime.Now.AddMinutes(1);
+                    DateTime DateTimeUniversalStart = DateTime.UtcNow.AddMinutes(1);
 
                     Appointment appt0 = new Appointment();
                     Appointment appt1 = new Appointment();
@@ -296,7 +296,7 @@ namespace ControlRoomApplication.Database
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x.StartTime < DateTime.Now || x.Status == AppointmentStatusEnum.COMPLETED);
+                    appointments.RemoveAll(x => x.StartTime < DateTime.UtcNow || x.Status == AppointmentStatusEnum.COMPLETED);
                     appointments.Sort();
                     logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;
@@ -324,7 +324,7 @@ namespace ControlRoomApplication.Database
             {
                 return false;
             }
-            else if (data.TimeCaptured > DateTime.Now.AddMinutes(1))
+            else if (data.TimeCaptured > DateTime.UtcNow.AddMinutes(1))
             {
                 return false;
             }

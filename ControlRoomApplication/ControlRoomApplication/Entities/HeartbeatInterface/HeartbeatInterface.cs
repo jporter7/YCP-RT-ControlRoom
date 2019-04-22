@@ -15,7 +15,7 @@ namespace ControlRoomApplication.Entities
         {
             HeartbeatThread = new Thread(HeartbeatThreadRoutine);
             HeartbeatMutex = new Mutex();
-            LastCheckedIn = DateTime.Now;
+            LastCheckedIn = DateTime.UtcNow;
 
             HeartbeatTrackerContainer.StartTracking(this);
 
@@ -59,7 +59,7 @@ namespace ControlRoomApplication.Entities
         public bool IsConsideredAlive()
         {
             AcquireControl();
-            double MillisecondsSinceLastCheckIn = (DateTime.Now - LastCheckedIn).TotalMilliseconds;
+            double MillisecondsSinceLastCheckIn = (DateTime.UtcNow - LastCheckedIn).TotalMilliseconds;
             ReleaseControl();
 
             return MillisecondsSinceLastCheckIn <= HeartbeatConstants.MAXIMUM_ALLOWABLE_DIFFERENCE_IN_LAST_HEARD_MS;
@@ -90,7 +90,7 @@ namespace ControlRoomApplication.Entities
 
                 AcquireControl();
                 KeepRunningHeartbeat &= KeepAlive;
-                LastCheckedIn = DateTime.Now;
+                LastCheckedIn = DateTime.UtcNow;
                 ReleaseControl();
             }
         }

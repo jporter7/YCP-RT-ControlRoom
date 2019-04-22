@@ -174,7 +174,8 @@ namespace ControlRoomApplication.Controllers
                             }
 
                             // Otherwise, this is valid
-                            SimMCU.SetActiveObjectiveOrientationAndStartMove(new Orientation(NextAZ, NextEL));
+                            // ForceLinearMove is set to true until the simulation MCU is fine-tuned
+                            SimMCU.SetActiveObjectiveOrientationAndStartMove(new Orientation(NextAZ, NextEL), true);
 
                             FinalResponseContainer[2] = 0x1;
                             break;

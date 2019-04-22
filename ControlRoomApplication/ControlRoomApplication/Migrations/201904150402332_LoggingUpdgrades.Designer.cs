@@ -7,13 +7,13 @@ namespace ControlRoomApplication.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class Feb13 : IMigrationMetadata
+    public sealed partial class LoggingUpdgrades : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Feb13));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(LoggingUpdgrades));
         
         string IMigrationMetadata.Id
         {
-            get { return "201902132340492_Feb13"; }
+            get { return "201904150402332_LoggingUpdgrades"; }
         }
         
         string IMigrationMetadata.Source

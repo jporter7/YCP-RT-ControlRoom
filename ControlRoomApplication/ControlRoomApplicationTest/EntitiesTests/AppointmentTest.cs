@@ -39,8 +39,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
 
             // Initialize data for fields
             user_id = 1;
-            startTime_1 = DateTime.Now;
-            endTime_1 = DateTime.Now.AddHours(1);
+            startTime_1 = DateTime.UtcNow;
+            endTime_1 = DateTime.UtcNow.AddHours(1);
             celestial_body = new CelestialBody(CelestialBodyConstants.SUN);
             orientation = new Orientation(20, 20);
             coordinate = new Coordinate(20, 20);
@@ -51,8 +51,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
             type = AppointmentTypeEnum.POINT;
             spectracyber_config = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
 
-            startTime_2 = DateTime.Now.AddDays(1);
-            endTime_2 = DateTime.Now.AddDays(1).AddHours(1);
+            startTime_2 = DateTime.UtcNow.AddDays(1);
+            endTime_2 = DateTime.UtcNow.AddDays(1).AddHours(1);
 
             // Initialize fields we are testing against
             appointment_1.UserId = user_id;
