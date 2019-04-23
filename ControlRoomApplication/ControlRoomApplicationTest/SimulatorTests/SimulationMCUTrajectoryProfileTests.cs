@@ -65,8 +65,8 @@ namespace ControlRoomApplicationTest.SimulatorTests
                 Encoder,
                 0.0,
                 0.0,
-                HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
                 Encoder.GetEquivalentDegreesFromEncoderTicks(20)
             );
 
@@ -74,8 +74,8 @@ namespace ControlRoomApplicationTest.SimulatorTests
                 Encoder,
                 0.0,
                 0.0,
-                HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
                 Encoder.GetEquivalentDegreesFromEncoderTicks(10)
             );
         }
@@ -173,8 +173,8 @@ namespace ControlRoomApplicationTest.SimulatorTests
         {
             Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.LINEAR_FULL, ProfileLinearFull.ProfileType);
             Assert.AreEqual(0.0, ProfileLinearFull.InitialVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileLinearFull.TrajectoryPeakVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileLinearFull.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
+            Assert.AreEqual(MCUConstants.SIMULATION_MCU_PEAK_VELOCITY, ProfileLinearFull.TrajectoryPeakVelocity, DOUBLE_EPSILON);
+            Assert.AreEqual(MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileLinearFull.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
             Assert.AreEqual(1.6729167, ProfileLinearFull.TotalTime, DOUBLE_EPSILON);
             Assert.AreEqual(0, ProfileLinearFull.InitialStep);
             Assert.AreEqual(20, ProfileLinearFull.ObjectiveStep);
@@ -206,7 +206,7 @@ namespace ControlRoomApplicationTest.SimulatorTests
             Assert.AreEqual(SimulationMCUTrajectoryProfileTypeEnum.LINEAR_PARTIAL, ProfileLinearPartial.ProfileType);
             Assert.AreEqual(0.0, ProfileLinearPartial.InitialVelocity, DOUBLE_EPSILON);
             Assert.AreEqual(17.8885438, ProfileLinearPartial.TrajectoryPeakVelocity, DOUBLE_EPSILON);
-            Assert.AreEqual(HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileLinearPartial.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
+            Assert.AreEqual(MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION, ProfileLinearPartial.TrajectoryPeakAcceleration, DOUBLE_EPSILON);
             Assert.AreEqual(1.1180339, ProfileLinearPartial.TotalTime, DOUBLE_EPSILON);
             Assert.AreEqual(0, ProfileLinearPartial.InitialStep);
             Assert.AreEqual(10, ProfileLinearPartial.ObjectiveStep);
