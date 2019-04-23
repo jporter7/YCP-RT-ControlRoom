@@ -45,7 +45,21 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
 
         public Orientation GetCurrentOrientationInDegrees()
         {
-            return UpdatePositionsToNow();
+            if (HasActiveMove())
+            {
+                Orientation updated = UpdatePositionsToNow();
+
+                if (updated.Equals(ActiveObjectiveOrientation))
+                {
+                    ActiveObjectiveOrientation = null;
+                }
+
+                return updated;
+            }
+            else
+            {
+                return new Orientation(AzEncoder.CurrentPositionDegrees, ElEncoder.CurrentPositionDegrees);
+            }
         }
 
         private void TryStop(SimulationStopTypeEnum stopType)
@@ -125,16 +139,6 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             ElEncoder.SetPositionFromDegrees(NewPosition.Elevation);
 
             return NewPosition;
-        }
-
-        public bool IsDoneMove()
-        {
-            return UpdatePositionsToNow().Equals(ActiveObjectiveOrientation);
-        }
-
-        public void ClaimMoveIsFinished()
-        {
-
         }
     }
 }
