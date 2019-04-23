@@ -5,6 +5,8 @@ namespace ControlRoomApplication.Constants
     public sealed class PLCConstants
     {
         // Constant strings for PLC-related classes
+        public const string COM3 = "COM3";
+        public const string COM4 = "COM4";
         public const string LOCAL_HOST_IP = "127.0.0.1";
 
         // Constant ints for PLC-related classes
@@ -20,6 +22,5 @@ namespace ControlRoomApplication.Constants
         public const int RIGHT_ASCENSION_UPPER_LIMIT = 359;
         public const int DECLINATION_LOWER_LIMIT = -90;
         public const int DECLINATION_UPPER_LIMIT = 90;
-
     }
 }

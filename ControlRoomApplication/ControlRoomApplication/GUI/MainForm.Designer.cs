@@ -50,10 +50,10 @@
             this.button1.BackColor = System.Drawing.Color.LimeGreen;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(916, 428);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
+            this.button1.Location = new System.Drawing.Point(1221, 527);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(187, 72);
+            this.button1.Size = new System.Drawing.Size(249, 89);
             this.button1.TabIndex = 6;
             this.button1.Text = "Start Telescope";
             this.button1.UseVisualStyleBackColor = false;
@@ -81,12 +81,12 @@
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridView1.Location = new System.Drawing.Point(9, 10);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridView1.Location = new System.Drawing.Point(12, 12);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.RowTemplate.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(403, 230);
+            this.dataGridView1.Size = new System.Drawing.Size(537, 283);
             this.dataGridView1.TabIndex = 7;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -95,10 +95,10 @@
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button2.BackColor = System.Drawing.Color.Red;
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.button2.Location = new System.Drawing.Point(916, 520);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
+            this.button2.Location = new System.Drawing.Point(1221, 640);
+            this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(187, 68);
+            this.button2.Size = new System.Drawing.Size(249, 84);
             this.button2.TabIndex = 7;
             this.button2.Text = "Shut Down Telescope";
             this.button2.UseVisualStyleBackColor = false;
@@ -108,10 +108,10 @@
             // 
             this.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.textBox1.Location = new System.Drawing.Point(532, 571);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox1.Location = new System.Drawing.Point(709, 703);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(114, 29);
+            this.textBox1.Size = new System.Drawing.Size(151, 34);
             this.textBox1.TabIndex = 5;
             this.textBox1.Text = "PLC Port";
             this.textBox1.GotFocus += new System.EventHandler(this.textBox1_Focus);
@@ -124,10 +124,10 @@
             this.comboBox1.Items.AddRange(new object[] {
             "Production SpectraCyber",
             "Simulated SpectraCyber"});
-            this.comboBox1.Location = new System.Drawing.Point(278, 569);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBox1.Location = new System.Drawing.Point(371, 700);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(237, 32);
+            this.comboBox1.Size = new System.Drawing.Size(315, 37);
             this.comboBox1.TabIndex = 2;
             this.comboBox1.Text = "SpectraCyber Type";
             // 
@@ -135,10 +135,10 @@
             // 
             this.textBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.textBox2.Location = new System.Drawing.Point(532, 529);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox2.Location = new System.Drawing.Point(709, 651);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(114, 29);
+            this.textBox2.Size = new System.Drawing.Size(151, 34);
             this.textBox2.TabIndex = 4;
             this.textBox2.Text = "PLC IP";
             this.textBox2.GotFocus += new System.EventHandler(this.textBox2_Focus);
@@ -152,10 +152,10 @@
             "Production Weather Station",
             "Simulated Weather Station",
             "Test Weather Station"});
-            this.comboBox2.Location = new System.Drawing.Point(9, 569);
-            this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBox2.Location = new System.Drawing.Point(12, 700);
+            this.comboBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(252, 32);
+            this.comboBox2.Size = new System.Drawing.Size(335, 37);
             this.comboBox2.TabIndex = 1;
             this.comboBox2.Text = "Weather Station Type";
             // 
@@ -164,10 +164,10 @@
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.checkBox1.Location = new System.Drawing.Point(9, 533);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox1.Location = new System.Drawing.Point(12, 657);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(228, 28);
+            this.checkBox1.Size = new System.Drawing.Size(293, 33);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "Populate local database";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -180,11 +180,12 @@
             this.comboBox3.Items.AddRange(new object[] {
             "Production PLC",
             "Scale PLC",
+            "Simulation PLC",
             "Test PLC"});
-            this.comboBox3.Location = new System.Drawing.Point(532, 479);
-            this.comboBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBox3.Location = new System.Drawing.Point(709, 590);
+            this.comboBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(153, 32);
+            this.comboBox3.Size = new System.Drawing.Size(203, 37);
             this.comboBox3.TabIndex = 3;
             this.comboBox3.Text = "PLC Type";
             // 
@@ -216,9 +217,9 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1112, 607);
+            this.ClientSize = new System.Drawing.Size(1483, 747);
             this.Controls.Add(this.FreeControl);
             this.Controls.Add(this.ManualControl);
             this.Controls.Add(this.comboBox3);
@@ -230,7 +231,7 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.button1);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.Load += new System.EventHandler(this.MainForm_Load);

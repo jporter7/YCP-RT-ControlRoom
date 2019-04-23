@@ -1,4 +1,5 @@
 ﻿using System;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
 
@@ -11,6 +12,8 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
 
         private DateTime ActiveObjectiveOrientationMoveStart;
         private Orientation ActiveObjectiveOrientation;
+        private SimulationMCUTrajectoryProfile ActiveObjectiveAzimuthProfile;
+        private SimulationMCUTrajectoryProfile ActiveObjectiveElevationProfile;
 
         private SimulationStopTypeEnum RequestedStopType;
 
@@ -19,7 +22,11 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             AzEncoder = azEncoder;
             ElEncoder = elEncoder;
 
+            ActiveObjectiveOrientationMoveStart = DateTime.MinValue;
             ActiveObjectiveOrientation = null;
+            ActiveObjectiveAzimuthProfile = null;
+            ActiveObjectiveElevationProfile = null;
+
             RequestedStopType = SimulationStopTypeEnum.NONE;
         }
 
@@ -38,42 +45,100 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
 
         public Orientation GetCurrentOrientationInDegrees()
         {
-            return new Orientation(AzEncoder.CurrentPositionDegrees, ElEncoder.CurrentPositionDegrees);
+            if (HasActiveMove())
+            {
+                Orientation updated = UpdatePositionsToNow();
+
+                if (updated.Equals(ActiveObjectiveOrientation))
+                {
+                    ActiveObjectiveOrientation = null;
+                }
+
+                return updated;
+            }
+            else
+            {
+                return new Orientation(AzEncoder.CurrentPositionDegrees, ElEncoder.CurrentPositionDegrees);
+            }
         }
 
-        public void ConsumeRequestedStop()
+        private void TryStop(SimulationStopTypeEnum stopType)
         {
-            RequestedStopType = SimulationStopTypeEnum.NONE;
+            RequestedStopType = HasActiveMove() ? stopType : SimulationStopTypeEnum.NONE;
         }
 
         public void ExecuteControlledStop()
         {
-            if (HasActiveMove())
-            {
-                RequestedStopType = SimulationStopTypeEnum.CONTROLLED;
-            }
-            else
-            {
-                ConsumeRequestedStop();
-            }
+            TryStop(SimulationStopTypeEnum.CONTROLLED);
         }
 
         public void ExecuteImmediateStop()
         {
-            if (HasActiveMove())
+            TryStop(SimulationStopTypeEnum.IMMEDIATE);
+        }
+
+        public void SetActiveObjectiveOrientationAndStartMove(Orientation orientationDegrees, bool forceLinear)
+        {
+            RequestedStopType = SimulationStopTypeEnum.NONE;
+            ActiveObjectiveOrientation = orientationDegrees;
+
+            if (forceLinear)
             {
-                RequestedStopType = SimulationStopTypeEnum.IMMEDIATE;
+                ActiveObjectiveAzimuthProfile = SimulationMCUTrajectoryProfile.ForceLinearInstance(
+                    AzEncoder,
+                    AzEncoder.CurrentPositionDegrees,
+                    0.0,
+                    HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                    HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                    orientationDegrees.Azimuth
+                );
+
+                ActiveObjectiveElevationProfile = SimulationMCUTrajectoryProfile.ForceLinearInstance(
+                    ElEncoder,
+                    ElEncoder.CurrentPositionDegrees,
+                    0.0,
+                    HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                    HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                    orientationDegrees.Elevation
+                );
             }
             else
             {
-                ConsumeRequestedStop();
+                ActiveObjectiveAzimuthProfile = SimulationMCUTrajectoryProfile.CalculateInstance(
+                    AzEncoder,
+                    AzEncoder.CurrentPositionDegrees,
+                    0.0,
+                    HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                    HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                    orientationDegrees.Azimuth
+                );
+
+                ActiveObjectiveElevationProfile = SimulationMCUTrajectoryProfile.CalculateInstance(
+                    ElEncoder,
+                    ElEncoder.CurrentPositionDegrees,
+                    0.0,
+                    HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                    HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                    orientationDegrees.Elevation
+                );
             }
+
+            ActiveObjectiveOrientationMoveStart = DateTime.UtcNow;
         }
 
-        public void SetActiveObjectiveOrientationAndStartMove(Orientation orientationDegrees)
+        private Orientation UpdatePositionsToNow()
         {
-            ConsumeRequestedStop();
-            ActiveObjectiveOrientation = orientationDegrees;
+            DateTime CoordinatedEvaluationTime = DateTime.UtcNow;
+
+            Orientation NewPosition = new Orientation(
+                ActiveObjectiveAzimuthProfile.InterpretDegreesAt(AzEncoder, ActiveObjectiveOrientationMoveStart, CoordinatedEvaluationTime),
+                ActiveObjectiveElevationProfile.InterpretDegreesAt(ElEncoder, ActiveObjectiveOrientationMoveStart, CoordinatedEvaluationTime)
+            );
+
+            AzEncoder.SetPositionFromDegrees(NewPosition.Azimuth);
+            ElEncoder.SetPositionFromDegrees(NewPosition.Elevation);
+
+            return NewPosition;
         }
     }
 }

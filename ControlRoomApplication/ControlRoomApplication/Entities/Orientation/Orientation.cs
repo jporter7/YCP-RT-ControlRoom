@@ -39,8 +39,10 @@ namespace ControlRoomApplication.Entities
             {
                 return false;
             }
-            bool az_equal = Math.Abs(Azimuth - other.Azimuth) <= 0.01;
-            bool el_equal = Math.Abs(Elevation - other.Elevation) <= 0.01;
+
+            // These are based off of 12 and 10 bit encoder precisions, respectively
+            bool az_equal = Math.Abs(Azimuth - other.Azimuth) < (360.0 / 4096);
+            bool el_equal = Math.Abs(Elevation - other.Elevation) < (360.0 / 1024);
             return az_equal && el_equal;
         }
 
