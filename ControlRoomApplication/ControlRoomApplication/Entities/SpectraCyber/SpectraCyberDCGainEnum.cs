@@ -2,6 +2,7 @@
 {
     public enum SpectraCyberDCGainEnum
     {
+        UNDEFINED,
         X1,
         X5,
         X10,
@@ -28,6 +29,8 @@
                     return "X50";
                 case SpectraCyberDCGainEnum.X60:
                     return "X60";
+                case SpectraCyberDCGainEnum.UNDEFINED:
+                    throw new System.Exception("UNDEFINED SpectraCyberDCGainEnum type");
                 default:
                     throw new System.Exception("Unexpected SpectraCyberDCGainEnum type");
             }

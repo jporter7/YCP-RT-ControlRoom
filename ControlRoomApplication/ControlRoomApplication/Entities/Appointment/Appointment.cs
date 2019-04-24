@@ -21,6 +21,8 @@ namespace ControlRoomApplication.Entities
             Coordinates = new List<Coordinate>();
             RFDatas = new List<RFData>();
             SpectraCyberConfig = new SpectraCyberConfig();
+            Status = AppointmentStatusEnum.UNDEFINED;
+            Type = AppointmentTypeEnum.UNDEFINED;
         }
 
         /// <summary>
