@@ -303,12 +303,14 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                 NextAppointment.Status = AppointmentStatusEnum.CANCELLED;
+                DatabaseOperations.UpdateAppointment(NextAppointment);
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
             }
             else
             {
                 NextAppointment.Status = AppointmentStatusEnum.COMPLETED;
+                DatabaseOperations.UpdateAppointment(NextAppointment);
             }
 
             DatabaseOperations.UpdateAppointment(NextAppointment);
