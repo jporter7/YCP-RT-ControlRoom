@@ -74,8 +74,8 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
                     AzEncoder,
                     AzEncoder.CurrentPositionDegrees,
                     0.0,
-                    HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                    HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                    MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                    MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
                     orientationDegrees.Azimuth
                 );
 
@@ -83,8 +83,8 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
                     ElEncoder,
                     ElEncoder.CurrentPositionDegrees,
                     0.0,
-                    HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                    HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                    MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                    MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
                     orientationDegrees.Elevation
                 );
             }
@@ -94,8 +94,8 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
                     AzEncoder,
                     AzEncoder.CurrentPositionDegrees,
                     0.0,
-                    HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                    HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                    MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                    MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
                     orientationDegrees.Azimuth
                 );
 
@@ -103,8 +103,8 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
                     ElEncoder,
                     ElEncoder.CurrentPositionDegrees,
                     0.0,
-                    HardwareConstants.SIMULATION_MCU_PEAK_VELOCITY,
-                    HardwareConstants.SIMULATION_MCU_PEAK_ACCELERATION,
+                    MCUConstants.SIMULATION_MCU_PEAK_VELOCITY,
+                    MCUConstants.SIMULATION_MCU_PEAK_ACCELERATION,
                     orientationDegrees.Elevation
                 );
             }

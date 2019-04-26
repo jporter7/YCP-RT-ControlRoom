@@ -271,7 +271,7 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
             int minimumTicksNeededForAcceleration = 2 * minimumTicksNeededToReachPeakSpeed;
 
             // See if this move is even worth the effort of TRYING to move
-            if (Math.Abs(axisEncoder.GetEquivalentDegreesFromEncoderTicks(changeInAxisSteps)) < MiscellaneousConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES)
+            if (Math.Abs(motorEncoder.GetEquivalentDegreesFromEncoderTicks(changeInSteps)) < MiscellaneousConstants.NEGLIGIBLE_POSITION_CHANGE_DEGREES)
             {
                 return new SimulationMCUTrajectoryProfile(SimulationMCUTrajectoryProfileTypeEnum.NEGLIGIBLE, initialVelocity, peakVelocity, acceleration, 0.0, 0.0, initialSteps, objectiveSteps);
             }
