@@ -73,8 +73,8 @@ namespace ControlRoomApplication.Controllers
                             double CurrentAZ = CurrentOrientation.Azimuth;
                             double CurrentEL = CurrentOrientation.Elevation;
 
-                            double ThresholdAZ = HardwareConstants.LIMIT_SWITCH_AZ_THRESHOLD_DEGREES;
-                            double ThresholdEL = HardwareConstants.LIMIT_SWITCH_EL_THRESHOLD_DEGREES;
+                            double ThresholdAZ = MiscellaneousHardwareConstants.LIMIT_SWITCH_AZ_THRESHOLD_DEGREES;
+                            double ThresholdEL = MiscellaneousHardwareConstants.LIMIT_SWITCH_EL_THRESHOLD_DEGREES;
 
                             // Subtracting out those 2 degrees is because of our actual rotational limits of (-2 : 362) and (-2 : 92) degrees in azimuth and elevation respectively
                             PLCLimitSwitchStatusEnum StatusAzimuthUnderRotation = (CurrentAZ < (ThresholdAZ - 2.0)) ? PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS : PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;

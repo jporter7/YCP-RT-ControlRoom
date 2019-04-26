@@ -159,6 +159,30 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// Method used to request to set configuration of elements of the RT.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ConfigureRadioTelescope(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        {
+            if ((startSpeedAzimuth < 1) || (startSpeedElevation < 1) || (homeTimeoutAzimuth < 0) || (homeTimeoutElevation < 0)
+                || (startSpeedAzimuth > 1000000) || (startSpeedElevation > 1000000) || (homeTimeoutAzimuth > 300) || (homeTimeoutElevation > 300))
+            {
+                return false;
+            }
+
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(
+                PLCCommandAndQueryTypeEnum.SET_CONFIGURATION,
+                startSpeedAzimuth,
+                startSpeedElevation,
+                homeTimeoutAzimuth,
+                homeTimeoutElevation
+            ));
+        }
+
+        /// <summary>
         /// Method used to request to move the Radio Telescope to an objective
         /// azimuth/elevation orientation.
         /// 
@@ -166,7 +190,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool MoveRadioTelescope(Orientation orientation)
+        public bool MoveRadioTelescopeToOrientation(Orientation orientation)
         {
             return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation));
         }
@@ -179,9 +203,87 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool MoveRadioTelescope(Coordinate coordinate)
+        public bool MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
-            return MoveRadioTelescope(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow));
+            return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow));
+        }
+
+        /// <summary>
+        /// Method used to request to start jogging one of the Radio Telescope's axes
+        /// at a speed, in either the clockwise or counter-clockwise direction.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        {
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.START_JOG_MOVEMENT, axis, speed, clockwise));
+        }
+
+        /// <summary>
+        /// Method used to request to start jogging the Radio Telescope's azimuth
+        /// at a speed, in either the clockwise or counter-clockwise direction.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool StartRadioTelescopeAzimuthJog(int speed, bool clockwise)
+        {
+            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.AZIMUTH, speed, clockwise);
+        }
+
+        /// <summary>
+        /// Method used to request to start jogging the Radio Telescope's elevation
+        /// at a speed, in either the clockwise or counter-clockwise direction.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool StartRadioTelescopeElevationJog(int speed, bool clockwise)
+        {
+            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise);
+        }
+
+        /// <summary>
+        /// Method used to request that all of the Radio Telescope's movement comes
+        /// to a controlled stop.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ExecuteRadioTelescopeControlledStop()
+        {
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CONTROLLED_STOP));
+        }
+
+        /// <summary>
+        /// Method used to request that all of the Radio Telescope's movement comes
+        /// to an immediate stop.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ExecuteRadioTelescopeImmediateStop()
+        {
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP));
+        }
+
+        /// <summary>
+        /// Method used to request that all of the Radio Telescope's movement comes
+        /// to an immediate stop.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, int position)
+        {
+            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION, axis, speed, position));
         }
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)

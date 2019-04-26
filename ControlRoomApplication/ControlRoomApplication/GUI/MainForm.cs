@@ -62,11 +62,12 @@ namespace ControlRoomApplication.Main
                 if (checkBox1.Checked)
                 {
                     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
-                    Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).StartTime.ToString());
+                    ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
                 }
                 else
                 {
+                    ManualControl.Enabled = true;
                     FreeControl.Enabled = true;
                 }
 
@@ -100,6 +101,11 @@ namespace ControlRoomApplication.Main
                 if (ManagementThread.Start())
                 {
                     logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+
+                    if (APLCDriver is ProductionPLCDriver)
+                    {
+                        ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(500, 500, 0, 0);
+                    }
                 }
                 else
                 {
@@ -254,8 +260,8 @@ namespace ControlRoomApplication.Main
             switch (comboBox3.SelectedIndex)
             {
                 case 0:
-                    // Case for the production telescope.
-                    throw new NotImplementedException("There is not yet communication for the real PLC.");
+                    // The production telescope
+                    return new ProductionPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
 
                 case 1:
                     // Case for the simulated radiotelescope.
@@ -315,6 +321,21 @@ namespace ControlRoomApplication.Main
                 Name = "Free Control Thread"
             };
             FreeControlThread.Start();
+        }
+
+        /// <summary>
+        /// Generates a manual control form that allows manual control access to a radio telescope
+        /// instance through the generated form.
+        /// </summary>
+        private void ManualControl_Click(object sender, EventArgs e)
+        {
+            ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+            // Create free control thread
+            Thread ManualControlThread = new Thread(() => manualControlWindow.ShowDialog())
+            {
+                Name = "Manual Control Thread"
+            };
+            ManualControlThread.Start();
         }
     }
 }

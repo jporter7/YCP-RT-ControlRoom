@@ -7,8 +7,7 @@ namespace ControlRoomApplication.Controllers
 {
     public class PLCClientCommunicationHandler
     {
-        private static readonly log4net.ILog logger =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private Thread StreamCommunicationThread;
         private Mutex StreamCommunicationThreadMutex;
@@ -212,11 +211,45 @@ namespace ControlRoomApplication.Controllers
                 case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                 case PLCCommandAndQueryTypeEnum.SHUTDOWN:
                 case PLCCommandAndQueryTypeEnum.CALIBRATE:
+                case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP:
+                case PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP:
                     {
                         ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
                         break;
                     }
 
+                case PLCCommandAndQueryTypeEnum.SET_CONFIGURATION:
+                    {
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+
+                        int StartSpeedAzimuth = (int)MessageParameters[0];
+                        int StartSpeedElevation = (int)MessageParameters[1];
+                        int HomeTimeoutAzimuth = (int)MessageParameters[2];
+                        int HomeTimeoutElevation = (int)MessageParameters[3];
+
+                        NetOutgoingMessage[3] = 0x84;
+                        NetOutgoingMessage[4] = 0x00;
+                        NetOutgoingMessage[5] = 0x00;
+                        NetOutgoingMessage[6] = 0x00;
+
+                        NetOutgoingMessage[7] = 0x0;
+                        NetOutgoingMessage[8] = (byte)(StartSpeedAzimuth / 0xFFFF);
+                        NetOutgoingMessage[9] = (byte)((StartSpeedAzimuth >> 8) & 0xFF);
+                        NetOutgoingMessage[10] = (byte)(StartSpeedAzimuth & 0xFF);
+
+                        NetOutgoingMessage[11] = 0x0;
+                        NetOutgoingMessage[12] = (byte)(StartSpeedElevation / 0xFFFF);
+                        NetOutgoingMessage[13] = (byte)((StartSpeedElevation >> 8) & 0xFF);
+                        NetOutgoingMessage[14] = (byte)(StartSpeedElevation & 0xFF);
+
+                        NetOutgoingMessage[15] = (byte)(HomeTimeoutAzimuth >> 8);
+                        NetOutgoingMessage[16] = (byte)(HomeTimeoutAzimuth & 0xFF);
+
+                        NetOutgoingMessage[17] = (byte)(HomeTimeoutElevation >> 8);
+                        NetOutgoingMessage[18] = (byte)(HomeTimeoutElevation & 0xFF);
+
+                        break;
+                    }
 
                 case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                     {
@@ -229,6 +262,95 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
+                case PLCCommandAndQueryTypeEnum.START_JOG_MOVEMENT:
+                    {
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+
+                        RadioTelescopeAxisEnum AxisEnum = (RadioTelescopeAxisEnum)MessageParameters[0];
+                        int AxisJogSpeed = (int)MessageParameters[1];
+                        bool JogClockwise = (bool)MessageParameters[2];
+
+                        switch (AxisEnum)
+                        {
+                            case RadioTelescopeAxisEnum.AZIMUTH:
+                                {
+                                    NetOutgoingMessage[3] = 0x1;
+                                    break;
+                                }
+
+                            case RadioTelescopeAxisEnum.ELEVATION:
+                                {
+                                    NetOutgoingMessage[3] = 0x2;
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    throw new ArgumentException("Invalid RadioTelescopeAxisEnum value seen while preparing jog movement bytes: " + AxisEnum.ToString());
+                                }
+                        }
+
+                        NetOutgoingMessage[4] = 0x0;
+                        NetOutgoingMessage[5] = (byte)(AxisJogSpeed / 0xFFFF);
+                        NetOutgoingMessage[6] = (byte)((AxisJogSpeed >> 8) & 0xFF);
+                        NetOutgoingMessage[7] = (byte)(AxisJogSpeed & 0xFF);
+
+                        NetOutgoingMessage[8] = (byte)(JogClockwise ? 0x1 : 0x2);
+
+                        break;
+                    }
+
+                case PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION:
+                    {
+                        ResponseExpectationValue = PLCCommandResponseExpectationEnum.MINOR_RESPONSE;
+
+                        RadioTelescopeAxisEnum AxisEnum = (RadioTelescopeAxisEnum)MessageParameters[0];
+                        int AxisJogSpeed = (int)MessageParameters[1];
+                        int position = (int)MessageParameters[2];
+
+                        switch (AxisEnum)
+                        {
+                            case RadioTelescopeAxisEnum.AZIMUTH:
+                                {
+                                    NetOutgoingMessage[3] = 0x1;
+                                    break;
+                                }
+
+                            case RadioTelescopeAxisEnum.ELEVATION:
+                                {
+                                    NetOutgoingMessage[3] = 0x2;
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    throw new ArgumentException("Invalid RadioTelescopeAxisEnum value seen while preparing relative movement bytes: " + AxisEnum.ToString());
+                                }
+                        }
+
+                        NetOutgoingMessage[4] = 0x0;
+                        NetOutgoingMessage[5] = (byte)(AxisJogSpeed / 0xFFFF);
+                        NetOutgoingMessage[6] = (byte)((AxisJogSpeed >> 8) & 0xFF);
+                        NetOutgoingMessage[7] = (byte)(AxisJogSpeed & 0xFF);
+
+                        if (position > 0)
+                        {
+                            NetOutgoingMessage[8] = 0x0;
+                            NetOutgoingMessage[9] = (byte)(position / 0xFFFF);
+                            NetOutgoingMessage[10] = (byte)((position >> 8) & 0xFF);
+                            NetOutgoingMessage[11] = (byte)(position & 0xFF);
+                        }
+                        else
+                        {
+                            NetOutgoingMessage[8] = 0xFF;
+                            NetOutgoingMessage[9] = (byte)((position / 0xFFFF) - 1);
+                            NetOutgoingMessage[10] = (byte)((position >> 8) & 0xFF);
+                            NetOutgoingMessage[11] = (byte)(position & 0xFF);
+                        }
+
+                        break;
+                    }
+
                 default:
                     {
                         throw new ArgumentException("Illegal PLCCommandAndQueryTypeEnum value: " + MessageType.ToString());
@@ -236,8 +358,6 @@ namespace ControlRoomApplication.Controllers
             }
             
             NetOutgoingMessage[2] += (byte)(PLCCommandResponseExpectationConversionHelper.ConvertToByte(ResponseExpectationValue) * 0x40);
-
-            //logger.Info("[PLCClientCommunicationHandler] About to send command " + MessageType.ToString());
 
             // This is the expected response size of anything from the PLC (simulated or real), minor or full response.
             // See the TCP/IP packet contents google sheets file describing this under Wiki Documentation -> Control Room in the shared GDrive

@@ -39,6 +39,7 @@
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.ManualControl = new System.Windows.Forms.Button();
             this.FreeControl = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
@@ -188,17 +189,30 @@
             this.comboBox3.TabIndex = 3;
             this.comboBox3.Text = "PLC Type";
             // 
+            // ManualControl
+            // 
+            this.ManualControl.BackColor = System.Drawing.Color.LightGray;
+            this.ManualControl.Enabled = false;
+            this.ManualControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
+            this.ManualControl.Location = new System.Drawing.Point(916, 23);
+            this.ManualControl.Name = "ManualControl";
+            this.ManualControl.Size = new System.Drawing.Size(187, 72);
+            this.ManualControl.TabIndex = 8;
+            this.ManualControl.Text = "Manual Control";
+            this.ManualControl.UseVisualStyleBackColor = false;
+            this.ManualControl.Click += new System.EventHandler(this.ManualControl_Click);
+            // 
             // FreeControl
             // 
+            this.FreeControl.BackColor = System.Drawing.Color.LightGray;
             this.FreeControl.Enabled = false;
             this.FreeControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.FreeControl.Location = new System.Drawing.Point(1221, 28);
-            this.FreeControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.FreeControl.Location = new System.Drawing.Point(712, 23);
             this.FreeControl.Name = "FreeControl";
-            this.FreeControl.Size = new System.Drawing.Size(249, 89);
-            this.FreeControl.TabIndex = 8;
+            this.FreeControl.Size = new System.Drawing.Size(187, 72);
+            this.FreeControl.TabIndex = 9;
             this.FreeControl.Text = "Free Control";
-            this.FreeControl.UseVisualStyleBackColor = true;
+            this.FreeControl.UseVisualStyleBackColor = false;
             this.FreeControl.Click += new System.EventHandler(this.FreeControl_Click);
             // 
             // MainForm
@@ -207,6 +221,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1483, 747);
             this.Controls.Add(this.FreeControl);
+            this.Controls.Add(this.ManualControl);
             this.Controls.Add(this.comboBox3);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.comboBox2);
@@ -237,6 +252,7 @@
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ComboBox comboBox3;
+        private System.Windows.Forms.Button ManualControl;
         private System.Windows.Forms.Button FreeControl;
     }
 }

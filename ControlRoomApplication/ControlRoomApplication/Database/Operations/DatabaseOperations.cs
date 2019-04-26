@@ -291,7 +291,7 @@ namespace ControlRoomApplication.Database
             Appointment appointment = null;
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                logger.Debug("Retrieving list of appointments.");
+                //logger.Debug("Retrieving list of appointments.");
                 List<Appointment> appointments = GetListOfAppointmentsForRadioTelescope(radioTelescopeId);
 
                 if (appointments.Count > 0)
@@ -303,7 +303,7 @@ namespace ControlRoomApplication.Database
                 }
                 else
                 {
-                    logger.Debug("No appointments found");
+                    //logger.Debug("No appointments found");
                 }
             }
             

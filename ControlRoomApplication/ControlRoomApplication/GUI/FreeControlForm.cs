@@ -11,7 +11,7 @@ namespace ControlRoomApplication.Main
     {
         public Appointment CurrentAppointment { get; set; }
         public Coordinate TargetCoordinate { get; set; }
-        public int Increment { get; set; }
+        public double Increment { get; set; }
         public CoordinateCalculationController CoordCalc { set; get; }
         public ControlRoom controlRoom { get; set; }
         public int rtId { get; set; }
@@ -19,13 +19,15 @@ namespace ControlRoomApplication.Main
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
             InitializeComponent();
-            //ControlRoom
-            rtId = new_rtId;
+            // Set ControlRoom
             controlRoom = new_controlRoom;
+            // Set RT id
+            rtId = new_rtId;
             // Make coordCalc
             CoordCalc = controlRoom.RadioTelescopeControllers[rtId - 1].CoordinateController;
             // Set increment
             Increment = 1;
+            UpdateIncrementButtons();
             // Add free control appt
             CurrentAppointment = new Appointment();
             CurrentAppointment.StartTime = DateTime.UtcNow.AddSeconds(5);
@@ -40,28 +42,69 @@ namespace ControlRoomApplication.Main
             CalibrateMove();
         }
 
+        private void FreeControlForm_FormClosing(Object sender, FormClosingEventArgs e)
+        {
+            timer1.Enabled = false;
+        }
+
         private void PosDecButton_Click(object sender, EventArgs e)
         {
-            TargetCoordinate = new Coordinate(TargetCoordinate.RightAscension, TargetCoordinate.Declination + Increment);
-            CoordMove();
+            Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension, TargetCoordinate.Declination + Increment);
+            Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
+            if(test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
+            {
+                TargetCoordinate = new_coord;
+                CoordMove();
+            }
+            else
+            {
+                errorLabel.Text = "Invalid Coordinate: orienation out of range";
+            }
         }
 
         private void NegDecButton_Click(object sender, EventArgs e)
         {
-            TargetCoordinate = new Coordinate(TargetCoordinate.RightAscension, TargetCoordinate.Declination - Increment);
-            CoordMove();
+            Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension, TargetCoordinate.Declination - Increment);
+            Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
+            if (test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
+            {
+                TargetCoordinate = new_coord;
+                CoordMove();
+            }
+            else
+            {
+                errorLabel.Text = "Invalid Coordinate: orienation out of range";
+            }
         }
 
         private void NegRAButton_Click(object sender, EventArgs e)
         {
-            TargetCoordinate = new Coordinate(TargetCoordinate.RightAscension - Increment, TargetCoordinate.Declination);
-            CoordMove();
+            Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension - Increment, TargetCoordinate.Declination);
+            Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
+            if (test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
+            {
+                TargetCoordinate = new_coord;
+                CoordMove();
+            }
+            else
+            {
+                errorLabel.Text = "Invalid Coordinate: orienation out of range";
+            }
         }
 
         private void PosRAButton_Click(object sender, EventArgs e)
         {
-            TargetCoordinate = new Coordinate(TargetCoordinate.RightAscension + Increment, TargetCoordinate.Declination);
-            CoordMove();
+            Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension + Increment, TargetCoordinate.Declination);
+            Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
+            if (test_orientation.Azimuth >= 0 && test_orientation.Elevation >= 0)
+            {
+                TargetCoordinate = new_coord;
+                CoordMove();
+            }
+            else
+            {
+                errorLabel.Text = "Invalid Coordinate: orienation out of range";
+            }
         }
 
         private void CalibrateButton_Click(object sender, EventArgs e)
@@ -74,7 +117,8 @@ namespace ControlRoomApplication.Main
             CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Orientation = new Entities.Orientation(0, 90);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
-            TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
+            TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.Now);
+            UpdateText();
         }
 
         private void CoordMove()
@@ -82,12 +126,18 @@ namespace ControlRoomApplication.Main
             CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Coordinates.Add(TargetCoordinate);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
+            UpdateText();
+        }
+
+        private void UpdateText()
+        {
+            SetTargetRAText(TargetCoordinate.RightAscension.ToString("0.##"));
+            SetTargetDecText(TargetCoordinate.Declination.ToString("0.##"));
+            errorLabel.Text = "Free Control for Radio Telescope " + rtId.ToString();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            SetTargetRAText(TargetCoordinate.RightAscension.ToString("0.##"));
-            SetTargetDecText(TargetCoordinate.Declination.ToString("0.##"));
             Entities.Orientation currentOrienation = controlRoom.RadioTelescopeControllers[rtId - 1].GetCurrentOrientation();
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
             SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
@@ -160,6 +210,92 @@ namespace ControlRoomApplication.Main
             {
                 ActualDecTextBox.Text = text;
             }
+        }
+
+        private void oneForthButton_Click(object sender, EventArgs e)
+        {
+            Increment = 0.25;
+            UpdateIncrementButtons();
+        }
+
+        private void oneButton_Click(object sender, EventArgs e)
+        {
+            Increment = 1;
+            UpdateIncrementButtons();
+        }
+
+        private void fiveButton_Click(object sender, EventArgs e)
+        {
+            Increment = 5;
+            UpdateIncrementButtons();
+        }
+
+        private void tenButton_Click(object sender, EventArgs e)
+        {
+            Increment = 10;
+            UpdateIncrementButtons();
+        }
+
+        private void UpdateIncrementButtons()
+        {
+            oneForthButton.BackColor = System.Drawing.Color.LightGray;
+            oneButton.BackColor = System.Drawing.Color.LightGray;
+            fiveButton.BackColor = System.Drawing.Color.LightGray;
+            tenButton.BackColor = System.Drawing.Color.LightGray;
+
+            switch (Increment)
+            {
+                case (0.25):
+                    oneForthButton.BackColor = System.Drawing.Color.DarkGray;
+                    break;
+                case (1):
+                    oneButton.BackColor = System.Drawing.Color.DarkGray;
+                    break;
+                case (5):
+                    fiveButton.BackColor = System.Drawing.Color.DarkGray;
+                    break;
+                case (10):
+                    tenButton.BackColor = System.Drawing.Color.DarkGray;
+                    break;
+                default:
+                    throw new ArgumentException("Invalid Increment");
+            }
+        }
+
+        private void editButton_Click(object sender, EventArgs e)
+        {
+            bool save_state = (editButton.Text == "Save Position");
+            if (save_state)
+            {
+                editButton.Text = "Edit Position";
+                double newRA;
+                double newDec;
+                Double.TryParse(TargetRATextBox.Text, out newRA);
+                Double.TryParse(TargetDecTextBox.Text, out newDec);
+                Coordinate new_coord = new Coordinate(newRA, newDec);
+                Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
+                if (test_orientation.Azimuth >= 0 && test_orientation.Elevation >= 0)
+                {
+                    TargetCoordinate = new_coord;
+                    CoordMove();
+                }
+                else
+                {
+                    errorLabel.Text = "Invalid Coordinate: orienation out of range";
+                }
+            }
+            else
+            {
+                editButton.Text = "Save Position";
+            }
+
+            PosDecButton.Enabled = save_state;
+            NegDecButton.Enabled = save_state;
+            PosRAButton.Enabled = save_state;
+            NegRAButton.Enabled = save_state;
+            CalibrateButton.Enabled = save_state;
+            TargetRATextBox.ReadOnly = save_state;
+            TargetDecTextBox.ReadOnly = save_state;
         }
     }
 }
