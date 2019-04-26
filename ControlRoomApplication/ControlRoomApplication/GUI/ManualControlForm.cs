@@ -10,6 +10,8 @@ namespace ControlRoomApplication.Main
         public RadioTelescopeController rt_controller { get; set; }
         public ControlRoom controlRoom { get; set; }
         public int speed { get; set; }
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public ManualControlForm(ControlRoom new_controlRoom, int rtId)
         {
@@ -27,10 +29,13 @@ namespace ControlRoomApplication.Main
             // Set speed
             comboBox1.Text = "0.1 RPM";
             speed = 16667;
+
+            logger.Info("ManualControlForm Initalized");
         }
 
         private void ManualControlForm_FormClosing(Object sender, FormClosingEventArgs e)
         {
+            logger.Info("ManualControl Form Closing");
             timer1.Enabled = false;
         }
 
@@ -41,6 +46,7 @@ namespace ControlRoomApplication.Main
 
         private void NegButton_MouseDown(object sender, MouseEventArgs e)
         {
+            logger.Info("Jog NegButton MouseDown");
             UpdateText("Moving at -" + comboBox1.Text);
 
             // Start CCW Jog
@@ -49,6 +55,7 @@ namespace ControlRoomApplication.Main
 
         private void NegButton_MouseUp(object sender, MouseEventArgs e)
         {
+            logger.Info("Jog NegButton MouseUp");
             UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Stop Move
@@ -57,6 +64,7 @@ namespace ControlRoomApplication.Main
 
         private void PosButton_MouseDown(object sender, MouseEventArgs e)
         {
+            logger.Info("Jog PosButton MouseDown");
             UpdateText("Moving at " + comboBox1.Text);
 
             // Start CW Jog
@@ -65,6 +73,7 @@ namespace ControlRoomApplication.Main
 
         private void PosButton_MouseUp(object sender, MouseEventArgs e)
         {
+            logger.Info("Jog PosButton MouseUp");
             UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Stop Move
@@ -75,46 +84,43 @@ namespace ControlRoomApplication.Main
         {
             if(comboBox1.Text == "2 RPM")
             {
+                logger.Info("Speed set to 2 RPM");
                 speed = 333333;
             }
             else if(comboBox1.Text == "0.1 RPM")
             {
+                logger.Info("Speed set to 0.1 RPM");
                 speed = 16667;
             }
             else
             {
+                logger.Info("Invalid Speed Selected");
                 throw new Exception();
             }
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            // Do nothing
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            // Do nothing
         }
 
         private void ExecuteCorrectStop()
         {
             if (radioButton1.Checked)
             {
+                logger.Info("Executed Controlled Stop");
                 rt_controller.ExecuteRadioTelescopeControlledStop();
             }
             else if (radioButton2.Checked)
             {
+                logger.Info("Executed Immediate Stop");
                 rt_controller.ExecuteRadioTelescopeImmediateStop();
             }
             else
             {
+                logger.Info("Invalid Stop Selected");
                 throw new Exception();
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            logger.Info("Move Relative Button Clicked");
             int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
             rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
         }

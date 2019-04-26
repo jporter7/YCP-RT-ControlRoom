@@ -2,7 +2,6 @@
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using System;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace ControlRoomApplication.Main
@@ -15,6 +14,8 @@ namespace ControlRoomApplication.Main
         public CoordinateCalculationController CoordCalc { set; get; }
         public ControlRoom controlRoom { get; set; }
         public int rtId { get; set; }
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
@@ -38,17 +39,21 @@ namespace ControlRoomApplication.Main
             CurrentAppointment.TelescopeId = rtId;
             CurrentAppointment.UserId = 1;
             DatabaseOperations.AddAppointment(CurrentAppointment);
-            // Calibrate Telescope
+            //Calibrate Move
             CalibrateMove();
+
+            logger.Info("FreeControl Form Initalized");
         }
 
         private void FreeControlForm_FormClosing(Object sender, FormClosingEventArgs e)
         {
+            logger.Info("FreeControl Form Closing");
             timer1.Enabled = false;
         }
 
         private void PosDecButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Positive Declination Button Clicked");
             Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension, TargetCoordinate.Declination + Increment);
             Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
             if(test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
@@ -64,6 +69,7 @@ namespace ControlRoomApplication.Main
 
         private void NegDecButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Negitive Declination Button Clicked");
             Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension, TargetCoordinate.Declination - Increment);
             Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
             if (test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
@@ -79,6 +85,7 @@ namespace ControlRoomApplication.Main
 
         private void NegRAButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Negitive Right Ascension Button Clicked");
             Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension - Increment, TargetCoordinate.Declination);
             Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
             if (test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
@@ -94,6 +101,7 @@ namespace ControlRoomApplication.Main
 
         private void PosRAButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Positive Right Ascension Button Clicked");
             Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension + Increment, TargetCoordinate.Declination);
             Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
             if (test_orientation.Azimuth >= 0 && test_orientation.Elevation >= 0)
@@ -109,11 +117,13 @@ namespace ControlRoomApplication.Main
 
         private void CalibrateButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Calibrate Button Clicked");
             CalibrateMove();
         }
 
         public void CalibrateMove()
         {
+            logger.Info("CalibrateMove ");
             CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Orientation = new Entities.Orientation(0, 90);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
@@ -123,6 +133,7 @@ namespace ControlRoomApplication.Main
 
         private void CoordMove()
         {
+            logger.Info("CoordMove ");
             CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Coordinates.Add(TargetCoordinate);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
@@ -131,8 +142,11 @@ namespace ControlRoomApplication.Main
 
         private void UpdateText()
         {
-            SetTargetRAText(TargetCoordinate.RightAscension.ToString("0.##"));
-            SetTargetDecText(TargetCoordinate.Declination.ToString("0.##"));
+            string RA = TargetCoordinate.RightAscension.ToString("0.##");
+            string Dec = TargetCoordinate.Declination.ToString("0.##");
+            logger.Info("UpdateText, Target Coordinate = RA:" + RA + ", Dec:" + Dec);
+            SetTargetRAText(RA);
+            SetTargetDecText(Dec);
             errorLabel.Text = "Free Control for Radio Telescope " + rtId.ToString();
         }
 
@@ -214,24 +228,28 @@ namespace ControlRoomApplication.Main
 
         private void oneForthButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Increment = 0.25 Button Clicked");
             Increment = 0.25;
             UpdateIncrementButtons();
         }
 
         private void oneButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Increment = 1 Button Clicked");
             Increment = 1;
             UpdateIncrementButtons();
         }
 
         private void fiveButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Increment = 5 Button Clicked");
             Increment = 5;
             UpdateIncrementButtons();
         }
 
         private void tenButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Increment = 10 Button Clicked");
             Increment = 10;
             UpdateIncrementButtons();
         }
@@ -245,16 +263,16 @@ namespace ControlRoomApplication.Main
 
             switch (Increment)
             {
-                case (0.25):
+                case 0.25:
                     oneForthButton.BackColor = System.Drawing.Color.DarkGray;
                     break;
-                case (1):
+                case 1:
                     oneButton.BackColor = System.Drawing.Color.DarkGray;
                     break;
-                case (5):
+                case 5:
                     fiveButton.BackColor = System.Drawing.Color.DarkGray;
                     break;
-                case (10):
+                case 10:
                     tenButton.BackColor = System.Drawing.Color.DarkGray;
                     break;
                 default:
@@ -264,14 +282,15 @@ namespace ControlRoomApplication.Main
 
         private void editButton_Click(object sender, EventArgs e)
         {
+            logger.Info("Edit Button Clicked");
             bool save_state = (editButton.Text == "Save Position");
             if (save_state)
             {
                 editButton.Text = "Edit Position";
                 double newRA;
                 double newDec;
-                Double.TryParse(TargetRATextBox.Text, out newRA);
-                Double.TryParse(TargetDecTextBox.Text, out newDec);
+                double.TryParse(TargetRATextBox.Text, out newRA);
+                double.TryParse(TargetDecTextBox.Text, out newDec);
                 Coordinate new_coord = new Coordinate(newRA, newDec);
                 Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
                 if (test_orientation.Azimuth >= 0 && test_orientation.Elevation >= 0)

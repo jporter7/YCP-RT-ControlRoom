@@ -137,7 +137,6 @@
             this.radioButton2.TabIndex = 22;
             this.radioButton2.Text = "Immediate Stop";
             this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
             // button1
             // 
