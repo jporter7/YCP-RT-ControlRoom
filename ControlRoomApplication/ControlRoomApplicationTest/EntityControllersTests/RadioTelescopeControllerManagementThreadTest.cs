@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
@@ -17,8 +16,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         private Location JohnRudyPark;
         private Orientation CalibrationOrientation;
 
-        private PLCClientCommunicationHandler PLCCCH0;
-        private PLCClientCommunicationHandler PLCCCH1;
+        private AbstractHardwareCommunicationHandler PLCCCH0;
+        private AbstractHardwareCommunicationHandler PLCCCH1;
 
         private RadioTelescopeController RTC0;
         private RadioTelescopeController RTC1;
@@ -36,11 +35,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             JohnRudyPark = MiscellaneousConstants.JOHN_RUDY_PARK;
             CalibrationOrientation = new Orientation(0, 90);
 
-            PLCCCH0 = new PLCClientCommunicationHandler(IP, Port0);
+            PLCCCH0 = new TCPIPCommunicationHandler(IP, Port0);
             RTC0 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH0, JohnRudyPark, CalibrationOrientation, 1));
             RTCMT0 = new RadioTelescopeControllerManagementThread(RTC0);
 
-            PLCCCH1 = new PLCClientCommunicationHandler(IP, Port1);
+            PLCCCH1 = new TCPIPCommunicationHandler(IP, Port1);
             RTC1 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH1, JohnRudyPark, CalibrationOrientation, 2));
             RTCMT1 = new RadioTelescopeControllerManagementThread(RTC1);
         }

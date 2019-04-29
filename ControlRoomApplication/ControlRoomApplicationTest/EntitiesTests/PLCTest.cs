@@ -9,54 +9,54 @@ namespace ControlRoomApplicationTest.EntitiesTests
     {
         public void PLCRadioTelescopeStatusConversionHelperTest() {
             //checking GetFromByte returns
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.UNDEFINED, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x0));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.IN_BRINGUP_SEQUENCE, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x1));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.ONLINE_AND_IDLE, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x2));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.ONLINE_AND_MOVING, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x3));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.ONLINE_AND_CANCELLING_ACTIVE_MOVE, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x4));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.IN_SHUTDOWN_SEQUENCE, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x5));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.EMERGENCY_STOPPED_BRB, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x6));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.EMERGENCY_STOPPED_SAFETY_INTERLOCK, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x7));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.EMERGENCY_STOPPED_CAMERA, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0x8));
-            Assert.AreEqual(PLCRadioTelescopeStatusEnum.MISCELLANEOUS_ERROR, PLCRadioTelescopeStatusConversionHelper.GetFromByte(0xff));
+            Assert.AreEqual(RadioTelescopeStatusEnum.UNDEFINED, RadioTelescopeStatusConversionHelper.GetFromByte(0x0));
+            Assert.AreEqual(RadioTelescopeStatusEnum.IN_BRINGUP_SEQUENCE, RadioTelescopeStatusConversionHelper.GetFromByte(0x1));
+            Assert.AreEqual(RadioTelescopeStatusEnum.ONLINE_AND_IDLE, RadioTelescopeStatusConversionHelper.GetFromByte(0x2));
+            Assert.AreEqual(RadioTelescopeStatusEnum.ONLINE_AND_MOVING, RadioTelescopeStatusConversionHelper.GetFromByte(0x3));
+            Assert.AreEqual(RadioTelescopeStatusEnum.ONLINE_AND_CANCELLING_ACTIVE_MOVE, RadioTelescopeStatusConversionHelper.GetFromByte(0x4));
+            Assert.AreEqual(RadioTelescopeStatusEnum.IN_SHUTDOWN_SEQUENCE, RadioTelescopeStatusConversionHelper.GetFromByte(0x5));
+            Assert.AreEqual(RadioTelescopeStatusEnum.EMERGENCY_STOPPED_BRB, RadioTelescopeStatusConversionHelper.GetFromByte(0x6));
+            Assert.AreEqual(RadioTelescopeStatusEnum.EMERGENCY_STOPPED_SAFETY_INTERLOCK, RadioTelescopeStatusConversionHelper.GetFromByte(0x7));
+            Assert.AreEqual(RadioTelescopeStatusEnum.EMERGENCY_STOPPED_CAMERA, RadioTelescopeStatusConversionHelper.GetFromByte(0x8));
+            Assert.AreEqual(RadioTelescopeStatusEnum.MISCELLANEOUS_ERROR, RadioTelescopeStatusConversionHelper.GetFromByte(0xff));
 
             //ConvertToByte
-            Assert.AreEqual(0x0, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.UNDEFINED));
-            Assert.AreEqual(0x1, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.IN_BRINGUP_SEQUENCE));
-            Assert.AreEqual(0x2, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.ONLINE_AND_IDLE));
-            Assert.AreEqual(0x3, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.ONLINE_AND_MOVING));
-            Assert.AreEqual(0x4, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.ONLINE_AND_CANCELLING_ACTIVE_MOVE));
-            Assert.AreEqual(0x5, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.IN_SHUTDOWN_SEQUENCE));
-            Assert.AreEqual(0x6, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.EMERGENCY_STOPPED_BRB));
-            Assert.AreEqual(0x7, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.EMERGENCY_STOPPED_SAFETY_INTERLOCK));
-            Assert.AreEqual(0x8, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.EMERGENCY_STOPPED_CAMERA));
-            Assert.AreEqual(0xff, PLCRadioTelescopeStatusConversionHelper.ConvertToByte(PLCRadioTelescopeStatusEnum.MISCELLANEOUS_ERROR));
+            Assert.AreEqual(0x0, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.UNDEFINED));
+            Assert.AreEqual(0x1, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.IN_BRINGUP_SEQUENCE));
+            Assert.AreEqual(0x2, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.ONLINE_AND_IDLE));
+            Assert.AreEqual(0x3, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.ONLINE_AND_MOVING));
+            Assert.AreEqual(0x4, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.ONLINE_AND_CANCELLING_ACTIVE_MOVE));
+            Assert.AreEqual(0x5, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.IN_SHUTDOWN_SEQUENCE));
+            Assert.AreEqual(0x6, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.EMERGENCY_STOPPED_BRB));
+            Assert.AreEqual(0x7, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.EMERGENCY_STOPPED_SAFETY_INTERLOCK));
+            Assert.AreEqual(0x8, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.EMERGENCY_STOPPED_CAMERA));
+            Assert.AreEqual(0xff, RadioTelescopeStatusConversionHelper.ConvertToByte(RadioTelescopeStatusEnum.MISCELLANEOUS_ERROR));
 
         }
 
         public void PLCSafetyInterlockStatusEnumTest() {
             //GetFromByte Tests
-            Assert.AreEqual(PLCSafetyInterlockStatusEnum.UNDEFINED, PLCSafetyInterlockStatusConversionHelper.GetFromByte(0x0));
-            Assert.AreEqual(PLCSafetyInterlockStatusEnum.LOCKED, PLCSafetyInterlockStatusConversionHelper.GetFromByte(0x1));
-            Assert.AreEqual(PLCSafetyInterlockStatusEnum.UNLOCKED, PLCSafetyInterlockStatusConversionHelper.GetFromByte(0x2));
+            Assert.AreEqual(SafetyInterlockStatusEnum.UNDEFINED, SafetyInterlockStatusConversionHelper.GetFromByte(0x0));
+            Assert.AreEqual(SafetyInterlockStatusEnum.LOCKED, SafetyInterlockStatusConversionHelper.GetFromByte(0x1));
+            Assert.AreEqual(SafetyInterlockStatusEnum.UNLOCKED, SafetyInterlockStatusConversionHelper.GetFromByte(0x2));
 
             //ConvertToByte Tests
-            Assert.AreEqual(0x0, PLCSafetyInterlockStatusConversionHelper.ConvertToByte(PLCSafetyInterlockStatusEnum.UNDEFINED));
-            Assert.AreEqual(0x1, PLCSafetyInterlockStatusConversionHelper.ConvertToByte(PLCSafetyInterlockStatusEnum.LOCKED));
-            Assert.AreEqual(0x2, PLCSafetyInterlockStatusConversionHelper.ConvertToByte(PLCSafetyInterlockStatusEnum.UNLOCKED));
+            Assert.AreEqual(0x0, SafetyInterlockStatusConversionHelper.ConvertToByte(SafetyInterlockStatusEnum.UNDEFINED));
+            Assert.AreEqual(0x1, SafetyInterlockStatusConversionHelper.ConvertToByte(SafetyInterlockStatusEnum.LOCKED));
+            Assert.AreEqual(0x2, SafetyInterlockStatusConversionHelper.ConvertToByte(SafetyInterlockStatusEnum.UNLOCKED));
         }
 
         public void PLCLimitSwitchStatusEnumTest()
         {
             //GetFromByte Tests
-            Assert.AreEqual(PLCLimitSwitchStatusEnum.UNDEFINED, PLCLimitSwitchStatusConversionHelper.GetFromByte(0x0));
-            Assert.AreEqual(PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS, PLCLimitSwitchStatusConversionHelper.GetFromByte(0x1));
-            Assert.AreEqual(PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS, PLCLimitSwitchStatusConversionHelper.GetFromByte(0x2));
+            Assert.AreEqual(LimitSwitchStatusEnum.UNDEFINED, LimitSwitchStatusConversionHelper.GetFromByte(0x0));
+            Assert.AreEqual(LimitSwitchStatusEnum.WITHIN_SAFE_LIMITS, LimitSwitchStatusConversionHelper.GetFromByte(0x1));
+            Assert.AreEqual(LimitSwitchStatusEnum.WITHIN_WARNING_LIMITS, LimitSwitchStatusConversionHelper.GetFromByte(0x2));
 
             //ConvertToByte Tests
-            Assert.AreEqual(0x0, PLCLimitSwitchStatusConversionHelper.ConvertToByte(PLCLimitSwitchStatusEnum.UNDEFINED));
-            Assert.AreEqual(0x1, PLCLimitSwitchStatusConversionHelper.ConvertToByte(PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS));
-            Assert.AreEqual(0x2, PLCLimitSwitchStatusConversionHelper.ConvertToByte(PLCLimitSwitchStatusEnum.WITHIN_WARNING_LIMITS));
+            Assert.AreEqual(0x0, LimitSwitchStatusConversionHelper.ConvertToByte(LimitSwitchStatusEnum.UNDEFINED));
+            Assert.AreEqual(0x1, LimitSwitchStatusConversionHelper.ConvertToByte(LimitSwitchStatusEnum.WITHIN_SAFE_LIMITS));
+            Assert.AreEqual(0x2, LimitSwitchStatusConversionHelper.ConvertToByte(LimitSwitchStatusEnum.WITHIN_WARNING_LIMITS));
         }
 
     }

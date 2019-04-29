@@ -13,20 +13,20 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         private static int port = PLCConstants.PORT_8080;
 
         private static RadioTelescopeController TestRadioTelescopeController;
-        private static TestPLCDriver TestRTPLC;
+        private static TestPLCTCPIPReceiver TestRTPLC;
 
         [ClassInitialize]
         public static void SetUp(TestContext context)
         {
-            PLCClientCommunicationHandler PLCClientCommHandler = new PLCClientCommunicationHandler(ip, port);
+            AbstractHardwareCommunicationHandler PLCClientCommHandler = new TCPIPCommunicationHandler(ip, port);
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCClientCommHandler, location, new Orientation(0, 0));
             TestRadioTelescopeController = new RadioTelescopeController(TestRT);
 
-            TestRTPLC = new TestPLCDriver(ip, port);
+            TestRTPLC = new TestPLCTCPIPReceiver(ip, port);
             TestRTPLC.StartAsyncAcceptingClients();
-            TestRT.PLCClient.ConnectToServer();
+            TestRT.HardwareCommsHandler.StartCommunicationThread();
         }
 
         [TestMethod]
@@ -134,8 +134,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [ClassCleanup]
         public static void BringDown()
         {
-            TestRadioTelescopeController.RadioTelescope.PLCClient.TerminateTCPServerConnection();
-            TestRTPLC.RequestStopAsyncAcceptingClientsAndJoin();
+            TestRadioTelescopeController.RadioTelescope.HardwareCommsHandler.TerminateAndJoinCommunicationThread();
+            TestRTPLC.StopAsyncAcceptingClientsAndJoin();
         }
     }
 }

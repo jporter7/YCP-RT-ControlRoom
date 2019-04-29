@@ -2,7 +2,7 @@
 
 namespace ControlRoomApplication.Entities
 {
-    public enum PLCRadioTelescopeStatusEnum : byte
+    public enum RadioTelescopeStatusEnum : byte
     {
         UNDEFINED = 0x0,
         IN_BRINGUP_SEQUENCE = 0x1,
@@ -16,25 +16,25 @@ namespace ControlRoomApplication.Entities
         MISCELLANEOUS_ERROR = 0xFF
     }
 
-    public class PLCRadioTelescopeStatusConversionHelper
+    public class RadioTelescopeStatusConversionHelper
     {
-        public static PLCRadioTelescopeStatusEnum GetFromByte(byte input)
+        public static RadioTelescopeStatusEnum GetFromByte(byte input)
         {
-            if (!Enum.IsDefined(typeof(PLCRadioTelescopeStatusEnum), input))
+            if (!Enum.IsDefined(typeof(RadioTelescopeStatusEnum), input))
             {
-                return PLCRadioTelescopeStatusEnum.UNDEFINED;
+                return RadioTelescopeStatusEnum.UNDEFINED;
             }
             else
             {
-                return (PLCRadioTelescopeStatusEnum)input;
+                return (RadioTelescopeStatusEnum)input;
             }
         }
 
-        public static byte ConvertToByte(PLCRadioTelescopeStatusEnum input)
+        public static byte ConvertToByte(RadioTelescopeStatusEnum input)
         {
-            if (!Enum.IsDefined(typeof(PLCRadioTelescopeStatusEnum), input))
+            if (!Enum.IsDefined(typeof(RadioTelescopeStatusEnum), input))
             {
-                return ConvertToByte(PLCRadioTelescopeStatusEnum.UNDEFINED);
+                return ConvertToByte(RadioTelescopeStatusEnum.UNDEFINED);
             }
             else
             {

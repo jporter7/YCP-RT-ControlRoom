@@ -7,9 +7,9 @@ namespace ControlRoomApplication.Entities
     [Table("radio_telescope")]
     public class RadioTelescope
     {
-        public RadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCClientCommunicationHandler plcCommsHandler, Location location, Orientation calibrationOrientation)
+        public RadioTelescope(AbstractSpectraCyberController spectraCyberController, AbstractHardwareCommunicationHandler hardwareCommsHandler, Location location, Orientation calibrationOrientation)
         {
-            PLCClient = plcCommsHandler;
+            HardwareCommsHandler = hardwareCommsHandler;
             SpectraCyberController = spectraCyberController;
             CalibrationOrientation = calibrationOrientation;
             Location = location;
@@ -19,8 +19,8 @@ namespace ControlRoomApplication.Entities
         //
         // This is only to be used with a local DB instance!!
         //
-        public RadioTelescope(AbstractSpectraCyberController spectraCyberController, PLCClientCommunicationHandler plcCommsHandler, Location location, Orientation calibrationOrientation, int localDBID)
-            : this(spectraCyberController, plcCommsHandler, location, calibrationOrientation)
+        public RadioTelescope(AbstractSpectraCyberController spectraCyberController, AbstractHardwareCommunicationHandler hardwareCommsHandler, Location location, Orientation calibrationOrientation, int localDBID)
+            : this(spectraCyberController, hardwareCommsHandler, location, calibrationOrientation)
         {
             Id = localDBID;
         }
@@ -39,7 +39,7 @@ namespace ControlRoomApplication.Entities
         [Column("location")]
         public Location Location { get; set; }
 
-        public PLCClientCommunicationHandler PLCClient { get; set; }
+        public AbstractHardwareCommunicationHandler HardwareCommsHandler { get; set; }
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
     }
 }

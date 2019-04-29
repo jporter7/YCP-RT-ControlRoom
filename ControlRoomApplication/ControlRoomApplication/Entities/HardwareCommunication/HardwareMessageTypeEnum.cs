@@ -2,7 +2,7 @@
 
 namespace ControlRoomApplication.Entities
 {
-    public enum PLCCommandAndQueryTypeEnum : byte
+    public enum HardwareMessageTypeEnum : byte
     {
         UNDEFINED = 0x0,
         TEST_CONNECTION = 0x1,
@@ -20,25 +20,25 @@ namespace ControlRoomApplication.Entities
         TRANSLATE_AZEL_POSITION = 0xD
     }
 
-    public class PLCCommandAndQueryTypeConversionHelper
+    public class HardwareMessageTypeEnumConversionHelper
     {
-        public static PLCCommandAndQueryTypeEnum GetFromByte(byte input)
+        public static HardwareMessageTypeEnum GetFromByte(byte input)
         {
-            if (!Enum.IsDefined(typeof(PLCCommandAndQueryTypeEnum), input))
+            if (!Enum.IsDefined(typeof(HardwareMessageTypeEnum), input))
             {
-                return PLCCommandAndQueryTypeEnum.UNDEFINED;
+                return HardwareMessageTypeEnum.UNDEFINED;
             }
             else
             {
-                return (PLCCommandAndQueryTypeEnum)input;
+                return (HardwareMessageTypeEnum)input;
             }
         }
 
-        public static byte ConvertToByte(PLCCommandAndQueryTypeEnum input)
+        public static byte ConvertToByte(HardwareMessageTypeEnum input)
         {
-            if (!Enum.IsDefined(typeof(PLCCommandAndQueryTypeEnum), input))
+            if (!Enum.IsDefined(typeof(HardwareMessageTypeEnum), input))
             {
-                return ConvertToByte(PLCCommandAndQueryTypeEnum.UNDEFINED);
+                return ConvertToByte(HardwareMessageTypeEnum.UNDEFINED);
             }
             else
             {
