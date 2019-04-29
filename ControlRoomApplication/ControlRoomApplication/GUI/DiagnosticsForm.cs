@@ -7,7 +7,7 @@ namespace ControlRoomApplication.GUI
     {
         private ControlRoom controlRoom;
         private int rtId;
-        private string[] statuses = { "Offline", "Offline" };
+        private string[] statuses = { "Offline", "Offline", "Offline" };
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -27,9 +27,11 @@ namespace ControlRoomApplication.GUI
             GetStatuses();
             string[] spectraCyberRow = { "SpectraCyber", statuses[0] };
             string[] weatherStationRow = { "Weather Station", statuses[1] };
+            string[] mcuRow = { "MCU", statuses[2] };
 
             dataGridView1.Rows.Add(spectraCyberRow);
             dataGridView1.Rows.Add(weatherStationRow);
+            dataGridView1.Rows.Add(mcuRow);
             dataGridView1.Update();
 
             label3.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString();
