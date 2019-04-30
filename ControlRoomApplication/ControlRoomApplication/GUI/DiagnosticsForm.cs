@@ -54,5 +54,28 @@ namespace ControlRoomApplication.GUI
                 statuses[1] = "Online";
             }
         }
+
+        public delegate void SetStartTimeTextCallback(string text);
+        public void SetStartTimeText(string text)
+        {
+            if (startTimeTextBox.InvokeRequired)
+            {
+                SetStartTimeTextCallback d = new SetStartTimeTextCallback(SetStartTimeText);
+                Invoke(d, new object[] { text });
+            }
+            else
+            {
+                startTimeTextBox.Text = text;
+            }
+        }
+
+        private void timer1_Tick(object sender, System.EventArgs e)
+        {
+            if (controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay != null)
+            {
+                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToShortDateString());
+            }
+            
+        }
     }
 }

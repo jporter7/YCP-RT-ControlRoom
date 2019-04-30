@@ -11,6 +11,7 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public RadioTelescopeController RTController { get; private set; }
+        public Appointment AppointmentToDisplay { get; private set; }
 
         private Thread ManagementThread;
         private Mutex ManagementMutex;
@@ -225,6 +226,7 @@ namespace ControlRoomApplication.Controllers
             }
 
             logger.Info("The next appointment is now within the correct timeframe.");
+            AppointmentToDisplay = NextAppointment;
             return NextAppointment;
         }
 
