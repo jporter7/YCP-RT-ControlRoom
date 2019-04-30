@@ -73,9 +73,10 @@ namespace ControlRoomApplication.GUI
         {
             if (controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay != null)
             {
-                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToShortDateString());
+                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToLocalTime().ToString());
             }
-            
+
+            dataGridView1.Update();
         }
     }
 }
