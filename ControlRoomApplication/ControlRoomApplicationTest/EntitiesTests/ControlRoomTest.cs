@@ -16,16 +16,16 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestInitialize]
         public void BuildUp()
         {
-            string IP = PLCConstants.LOCAL_HOST_IP;
+            string IP = MiscellaneousConstants.LOCAL_HOST_IP;
 
             rtManagementThreads = new List<RadioTelescopeControllerManagementThread>()
             {
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TCPIPCommunicationHandler(IP, 8080), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new YCPBaseTCPIPCommunicationHandler(IP, 8080), new Location(), new Orientation()))),
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TCPIPCommunicationHandler(IP, 8081), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new YCPBaseTCPIPCommunicationHandler(IP, 8081), new Location(), new Orientation()))),
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TCPIPCommunicationHandler(IP, 8082), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new YCPBaseTCPIPCommunicationHandler(IP, 8082), new Location(), new Orientation()))),
             };
 
             controlRoom = new ControlRoom(weatherStation);

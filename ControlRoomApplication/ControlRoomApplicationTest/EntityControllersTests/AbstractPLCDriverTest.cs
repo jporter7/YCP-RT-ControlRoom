@@ -13,7 +13,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [ClassInitialize]
         public static void BringUp(TestContext context)
         {
-            DerivedAbstractPLCDriver = new TestPLCTCPIPReceiver(PLCConstants.LOCAL_HOST_IP, 8080);
+            DerivedAbstractPLCDriver = new TestPLCTCPIPReceiver(MiscellaneousConstants.LOCAL_HOST_IP, 8080);
         }
 
         [TestMethod]

@@ -2,7 +2,7 @@
 
 namespace ControlRoomApplication.Entities
 {
-    public enum HardwareMesageResponseExpectationEnum : byte
+    public enum HardwareMessageResponseExpectationEnum : byte
     {
         UNDEFINED = 0x0,
         MINOR_RESPONSE = 0x1,
@@ -11,23 +11,23 @@ namespace ControlRoomApplication.Entities
 
     public class HardwareMessageResponseExpectationConversionHelper
     {
-        public static HardwareMesageResponseExpectationEnum GetFromByte(byte input)
+        public static HardwareMessageResponseExpectationEnum GetFromByte(byte input)
         {
-            if (!Enum.IsDefined(typeof(HardwareMesageResponseExpectationEnum), input))
+            if (!Enum.IsDefined(typeof(HardwareMessageResponseExpectationEnum), input))
             {
-                return HardwareMesageResponseExpectationEnum.UNDEFINED;
+                return HardwareMessageResponseExpectationEnum.UNDEFINED;
             }
             else
             {
-                return (HardwareMesageResponseExpectationEnum)input;
+                return (HardwareMessageResponseExpectationEnum)input;
             }
         }
 
-        public static byte ConvertToByte(HardwareMesageResponseExpectationEnum input)
+        public static byte ConvertToByte(HardwareMessageResponseExpectationEnum input)
         {
-            if (!Enum.IsDefined(typeof(HardwareMesageResponseExpectationEnum), input))
+            if (!Enum.IsDefined(typeof(HardwareMessageResponseExpectationEnum), input))
             {
-                return ConvertToByte(HardwareMesageResponseExpectationEnum.UNDEFINED);
+                return ConvertToByte(HardwareMessageResponseExpectationEnum.UNDEFINED);
             }
             else
             {

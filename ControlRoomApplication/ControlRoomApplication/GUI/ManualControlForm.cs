@@ -116,7 +116,7 @@ namespace ControlRoomApplication.Main
         private void button1_Click(object sender, EventArgs e)
         {
             int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
-            rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
+            rt_controller.ExecuteRelativeMoveAzimuth(speed, pos);
         }
 
         private void timer1_Tick(object sender, EventArgs e)

@@ -13,8 +13,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static ControlRoomController CRController;
         public static ControlRoom ControlRoom;
         public static Orientation CalibrationOrientation;
-        public static string IP = PLCConstants.LOCAL_HOST_IP;
-        public static int Port = PLCConstants.PORT_8080;
+        public static string IP = MiscellaneousConstants.LOCAL_HOST_IP;
+        public static int Port = MiscellaneousConstants.PORT_8080;
         public static RadioTelescopeController RTController0;
         public static RadioTelescopeController RTController1;
         public static RadioTelescopeController RTController2;
@@ -33,7 +33,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController0 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new TCPIPCommunicationHandler(IP, Port),
+                    new YCPBaseTCPIPCommunicationHandler(IP, Port),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -42,7 +42,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController1 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new TCPIPCommunicationHandler(IP, Port),
+                    new YCPBaseTCPIPCommunicationHandler(IP, Port),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -51,7 +51,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController2 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new TCPIPCommunicationHandler(IP, Port),
+                    new YCPBaseTCPIPCommunicationHandler(IP, Port),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -103,7 +103,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             {
                 ManagementThread.Start();
             }
-
 
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, false));
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeControllerAt(0, false));

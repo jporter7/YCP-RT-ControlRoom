@@ -6,7 +6,7 @@ using ControlRoomApplication.Simulators.Hardware.MCU;
 
 namespace ControlRoomApplication.Controllers
 {
-    public class SimulationPLCTCPIPReceiver : AbstractHardwareReceiver
+    public class SimulationPLCTCPIPReceiver : AbstractSimulationHardwareTCPIPReceiver
     {
         private SimulationMCU SimMCU;
 
@@ -33,11 +33,11 @@ namespace ControlRoomApplication.Controllers
             byte ExpectedResponseStatusByte = (byte)(CommandQueryTypeAndExpectedResponseStatus >> 6);
 
             HardwareMessageTypeEnum CommandQueryTypeEnum = HardwareMessageTypeEnumConversionHelper.GetFromByte(CommandQueryTypeByte);
-            HardwareMesageResponseExpectationEnum ExpectedResponseStatusEnum = HardwareMessageResponseExpectationConversionHelper.GetFromByte(ExpectedResponseStatusByte);
+            HardwareMessageResponseExpectationEnum ExpectedResponseStatusEnum = HardwareMessageResponseExpectationConversionHelper.GetFromByte(ExpectedResponseStatusByte);
 
             byte[] FinalResponseContainer;
 
-            if (ExpectedResponseStatusEnum == HardwareMesageResponseExpectationEnum.FULL_RESPONSE)
+            if (ExpectedResponseStatusEnum == HardwareMessageResponseExpectationEnum.FULL_RESPONSE)
             {
                 FinalResponseContainer = new byte[]
                 {
@@ -110,7 +110,7 @@ namespace ControlRoomApplication.Controllers
                         }
                 }
             }
-            else if (ExpectedResponseStatusEnum == HardwareMesageResponseExpectationEnum.MINOR_RESPONSE)
+            else if (ExpectedResponseStatusEnum == HardwareMessageResponseExpectationEnum.MINOR_RESPONSE)
             {
                 FinalResponseContainer = new byte[]
                 {

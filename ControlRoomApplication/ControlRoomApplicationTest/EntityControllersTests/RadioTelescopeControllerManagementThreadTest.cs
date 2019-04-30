@@ -28,18 +28,18 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestInitialize]
         public void BringUp()
         {
-            IP = PLCConstants.LOCAL_HOST_IP;
+            IP = MiscellaneousConstants.LOCAL_HOST_IP;
             Port0 = 8080;
             Port1 = 8081;
 
             JohnRudyPark = MiscellaneousConstants.JOHN_RUDY_PARK;
             CalibrationOrientation = new Orientation(0, 90);
 
-            PLCCCH0 = new TCPIPCommunicationHandler(IP, Port0);
+            PLCCCH0 = new YCPBaseTCPIPCommunicationHandler(IP, Port0);
             RTC0 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH0, JohnRudyPark, CalibrationOrientation, 1));
             RTCMT0 = new RadioTelescopeControllerManagementThread(RTC0);
 
-            PLCCCH1 = new TCPIPCommunicationHandler(IP, Port1);
+            PLCCCH1 = new YCPBaseTCPIPCommunicationHandler(IP, Port1);
             RTC1 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH1, JohnRudyPark, CalibrationOrientation, 2));
             RTCMT1 = new RadioTelescopeControllerManagementThread(RTC1);
         }

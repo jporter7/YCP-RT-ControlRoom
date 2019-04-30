@@ -119,13 +119,15 @@
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\HardwareCommunication\AbstractHardwareCommunicationHandler.cs" />
-    <Compile Include="Controllers\HardwareCommunication\AbstractHardwareCommunicationHandlerBase.cs" />
+    <Compile Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\ModbusTCPMCUCommunicationHandler.cs" />
+    <Compile Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\YCPBaseTCPIPCommunicationHandler.cs" />
+    <Compile Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\TestHardwareCommunicationHandler.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\MCUModbusReceiver.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\ScaleModelTCPIPReceiver.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\SimulationPLCTCPIPReceiver.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\TestPLCTCPIPReceiver.cs" />
-    <Compile Include="Controllers\HardwareCommunication\GenericCommunicationHandlers\ModbusTCPCommunicationHandler.cs" />
-    <Compile Include="Controllers\HardwareCommunication\GenericCommunicationHandlers\TCPIPCommunicationHandler.cs" />
+    <Compile Include="Controllers\HardwareCommunication\GenericCommunicationHandlers\BaseModbusTCPCommunicationHandler.cs" />
+    <Compile Include="Controllers\HardwareCommunication\GenericCommunicationHandlers\BaseTCPIPCommunicationHandler.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\Log\Log.cs" />
@@ -242,9 +244,7 @@
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

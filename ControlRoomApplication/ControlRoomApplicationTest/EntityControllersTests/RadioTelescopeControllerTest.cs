@@ -9,8 +9,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
     [TestClass]
     public class RadioTelescopeControllerTest
     {
-        private static string ip = PLCConstants.LOCAL_HOST_IP;
-        private static int port = PLCConstants.PORT_8080;
+        private static string ip = MiscellaneousConstants.LOCAL_HOST_IP;
+        private static int port = MiscellaneousConstants.PORT_8080;
 
         private static RadioTelescopeController TestRadioTelescopeController;
         private static TestPLCTCPIPReceiver TestRTPLC;
@@ -18,7 +18,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [ClassInitialize]
         public static void SetUp(TestContext context)
         {
-            AbstractHardwareCommunicationHandler PLCClientCommHandler = new TCPIPCommunicationHandler(ip, port);
+            AbstractHardwareCommunicationHandler PLCClientCommHandler = new YCPBaseTCPIPCommunicationHandler(ip, port);
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCClientCommHandler, location, new Orientation(0, 0));
@@ -26,7 +26,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             TestRTPLC = new TestPLCTCPIPReceiver(ip, port);
             TestRTPLC.StartAsyncAcceptingClients();
-            TestRT.HardwareCommsHandler.StartCommunicationThread();
+            TestRT.HardwareCommsHandler.StartHandler();
         }
 
         [TestMethod]
@@ -134,7 +134,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [ClassCleanup]
         public static void BringDown()
         {
-            TestRadioTelescopeController.RadioTelescope.HardwareCommsHandler.TerminateAndJoinCommunicationThread();
+            TestRadioTelescopeController.RadioTelescope.HardwareCommsHandler.DisposeHandler();
             TestRTPLC.StopAsyncAcceptingClientsAndJoin();
         }
     }

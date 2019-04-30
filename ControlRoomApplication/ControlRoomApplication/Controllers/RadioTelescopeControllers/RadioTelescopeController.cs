@@ -30,8 +30,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> Whether or not the RT responded. </returns>
         public bool TestCommunication()
         {
-            byte[] ByteResponse = RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.TEST_CONNECTION);
-            return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
+            return RadioTelescope.HardwareCommsHandler.TestCommunication();
         }
 
         /// <summary>
@@ -44,14 +43,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-            byte[] ByteResponse = RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.GET_CURRENT_AZEL_POSITIONS);
-
-            if (!ResponseMetBasicExpectations(ByteResponse, 0x13))
-            {
-                return null;
-            }
-
-            return new Orientation(BitConverter.ToDouble(ByteResponse, 3), BitConverter.ToDouble(ByteResponse, 11));
+            return RadioTelescope.HardwareCommsHandler.GetCurrentOrientation();
         }
 
         /// <summary>
@@ -71,40 +63,7 @@ namespace ControlRoomApplication.Controllers
         /// </returns>
         public bool[] GetCurrentLimitSwitchStatuses()
         {
-            byte[] ByteResponse = RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.GET_CURRENT_LIMIT_SWITCH_STATUSES);
-
-            if (!ResponseMetBasicExpectations(ByteResponse, 0x13))
-            {
-                return null;
-            }
-
-            bool[] Statuses = new bool[4];
-
-            byte DataByte = ByteResponse[3];
-            for (int i = 0; i < 4; i++)
-            {
-                switch (LimitSwitchStatusConversionHelper.GetFromByte((byte)((DataByte >> (2 * (3 - i))) & 0x3)))
-                {
-                    case LimitSwitchStatusEnum.WITHIN_WARNING_LIMITS:
-                        {
-                            Statuses[i] = true;
-                            break;
-                        }
-
-                    case LimitSwitchStatusEnum.WITHIN_SAFE_LIMITS:
-                        {
-                            Statuses[i] = false;
-                            break;
-                        }
-
-                    default:
-                        {
-                            throw new NotImplementedException("Unrecognized/Invalid response for byte-casted limit switch status.");
-                        }
-                }
-            }
-
-            return Statuses;
+            return RadioTelescope.HardwareCommsHandler.GetCurrentLimitSwitchStatuses();
         }
 
         /// <summary>
@@ -117,8 +76,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> Returns true if the safety interlock system is still secured, false otherwise. </returns>
         public bool GetCurrentSafetyInterlockStatus()
         {
-            byte[] ByteResponse = RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.GET_CURRENT_SAFETY_INTERLOCK_STATUS);
-            return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
+            return RadioTelescope.HardwareCommsHandler.GetCurrentSafetyInterlockStatus();
         }
 
         /// <summary>
@@ -130,7 +88,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool CancelCurrentMoveCommand()
         {
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION));
+            return RadioTelescope.HardwareCommsHandler.CancelCurrentMoveCommand();
         }
 
         /// <summary>
@@ -143,7 +101,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ShutdownRadioTelescope()
         {
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.SHUTDOWN));
+            return RadioTelescope.HardwareCommsHandler.ShutdownRadioTelescope();
         }
 
         /// <summary>
@@ -155,7 +113,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool CalibrateRadioTelescope()
         {
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.CALIBRATE));
+            return RadioTelescope.HardwareCommsHandler.CalibrateRadioTelescope();
         }
 
         /// <summary>
@@ -165,21 +123,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ConfigureRadioTelescope(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
-            if ((startSpeedAzimuth < 1) || (startSpeedElevation < 1) || (homeTimeoutAzimuth < 0) || (homeTimeoutElevation < 0)
-                || (startSpeedAzimuth > 1000000) || (startSpeedElevation > 1000000) || (homeTimeoutAzimuth > 300) || (homeTimeoutElevation > 300))
-            {
-                return false;
-            }
-
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(
-                HardwareMessageTypeEnum.SET_CONFIGURATION,
-                startSpeedAzimuth,
-                startSpeedElevation,
-                homeTimeoutAzimuth,
-                homeTimeoutElevation
-            ));
+            return RadioTelescope.HardwareCommsHandler.ConfigureRadioTelescope(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
 
         /// <summary>
@@ -192,7 +138,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool MoveRadioTelescopeToOrientation(Orientation orientation)
         {
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation));
+            return RadioTelescope.HardwareCommsHandler.MoveRadioTelescopeToOrientation(orientation);
         }
 
         /// <summary>
@@ -216,9 +162,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
         {
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.START_JOG_MOVEMENT, axis, speed, clockwise));
+            return RadioTelescope.HardwareCommsHandler.StartRadioTelescopeJog(axis, speed, clockwise);
         }
 
         /// <summary>
@@ -229,7 +175,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeAzimuthJog(int speed, bool clockwise)
+        public bool StartRadioTelescopeAzimuthJog(double speed, bool clockwise)
         {
             return StartRadioTelescopeJog(RadioTelescopeAxisEnum.AZIMUTH, speed, clockwise);
         }
@@ -242,7 +188,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeElevationJog(int speed, bool clockwise)
+        public bool StartRadioTelescopeElevationJog(double speed, bool clockwise)
         {
             return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise);
         }
@@ -257,7 +203,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeControlledStop()
         {
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.CONTROLLED_STOP));
+            return RadioTelescope.HardwareCommsHandler.ExecuteRadioTelescopeControlledStop();
         }
 
         /// <summary>
@@ -270,30 +216,49 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeImmediateStop()
         {
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.IMMEDIATE_STOP));
+            return RadioTelescope.HardwareCommsHandler.ExecuteRadioTelescopeImmediateStop();
         }
 
         /// <summary>
-        /// Method used to request that all of the Radio Telescope's movement comes
-        /// to an immediate stop.
+        /// Method used to request that one of the Radio Telescope's axes moves to a
+        /// position relative to the current one, in either the clockwise or
+        /// counter-clockwise direction.
         /// 
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, int position)
+        public bool ExecuteRelativeMove(RadioTelescopeAxisEnum axis, double speed, double position)
         {
-            return MinorResponseIsValid(RadioTelescope.HardwareCommsHandler.SendMessageAndReadResponse(HardwareMessageTypeEnum.TRANSLATE_AZEL_POSITION, axis, speed, position));
+            return RadioTelescope.HardwareCommsHandler.ExecuteRelativeMove(axis, speed, position);
         }
 
-        private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
+        /// <summary>
+        /// Method used to request that the Radio Telescope's azimuth axis moves to a
+        /// position relative to the current one, in either the clockwise or
+        /// counter-clockwise direction.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ExecuteRelativeMoveAzimuth(double speed, double position)
         {
-            return ((ResponseBytes[0] + (ResponseBytes[1] * 256)) == ExpectedSize) && (ResponseBytes[2] == 0x1);
+            return ExecuteRelativeMove(RadioTelescopeAxisEnum.AZIMUTH, speed, position);
         }
 
-        private static bool MinorResponseIsValid(byte[] MinorResponseBytes)
+        /// <summary>
+        /// Method used to request that the Radio Telescope's elevation axis moves to a
+        /// position relative to the current one, in either the clockwise or
+        /// counter-clockwise direction.
+        /// 
+        /// The implementation of this functionality is on a "per-RT" basis, as
+        /// in this may or may not work, it depends on if the derived
+        /// AbstractRadioTelescope class has implemented it.
+        /// </summary>
+        public bool ExecuteRelativeMoveElevation(double speed, double position)
         {
-            return ResponseMetBasicExpectations(MinorResponseBytes, 0x3);
+            return ExecuteRelativeMove(RadioTelescopeAxisEnum.AZIMUTH, speed, position);
         }
 
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
