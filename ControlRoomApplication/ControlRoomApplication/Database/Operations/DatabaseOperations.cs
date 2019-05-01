@@ -190,7 +190,7 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// Returns the list of Appointments from the database, ordered by priority
+        /// Returns the list of Appointments from the database.
         /// </summary>
         public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
         {
@@ -200,25 +200,26 @@ namespace ControlRoomApplication.Database
                 // Use Include method to load related entities from the database
                 appts = QueryAppointments(Context).Where(x => x.TelescopeId == radioTelescopeId).ToList();
             }
+            return appts;
+        }
+
+        /// <summary>
+        /// Returns the list of Appointments from the database, ordered by priority
+        /// OR Returns a Null list if there are no appointments
+        /// </summary>
+        public static List<Appointment> GetListOfHighPriorityAppointmentsForRadioTelescope(int radioTelescopeId, Appointment appointment)
+        {
+            List<Appointment> appts = GetListOfAppointmentsForRadioTelescope(radioTelescopeId);
+
             // Order the List.  First by Priority then by StartTime
             appts.OrderBy(a => a.Priority).ToList();
 
             List<Appointment> orderedList = new List<Appointment>();
-            try
-            {
-                orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.MANUAL).OrderBy(a => a.StartTime));
-                orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.PRIMARY).OrderBy(a => a.StartTime));
-                orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.SECONDARY).OrderBy(a => a.StartTime));
-            }
-            catch (Exception e)
-            {
-                if(e is ArgumentNullException)
-                {
-                    //throw new ArgumentNullException("Error in sorting the Appointment list:  Does the database contain appointments?");
-                    return appts;
-                }
-            }
+            orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.MANUAL).OrderBy(a => a.StartTime));
+            orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.PRIMARY).OrderBy(a => a.StartTime));
+            orderedList.AddRange(appts.Where(a => a.Priority == AppointmentPriorityEnum.SECONDARY).OrderBy(a => a.StartTime));
 
+            // Returns the list or the Null list
             return orderedList; 
         }
 

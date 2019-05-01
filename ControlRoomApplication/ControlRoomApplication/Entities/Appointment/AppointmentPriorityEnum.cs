@@ -2,6 +2,7 @@
 {
     public enum AppointmentPriorityEnum
     {
+        UNSPECIFIED,
         SECONDARY,
         PRIMARY,
         MANUAL
