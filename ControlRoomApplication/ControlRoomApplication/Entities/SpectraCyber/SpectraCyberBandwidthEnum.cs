@@ -2,6 +2,7 @@
 {
     public enum SpectraCyberBandwidthEnum
     {
+        UNDEFINED,
         SMALL_BANDWIDTH,
         MID_BANDWIDTH,
         LARGE_BANDWIDTH
@@ -19,6 +20,8 @@
                     return "15";
                 case SpectraCyberBandwidthEnum.LARGE_BANDWIDTH:
                     return "30";
+                case SpectraCyberBandwidthEnum.UNDEFINED:
+                    throw new System.Exception("UNDEFINED SpectraCyberBandwidthEnum type");
                 default:
                     throw new System.Exception("Unexpected SpectraCyberBandwidthEnum type");
             }

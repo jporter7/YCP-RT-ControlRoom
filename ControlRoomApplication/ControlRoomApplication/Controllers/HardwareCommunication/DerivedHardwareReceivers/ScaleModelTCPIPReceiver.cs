@@ -5,7 +5,7 @@ using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Controllers
 {
-    public class ScaleModelTCPIPReceiver : AbstractSimulationHardwareTCPIPReceiver
+    public class ScaleModelTCPIPReceiver : BaseTCPIPHardwareReceiver
     {
         public ScaleModelTCPIPReceiver(IPAddress ip_address, int port) : base(ip_address, port) { }
 

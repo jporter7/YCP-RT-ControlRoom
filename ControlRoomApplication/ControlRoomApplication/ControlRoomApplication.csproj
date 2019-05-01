@@ -122,12 +122,13 @@
     <Compile Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\ModbusTCPMCUCommunicationHandler.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\YCPBaseTCPIPCommunicationHandler.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\TestHardwareCommunicationHandler.cs" />
-    <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\MCUModbusReceiver.cs" />
+    <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\MCUTCPIPReceiverToModbusTCP.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\ScaleModelTCPIPReceiver.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\SimulationPLCTCPIPReceiver.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedHardwareReceivers\TestPLCTCPIPReceiver.cs" />
     <Compile Include="Controllers\HardwareCommunication\GenericCommunicationHandlers\BaseModbusTCPCommunicationHandler.cs" />
     <Compile Include="Controllers\HardwareCommunication\GenericCommunicationHandlers\BaseTCPIPCommunicationHandler.cs" />
+    <Compile Include="Controllers\HardwareCommunication\GenericHardwareReceivers\BaseTCPIPHardwareReceiver.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\Log\Log.cs" />
@@ -143,7 +144,7 @@
     <Compile Include="Entities\HardwareCommunication\LimitSwitchStatusEnum.cs" />
     <Compile Include="Entities\HardwareCommunication\RadioTelescopeStatusEnum.cs" />
     <Compile Include="Entities\HardwareCommunication\SafetyInterlockStatusEnum.cs" />
-    <Compile Include="Controllers\HardwareCommunication\AbstractHardwareReceiver.cs" />
+    <Compile Include="Controllers\HardwareCommunication\AbstractSimulationHardwareReceiver.cs" />
     <Compile Include="Controllers\RadioTelescopeControllers\RadioTelescopeController.cs" />
     <Compile Include="Controllers\SpectraCyberControllers\AbstractSpectraCyberController.cs" />
     <Compile Include="Controllers\SpectraCyberControllers\SpectraCyberController.cs" />

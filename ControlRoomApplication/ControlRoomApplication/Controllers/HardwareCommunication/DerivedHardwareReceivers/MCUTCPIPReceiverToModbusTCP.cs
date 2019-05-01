@@ -8,20 +8,20 @@ using Modbus.Device;
 
 namespace ControlRoomApplication.Controllers
 {
-    public class MCUModbusReceiver : AbstractSimulationHardwareTCPIPReceiver
+    public class MCUTCPIPReceiverToModbusTCP : BaseTCPIPHardwareReceiver
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private TcpClient MCUTCPClient;
         private ModbusIpMaster MCUModbusMaster;
 
-        public MCUModbusReceiver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
+        public MCUTCPIPReceiverToModbusTCP(string ipLocal, int portLocal) : base(ipLocal, portLocal)
         {
             MCUTCPClient = new TcpClient(MCUConstants.ACTUAL_MCU_IP_ADDRESS, MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
         }
 
-        ~MCUModbusReceiver()
+        ~MCUTCPIPReceiverToModbusTCP()
         {
             if (MCUTCPClient != null)
             {
@@ -187,7 +187,7 @@ namespace ControlRoomApplication.Controllers
                             };
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
-                            
+
                             PrintReadInputRegisterContents("After setting configuration");
                             if (SendResetErrorsCommand())
                             {
@@ -201,7 +201,7 @@ namespace ControlRoomApplication.Controllers
                                 Console.WriteLine("[MCUModbusDriver] ERROR sending reset command.");
                                 FinalResponseContainer[2] = 0x2;
                             }
-                            
+
                             break;
                         }
 
@@ -279,7 +279,7 @@ namespace ControlRoomApplication.Controllers
                                         commandCode = 0x80;
                                         break;
                                     }
-                                
+
                                 case 0x2:
                                     {
                                         commandCode = 0x100;
@@ -307,7 +307,7 @@ namespace ControlRoomApplication.Controllers
                             };
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
-                            
+
                             PrintReadInputRegisterContents("After starting jog command");
 
                             FinalResponseContainer[2] = 0x1;

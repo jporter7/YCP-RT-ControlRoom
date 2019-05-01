@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace ControlRoomApplication.Controllers
 {
-    public abstract class AbstractSimulationHardwareTCPIPReceiver
+    public abstract class BaseTCPIPHardwareReceiver : AbstractSimulationHardwareReceiver
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Controllers
         private Thread CommunicationManagmentThread;
         private volatile bool KillClientManagementThreadFlag;
 
-        public AbstractSimulationHardwareTCPIPReceiver(IPAddress ip_address, int port)
+        public BaseTCPIPHardwareReceiver(IPAddress ip_address, int port)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        public AbstractSimulationHardwareTCPIPReceiver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
+        public BaseTCPIPHardwareReceiver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
 
         public bool StartAsyncAcceptingClients()
         {
@@ -180,6 +180,16 @@ namespace ControlRoomApplication.Controllers
                     AcceptedClient.Dispose();
                 }
             }
+        }
+
+        public override bool StartReceiver()
+        {
+            return StartAsyncAcceptingClients();
+        }
+
+        public override bool DisposeReceiver()
+        {
+            return StopAsyncAcceptingClientsAndJoin();
         }
 
         protected abstract bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query);

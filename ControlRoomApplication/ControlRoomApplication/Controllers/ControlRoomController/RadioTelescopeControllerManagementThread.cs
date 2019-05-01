@@ -62,7 +62,7 @@ namespace ControlRoomApplication.Controllers
 
             ManagementThread = new Thread(new ThreadStart(SpinRoutine))
             {
-                Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") overarching management thread"
+                Name = "RTControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ")"
             };
 
             ManagementMutex = new Mutex();
@@ -148,13 +148,14 @@ namespace ControlRoomApplication.Controllers
                     // Calibrate telescope
                     if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL)
                     {
+                        logger.Info("Calibrating RadioTelescope");
                         RTController.CalibrateRadioTelescope();
                     }
 
                     // Create movement thread
                     Thread AppointmentMovementThread = new Thread(() => PerformRadioTelescopeMovement(NextAppointment))
                     {
-                        Name = "RadioTelescopeControllerManagementThread (ID=" + RadioTelescopeID.ToString() + ") intermediate movement thread"
+                        Name = "RTControllerIntermediateThread (ID=" + RadioTelescopeID.ToString() + ")"
                     };
 
                     // Start SpectraCyber
@@ -303,12 +304,14 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                 NextAppointment.Status = AppointmentStatusEnum.CANCELLED;
+                DatabaseOperations.UpdateAppointment(NextAppointment);
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
             }
             else
             {
                 NextAppointment.Status = AppointmentStatusEnum.COMPLETED;
+                DatabaseOperations.UpdateAppointment(NextAppointment);
             }
 
             DatabaseOperations.UpdateAppointment(NextAppointment);
@@ -319,6 +322,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         private void EndAppointment()
         {
+            logger.Info("Ending Appointment");
             RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90));
         }
 
@@ -327,6 +331,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         private void StartReadingData(Appointment appt)
         {
+            logger.Info("Starting Reading of RFData");
             RTController.RadioTelescope.SpectraCyberController.SetApptConfig(appt);
             RTController.RadioTelescope.SpectraCyberController.StartScan();
         }
@@ -336,6 +341,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         private void StopReadingRFData()
         {
+            logger.Info("Stoping Reading of RTData");
             RTController.RadioTelescope.SpectraCyberController.StopScan();
             RTController.RadioTelescope.SpectraCyberController.RemoveActiveAppointmentID();
             RTController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);

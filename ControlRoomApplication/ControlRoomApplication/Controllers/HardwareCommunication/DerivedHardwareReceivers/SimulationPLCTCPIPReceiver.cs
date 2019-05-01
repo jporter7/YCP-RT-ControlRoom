@@ -6,7 +6,7 @@ using ControlRoomApplication.Simulators.Hardware.MCU;
 
 namespace ControlRoomApplication.Controllers
 {
-    public class SimulationPLCTCPIPReceiver : AbstractSimulationHardwareTCPIPReceiver
+    public class SimulationPLCTCPIPReceiver : BaseTCPIPHardwareReceiver
     {
         private SimulationMCU SimMCU;
 

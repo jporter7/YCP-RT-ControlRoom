@@ -1,13 +1,4 @@
 ﻿using ControlRoomApplication.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ControlRoomApplication.GUI
@@ -17,6 +8,8 @@ namespace ControlRoomApplication.GUI
         private ControlRoom controlRoom;
         private int rtId;
         private string[] statuses = { "Offline", "Offline" };
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Initializes the diagnostic form based off of the specified configuration.
@@ -41,6 +34,7 @@ namespace ControlRoomApplication.GUI
 
             label3.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString();
             label4.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString();
+            logger.Info("DiagnosticsForm Initalized");
         }
 
         /// <summary>
@@ -57,11 +51,6 @@ namespace ControlRoomApplication.GUI
             {
                 statuses[1] = "Online";
             }
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
     }
 }

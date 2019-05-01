@@ -58,11 +58,11 @@
             // 
             // PosDecButton
             // 
+            this.PosDecButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.PosDecButton.BackColor = System.Drawing.Color.LightGray;
-            this.PosDecButton.Location = new System.Drawing.Point(500, 302);
-            this.PosDecButton.Margin = new System.Windows.Forms.Padding(4);
+            this.PosDecButton.Location = new System.Drawing.Point(375, 245);
             this.PosDecButton.Name = "PosDecButton";
-            this.PosDecButton.Size = new System.Drawing.Size(100, 66);
+            this.PosDecButton.Size = new System.Drawing.Size(75, 54);
             this.PosDecButton.TabIndex = 0;
             this.PosDecButton.Text = "+ Dec";
             this.PosDecButton.UseVisualStyleBackColor = false;
@@ -70,11 +70,11 @@
             // 
             // NegDecButton
             // 
+            this.NegDecButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.NegDecButton.BackColor = System.Drawing.Color.LightGray;
-            this.NegDecButton.Location = new System.Drawing.Point(500, 390);
-            this.NegDecButton.Margin = new System.Windows.Forms.Padding(4);
+            this.NegDecButton.Location = new System.Drawing.Point(375, 317);
             this.NegDecButton.Name = "NegDecButton";
-            this.NegDecButton.Size = new System.Drawing.Size(100, 66);
+            this.NegDecButton.Size = new System.Drawing.Size(75, 54);
             this.NegDecButton.TabIndex = 1;
             this.NegDecButton.Text = "- Dec";
             this.NegDecButton.UseVisualStyleBackColor = false;
@@ -82,11 +82,11 @@
             // 
             // NegRAButton
             // 
+            this.NegRAButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.NegRAButton.BackColor = System.Drawing.Color.LightGray;
-            this.NegRAButton.Location = new System.Drawing.Point(375, 390);
-            this.NegRAButton.Margin = new System.Windows.Forms.Padding(4);
+            this.NegRAButton.Location = new System.Drawing.Point(281, 317);
             this.NegRAButton.Name = "NegRAButton";
-            this.NegRAButton.Size = new System.Drawing.Size(100, 66);
+            this.NegRAButton.Size = new System.Drawing.Size(75, 54);
             this.NegRAButton.TabIndex = 2;
             this.NegRAButton.Text = "- RA";
             this.NegRAButton.UseVisualStyleBackColor = false;
@@ -94,11 +94,11 @@
             // 
             // PosRAButton
             // 
+            this.PosRAButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.PosRAButton.BackColor = System.Drawing.Color.LightGray;
-            this.PosRAButton.Location = new System.Drawing.Point(628, 390);
-            this.PosRAButton.Margin = new System.Windows.Forms.Padding(4);
+            this.PosRAButton.Location = new System.Drawing.Point(471, 317);
             this.PosRAButton.Name = "PosRAButton";
-            this.PosRAButton.Size = new System.Drawing.Size(100, 66);
+            this.PosRAButton.Size = new System.Drawing.Size(75, 54);
             this.PosRAButton.TabIndex = 3;
             this.PosRAButton.Text = "+ RA";
             this.PosRAButton.UseVisualStyleBackColor = false;
@@ -106,11 +106,11 @@
             // 
             // CalibrateButton
             // 
+            this.CalibrateButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.CalibrateButton.BackColor = System.Drawing.Color.LightGray;
-            this.CalibrateButton.Location = new System.Drawing.Point(59, 401);
-            this.CalibrateButton.Margin = new System.Windows.Forms.Padding(4);
+            this.CalibrateButton.Location = new System.Drawing.Point(44, 326);
             this.CalibrateButton.Name = "CalibrateButton";
-            this.CalibrateButton.Size = new System.Drawing.Size(164, 44);
+            this.CalibrateButton.Size = new System.Drawing.Size(123, 36);
             this.CalibrateButton.TabIndex = 4;
             this.CalibrateButton.Text = "Calibrate";
             this.CalibrateButton.UseVisualStyleBackColor = false;
@@ -118,109 +118,111 @@
             // 
             // ActualRATextBox
             // 
-            this.ActualRATextBox.Location = new System.Drawing.Point(76, 183);
-            this.ActualRATextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.ActualRATextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.ActualRATextBox.Location = new System.Drawing.Point(57, 149);
             this.ActualRATextBox.Name = "ActualRATextBox";
             this.ActualRATextBox.ReadOnly = true;
-            this.ActualRATextBox.Size = new System.Drawing.Size(132, 22);
+            this.ActualRATextBox.Size = new System.Drawing.Size(100, 20);
             this.ActualRATextBox.TabIndex = 5;
             // 
             // ActualDecTextBox
             // 
-            this.ActualDecTextBox.Location = new System.Drawing.Point(76, 248);
-            this.ActualDecTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.ActualDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.ActualDecTextBox.Location = new System.Drawing.Point(57, 202);
             this.ActualDecTextBox.Name = "ActualDecTextBox";
             this.ActualDecTextBox.ReadOnly = true;
-            this.ActualDecTextBox.Size = new System.Drawing.Size(132, 22);
+            this.ActualDecTextBox.Size = new System.Drawing.Size(100, 20);
             this.ActualDecTextBox.TabIndex = 6;
             // 
             // ActualPositionLabel
             // 
+            this.ActualPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualPositionLabel.AutoSize = true;
             this.ActualPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.ActualPositionLabel.Location = new System.Drawing.Point(71, 124);
-            this.ActualPositionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.ActualPositionLabel.Location = new System.Drawing.Point(53, 101);
             this.ActualPositionLabel.Name = "ActualPositionLabel";
-            this.ActualPositionLabel.Size = new System.Drawing.Size(141, 25);
+            this.ActualPositionLabel.Size = new System.Drawing.Size(114, 20);
             this.ActualPositionLabel.TabIndex = 7;
             this.ActualPositionLabel.Text = "Actual Position";
             // 
             // ActualRALabel
             // 
+            this.ActualRALabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualRALabel.AutoSize = true;
-            this.ActualRALabel.Location = new System.Drawing.Point(73, 161);
-            this.ActualRALabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.ActualRALabel.Location = new System.Drawing.Point(55, 131);
             this.ActualRALabel.Name = "ActualRALabel";
-            this.ActualRALabel.Size = new System.Drawing.Size(110, 17);
+            this.ActualRALabel.Size = new System.Drawing.Size(84, 13);
             this.ActualRALabel.TabIndex = 8;
             this.ActualRALabel.Text = "Right Ascension";
             // 
             // ActualDecLabel
             // 
+            this.ActualDecLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualDecLabel.AutoSize = true;
-            this.ActualDecLabel.Location = new System.Drawing.Point(73, 227);
-            this.ActualDecLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.ActualDecLabel.Location = new System.Drawing.Point(55, 184);
             this.ActualDecLabel.Name = "ActualDecLabel";
-            this.ActualDecLabel.Size = new System.Drawing.Size(78, 17);
+            this.ActualDecLabel.Size = new System.Drawing.Size(60, 13);
             this.ActualDecLabel.TabIndex = 9;
             this.ActualDecLabel.Text = "Declination";
             // 
             // TargetDecLabel
             // 
+            this.TargetDecLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetDecLabel.AutoSize = true;
-            this.TargetDecLabel.Location = new System.Drawing.Point(852, 227);
-            this.TargetDecLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.TargetDecLabel.Location = new System.Drawing.Point(639, 184);
             this.TargetDecLabel.Name = "TargetDecLabel";
-            this.TargetDecLabel.Size = new System.Drawing.Size(78, 17);
+            this.TargetDecLabel.Size = new System.Drawing.Size(60, 13);
             this.TargetDecLabel.TabIndex = 14;
             this.TargetDecLabel.Text = "Declination";
             // 
             // TargetRALabel
             // 
+            this.TargetRALabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetRALabel.AutoSize = true;
-            this.TargetRALabel.Location = new System.Drawing.Point(853, 161);
-            this.TargetRALabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.TargetRALabel.Location = new System.Drawing.Point(640, 131);
             this.TargetRALabel.Name = "TargetRALabel";
-            this.TargetRALabel.Size = new System.Drawing.Size(110, 17);
+            this.TargetRALabel.Size = new System.Drawing.Size(84, 13);
             this.TargetRALabel.TabIndex = 13;
             this.TargetRALabel.Text = "Right Ascension";
             // 
             // TargetPositionLabel
             // 
+            this.TargetPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetPositionLabel.AutoSize = true;
             this.TargetPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.TargetPositionLabel.Location = new System.Drawing.Point(850, 124);
-            this.TargetPositionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.TargetPositionLabel.Location = new System.Drawing.Point(638, 101);
             this.TargetPositionLabel.Name = "TargetPositionLabel";
-            this.TargetPositionLabel.Size = new System.Drawing.Size(143, 25);
+            this.TargetPositionLabel.Size = new System.Drawing.Size(115, 20);
             this.TargetPositionLabel.TabIndex = 12;
             this.TargetPositionLabel.Text = "Target Position";
             // 
             // TargetDecTextBox
             // 
-            this.TargetDecTextBox.Location = new System.Drawing.Point(855, 248);
-            this.TargetDecTextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.TargetDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.TargetDecTextBox.Location = new System.Drawing.Point(641, 202);
             this.TargetDecTextBox.Name = "TargetDecTextBox";
             this.TargetDecTextBox.ReadOnly = true;
-            this.TargetDecTextBox.Size = new System.Drawing.Size(132, 22);
+            this.TargetDecTextBox.Size = new System.Drawing.Size(100, 20);
             this.TargetDecTextBox.TabIndex = 11;
             // 
             // TargetRATextBox
             // 
-            this.TargetRATextBox.Location = new System.Drawing.Point(855, 183);
-            this.TargetRATextBox.Margin = new System.Windows.Forms.Padding(4);
+            this.TargetRATextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.TargetRATextBox.Location = new System.Drawing.Point(641, 149);
             this.TargetRATextBox.Name = "TargetRATextBox";
             this.TargetRATextBox.ReadOnly = true;
-            this.TargetRATextBox.Size = new System.Drawing.Size(132, 22);
+            this.TargetRATextBox.Size = new System.Drawing.Size(100, 20);
             this.TargetRATextBox.TabIndex = 10;
             // 
             // Title
             // 
+            this.Title.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.Title.AutoSize = true;
             this.Title.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F);
-            this.Title.Location = new System.Drawing.Point(396, 34);
+            this.Title.Location = new System.Drawing.Point(297, 28);
+            this.Title.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.Title.Name = "Title";
-            this.Title.Size = new System.Drawing.Size(304, 58);
+            this.Title.Size = new System.Drawing.Size(242, 46);
             this.Title.TabIndex = 15;
             this.Title.Text = "Free Control";
             // 
@@ -232,13 +234,16 @@
             // 
             // IncrementButtons
             // 
+            this.IncrementButtons.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.IncrementButtons.Controls.Add(this.tenButton);
             this.IncrementButtons.Controls.Add(this.fiveButton);
             this.IncrementButtons.Controls.Add(this.oneButton);
             this.IncrementButtons.Controls.Add(this.oneForthButton);
-            this.IncrementButtons.Location = new System.Drawing.Point(391, 139);
+            this.IncrementButtons.Location = new System.Drawing.Point(293, 113);
+            this.IncrementButtons.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.IncrementButtons.Name = "IncrementButtons";
-            this.IncrementButtons.Size = new System.Drawing.Size(321, 95);
+            this.IncrementButtons.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.IncrementButtons.Size = new System.Drawing.Size(241, 77);
             this.IncrementButtons.TabIndex = 16;
             this.IncrementButtons.TabStop = false;
             this.IncrementButtons.Text = "Increment";
@@ -246,9 +251,10 @@
             // tenButton
             // 
             this.tenButton.BackColor = System.Drawing.Color.LightGray;
-            this.tenButton.Location = new System.Drawing.Point(243, 22);
+            this.tenButton.Location = new System.Drawing.Point(182, 18);
+            this.tenButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tenButton.Name = "tenButton";
-            this.tenButton.Size = new System.Drawing.Size(72, 67);
+            this.tenButton.Size = new System.Drawing.Size(54, 54);
             this.tenButton.TabIndex = 3;
             this.tenButton.Text = "10";
             this.tenButton.UseVisualStyleBackColor = false;
@@ -257,9 +263,10 @@
             // fiveButton
             // 
             this.fiveButton.BackColor = System.Drawing.Color.LightGray;
-            this.fiveButton.Location = new System.Drawing.Point(165, 22);
+            this.fiveButton.Location = new System.Drawing.Point(124, 18);
+            this.fiveButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.fiveButton.Name = "fiveButton";
-            this.fiveButton.Size = new System.Drawing.Size(72, 67);
+            this.fiveButton.Size = new System.Drawing.Size(54, 54);
             this.fiveButton.TabIndex = 2;
             this.fiveButton.Text = "5";
             this.fiveButton.UseVisualStyleBackColor = false;
@@ -268,9 +275,10 @@
             // oneButton
             // 
             this.oneButton.BackColor = System.Drawing.Color.LightGray;
-            this.oneButton.Location = new System.Drawing.Point(87, 22);
+            this.oneButton.Location = new System.Drawing.Point(65, 18);
+            this.oneButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.oneButton.Name = "oneButton";
-            this.oneButton.Size = new System.Drawing.Size(72, 67);
+            this.oneButton.Size = new System.Drawing.Size(54, 54);
             this.oneButton.TabIndex = 1;
             this.oneButton.Text = "1";
             this.oneButton.UseVisualStyleBackColor = false;
@@ -279,9 +287,10 @@
             // oneForthButton
             // 
             this.oneForthButton.BackColor = System.Drawing.Color.LightGray;
-            this.oneForthButton.Location = new System.Drawing.Point(9, 22);
+            this.oneForthButton.Location = new System.Drawing.Point(7, 18);
+            this.oneForthButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.oneForthButton.Name = "oneForthButton";
-            this.oneForthButton.Size = new System.Drawing.Size(72, 67);
+            this.oneForthButton.Size = new System.Drawing.Size(54, 54);
             this.oneForthButton.TabIndex = 0;
             this.oneForthButton.Text = "0.25";
             this.oneForthButton.UseVisualStyleBackColor = false;
@@ -289,11 +298,11 @@
             // 
             // editButton
             // 
+            this.editButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.editButton.BackColor = System.Drawing.Color.LightGray;
-            this.editButton.Location = new System.Drawing.Point(840, 401);
-            this.editButton.Margin = new System.Windows.Forms.Padding(4);
+            this.editButton.Location = new System.Drawing.Point(630, 326);
             this.editButton.Name = "editButton";
-            this.editButton.Size = new System.Drawing.Size(164, 44);
+            this.editButton.Size = new System.Drawing.Size(123, 36);
             this.editButton.TabIndex = 17;
             this.editButton.Text = "Edit Position";
             this.editButton.UseVisualStyleBackColor = false;
@@ -301,19 +310,21 @@
             // 
             // errorLabel
             // 
+            this.errorLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.errorLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.errorLabel.ForeColor = System.Drawing.Color.Red;
-            this.errorLabel.Location = new System.Drawing.Point(400, 506);
+            this.errorLabel.Location = new System.Drawing.Point(300, 411);
+            this.errorLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.errorLabel.Name = "errorLabel";
-            this.errorLabel.Size = new System.Drawing.Size(306, 23);
+            this.errorLabel.Size = new System.Drawing.Size(230, 19);
             this.errorLabel.TabIndex = 18;
             this.errorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // FreeControlForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1067, 554);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.errorLabel);
             this.Controls.Add(this.editButton);
             this.Controls.Add(this.IncrementButtons);
@@ -333,7 +344,7 @@
             this.Controls.Add(this.NegRAButton);
             this.Controls.Add(this.NegDecButton);
             this.Controls.Add(this.PosDecButton);
-            this.Margin = new System.Windows.Forms.Padding(4);
+            this.MinimumSize = new System.Drawing.Size(816, 489);
             this.Name = "FreeControlForm";
             this.Text = "FreeControlForm";
             this.IncrementButtons.ResumeLayout(false);

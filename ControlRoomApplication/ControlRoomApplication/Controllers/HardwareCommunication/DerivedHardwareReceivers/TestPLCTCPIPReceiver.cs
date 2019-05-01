@@ -6,7 +6,7 @@ using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Controllers
 {
-    public class TestPLCTCPIPReceiver : AbstractSimulationHardwareTCPIPReceiver
+    public class TestPLCTCPIPReceiver : BaseTCPIPHardwareReceiver
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 

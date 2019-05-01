@@ -51,6 +51,7 @@
             // 
             // NegButton
             // 
+            this.NegButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.NegButton.BackColor = System.Drawing.Color.LightGray;
             this.NegButton.Location = new System.Drawing.Point(300, 201);
             this.NegButton.Name = "NegButton";
@@ -63,6 +64,7 @@
             // 
             // PosButton
             // 
+            this.PosButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.PosButton.BackColor = System.Drawing.Color.LightGray;
             this.PosButton.Location = new System.Drawing.Point(455, 201);
             this.PosButton.Name = "PosButton";
@@ -75,6 +77,7 @@
             // 
             // Title
             // 
+            this.Title.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.Title.AutoSize = true;
             this.Title.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F);
             this.Title.Location = new System.Drawing.Point(297, 28);
@@ -86,6 +89,7 @@
             // 
             // errorLabel
             // 
+            this.errorLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.errorLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.errorLabel.ForeColor = System.Drawing.Color.Red;
             this.errorLabel.Location = new System.Drawing.Point(300, 411);
@@ -97,6 +101,7 @@
             // 
             // comboBox1
             // 
+            this.comboBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "0.1 RPM",
@@ -109,6 +114,7 @@
             // 
             // label1
             // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(391, 95);
             this.label1.Name = "label1";
@@ -118,6 +124,7 @@
             // 
             // radioButton1
             // 
+            this.radioButton1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.radioButton1.AutoSize = true;
             this.radioButton1.Checked = true;
             this.radioButton1.Location = new System.Drawing.Point(366, 319);
@@ -130,6 +137,7 @@
             // 
             // radioButton2
             // 
+            this.radioButton2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.radioButton2.AutoSize = true;
             this.radioButton2.Location = new System.Drawing.Point(365, 342);
             this.radioButton2.Name = "radioButton2";
@@ -137,10 +145,10 @@
             this.radioButton2.TabIndex = 22;
             this.radioButton2.Text = "Immediate Stop";
             this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
             // button1
             // 
+            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.button1.Location = new System.Drawing.Point(640, 258);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 24);
@@ -151,6 +159,7 @@
             // 
             // label2
             // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.label2.Location = new System.Drawing.Point(636, 161);
@@ -161,6 +170,7 @@
             // 
             // numericUpDown1
             // 
+            this.numericUpDown1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.numericUpDown1.Location = new System.Drawing.Point(640, 209);
             this.numericUpDown1.Maximum = new decimal(new int[] {
             90000,
@@ -184,6 +194,7 @@
             // 
             // ActualELLabel
             // 
+            this.ActualELLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualELLabel.AutoSize = true;
             this.ActualELLabel.Location = new System.Drawing.Point(63, 244);
             this.ActualELLabel.Name = "ActualELLabel";
@@ -193,6 +204,7 @@
             // 
             // ActualAZLabel
             // 
+            this.ActualAZLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualAZLabel.AutoSize = true;
             this.ActualAZLabel.Location = new System.Drawing.Point(63, 191);
             this.ActualAZLabel.Name = "ActualAZLabel";
@@ -202,6 +214,7 @@
             // 
             // ActualPositionLabel
             // 
+            this.ActualPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualPositionLabel.AutoSize = true;
             this.ActualPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.ActualPositionLabel.Location = new System.Drawing.Point(61, 161);
@@ -212,6 +225,7 @@
             // 
             // ActualELTextBox
             // 
+            this.ActualELTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualELTextBox.Location = new System.Drawing.Point(65, 262);
             this.ActualELTextBox.Name = "ActualELTextBox";
             this.ActualELTextBox.ReadOnly = true;
@@ -220,6 +234,7 @@
             // 
             // ActualAZTextBox
             // 
+            this.ActualAZTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualAZTextBox.Location = new System.Drawing.Point(65, 209);
             this.ActualAZTextBox.Name = "ActualAZTextBox";
             this.ActualAZTextBox.ReadOnly = true;
@@ -247,6 +262,7 @@
             this.Controls.Add(this.Title);
             this.Controls.Add(this.PosButton);
             this.Controls.Add(this.NegButton);
+            this.MinimumSize = new System.Drawing.Size(816, 489);
             this.Name = "ManualControlForm";
             this.Text = "ManualControlForm";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
