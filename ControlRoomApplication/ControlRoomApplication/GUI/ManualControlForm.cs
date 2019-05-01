@@ -227,9 +227,9 @@ namespace ControlRoomApplication.Main
 
         private void StartDemo()
         {
+            logger.Info("Running Demo");
             while (DemoRunning)
             {
-                logger.Info("Running Demo");
                 //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, 45);
                 //Thread.Sleep(5000);
                 //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, -45);
