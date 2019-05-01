@@ -169,7 +169,6 @@
     <Compile Include="Simulators\Hardware\MCU\SimulationMCU.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationStopTypeEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberSimulator.cs" />
-    <Compile Include="Main\ConfigurationManager.cs" />
     <Compile Include="Main\ControlWriter.cs" />
     <Compile Include="GUI\MainForm.cs">
       <SubType>Form</SubType>
