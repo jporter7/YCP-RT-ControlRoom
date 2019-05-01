@@ -207,7 +207,7 @@ namespace ControlRoomApplication.Database
         /// Returns the list of Appointments from the database, ordered by priority
         /// OR Returns a Null list if there are no appointments
         /// </summary>
-        public static List<Appointment> GetListOfHighPriorityAppointmentsForRadioTelescope(int radioTelescopeId, Appointment appointment)
+        public static List<Appointment> GetListOfHighPriorityAppointmentsForRadioTelescope(int radioTelescopeId)
         {
             List<Appointment> appts = GetListOfAppointmentsForRadioTelescope(radioTelescopeId);
 
@@ -313,12 +313,11 @@ namespace ControlRoomApplication.Database
             using (RTDbContext Context = InitializeDatabaseContext())
             {
                 logger.Debug("Retrieving list of appointments.");
-                List<Appointment> appointments = GetListOfAppointmentsForRadioTelescope(radioTelescopeId);
+                List<Appointment> appointments = GetListOfHighPriorityAppointmentsForRadioTelescope(radioTelescopeId);
 
                 if (appointments.Count > 0)
                 {
                     appointments.RemoveAll(x => x.StartTime < DateTime.Now || x.Status == AppointmentStatusEnum.COMPLETED);
-                    appointments.Sort();
                     logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;
                 }

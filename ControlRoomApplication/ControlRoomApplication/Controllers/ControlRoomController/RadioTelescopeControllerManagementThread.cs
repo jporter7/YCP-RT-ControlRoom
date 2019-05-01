@@ -221,8 +221,8 @@ namespace ControlRoomApplication.Controllers
             // Continue to loop until this appointment is no longer active
             while (_currentAppointmentID == currentAppointment.Id)
             {
-                List<Appointment> appointmentList = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(currentAppointment.TelescopeId);
-                if (currentAppointment.Priority != appointmentList[0].Priority)
+                List<Appointment> appointmentList = DatabaseOperations.GetListOfHighPriorityAppointmentsForRadioTelescope(currentAppointment.TelescopeId);
+                if (currentAppointment.Priority < appointmentList[0].Priority)
                 {
                     // Send interrupt: The current appointment must be changed
                     logger.Info("Higher Priority Appointment Found. Calling InterruptOnce()");
