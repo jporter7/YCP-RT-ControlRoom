@@ -327,8 +327,8 @@ namespace ControlRoomApplication.Controllers
                             ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
                             ushort programmedPeakSpeedUShortLSW = (ushort)((256 * query[6]) + query[7]);
 
-                            short programmedPositionUShortMSW = (short)((256 * query[8]) + query[9]);
-                            short programmedPositionUShortLSW = (short)((256 * query[10]) + query[11]);
+                            ushort programmedPositionUShortMSW = (ushort)((256 * query[8]) + query[9]);
+                            ushort programmedPositionUShortLSW = (ushort)((256 * query[10]) + query[11]);
 
                             ushort[] DataToWrite =
                             {

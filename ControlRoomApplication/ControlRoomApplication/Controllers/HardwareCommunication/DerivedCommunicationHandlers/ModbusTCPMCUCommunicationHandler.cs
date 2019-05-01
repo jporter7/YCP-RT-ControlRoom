@@ -175,11 +175,24 @@ namespace ControlRoomApplication.Controllers
                 return false;
             }
 
+            // Page 59 of the MCU documentation ("ANFI1 & ANF2 AnyNET-I/O 1 or 2 Axis Servo/Stepper Controller with Interpolated Moves") says that
+            // a negative relative move of less than 65,535 steps must make the MSW for the position -1. This check is done here.
+            ushort positionTranslationMSW;
+            if ((positionTranslationInt < 0) && (positionTranslationInt > -65535))
+            {
+                // For all those CS students out there (and those that "didn't like" Dr. Moscola's ECE220), this is Two's-Complement "-1" for 16-bit words
+                positionTranslationMSW = 0xFFFF;
+            }
+            else
+            {
+                positionTranslationMSW = (ushort)(programmedPeakSpeedInt >> 0x10);
+            }
+
             ushort[] DataToWrite =
             {
                 0x2,                                        // Denotes a relative move
                 0x3,                                        // Denotes a Trapezoidal S-Curve profile
-                (ushort)(programmedPeakSpeedInt >> 0x10),   // MSW for position
+                positionTranslationMSW,                     // MSW for position
                 (ushort)(programmedPeakSpeedInt & 0xFFFF),  // LSW for position
                 (ushort)(programmedPeakSpeedInt >> 0x10),
                 (ushort)(programmedPeakSpeedInt & 0xFFFF),
