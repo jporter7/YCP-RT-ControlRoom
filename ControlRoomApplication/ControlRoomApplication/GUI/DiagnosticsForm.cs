@@ -69,11 +69,41 @@ namespace ControlRoomApplication.GUI
             }
         }
 
+        public delegate void SetEndTimeTextCallback(string text);
+        public void SetEndTimeText(string text)
+        {
+            if (endTimeTextBox.InvokeRequired)
+            {
+                SetEndTimeTextCallback d = new SetEndTimeTextCallback(SetEndTimeText);
+                Invoke(d, new object[] { text });
+            }
+            else
+            {
+                endTimeTextBox.Text = text;
+            }
+        }
+
+        public delegate void SetApptStatusTextCallback(string text);
+        public void SetApptStatusText(string text)
+        {
+            if (statusTextBox.InvokeRequired)
+            {
+                SetApptStatusTextCallback d = new SetApptStatusTextCallback(SetApptStatusText);
+                Invoke(d, new object[] { text });
+            }
+            else
+            {
+                statusTextBox.Text = text;
+            }
+        }
+
         private void timer1_Tick(object sender, System.EventArgs e)
         {
             if (controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay != null)
             {
                 SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToLocalTime().ToString());
+                SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.EndTime.ToLocalTime().ToString());
+                SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.Status.ToString());
             }
 
             dataGridView1.Update();
