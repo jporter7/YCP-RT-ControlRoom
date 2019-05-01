@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
 using System.Threading;
@@ -10,11 +11,10 @@ namespace ControlRoomApplication.Main
     {
         public RadioTelescopeController rt_controller { get; set; }
         public ControlRoom controlRoom { get; set; }
-        public int speed { get; set; }
+        public double speedRPM { get; set; }
         public bool DemoRunning { get; set; }
         public Thread DemoThread { get; set; }
-        private static readonly log4net.ILog logger =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public ManualControlForm(ControlRoom new_controlRoom, int rtId)
         {
@@ -31,13 +31,28 @@ namespace ControlRoomApplication.Main
 
             // Set speed
             comboBox1.Text = "0.1 RPM";
-            speed = 16667;
+            speedRPM = fromRPMsToDegreesPerSecond(0.1);
 
             // Set demo thread and flag
             CreateDemoThread();
             DemoRunning = false;
 
             logger.Info("ManualControlForm Initalized");
+        }
+
+        private static int fromDegreesToSteps(double degs)
+        {
+            return (int)(degs / 360 * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION);
+        }
+
+        private static double fromRevolutionsToDegrees(double revs)
+        {
+            return revs * 360;
+        }
+
+        private static double fromRPMsToDegreesPerSecond(double rpms)
+        {
+            return rpms * 6;
         }
 
         private void ManualControlForm_FormClosing(Object sender, FormClosingEventArgs e)
@@ -57,7 +72,7 @@ namespace ControlRoomApplication.Main
             UpdateText("Moving at -" + comboBox1.Text);
 
             // Start CCW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(speed, false);
+            rt_controller.StartRadioTelescopeAzimuthJog(speedRPM, false);
         }
 
         private void NegButton_MouseUp(object sender, MouseEventArgs e)
@@ -75,7 +90,7 @@ namespace ControlRoomApplication.Main
             UpdateText("Moving at " + comboBox1.Text);
 
             // Start CW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+            rt_controller.StartRadioTelescopeAzimuthJog(speedRPM, true);
         }
 
         private void PosButton_MouseUp(object sender, MouseEventArgs e)
@@ -92,12 +107,12 @@ namespace ControlRoomApplication.Main
             if(comboBox1.Text == "2 RPM")
             {
                 logger.Info("Speed set to 2 RPM");
-                speed = 333333;
+                speedRPM = fromRPMsToDegreesPerSecond(2.0);
             }
             else if(comboBox1.Text == "0.1 RPM")
             {
                 logger.Info("Speed set to 0.1 RPM");
-                speed = 16667;
+                speedRPM = fromRPMsToDegreesPerSecond(0.1);
             }
             else
             {
@@ -128,13 +143,7 @@ namespace ControlRoomApplication.Main
         private void button1_Click(object sender, EventArgs e)
         {
             logger.Info("Move Relative Button Clicked");
-            MoveRelative((int)numericUpDown1.Value);
-        }
-
-        private void MoveRelative(int degree)
-        {
-            int pos = degree * (int)((166 + (2.0 / 3.0)) * 200);
-            rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH, speed, pos);
+            rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, (double)numericUpDown1.Value);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -221,15 +230,15 @@ namespace ControlRoomApplication.Main
             while (DemoRunning)
             {
                 logger.Info("Running Demo");
-                //MoveRelative(45);
+                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, 45);
                 //Thread.Sleep(5000);
-                //MoveRelative(-45);
+                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, -45);
                 //Thread.Sleep(5000);
-                //MoveRelative(90);
+                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, 90);
                 //Thread.Sleep(10000);
-                //MoveRelative(-180);
+                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, -180);
                 //Thread.Sleep(15000);
-                //MoveRelative(90);
+                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, 90);
                 //Thread.Sleep(10000);
             }
         }

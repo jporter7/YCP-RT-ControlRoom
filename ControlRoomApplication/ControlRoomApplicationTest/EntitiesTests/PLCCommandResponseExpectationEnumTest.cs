@@ -10,19 +10,19 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestMethod]
         public void TestEnumToByte()
         {
-            Assert.AreEqual(0x0, PLCCommandResponseExpectationConversionHelper.ConvertToByte(PLCCommandResponseExpectationEnum.UNDEFINED));
-            Assert.AreEqual(0x1, PLCCommandResponseExpectationConversionHelper.ConvertToByte(PLCCommandResponseExpectationEnum.MINOR_RESPONSE));
-            Assert.AreEqual(0x2, PLCCommandResponseExpectationConversionHelper.ConvertToByte(PLCCommandResponseExpectationEnum.FULL_RESPONSE));
+            Assert.AreEqual(0x0, HardwareMessageResponseExpectationConversionHelper.ConvertToByte(HardwareMessageResponseExpectationEnum.UNDEFINED));
+            Assert.AreEqual(0x1, HardwareMessageResponseExpectationConversionHelper.ConvertToByte(HardwareMessageResponseExpectationEnum.MINOR_RESPONSE));
+            Assert.AreEqual(0x2, HardwareMessageResponseExpectationConversionHelper.ConvertToByte(HardwareMessageResponseExpectationEnum.FULL_RESPONSE));
         }
 
         [TestMethod]
         public void TestByteToEnum()
         {
-            Assert.AreEqual(PLCCommandResponseExpectationEnum.UNDEFINED, PLCCommandResponseExpectationConversionHelper.GetFromByte(0x0));
-            Assert.AreEqual(PLCCommandResponseExpectationEnum.MINOR_RESPONSE, PLCCommandResponseExpectationConversionHelper.GetFromByte(0x1));
-            Assert.AreEqual(PLCCommandResponseExpectationEnum.FULL_RESPONSE, PLCCommandResponseExpectationConversionHelper.GetFromByte(0x2));
-            Assert.AreEqual(PLCCommandResponseExpectationEnum.UNDEFINED, PLCCommandResponseExpectationConversionHelper.GetFromByte(0x3));
-            Assert.AreEqual(PLCCommandResponseExpectationEnum.UNDEFINED, PLCCommandResponseExpectationConversionHelper.GetFromByte(0xFF));
+            Assert.AreEqual(HardwareMessageResponseExpectationEnum.UNDEFINED, HardwareMessageResponseExpectationConversionHelper.GetFromByte(0x0));
+            Assert.AreEqual(HardwareMessageResponseExpectationEnum.MINOR_RESPONSE, HardwareMessageResponseExpectationConversionHelper.GetFromByte(0x1));
+            Assert.AreEqual(HardwareMessageResponseExpectationEnum.FULL_RESPONSE, HardwareMessageResponseExpectationConversionHelper.GetFromByte(0x2));
+            Assert.AreEqual(HardwareMessageResponseExpectationEnum.UNDEFINED, HardwareMessageResponseExpectationConversionHelper.GetFromByte(0x3));
+            Assert.AreEqual(HardwareMessageResponseExpectationEnum.UNDEFINED, HardwareMessageResponseExpectationConversionHelper.GetFromByte(0xFF));
         }
     }
 }

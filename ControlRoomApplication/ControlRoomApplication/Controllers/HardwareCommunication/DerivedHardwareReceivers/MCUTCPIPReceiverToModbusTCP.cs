@@ -1,4 +1,4 @@
-﻿#define PRODUCTION_PLC_DRIVER_DEBUG
+﻿#define MCU_MODBUS_DRIVER_DEBUG
 
 using System;
 using System.Net.Sockets;
@@ -8,20 +8,20 @@ using Modbus.Device;
 
 namespace ControlRoomApplication.Controllers
 {
-    public class ProductionPLCDriver : AbstractPLCDriver
+    public class MCUTCPIPReceiverToModbusTCP : BaseTCPIPHardwareReceiver
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private TcpClient MCUTCPClient;
         private ModbusIpMaster MCUModbusMaster;
 
-        public ProductionPLCDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
+        public MCUTCPIPReceiverToModbusTCP(string ipLocal, int portLocal) : base(ipLocal, portLocal)
         {
             MCUTCPClient = new TcpClient(MCUConstants.ACTUAL_MCU_IP_ADDRESS, MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
         }
 
-        ~ProductionPLCDriver()
+        ~MCUTCPIPReceiverToModbusTCP()
         {
             if (MCUTCPClient != null)
             {
@@ -29,9 +29,9 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        public void PrintReadInputRegsiterContents(string header)
+        public void PrintReadInputRegisterContents(string header)
         {
-#if PRODUCTION_PLC_DRIVER_DEBUG
+#if MCU_MODBUS_DRIVER_DEBUG
             System.Threading.Thread.Sleep(50);
 
             ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
@@ -51,44 +51,44 @@ namespace ControlRoomApplication.Controllers
 
         public bool SendResetErrorsCommand()
         {
-            PrintReadInputRegsiterContents("Before reset");
+            PrintReadInputRegisterContents("Before reset");
 
             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x0800, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
-            PrintReadInputRegsiterContents("After reset");
+            PrintReadInputRegisterContents("After reset");
 
             return true;
         }
 
         public bool SendHoldMoveCommand()
         {
-            PrintReadInputRegsiterContents("Before controlled stop");
+            PrintReadInputRegisterContents("Before controlled stop");
 
             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x4, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
-            PrintReadInputRegsiterContents("After controlled stop");
+            PrintReadInputRegisterContents("After controlled stop");
 
             return true;
         }
 
         public bool SendImmediateStopCommand()
         {
-            PrintReadInputRegsiterContents("Before controlled stop");
+            PrintReadInputRegisterContents("Before controlled stop");
 
             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x10, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
-            PrintReadInputRegsiterContents("After controlled stop");
+            PrintReadInputRegisterContents("After controlled stop");
 
             return true;
         }
 
         public bool SendEmptyMoveCommand()
         {
-            PrintReadInputRegsiterContents("Before removing move bits");
+            PrintReadInputRegisterContents("Before removing move bits");
 
             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x0, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
-            PrintReadInputRegsiterContents("After removing move bits");
+            PrintReadInputRegisterContents("After removing move bits");
 
             return true;
         }
@@ -99,7 +99,7 @@ namespace ControlRoomApplication.Controllers
             if (query.Length != ExpectedSize)
             {
                 throw new ArgumentException(
-                    "ProductionPLCDriver read a package specifying a size [" + ExpectedSize.ToString() + "], but the actual size was different [" + query.Length + "]."
+                    "MCUModbusDriver read a package specifying a size [" + ExpectedSize.ToString() + "], but the actual size was different [" + query.Length + "]."
                 );
             }
 
@@ -107,12 +107,12 @@ namespace ControlRoomApplication.Controllers
             byte CommandQueryTypeByte = (byte)(CommandQueryTypeAndExpectedResponseStatus & 0x3F);
             byte ExpectedResponseStatusByte = (byte)(CommandQueryTypeAndExpectedResponseStatus >> 6);
 
-            PLCCommandAndQueryTypeEnum CommandQueryTypeEnum = PLCCommandAndQueryTypeConversionHelper.GetFromByte(CommandQueryTypeByte);
-            PLCCommandResponseExpectationEnum ExpectedResponseStatusEnum = PLCCommandResponseExpectationConversionHelper.GetFromByte(ExpectedResponseStatusByte);
+            HardwareMessageTypeEnum CommandQueryTypeEnum = HardwareMessageTypeEnumConversionHelper.GetFromByte(CommandQueryTypeByte);
+            HardwareMessageResponseExpectationEnum ExpectedResponseStatusEnum = HardwareMessageResponseExpectationConversionHelper.GetFromByte(ExpectedResponseStatusByte);
 
             byte[] FinalResponseContainer;
 
-            if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.FULL_RESPONSE)
+            if (ExpectedResponseStatusEnum == HardwareMessageResponseExpectationEnum.FULL_RESPONSE)
             {
                 FinalResponseContainer = new byte[]
                 {
@@ -124,7 +124,7 @@ namespace ControlRoomApplication.Controllers
 
                 switch (CommandQueryTypeEnum)
                 {
-                    case PLCCommandAndQueryTypeEnum.TEST_CONNECTION:
+                    case HardwareMessageTypeEnum.TEST_CONNECTION:
                         {
                             // Read the heartbeat register
                             ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_HEARTBEAT_ADDRESS, 1);
@@ -135,15 +135,15 @@ namespace ControlRoomApplication.Controllers
                             break;
                         }
 
-                    case PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS:
+                    case HardwareMessageTypeEnum.GET_CURRENT_AZEL_POSITIONS:
                         {
-                            PrintReadInputRegsiterContents("Before getting current position");
+                            PrintReadInputRegisterContents("Before getting current position");
 
                             // Get the MCU's value for the displacement since its power cycle
                             ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_CURRENT_POSITION_ADDRESS, 2);
                             int currentStepForMCU = (65536 * inputRegisters[0]) + inputRegisters[1];
 
-                            PrintReadInputRegsiterContents("After getting current position");
+                            PrintReadInputRegisterContents("After getting current position");
 
                             // Convert that step change into degrees and write the bytes to return
                             Array.Copy(BitConverter.GetBytes(currentStepForMCU * 360 / 10000000.0), 0, FinalResponseContainer, 3, 8);
@@ -155,11 +155,11 @@ namespace ControlRoomApplication.Controllers
 
                     default:
                         {
-                            throw new ArgumentException("Invalid PLCCommandAndQueryTypeEnum value seen while expecting a response: " + CommandQueryTypeEnum.ToString());
+                            throw new ArgumentException("Invalid HardwareMessageTypeEnum value seen while expecting a response: " + CommandQueryTypeEnum.ToString());
                         }
                 }
             }
-            else if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.MINOR_RESPONSE)
+            else if (ExpectedResponseStatusEnum == HardwareMessageResponseExpectationEnum.MINOR_RESPONSE)
             {
                 FinalResponseContainer = new byte[]
                 {
@@ -168,7 +168,7 @@ namespace ControlRoomApplication.Controllers
 
                 switch (CommandQueryTypeEnum)
                 {
-                    case PLCCommandAndQueryTypeEnum.SET_CONFIGURATION:
+                    case HardwareMessageTypeEnum.SET_CONFIGURATION:
                         {
                             // Copy over data we care about, which for now is only the azimuth
                             // We skip over the data concerning the elevation, hence the gap in element access for query
@@ -187,25 +187,25 @@ namespace ControlRoomApplication.Controllers
                             };
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
-                            
-                            PrintReadInputRegsiterContents("After setting configuration");
+
+                            PrintReadInputRegisterContents("After setting configuration");
                             if (SendResetErrorsCommand())
                             {
-                                Console.WriteLine("[ProductionPLCDriver] Successfully sent reset command.");
-                                PrintReadInputRegsiterContents("After sending reset command");
+                                Console.WriteLine("[MCUModbusDriver] Successfully sent reset command.");
+                                PrintReadInputRegisterContents("After sending reset command");
                                 FinalResponseContainer[2] = 0x1;
                             }
                             else
                             {
                                 // Send an error code
-                                Console.WriteLine("[ProductionPLCDriver] ERROR sending reset command.");
+                                Console.WriteLine("[MCUModbusDriver] ERROR sending reset command.");
                                 FinalResponseContainer[2] = 0x2;
                             }
-                            
+
                             break;
                         }
 
-                    case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP:
+                    case HardwareMessageTypeEnum.CONTROLLED_STOP:
                         {
                             // There was already a helper function to execute a controlled stop, so just call that
                             // Send an error code if there's a failure for some reason
@@ -213,7 +213,7 @@ namespace ControlRoomApplication.Controllers
                             break;
                         }
 
-                    case PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP:
+                    case HardwareMessageTypeEnum.IMMEDIATE_STOP:
                         {
                             // There was already a helper function to execute a controlled stop, so just call that
                             // Send an error code if there's a failure for some reason
@@ -221,9 +221,9 @@ namespace ControlRoomApplication.Controllers
                             break;
                         }
 
-                    case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
+                    case HardwareMessageTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                         {
-                            PrintReadInputRegsiterContents("Before setting objective position");
+                            PrintReadInputRegisterContents("Before setting objective position");
 
                             // Copy over data we care about, so skip over the data concerning the elevation
                             double discrepancyMultiplier = 1.0;
@@ -252,20 +252,20 @@ namespace ControlRoomApplication.Controllers
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
-                            PrintReadInputRegsiterContents("After setting objective position");
+                            PrintReadInputRegisterContents("After setting objective position");
 
                             FinalResponseContainer[2] = 0x1;
                             break;
                         }
 
-                    case PLCCommandAndQueryTypeEnum.START_JOG_MOVEMENT:
+                    case HardwareMessageTypeEnum.START_JOG_MOVEMENT:
                         {
-                            PrintReadInputRegsiterContents("Before starting jog command");
+                            PrintReadInputRegisterContents("Before starting jog command");
 
                             // Make sure the command is intended for the azimuth
                             if (query[3] != 0x1)
                             {
-                                throw new ArgumentException("Unsupported value for axis specified in jog command for ProductionPLCDriver: " + query[3].ToString());
+                                throw new ArgumentException("Unsupported value for axis specified in jog command for MCUModbusDriver: " + query[3].ToString());
                             }
 
                             ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
@@ -279,7 +279,7 @@ namespace ControlRoomApplication.Controllers
                                         commandCode = 0x80;
                                         break;
                                     }
-                                
+
                                 case 0x2:
                                     {
                                         commandCode = 0x100;
@@ -288,7 +288,7 @@ namespace ControlRoomApplication.Controllers
 
                                 default:
                                     {
-                                        throw new ArgumentException("Unsupported value for motor movement direction in jog command for ProductionPLCDriver: " + query[8].ToString());
+                                        throw new ArgumentException("Unsupported value for motor movement direction in jog command for MCUModbusDriver: " + query[8].ToString());
                                     }
                             }
 
@@ -307,35 +307,35 @@ namespace ControlRoomApplication.Controllers
                             };
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
-                            
-                            PrintReadInputRegsiterContents("After starting jog command");
+
+                            PrintReadInputRegisterContents("After starting jog command");
 
                             FinalResponseContainer[2] = 0x1;
                             break;
                         }
 
-                    case PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION:
+                    case HardwareMessageTypeEnum.TRANSLATE_AZEL_POSITION:
                         {
-                            PrintReadInputRegsiterContents("Before starting relative move");
+                            PrintReadInputRegisterContents("Before starting relative move");
 
                             // Make sure the command is intended for the azimuth
                             if (query[3] != 0x1)
                             {
-                                throw new ArgumentException("Unsupported value for axis specified in move relative command for ProductionPLCDriver: " + query[3].ToString());
+                                throw new ArgumentException("Unsupported value for axis specified in move relative command for MCUModbusDriver: " + query[3].ToString());
                             }
 
                             ushort programmedPeakSpeedUShortMSW = (ushort)((256 * query[4]) + query[5]);
                             ushort programmedPeakSpeedUShortLSW = (ushort)((256 * query[6]) + query[7]);
 
-                            short programmedPositionUShortMSW = (short)((256 * query[8]) + query[9]);
-                            short programmedPositionUShortLSW = (short)((256 * query[10]) + query[11]);
+                            ushort programmedPositionUShortMSW = (ushort)((256 * query[8]) + query[9]);
+                            ushort programmedPositionUShortLSW = (ushort)((256 * query[10]) + query[11]);
 
                             ushort[] DataToWrite =
                             {
-                                0x2,                                    // Denotes a relative move
-                                0x3,                                    // Denotes a Trapezoidal S-Curve profile
-                                (ushort)programmedPositionUShortMSW,    // MSW for position
-                                (ushort)programmedPositionUShortLSW,    // LSW for position
+                                0x2,                            // Denotes a relative move
+                                0x3,                            // Denotes a Trapezoidal S-Curve profile
+                                programmedPositionUShortMSW,    // MSW for position
+                                programmedPositionUShortLSW,    // LSW for position
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
                                 MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
@@ -346,7 +346,7 @@ namespace ControlRoomApplication.Controllers
 
                             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
-                            PrintReadInputRegsiterContents("After starting relative move command");
+                            PrintReadInputRegisterContents("After starting relative move command");
 
                             FinalResponseContainer[2] = 0x1;
                             break;
@@ -354,16 +354,16 @@ namespace ControlRoomApplication.Controllers
 
                     default:
                         {
-                            throw new ArgumentException("Invalid PLCCommandAndQueryTypeEnum value seen while NOT expecting a response: " + CommandQueryTypeEnum.ToString());
+                            throw new ArgumentException("Invalid HardwareMessageTypeEnum value seen while NOT expecting a response: " + CommandQueryTypeEnum.ToString());
                         }
                 }
             }
             else
             {
-                throw new ArgumentException("Invalid PLCCommandResponseExpectationEnum value seen while processing client request in ProductionPLCDriver: " + ExpectedResponseStatusEnum.ToString());
+                throw new ArgumentException("Invalid HardwareMessageResponseExpectationEnum value seen while processing client request in MCUModbusDriver: " + ExpectedResponseStatusEnum.ToString());
             }
 
-            return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
+            return RespondWith(ActiveClientStream, FinalResponseContainer);
         }
     }
 }

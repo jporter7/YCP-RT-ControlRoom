@@ -1,22 +1,22 @@
-﻿using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.GUI;
-using ControlRoomApplication.Simulators.Hardware.WeatherStation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Entities;
+using ControlRoomApplication.GUI;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 
 namespace ControlRoomApplication.Main
 {
     public partial class MainForm : Form
     {
         private static int current_rt_id;
-        public List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList { get; set; }
+        public List<KeyValuePair<RadioTelescope, AbstractSimulationHardwareReceiver>> AbstractRTDriverPairList { get; set; }
         public List<RadioTelescopeController> ProgramRTControllerList { get; set; }
-        public List<AbstractPLCDriver> ProgramPLCDriverList { get; set; }
+        public List<AbstractSimulationHardwareReceiver> ProgramPLCDriverList { get; set; }
         public List<ControlRoomController> ProgramControlRoomControllerList { get; set; }
         private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
@@ -39,9 +39,9 @@ namespace ControlRoomApplication.Main
             dataGridView1.Columns[1].HeaderText = "PLC IP";
             dataGridView1.Columns[2].HeaderText = "PLC Port";
 
-            AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
+            AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractSimulationHardwareReceiver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
-            ProgramPLCDriverList = new List<AbstractPLCDriver>();
+            ProgramPLCDriverList = new List<AbstractSimulationHardwareReceiver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
             logger.Info("MainForm Initalized");
@@ -63,10 +63,10 @@ namespace ControlRoomApplication.Main
             {
                 current_rt_id++;
                 RadioTelescope ARadioTelescope = BuildRT();
-                AbstractPLCDriver APLCDriver = BuildPLCDriver();
+                AbstractSimulationHardwareReceiver APLCDriver = BuildPLCDriver();
 
                 // Add the RT/PLC driver pair and the RT controller to their respective lists
-                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
+                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractSimulationHardwareReceiver>(ARadioTelescope, APLCDriver));
                 ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
                 ProgramPLCDriverList.Add(APLCDriver);
 
@@ -95,8 +95,19 @@ namespace ControlRoomApplication.Main
 
                 // Start plc server and attempt to connect to it.
                 logger.Info("Starting plc server and attempting to connect to it");
-                ProgramPLCDriverList[current_rt_id - 1].StartAsyncAcceptingClients();
-                ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();
+                if (ProgramPLCDriverList[current_rt_id - 1] != null)
+                {
+                    ProgramPLCDriverList[current_rt_id - 1].StartReceiver();
+                }
+
+                if (!ProgramRTControllerList[current_rt_id - 1].RadioTelescope.HardwareCommsHandler.StartHandler())
+                {
+                    logger.Info("FAILURE starting hardware communication handler.");
+                }
+                else if (ProgramRTControllerList[current_rt_id - 1].RadioTelescope.HardwareCommsHandler is ModbusTCPMCUCommunicationHandler)
+                {
+                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(0.018, 0.018, 0, 0);
+                }
 
                 logger.Info("Adding RadioTelescope Controller");
                 MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
@@ -119,11 +130,6 @@ namespace ControlRoomApplication.Main
                 if (ManagementThread.Start())
                 {
                     logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
-
-                    if (APLCDriver is ProductionPLCDriver)
-                    {
-                        ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(500, 500, 0, 0);
-                    }
                 }
                 else
                 {
@@ -174,8 +180,12 @@ namespace ControlRoomApplication.Main
                 }
 
                 ProgramRTControllerList[0].RadioTelescope.SpectraCyberController.BringDown();
-                ProgramRTControllerList[0].RadioTelescope.PLCClient.TerminateTCPServerConnection();
-                ProgramPLCDriverList[0].RequestStopAsyncAcceptingClientsAndJoin();
+                ProgramRTControllerList[0].RadioTelescope.HardwareCommsHandler.DisposeHandler();
+
+                if (ProgramPLCDriverList[0] != null)
+                {
+                    ProgramPLCDriverList[0].DisposeReceiver();
+                }
             }
 
             // End logging
@@ -218,17 +228,33 @@ namespace ControlRoomApplication.Main
         /// <returns> A radio telescope instance representing the configuration chosen. </returns>
         public RadioTelescope BuildRT()
         {
-            logger.Info("Building RadioTelescope");
-            PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
+            AbstractHardwareCommunicationHandler HardwareCommsHandler;
 
-            // Create Radio Telescope Location
-            Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
+            // TODO: Add in logic for selecting other types of HardwareCommsHandler
+            switch (comboBox3.SelectedIndex)
+            {
+                case 0:
+                    HardwareCommsHandler = new ModbusTCPMCUCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
+                    break;
+
+                case 3:
+                    throw new InvalidOperationException("The scale model is unsupported at the moment.");
+
+                default:
+                    HardwareCommsHandler = new YCPBaseTCPIPCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
+                    break;
+            }
 
             // Return Radio Telescope
-            RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,90), current_rt_id);
-
-            logger.Info("RadioTelescope Built Successfully");
-            return rt;
+            // This if-statement is not permanent functionality (obviously, because both cases are the same)
+            if (checkBox1.Checked)
+            {
+                return new RadioTelescope(BuildSpectraCyber(), HardwareCommsHandler, MiscellaneousConstants.JOHN_RUDY_PARK, new Entities.Orientation(0, 90), current_rt_id);
+            }
+            else
+            {
+                return new RadioTelescope(BuildSpectraCyber(), HardwareCommsHandler, MiscellaneousConstants.JOHN_RUDY_PARK, new Entities.Orientation(0, 90), current_rt_id);
+            }
         }
 
         /// <summary>
@@ -254,26 +280,30 @@ namespace ControlRoomApplication.Main
         /// Builds a PLC driver based off of the input from the GUI.
         /// </summary>
         /// <returns> A plc driver based off of the configuration specified by the GUI. </returns>
-        public AbstractPLCDriver BuildPLCDriver()
+        public AbstractSimulationHardwareReceiver BuildPLCDriver()
         {
             switch (comboBox3.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building ProductionPLCDriver");
-                    return new ProductionPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    // The production telescope
+                    logger.Info("ProductionPLC does not have a simulation counterprrt, skipping build...");
+                    return null;
 
                 case 1:
-                    logger.Info("Building ScaleModelPLCDriver");
-                    return new ScaleModelPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    // Case for the simulated radiotelescope.
+                    logger.Info("Building ScaleModelTCPIPReceiver");
+                    return new ScaleModelTCPIPReceiver(textBox2.Text, int.Parse(textBox1.Text));
 
                 case 3:
-                    logger.Info("Building TestPLCDriver");
-                    return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    // Case for the test radiotelescope.
+                    logger.Info("Building TestPLCTCPIPReceiver");
+                    return new TestPLCTCPIPReceiver(textBox2.Text, int.Parse(textBox1.Text));
 
                 case 2:
                 default:
-                    logger.Info("Building SimulationPLCDriver");
-                    return new SimulationPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    // Case for the simulation telescope.
+                    logger.Info("Building SimulationPLCTCPIPReceiver");
+                    return new SimulationPLCTCPIPReceiver(textBox2.Text, int.Parse(textBox1.Text));
             }
         }
 

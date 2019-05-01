@@ -8,19 +8,19 @@ namespace ControlRoomApplicationTest.EntityControllersTests
     [TestClass]
     public class AbstractPLCDriverTest
     {
-        private static TestPLCDriver DerivedAbstractPLCDriver;
+        private static TestPLCTCPIPReceiver DerivedAbstractPLCDriver;
 
         [ClassInitialize]
         public static void BringUp(TestContext context)
         {
-            DerivedAbstractPLCDriver = new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, 8080);
+            DerivedAbstractPLCDriver = new TestPLCTCPIPReceiver(MiscellaneousConstants.LOCAL_HOST_IP, 8080);
         }
 
         [TestMethod]
         public void TestStartAndStopAsync()
         {
             Assert.AreEqual(true, DerivedAbstractPLCDriver.StartAsyncAcceptingClients());
-            Assert.AreEqual(true, DerivedAbstractPLCDriver.RequestStopAsyncAcceptingClientsAndJoin());
+            Assert.AreEqual(true, DerivedAbstractPLCDriver.StopAsyncAcceptingClientsAndJoin());
         }
     }
 }

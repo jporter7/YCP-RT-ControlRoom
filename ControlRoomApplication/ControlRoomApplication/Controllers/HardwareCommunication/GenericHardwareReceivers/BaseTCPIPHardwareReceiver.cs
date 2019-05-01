@@ -5,27 +5,26 @@ using System.Threading;
 
 namespace ControlRoomApplication.Controllers
 {
-    public abstract class AbstractPLCDriver
+    public abstract class BaseTCPIPHardwareReceiver : AbstractSimulationHardwareReceiver
     {
-        private static readonly log4net.ILog logger =
-            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private TcpListener PLCTCPListener;
-        private Thread ClientManagmentThread;
+        private TcpListener HardwareTCPListener;
+        private Thread CommunicationManagmentThread;
         private volatile bool KillClientManagementThreadFlag;
 
-        public AbstractPLCDriver(IPAddress ip_address, int port)
+        public BaseTCPIPHardwareReceiver(IPAddress ip_address, int port)
         {
             try
             {
-                PLCTCPListener = new TcpListener(new IPEndPoint(ip_address, port));
-                ClientManagmentThread = new Thread(new ThreadStart(HandleClientManagementThread));
+                HardwareTCPListener = new TcpListener(new IPEndPoint(ip_address, port));
+                CommunicationManagmentThread = new Thread(new ThreadStart(HandleCommunicationManagementThread));
             }
             catch (Exception e)
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
                 {
-                    logger.Info("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
+                    logger.Info("[AbstractHardwareReceiver] ERROR: failure creating hardware TCP server or management thread: " + e.ToString());
                     return;
                 }
                 else
@@ -37,19 +36,19 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
-                PLCTCPListener.Start(1);
+                HardwareTCPListener.Start(1);
             }
             catch (Exception e)
             {
                 if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException))
                 {
-                    logger.Info("[AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
+                    logger.Info("[AbstractHardwareReceiver] ERROR: failure starting hardware TCP server: " + e.ToString());
                     return;
                 }
             }
         }
 
-        public AbstractPLCDriver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
+        public BaseTCPIPHardwareReceiver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
 
         public bool StartAsyncAcceptingClients()
         {
@@ -57,7 +56,7 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
-                ClientManagmentThread.Start();
+                CommunicationManagmentThread.Start();
             }
             catch (Exception e)
             {
@@ -75,13 +74,13 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        public bool RequestStopAsyncAcceptingClientsAndJoin()
+        public bool StopAsyncAcceptingClientsAndJoin()
         {
             KillClientManagementThreadFlag = true;
 
             try
             {
-                ClientManagmentThread.Join();
+                CommunicationManagmentThread.Join();
             }
             catch (Exception e)
             {
@@ -99,7 +98,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        protected bool AttemptToWriteDataToServer(NetworkStream ActiveClientStream, byte[] ResponseData)
+        protected bool RespondWith(NetworkStream ActiveClientStream, byte[] ResponseData)
         {
             try
             {
@@ -109,7 +108,7 @@ namespace ControlRoomApplication.Controllers
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException) || (e is System.IO.IOException) || (e is ObjectDisposedException))
                 {
-                    logger.Info("[AbstractPLCDriver] ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
+                    logger.Info("[AbstractHardwareReceiver] ERROR: writing back to client with the hardware's response {" + ResponseData.ToString() + "}");
                     return false;
                 }
             }
@@ -117,7 +116,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        private void HandleClientManagementThread()
+        private void HandleCommunicationManagementThread()
         {
             TcpClient AcceptedClient = null;
             byte[] StreamBuffer = new byte[256];
@@ -125,10 +124,10 @@ namespace ControlRoomApplication.Controllers
 
             while (!KillClientManagementThreadFlag)
             {
-                if (PLCTCPListener.Pending())
+                if (HardwareTCPListener.Pending())
                 {
-                    AcceptedClient = PLCTCPListener.AcceptTcpClient();
-                    logger.Info("[AbstractPLCDriver] Connected to new client.");
+                    AcceptedClient = HardwareTCPListener.AcceptTcpClient();
+                    logger.Info("[AbstractHardwareReceiver] Connected to new client.");
 
                     NetworkStream ClientStream = AcceptedClient.GetStream();
 
@@ -154,12 +153,7 @@ namespace ControlRoomApplication.Controllers
 
                             if (!ProcessRequest(ClientStream, ClippedData))
                             {
-                                logger.Info("[AbstractPLCDriver] FAILED to write server.");
-                            }
-                            else
-                            {
-                                //logger.Info("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
-                                //logger.Info("[AbstractPLCDriver] Successfully wrote to server!");
+                                logger.Info("[AbstractHardwareReceiver] FAILED to write server.");
                             }
                         }
                         catch (Exception e)
@@ -171,7 +165,7 @@ namespace ControlRoomApplication.Controllers
                                 || (e is ArgumentOutOfRangeException)
                                 || (e is ArgumentException))
                             {
-                                logger.Info("[AbstractPLCDriver] ERROR: copying buffer array into clipped array {" + Fd + "}, skipping... [" + e.ToString());
+                                logger.Info("[AbstractHardwareReceiver] ERROR: copying buffer array into clipped array {" + Fd + "}, skipping... [" + e.ToString());
                                 continue;
                             }
                             else
@@ -186,6 +180,16 @@ namespace ControlRoomApplication.Controllers
                     AcceptedClient.Dispose();
                 }
             }
+        }
+
+        public override bool StartReceiver()
+        {
+            return StartAsyncAcceptingClients();
+        }
+
+        public override bool DisposeReceiver()
+        {
+            return StopAsyncAcceptingClientsAndJoin();
         }
 
         protected abstract bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query);
