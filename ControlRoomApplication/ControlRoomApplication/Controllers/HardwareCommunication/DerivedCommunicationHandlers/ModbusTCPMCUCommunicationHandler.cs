@@ -102,26 +102,26 @@ namespace ControlRoomApplication.Controllers
 
             ushort[] DataToWrite =
             {
-                0x8400,                             // The configuration for the YCP radio telescope's MCU, see the output configuration table of the MCU for the bit-wise info
-                0x0000,                             // Configuration info, continued
-                (ushort)(gearedSpeedAZ >> 0x0010),  // MSW for azimuth starting speed
-                (ushort)(gearedSpeedAZ & 0xFFFF),   // LSW for azimuth starting speed
-                (ushort)homeTimeoutSecondsAzimuth,  // The timeout for the azimuth to reach its homing position
-                0,                                  // Reserved for configuration commands
-                0,                                  // Reserved for configuration commands
-                0,                                  // Reserved for configuration commands
-                0,                                  // Reserved for configuration commands
-                0,                                  // Reserved for configuration commands
-                0x8400,                             // Reserved for configuration commands
-                0x0000,                             // Reserved for configuration commands
-                (ushort)(gearedSpeedAZ >> 0x0010),  // MSW for elevation starting speed
-                (ushort)(gearedSpeedAZ & 0xFFFF),   // LSW for elevation starting speed
-                (ushort)homeTimeoutSecondsAzimuth,  // The timeout for the elevation to reach its homing position
-                0,                                  // Reserved for configuration commands
-                0,                                  // Reserved for configuration commands
-                0,                                  // Reserved for configuration commands
-                0,                                  // Reserved for configuration commands
-                0                                   // Reserved for configuration commands
+                0x8400,                               // The configuration for the YCP radio telescope's MCU, see the output configuration table of the MCU for the bit-wise info
+                0x0000,                               // Configuration info, continued
+                (ushort)(gearedSpeedAZ >> 0x0010),    // MSW for azimuth starting speed
+                (ushort)(gearedSpeedAZ & 0xFFFF),     // LSW for azimuth starting speed
+                (ushort)homeTimeoutSecondsAzimuth,    // The timeout for the azimuth to reach its homing position
+                0,                                    // Reserved for configuration commands
+                0,                                    // Reserved for configuration commands
+                0,                                    // Reserved for configuration commands
+                0,                                    // Reserved for configuration commands
+                0,                                    // Reserved for configuration commands
+                0x8400,                               // Reserved for configuration commands
+                0x0000,                               // Reserved for configuration commands
+                (ushort)(gearedSpeedEL >> 0x0010),    // MSW for elevation starting speed
+                (ushort)(gearedSpeedEL & 0xFFFF),     // LSW for elevation starting speed
+                (ushort)homeTimeoutSecondsElevation,  // The timeout for the elevation to reach its homing position
+                0,                                    // Reserved for configuration commands
+                0,                                    // Reserved for configuration commands
+                0,                                    // Reserved for configuration commands
+                0,                                    // Reserved for configuration commands
+                0                                     // Reserved for configuration commands
             };
 
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
@@ -179,14 +179,14 @@ namespace ControlRoomApplication.Controllers
 
             ushort[] JogDataToWrite =
             {
-                (ushort)(clockwise ? 0x0080 : 0x0100),      // Denotes a jog move, either CW or CCW, in command mode for azimuth
+                (ushort)(clockwise ? 0x0080 : 0x0100),      // Denotes a jog move, either CW or CCW, in command mode for an axis
                 0x3,                                        // Denotes a Trapezoidal S-Curve profile
                 0,                                          // Reserved to 0 for a jog command
                 0,                                          // Reserved to 0 for a jog command
-                (ushort)(programmedPeakSpeedInt >> 0x10),   // MSW for azimuth speed
-                (ushort)(programmedPeakSpeedInt & 0xFFFF),  // LSW for azimuth speed
-                MCUConstants.MCU_DEFAULT_ACCELERATION,      // Acceleration for azimuth
-                MCUConstants.MCU_DEFAULT_ACCELERATION,      // Acceleration for azimuth
+                (ushort)(programmedPeakSpeedInt >> 0x10),   // MSW for an axis speed
+                (ushort)(programmedPeakSpeedInt & 0xFFFF),  // LSW for an axis speed
+                MCUConstants.MCU_DEFAULT_ACCELERATION,      // Acceleration for an axis
+                MCUConstants.MCU_DEFAULT_ACCELERATION,      // Deceleration for an axis
                 0,                                          // Reserved for a relative move
                 0                                           // Reserved for a relative move
             };
@@ -228,7 +228,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        public override bool ExecuteRelativeMove(double speedDPSAzimuth, double translationDegreesAzimuth, double speedDPSElevation, double translationDegreesElevation)
+        public override bool ExecuteRelativeMove(double speedDPSAzimuth, double speedDPSElevation, double translationDegreesAzimuth, double translationDegreesElevation)
         {
             PrintInputRegisterContents("Before relative move", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
 
@@ -298,7 +298,7 @@ namespace ControlRoomApplication.Controllers
                 (ushort)(programmedPeakSpeedELInt >> 0x10),   // MSW for elevation speed
                 (ushort)(programmedPeakSpeedELInt & 0xFFFF),  // MSW for elevation speed
                 MCUConstants.MCU_DEFAULT_ACCELERATION,        // Acceleration for elevation
-                MCUConstants.MCU_DEFAULT_ACCELERATION,        // Acceleration for elevation
+                MCUConstants.MCU_DEFAULT_ACCELERATION,        // Deceleration for elevation
                 0,                                            // Reserved for a relative move
                 0                                             // Reserved for a relative move
             };

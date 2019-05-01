@@ -37,6 +37,18 @@ namespace ControlRoomApplication.Main
             DemoRunning = false;
 
             logger.Info("ManualControlForm Initalized");
+
+
+
+            // The designer is... "bad", we'll say, and is driving me nuts - and I prefer to actually write my code anyway, so here's my event binding, go ahead and @ me
+            NegButtonEL.MouseDown += new MouseEventHandler(NegButtonEL_MouseDown);
+            NegButtonEL.MouseUp += new MouseEventHandler(NegButtonEL_MouseUp);
+            PosButtonEL.MouseDown += new MouseEventHandler(PosButtonEL_MouseDown);
+            PosButtonEL.MouseUp += new MouseEventHandler(PosButtonEL_MouseUp);
+
+            AbsoluteMoveSubmit.Click += new EventHandler(AbsoluteMoveSubmit_Click);
+
+            ClearCommandsSubmit.Click += new EventHandler(ClearCommandsSubmit_Click);
         }
 
         private void ManualControlForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -50,36 +62,36 @@ namespace ControlRoomApplication.Main
             errorLabel.Text = text;
         }
 
-        private void NegButton_MouseDown(object sender, MouseEventArgs e)
+        private void NegButtonAZ_MouseDown(object sender, MouseEventArgs e)
         {
-            logger.Info("Jog NegButton MouseDown");
+            logger.Info("Jog NegButton Azimuth MouseDown");
             UpdateText("Moving at -" + comboBox1.Text);
 
             // Start CCW Jog
             rt_controller.StartRadioTelescopeAzimuthJog(speedRPM, false);
         }
 
-        private void NegButton_MouseUp(object sender, MouseEventArgs e)
+        private void NegButtonAZ_MouseUp(object sender, MouseEventArgs e)
         {
-            logger.Info("Jog NegButton MouseUp");
+            logger.Info("Jog NegButton Azimuth MouseUp");
             UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Stop Move
             ExecuteCorrectStop();
         }
 
-        private void PosButton_MouseDown(object sender, MouseEventArgs e)
+        private void PosButtonAZ_MouseDown(object sender, MouseEventArgs e)
         {
-            logger.Info("Jog PosButton MouseDown");
+            logger.Info("Jog PosButton Azimuth MouseDown");
             UpdateText("Moving at " + comboBox1.Text);
 
             // Start CW Jog
             rt_controller.StartRadioTelescopeAzimuthJog(speedRPM, true);
         }
 
-        private void PosButton_MouseUp(object sender, MouseEventArgs e)
+        private void PosButtonAZ_MouseUp(object sender, MouseEventArgs e)
         {
-            logger.Info("Jog PosButton MouseUp");
+            logger.Info("Jog PosButton Azimuth MouseUp");
             UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Stop Move
@@ -124,10 +136,10 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void RelativeMoveSubmit_Click(object sender, EventArgs e)
         {
             logger.Info("Move Relative Button Clicked");
-            rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, (double)numericUpDown1.Value);
+            rt_controller.ExecuteRelativeMove(speedRPM, speedRPM, (double)numericUpDown1.Value, (double)numericUpDown2.Value);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -201,10 +213,10 @@ namespace ControlRoomApplication.Main
         private void SetButtonsEnabled(bool enabled)
         {
             comboBox1.Enabled = enabled;
-            button1.Enabled = enabled;
+            RelativeMoveSubmit.Enabled = enabled;
             numericUpDown1.Enabled = enabled;
-            NegButton.Enabled = enabled;
-            PosButton.Enabled = enabled;
+            NegButtonAZ.Enabled = enabled;
+            PosButtonAZ.Enabled = enabled;
             radioButton1.Enabled = enabled;
             radioButton2.Enabled = enabled;
         }
@@ -214,17 +226,119 @@ namespace ControlRoomApplication.Main
             logger.Info("Running Demo");
             while (DemoRunning)
             {
-                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, 45);
-                //Thread.Sleep(5000);
-                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, -45);
-                //Thread.Sleep(5000);
-                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, 90);
-                //Thread.Sleep(10000);
-                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, -180);
-                //Thread.Sleep(15000);
-                //rt_controller.ExecuteRelativeMoveAzimuth(speedRPM, 90);
-                //Thread.Sleep(10000);
+                logger.Info("Executing command #0: relative move, elevation, 45 degrees, 80 second sleep.");
+                rt_controller.ExecuteRelativeMoveElevation(speedRPM, 45);
+                Thread.Sleep(80000);
+
+                logger.Info("Executing command #1: CCW jog move, elevation, 10 seconds, controlled stop.");
+                rt_controller.StartRadioTelescopeElevationJog(speedRPM, false);
+                Thread.Sleep(10000);
+                rt_controller.ExecuteRadioTelescopeControlledStop();
+                Thread.Sleep(3000);
+
+                logger.Info("Executing command #2: relative move, elevation, -45 degrees, 80 second sleep.");
+                rt_controller.ExecuteRelativeMoveElevation(speedRPM, -45);
+                Thread.Sleep(80000);
+
+                logger.Info("Executing command #3: CCW jog move, elevation, 5 seconds, immediate stop.");
+                rt_controller.StartRadioTelescopeElevationJog(speedRPM, false);
+                Thread.Sleep(5000);
+                rt_controller.ExecuteRadioTelescopeImmediateStop();
+                Thread.Sleep(1000);
+
+                logger.Info("Executing command #2: relative move, elevation, 90 degrees, 160 second sleep.");
+                rt_controller.ExecuteRelativeMoveElevation(speedRPM, 90);
+                Thread.Sleep(160000);
+                rt_controller.CancelCurrentMoveCommand();
+
+                logger.Info("Executing command #3: relative move, elevation, -180 degrees, 320 second sleep.");
+                rt_controller.ExecuteRelativeMoveElevation(speedRPM, -180);
+                Thread.Sleep(320000);
+                rt_controller.CancelCurrentMoveCommand();
+
+                logger.Info("Executing command #4: absolute move, [0, 0] degrees, 160 second sleep.");
+                rt_controller.MoveRadioTelescopeToOrientation(new Entities.Orientation(0, 0));
+                Thread.Sleep(160000);
+                rt_controller.CancelCurrentMoveCommand();
             }
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void NegButtonEL_MouseDown(object sender, MouseEventArgs e)
+        {
+            logger.Info("Jog NegButton Elevation MouseDown");
+            UpdateText("Moving at -" + comboBox1.Text);
+
+            // Start CCW Jog
+            rt_controller.StartRadioTelescopeElevationJog(speedRPM, false);
+        }
+
+        private void NegButtonEL_MouseUp(object sender, MouseEventArgs e)
+        {
+            logger.Info("Jog NegButton Elevation MouseUp");
+            UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+            // Stop Move
+            ExecuteCorrectStop();
+        }
+
+        private void PosButtonEL_MouseDown(object sender, MouseEventArgs e)
+        {
+            logger.Info("Jog PosButton Elevation MouseDown");
+            UpdateText("Moving at " + comboBox1.Text);
+
+            // Start CW Jog
+            rt_controller.StartRadioTelescopeElevationJog(speedRPM, true);
+        }
+
+        private void PosButtonEL_MouseUp(object sender, MouseEventArgs e)
+        {
+            logger.Info("Jog PosButton Elevation MouseUp");
+            UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+            // Stop Move
+            ExecuteCorrectStop();
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ActualAZTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ActualELTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AbsoluteMoveSubmit_Click(object sender, EventArgs e)
+        {
+            logger.Info("Move Absolute Button Clicked");
+            rt_controller.MoveRadioTelescopeToOrientation(new Entities.Orientation((double)numericUpDown1.Value, (double)numericUpDown2.Value));
+        }
+
+        private void ClearCommandsSubmit_Click(object sender, EventArgs e)
+        {
+            logger.Info("Clear Commands Button Clicked");
+            rt_controller.CancelCurrentMoveCommand();
         }
     }
 }
