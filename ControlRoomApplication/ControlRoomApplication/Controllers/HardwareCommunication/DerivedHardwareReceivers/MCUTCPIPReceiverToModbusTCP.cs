@@ -332,10 +332,10 @@ namespace ControlRoomApplication.Controllers
 
                             ushort[] DataToWrite =
                             {
-                                0x2,                                    // Denotes a relative move
-                                0x3,                                    // Denotes a Trapezoidal S-Curve profile
-                                (ushort)programmedPositionUShortMSW,    // MSW for position
-                                (ushort)programmedPositionUShortLSW,    // LSW for position
+                                0x2,                            // Denotes a relative move
+                                0x3,                            // Denotes a Trapezoidal S-Curve profile
+                                programmedPositionUShortMSW,    // MSW for position
+                                programmedPositionUShortLSW,    // LSW for position
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
                                 MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,

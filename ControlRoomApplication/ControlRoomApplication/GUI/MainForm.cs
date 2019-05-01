@@ -100,7 +100,14 @@ namespace ControlRoomApplication.Main
                     ProgramPLCDriverList[current_rt_id - 1].StartReceiver();
                 }
 
-                ProgramRTControllerList[current_rt_id - 1].RadioTelescope.HardwareCommsHandler.StartHandler();
+                if (!ProgramRTControllerList[current_rt_id - 1].RadioTelescope.HardwareCommsHandler.StartHandler())
+                {
+                    logger.Info("FAILURE starting hardware communication handler.");
+                }
+                else if (ProgramRTControllerList[current_rt_id - 1].RadioTelescope.HardwareCommsHandler is ModbusTCPMCUCommunicationHandler)
+                {
+                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(0.018, 0.018, 0, 0);
+                }
 
                 logger.Info("Adding RadioTelescope Controller");
                 MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
@@ -123,11 +130,6 @@ namespace ControlRoomApplication.Main
                 if (ManagementThread.Start())
                 {
                     logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
-
-                    if (APLCDriver is MCUTCPIPReceiverToModbusTCP)
-                    {
-                        ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(500, 500, 0, 0);
-                    }
                 }
                 else
                 {

@@ -10,6 +10,8 @@ namespace ControlRoomApplication.Controllers
         private static readonly ushort[] MESSAGE_CONTENTS_CLEAR_MOVE = new ushort[] { 0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000 };
         private static readonly ushort[] MESSAGE_CONTENTS_RESET_ERRORS = new ushort[] { 0x0800, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000 };
 
+        private static readonly double DEFAULT_SPEED_IF_UNSPECIFIED_RPMS = 0.2;
+
         public int ConfiguredStartingSpeedAzimuth { get; private set; }
         public int ConfiguredStartingSpeedElevation { get; private set; }
 
@@ -74,8 +76,8 @@ namespace ControlRoomApplication.Controllers
 
         public override bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
-            int gearedSpeedAZ = (int)((startSpeedAzimuth / 360) * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION);
-            int gearedSpeedEL = (int)((startSpeedElevation / 360) * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION);
+            int gearedSpeedAZ = (int)(startSpeedAzimuth * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
+            int gearedSpeedEL = (int)(startSpeedElevation * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
 
             if ((gearedSpeedAZ < 1) || (gearedSpeedEL < 1) || (homeTimeoutAzimuth < 0) || (homeTimeoutElevation < 0)
                 || (gearedSpeedAZ > 1000000) || (gearedSpeedEL > 1000000) || (homeTimeoutAzimuth > 300) || (homeTimeoutElevation > 300))
@@ -89,7 +91,7 @@ namespace ControlRoomApplication.Controllers
                 0x0000,
                 (ushort)(gearedSpeedAZ >> 0x0010),
                 (ushort)(gearedSpeedAZ & 0xFFFF),
-                (ushort)(homeTimeoutAzimuth),
+                (ushort)homeTimeoutAzimuth,
                 0,
                 0,
                 0,
@@ -98,7 +100,7 @@ namespace ControlRoomApplication.Controllers
             };
 
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
-            SendResetErrorsCommand();
+            //SendResetErrorsCommand();
 
             ConfiguredStartingSpeedAzimuth = gearedSpeedAZ;
             ConfiguredStartingSpeedElevation = gearedSpeedEL;
@@ -108,7 +110,15 @@ namespace ControlRoomApplication.Controllers
 
         public override bool MoveRadioTelescopeToOrientation(Orientation orientation)
         {
-            throw new NotImplementedException("This is a currently unsupported operation.");
+            int ObjectivePositionStepsAZ = (int)(orientation.Azimuth * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
+
+            Orientation CurrentMCUPosition = GetCurrentOrientation();
+            int CurrentPositionStepsAZ = (int)(CurrentMCUPosition.Azimuth * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
+
+            int PositionTranslationStepsAZ = ObjectivePositionStepsAZ - CurrentPositionStepsAZ;
+            double PositionTranslationDegreesAZ = PositionTranslationStepsAZ * 360 / MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION;
+
+            return ExecuteRelativeMove(RadioTelescopeAxisEnum.AZIMUTH, DEFAULT_SPEED_IF_UNSPECIFIED_RPMS * 6, PositionTranslationDegreesAZ);
         }
 
         public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
@@ -119,7 +129,7 @@ namespace ControlRoomApplication.Controllers
                 return false;
             }
 
-            int programmedPeakSpeedInt = (int)((speed / 360) * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION);
+            int programmedPeakSpeedInt = (int)(speed * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
             if ((programmedPeakSpeedInt < 1) || (programmedPeakSpeedInt > 1000000))
             {
                 return false;
@@ -157,19 +167,21 @@ namespace ControlRoomApplication.Controllers
 
         public override bool ExecuteRelativeMove(RadioTelescopeAxisEnum axis, double speed, double position)
         {
+            PrintInputRegisterContents("Before relative move", MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             // Make sure the command is intended for the azimuth
             if (axis != RadioTelescopeAxisEnum.AZIMUTH)
             {
                 return false;
             }
 
-            int programmedPeakSpeedInt = (int)((speed / 360) * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION);
+            int programmedPeakSpeedInt = (int)(speed * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
             if ((programmedPeakSpeedInt < ConfiguredStartingSpeedAzimuth) || (programmedPeakSpeedInt > 1000000))
             {
                 return false;
             }
 
-            int positionTranslationInt = (int)((position / 360) * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION);
+            int positionTranslationInt = (int)(position * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
             if ((positionTranslationInt < -1073741823) || (positionTranslationInt > 1073741823))
             {
                 return false;
@@ -185,7 +197,7 @@ namespace ControlRoomApplication.Controllers
             }
             else
             {
-                positionTranslationMSW = (ushort)(programmedPeakSpeedInt >> 0x10);
+                positionTranslationMSW = (ushort)(positionTranslationInt >> 0x10);
             }
 
             ushort[] DataToWrite =
@@ -193,7 +205,7 @@ namespace ControlRoomApplication.Controllers
                 0x2,                                        // Denotes a relative move
                 0x3,                                        // Denotes a Trapezoidal S-Curve profile
                 positionTranslationMSW,                     // MSW for position
-                (ushort)(programmedPeakSpeedInt & 0xFFFF),  // LSW for position
+                (ushort)(positionTranslationInt & 0xFFFF),  // LSW for position
                 (ushort)(programmedPeakSpeedInt >> 0x10),
                 (ushort)(programmedPeakSpeedInt & 0xFFFF),
                 MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
