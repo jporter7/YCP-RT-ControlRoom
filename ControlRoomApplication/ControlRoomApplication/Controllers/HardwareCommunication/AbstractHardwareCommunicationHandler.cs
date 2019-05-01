@@ -23,17 +23,17 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool CalibrateRadioTelescope();
 
-        public abstract bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
+        public abstract bool ConfigureRadioTelescope(double startSpeedDPSAzimuth, double startSpeedDPSElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation);
 
         public abstract bool MoveRadioTelescopeToOrientation(Orientation orientation);
 
-        public abstract bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise);
+        public abstract bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speedDPS, bool clockwise);
 
         public abstract bool ExecuteRadioTelescopeControlledStop();
 
         public abstract bool ExecuteRadioTelescopeImmediateStop();
 
-        public abstract bool ExecuteRelativeMove(RadioTelescopeAxisEnum axis, double speed, double position);
+        public abstract bool ExecuteRelativeMove(double speedDPSAzimuth, double speedDPSElevation, double translationDegreesAzimuth, double translationDegreesElevation);
 
         protected override bool TestIfComponentIsAlive()
         {

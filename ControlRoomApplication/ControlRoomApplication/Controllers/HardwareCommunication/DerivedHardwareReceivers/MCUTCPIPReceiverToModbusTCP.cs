@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Controllers
 
         public MCUTCPIPReceiverToModbusTCP(string ipLocal, int portLocal) : base(ipLocal, portLocal)
         {
-            MCUTCPClient = new TcpClient(MCUConstants.ACTUAL_MCU_IP_ADDRESS, MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
+            MCUTCPClient = new TcpClient(MCUConstants.MCU_IP_ADDRESS, MCUConstants.MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
         }
 
@@ -34,7 +34,7 @@ namespace ControlRoomApplication.Controllers
 #if MCU_MODBUS_DRIVER_DEBUG
             System.Threading.Thread.Sleep(50);
 
-            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
             Console.WriteLine(header + ":");
             foreach (ushort us in inputRegisters)
             {
@@ -53,7 +53,7 @@ namespace ControlRoomApplication.Controllers
         {
             PrintReadInputRegisterContents("Before reset");
 
-            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x0800, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x0800, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
             PrintReadInputRegisterContents("After reset");
 
@@ -64,7 +64,7 @@ namespace ControlRoomApplication.Controllers
         {
             PrintReadInputRegisterContents("Before controlled stop");
 
-            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x4, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x4, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
             PrintReadInputRegisterContents("After controlled stop");
 
@@ -75,7 +75,7 @@ namespace ControlRoomApplication.Controllers
         {
             PrintReadInputRegisterContents("Before controlled stop");
 
-            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x10, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x10, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
             PrintReadInputRegisterContents("After controlled stop");
 
@@ -86,7 +86,7 @@ namespace ControlRoomApplication.Controllers
         {
             PrintReadInputRegisterContents("Before removing move bits");
 
-            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x0, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, new ushort[] { 0x0, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 });
 
             PrintReadInputRegisterContents("After removing move bits");
 
@@ -127,7 +127,7 @@ namespace ControlRoomApplication.Controllers
                     case HardwareMessageTypeEnum.TEST_CONNECTION:
                         {
                             // Read the heartbeat register
-                            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_HEARTBEAT_ADDRESS, 1);
+                            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.MCU_READ_INPUT_REGISTER_HEARTBEAT_ADDRESS, 1);
                             ushort resultValue = (ushort)((inputRegisters.Length == 1) ? inputRegisters[0] : 0);
                             FinalResponseContainer[3] = (byte)(((resultValue == 8192) || (resultValue == 24576)) ? 0x1 : 0x0);
 
@@ -140,7 +140,7 @@ namespace ControlRoomApplication.Controllers
                             PrintReadInputRegisterContents("Before getting current position");
 
                             // Get the MCU's value for the displacement since its power cycle
-                            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_CURRENT_POSITION_ADDRESS, 2);
+                            ushort[] inputRegisters = MCUModbusMaster.ReadInputRegisters(MCUConstants.MCU_READ_INPUT_REGISTER_CURRENT_POSITION_ADDRESS, 2);
                             int currentStepForMCU = (65536 * inputRegisters[0]) + inputRegisters[1];
 
                             PrintReadInputRegisterContents("After getting current position");
@@ -186,7 +186,7 @@ namespace ControlRoomApplication.Controllers
                                 0
                             };
 
-                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
                             PrintReadInputRegisterContents("After setting configuration");
                             if (SendResetErrorsCommand())
@@ -223,39 +223,41 @@ namespace ControlRoomApplication.Controllers
 
                     case HardwareMessageTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
                         {
-                            PrintReadInputRegisterContents("Before setting objective position");
+                            //PrintReadInputRegisterContents("Before setting objective position");
 
-                            // Copy over data we care about, so skip over the data concerning the elevation
-                            double discrepancyMultiplier = 1.0;
-                            double objectiveAZDouble = BitConverter.ToDouble(query, 3);
-                            int stepChange = (int)(discrepancyMultiplier * Math.Pow(2, MCUConstants.ACTUAL_MCU_AZIMUTH_ENCODER_BIT_RESOLUTION) * objectiveAZDouble / 360);
-                            ushort stepChangeUShortMSW = (ushort)((stepChange >> 16) & 0xFFFF);
-                            ushort stepChangeUShortLSW = (ushort)(stepChange & 0xFFFF);
+                            //// Copy over data we care about, so skip over the data concerning the elevation
+                            //double discrepancyMultiplier = 1.0;
+                            //double objectiveAZDouble = BitConverter.ToDouble(query, 3);
+                            //int stepChange = (int)(discrepancyMultiplier * Math.Pow(2, MCUConstants.ACTUAL_MCU_AZIMUTH_ENCODER_BIT_RESOLUTION) * objectiveAZDouble / 360);
+                            //ushort stepChangeUShortMSW = (ushort)((stepChange >> 16) & 0xFFFF);
+                            //ushort stepChangeUShortLSW = (ushort)(stepChange & 0xFFFF);
 
-                            int programmedPeakSpeed = BitConverter.ToInt32(query, 7);
-                            ushort programmedPeakSpeedUShortMSW = (ushort)((programmedPeakSpeed >> 16) & 0xFFFF);
-                            ushort programmedPeakSpeedUShortLSW = (ushort)(programmedPeakSpeed & 0xFFFF);
+                            //int programmedPeakSpeed = BitConverter.ToInt32(query, 7);
+                            //ushort programmedPeakSpeedUShortMSW = (ushort)((programmedPeakSpeed >> 16) & 0xFFFF);
+                            //ushort programmedPeakSpeedUShortLSW = (ushort)(programmedPeakSpeed & 0xFFFF);
 
-                            ushort[] DataToWrite =
-                            {
-                                0x2, // Denotes a relative move in command mode
-                                0x3, // Denotes a Trapezoidal S-Curve profile
-                                stepChangeUShortMSW,
-                                stepChangeUShortLSW,
-                                programmedPeakSpeedUShortMSW,
-                                programmedPeakSpeedUShortLSW,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                                0,
-                                0
-                            };
+                            //ushort[] DataToWrite =
+                            //{
+                            //    0x2, // Denotes a relative move in command mode
+                            //    0x3, // Denotes a Trapezoidal S-Curve profile
+                            //    stepChangeUShortMSW,
+                            //    stepChangeUShortLSW,
+                            //    programmedPeakSpeedUShortMSW,
+                            //    programmedPeakSpeedUShortLSW,
+                            //    MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                            //    MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                            //    0,
+                            //    0
+                            //};
 
-                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+                            //MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
-                            PrintReadInputRegisterContents("After setting objective position");
+                            //PrintReadInputRegisterContents("After setting objective position");
 
-                            FinalResponseContainer[2] = 0x1;
-                            break;
+                            //FinalResponseContainer[2] = 0x1;
+                            //break;
+
+                            throw new NotSupportedException("This is not supported at the moment.");
                         }
 
                     case HardwareMessageTypeEnum.START_JOG_MOVEMENT:
@@ -300,13 +302,13 @@ namespace ControlRoomApplication.Controllers
                                 0,            // Reserved to 0 for a jog command
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                                MCUConstants.MCU_DEFAULT_ACCELERATION,
+                                MCUConstants.MCU_DEFAULT_ACCELERATION,
                                 0,
                                 0
                             };
 
-                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
                             PrintReadInputRegisterContents("After starting jog command");
 
@@ -338,13 +340,13 @@ namespace ControlRoomApplication.Controllers
                                 programmedPositionUShortLSW,    // LSW for position
                                 programmedPeakSpeedUShortMSW,
                                 programmedPeakSpeedUShortLSW,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                                MCUConstants.MCU_DEFAULT_ACCELERATION,
+                                MCUConstants.MCU_DEFAULT_ACCELERATION,
                                 0,
                                 0
                             };
 
-                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+                            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
                             PrintReadInputRegisterContents("After starting relative move command");
 

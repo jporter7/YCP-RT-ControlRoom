@@ -228,9 +228,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRelativeMove(RadioTelescopeAxisEnum axis, double speed, double position)
+        public bool ExecuteRelativeMove(double speedDPSAzimuth, double speedDPSElevation, double translationDegreesAzimuth, double translationDegreesElevation)
         {
-            return RadioTelescope.HardwareCommsHandler.ExecuteRelativeMove(axis, speed, position);
+            return RadioTelescope.HardwareCommsHandler.ExecuteRelativeMove(speedDPSAzimuth, speedDPSElevation, translationDegreesAzimuth, translationDegreesElevation);
         }
 
         /// <summary>
@@ -242,9 +242,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRelativeMoveAzimuth(double speed, double position)
+        public bool ExecuteRelativeMoveAzimuth(double speedDPS, double positionTranslation)
         {
-            return ExecuteRelativeMove(RadioTelescopeAxisEnum.AZIMUTH, speed, position);
+            return ExecuteRelativeMove(speedDPS, positionTranslation, speedDPS, 0);
         }
 
         /// <summary>
@@ -256,9 +256,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRelativeMoveElevation(double speed, double position)
+        public bool ExecuteRelativeMoveElevation(double speedDPS, double positionTranslation)
         {
-            return ExecuteRelativeMove(RadioTelescopeAxisEnum.AZIMUTH, speed, position);
+            return ExecuteRelativeMove(speedDPS, 0, speedDPS, positionTranslation);
         }
 
         private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)

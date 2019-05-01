@@ -63,12 +63,12 @@ namespace ControlRoomApplication.Controllers
             return MinorResponseIsValid(ExchangeSimpleMessage(HardwareMessageTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION, false));
         }
         
-        public override bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public override bool ConfigureRadioTelescope(double startSpeedDPSAzimuth, double startSpeedDPSElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation)
         {
             byte[] NetOutgoingMessage = GetNewOutgoingMessageTemplate(HardwareMessageTypeEnum.SET_CONFIGURATION);
 
-            int StartSpeedAzimuth = (int)((startSpeedAzimuth * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION) / 60);
-            int StartSpeedElevation = (int)((startSpeedElevation * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION) / 60);
+            int StartSpeedAzimuth = ConversionHelper.DPSToSPS(startSpeedDPSAzimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int StartSpeedElevation = ConversionHelper.DPSToSPS(startSpeedDPSElevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             NetOutgoingMessage[3] = 0x84;
             NetOutgoingMessage[4] = 0x00;
@@ -85,11 +85,11 @@ namespace ControlRoomApplication.Controllers
             NetOutgoingMessage[13] = (byte)((StartSpeedElevation >> 8) & 0xFF);
             NetOutgoingMessage[14] = (byte)(StartSpeedElevation & 0xFF);
 
-            NetOutgoingMessage[15] = (byte)(homeTimeoutAzimuth >> 8);
-            NetOutgoingMessage[16] = (byte)(homeTimeoutAzimuth & 0xFF);
+            NetOutgoingMessage[15] = (byte)(homeTimeoutSecondsAzimuth >> 8);
+            NetOutgoingMessage[16] = (byte)(homeTimeoutSecondsAzimuth & 0xFF);
 
-            NetOutgoingMessage[17] = (byte)(homeTimeoutElevation >> 8);
-            NetOutgoingMessage[18] = (byte)(homeTimeoutElevation & 0xFF);
+            NetOutgoingMessage[17] = (byte)(homeTimeoutSecondsElevation >> 8);
+            NetOutgoingMessage[18] = (byte)(homeTimeoutSecondsElevation & 0xFF);
 
             return MinorResponseIsValid(QueueOutgoingMessageAndReadResponse(NetOutgoingMessage, false, EXPECTED_MINOR_RESPONSE_SIZE));
         }
@@ -104,54 +104,56 @@ namespace ControlRoomApplication.Controllers
             return MinorResponseIsValid(ExchangeSimpleMessage(HardwareMessageTypeEnum.IMMEDIATE_STOP, false));
         }
 
-        public override bool ExecuteRelativeMove(RadioTelescopeAxisEnum axis, double speed, double translation)
+        public override bool ExecuteRelativeMove(double speedDPSAzimuth, double translationDegreesAzimuth, double speedDPSElevation, double translationDegreesElevation)
         {
-            byte[] NetOutgoingMessage = GetNewOutgoingMessageTemplate(HardwareMessageTypeEnum.TRANSLATE_AZEL_POSITION);
+            //byte[] NetOutgoingMessage = GetNewOutgoingMessageTemplate(HardwareMessageTypeEnum.TRANSLATE_AZEL_POSITION);
 
-            int AxisPeakSpeed = (int)((speed * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION) / 60);
-            int AxisTranslation = (int)(translation * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
+            //int AxisPeakSpeed = (int)((speedDPSAzimuth * MotorConstants.GEARED_STEPS_PER_REVOLUTION) / 60);
+            //int AxisTranslation = (int)(translationDegreesAzimuth * MotorConstants.GEARED_STEPS_PER_REVOLUTION / 360);
 
-            switch (axis)
-            {
-                case RadioTelescopeAxisEnum.AZIMUTH:
-                    {
-                        NetOutgoingMessage[3] = 0x1;
-                        break;
-                    }
+            //switch (axis)
+            //{
+            //    case RadioTelescopeAxisEnum.AZIMUTH:
+            //        {
+            //            NetOutgoingMessage[3] = 0x1;
+            //            break;
+            //        }
 
-                case RadioTelescopeAxisEnum.ELEVATION:
-                    {
-                        NetOutgoingMessage[3] = 0x2;
-                        break;
-                    }
+            //    case RadioTelescopeAxisEnum.ELEVATION:
+            //        {
+            //            NetOutgoingMessage[3] = 0x2;
+            //            break;
+            //        }
 
-                default:
-                    {
-                        throw new ArgumentException("Invalid RadioTelescopeAxisEnum value seen while preparing relative movement bytes: " + axis.ToString());
-                    }
-            }
+            //    default:
+            //        {
+            //            throw new ArgumentException("Invalid RadioTelescopeAxisEnum value seen while preparing relative movement bytes: " + axis.ToString());
+            //        }
+            //}
 
-            NetOutgoingMessage[4] = 0x0;
-            NetOutgoingMessage[5] = (byte)(AxisPeakSpeed / 0xFFFF);
-            NetOutgoingMessage[6] = (byte)((AxisPeakSpeed >> 8) & 0xFF);
-            NetOutgoingMessage[7] = (byte)(AxisPeakSpeed & 0xFF);
+            //NetOutgoingMessage[4] = 0x0;
+            //NetOutgoingMessage[5] = (byte)(AxisPeakSpeed / 0xFFFF);
+            //NetOutgoingMessage[6] = (byte)((AxisPeakSpeed >> 8) & 0xFF);
+            //NetOutgoingMessage[7] = (byte)(AxisPeakSpeed & 0xFF);
 
-            if (AxisTranslation > 0)
-            {
-                NetOutgoingMessage[8] = 0x0;
-                NetOutgoingMessage[9] = (byte)(AxisTranslation / 0xFFFF);
-                NetOutgoingMessage[10] = (byte)((AxisTranslation >> 8) & 0xFF);
-                NetOutgoingMessage[11] = (byte)(AxisTranslation & 0xFF);
-            }
-            else
-            {
-                NetOutgoingMessage[8] = 0xFF;
-                NetOutgoingMessage[9] = (byte)((AxisTranslation / 0xFFFF) - 1);
-                NetOutgoingMessage[10] = (byte)((AxisTranslation >> 8) & 0xFF);
-                NetOutgoingMessage[11] = (byte)(AxisTranslation & 0xFF);
-            }
+            //if (AxisTranslation > 0)
+            //{
+            //    NetOutgoingMessage[8] = 0x0;
+            //    NetOutgoingMessage[9] = (byte)(AxisTranslation / 0xFFFF);
+            //    NetOutgoingMessage[10] = (byte)((AxisTranslation >> 8) & 0xFF);
+            //    NetOutgoingMessage[11] = (byte)(AxisTranslation & 0xFF);
+            //}
+            //else
+            //{
+            //    NetOutgoingMessage[8] = 0xFF;
+            //    NetOutgoingMessage[9] = (byte)((AxisTranslation / 0xFFFF) - 1);
+            //    NetOutgoingMessage[10] = (byte)((AxisTranslation >> 8) & 0xFF);
+            //    NetOutgoingMessage[11] = (byte)(AxisTranslation & 0xFF);
+            //}
 
-            return MinorResponseIsValid(QueueOutgoingMessageAndReadResponse(NetOutgoingMessage, false, EXPECTED_MINOR_RESPONSE_SIZE));
+            //return MinorResponseIsValid(QueueOutgoingMessageAndReadResponse(NetOutgoingMessage, false, EXPECTED_MINOR_RESPONSE_SIZE));
+
+            throw new NotImplementedException("This is unsupported after recent refactoring and due to time constraints.");
         }
 
         public override bool[] GetCurrentLimitSwitchStatuses()
@@ -224,23 +226,25 @@ namespace ControlRoomApplication.Controllers
             return MinorResponseIsValid(ExchangeSimpleMessage(HardwareMessageTypeEnum.SHUTDOWN, false));
         }
 
-        public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
+        public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speedDPS, bool clockwise)
         {
             byte[] NetOutgoingMessage = GetNewOutgoingMessageTemplate(HardwareMessageTypeEnum.SET_OBJECTIVE_AZEL_POSITION);
 
-            int AxisJogSpeed = (int)((speed * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION) / 60);
+            int AxisJogSpeed;
 
             switch (axis)
             {
                 case RadioTelescopeAxisEnum.AZIMUTH:
                     {
                         NetOutgoingMessage[3] = 0x1;
+                        AxisJogSpeed = ConversionHelper.DPSToSPS(speedDPS, MotorConstants.GEARING_RATIO_AZIMUTH);
                         break;
                     }
 
                 case RadioTelescopeAxisEnum.ELEVATION:
                     {
                         NetOutgoingMessage[3] = 0x2;
+                        AxisJogSpeed = ConversionHelper.DPSToSPS(speedDPS, MotorConstants.GEARING_RATIO_ELEVATION);
                         break;
                     }
 

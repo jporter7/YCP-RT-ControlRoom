@@ -29,7 +29,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        public override bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public override bool ConfigureRadioTelescope(double startSpeedDPSAzimuth, double startSpeedDPSElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation)
         {
             return true;
         }
@@ -44,7 +44,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        public override bool ExecuteRelativeMove(RadioTelescopeAxisEnum axis, double speed, double position)
+        public override bool ExecuteRelativeMove(double speedDPSAzimuth, double positionDegreesAzimuth, double speedDPSElevation, double positionDegreesElevation)
         {
             return false;
         }
@@ -74,7 +74,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
+        public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speedDPS, bool clockwise)
         {
             return false;
         }

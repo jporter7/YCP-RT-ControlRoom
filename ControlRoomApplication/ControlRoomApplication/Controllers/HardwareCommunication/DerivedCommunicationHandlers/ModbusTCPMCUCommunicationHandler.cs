@@ -6,9 +6,23 @@ namespace ControlRoomApplication.Controllers
 {
     public class ModbusTCPMCUCommunicationHandler : BaseModbusTCPCommunicationHandler
     {
-        private static readonly ushort[] MESSAGE_CONTENTS_IMMEDIATE_STOP = new ushort[] { 0x0010, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000 };
-        private static readonly ushort[] MESSAGE_CONTENTS_CLEAR_MOVE = new ushort[] { 0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000 };
-        private static readonly ushort[] MESSAGE_CONTENTS_RESET_ERRORS = new ushort[] { 0x0800, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000 };
+        private static readonly ushort[] MESSAGE_CONTENTS_IMMEDIATE_STOP = new ushort[]
+        {
+            0x0010, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+            0x0010, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
+        };
+
+        private static readonly ushort[] MESSAGE_CONTENTS_CLEAR_MOVE = new ushort[]
+        {
+            0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+            0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
+        };
+
+        private static readonly ushort[] MESSAGE_CONTENTS_RESET_ERRORS = new ushort[]
+        {
+            0x0800, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+            0x0800, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
+        };
 
         private static readonly double DEFAULT_SPEED_IF_UNSPECIFIED_RPMS = 0.2;
 
@@ -21,30 +35,31 @@ namespace ControlRoomApplication.Controllers
             ConfiguredStartingSpeedElevation = 0;
         }
 
-        public ModbusTCPMCUCommunicationHandler() : base(MCUConstants.ACTUAL_MCU_IP_ADDRESS, MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT)
+        public ModbusTCPMCUCommunicationHandler() : base(MCUConstants.MCU_IP_ADDRESS, MCUConstants.MCU_MODBUS_TCP_PORT)
         {
             // Does nothing extra
         }
 
         private void SendResetErrorsCommand()
         {
-            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_RESET_ERRORS);
+            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_RESET_ERRORS);
         }
 
         public override bool TestCommunication()
         {
             // Read the heartbeat register
-            ushort[] inputRegisters = GenericModbusTCPMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_HEARTBEAT_ADDRESS, 1);
+            ushort[] inputRegisters = GenericModbusTCPMaster.ReadInputRegisters(MCUConstants.MCU_READ_INPUT_REGISTER_HEARTBEAT_ADDRESS, 1);
             return (inputRegisters[0] == 8192) || (inputRegisters[0] == 24576);
         }
 
         public override Orientation GetCurrentOrientation()
         {
             // Get the MCU's value for the displacement since its power cycle
-            ushort[] inputRegisters = GenericModbusTCPMaster.ReadInputRegisters(MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_CURRENT_POSITION_ADDRESS, 2);
+            // Either issue one read command that's larger than necessary, or issue two of them at the exact - if it's more efficient to do one or the other, that can be changed
+            ushort[] ClippedInputRegisterInfo = GenericModbusTCPMaster.ReadInputRegisters(MCUConstants.MCU_READ_INPUT_REGISTER_CURRENT_POSITION_ADDRESS, 12);
             return new Orientation(
-                ((65536 * inputRegisters[0]) + inputRegisters[1]) * 360.0 / MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION,
-                0.0
+                ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[0]) + ClippedInputRegisterInfo[1], MotorConstants.GEARING_RATIO_AZIMUTH),
+                ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[10]) + ClippedInputRegisterInfo[11], MotorConstants.GEARING_RATIO_ELEVATION)
             );
         }
 
@@ -60,7 +75,7 @@ namespace ControlRoomApplication.Controllers
 
         public override bool CancelCurrentMoveCommand()
         {
-            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_CLEAR_MOVE);
+            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_CLEAR_MOVE);
             return true;
         }
 
@@ -74,32 +89,42 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException("This is a currently unsupported operation.");
         }
 
-        public override bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public override bool ConfigureRadioTelescope(double startSpeedDPSAzimuth, double startSpeedDPSElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation)
         {
-            int gearedSpeedAZ = (int)(startSpeedAzimuth * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
-            int gearedSpeedEL = (int)(startSpeedElevation * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
+            int gearedSpeedAZ = ConversionHelper.DPSToSPS(startSpeedDPSAzimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int gearedSpeedEL = ConversionHelper.DPSToSPS(startSpeedDPSElevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
-            if ((gearedSpeedAZ < 1) || (gearedSpeedEL < 1) || (homeTimeoutAzimuth < 0) || (homeTimeoutElevation < 0)
-                || (gearedSpeedAZ > 1000000) || (gearedSpeedEL > 1000000) || (homeTimeoutAzimuth > 300) || (homeTimeoutElevation > 300))
+            if ((gearedSpeedAZ < 1) || (gearedSpeedEL < 1) || (homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsElevation < 0)
+                || (gearedSpeedAZ > 1000000) || (gearedSpeedEL > 1000000) || (homeTimeoutSecondsAzimuth > 300) || (homeTimeoutSecondsElevation > 300))
             {
                 return false;
             }
 
             ushort[] DataToWrite =
             {
-                0x8400,
-                0x0000,
-                (ushort)(gearedSpeedAZ >> 0x0010),
-                (ushort)(gearedSpeedAZ & 0xFFFF),
-                (ushort)homeTimeoutAzimuth,
-                0,
-                0,
-                0,
-                0,
-                0
+                0x8400,                             // The configuration for the YCP radio telescope's MCU, see the output configuration table of the MCU for the bit-wise info
+                0x0000,                             // Configuration info, continued
+                (ushort)(gearedSpeedAZ >> 0x0010),  // MSW for azimuth starting speed
+                (ushort)(gearedSpeedAZ & 0xFFFF),   // LSW for azimuth starting speed
+                (ushort)homeTimeoutSecondsAzimuth,  // The timeout for the azimuth to reach its homing position
+                0,                                  // Reserved for configuration commands
+                0,                                  // Reserved for configuration commands
+                0,                                  // Reserved for configuration commands
+                0,                                  // Reserved for configuration commands
+                0,                                  // Reserved for configuration commands
+                0x8400,                             // Reserved for configuration commands
+                0x0000,                             // Reserved for configuration commands
+                (ushort)(gearedSpeedAZ >> 0x0010),  // MSW for elevation starting speed
+                (ushort)(gearedSpeedAZ & 0xFFFF),   // LSW for elevation starting speed
+                (ushort)homeTimeoutSecondsAzimuth,  // The timeout for the elevation to reach its homing position
+                0,                                  // Reserved for configuration commands
+                0,                                  // Reserved for configuration commands
+                0,                                  // Reserved for configuration commands
+                0,                                  // Reserved for configuration commands
+                0                                   // Reserved for configuration commands
             };
 
-            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
             //SendResetErrorsCommand();
 
             ConfiguredStartingSpeedAzimuth = gearedSpeedAZ;
@@ -110,46 +135,84 @@ namespace ControlRoomApplication.Controllers
 
         public override bool MoveRadioTelescopeToOrientation(Orientation orientation)
         {
-            int ObjectivePositionStepsAZ = (int)(orientation.Azimuth * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
+            int ObjectivePositionStepsAZ = ConversionHelper.DegreesToSteps(orientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int ObjectivePositionStepsEL = ConversionHelper.DegreesToSteps(orientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             Orientation CurrentMCUPosition = GetCurrentOrientation();
-            int CurrentPositionStepsAZ = (int)(CurrentMCUPosition.Azimuth * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
+            int CurrentPositionStepsAZ = ConversionHelper.DegreesToSteps(CurrentMCUPosition.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int CurrentPositionStepsEL = ConversionHelper.DegreesToSteps(CurrentMCUPosition.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+            
+            double PositionTranslationDegreesAZ = ConversionHelper.StepsToDegrees(ObjectivePositionStepsAZ - CurrentPositionStepsAZ, MotorConstants.GEARING_RATIO_AZIMUTH);
+            double PositionTranslationDegreesEL = ConversionHelper.StepsToDegrees(ObjectivePositionStepsEL - CurrentPositionStepsEL, MotorConstants.GEARING_RATIO_ELEVATION);
 
-            int PositionTranslationStepsAZ = ObjectivePositionStepsAZ - CurrentPositionStepsAZ;
-            double PositionTranslationDegreesAZ = PositionTranslationStepsAZ * 360 / MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION;
-
-            return ExecuteRelativeMove(RadioTelescopeAxisEnum.AZIMUTH, DEFAULT_SPEED_IF_UNSPECIFIED_RPMS * 6, PositionTranslationDegreesAZ);
+            double FixedSpeedDPS = ConversionHelper.RPMToDPS(DEFAULT_SPEED_IF_UNSPECIFIED_RPMS);
+            return ExecuteRelativeMove(FixedSpeedDPS, PositionTranslationDegreesAZ, FixedSpeedDPS, PositionTranslationDegreesEL);
         }
 
-        public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
+        public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speedDPS, bool clockwise)
         {
-            // Make sure the command is intended for the azimuth
-            if (axis != RadioTelescopeAxisEnum.AZIMUTH)
+            int JogMoveIndex, ClearMoveIndex, ApplicableGearingRatio;
+
+            switch (axis)
             {
-                return false;
+                case RadioTelescopeAxisEnum.AZIMUTH:
+                    JogMoveIndex = 0;
+                    ClearMoveIndex = 10;
+                    ApplicableGearingRatio = MotorConstants.GEARING_RATIO_AZIMUTH;
+                    break;
+
+                case RadioTelescopeAxisEnum.ELEVATION:
+                    JogMoveIndex = 10;
+                    ClearMoveIndex = 0;
+                    ApplicableGearingRatio = MotorConstants.GEARING_RATIO_ELEVATION;
+                    break;
+
+                default:
+                    throw new ArgumentException("Invalid axis enum provided: " + axis.ToString());
             }
 
-            int programmedPeakSpeedInt = (int)(speed * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
+            int programmedPeakSpeedInt = ConversionHelper.DPSToSPS(speedDPS, ApplicableGearingRatio);
             if ((programmedPeakSpeedInt < 1) || (programmedPeakSpeedInt > 1000000))
             {
                 return false;
             }
 
-            ushort[] DataToWrite =
+            ushort[] JogDataToWrite =
             {
-                (ushort)(clockwise ? 0x0080 : 0x0100),   // Denotes a jog move, either CW or CCW, in command mode
-                0x3,                                     // Denotes a Trapezoidal S-Curve profile
-                0,                                       // Reserved to 0 for a jog command
-                0,                                       // Reserved to 0 for a jog command
-                (ushort)(programmedPeakSpeedInt >> 0x10),
-                (ushort)(programmedPeakSpeedInt & 0xFFFF),
-                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                0,
-                0
+                (ushort)(clockwise ? 0x0080 : 0x0100),      // Denotes a jog move, either CW or CCW, in command mode for azimuth
+                0x3,                                        // Denotes a Trapezoidal S-Curve profile
+                0,                                          // Reserved to 0 for a jog command
+                0,                                          // Reserved to 0 for a jog command
+                (ushort)(programmedPeakSpeedInt >> 0x10),   // MSW for azimuth speed
+                (ushort)(programmedPeakSpeedInt & 0xFFFF),  // LSW for azimuth speed
+                MCUConstants.MCU_DEFAULT_ACCELERATION,      // Acceleration for azimuth
+                MCUConstants.MCU_DEFAULT_ACCELERATION,      // Acceleration for azimuth
+                0,                                          // Reserved for a relative move
+                0                                           // Reserved for a relative move
             };
 
-            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+            ushort[] DataToWrite = new ushort[20];
+
+            try
+            {
+                Array.Copy(JogDataToWrite, 0, DataToWrite, JogMoveIndex, 10);
+                Array.Copy(MESSAGE_CONTENTS_CLEAR_MOVE, 0, DataToWrite, ClearMoveIndex, 10);
+            }
+            catch (Exception e)
+            {
+                if ((e is ArgumentNullException) || (e is RankException) || (e is ArrayTypeMismatchException)
+                    || (e is InvalidCastException) || (e is ArgumentOutOfRangeException) || (e is ArgumentException))
+                {
+                    return false;
+                }
+                else
+                {
+                    // Unexpected exception
+                    throw e;
+                }
+            }
+
+            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
             return true;
         }
@@ -161,60 +224,86 @@ namespace ControlRoomApplication.Controllers
 
         public override bool ExecuteRadioTelescopeImmediateStop()
         {
-            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_IMMEDIATE_STOP);
+            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_IMMEDIATE_STOP);
             return true;
         }
 
-        public override bool ExecuteRelativeMove(RadioTelescopeAxisEnum axis, double speed, double position)
+        public override bool ExecuteRelativeMove(double speedDPSAzimuth, double translationDegreesAzimuth, double speedDPSElevation, double translationDegreesElevation)
         {
-            PrintInputRegisterContents("Before relative move", MCUConstants.ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+            PrintInputRegisterContents("Before relative move", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
 
-            // Make sure the command is intended for the azimuth
-            if (axis != RadioTelescopeAxisEnum.AZIMUTH)
+            int programmedPeakSpeedAZInt = ConversionHelper.DPSToSPS(speedDPSAzimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            if ((programmedPeakSpeedAZInt < ConfiguredStartingSpeedAzimuth) || (programmedPeakSpeedAZInt > 1000000))
             {
                 return false;
             }
 
-            int programmedPeakSpeedInt = (int)(speed * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
-            if ((programmedPeakSpeedInt < ConfiguredStartingSpeedAzimuth) || (programmedPeakSpeedInt > 1000000))
-            {
-                return false;
-            }
-
-            int positionTranslationInt = (int)(position * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION / 360);
-            if ((positionTranslationInt < -1073741823) || (positionTranslationInt > 1073741823))
+            int positionTranslationAZInt = ConversionHelper.DegreesToSteps(translationDegreesAzimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            if ((positionTranslationAZInt < -1073741823) || (positionTranslationAZInt > 1073741823))
             {
                 return false;
             }
 
             // Page 59 of the MCU documentation ("ANFI1 & ANF2 AnyNET-I/O 1 or 2 Axis Servo/Stepper Controller with Interpolated Moves") says that
             // a negative relative move of less than 65,535 steps must make the MSW for the position -1. This check is done here.
-            ushort positionTranslationMSW;
-            if ((positionTranslationInt < 0) && (positionTranslationInt > -65535))
+            ushort positionTranslationAZMSW;
+            if ((positionTranslationAZInt < 0) && (positionTranslationAZInt > -65535))
             {
-                // For all those CS students out there (and those that "didn't like" Dr. Moscola's ECE220), this is Two's-Complement "-1" for 16-bit words
-                positionTranslationMSW = 0xFFFF;
+                // For all those CS students out there (and those that "didn't like" Dr. Moscola's Fundamentals of CE), this is Two's-Complement "-1" for 16-bit words
+                positionTranslationAZMSW = 0xFFFF;
             }
             else
             {
-                positionTranslationMSW = (ushort)(positionTranslationInt >> 0x10);
+                positionTranslationAZMSW = (ushort)(positionTranslationAZInt >> 0x10);
+            }
+
+            int programmedPeakSpeedELInt = ConversionHelper.DPSToSPS(speedDPSElevation, MotorConstants.GEARING_RATIO_ELEVATION);
+            if ((programmedPeakSpeedELInt < ConfiguredStartingSpeedAzimuth) || (programmedPeakSpeedELInt > 1000000))
+            {
+                return false;
+            }
+
+            int positionTranslationELInt = ConversionHelper.DegreesToSteps(translationDegreesElevation, MotorConstants.GEARING_RATIO_ELEVATION);
+            if ((positionTranslationELInt < -1073741823) || (positionTranslationELInt > 1073741823))
+            {
+                return false;
+            }
+            
+            ushort positionTranslationELMSW;
+            if ((positionTranslationELInt < 0) && (positionTranslationELInt > -65535))
+            {
+                positionTranslationELMSW = 0xFFFF;
+            }
+            else
+            {
+                positionTranslationELMSW = (ushort)(positionTranslationELInt >> 0x10);
             }
 
             ushort[] DataToWrite =
             {
-                0x2,                                        // Denotes a relative move
-                0x3,                                        // Denotes a Trapezoidal S-Curve profile
-                positionTranslationMSW,                     // MSW for position
-                (ushort)(positionTranslationInt & 0xFFFF),  // LSW for position
-                (ushort)(programmedPeakSpeedInt >> 0x10),
-                (ushort)(programmedPeakSpeedInt & 0xFFFF),
-                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                0,
-                0
+                0x2,                                          // Denotes a relative move in azimuth
+                0x3,                                          // Denotes a Trapezoidal S-Curve profile
+                positionTranslationAZMSW,                     // MSW for azimuth position
+                (ushort)(positionTranslationAZInt & 0xFFFF),  // LSW for elevation position
+                (ushort)(programmedPeakSpeedAZInt >> 0x10),   // MSW for azimuth speed
+                (ushort)(programmedPeakSpeedAZInt & 0xFFFF),  // LSW for azimuth speed
+                MCUConstants.MCU_DEFAULT_ACCELERATION,        // Acceleration for azimuth
+                MCUConstants.MCU_DEFAULT_ACCELERATION,        // Deceleration for azimuth
+                0,                                            // Reserved for a relative move
+                0,                                            // Reserved for a relative move
+                0x2,                                          // Denotes a relative move in elevation
+                0x3,                                          // Denotes a Trapezoidal S-Curve profile
+                positionTranslationELMSW,                     // MSW for elevation position
+                (ushort)(positionTranslationELInt & 0xFFFF),  // LSW for elevation position
+                (ushort)(programmedPeakSpeedELInt >> 0x10),   // MSW for elevation speed
+                (ushort)(programmedPeakSpeedELInt & 0xFFFF),  // MSW for elevation speed
+                MCUConstants.MCU_DEFAULT_ACCELERATION,        // Acceleration for elevation
+                MCUConstants.MCU_DEFAULT_ACCELERATION,        // Acceleration for elevation
+                0,                                            // Reserved for a relative move
+                0                                             // Reserved for a relative move
             };
 
-            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+            GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
             return true;
         }

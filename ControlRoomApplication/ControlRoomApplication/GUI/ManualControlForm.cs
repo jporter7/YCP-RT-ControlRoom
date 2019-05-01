@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
 
@@ -28,27 +27,12 @@ namespace ControlRoomApplication.Main
 
             // Set speed
             comboBox1.Text = "0.1 RPM";
-            speedRPM = fromRPMsToDegreesPerSecond(0.1);
+            speedRPM = ConversionHelper.RPMToDPS(0.1);
 
             logger.Info("ManualControlForm Initalized");
         }
 
-        private static int fromDegreesToSteps(double degs)
-        {
-            return (int)(degs / 360 * MiscellaneousConstants.GEARED_STEPS_PER_REVOLUTION);
-        }
-
-        private static double fromRevolutionsToDegrees(double revs)
-        {
-            return revs * 360;
-        }
-
-        private static double fromRPMsToDegreesPerSecond(double rpms)
-        {
-            return rpms * 6;
-        }
-
-        private void ManualControlForm_FormClosing(Object sender, FormClosingEventArgs e)
+        private void ManualControlForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             logger.Info("ManualControl Form Closing");
             timer1.Enabled = false;
@@ -100,12 +84,12 @@ namespace ControlRoomApplication.Main
             if(comboBox1.Text == "2 RPM")
             {
                 logger.Info("Speed set to 2 RPM");
-                speedRPM = fromRPMsToDegreesPerSecond(2.0);
+                speedRPM = ConversionHelper.RPMToDPS(2.0);
             }
             else if(comboBox1.Text == "0.1 RPM")
             {
                 logger.Info("Speed set to 0.1 RPM");
-                speedRPM = fromRPMsToDegreesPerSecond(0.1);
+                speedRPM = ConversionHelper.RPMToDPS(0.1);
             }
             else
             {

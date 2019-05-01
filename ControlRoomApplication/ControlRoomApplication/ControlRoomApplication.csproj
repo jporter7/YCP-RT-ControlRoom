@@ -113,11 +113,13 @@
     <Compile Include="Constants\MCUConstants.cs" />
     <Compile Include="Constants\MiscellaneousConstants.cs" />
     <Compile Include="Constants\HeartbeatConstants.cs" />
+    <Compile Include="Constants\MotorConstants.cs" />
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\ThreadNameConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
+    <Compile Include="Controllers\ConversionHelper.cs" />
     <Compile Include="Controllers\HardwareCommunication\AbstractHardwareCommunicationHandler.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\ModbusTCPMCUCommunicationHandler.cs" />
     <Compile Include="Controllers\HardwareCommunication\DerivedCommunicationHandlers\YCPBaseTCPIPCommunicationHandler.cs" />
