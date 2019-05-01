@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
+using System.Threading;
 
 namespace ControlRoomApplication.Main
 {
@@ -10,6 +11,8 @@ namespace ControlRoomApplication.Main
         public RadioTelescopeController rt_controller { get; set; }
         public ControlRoom controlRoom { get; set; }
         public int speed { get; set; }
+        public bool DemoRunning { get; set; }
+        public Thread DemoThread { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -29,6 +32,10 @@ namespace ControlRoomApplication.Main
             // Set speed
             comboBox1.Text = "0.1 RPM";
             speed = 16667;
+
+            // Set demo thread and flag
+            CreateDemoThread();
+            DemoRunning = false;
 
             logger.Info("ManualControlForm Initalized");
         }
@@ -121,8 +128,13 @@ namespace ControlRoomApplication.Main
         private void button1_Click(object sender, EventArgs e)
         {
             logger.Info("Move Relative Button Clicked");
-            int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
-            rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
+            MoveRelative((int)numericUpDown1.Value);
+        }
+
+        private void MoveRelative(int degree)
+        {
+            int pos = degree * (int)((166 + (2.0 / 3.0)) * 200);
+            rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH, speed, pos);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -163,6 +175,62 @@ namespace ControlRoomApplication.Main
             else
             {
                 ActualELTextBox.Text = text;
+            }
+        }
+
+        private void DemoButton_Click(object sender, EventArgs e)
+        {
+            if (!DemoRunning)
+            {
+                SetButtonsEnabled(false);
+                DemoButton.Text = "Stop Demo";
+                DemoRunning = true;
+                DemoThread.Start();
+            }
+            else
+            {
+                SetButtonsEnabled(true);
+                DemoButton.Text = "Start Demo";
+                DemoRunning = false;
+                DemoThread.Join();
+                CreateDemoThread();
+            }
+        }
+
+        private void CreateDemoThread()
+        {
+            DemoThread = new Thread(() => StartDemo())
+            {
+                Name = "Demo Thread"
+            };
+        }
+
+        private void SetButtonsEnabled(bool enabled)
+        {
+            comboBox1.Enabled = enabled;
+            button1.Enabled = enabled;
+            numericUpDown1.Enabled = enabled;
+            NegButton.Enabled = enabled;
+            PosButton.Enabled = enabled;
+            radioButton1.Enabled = enabled;
+            radioButton2.Enabled = enabled;
+        }
+
+        private void StartDemo()
+        {
+            while (DemoRunning)
+            {
+                logger.Info("Running Demo");
+                //MoveRelative(45);
+                //Thread.Sleep(5000);
+                //MoveRelative(-45);
+                //Thread.Sleep(5000);
+                //MoveRelative(90);
+                //Thread.Sleep(10000);
+                //MoveRelative(-180);
+                //Thread.Sleep(15000);
+                //MoveRelative(90);
+                //Thread.Sleep(10000);
             }
         }
     }
