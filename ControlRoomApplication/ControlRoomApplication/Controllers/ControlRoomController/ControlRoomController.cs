@@ -4,6 +4,9 @@ using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Controllers
 {
+    /// <summary>
+    /// Controller for the control room class.
+    /// </summary>
     public class ControlRoomController
     {
         /// <summary>
@@ -16,9 +19,9 @@ namespace ControlRoomApplication.Controllers
         private bool KeepWeatherMonitoringThreadAlive;
 
         /// <summary>
-        /// 
+        /// Constructor for the control room controller.
         /// </summary>
-        /// <param name="controlRoom"></param>
+        /// <param name="controlRoom"> The control room class to be controlled. </param>
         public ControlRoomController(ControlRoom controlRoom)
         {
             ControlRoom = controlRoom;
@@ -26,6 +29,10 @@ namespace ControlRoomApplication.Controllers
             KeepWeatherMonitoringThreadAlive = false;
         }
 
+        /// <summary>
+        /// Starts the weather station monitor and weather station thread. 
+        /// </summary>
+        /// <returns> A boolean indicating if the weather routine started. </returns>
         public bool StartWeatherMonitoringRoutine()
         {
             KeepWeatherMonitoringThreadAlive = true;
@@ -55,6 +62,10 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+        /// <summary>
+        /// Sends a request for the weather monitoring routine to stop.
+        /// </summary>
+        /// <returns> A boolean indicating if the weather monitoring routine stopped. </returns>
         public bool RequestToKillWeatherMonitoringRoutine()
         {
             KeepWeatherMonitoringThreadAlive = false;
@@ -79,6 +90,9 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+        /// <summary>
+        /// Checks the weather station attributes and determines if they are allowable.
+        /// </summary>
         public void WeatherMonitoringRoutine()
         {
             while (KeepWeatherMonitoringThreadAlive)
@@ -93,6 +107,11 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
+        /// <summary>
+        /// Adds a radiotelescope controller and a management thread to the control room.
+        /// </summary>
+        /// <param name="rtController"> The radiotelescope controller to be added. </param>
+        /// <returns> A boolean indicating if the controller was added to the control room. </returns>
         public bool AddRadioTelescopeController(RadioTelescopeController rtController)
         {
             if (ControlRoom.RadioTelescopes.Contains(rtController.RadioTelescope))
@@ -104,6 +123,11 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+        /// <summary>
+        /// Adds a radiotelescope controller and starts its management thread.
+        /// </summary>
+        /// <param name="rtController"> The radiotelescope controller to be added and started. </param>
+        /// <returns> A boolean indicating if the controller was added and started correctly. </returns>
         public bool AddRadioTelescopeControllerAndStart(RadioTelescopeController rtController)
         {
             if (AddRadioTelescopeController(rtController))
@@ -115,6 +139,7 @@ namespace ControlRoomApplication.Controllers
                 return false;
             }
         }
+
 
         public bool RemoveRadioTelescopeControllerAt(int rtControllerIndex, bool waitForAnyTasks)
         {
