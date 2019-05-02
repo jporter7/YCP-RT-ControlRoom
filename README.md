@@ -6,7 +6,9 @@ ________________________________________________________________________________
                                                 Github Repository
     Website URL: https://github.com/jporter7/YCP-RT-ControlRoom
     Clone URL: https://github.com/jporter7/YCP-RT-ControlRoom.git 
-    Repository owner: Jason Porter Github account: jporter7 E-mail: jporter7@ycp.edu
+    Repository owner: Jason Porter 
+    Github account: jporter7 
+    E-mail: jporter7@ycp.edu
 
 ________________________________________________________________________________________________________________________________________
                                               Installations/Downloads
