@@ -6,12 +6,19 @@ namespace ControlRoomApplication.Controllers
 {
     public class ControlRoomController
     {
+        /// <summary>
+        /// The control room that is being controller by this controller.
+        /// </summary>
         public ControlRoom ControlRoom { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Thread WeatherMonitoringThread;
         private bool KeepWeatherMonitoringThreadAlive;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="controlRoom"></param>
         public ControlRoomController(ControlRoom controlRoom)
         {
             ControlRoom = controlRoom;
