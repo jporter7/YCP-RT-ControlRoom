@@ -10,7 +10,7 @@ namespace ControlRoomApplication.Main
     {
         public RadioTelescopeController rt_controller { get; set; }
         public ControlRoom controlRoom { get; set; }
-        public double speedRPM { get; set; }
+        public double speedDPS { get; set; }
         public bool DemoRunningFlag { get; set; }
         public Thread DemoThread { get; set; }
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -29,8 +29,7 @@ namespace ControlRoomApplication.Main
             UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Set speed
-            comboBox1.Text = "0.1 RPM";
-            speedRPM = ConversionHelper.RPMToDPS(0.1);
+            speedDPS = ConversionHelper.RPMToDPS((double) SpeedInput.Value);
 
             // Set demo thread and flag
             CreateDemoThread();
@@ -61,25 +60,6 @@ namespace ControlRoomApplication.Main
         private void UpdateText(string text)
         {
             errorLabel.Text = text;
-        }
-
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if(comboBox1.Text == "2 RPM")
-            {
-                logger.Info("Speed set to 2 RPM");
-                speedRPM = ConversionHelper.RPMToDPS(2.0);
-            }
-            else if(comboBox1.Text == "0.1 RPM")
-            {
-                logger.Info("Speed set to 0.1 RPM");
-                speedRPM = ConversionHelper.RPMToDPS(0.1);
-            }
-            else
-            {
-                logger.Info("Invalid Speed Selected");
-                throw new Exception();
-            }
         }
 
         private void ExecuteCorrectStop()
@@ -171,7 +151,7 @@ namespace ControlRoomApplication.Main
 
         private void SetButtonsEnabled(bool enabled)
         {
-            comboBox1.Enabled = enabled;
+            SpeedInput.Enabled = enabled;
             AbsoluteMoveSubmit.Enabled = enabled;
             RelativeMoveSubmit.Enabled = enabled;
             ClearCommandsSubmit.Enabled = enabled;
@@ -191,37 +171,37 @@ namespace ControlRoomApplication.Main
             while (DemoRunningFlag)
             {
                 logger.Info("Executing command #0: relative move, elevation, 45 degrees, 80 second sleep.");
-                rt_controller.ExecuteRelativeMoveElevation(speedRPM, 45);
+                rt_controller.ExecuteRelativeMoveElevation(speedDPS, 45);
                 WaitAndCheckFlag(80000);
                 if (!DemoRunningFlag) { break; }
 
                 logger.Info("Executing command #1: CCW jog move, elevation, 10 seconds, controlled stop.");
-                rt_controller.StartRadioTelescopeElevationJog(speedRPM, false);
+                rt_controller.StartRadioTelescopeElevationJog(speedDPS, false);
                 WaitAndCheckFlag(10000);
                 rt_controller.ExecuteRadioTelescopeControlledStop();
                 WaitAndCheckFlag(3000);
                 if (!DemoRunningFlag) { break; }
 
                 logger.Info("Executing command #2: relative move, elevation, -45 degrees, 80 second sleep.");
-                rt_controller.ExecuteRelativeMoveElevation(speedRPM, -45);
+                rt_controller.ExecuteRelativeMoveElevation(speedDPS, -45);
                 WaitAndCheckFlag(80000);
                 if (!DemoRunningFlag) { break; }
 
                 logger.Info("Executing command #3: CCW jog move, elevation, 5 seconds, immediate stop.");
-                rt_controller.StartRadioTelescopeElevationJog(speedRPM, false);
+                rt_controller.StartRadioTelescopeElevationJog(speedDPS, false);
                 WaitAndCheckFlag(5000);
                 rt_controller.ExecuteRadioTelescopeImmediateStop();
                 WaitAndCheckFlag(1000);
                 if (!DemoRunningFlag) { break; }
 
                 logger.Info("Executing command #2: relative move, elevation, 90 degrees, 160 second sleep.");
-                rt_controller.ExecuteRelativeMoveElevation(speedRPM, 90);
+                rt_controller.ExecuteRelativeMoveElevation(speedDPS, 90);
                 WaitAndCheckFlag(160000);
                 rt_controller.CancelCurrentMoveCommand();
                 if (!DemoRunningFlag) { break; }
 
                 logger.Info("Executing command #3: relative move, elevation, -180 degrees, 320 second sleep.");
-                rt_controller.ExecuteRelativeMoveElevation(speedRPM, -180);
+                rt_controller.ExecuteRelativeMoveElevation(speedDPS, -180);
                 WaitAndCheckFlag(320000);
                 rt_controller.CancelCurrentMoveCommand();
                 if (!DemoRunningFlag) { break; }
@@ -254,10 +234,10 @@ namespace ControlRoomApplication.Main
         private void NegButtonAZ_MouseDown(object sender, MouseEventArgs e)
         {
             logger.Info("Jog NegButton Azimuth MouseDown");
-            UpdateText("Moving at -" + comboBox1.Text);
+            UpdateText("Moving at -" + speedDPS + " DPS");
 
             // Start CCW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(speedRPM, false);
+            rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, false);
         }
 
         private void NegButtonAZ_MouseUp(object sender, MouseEventArgs e)
@@ -272,10 +252,10 @@ namespace ControlRoomApplication.Main
         private void PosButtonAZ_MouseDown(object sender, MouseEventArgs e)
         {
             logger.Info("Jog PosButton Azimuth MouseDown");
-            UpdateText("Moving at " + comboBox1.Text);
+            UpdateText("Moving at " + speedDPS + " DPS");
 
             // Start CW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(speedRPM, true);
+            rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, true);
         }
 
         private void PosButtonAZ_MouseUp(object sender, MouseEventArgs e)
@@ -290,10 +270,10 @@ namespace ControlRoomApplication.Main
         private void NegButtonEL_MouseDown(object sender, MouseEventArgs e)
         {
             logger.Info("Jog NegButton Elevation MouseDown");
-            UpdateText("Moving at -" + comboBox1.Text);
+            UpdateText("Moving at -" + speedDPS + " DPS");
 
             // Start CCW Jog
-            rt_controller.StartRadioTelescopeElevationJog(speedRPM, false);
+            rt_controller.StartRadioTelescopeElevationJog(speedDPS, false);
         }
 
         private void NegButtonEL_MouseUp(object sender, MouseEventArgs e)
@@ -308,10 +288,10 @@ namespace ControlRoomApplication.Main
         private void PosButtonEL_MouseDown(object sender, MouseEventArgs e)
         {
             logger.Info("Jog PosButton Elevation MouseDown");
-            UpdateText("Moving at " + comboBox1.Text);
+            UpdateText("Moving at " + speedDPS + " DPS");
 
             // Start CW Jog
-            rt_controller.StartRadioTelescopeElevationJog(speedRPM, true);
+            rt_controller.StartRadioTelescopeElevationJog(speedDPS, true);
         }
 
         private void PosButtonEL_MouseUp(object sender, MouseEventArgs e)
@@ -332,13 +312,34 @@ namespace ControlRoomApplication.Main
         private void RelativeMoveSubmit_Click(object sender, EventArgs e)
         {
             logger.Info("Move Relative Button Clicked");
-            rt_controller.ExecuteRelativeMove(speedRPM, speedRPM, (double)numericUpDown1.Value, (double)numericUpDown2.Value);
+            rt_controller.ExecuteRelativeMove(speedDPS, speedDPS, (double)numericUpDown1.Value, (double)numericUpDown2.Value);
         }
 
         private void ClearCommandsSubmit_Click(object sender, EventArgs e)
         {
             logger.Info("Clear Commands Button Clicked");
             rt_controller.CancelCurrentMoveCommand();
+        }
+
+        private void SpeedInput_ValueChanged(object sender, EventArgs e)
+        {
+            double speed = (double)SpeedInput.Value;
+            errorProvider1.SetError(SpeedInput, "");
+            if (speed > 2)
+            {
+                UpdateText("Speed Must Be <= 2 RPM");
+                SpeedInput.Value = 2;
+            }
+            else if (speed < 0.1)
+            {
+                UpdateText("Speed Must Be >= 0.1 RPM");
+                SpeedInput.Value = (decimal) 0.1;
+            }
+            else
+            {
+                speedDPS = ConversionHelper.RPMToDPS(speed);
+                logger.Info("Speed set to " + speed + " RPM (" + speedDPS + " DPS)");
+            }
         }
     }
 }

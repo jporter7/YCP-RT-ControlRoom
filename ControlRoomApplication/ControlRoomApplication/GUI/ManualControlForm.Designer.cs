@@ -33,7 +33,6 @@
             this.PosButtonAZ = new System.Windows.Forms.Button();
             this.Title = new System.Windows.Forms.Label();
             this.errorLabel = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
@@ -56,8 +55,12 @@
             this.label6 = new System.Windows.Forms.Label();
             this.AbsoluteMoveSubmit = new System.Windows.Forms.Button();
             this.ClearCommandsSubmit = new System.Windows.Forms.Button();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.SpeedInput = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SpeedInput)).BeginInit();
             this.SuspendLayout();
             // 
             // NegButtonAZ
@@ -109,19 +112,6 @@
             this.errorLabel.Size = new System.Drawing.Size(230, 19);
             this.errorLabel.TabIndex = 18;
             this.errorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "0.1 RPM",
-            "2 RPM"});
-            this.comboBox1.Location = new System.Drawing.Point(353, 111);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 19;
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -365,11 +355,35 @@
             this.ClearCommandsSubmit.UseVisualStyleBackColor = true;
             this.ClearCommandsSubmit.Click += new System.EventHandler(this.ClearCommandsSubmit_Click);
             // 
+            // errorProvider1
+            // 
+            this.errorProvider1.ContainerControl = this;
+            // 
+            // SpeedInput
+            // 
+            this.SpeedInput.DecimalPlaces = 1;
+            this.SpeedInput.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.SpeedInput.Location = new System.Drawing.Point(352, 108);
+            this.SpeedInput.Name = "SpeedInput";
+            this.SpeedInput.Size = new System.Drawing.Size(120, 20);
+            this.SpeedInput.TabIndex = 42;
+            this.SpeedInput.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.SpeedInput.ValueChanged += new System.EventHandler(this.SpeedInput_ValueChanged);
+            // 
             // ManualControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.SpeedInput);
             this.Controls.Add(this.ClearCommandsSubmit);
             this.Controls.Add(this.AbsoluteMoveSubmit);
             this.Controls.Add(this.label6);
@@ -391,7 +405,6 @@
             this.Controls.Add(this.radioButton2);
             this.Controls.Add(this.radioButton1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.errorLabel);
             this.Controls.Add(this.Title);
             this.Controls.Add(this.PosButtonAZ);
@@ -401,6 +414,8 @@
             this.Text = "ManualControlForm";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SpeedInput)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -411,7 +426,6 @@
         private System.Windows.Forms.Button PosButtonAZ;
         private System.Windows.Forms.Label Title;
         private System.Windows.Forms.Label errorLabel;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.RadioButton radioButton2;
@@ -434,5 +448,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button AbsoluteMoveSubmit;
         private System.Windows.Forms.Button ClearCommandsSubmit;
+        private System.Windows.Forms.ErrorProvider errorProvider1;
+        private System.Windows.Forms.NumericUpDown SpeedInput;
     }
 }
