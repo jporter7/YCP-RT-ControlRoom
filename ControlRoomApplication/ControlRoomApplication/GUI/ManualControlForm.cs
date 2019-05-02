@@ -170,37 +170,37 @@ namespace ControlRoomApplication.Main
             logger.Info("Demo Started");
             while (DemoRunningFlag)
             {
-                logger.Info("Executing command #0: CCW jog move, elevation, 10 seconds, controlled stop.");
+                logger.Info("Executing command #0: CCW jog move, elevation, 20 seconds, controlled stop.");
                 rt_controller.StartRadioTelescopeElevationJog(speedDPS, false);
-                WaitAndCheckFlag(10000);
+                WaitAndCheckFlag(20000);
                 rt_controller.ExecuteRadioTelescopeControlledStop();
                 WaitAndCheckFlag(3000);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #1: CCW jog move, azimuth, 15 seconds, immediate stop.");
+                logger.Info("Executing command #1: CCW jog move, azimuth, 30 seconds, immediate stop.");
                 rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, false);
-                WaitAndCheckFlag(15000);
+                WaitAndCheckFlag(30000);
                 rt_controller.ExecuteRadioTelescopeImmediateStop();
                 WaitAndCheckFlag(1000);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #2: CW jog move, elevation, 10 seconds, controlled stop.");
+                logger.Info("Executing command #2: CW jog move, elevation, 20 seconds, controlled stop.");
                 rt_controller.StartRadioTelescopeElevationJog(speedDPS, true);
-                WaitAndCheckFlag(10000);
+                WaitAndCheckFlag(20000);
                 rt_controller.ExecuteRadioTelescopeControlledStop();
                 WaitAndCheckFlag(3000);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #3: CW jog move, azimuth, 25 seconds, immediate stop.");
+                logger.Info("Executing command #3: CW jog move, azimuth, 50 seconds, immediate stop.");
                 rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, true);
-                WaitAndCheckFlag(25000);
+                WaitAndCheckFlag(50000);
                 rt_controller.ExecuteRadioTelescopeImmediateStop();
                 WaitAndCheckFlag(1000);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #4: CCW jog move, azimuth, 10 seconds, immediate stop.");
+                logger.Info("Executing command #4: CCW jog move, azimuth, 20 seconds, immediate stop.");
                 rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, false);
-                WaitAndCheckFlag(10000);
+                WaitAndCheckFlag(20000);
                 rt_controller.ExecuteRadioTelescopeImmediateStop();
                 WaitAndCheckFlag(3000);
                 if (!DemoRunningFlag) { break; }

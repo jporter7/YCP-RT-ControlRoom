@@ -171,6 +171,7 @@ namespace ControlRoomApplication.Controllers
                 case RadioTelescopeAxisEnum.ELEVATION:
                     JogMoveIndex = 10;
                     ClearMoveIndex = 0;
+                    speedDPS *= 8;
                     ApplicableGearingRatio = MotorConstants.GEARING_RATIO_ELEVATION;
                     break;
 
