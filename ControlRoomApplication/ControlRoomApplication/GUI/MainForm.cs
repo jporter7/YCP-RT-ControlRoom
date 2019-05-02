@@ -237,8 +237,12 @@ namespace ControlRoomApplication.Main
                     HardwareCommsHandler = new ModbusTCPMCUCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
                     break;
 
-                case 3:
+                case 2:
                     throw new InvalidOperationException("The scale model is unsupported at the moment.");
+
+                case 3:
+                    HardwareCommsHandler = new TestHardwarCommunicationHandler();
+                    break;
 
                 default:
                     HardwareCommsHandler = new YCPBaseTCPIPCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));

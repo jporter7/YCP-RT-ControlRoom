@@ -242,7 +242,6 @@
             this.ActualELTextBox.ReadOnly = true;
             this.ActualELTextBox.Size = new System.Drawing.Size(52, 20);
             this.ActualELTextBox.TabIndex = 27;
-            this.ActualELTextBox.TextChanged += new System.EventHandler(this.ActualELTextBox_TextChanged);
             // 
             // ActualAZTextBox
             // 
@@ -252,7 +251,6 @@
             this.ActualAZTextBox.ReadOnly = true;
             this.ActualAZTextBox.Size = new System.Drawing.Size(52, 20);
             this.ActualAZTextBox.TabIndex = 26;
-            this.ActualAZTextBox.TextChanged += new System.EventHandler(this.ActualAZTextBox_TextChanged);
             // 
             // DemoButton
             // 
@@ -273,7 +271,6 @@
             this.label3.Size = new System.Drawing.Size(44, 13);
             this.label3.TabIndex = 32;
             this.label3.Text = "Azimuth";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // NegButtonEL
             // 
@@ -285,7 +282,8 @@
             this.NegButtonEL.TabIndex = 33;
             this.NegButtonEL.Text = "- Jog";
             this.NegButtonEL.UseVisualStyleBackColor = false;
-            this.NegButtonEL.Click += new System.EventHandler(this.button2_Click);
+            this.NegButtonEL.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NegButtonEL_MouseDown);
+            this.NegButtonEL.MouseUp += new System.Windows.Forms.MouseEventHandler(this.NegButtonEL_MouseUp);
             // 
             // PosButtonEL
             // 
@@ -297,6 +295,8 @@
             this.PosButtonEL.TabIndex = 34;
             this.PosButtonEL.Text = "+ Jog";
             this.PosButtonEL.UseVisualStyleBackColor = false;
+            this.PosButtonEL.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PosButtonEL_MouseDown);
+            this.PosButtonEL.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PosButtonEL_MouseUp);
             // 
             // label4
             // 
@@ -333,7 +333,6 @@
             this.label5.Size = new System.Drawing.Size(21, 13);
             this.label5.TabIndex = 37;
             this.label5.Text = "AZ";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label6
             // 
@@ -353,7 +352,7 @@
             this.AbsoluteMoveSubmit.TabIndex = 39;
             this.AbsoluteMoveSubmit.Text = "Move Here";
             this.AbsoluteMoveSubmit.UseVisualStyleBackColor = true;
-            this.AbsoluteMoveSubmit.Click += new System.EventHandler(this.button1_Click);
+            this.AbsoluteMoveSubmit.Click += new System.EventHandler(this.AbsoluteMoveSubmit_Click);
             // 
             // ClearCommandsSubmit
             // 
@@ -364,6 +363,7 @@
             this.ClearCommandsSubmit.TabIndex = 40;
             this.ClearCommandsSubmit.Text = "Clear Commands";
             this.ClearCommandsSubmit.UseVisualStyleBackColor = true;
+            this.ClearCommandsSubmit.Click += new System.EventHandler(this.ClearCommandsSubmit_Click);
             // 
             // ManualControlForm
             // 
