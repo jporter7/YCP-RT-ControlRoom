@@ -170,46 +170,39 @@ namespace ControlRoomApplication.Main
             logger.Info("Demo Started");
             while (DemoRunningFlag)
             {
-                logger.Info("Executing command #0: relative move, elevation, 45 degrees, 80 second sleep.");
-                rt_controller.ExecuteRelativeMoveElevation(speedDPS, 45);
-                WaitAndCheckFlag(80000);
-                if (!DemoRunningFlag) { break; }
-
-                logger.Info("Executing command #1: CCW jog move, elevation, 10 seconds, controlled stop.");
+                logger.Info("Executing command #0: CCW jog move, elevation, 10 seconds, controlled stop.");
                 rt_controller.StartRadioTelescopeElevationJog(speedDPS, false);
                 WaitAndCheckFlag(10000);
                 rt_controller.ExecuteRadioTelescopeControlledStop();
                 WaitAndCheckFlag(3000);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #2: relative move, elevation, -45 degrees, 80 second sleep.");
-                rt_controller.ExecuteRelativeMoveElevation(speedDPS, -45);
-                WaitAndCheckFlag(80000);
-                if (!DemoRunningFlag) { break; }
-
-                logger.Info("Executing command #3: CCW jog move, elevation, 5 seconds, immediate stop.");
-                rt_controller.StartRadioTelescopeElevationJog(speedDPS, false);
-                WaitAndCheckFlag(5000);
+                logger.Info("Executing command #1: CCW jog move, azimuth, 15 seconds, immediate stop.");
+                rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, false);
+                WaitAndCheckFlag(15000);
                 rt_controller.ExecuteRadioTelescopeImmediateStop();
                 WaitAndCheckFlag(1000);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #2: relative move, elevation, 90 degrees, 160 second sleep.");
-                rt_controller.ExecuteRelativeMoveElevation(speedDPS, 90);
-                WaitAndCheckFlag(160000);
-                rt_controller.CancelCurrentMoveCommand();
+                logger.Info("Executing command #2: CW jog move, elevation, 10 seconds, controlled stop.");
+                rt_controller.StartRadioTelescopeElevationJog(speedDPS, true);
+                WaitAndCheckFlag(10000);
+                rt_controller.ExecuteRadioTelescopeControlledStop();
+                WaitAndCheckFlag(3000);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #3: relative move, elevation, -180 degrees, 320 second sleep.");
-                rt_controller.ExecuteRelativeMoveElevation(speedDPS, -180);
-                WaitAndCheckFlag(320000);
-                rt_controller.CancelCurrentMoveCommand();
+                logger.Info("Executing command #3: CW jog move, azimuth, 25 seconds, immediate stop.");
+                rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, true);
+                WaitAndCheckFlag(25000);
+                rt_controller.ExecuteRadioTelescopeImmediateStop();
+                WaitAndCheckFlag(1000);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #4: absolute move, [0, 0] degrees, 160 second sleep.");
-                rt_controller.MoveRadioTelescopeToOrientation(new Entities.Orientation(0, 0));
-                WaitAndCheckFlag(160000);
-                rt_controller.CancelCurrentMoveCommand();
+                logger.Info("Executing command #4: CCW jog move, azimuth, 10 seconds, immediate stop.");
+                rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, false);
+                WaitAndCheckFlag(10000);
+                rt_controller.ExecuteRadioTelescopeImmediateStop();
+                WaitAndCheckFlag(3000);
                 if (!DemoRunningFlag) { break; }
             }
         }

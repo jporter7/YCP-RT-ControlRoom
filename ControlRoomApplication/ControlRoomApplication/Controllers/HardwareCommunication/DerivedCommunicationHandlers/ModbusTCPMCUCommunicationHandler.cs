@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 
@@ -38,6 +39,12 @@ namespace ControlRoomApplication.Controllers
         public ModbusTCPMCUCommunicationHandler() : base(MCUConstants.MCU_IP_ADDRESS, MCUConstants.MCU_MODBUS_TCP_PORT)
         {
             // Does nothing extra
+        }
+
+        ~ModbusTCPMCUCommunicationHandler()
+        {
+            CancelCurrentMoveCommand();
+            Thread.Sleep(100);
         }
 
         private void SendResetErrorsCommand()
