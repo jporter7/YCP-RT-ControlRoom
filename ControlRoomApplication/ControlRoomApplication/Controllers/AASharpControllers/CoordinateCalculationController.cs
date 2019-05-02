@@ -8,15 +8,28 @@ using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Controllers
 {
+    /// <summary>
+    /// Controller for handling Coordinate and Orientation tranlsations.
+    /// </summary>
     public class CoordinateCalculationController
     {
         private Location Location { get; }
 
+        /// <summary>
+        /// Constructor for the coordinate calculation controller.
+        /// </summary>
+        /// <param name="location"> The location that the coordinates should be calculated for. </param>
         public CoordinateCalculationController(Location location)
         {
             Location = location;
         }
 
+        /// <summary>
+        /// Translates a Coordinate object into an Orientation object.
+        /// </summary>
+        /// <param name="coordinate"> Coordinate object to be transformed. </param>
+        /// <param name="datetime"> </param>
+        /// <returns></returns>
         public Orientation CoordinateToOrientation(Coordinate coordinate, DateTime datetime)
         {
             if(coordinate == null)
@@ -41,6 +54,12 @@ namespace ControlRoomApplication.Controllers
             return new Orientation(Horizontal.X, Horizontal.Y);
         }
 
+        /// <summary>
+        /// Translates an Orientation object into a Coordinate object.
+        /// </summary>
+        /// <param name="horizantal"> The horizontal orientation being translated. </param>
+        /// <param name="datetime"> The date and time the orientation should be calculated for. </param>
+        /// <returns> A coordinate calculated using the orientation passed in. </returns>
         public Coordinate OrientationToCoordinate(Orientation horizantal, DateTime datetime)
         {
             if (horizantal == null)
@@ -68,6 +87,12 @@ namespace ControlRoomApplication.Controllers
             return new Coordinate(RightAscension, equatorial.Y);
         }
 
+        /// <summary>
+        /// Calculates the orientation based on an appointment.
+        /// </summary>
+        /// <param name="appt"> The appointment that an orientation is calculated from. </param>
+        /// <param name="datetime">The date and time the orientation is calculated from. </param>
+        /// <returns> An orientation calculated from the appointment passed in. </returns>
         public Orientation CalculateOrientation(Appointment appt, DateTime datetime)
         {
             switch (appt.Type)
@@ -87,12 +112,23 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
+        /// <summary>
+        /// Calculates orientation from an appointment.
+        /// </summary>
+        /// <param name="appt"> The appointment that the orientation is calculated from. </param>
+        /// <param name="datetime">The date and time that the orientation is calculated from. </param>
+        /// <returns> An orientation calculated from the appointment passed in. </returns>
         public Orientation GetPointOrientation(Appointment appt, DateTime datetime)
         {
             var point_coord = GetPointCoordinate(appt);
             return CoordinateToOrientation(point_coord, datetime);
         }
 
+        /// <summary>
+        /// Calculates a coordinate based on an appointment.
+        /// </summary>
+        /// <param name="appt"> The appointment that the coordinate is calculated from. </param>
+        /// <returns> A coordinate calculated from the appointment passed in. </returns>
         public Coordinate GetPointCoordinate(Appointment appt)
         {
             var coords = appt.Coordinates.ToList();
@@ -107,12 +143,24 @@ namespace ControlRoomApplication.Controllers
             return coords[0];
         }
 
+        /// <summary>
+        /// Calculates the orientation for a celestial body based on the appointment passed in.
+        /// </summary>
+        /// <param name="appt"> The appointment that the orientation is calculated from. </param>
+        /// <param name="datetime"> The date and time that the celestial body's position is calculated from. </param>
+        /// <returns> An orientation representing the celestial body passed in from the appointment. </returns>
         public Orientation GetCelestialBodyOrientation(Appointment appt, DateTime datetime)
         {
             var celestial_body_coord = GetCelestialBodyCoordinate(appt, datetime);
             return CoordinateToOrientation(celestial_body_coord, datetime);
         }
 
+        /// <summary>
+        /// Calculates the coordinate for a celestial body based on the appointment passed in.
+        /// </summary>
+        /// <param name="appt"> The appointment that the orientation is calculated from. </param>
+        /// <param name="datetime"> The date and time that the celestial body's position is calculated from. </param>
+        /// <returns> A coordinate representing the celestial body passed in from the appointment. </returns>
         public Coordinate GetCelestialBodyCoordinate(Appointment appt, DateTime datetime)
         {
             switch (appt.CelestialBody.Name)
@@ -136,6 +184,11 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
+        /// <summary>
+        /// Calculates a coordinate for the sun based on the datetime passed in.
+        /// </summary>
+        /// <param name="datetime"> The datetime that the coordinate should be calculated from. </param>
+        /// <returns> A coordinate representing the sun's position calculated from the datetime passed in. </returns>
         public Coordinate GetSunCoordinate(DateTime datetime)
         {
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
@@ -152,6 +205,11 @@ namespace ControlRoomApplication.Controllers
             return new Coordinate(SunTopo.X, SunTopo.Y);
         }
 
+        /// <summary>
+        /// Calculates a coordinate representing the moon's position based on the datetime passed in.
+        /// </summary>
+        /// <param name="datetime"> A datetime object that the coordinate is calculated from. </param>
+        /// <returns> A coordinate calculated using the datetime passed in. </returns>
         public Coordinate GetMoonCoordinate(DateTime datetime)
         {
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
@@ -168,12 +226,24 @@ namespace ControlRoomApplication.Controllers
             return new Coordinate(MoonTopo.X, MoonTopo.Y);
         }
 
+        /// <summary>
+        /// Calculates a raster orientation based on the appointment passed in.
+        /// </summary>
+        /// <param name="appt"> The appointment that the raster orientation is calculated from. </param>
+        /// <param name="datetime"> The datetime that the orientation is calculated from. </param>
+        /// <returns> An orientation calculated using the appointment and datetime passed in. </returns>
         public Orientation GetRasterOrientation(Appointment appt, DateTime datetime)
         {
             var raster_coord = GetRasterCoordinate(appt, datetime);
             return CoordinateToOrientation(raster_coord, datetime);
         }
 
+        /// <summary>
+        /// Calculates the raster coordinate for an appointment.
+        /// </summary>
+        /// <param name="appt"> The appointment that the coordinate is calculated from. </param>
+        /// <param name="datetime"> The datetime that the coordinate is calculated from. </param>
+        /// <returns> A coordinate calculated from the appointment and datetime passed in. </returns>
         public Coordinate GetRasterCoordinate(Appointment appt, DateTime datetime)
         {
             // Get start and end coordinates
@@ -249,11 +319,22 @@ namespace ControlRoomApplication.Controllers
             return new Coordinate(x, y);
         }
 
+        /// <summary>
+        /// Calculates an orientation from the appointment passed in.
+        /// </summary>
+        /// <param name="appt"> An appointment that the orientation is calculated from. </param>
+        /// <returns> An orientation calculated from the appointment passed in. </returns>
         public Orientation GetDriftScanOrienation(Appointment appt)
         {
             return appt.Orientation;
         }
 
+        /// <summary>
+        /// Calculates an orientation based on the free control appointment passed in.
+        /// </summary>
+        /// <param name="appt"> The appointment that the orientation is calculated from. </param>
+        /// <param name="datetime"> The datetime that the orientation is calculted from. </param>
+        /// <returns> An orientation based on the appointment and datetime passed in. </returns>
         public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
         {
             appt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
@@ -275,6 +356,11 @@ namespace ControlRoomApplication.Controllers
             return free_orientation;
         }
 
+        /// <summary>
+        /// Calculates a coordinate based on the free control appointment passed in.
+        /// </summary>
+        /// <param name="appt"> The appointment that the coordinate is calculated from. </param>
+        /// <returns> A coordinate based on the appointment passed in. </returns>
         public Coordinate GetFreeControlCoordinate(Appointment appt)
         {
             Coordinate free_coord = null;
