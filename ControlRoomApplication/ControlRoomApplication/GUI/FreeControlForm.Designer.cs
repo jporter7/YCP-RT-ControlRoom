@@ -112,7 +112,7 @@
             this.CalibrateButton.Name = "CalibrateButton";
             this.CalibrateButton.Size = new System.Drawing.Size(123, 36);
             this.CalibrateButton.TabIndex = 4;
-            this.CalibrateButton.Text = "Calibrate";
+            this.CalibrateButton.Text = "Cancel Move\r\n and Calibrate";
             this.CalibrateButton.UseVisualStyleBackColor = false;
             this.CalibrateButton.Click += new System.EventHandler(this.CalibrateButton_Click);
             // 
@@ -240,9 +240,9 @@
             this.IncrementButtons.Controls.Add(this.oneButton);
             this.IncrementButtons.Controls.Add(this.oneForthButton);
             this.IncrementButtons.Location = new System.Drawing.Point(293, 113);
-            this.IncrementButtons.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.IncrementButtons.Margin = new System.Windows.Forms.Padding(2);
             this.IncrementButtons.Name = "IncrementButtons";
-            this.IncrementButtons.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.IncrementButtons.Padding = new System.Windows.Forms.Padding(2);
             this.IncrementButtons.Size = new System.Drawing.Size(241, 77);
             this.IncrementButtons.TabIndex = 16;
             this.IncrementButtons.TabStop = false;
@@ -252,7 +252,7 @@
             // 
             this.tenButton.BackColor = System.Drawing.Color.LightGray;
             this.tenButton.Location = new System.Drawing.Point(182, 18);
-            this.tenButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tenButton.Margin = new System.Windows.Forms.Padding(2);
             this.tenButton.Name = "tenButton";
             this.tenButton.Size = new System.Drawing.Size(54, 54);
             this.tenButton.TabIndex = 3;
@@ -264,7 +264,7 @@
             // 
             this.fiveButton.BackColor = System.Drawing.Color.LightGray;
             this.fiveButton.Location = new System.Drawing.Point(124, 18);
-            this.fiveButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.fiveButton.Margin = new System.Windows.Forms.Padding(2);
             this.fiveButton.Name = "fiveButton";
             this.fiveButton.Size = new System.Drawing.Size(54, 54);
             this.fiveButton.TabIndex = 2;
@@ -276,7 +276,7 @@
             // 
             this.oneButton.BackColor = System.Drawing.Color.LightGray;
             this.oneButton.Location = new System.Drawing.Point(65, 18);
-            this.oneButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.oneButton.Margin = new System.Windows.Forms.Padding(2);
             this.oneButton.Name = "oneButton";
             this.oneButton.Size = new System.Drawing.Size(54, 54);
             this.oneButton.TabIndex = 1;
@@ -288,7 +288,7 @@
             // 
             this.oneForthButton.BackColor = System.Drawing.Color.LightGray;
             this.oneForthButton.Location = new System.Drawing.Point(7, 18);
-            this.oneForthButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.oneForthButton.Margin = new System.Windows.Forms.Padding(2);
             this.oneForthButton.Name = "oneForthButton";
             this.oneForthButton.Size = new System.Drawing.Size(54, 54);
             this.oneForthButton.TabIndex = 0;
