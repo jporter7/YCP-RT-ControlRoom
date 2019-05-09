@@ -273,7 +273,8 @@ namespace ControlRoomApplication.Controllers
                 // Move to orientation
                 if (NextObjectiveOrientation != null)
                 {
-                    if (NextObjectiveOrientation.Azimuth < 0 || NextObjectiveOrientation.Elevation < 0)
+                    if (NextObjectiveOrientation.Azimuth < 0 || NextObjectiveOrientation.Azimuth > 360 ||
+                        NextObjectiveOrientation.Elevation < 0 || NextObjectiveOrientation.Elevation > 90)
                     {
                         logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                         InterruptAppointmentFlag = true;
