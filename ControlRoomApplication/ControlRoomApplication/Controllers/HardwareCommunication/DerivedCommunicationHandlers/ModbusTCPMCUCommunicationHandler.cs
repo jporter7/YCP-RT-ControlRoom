@@ -82,7 +82,12 @@ namespace ControlRoomApplication.Controllers
 
         public override bool CancelCurrentMoveCommand()
         {
+            PrintInputRegisterContents("Before cancelling move", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_CLEAR_MOVE);
+
+            Thread.Sleep(100);
+            PrintInputRegisterContents("After cancelling move", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
             return true;
         }
 
@@ -158,6 +163,8 @@ namespace ControlRoomApplication.Controllers
 
         public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speedDPS, bool clockwise)
         {
+            PrintInputRegisterContents("Before jog", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             int JogMoveIndex, ClearMoveIndex, ApplicableGearingRatio;
 
             switch (axis)
@@ -222,6 +229,9 @@ namespace ControlRoomApplication.Controllers
 
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
+            Thread.Sleep(100);
+            PrintInputRegisterContents("After jog", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             return true;
         }
 
@@ -232,7 +242,12 @@ namespace ControlRoomApplication.Controllers
 
         public override bool ExecuteRadioTelescopeImmediateStop()
         {
+            PrintInputRegisterContents("Before immediate stop", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_IMMEDIATE_STOP);
+
+            Thread.Sleep(100);
+            PrintInputRegisterContents("After immediate stop", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
             return true;
         }
 
@@ -312,6 +327,9 @@ namespace ControlRoomApplication.Controllers
             };
 
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+
+            Thread.Sleep(100);
+            PrintInputRegisterContents("After relative move", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
 
             return true;
         }
