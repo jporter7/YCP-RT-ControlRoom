@@ -154,7 +154,7 @@
             this.RelativeMoveSubmit.Name = "RelativeMoveSubmit";
             this.RelativeMoveSubmit.Size = new System.Drawing.Size(120, 24);
             this.RelativeMoveSubmit.TabIndex = 23;
-            this.RelativeMoveSubmit.Text = "Translate This Much";
+            this.RelativeMoveSubmit.Text = "Relative Move";
             this.RelativeMoveSubmit.UseVisualStyleBackColor = true;
             this.RelativeMoveSubmit.Click += new System.EventHandler(this.RelativeMoveSubmit_Click);
             // 
@@ -340,7 +340,7 @@
             this.AbsoluteMoveSubmit.Name = "AbsoluteMoveSubmit";
             this.AbsoluteMoveSubmit.Size = new System.Drawing.Size(120, 24);
             this.AbsoluteMoveSubmit.TabIndex = 39;
-            this.AbsoluteMoveSubmit.Text = "Move Here";
+            this.AbsoluteMoveSubmit.Text = "Absolute Move";
             this.AbsoluteMoveSubmit.UseVisualStyleBackColor = true;
             this.AbsoluteMoveSubmit.Click += new System.EventHandler(this.AbsoluteMoveSubmit_Click);
             // 
