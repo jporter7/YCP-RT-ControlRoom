@@ -305,6 +305,7 @@ namespace ControlRoomApplication.Main
         private void RelativeMoveSubmit_Click(object sender, EventArgs e)
         {
             logger.Info("Move Relative Button Clicked");
+            rt_controller.CancelCurrentMoveCommand();
             rt_controller.ExecuteRelativeMove(speedDPS, speedDPS, (double)numericUpDown1.Value, (double)numericUpDown2.Value);
         }
 

@@ -82,7 +82,12 @@ namespace ControlRoomApplication.Controllers
 
         public override bool CancelCurrentMoveCommand()
         {
+            PrintInputRegisterContents("Before cancelling move", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_CLEAR_MOVE);
+
+            Thread.Sleep(100);
+            PrintInputRegisterContents("After cancelling move", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
             return true;
         }
 
@@ -158,6 +163,8 @@ namespace ControlRoomApplication.Controllers
 
         public override bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speedDPS, bool clockwise)
         {
+            PrintInputRegisterContents("Before jog", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             int JogMoveIndex, ClearMoveIndex, ApplicableGearingRatio;
 
             switch (axis)
@@ -222,6 +229,9 @@ namespace ControlRoomApplication.Controllers
 
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
 
+            Thread.Sleep(100);
+            PrintInputRegisterContents("After jog", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             return true;
         }
 
@@ -232,7 +242,12 @@ namespace ControlRoomApplication.Controllers
 
         public override bool ExecuteRadioTelescopeImmediateStop()
         {
+            PrintInputRegisterContents("Before immediate stop", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
+
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_IMMEDIATE_STOP);
+
+            Thread.Sleep(100);
+            PrintInputRegisterContents("After immediate stop", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
             return true;
         }
 
@@ -287,31 +302,35 @@ namespace ControlRoomApplication.Controllers
                 positionTranslationELMSW = (ushort)(positionTranslationELInt >> 0x10);
             }
 
+            // See page 72 of MCU manual for interpolated moves
             ushort[] DataToWrite =
             {
-                0x2,                                          // Denotes a relative move in azimuth
-                0x3,                                          // Denotes a Trapezoidal S-Curve profile
-                positionTranslationAZMSW,                     // MSW for azimuth position
-                (ushort)(positionTranslationAZInt & 0xFFFF),  // LSW for elevation position
+                0,                                            // Reserved 
+                0x403,                                        // Denotes a relative linear interpolated move and a Trapezoidal S-Curve profile
                 (ushort)(programmedPeakSpeedAZInt >> 0x10),   // MSW for azimuth speed
                 (ushort)(programmedPeakSpeedAZInt & 0xFFFF),  // LSW for azimuth speed
                 MCUConstants.MCU_DEFAULT_ACCELERATION,        // Acceleration for azimuth
                 MCUConstants.MCU_DEFAULT_ACCELERATION,        // Deceleration for azimuth
-                0,                                            // Reserved for a relative move
-                0,                                            // Reserved for a relative move
-                0x2,                                          // Denotes a relative move in elevation
-                0x3,                                          // Denotes a Trapezoidal S-Curve profile
+                positionTranslationAZMSW,                     // MSW for azimuth position
+                (ushort)(positionTranslationAZInt & 0xFFFF),  // LSW for azimuth position
+                0,                                            // Reserved 
+                0,                                            // Reserved 
+                0,                                            // Reserved 
+                0,                                            // Reserved 
                 positionTranslationELMSW,                     // MSW for elevation position
                 (ushort)(positionTranslationELInt & 0xFFFF),  // LSW for elevation position
-                (ushort)(programmedPeakSpeedELInt >> 0x10),   // MSW for elevation speed
-                (ushort)(programmedPeakSpeedELInt & 0xFFFF),  // MSW for elevation speed
-                MCUConstants.MCU_DEFAULT_ACCELERATION,        // Acceleration for elevation
-                MCUConstants.MCU_DEFAULT_ACCELERATION,        // Deceleration for elevation
-                0,                                            // Reserved for a relative move
-                0                                             // Reserved for a relative move
+                0,                                            // Reserved 
+                0,                                            // Reserved 
+                0,                                            // Reserved 
+                0,                                            // Reserved 
+                0,                                            // Reserved
+                0                                             // Reserved
             };
 
             GenericModbusTCPMaster.WriteMultipleRegisters(MCUConstants.MCU_WRITE_REGISTER_START_ADDRESS, DataToWrite);
+
+            Thread.Sleep(100);
+            PrintInputRegisterContents("After relative move", MCUConstants.MCU_READ_INPUT_REGISTER_START_ADDRESS, 10);
 
             return true;
         }
