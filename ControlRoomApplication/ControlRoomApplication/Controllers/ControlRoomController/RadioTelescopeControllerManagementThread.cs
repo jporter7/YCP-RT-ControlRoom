@@ -146,6 +146,9 @@ namespace ControlRoomApplication.Controllers
                 {
                     logger.Info("Starting appointment...");
 
+                    // Start SpectraCyber
+                    StartReadingData(NextAppointment);
+
                     // Calibrate telescope
                     if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL)
                     {
@@ -158,9 +161,6 @@ namespace ControlRoomApplication.Controllers
                     {
                         Name = "RTControllerIntermediateThread (ID=" + RadioTelescopeID.ToString() + ")"
                     };
-
-                    // Start SpectraCyber
-                    StartReadingData(NextAppointment);
 
                     // Start movement thread
                     AppointmentMovementThread.Start();
