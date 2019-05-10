@@ -11,7 +11,7 @@ namespace ControlRoomApplication.Database
 {
     public static class DatabaseOperations
     {
-        private static bool USING_REMOTE_DATABASE = false;
+        private static bool USING_REMOTE_DATABASE = true;
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
@@ -75,11 +75,13 @@ namespace ControlRoomApplication.Database
         /// <summary>
         /// Populates the local database with 4 appointments for testing purposes.
         /// </summary>
-        public static void PopulateLocalDatabase(int RT_id)
+        public static void PopulateLocalDatabase(int RT_id, bool local)
         {
-            if (!USING_REMOTE_DATABASE)
+            Random rand = new Random();
+
+            if (local)
             {
-                Random rand = new Random();
+
 
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
@@ -109,7 +111,13 @@ namespace ControlRoomApplication.Database
                     coordinate3.RightAscension = 26.3;
                     coordinate3.Declination = 85.12;
 
+                    //List<Coordinate> coords = new List<Coordinate>();
+                    //coords.AddRange(new Coordinate[] { coordinate0, coordinate1, coordinate2, coordinate3 } );
+                    //Context.Coordinates.AddRange(coords);
+                    //SaveContext(Context);
+
                     // Add drift scan appointment
+                    appt0.id = 137;
                     appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
                     appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
                     appt0.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
@@ -120,6 +128,7 @@ namespace ControlRoomApplication.Database
                     appt0.UserId = 6;
 
                     // Add celesital body appointment
+                    appt1.id = 137;
                     appt1.StartTime = appt0.EndTime.AddSeconds(20 + rand.Next(30));
                     appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
                     appt1.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
@@ -130,6 +139,7 @@ namespace ControlRoomApplication.Database
                     appt1.UserId = 6;
 
                     // Add point appointment
+                    appt2.id = 137;
                     appt2.StartTime = appt1.EndTime.AddSeconds(20 + rand.Next(30));
                     appt2.EndTime = appt2.StartTime.AddSeconds(10 + rand.Next(90));
                     appt2.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
@@ -140,6 +150,7 @@ namespace ControlRoomApplication.Database
                     appt2.UserId = 6;
 
                     // Add raster appointment
+                    appt3.id = 137;
                     appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
                     appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
                     appt3.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
@@ -155,6 +166,49 @@ namespace ControlRoomApplication.Database
                     Context.Appointments.AddRange(appts);
                     SaveContext(Context);
                 }
+            }
+            else
+            {
+                USING_REMOTE_DATABASE = true;
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    DateTime DateTimeUniversalStart = DateTime.UtcNow.AddMinutes(1);
+
+                    Appointment appt0 = new Appointment();
+                    Coordinate coordinate0 = new Coordinate();
+
+                    appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
+                    appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
+                    appt0.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
+                    appt0.Type = "DRIFT_SCAN";//AppointmentTypeEnum.DRIFT_SCAN;
+                    appt0.orientation = new Orientation(30, 30);
+                    appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+                    appt0.TelescopeId = RT_id;
+                    appt0.UserId = 6;
+
+                    Context.Appointments.Add(appt0);
+                    SaveContext(Context);
+                }
+                //USING_REMOTE_DATABASE = false;
+                //using (RTDbContext Context = InitializeDatabaseContext())
+                //{
+                //    DateTime DateTimeUniversalStart = DateTime.UtcNow.AddMinutes(1);
+
+                //    Appointment appt0 = new Appointment();
+                //    Coordinate coordinate0 = new Coordinate();
+
+                //    appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
+                //    appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
+                //    appt0.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
+                //    appt0.Type = "DRIFT_SCAN";//AppointmentTypeEnum.DRIFT_SCAN;
+                //    appt0.orientation = new Orientation(30, 30);
+                //    appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+                //    appt0.TelescopeId = RT_id;
+                //    appt0.UserId = 6;
+
+                //    Context.Appointments.Add(appt0);
+                //    SaveContext(Context);
+                //}
             }
         }
 
@@ -355,11 +409,11 @@ namespace ControlRoomApplication.Database
         /// <returns> A boolean indicating whether or not the status is valid.</returns>
         private static bool VerifyAppointmentStatus(Appointment appt)
         {
-            return  appt.Status.Equals(AppointmentStatusEnum.CANCELLED) || 
-                    appt.Status.Equals(AppointmentStatusEnum.COMPLETED) ||
-                    appt.Status.Equals(AppointmentStatusEnum.IN_PROGRESS) ||
-                    appt.Status.Equals(AppointmentStatusEnum.REQUESTED) ||
-                    appt.Status.Equals(AppointmentStatusEnum.SCHEDULED);
+            return appt.Status.Equals("CANCELLED") || //AppointmentStatusEnum.CANCELLED) || 
+                    appt.Status.Equals("COMPLETED") || //AppointmentStatusEnum.COMPLETED) ||
+                    appt.Status.Equals("IN_PROGRESS") || //AppointmentStatusEnum.IN_PROGRESS) ||
+                    appt.Status.Equals("REQUESTED") || //AppointmentStatusEnum.REQUESTED) ||
+                    appt.Status.Equals("SCHEDULED");  //AppointmentStatusEnum.SCHEDULED);
         }
     }
 }
