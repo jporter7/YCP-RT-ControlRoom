@@ -118,7 +118,6 @@ namespace ControlRoomApplication.Main
         private void CalibrateButton_Click(object sender, EventArgs e)
         {
             logger.Info("Calibrate Button Clicked");
-            controlRoom.RTControllerManagementThreads[rtId - 1].InterruptOnce();
             CalibrateMove();
         }
 

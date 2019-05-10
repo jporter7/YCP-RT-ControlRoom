@@ -276,29 +276,31 @@ namespace ControlRoomApplication.Controllers
                         NextObjectiveOrientation.Elevation < 0 || NextObjectiveOrientation.Elevation > 90)
                     {
                         logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                        InterruptAppointmentFlag = true;
-                        break;
                     }
-
-                    logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                    RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
-
-                    // Wait until telescope reaches destination
-                    Orientation currentOrientation;
-                    do
+                    else
                     {
-                        if (InterruptAppointmentFlag)
-                        {
-                            break;
-                        }
+                        logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                        bool move_result = RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
+                        logger.Info("Move Successful: " + move_result.ToString());
 
-                        currentOrientation = RTController.GetCurrentOrientation();
-                        logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
-                        Thread.Sleep(100);
+                        // !!! COMMENTED OUT FOR TESTING PRODUCTION TELESCOPE !!!
+                        // Wait until telescope reaches destination
+                        //Orientation currentOrientation;
+                        //do
+                        //{
+                        //    if (InterruptAppointmentFlag)
+                        //    {
+                        //        break;
+                        //    }
+
+                        //    currentOrientation = RTController.GetCurrentOrientation();
+                        //    logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                        //    Thread.Sleep(100);
+                        //}
+                        //while (!NextObjectiveOrientation.Equals(currentOrientation));
+
+                        NextObjectiveOrientation = null;
                     }
-                    while (!NextObjectiveOrientation.Equals(currentOrientation));
-
-                    NextObjectiveOrientation = null;
                 }
             }
 

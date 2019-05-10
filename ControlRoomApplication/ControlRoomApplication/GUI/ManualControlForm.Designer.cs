@@ -336,6 +336,7 @@
             // AbsoluteMoveSubmit
             // 
             this.AbsoluteMoveSubmit.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.AbsoluteMoveSubmit.Enabled = false;
             this.AbsoluteMoveSubmit.Location = new System.Drawing.Point(633, 238);
             this.AbsoluteMoveSubmit.Name = "AbsoluteMoveSubmit";
             this.AbsoluteMoveSubmit.Size = new System.Drawing.Size(120, 24);

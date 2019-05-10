@@ -112,7 +112,7 @@
             this.CalibrateButton.Name = "CalibrateButton";
             this.CalibrateButton.Size = new System.Drawing.Size(123, 36);
             this.CalibrateButton.TabIndex = 4;
-            this.CalibrateButton.Text = "Cancel Move\r\n and Calibrate";
+            this.CalibrateButton.Text = "Calibrate";
             this.CalibrateButton.UseVisualStyleBackColor = false;
             this.CalibrateButton.Click += new System.EventHandler(this.CalibrateButton_Click);
             // 

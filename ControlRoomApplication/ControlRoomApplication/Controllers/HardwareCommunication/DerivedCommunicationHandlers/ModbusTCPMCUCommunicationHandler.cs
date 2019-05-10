@@ -93,12 +93,14 @@ namespace ControlRoomApplication.Controllers
 
         public override bool ShutdownRadioTelescope()
         {
-            throw new NotImplementedException("This is a currently unsupported operation.");
+            logger.Error("ShutdownRadioTelescope is a currently unsupported operation.");
+            return false;
         }
 
         public override bool CalibrateRadioTelescope()
         {
-            throw new NotImplementedException("This is a currently unsupported operation.");
+            logger.Error("CalibrateRadioTelescope is a currently unsupported operation.");
+            return false;
         }
 
         public override bool ConfigureRadioTelescope(double startSpeedDPSAzimuth, double startSpeedDPSElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation)
@@ -158,6 +160,7 @@ namespace ControlRoomApplication.Controllers
             double PositionTranslationDegreesEL = ConversionHelper.StepsToDegrees(ObjectivePositionStepsEL - CurrentPositionStepsEL, MotorConstants.GEARING_RATIO_ELEVATION);
 
             double FixedSpeedDPS = ConversionHelper.RPMToDPS(DEFAULT_SPEED_IF_UNSPECIFIED_RPMS);
+            CancelCurrentMoveCommand(); // Clear current move to fix bug
             return ExecuteRelativeMove(FixedSpeedDPS, PositionTranslationDegreesAZ, FixedSpeedDPS, PositionTranslationDegreesEL);
         }
 

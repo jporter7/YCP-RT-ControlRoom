@@ -62,6 +62,11 @@ namespace ControlRoomApplication.GUI
             {
                 statuses[1] = "Online";
             }
+
+            if (controlRoom.RTControllerManagementThreads[rtId].RTController.TestCommunication())
+            {
+                statuses[1] = "Online";
+            }
         }
 
         public delegate void SetStartTimeTextCallback(string text);
