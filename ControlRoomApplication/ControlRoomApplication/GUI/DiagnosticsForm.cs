@@ -106,13 +106,28 @@ namespace ControlRoomApplication.GUI
             }
         }
 
+        public delegate void SetApptTypeTextCallback(string text);
+        public void SetApptTypeText(string text)
+        {
+            if (typeTextBox.InvokeRequired)
+            {
+                SetApptTypeTextCallback d = new SetApptTypeTextCallback(SetApptTypeText);
+                Invoke(d, new object[] { text });
+            }
+            else
+            {
+                typeTextBox.Text = text;
+            }
+        }
+
         private void timer1_Tick(object sender, System.EventArgs e)
         {
             if (controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay != null)
             {
-                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToLocalTime().ToString("hh:mm tt"));
-                SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.EndTime.ToLocalTime().ToString("hh:mm tt"));
+                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToLocalTime().ToString("hh:mm:ss tt"));
+                SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.EndTime.ToLocalTime().ToString("hh:mm:ss tt"));
                 SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.Status.ToString());
+                SetApptTypeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.Type.ToString());
             }
 
             GetHardwareStatuses();

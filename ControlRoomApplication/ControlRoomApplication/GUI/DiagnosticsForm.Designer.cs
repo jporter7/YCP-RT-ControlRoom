@@ -43,6 +43,8 @@
             this.statusTextBox = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.label9 = new System.Windows.Forms.Label();
+            this.typeTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -188,11 +190,33 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(111, 295);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(40, 17);
+            this.label9.TabIndex = 13;
+            this.label9.Text = "Type";
+            // 
+            // typeTextBox
+            // 
+            this.typeTextBox.Location = new System.Drawing.Point(115, 314);
+            this.typeTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.typeTextBox.Name = "typeTextBox";
+            this.typeTextBox.ReadOnly = true;
+            this.typeTextBox.Size = new System.Drawing.Size(102, 20);
+            this.typeTextBox.TabIndex = 12;
+            // 
             // DiagnosticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(600, 366);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.typeTextBox);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.statusTextBox);
             this.Controls.Add(this.endTimeTextBox);
@@ -231,5 +255,7 @@
         private System.Windows.Forms.TextBox statusTextBox;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox typeTextBox;
     }
 }
