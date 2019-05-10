@@ -194,11 +194,10 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// Waits for the next chronological appointment's start time to be less than 10 minutes
-        /// from the current time of day. Once we are 10 minutes from the appointment's start time
-        /// we should begin operations such as calibration.
+        /// Waits for the next chronological appointment's start time to be less than 1 minute
+        /// from the current time of day. 
         /// </summary>
-        /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
+        /// <returns> An appointment object that is next in chronological order and is less than 1 minutes away from starting. </returns>
         private Appointment WaitForNextAppointment()
         {
             Appointment NextAppointment;
@@ -213,7 +212,7 @@ namespace ControlRoomApplication.Controllers
                 Thread.Sleep(100);
             }
 
-            logger.Info("Waiting for the next appointment to be within 10 minutes.");
+            logger.Info("Waiting for the next appointment to be within 1 minutes.");
             TimeSpan diff;
             while ((diff = NextAppointment.StartTime - DateTime.UtcNow).TotalMinutes > 1)
             {

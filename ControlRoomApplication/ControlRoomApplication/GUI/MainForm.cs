@@ -74,7 +74,6 @@ namespace ControlRoomApplication.Main
                 {
                     logger.Info("Populating Local Database");
                     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
-                    Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).StartTime.ToString());
                     logger.Info("Disabling ManualControl and FreeControl");
                     ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
@@ -237,8 +236,12 @@ namespace ControlRoomApplication.Main
                     HardwareCommsHandler = new ModbusTCPMCUCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
                     break;
 
-                case 2:
+                case 1:
                     throw new InvalidOperationException("The scale model is unsupported at the moment.");
+
+                case 2:
+                    HardwareCommsHandler = new YCPBaseTCPIPCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
+                    break;
 
                 case 3:
                     HardwareCommsHandler = new TestHardwarCommunicationHandler();
