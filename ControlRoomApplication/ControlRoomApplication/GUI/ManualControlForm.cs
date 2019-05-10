@@ -170,40 +170,30 @@ namespace ControlRoomApplication.Main
             logger.Info("Demo Started");
             while (DemoRunningFlag)
             {
-                logger.Info("Executing command #0: CCW jog move, elevation, 20 seconds, controlled stop.");
-                rt_controller.StartRadioTelescopeElevationJog(speedDPS, false);
-                WaitAndCheckFlag(20000);
-                rt_controller.ExecuteRadioTelescopeControlledStop();
-                WaitAndCheckFlag(3000);
+
+                RelativeMove(speedDPS, speedDPS, 15, 45, true);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #1: CCW jog move, azimuth, 30 seconds, immediate stop.");
-                rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, false);
-                WaitAndCheckFlag(30000);
-                rt_controller.ExecuteRadioTelescopeImmediateStop();
-                WaitAndCheckFlag(1000);
+                RelativeMove(speedDPS, speedDPS, 30, 45, true);
                 if (!DemoRunningFlag) { break; }
 
-                logger.Info("Executing command #2: CW jog move, elevation, 20 seconds, controlled stop.");
-                rt_controller.StartRadioTelescopeElevationJog(speedDPS, true);
-                WaitAndCheckFlag(20000);
-                rt_controller.ExecuteRadioTelescopeControlledStop();
-                WaitAndCheckFlag(3000);
+                RelativeMove(speedDPS, speedDPS, -45, -90, true);
                 if (!DemoRunningFlag) { break; }
+            }
+        }
 
-                logger.Info("Executing command #3: CW jog move, azimuth, 50 seconds, immediate stop.");
-                rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, true);
-                WaitAndCheckFlag(50000);
-                rt_controller.ExecuteRadioTelescopeImmediateStop();
-                WaitAndCheckFlag(1000);
-                if (!DemoRunningFlag) { break; }
-
-                logger.Info("Executing command #4: CCW jog move, azimuth, 20 seconds, immediate stop.");
-                rt_controller.StartRadioTelescopeAzimuthJog(speedDPS, false);
-                WaitAndCheckFlag(20000);
-                rt_controller.ExecuteRadioTelescopeImmediateStop();
-                WaitAndCheckFlag(3000);
-                if (!DemoRunningFlag) { break; }
+        private void RelativeMove(double speedDPSAzimuth, double speedDPSElevation, double translationDegreesAzimuth, double translationDegreesElevation, bool demo_wait)
+        {
+            logger.Info("Executing relative move, azimuth " + translationDegreesAzimuth + ", elevation" + translationDegreesElevation);
+            rt_controller.CancelCurrentMoveCommand();
+            WaitAndCheckFlag(3000);
+            rt_controller.ExecuteRelativeMove(speedDPSAzimuth, speedDPSElevation, translationDegreesAzimuth, translationDegreesElevation);
+            if (demo_wait)
+            {
+                double max_degrees = Math.Max(translationDegreesAzimuth, translationDegreesElevation);
+                int wait_ms = (int)  ((max_degrees / speedDPS) * 1000 * 0.75 ); // Finding wait time. Multiplying by 0.5 to account for ramp up and down times
+                logger.Info("Waiting " + wait_ms / 1000 + "seconds");
+                WaitAndCheckFlag(wait_ms);
             }
         }
 
@@ -214,13 +204,17 @@ namespace ControlRoomApplication.Main
             {
                 if (!DemoRunningFlag)
                 {
-                    rt_controller.CancelCurrentMoveCommand();
+                    logger.Info("Demo Stopping");
                     rt_controller.ExecuteRadioTelescopeImmediateStop();
+                    Thread.Sleep(3000);
+                    rt_controller.CancelCurrentMoveCommand();
+                    Thread.Sleep(3000);
                     logger.Info("Demo Stopped");
                     break;
                 }
-                Thread.Sleep(100);
-                counter += 100;
+                Thread.Sleep(1000);
+                logger.Info(counter / 1000 + "/" + milliseconds /1000 + " Seconds...");
+                counter += 1000;
             }
         }
 
@@ -305,8 +299,7 @@ namespace ControlRoomApplication.Main
         private void RelativeMoveSubmit_Click(object sender, EventArgs e)
         {
             logger.Info("Move Relative Button Clicked");
-            rt_controller.CancelCurrentMoveCommand();
-            rt_controller.ExecuteRelativeMove(speedDPS, speedDPS, (double)numericUpDown1.Value, (double)numericUpDown2.Value);
+            RelativeMove(speedDPS, speedDPS, (double)numericUpDown1.Value, (double)numericUpDown2.Value, false);
         }
 
         private void ClearCommandsSubmit_Click(object sender, EventArgs e)
