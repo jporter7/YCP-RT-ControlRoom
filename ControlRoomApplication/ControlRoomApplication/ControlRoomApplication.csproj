@@ -183,10 +183,6 @@
     <Compile Include="GUI\ManualControlForm.Designer.cs">
       <DependentUpon>ManualControlForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201904150402332_LoggingUpdgrades.cs" />
-    <Compile Include="Migrations\201904150402332_LoggingUpdgrades.Designer.cs">
-      <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
-    </Compile>
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
     <Compile Include="Simulators\Hardware\AbsoluteEncoder\SimulationAbsoluteEncoder.cs" />
@@ -235,9 +231,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201904150402332_LoggingUpdgrades.resx">
-      <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

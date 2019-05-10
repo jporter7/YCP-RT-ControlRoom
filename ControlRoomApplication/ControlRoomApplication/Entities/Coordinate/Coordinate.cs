@@ -16,7 +16,8 @@ namespace ControlRoomApplication.Entities
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        [Column("id")]
+        public int id { get; set; }
 
         [Required]
         [Column("right_ascension")]

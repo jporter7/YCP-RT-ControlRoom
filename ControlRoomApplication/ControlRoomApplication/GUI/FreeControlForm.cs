@@ -33,8 +33,8 @@ namespace ControlRoomApplication.Main
             CurrentAppointment = new Appointment();
             CurrentAppointment.StartTime = DateTime.UtcNow.AddSeconds(5);
             CurrentAppointment.EndTime = DateTime.UtcNow.AddMinutes(15);
-            CurrentAppointment.Status = AppointmentStatusEnum.REQUESTED;
-            CurrentAppointment.Type = AppointmentTypeEnum.FREE_CONTROL;
+            CurrentAppointment.Status = "REQUESTED";// AppointmentStatusEnum.REQUESTED;
+            CurrentAppointment.Type = "FREE_CONTROL";// AppointmentTypeEnum.FREE_CONTROL;
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
             CurrentAppointment.TelescopeId = rtId;
             CurrentAppointment.UserId = 1;
@@ -63,7 +63,7 @@ namespace ControlRoomApplication.Main
             }
             else
             {
-                errorLabel.Text = "Invalid Coordinate: orienation out of range";
+                errorLabel.Text = "Invalid coordinate: orienation out of range";
             }
         }
 
@@ -79,7 +79,7 @@ namespace ControlRoomApplication.Main
             }
             else
             {
-                errorLabel.Text = "Invalid Coordinate: orienation out of range";
+                errorLabel.Text = "Invalid coordinate: orienation out of range";
             }
         }
 
@@ -95,7 +95,7 @@ namespace ControlRoomApplication.Main
             }
             else
             {
-                errorLabel.Text = "Invalid Coordinate: orienation out of range";
+                errorLabel.Text = "Invalid coordinate: orienation out of range";
             }
         }
 
@@ -111,7 +111,7 @@ namespace ControlRoomApplication.Main
             }
             else
             {
-                errorLabel.Text = "Invalid Coordinate: orienation out of range";
+                errorLabel.Text = "Invalid coordinate: orienation out of range";
             }
         }
 
@@ -124,18 +124,18 @@ namespace ControlRoomApplication.Main
         public void CalibrateMove()
         {
             logger.Info("CalibrateMove ");
-            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
-            CurrentAppointment.Orientation = new Entities.Orientation(0, 90);
+            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.id);
+            CurrentAppointment.orientation = new Entities.Orientation(0, 90);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
-            TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
+            TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.orientation, DateTime.UtcNow);
             UpdateText();
         }
 
         private void CoordMove()
         {
             logger.Info("CoordMove ");
-            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
-            CurrentAppointment.Coordinates.Add(TargetCoordinate);
+            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.id);
+            CurrentAppointment.coordinates.Add(TargetCoordinate);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
             UpdateText();
         }
@@ -144,7 +144,7 @@ namespace ControlRoomApplication.Main
         {
             string RA = TargetCoordinate.RightAscension.ToString("0.##");
             string Dec = TargetCoordinate.Declination.ToString("0.##");
-            logger.Info("UpdateText, Target Coordinate = RA:" + RA + ", Dec:" + Dec);
+            logger.Info("UpdateText, Target coordinate = RA:" + RA + ", Dec:" + Dec);
             SetTargetRAText(RA);
             SetTargetDecText(Dec);
             errorLabel.Text = "Free Control for Radio Telescope " + rtId.ToString();
@@ -300,7 +300,7 @@ namespace ControlRoomApplication.Main
                 }
                 else
                 {
-                    errorLabel.Text = "Invalid Coordinate: orienation out of range";
+                    errorLabel.Text = "Invalid coordinate: orienation out of range";
                 }
             }
             else

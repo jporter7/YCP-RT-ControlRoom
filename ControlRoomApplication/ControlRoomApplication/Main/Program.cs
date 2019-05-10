@@ -26,7 +26,7 @@ namespace ControlRoomApplication.Main
             //        new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
             //        new PLCClientCommunicationHandler(localhostIP, localhostPort),
             //        MiscellaneousConstants.JOHN_RUDY_PARK,
-            //        new Orientation(0, 90)
+            //        new orientation(0, 90)
             //    )
             //);
 

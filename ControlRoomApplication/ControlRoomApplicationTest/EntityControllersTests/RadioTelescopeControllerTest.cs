@@ -39,7 +39,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestGetCurrentOrientation()
         {
-            // Create an Orientation object with an azimuth of 311 and elevation of 42
+            // Create an orientation object with an azimuth of 311 and elevation of 42
             Orientation Orientation = new Orientation(311.0, 42.0);
 
             // Set the RadioTelescope's CurrentOrientation field
@@ -116,7 +116,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestMoveRadioTelescope()
         {
-            // Create an Orientation object with an azimuth of 311 and elevation of 42
+            // Create an orientation object with an azimuth of 311 and elevation of 42
             Orientation Orientation = new Orientation(311.0, 42.0);
 
             // Set the RadioTelescope's CurrentOrientation field

@@ -18,7 +18,8 @@ namespace ControlRoomApplication.Entities
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        [Column("id")]
+        public int id { get; set; }
 
         [Required]
         [Column("azimuth")]
@@ -29,8 +30,8 @@ namespace ControlRoomApplication.Entities
         public double Elevation { get; set; }
 
         /// <summary>
-        /// Checks if the current Orientation is Equal to another Orientation  
-        /// and it checks if the other Orientation is null
+        /// Checks if the current orientation is Equal to another orientation  
+        /// and it checks if the other orientation is null
         /// </summary>
         public override bool Equals(object obj)
         {
@@ -47,11 +48,11 @@ namespace ControlRoomApplication.Entities
         }
 
         /// <summary>
-        /// Returns the HashCode of the Orientation's Id
+        /// Returns the HashCode of the orientation's id
         /// </summary>
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return id.GetHashCode();
         }
     }
 }

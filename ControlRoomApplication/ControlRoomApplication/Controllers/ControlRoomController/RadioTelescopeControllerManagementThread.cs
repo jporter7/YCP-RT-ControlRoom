@@ -147,7 +147,7 @@ namespace ControlRoomApplication.Controllers
                     logger.Info("Starting appointment...");
 
                     // Calibrate telescope
-                    if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL)
+                    if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL.ToString())
                     {
                         logger.Info("Calibrating RadioTelescope");
                         RTController.CalibrateRadioTelescope();
@@ -172,19 +172,19 @@ namespace ControlRoomApplication.Controllers
                     // Stow Telescope
                     EndAppointment();
 
-                    logger.Info("Appointment completed.");
+                    logger.Info("appointment completed.");
                 }
                 else
                 {
                     if (InterruptAppointmentFlag)
                     {
-                        logger.Info("Appointment interrupted in loading routine.");
+                        logger.Info("appointment interrupted in loading routine.");
                         ManagementMutex.WaitOne();
                         InterruptAppointmentFlag = false;
                         ManagementMutex.ReleaseMutex();
                     }
 
-                    logger.Info("Appointment does not have an orientation associated with it.");
+                    logger.Info("appointment does not have an orientation associated with it.");
                 }
 
                 KeepAlive = KeepThreadAlive;
@@ -238,18 +238,18 @@ namespace ControlRoomApplication.Controllers
         /// <param name="NextAppointment"> The appointment that is currently running. </param>
         private void PerformRadioTelescopeMovement(Appointment NextAppointment)
         {
-            NextAppointment.Status = AppointmentStatusEnum.IN_PROGRESS;
+            NextAppointment.Status = AppointmentStatusEnum.IN_PROGRESS.ToString();
             DatabaseOperations.UpdateAppointment(NextAppointment);
 
-            logger.Info("Appointment Type: " + NextAppointment.Type);
+            logger.Info("appointment Type: " + NextAppointment.Type);
 
             // Loop through each second or minute of the appointment (depending on appt type)
             TimeSpan length = NextAppointment.EndTime - NextAppointment.StartTime;
-            double duration = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? length.TotalSeconds : length.TotalMinutes;
+            double duration = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL.ToString() ? length.TotalSeconds : length.TotalMinutes;
             for (int i = 0; i <= (int) duration; i++)
             {
                 // Get orientation for current datetime
-                DateTime datetime = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? NextAppointment.StartTime.AddSeconds(i) : NextAppointment.StartTime.AddMinutes(i); 
+                DateTime datetime = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL.ToString() ? NextAppointment.StartTime.AddSeconds(i) : NextAppointment.StartTime.AddMinutes(i); 
                 NextObjectiveOrientation = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
 
                 // Wait for datetime
@@ -257,7 +257,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     if (InterruptAppointmentFlag)
                     {
-                        logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
+                        logger.Info("Interrupted appointment [" + NextAppointment.id.ToString() + "] at " + DateTime.Now.ToString());
                         break;
                     }
 
@@ -304,15 +304,15 @@ namespace ControlRoomApplication.Controllers
 
             if (InterruptAppointmentFlag)
             {
-                logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
-                NextAppointment.Status = AppointmentStatusEnum.CANCELLED;
+                logger.Info("Interrupted appointment [" + NextAppointment.id.ToString() + "] at " + DateTime.Now.ToString());
+                NextAppointment.Status = "CANCELLED";//AppointmentStatusEnum.CANCELLED.ToString();
                 DatabaseOperations.UpdateAppointment(NextAppointment);
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
             }
             else
             {
-                NextAppointment.Status = AppointmentStatusEnum.COMPLETED;
+                NextAppointment.Status = "COMPLETED";// AppointmentStatusEnum.COMPLETED;
                 DatabaseOperations.UpdateAppointment(NextAppointment);
             }
 
@@ -324,7 +324,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         private void EndAppointment()
         {
-            logger.Info("Ending Appointment");
+            logger.Info("Ending appointment");
             RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90));
         }
 
@@ -335,7 +335,9 @@ namespace ControlRoomApplication.Controllers
         {
             logger.Info("Starting Reading of RFData");
             RTController.RadioTelescope.SpectraCyberController.SetApptConfig(appt);
+            RTController.RadioTelescope.SpectraCyberController.BringUp();
             RTController.RadioTelescope.SpectraCyberController.StartScan();
+            
         }
 
         /// <summary>

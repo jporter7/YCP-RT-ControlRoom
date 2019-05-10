@@ -79,7 +79,7 @@ namespace ControlRoomApplication.Entities
         }
 
         /// <summary>
-        /// Returns the HashCode of the Orientation's Id
+        /// Returns the HashCode of the orientation's id
         /// </summary>
         public override int GetHashCode()
         {

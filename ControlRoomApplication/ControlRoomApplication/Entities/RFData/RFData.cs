@@ -29,7 +29,7 @@ namespace ControlRoomApplication.Entities
         [Column("intensity")]
         public long Intensity { get; set; }
 
-        //public Orientation AcquisitionOrientation { get; set; }
+        //public orientation AcquisitionOrientation { get; set; }
 
         public static RFData GenerateFrom(SpectraCyberResponse response)
         {

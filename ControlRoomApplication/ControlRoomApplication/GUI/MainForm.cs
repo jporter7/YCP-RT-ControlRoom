@@ -113,7 +113,7 @@ namespace ControlRoomApplication.Main
                 logger.Info("Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
                 foreach (Appointment appt in AllAppointments)
                 {
-                    logger.Info("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
+                    logger.Info("\t[" + appt.id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
                 }
 
                 if (ManagementThread.Start())
@@ -246,7 +246,8 @@ namespace ControlRoomApplication.Main
                 case 1:
                 default:
                     logger.Info("Building SpectraCyberSimulator");
-                    return new SpectraCyberTestController(new SpectraCyberSimulator());
+                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
+                    //return new SpectraCyberTestController(new SpectraCyberSimulator());
             }
         }
 
@@ -330,6 +331,11 @@ namespace ControlRoomApplication.Main
                 Name = "Manual Control Thread"
             };
             ManualControlThread.Start();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -41,8 +41,8 @@ namespace ControlRoomApplication.Controllers
         public bool SetApptConfig(Appointment appt)
         {
             bool success = false;
-            SetActiveAppointmentID(appt.Id);
-            SpectraCyberConfig config = appt.SpectraCyberConfig;
+            SetActiveAppointmentID(appt.id);
+            SpectraCyberConfig config = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM); // appt.SpectraCyberConfig;
             SetSpectraCyberModeType(config.Mode);
             if(config.Mode == SpectraCyberModeTypeEnum.CONTINUUM)
             {

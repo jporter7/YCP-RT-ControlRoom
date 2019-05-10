@@ -58,13 +58,13 @@ namespace ControlRoomApplicationTest.EntitiesTests
             appointment_1.UserId = user_id;
             appointment_1.StartTime = startTime_1;
             appointment_1.EndTime = endTime_1;
-            appointment_1.CelestialBody = celestial_body;
-            appointment_1.Orientation = orientation;
-            appointment_1.Coordinates.Add(coordinate);
+            appointment_1.celestial_body = celestial_body;
+            appointment_1.orientation = orientation;
+            appointment_1.coordinates.Add(coordinate);
             appointment_1.RFDatas.Add(rf_data);
             appointment_1.TelescopeId = telescope_id;
-            appointment_1.Status = status;
-            appointment_1.Type = type;
+            appointment_1.Status = "";// status;
+            appointment_1.Type = "";// type;
             appointment_1.SpectraCyberConfig = spectracyber_config;
 
             appointment_2.StartTime = startTime_2;
@@ -77,9 +77,9 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreEqual(user_id, appointment_1.UserId);
             Assert.AreEqual(startTime_1, appointment_1.StartTime);
             Assert.AreEqual(endTime_1, appointment_1.EndTime);
-            Assert.AreEqual(celestial_body, appointment_1.CelestialBody);
-            Assert.AreEqual(orientation, appointment_1.Orientation);
-            Assert.AreEqual(coordinate, appointment_1.Coordinates.ToList()[0]);
+            Assert.AreEqual(celestial_body, appointment_1.celestial_body);
+            Assert.AreEqual(orientation, appointment_1.orientation);
+            Assert.AreEqual(coordinate, appointment_1.coordinates.ToList()[0]);
             Assert.AreEqual(rf_data, appointment_1.RFDatas.ToList()[0]);
             Assert.AreEqual(telescope_id, appointment_1.TelescopeId);
             Assert.AreEqual(status, appointment_1.Status);

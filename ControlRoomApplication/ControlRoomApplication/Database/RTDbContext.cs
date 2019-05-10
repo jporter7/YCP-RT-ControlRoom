@@ -14,8 +14,19 @@ namespace ControlRoomApplication.Main
         public RTDbContext(string connectionString) : base(connectionString)
         {
             Database.Connection.ConnectionString = connectionString;
-            Configuration.LazyLoadingEnabled = false;
+            Configuration.LazyLoadingEnabled = true;
         }
+
+        //protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        //{
+        //    //base.OnModelCreating(modelBuilder);
+        //    //modelBuilder.Entity<appointment>()
+        //    //  .HasOptional<orientation>(o => o.orientation);
+        //    //modelBuilder.Entity<appointment>()
+        //      //  .HasRequired<celestial_body>(c => c.celestial_body)
+        //        //.WithMany(a => a.appointment)
+        //        //.HasForeignKey<int>(c => c.celestial_body_id);
+        //}
 
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<RFData> RFDatas { get; set; }

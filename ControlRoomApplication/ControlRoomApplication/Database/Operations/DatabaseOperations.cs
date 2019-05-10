@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Validation;
 using System.Linq;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
@@ -10,7 +11,7 @@ namespace ControlRoomApplication.Database
 {
     public static class DatabaseOperations
     {
-        private static readonly bool USING_REMOTE_DATABASE = false;
+        private static bool USING_REMOTE_DATABASE = false;
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
@@ -27,6 +28,18 @@ namespace ControlRoomApplication.Database
                 try
                 {
                     Context.SaveChanges();
+                }
+                catch (DbEntityValidationException e)
+                {
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        logger.Error($"Entity of type {eve.Entry.Entity.GetType().Name} in state {eve.Entry.State} has the following validation errors:");
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            logger.Error($"- Property: {ve.PropertyName}, Error: {ve.ErrorMessage}");
+                        }
+                    }
+                    throw;
                 }
                 catch (DbUpdateException ex)
                 {
@@ -99,43 +112,43 @@ namespace ControlRoomApplication.Database
                     // Add drift scan appointment
                     appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
                     appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt0.Status = AppointmentStatusEnum.REQUESTED;
-                    appt0.Type = AppointmentTypeEnum.DRIFT_SCAN;
-                    appt0.Orientation = new Orientation(30, 30);
+                    appt0.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
+                    appt0.Type = "DRIFT_SCAN";//AppointmentTypeEnum.DRIFT_SCAN;
+                    appt0.orientation = new Orientation(30, 30);
                     appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                     appt0.TelescopeId = RT_id;
-                    appt0.UserId = 1;
+                    appt0.UserId = 6;
 
                     // Add celesital body appointment
                     appt1.StartTime = appt0.EndTime.AddSeconds(20 + rand.Next(30));
                     appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt1.Status = AppointmentStatusEnum.REQUESTED;
-                    appt1.Type = AppointmentTypeEnum.CELESTIAL_BODY;
-                    appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
+                    appt1.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
+                    appt1.Type = "CELESTIAL_BODY";//AppointmentTypeEnum.CELESTIAL_BODY;
+                    appt1.celestial_body = new CelestialBody(CelestialBodyConstants.SUN);
                     appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
                     appt1.TelescopeId = RT_id;
-                    appt1.UserId = 1;
+                    appt1.UserId = 6;
 
                     // Add point appointment
                     appt2.StartTime = appt1.EndTime.AddSeconds(20 + rand.Next(30));
                     appt2.EndTime = appt2.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt2.Status = AppointmentStatusEnum.REQUESTED;
-                    appt2.Type = AppointmentTypeEnum.POINT;
-                    appt2.Coordinates.Add(coordinate2);
+                    appt2.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
+                    appt2.Type = "POINT";//AppointmentTypeEnum.POINT;
+                    appt2.coordinates.Add(coordinate2);
                     appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                     appt2.TelescopeId = RT_id;
-                    appt2.UserId = 1;
+                    appt2.UserId = 6;
 
                     // Add raster appointment
                     appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
                     appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
-                    appt3.Status = AppointmentStatusEnum.REQUESTED;
-                    appt3.Type = AppointmentTypeEnum.RASTER;
-                    appt3.Coordinates.Add(coordinate0);
-                    appt3.Coordinates.Add(coordinate1);
+                    appt3.Status = "REQUESTED";//AppointmentStatusEnum.REQUESTED;
+                    appt3.Type = "RASTER"; //AppointmentTypeEnum.RASTER;
+                    appt3.coordinates.Add(coordinate0);
+                    appt3.coordinates.Add(coordinate1);
                     appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                     appt3.TelescopeId = RT_id;
-                    appt3.UserId = 1;
+                    appt3.UserId = 6;
 
                     appts.AddRange(new Appointment[] { appt0, appt1, appt2, appt3 });
 
@@ -181,11 +194,11 @@ namespace ControlRoomApplication.Database
         private static DbQuery<Appointment> QueryAppointments(RTDbContext Context)
         {
             // Use Include method to load related entities from the database
-            return Context.Appointments.Include("Coordinates")
-                                        .Include("CelestialBody.Coordinate")
-                                        .Include("Orientation")
-                                        .Include("RFDatas")
-                                        .Include("SpectraCyberConfig");
+            return Context.Appointments.Include("coordinates")
+                                        .Include("celestial_body.coordinate")
+                                        .Include("orientation")
+                                        .Include("RFDatas");
+                                        //.Include("SpectraCyberConfig");
         }
 
             /// <summary>
@@ -203,7 +216,7 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// Returns the updated Appointment from the database.
+        /// Returns the updated appointment from the database.
         /// </summary>
         public static Appointment GetUpdatedAppointment(int appt_id)
         {
@@ -213,7 +226,7 @@ namespace ControlRoomApplication.Database
                 List<Appointment> appts = new List<Appointment>();
                 // Use Include method to load related entities from the database
                 appts = QueryAppointments(Context).ToList();
-                appt = appts.Find(x => x.Id == appt_id);
+                appt = appts.Find(x => x.id == appt_id);
             }
             return appt;
         }
@@ -242,12 +255,14 @@ namespace ControlRoomApplication.Database
             
             if (VerifyRFData(data))
             {
+                USING_REMOTE_DATABASE = true;
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     var appt = Context.Appointments.Find(apptId);
                     appt.RFDatas.Add(data);
                     SaveContext(Context);
                 }
+                USING_REMOTE_DATABASE = false;
             }
         }
 
@@ -262,13 +277,13 @@ namespace ControlRoomApplication.Database
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     // Update database appt with new status
-                    var db_appt = QueryAppointments(Context).ToList().Find(x => x.Id == appt.Id);
+                    var db_appt = QueryAppointments(Context).ToList().Find(x => x.id == appt.id);
                     if (db_appt != null)
                     {
-                        db_appt.CelestialBody = appt.CelestialBody;
-                        db_appt.Coordinates = appt.Coordinates;
+                        db_appt.celestial_body = appt.celestial_body;
+                        db_appt.coordinates = appt.coordinates;
                         db_appt.EndTime = appt.EndTime;
-                        db_appt.Orientation = appt.Orientation;
+                        db_appt.orientation = appt.orientation;
                         db_appt.RFDatas = appt.RFDatas;
                         db_appt.SpectraCyberConfig = appt.SpectraCyberConfig;
                         db_appt.StartTime = appt.StartTime;
@@ -296,9 +311,9 @@ namespace ControlRoomApplication.Database
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x.StartTime < DateTime.UtcNow || x.Status == AppointmentStatusEnum.COMPLETED);
+                    appointments.RemoveAll(x => x.StartTime < DateTime.UtcNow || x.Status == "COMPLETED");//AppointmentStatusEnum.COMPLETED);
                     appointments.Sort();
-                    logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
+                    logger.Debug("appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;
                 }
                 else

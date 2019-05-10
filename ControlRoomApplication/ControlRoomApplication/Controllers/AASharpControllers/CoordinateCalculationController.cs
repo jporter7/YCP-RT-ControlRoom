@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Controllers
         {
             if(coordinate == null)
             {
-                throw new ArgumentException("Coordinate cannot be null");
+                throw new ArgumentException("coordinate cannot be null");
             }
 
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
@@ -45,7 +45,7 @@ namespace ControlRoomApplication.Controllers
         {
             if (horizantal == null)
             {
-                throw new ArgumentException("Orientation cannot be null");
+                throw new ArgumentException("orientation cannot be null");
             }
 
             // Since AASharp considers south zero, flip the orientation 180 degrees
@@ -72,15 +72,15 @@ namespace ControlRoomApplication.Controllers
         {
             switch (appt.Type)
             {
-                case (AppointmentTypeEnum.POINT):
+                case ("POINT"): //AppointmentTypeEnum.POINT):
                     return GetPointOrientation(appt, datetime);
-                case (AppointmentTypeEnum.CELESTIAL_BODY):
+                case ("CELESTIAL_BODY"): //AppointmentTypeEnum.CELESTIAL_BODY):
                     return GetCelestialBodyOrientation(appt, datetime);
-                case (AppointmentTypeEnum.RASTER):
+                case ("RASTER"): // AppointmentTypeEnum.RASTER):
                     return GetRasterOrientation(appt, datetime);
-                case (AppointmentTypeEnum.DRIFT_SCAN):
+                case ("DRIFT_SCAN"):// AppointmentTypeEnum.DRIFT_SCAN):
                     return GetDriftScanOrienation(appt);
-                case (AppointmentTypeEnum.FREE_CONTROL):
+                case ("FREE_CONTROL"):// AppointmentTypeEnum.FREE_CONTROL):
                     return GetFreeControlOrientation(appt, datetime);
                 default:
                     throw new ArgumentException("Invalid Appt type");
@@ -95,14 +95,14 @@ namespace ControlRoomApplication.Controllers
 
         public Coordinate GetPointCoordinate(Appointment appt)
         {
-            var coords = appt.Coordinates.ToList();
+            var coords = appt.coordinates.ToList();
             if (coords.Count > 1)
             {
-                throw new ArgumentException("Too many Coordinates for a Point");
+                throw new ArgumentException("Too many coordinates for a Point");
             }
             else if (coords.Count < 1)
             {
-                throw new ArgumentException("No Point Coordinate");
+                throw new ArgumentException("No Point coordinate");
             }
             return coords[0];
         }
@@ -115,7 +115,7 @@ namespace ControlRoomApplication.Controllers
 
         public Coordinate GetCelestialBodyCoordinate(Appointment appt, DateTime datetime)
         {
-            switch (appt.CelestialBody.Name)
+            switch (appt.celestial_body.Name)
             {
                 case CelestialBodyConstants.SUN:
                     return GetSunCoordinate(datetime);
@@ -125,13 +125,13 @@ namespace ControlRoomApplication.Controllers
                 case null:
                     throw new ArgumentException("Invalid Celestial Body");
                 default:
-                    if (appt.CelestialBody.Coordinate != null)
+                    if (appt.celestial_body.coordinate != null)
                     {
-                        return appt.CelestialBody.Coordinate;
+                        return appt.celestial_body.coordinate;
                     }
                     else
                     {
-                        throw new ArgumentException("Invalid Celestial Body Coordinate");
+                        throw new ArgumentException("Invalid Celestial Body coordinate");
                     }
             }
         }
@@ -177,15 +177,15 @@ namespace ControlRoomApplication.Controllers
         public Coordinate GetRasterCoordinate(Appointment appt, DateTime datetime)
         {
             // Get start and end coordinates
-            List<Coordinate> coords = appt.Coordinates.ToList();
+            List<Coordinate> coords = appt.coordinates.ToList();
 
             if (coords.Count > 2)
             {
-                throw new ArgumentException("Too many Coordinates for a Raster Scan");
+                throw new ArgumentException("Too many coordinates for a Raster Scan");
             }
             else if (coords.Count < 2)
             {
-                throw new ArgumentException("Too few Coordinates for a Raster Scan");
+                throw new ArgumentException("Too few coordinates for a Raster Scan");
             }
             Coordinate start_coord = coords[0];
             Coordinate end_coord = coords[1];
@@ -194,7 +194,7 @@ namespace ControlRoomApplication.Controllers
             if( start_coord.RightAscension == end_coord.RightAscension ||
                 start_coord.Declination == end_coord.Declination)
             {
-                throw new ArgumentException("Coordinates cannot overlap");
+                throw new ArgumentException("coordinates cannot overlap");
             }
 
             // Find the width and the height of the square in points (minutes),
@@ -204,7 +204,7 @@ namespace ControlRoomApplication.Controllers
             double point_height = Math.Floor(Math.Sqrt(num_points));
             if (point_width == 0 || point_height == 0)
             {
-                throw new ArgumentException("Appointment duration is too short");
+                throw new ArgumentException("appointment duration is too short");
             }
 
             // Find the width and the height of the square in coordinates
@@ -251,14 +251,14 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation GetDriftScanOrienation(Appointment appt)
         {
-            return appt.Orientation;
+            return appt.orientation;
         }
 
         public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
         {
-            appt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
+            appt = DatabaseOperations.GetUpdatedAppointment(appt.id);
             Orientation free_orientation = null;
-            if (appt.Orientation == null)
+            if (appt.orientation == null)
             {
                 var free_coord = GetFreeControlCoordinate(appt);
                 if(free_coord != null)
@@ -268,8 +268,8 @@ namespace ControlRoomApplication.Controllers
             }
             else
             {
-                free_orientation = appt.Orientation;
-                appt.Orientation = null;
+                free_orientation = appt.orientation;
+                appt.orientation = null;
                 DatabaseOperations.UpdateAppointment(appt);
             }
             return free_orientation;
@@ -278,10 +278,10 @@ namespace ControlRoomApplication.Controllers
         public Coordinate GetFreeControlCoordinate(Appointment appt)
         {
             Coordinate free_coord = null;
-            if(appt.Coordinates.Count > 0)
+            if(appt.coordinates.Count > 0)
             {
-                free_coord = appt.Coordinates.First();
-                appt.Coordinates.Remove(free_coord);
+                free_coord = appt.coordinates.First();
+                appt.coordinates.Remove(free_coord);
                 DatabaseOperations.UpdateAppointment(appt);
             }
             return free_coord;

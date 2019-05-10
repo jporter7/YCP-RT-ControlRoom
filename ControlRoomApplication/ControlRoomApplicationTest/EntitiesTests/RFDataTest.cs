@@ -26,7 +26,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             intensity = 0;
             appt = new Appointment();
             apptId = 1;
-            appt.Id = apptId;
+            appt.id = apptId;
             DateTime start = DateTime.UtcNow;
             appt.StartTime = start;
         }
