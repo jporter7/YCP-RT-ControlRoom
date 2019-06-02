@@ -113,7 +113,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(114, 29);
             this.textBox1.TabIndex = 5;
-            this.textBox1.Text = "PLC Port";
+            this.textBox1.Text = "8080";//PLC port
             this.textBox1.GotFocus += new System.EventHandler(this.textBox1_Focus);
             // 
             // comboBox1
@@ -129,7 +129,7 @@
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(237, 32);
             this.comboBox1.TabIndex = 2;
-            this.comboBox1.Text = "SpectraCyber Type";
+            this.comboBox1.Text = "Simulated SpectraCyber";//SpectraCyber Type
             // 
             // textBox2
             // 
@@ -140,7 +140,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(114, 29);
             this.textBox2.TabIndex = 4;
-            this.textBox2.Text = "PLC IP";
+            this.textBox2.Text = "127.0.0.1";//PLC ip
             this.textBox2.GotFocus += new System.EventHandler(this.textBox2_Focus);
             // 
             // comboBox2
@@ -157,7 +157,7 @@
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(252, 32);
             this.comboBox2.TabIndex = 1;
-            this.comboBox2.Text = "Weather Station Type";
+            this.comboBox2.Text = "Simulated Weather Station";//Weather Station Type
             // 
             // checkBox1
             // 
@@ -187,7 +187,7 @@
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(153, 32);
             this.comboBox3.TabIndex = 3;
-            this.comboBox3.Text = "PLC Type";
+            this.comboBox3.Text = "Simulation PLC";//PLC Type
             // 
             // ManualControl
             // 

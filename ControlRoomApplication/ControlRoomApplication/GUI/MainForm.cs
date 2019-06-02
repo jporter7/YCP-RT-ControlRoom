@@ -36,8 +36,8 @@ namespace ControlRoomApplication.Main
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 3;
             dataGridView1.Columns[0].HeaderText = "ID";
-            dataGridView1.Columns[1].HeaderText = "PLC IP";
-            dataGridView1.Columns[2].HeaderText = "PLC Port";
+            dataGridView1.Columns[1].HeaderText = "PLC ip";
+            dataGridView1.Columns[2].HeaderText = "PLC port";
 
             AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
