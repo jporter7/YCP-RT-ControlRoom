@@ -155,7 +155,9 @@ namespace ControlRoomApplication.Controllers
             return SetSomeIntegrationTime(time, 'L');
         }
 
-        // Perform a single scan, based on current mode
+        /// <summary>
+        /// Perform a single scan, based on current mode
+        /// </summary>
         protected SpectraCyberResponse DoSpectraCyberScan()
         {
             SpectraCyberResponse Response = new SpectraCyberResponse();
@@ -167,7 +169,9 @@ namespace ControlRoomApplication.Controllers
             return Response;
         }
 
-        // Start scanning, keep doing so until requested to stop
+        /// <summary>
+        /// Start scanning, keep doing so until requested to stop
+        /// </summary>
         public void SingleScan()
         {
             try
@@ -182,7 +186,9 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        // Start scanning, keep doing so until requested to stop
+        /// <summary>
+        /// Start scanning, keep doing so until requested to stop
+        /// </summary>
         public void StartScan()
         {
             try
@@ -197,7 +203,9 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        // Stop scanning and return scan results
+        /// <summary>
+        ///  Stop scanning and return scan results
+        /// </summary>
         public void StopScan()
         {
             try
@@ -212,7 +220,9 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        // Start a scheduled scan interval
+        /// <summary>
+        /// Start a scheduled scan interval
+        /// </summary>
         public void ScheduleScan(int intervalMS, int delayMS, bool startAfterDelay)
         {
             try
@@ -227,7 +237,9 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        // Generate a SpectraCyberRequest based on currentMode
+        /// <summary>
+        /// Generate a SpectraCyberRequest based on currentMode
+        /// </summary>
         protected SpectraCyberRequest GenerateCurrentDataRequest(bool waitForReply = true, int numChars = 0)
         {
             if (numChars <= 0)
@@ -286,7 +298,9 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        // Implicitly kills the processing thread and waits for it to join before returning
+        /// <summary>
+        /// Implicitly kills the processing thread and waits for it to join before returning
+        /// </summary>
         public void KillCommunicationThreadAndWait()
         {
             CommunicationMutex.WaitOne();
@@ -317,7 +331,9 @@ namespace ControlRoomApplication.Controllers
         public abstract bool BringDown();
         protected abstract void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response);
 
-        // TODO: implement proper error handling if ch is out of acceptable range
+        /// <summary>
+        /// TODO: implement proper error handling if ch is out of acceptable range
+        /// </summary>
         protected static int HexCharToInt(char ch)
         {
             int baseVal = Convert.ToByte(ch);

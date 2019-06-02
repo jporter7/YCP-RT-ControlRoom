@@ -47,7 +47,10 @@ namespace ControlRoomApplication.Controllers
             logger.Info("[SpectraCyberSimulatorController] Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
-
+        /// <summary>
+        /// calls KillCommunicationThreadAndWait then if no err was thrown logs info
+        /// </summary>
+        /// <returns>true</returns>
         public override bool BringDown()
         {
             KillCommunicationThreadAndWait();
@@ -56,7 +59,9 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        // Submit a command and return a response
+        /// <summary>
+        /// Submit a command and return a response
+        /// </summary>
         protected override void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response)
         {
             // Here is where the request would be sent through serial if this were a physical device
@@ -100,7 +105,11 @@ namespace ControlRoomApplication.Controllers
 
             // Do nothing to purge a simulated buffer
         }
-
+        /// <summary>
+        /// TODO: implament  |      
+        /// currently returns true
+        /// </summary>
+        /// <returns></returns>
         protected override bool TestIfComponentIsAlive()
         {
             return true;

@@ -6,6 +6,10 @@ using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers
 {
+    /// <summary>
+    /// implaments AbstractSpectraCyberController
+    /// 
+    /// </summary>
     public class SpectraCyberController : AbstractSpectraCyberController
     {
         private static readonly log4net.ILog logger =
@@ -95,7 +99,10 @@ namespace ControlRoomApplication.Controllers
             logger.Info("[SpectraCyberController] Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
-
+        /// <summary>
+        /// closes serial conection and kill comm thred
+        /// </summary>
+        /// <returns>bolean describing state of operation </returns>
         public override bool BringDown()
         {
             try
@@ -124,7 +131,9 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        // Submit a command and return a response
+        /// <summary>
+        /// Submit a command and return a response
+        /// </summary>
         protected override void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response)
         {
             // If the request is empty, don't process
@@ -245,7 +254,9 @@ namespace ControlRoomApplication.Controllers
             ((SpectraCyber)SpectraCyber).SerialPort.DiscardInBuffer();
         }
 
-        // Test if the physical SpectraCyber is alive, while making sure to not interrupt the schedule
+        /// <summary>
+        /// Test if the physical SpectraCyber is alive, while making sure to not interrupt the schedule
+        /// </summary>
         protected override bool TestIfComponentIsAlive()
         {
             // If the SpectraCyber has already told us it failed, then it's clearly not alive
