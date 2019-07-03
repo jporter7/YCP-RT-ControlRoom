@@ -14,7 +14,9 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            Application.Run(new MainForm());
+            //Application.Run(new MainForm());
+
+            ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
 
             //string localhostIP = PLCConstants.LOCAL_HOST_IP;
             //int localhostPort = PLCConstants.PORT_8080;
