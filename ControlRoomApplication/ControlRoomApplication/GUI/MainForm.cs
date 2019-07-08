@@ -20,6 +20,7 @@ namespace ControlRoomApplication.Main
         public List<ControlRoomController> ProgramControlRoomControllerList { get; set; }
         private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
+        private Thread MicroctrlServerThread { get; set; }
         private CancellationTokenSource CancellationSource { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -131,6 +132,16 @@ namespace ControlRoomApplication.Main
                 }
 
                 AddConfigurationToDataGrid();
+
+
+
+                Console.WriteLine("at microtherad start");
+                MicroctrlServerThread = new Thread(new ThreadStart(ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp));
+                MicroctrlServerThread.Start();
+                //ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
+
+
+
             }
         }
 

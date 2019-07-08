@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -44,8 +45,8 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 // The DNS name of the computer  
                 // running the listener is "host.contoso.com".  
                 IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-                IPAddress ipAddress = ipHostInfo.AddressList[0];
-                ipAddress= IPAddress.Parse("192.168.43.86");
+                IPAddress ipAddress = ipHostInfo.AddressList[1];
+                ipAddress= IPAddress.Parse("169.254.28.40");
                 IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
                 Console.WriteLine("this ip "+ localEndPoint);
                 // Create a TCP/IP socket.  
@@ -57,28 +58,23 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 {
                     listener.Bind(localEndPoint);
                     listener.Listen(100);
-
                     while (true)
                     {
                         // Set the event to nonsignaled state.  
                         allDone.Reset();
-
                         // Start an asynchronous socket to listen for connections.  
                         //Console.WriteLine("Waiting for a connection...");
                         listener.BeginAccept(new AsyncCallback(AcceptCallback),listener);
                         // Wait until a connection is made before continuing.  
                         allDone.WaitOne();
                     }
-
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.ToString());
                 }
-
                 Console.WriteLine("\nPress ENTER to continue...");
                 Console.Read();
-
             }
             /// <summary>
             /// callback for accepting tcp conections
@@ -94,8 +90,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 // Create the state object.  
                 StateObject state = new StateObject();
                 state.workSocket = handler;
-                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
+                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
             }
             /// <summary>
             /// callback occors when scoket has new data
@@ -109,8 +104,16 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 StateObject state = (StateObject)ar.AsyncState;
                 Socket handler = state.workSocket;
                 // Read data from the client socket.   
-                int bytesRead = handler.EndReceive(ar);
+                int bytesRead=0;
+                try
+                {
+                    bytesRead = handler.EndReceive(ar);
+                }
+                catch
+                {
 
+                }
+                
                 if (bytesRead > 0)
                 {
                     // There  might be more data, so store the data received so far.  
@@ -126,16 +129,39 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                         content = content.Substring(0, eof);
                         // All the data has been read from the   
                         // client. Display it on the console.  
-                        Console.WriteLine("Read {0} bytes from socket. Data : {1}", content.Length, content);
-                        // Echo the data back to the client.  
+                        try
+                        {
+                            dynamic respobj = JsonConvert.DeserializeObject(content);
+                            //Console.WriteLine(respobj);
+                            interpretData(respobj);
+                        }
+                        catch (Exception e)
+                        {
+                            if (content == "getMode")
+                            {
+                                Send(handler, "run");
+                                handler.Shutdown(SocketShutdown.Both);
+                                handler.Close();
+                            }
+                            else if (content == "alert")
+                            {
+
+                            }
+                            else
+                            {
+                                Send(handler, "400");//could not parse JSON
+                                Console.WriteLine(e+" line  165");
+                            }
+                            return;
+                        }
+
                         Send(handler, "200");
                         state.sb.Clear();
                     }
                     //else
                     //{
-                        // Not all data received. Get more.  
-                        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                        new AsyncCallback(ReadCallback), state);
+                    // Not all data received. Get more.  
+                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
                     //}
                 }
             }
@@ -162,14 +188,49 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.ToString());
+                    if (!(e is System.ObjectDisposedException)){
+                        Console.WriteLine(e.ToString()+"   line 195");
+                    }
+                    
                 }
             }
 
+            static void interpretData(dynamic data)
+            {
+                double threshold = 0;
+                try
+                {
+                    if (data.type == "temp")
+                    {
+                        threshold = 80;
+                    }
+                    else if (data.type== "vibration")
+                    {
+                        threshold = 1.65;
+                    }
+                    else
+                    {
+                        Console.WriteLine("datatype not found");
+                        return;
+                    }
+                    foreach(dynamic element in data.data)
+                    {
+                        if (element.val > threshold)
+                        {
+                            Console.WriteLine(element.val);
+                            Console.WriteLine(element.time - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                            //Console.WriteLine();
+                            //Console.WriteLine(typeof(element.time));
+                            //Console.WriteLine( (Int32.Parse(element.time) - DateTime.UtcNow.Millisecond));
+
+                        }
+
+                    }
+                }catch(Exception e)
+                {
+                    Console.WriteLine(e + "line 229");
+                }
+            }
         }
-
-
-
-
     }
 }

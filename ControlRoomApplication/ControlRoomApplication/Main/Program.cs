@@ -17,7 +17,6 @@ namespace ControlRoomApplication.Main
             //Application.Run(new MainForm());
 
             ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
-
             //string localhostIP = PLCConstants.LOCAL_HOST_IP;
             //int localhostPort = PLCConstants.PORT_8080;
             //string mcuIP = MCUConstants.ACTUAL_MCU_IP_ADDRESS;

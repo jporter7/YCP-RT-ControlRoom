@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "onoff": "^4.1.2",
-    "spi-device": "^2.0.8"
+    "spi-device": "^2.0.8",
+    "sqlite3": "^4.0.9"
   }
 }
