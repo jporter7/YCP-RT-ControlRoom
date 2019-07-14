@@ -45,9 +45,9 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 // The DNS name of the computer  
                 // running the listener is "host.contoso.com".  
                 IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-                IPAddress ipAddress = ipHostInfo.AddressList[1];
-                ipAddress= IPAddress.Parse("169.254.28.40");
-                IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+                IPAddress ipAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length-1];
+                //ipAddress= IPAddress.Parse("169.254.28.40");
+                IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 1600);
                 Console.WriteLine("this ip "+ localEndPoint);
                 // Create a TCP/IP socket.  
                 Socket listener = new Socket(ipAddress.AddressFamily,
@@ -128,12 +128,14 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                     {
                         content = content.Substring(0, eof);
                         // All the data has been read from the   
-                        // client. Display it on the console.  
+                        // client. Display it on the console. 
                         try
                         {
                             dynamic respobj = JsonConvert.DeserializeObject(content);
                             //Console.WriteLine(respobj);
                             interpretData(respobj);
+                            Send(handler, "200-"+ respobj.uuid);
+
                         }
                         catch (Exception e)
                         {
@@ -154,8 +156,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                             }
                             return;
                         }
-
-                        Send(handler, "200");
                         state.sb.Clear();
                     }
                     //else

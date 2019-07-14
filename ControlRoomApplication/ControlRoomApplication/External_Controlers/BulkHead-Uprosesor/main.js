@@ -3,46 +3,26 @@ npm install --global --production windows-build-tools
 npm install spi-device
 npm install onoff
 */
+//192.168.1.39
+//192.168.43.86
+//169.254.28.40
+//192.168.7.1
 'use strict';
-const config = {
-    azencoderSPIbus: 1,
-    azencoderSPIdeviceNumber: 0,
-    AdcSPIbus: 1,
-    AdcSPIdeviceNumber: 1,
-    checkTemperatuerEvery: 2000,//ms
-    getpositionEvery: 2000,//ms
-    motorfanOnTemperature: 50,//C
-    //192.168.1.39
-    //192.168.43.86
-    //169.254.28.40
-    //192.168.7.1
-    controlRoom: {
-        IP: "192.168.7.1",
-        TCPport: 11000
-    },
-    // An SPI message is an array of one or more read+write transfers
-    mesage_readCH5: [{
-        sendBuffer: Buffer.from([0x01, 0xd0, 0x00]), // Sent to read channel 5
-        receiveBuffer: Buffer.alloc(3),              // Raw data read from channel 5
-        byteLength: 3,
-        speedHz: 20000 
-    }],
-    azEncoderMessage:[{
-        sendBuffer: Buffer.from([0x01, 0xd0, 0x30, 0x40, 0x35, 0x04]),
-        receiveBuffer: Buffer.alloc(6),
-        byteLength: 6,
-        speedHz: 100000 
-    }]
-}
+
+// An SPI message is an array of one or more read+write transfers
+var mesage_readCH5 = [{
+    sendBuffer: Buffer.from([0x01, 0xd0, 0x00]), // Sent to read channel 5
+    receiveBuffer: Buffer.alloc(3),              // Raw data read from channel 5
+    byteLength: 3,
+    speedHz: 20000
+}];
 
 
+var runMode = "";
 
 const net = require('net');
-//const spi = require('spi-node');
-//*
-
 const spi = require('spi-device');
-
+const config=require('./config.json');
 /*
 var hrTime = process.hrtime();
 let acc = { x: 0, y: 0, z: 0, time: (hrTime[0] * 1000 + hrTime[1] / 1000000), netAcc: 0 }
@@ -52,26 +32,45 @@ date.getSeconds()+(date.getMinutes()*60)+(date.getHours()*60*60)
 console.log(process.hrtime()[0],(Math.floor(new Date().getTime() / 1000)*1000)+(process.hrtime()[1]/1000000))
 (Math.floor(new Date().getTime() / 1000)*1000)+(process.hrtime()[1]/1000000);
 */
-var temperatureInterval, vibrationInterval, vibrationSendInterval, positionInterval;
+var temperatureInterval, vibrationInterval, vibrationSendInterval/*, positionInterval*/;
 function startup() {
     const client = new net.Socket();
     try {
-        client.connect(config.controlRoom.TCPport, config.controlRoom.IP, function () {
+        let conectTimeout = setTimeout(() => { client.destroy();startup(); }, 20000);
+        client.connect(config.controlRoom.TCPportrecive, config.controlRoom.IP, function () {
             client.write("getMode<EOF>");
             //client.destroy();
         });
         client.on('data', function (data) {
             console.log('Received: ' + data);
-
+            runMode = "run";
             run();
             client.destroy(); // kill client after server's response
+            clearTimeout(conectTimeout);
         });
     } catch (err) { console.log(err); client.destroy(); startup(); }
 }
+/*
+var fs = require('fs');
+var out = fs.openSync('./out.log', 'a');
+var err = fs.openSync('./out.log', 'a');
+*/
+var cp = require('child_process');
+var child = cp.spawn('node', ['server.js'],{ detached: true, stdio: [ 'ignore'] });
+child.unref();
 
 startup();
 
+function cleanup() {
+    clearInterval(temperatureInterval);
+    clearInterval(vibrationInterval);
+    clearInterval(vibrationSendInterval);
+    //clearInterval(positionInterval);
 
+    if (runMode == "run") {
+        run();
+    }
+}
 
 
 
@@ -80,11 +79,7 @@ process.on('uncaughtException', (err, origin) => {
     console.log(origin);
     console.log(err.stack)
     console.log("ERR     starting cleanup");
-    //clearInterval(temperatureInterval);
-    //clearInterval(vibrationInterval);
-    //clearInterval(vibrationSendInterval);
-    //clearInterval(positionInterval);
-    //startup();
+    cleanup();
 });
 
 
@@ -115,9 +110,10 @@ class SendBuffer {//in the event that coms are down this will acumulate data to 
     GetNextSend = function () {
         if (!this.CanSend()) { return null; }
         let nextuuid = this.order.shift();
+        //console.log("^^^^^^^^^^^^")
         if (this.stored[nextuuid] == undefined) { delete this.stored[nextuuid]; return null; }
         let tosend = this.stored[nextuuid];
-
+        //console.log("&&&&&&&&&&&&&&&&&&&")
         this.inTransit[nextuuid] = tosend;
         tosend.uuid = nextuuid;
         delete this.stored[nextuuid];
@@ -132,9 +128,9 @@ class SendBuffer {//in the event that coms are down this will acumulate data to 
         return Object.keys(this.inTransit).length == 0
     }
     makeUUid = function () {
-        var date = new Date().getTime();
-        var uuid = 'xxxxxxxxxxxxxxx'.replace(/[x]/g, function (c) {
-            var r = (date + Math.random() * 16) % 16 | 0;
+        let date = new Date().getTime();
+        let uuid = 'xxxxxxxxxxxxxxx'.replace(/[x]/g, function (c) {
+            let r = (date + Math.random() * 16) % 16 | 0;
             date = Math.floor(date / 16);
             return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
@@ -142,38 +138,42 @@ class SendBuffer {//in the event that coms are down this will acumulate data to 
     }
 }
 function run() {
-    var buffer = new SendBuffer();
+    let buffer = new SendBuffer();
     function trysend(data = { type: "", data: [{ val: 0, time: 0 }] }) {
         buffer.addData(data);
         let nextdata = buffer.GetNextSend();
         if (nextdata != null) {
-            //console.log("sending")
+            //console.log("sending"+JSON.stringify(nextdata))
             sendData(nextdata);
-        }else{console.log("norywtvr")}
-
+        } else { console.log("norywtvr "+buffer.CanSend()) }
     }
 
-
     function sendData(data = { type: "", data: [{ val: 0, time: 0 }], uuid: "xxxxxxxxxxxxxxx" }) {
-        const client = new net.Socket();
-        let nexxtuuid=data.uuid;
-        client.connect(config.controlRoom.TCPport, config.controlRoom.IP, function () {
+        let client = new net.Socket();
+        let conectTimeout ;
+        client.connect(config.controlRoom.TCPportrecive, config.controlRoom.IP, function () {
             client.write(JSON.stringify(data) + "<EOF>"); //send first data
+            conectTimeout = setTimeout(function(dat){ client.destroy();sendData(dat); }.bind(data), 20000);//if the socket times out destroy it and resend the data 20 seconds
         });
         client.on('data', function (resp) {
+            clearTimeout(conectTimeout);//remove the timeout on sucessfull responce
             if (resp.indexOf("200") != -1) {
-                console.log("responce " + resp);
-                buffer.ConfirmSend(nexxtuuid);
+                // (?:200-)([0-9a-zA-Z]{15})//alternative regex
+                let uuid=/(?:200-)(.*)/.exec(resp);// find uuid of last packet in responce
+                buffer.ConfirmSend(uuid[1]);
                 let nextdata = buffer.GetNextSend();
                 if (nextdata == null) { client.destroy(); }
-                else {nexxtuuid=nextdata.uuid; client.write(JSON.stringify(nextdata) + "<EOF>"); }
+                else {//there is moar data to send so just reuse this existing conection
+                    client.write(JSON.stringify(nextdata) + "<EOF>"); 
+                    conectTimeout = setTimeout(function(dat){ client.destroy();sendData(dat); }.bind(nextdata), 20000); 
+                }
             }
             else { client.write(JSON.stringify(data) + "<EOF>"); }
         });
     }
 
-    function sendalert(message = "") {
-        const client = new net.Socket();
+    function sendalert(message = "") {//used to send one time string message if necicary
+        let client = new net.Socket();
         client.connect(port, ip, function () {
             client.write(message + "<EOF>");
         });
@@ -184,38 +184,23 @@ function run() {
         });
     }
 
-    const AZencoder = spi.open(config.azencoderSPIbus, config.azencoderSPIdeviceNumber, (err) => {
-        if (err) throw err;
-        AZencoder.transfer(config.mesage_readCH5, (err, message) => {
-            if (err) throw err;
-            // Convert raw value from sensor to celcius and log to console
-            const rawValue = ((message[0].receiveBuffer[1] & 0x03) << 8) + message[0].receiveBuffer[2];
-            const voltage = rawValue * 3.3 / 1023;
-            const celcius = (voltage - 0.5) * 100;
-            console.log(celcius);
-        });
-    });
-
-
-
-
     temperatureInterval = setInterval(checkTemperatuer, config.checkTemperatuerEvery);
     vibrationInterval = setInterval(recordVibration, 1);
     vibrationSendInterval = setInterval(sendVipration, 1000);
-    positionInterval = setInterval(getposition, config.getpositionEvery);
+    //positionInterval = setInterval(getposition, config.getpositionEvery);
 
     function checkTemperatuer() {
-        const ADconverter = spi.open(config.AdcSPIbus, config.AdcSPIdeviceNumber, (err) => {
-            if (err) {console.log(err); return;}
-            ADconverter.transfer(config.mesage_readCH5, (err, message) => {
-                if (err) {console.log(err); throw err;}
+        let ADconverter = spi.open(config.AdcSPIbus, config.AdcSPIdeviceNumber, (err) => {
+            if (err) { console.log(err); return; }
+            ADconverter.transfer(mesage_readCH5, (err, message) => {
+                if (err) { console.log(err); throw err; }
                 let rawValue = ((message[0].receiveBuffer[1] & 0x03) << 8) + message[0].receiveBuffer[2];
                 let voltage = rawValue * 3.3 / 1023;
                 let celcius = (voltage - 0.5) * 100;
                 if (celcius > config.motorfanOnTemperature) {
                     setfanrunning(true)
                 } else if (celcius < config.motorfanOnTemperature - 3) { setfanrunning(false) }//hysteris for fan
-                var now = new Date().getTime();
+                let now = new Date().getTime();
                 trysend({ type: "temp", data: [{ val: celcius, time: now }] });
             });
         });
@@ -247,35 +232,6 @@ function run() {
     function sendVipration() {
         trysend({ type: "vibration", data: vibrationBuffer });
         vibrationBuffer = [];
-    }
-
-    function getposition() { }
-
-    /**
-     * get the azumith position via the spi bus for the encoder
-     */
-    function getAZposition() {
-
-    }
-
-    /**
-     * get elevation position via the adc on the spi bus 
-     * the elevation encoder has an analog voltage ranging from .5 to 4.5 volts
-     */
-    function getELposition() {
-
-
-    }
-
-
-
-    /**
-     * remove all entries in table from befor the specified time
-     * @param {*} table 
-     * @param {*} time 
-     */
-    function cleandatabase(table, time) {
-
     }
 }
 

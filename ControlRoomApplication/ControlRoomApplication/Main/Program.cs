@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 //using System.Threading;
 using System.Windows.Forms;
 //using ControlRoomApplication.Constants;
@@ -16,7 +18,32 @@ namespace ControlRoomApplication.Main
         {
             //Application.Run(new MainForm());
 
+
+
+
+
+            //*
+            new Thread(new ThreadStart(() => {
+                while (true)
+                {
+                    Console.WriteLine("---------------------------------");
+                    ControlRoomApplication.Entities.Orientation one = ControlRoomApplication.Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation();
+                    if (one != null)
+                    {
+                        Console.WriteLine(one.Azimuth + " " + one.Elevation);
+                    }
+                    Thread.Sleep(1000);
+                }
+            })).Start();//*/
             ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
+
+
+
+
+
+
+
+
             //string localhostIP = PLCConstants.LOCAL_HOST_IP;
             //int localhostPort = PLCConstants.PORT_8080;
             //string mcuIP = MCUConstants.ACTUAL_MCU_IP_ADDRESS;
