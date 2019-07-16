@@ -300,6 +300,27 @@ namespace ControlRoomApplication.Main
             }
         }
 
+        public void BuildTempSensor()
+        {
+            switch (comboBox4.SelectedIndex)
+            {
+                case 0:
+                    logger.Error("The production temperature sensor is not yet supported");
+                    throw new NotImplementedException("The production temperature sensor is not yet supported");
+
+                case 2:
+                    logger.Error("The test temperature sensor is not yet supported.");
+                    throw new NotImplementedException("The test temperature sensor is not yet supported.");
+
+                case 1:
+                default:
+                    logger.Info("Building FakeTempSensor");
+                    break;
+
+            }
+        }
+
+
         /// <summary>
         /// Generates a free control form that allows free control access to a radio telescope
         /// instance through the generated form.
@@ -330,6 +351,24 @@ namespace ControlRoomApplication.Main
                 Name = "Manual Control Thread"
             };
             ManualControlThread.Start();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGoToDiagnosticsForm_Click(object sender, EventArgs e)
+        {
+            logger.Info("Diagnostics Form Button Clicked");
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm();
+            diagnosticsWindows.Show();
+            // Create free control thread
+           // Thread DiagnosticsFormThread = new Thread(() => diagnosticsWindows.ShowDialog())
+           // {
+           //     Name = "Diagnostics Form Thread"
+           // };
+          //  DiagnosticsFormThread.Start();
         }
     }
 }

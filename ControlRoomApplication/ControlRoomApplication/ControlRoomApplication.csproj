@@ -187,6 +187,8 @@
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.Designer.cs">
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
     </Compile>
+    <Compile Include="Simulators\Hardware\FakeTempSensor.cs" />
+    <Compile Include="Simulators\Hardware\LimitSwitches\SimulateLimitSwitches.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
     <Compile Include="Simulators\Hardware\AbsoluteEncoder\SimulationAbsoluteEncoder.cs" />

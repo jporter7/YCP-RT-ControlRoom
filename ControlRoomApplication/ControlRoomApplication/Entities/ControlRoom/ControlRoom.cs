@@ -8,6 +8,7 @@ namespace ControlRoomApplication.Entities
         public List<RadioTelescopeControllerManagementThread> RTControllerManagementThreads { get; }
         public AbstractWeatherStation WeatherStation { get; }
 
+
         public List<RadioTelescopeController> RadioTelescopeControllers
         {
             get
