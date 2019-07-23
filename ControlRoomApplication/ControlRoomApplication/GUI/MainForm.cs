@@ -134,12 +134,12 @@ namespace ControlRoomApplication.Main
                 AddConfigurationToDataGrid();
 
 
-
+                /*
                 Console.WriteLine("at microtherad start");
                 MicroctrlServerThread = new Thread(new ThreadStart(ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp));
                 MicroctrlServerThread.Start();
                 //ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
-
+                */
 
 
             }
