@@ -24,6 +24,12 @@ namespace ControlRoomApplication.Main
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        enum TempSensorType
+        {
+            Production,
+            Simulation
+        }
+
         /// <summary>
         /// Constructor for the main GUI form. Initializes the GUI form by calling the
         /// initialization method in another partial class. Initializes the datagridview
@@ -300,6 +306,30 @@ namespace ControlRoomApplication.Main
             }
         }
 
+
+        /// <summary>
+        /// Determine if the Temp sensor is going to be real or simulated
+        /// </summary>
+        /// <returns> True when simulated, false when real </returns>
+        public bool IsTempSensorSimulated()
+        {
+            bool isSimulated = false;
+
+            logger.Info("Selected Temperature Sensor type: " + comboTempSensorType.Text);
+
+            if (comboTempSensorType.SelectedIndex == (int)TempSensorType.Production)               
+            {
+                isSimulated = false;
+            }
+            else
+            {
+                isSimulated = true;
+            }
+
+            return isSimulated;
+        }
+
+
         /// <summary>
         /// Generates a free control form that allows free control access to a radio telescope
         /// instance through the generated form.
@@ -331,5 +361,25 @@ namespace ControlRoomApplication.Main
             };
             ManualControlThread.Start();
         }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnGoToDiagnosticsForm_Click(object sender, EventArgs e)
+        {
+            logger.Info("Diagnostics Form Button Clicked");
+
+            bool isTempSensorSimulated = IsTempSensorSimulated();
+            
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(isTempSensorSimulated);
+            
+            diagnosticsWindows.Show();
+            
+        }
+
+
+
     }
 }

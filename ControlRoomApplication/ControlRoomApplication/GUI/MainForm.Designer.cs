@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button2 = new System.Windows.Forms.Button();
@@ -41,6 +41,9 @@
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.ManualControl = new System.Windows.Forms.Button();
             this.FreeControl = new System.Windows.Forms.Button();
+            this.btnGoToDiagnosticsForm = new System.Windows.Forms.Button();
+            this.comboTempSensorType = new System.Windows.Forms.ComboBox();
+            this.comboEncoderType = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -64,23 +67,23 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(9, 10);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -219,11 +222,55 @@
             this.FreeControl.UseVisualStyleBackColor = false;
             this.FreeControl.Click += new System.EventHandler(this.FreeControl_Click);
             // 
+            // btnGoToDiagnosticsForm
+            // 
+            this.btnGoToDiagnosticsForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnGoToDiagnosticsForm.Location = new System.Drawing.Point(500, 32);
+            this.btnGoToDiagnosticsForm.Name = "btnGoToDiagnosticsForm";
+            this.btnGoToDiagnosticsForm.Size = new System.Drawing.Size(185, 72);
+            this.btnGoToDiagnosticsForm.TabIndex = 10;
+            this.btnGoToDiagnosticsForm.Text = "Diagnostics Form";
+            this.btnGoToDiagnosticsForm.UseVisualStyleBackColor = true;
+            this.btnGoToDiagnosticsForm.Click += new System.EventHandler(this.btnGoToDiagnosticsForm_Click);
+            // 
+            // comboTempSensorType
+            // 
+            this.comboTempSensorType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.comboTempSensorType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboTempSensorType.FormattingEnabled = true;
+            this.comboTempSensorType.Items.AddRange(new object[] {
+            "Production Temp Sensor",
+            "Simulated Temp Sensor",
+            "Test Temp Sensor"});
+            this.comboTempSensorType.Location = new System.Drawing.Point(278, 526);
+            this.comboTempSensorType.Name = "comboTempSensorType";
+            this.comboTempSensorType.Size = new System.Drawing.Size(237, 32);
+            this.comboTempSensorType.TabIndex = 11;
+            this.comboTempSensorType.Text = "Temp Sensor Type";
+            // 
+            // comboEncoderType
+            // 
+            this.comboEncoderType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.comboEncoderType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboEncoderType.FormattingEnabled = true;
+            this.comboEncoderType.Items.AddRange(new object[] {
+            "Production Absolute Encoder",
+            "Simulated Absolute Encoder",
+            "Test Absolute Encoder"});
+            this.comboEncoderType.Location = new System.Drawing.Point(278, 479);
+            this.comboEncoderType.Name = "comboEncoderType";
+            this.comboEncoderType.Size = new System.Drawing.Size(237, 32);
+            this.comboEncoderType.TabIndex = 12;
+            this.comboEncoderType.Text = "Absolute Encoder Type";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1112, 607);
+            this.Controls.Add(this.comboEncoderType);
+            this.Controls.Add(this.comboTempSensorType);
+            this.Controls.Add(this.btnGoToDiagnosticsForm);
             this.Controls.Add(this.FreeControl);
             this.Controls.Add(this.ManualControl);
             this.Controls.Add(this.comboBox3);
@@ -239,6 +286,7 @@
             this.MinimumSize = new System.Drawing.Size(922, 367);
             this.Name = "MainForm";
             this.Text = "MainForm";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -258,5 +306,8 @@
         private System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Button ManualControl;
         private System.Windows.Forms.Button FreeControl;
+        private System.Windows.Forms.Button btnGoToDiagnosticsForm;
+        private System.Windows.Forms.ComboBox comboTempSensorType;
+        private System.Windows.Forms.ComboBox comboEncoderType;
     }
 }
