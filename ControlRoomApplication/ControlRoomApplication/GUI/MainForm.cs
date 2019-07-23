@@ -24,6 +24,12 @@ namespace ControlRoomApplication.Main
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        enum TempSensorType
+        {
+            Production,
+            Simulation
+        }
+
         /// <summary>
         /// Constructor for the main GUI form. Initializes the GUI form by calling the
         /// initialization method in another partial class. Initializes the datagridview
@@ -300,24 +306,27 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        public void BuildTempSensor()
+
+        /// <summary>
+        /// Determine if the Temp sensor is going to be real or simulated
+        /// </summary>
+        /// <returns> True when simulated, false when real </returns>
+        public bool IsTempSensorSimulated()
         {
-            switch (comboBox4.SelectedIndex)
+            bool isSimulated = false;
+
+            logger.Info("Selected Temperature Sensor type: " + comboTempSensorType.Text);
+
+            if (comboTempSensorType.SelectedIndex == (int)TempSensorType.Production)               
             {
-                case 0:
-                    logger.Error("The production temperature sensor is not yet supported");
-                    throw new NotImplementedException("The production temperature sensor is not yet supported");
-
-                case 2:
-                    logger.Error("The test temperature sensor is not yet supported.");
-                    throw new NotImplementedException("The test temperature sensor is not yet supported.");
-
-                case 1:
-                default:
-                    logger.Info("Building FakeTempSensor");
-                    break;
-
+                isSimulated = false;
             }
+            else
+            {
+                isSimulated = true;
+            }
+
+            return isSimulated;
         }
 
 
@@ -361,14 +370,16 @@ namespace ControlRoomApplication.Main
         private void btnGoToDiagnosticsForm_Click(object sender, EventArgs e)
         {
             logger.Info("Diagnostics Form Button Clicked");
-            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm();
+
+            bool isTempSensorSimulated = IsTempSensorSimulated();
+            
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(isTempSensorSimulated);
+            
             diagnosticsWindows.Show();
-            // Create free control thread
-           // Thread DiagnosticsFormThread = new Thread(() => diagnosticsWindows.ShowDialog())
-           // {
-           //     Name = "Diagnostics Form Thread"
-           // };
-          //  DiagnosticsFormThread.Start();
+            
         }
+
+
+
     }
 }

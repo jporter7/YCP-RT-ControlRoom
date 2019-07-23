@@ -42,8 +42,8 @@
             this.ManualControl = new System.Windows.Forms.Button();
             this.FreeControl = new System.Windows.Forms.Button();
             this.btnGoToDiagnosticsForm = new System.Windows.Forms.Button();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
-            this.comboBox5 = new System.Windows.Forms.ComboBox();
+            this.comboTempSensorType = new System.Windows.Forms.ComboBox();
+            this.comboEncoderType = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -233,43 +233,43 @@
             this.btnGoToDiagnosticsForm.UseVisualStyleBackColor = true;
             this.btnGoToDiagnosticsForm.Click += new System.EventHandler(this.btnGoToDiagnosticsForm_Click);
             // 
-            // comboBox4
+            // comboTempSensorType
             // 
-            this.comboBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.comboBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Items.AddRange(new object[] {
+            this.comboTempSensorType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.comboTempSensorType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboTempSensorType.FormattingEnabled = true;
+            this.comboTempSensorType.Items.AddRange(new object[] {
             "Production Temp Sensor",
             "Simulated Temp Sensor",
             "Test Temp Sensor"});
-            this.comboBox4.Location = new System.Drawing.Point(278, 526);
-            this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(237, 32);
-            this.comboBox4.TabIndex = 11;
-            this.comboBox4.Text = "Temp Sensor Type";
+            this.comboTempSensorType.Location = new System.Drawing.Point(278, 526);
+            this.comboTempSensorType.Name = "comboTempSensorType";
+            this.comboTempSensorType.Size = new System.Drawing.Size(237, 32);
+            this.comboTempSensorType.TabIndex = 11;
+            this.comboTempSensorType.Text = "Temp Sensor Type";
             // 
-            // comboBox5
+            // comboEncoderType
             // 
-            this.comboBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.comboBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Items.AddRange(new object[] {
+            this.comboEncoderType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.comboEncoderType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboEncoderType.FormattingEnabled = true;
+            this.comboEncoderType.Items.AddRange(new object[] {
             "Production Absolute Encoder",
             "Simulated Absolute Encoder",
             "Test Absolute Encoder"});
-            this.comboBox5.Location = new System.Drawing.Point(278, 479);
-            this.comboBox5.Name = "comboBox5";
-            this.comboBox5.Size = new System.Drawing.Size(237, 32);
-            this.comboBox5.TabIndex = 12;
-            this.comboBox5.Text = "Absolute Encoder Type";
+            this.comboEncoderType.Location = new System.Drawing.Point(278, 479);
+            this.comboEncoderType.Name = "comboEncoderType";
+            this.comboEncoderType.Size = new System.Drawing.Size(237, 32);
+            this.comboEncoderType.TabIndex = 12;
+            this.comboEncoderType.Text = "Absolute Encoder Type";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1112, 607);
-            this.Controls.Add(this.comboBox5);
-            this.Controls.Add(this.comboBox4);
+            this.Controls.Add(this.comboEncoderType);
+            this.Controls.Add(this.comboTempSensorType);
             this.Controls.Add(this.btnGoToDiagnosticsForm);
             this.Controls.Add(this.FreeControl);
             this.Controls.Add(this.ManualControl);
@@ -307,7 +307,7 @@
         private System.Windows.Forms.Button ManualControl;
         private System.Windows.Forms.Button FreeControl;
         private System.Windows.Forms.Button btnGoToDiagnosticsForm;
-        private System.Windows.Forms.ComboBox comboBox4;
-        private System.Windows.Forms.ComboBox comboBox5;
+        private System.Windows.Forms.ComboBox comboTempSensorType;
+        private System.Windows.Forms.ComboBox comboEncoderType;
     }
 }
