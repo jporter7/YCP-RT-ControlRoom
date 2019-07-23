@@ -1,0 +1,14 @@
+{
+    "azencoderSPIbus": 1,
+    "azencoderSPIdeviceNumber": 0,
+    "AdcSPIbus": 1,
+    "AdcSPIdeviceNumber": 1,
+    "checkTemperatuerEvery": 2000,
+    "getpositionEvery": 2000,
+    "motorfanOnTemperature": 50,
+    "controlRoom": {
+        "IP": "192.168.7.1",
+        "TCPportrecive": 1600,
+        "TCPportsend":1602
+    }
+}
