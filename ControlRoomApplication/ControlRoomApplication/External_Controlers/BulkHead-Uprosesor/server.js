@@ -5,13 +5,8 @@
 'use strict';
 const Net = require('net');
 const spi = require('spi-device');
-const config=require('./config.json');
-let azEncoderMessage = [{
-    sendBuffer: Buffer.from([0x01, 0xd0, 0x30, 0x40, 0x35, 0x04]),
-    receiveBuffer: Buffer.alloc(6),
-    byteLength: 6,
-    speedHz: 100000
-}];
+const config = require('./config.json');
+
 
 //alternative eventlistner that can be passed as a callback for createServer
 /*function (c) { //'connection' e listener //console.log('server connected');c.on('end', function () {//console.log('server disconnected');});}//*/
@@ -25,19 +20,18 @@ server.on('connection', function (socket) {
     //xxxxxxxxxxxxxxx:{type: "", data: [{ val: 0, time: 0 }]} 
     let uuid = makeUUid();
     let encodertimeout = setTimeout(() => { socket.write("null"); }, 5000);
-    let az, el, total = 2, recived = 0;
-    getAZposition().then(val => { az = val; recived++; both(); });
-    getELposition().then(val => { el = val; recived++; both(); });
-
-    var msg = {};
-    function both() {
-        if (recived == total) {
-            console.log(az,el)
-            msg = {uuid:uuid, type: "position", AZ: az, EL: el };
-            socket.write(JSON.stringify(msg));
+    Promise.all([getAZposition(), getELposition()])
+        .then(function (values) {//wait for all the promises to resolve
             clearTimeout(encodertimeout);
-        }
-    }
+            console.log(values)
+            let msg = { uuid: uuid, type: "position", AZ: values[0], EL: values[1] };
+            socket.write(JSON.stringify(msg));
+        }).catch((reason) => {
+            console.log("promise rejected: " + reason)
+            clearTimeout(encodertimeout);
+            socket.write(JSON.stringify({error:reason}));
+        });
+
     /*
     socket.on('data', function (chunk) {console.log(`Data received from client: ${chunk.toString()}`);});
     socket.on('end', function () {console.log('Closing connection with the client');});
@@ -48,16 +42,36 @@ server.on('connection', function (socket) {
 
 });
 
+var azEncoderMessage = [{
+    sendBuffer: Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
+    receiveBuffer: Buffer.alloc(6),
+    byteLength: 6,
+    speedHz: 200000,
+    microSecondDelay: 0xf
+
+}];
+
 function getAZposition() {
     return new Promise((resolve, reject) => {
-        let AZencoder = spi.open(config.azencoderSPIbus, config.azencoderSPIdeviceNumber, (err) => {
+        let AZencoder = spi.open(config.azencoderSPIbus, config.azencoderSPIdeviceNumber, [{ threeWire: true, noChipSelect: true, }], (err) => {
             if (err) reject(err);
             AZencoder.transfer(azEncoderMessage, (err, message) => {
                 if (err) reject(err);
-                // Convert raw value from sensor to celcius and log to console
-                let rawValue = ((message[0].receiveBuffer & (0x1FFFFF << 8)) >> 8);//21 bit mask over the position value
-                //console.log(rawValue);
-                resolve(rawValue);
+                var read = message[0].receiveBuffer;
+                var datagood = (read[2] >> 7);
+                if (datagood == 0) {
+                    reject("bad_data")
+                    console.log("data bad");
+                    return;
+                }
+                var chcksum = read[5] & 0x7f;
+                var val = (read[3] << 8) + read[4];
+                var vallow = (read[3] << 16) + (read[4] << 8) + read[5];
+                console.log((message[0].receiveBuffer), " checksum: " + chcksum);
+                console.log(vallow.toString(2))
+                console.log(val, val.toString(2));
+                resolve(val);
+                AZencoder.close(nothing);
             });
         });
     });

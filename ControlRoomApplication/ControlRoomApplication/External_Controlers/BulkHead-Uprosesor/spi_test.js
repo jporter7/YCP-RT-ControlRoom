@@ -2,17 +2,26 @@
 const Net = require('net');
 const spi = require('spi-device');
 const config = require('./config.json');
-let azEncoderMessage = [{
-    sendBuffer: Buffer.from([0x00, 0x00, 0x00, 0x00, 0x00, 0x00]),
-    receiveBuffer: Buffer.alloc(6),
-    byteLength: 6,
-    speedHz: 200000,
-    microSecondDelay: 0xafff
-
-}];
+const Gpio = require('onoff').Gpio;
 
 
-setInterval(loop, 1000)
+var SPIdevice = spi.openSync(2, 1, [{/////////this throws an error if spi buss is not properly configured
+    mode: 0,
+    chipSelectHigh: false,
+    lsbFirst: false,
+    threeWire: true,
+    loopback: false,
+    noChipSelect: true,
+    bitsPerWord: 8,
+}]);
+
+//10000010
+configure();
+function configure() {
+
+    setInterval(loop, 1000)
+}
+
 
 function loop() {
     /*
@@ -23,42 +32,77 @@ function loop() {
         }).catch((reason) => {
             console.log("promise rejected: " + reason)
         });
-//*/
+//*/            //chipselest only works for device 0
+    //0x10, 0x01     , 
+    /*    spi_transfer(Buffer.from([0x11,0x01]), 105, 200000, SPIdevice).then(ret=>{
+             //SPIdevice.close(nothing);
+           
+            var datagood = (ret[2] >> 7);
+            if (datagood == 0) {
+                //console.log("data bad");
+                //return;
+            }
+            var chcksum = ret[5] & 0x7f;
+            console.log((ret), " checksum: " + chcksum);
+            var val = (ret[3] << 8) + ret[4];
+            //(read[1]<<32)+(read[2]<<24)+
+            var vallow = (ret[3] << 16) + (ret[4] << 8) + ret[5];
+        
+            //console.log(vallow.toString(2))
+            console.log(val, val.toString(2));
+        }).catch(reason=>{
+            console.log(reason)
+        });//*/
+    spi_transfer(Buffer.from([0x10, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), 105, 200000, SPIdevice).then(ret => {
+        //SPIdevice.close(nothing);
 
-let AZencoder = spi.openSync(2,1,[{
-    mode: 0,
-    chipSelectHigh: false,
-    lsbFirst: false,
-    threeWire: true,
-    loopback: false,
-    noChipSelect: true,
-    bitsPerWord: 8,
-  }]);
-//console.log(AZencoder.getOptionsSync());
-AZencoder.transfer(azEncoderMessage, (err, message) => {
-    if (err) throw(err);
-    //console.log(AZencoder.getOptionsSync());
-    // Convert raw value from sensor to celcius and log to console
-    //let rawValue = ((message[0].receiveBuffer & (0x1FFFFF << 8)) >> 8);//21 bit mask over the position value
-    var read=message[0].receiveBuffer;
-    var datagood=(read[2]>>7);
-    if (datagood==0){
-        console.log("data bad");
-        return
-    }
-    var chcksum=read[5]&0x7f;
-    console.log((message[0].receiveBuffer) ," checksum: "+chcksum);
-    var val=(read[3]<<8)+read[4];
-    //(read[1]<<32)+(read[2]<<24)+
-    var vallow=(read[3]<<16)+(read[4]<<8)+read[5];
-    
+        var datagood = (ret[2] >> 7);
+        if (datagood == 0) {
+            //console.log("data bad");
+            //return;
+        }
+        var chcksum = ret[5] & 0x7f;
+        console.log((ret), " checksum: " + chcksum);
+        var val = (ret[3] << 8) + ret[4];
+        //(read[1]<<32)+(read[2]<<24)+
+        var vallow = (ret[3] << 16) + (ret[4] << 8) + ret[5];
 
-    console.log(vallow.toString(2))
-    console.log(val,val.toString(2),);
-    AZencoder.close(nothing);
-});
+        //console.log(vallow.toString(2))
+        console.log(val, val.toString(2));
+    }).catch(reason => {
+        console.log(reason)
+    });
+
 }
 
+
+
+
+
+
+
+function spi_transfer(message, devicePinNumber, speed, SPIdevice) {
+    return new Promise((resolve, reject) => {
+        let spimessage = [{
+            sendBuffer: message,
+            receiveBuffer: Buffer.alloc(Buffer.byteLength(message)),
+            byteLength: Buffer.byteLength(message),
+            speedHz: speed,
+            microSecondDelay: 50
+
+        }];
+        SPIdevice.transfer(spimessage, (err, message) => {
+            if (err) reject(err);
+            //console.log(AZencoder.getOptionsSync());
+            // Convert raw value from sensor to celcius and log to console
+            //let rawValue = ((message[0].receiveBuffer & (0x1FFFFF << 8)) >> 8);//21 bit mask over the position value
+            var read = message[0].receiveBuffer;
+            resolve(read);
+        });
+    });
+
+
+}
 /**
  * 
 {

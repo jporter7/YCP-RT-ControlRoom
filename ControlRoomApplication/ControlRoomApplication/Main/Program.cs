@@ -16,13 +16,13 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            //Application.Run(new MainForm());
+            Application.Run(new MainForm());
 
 
 
 
 
-            //*
+            /*
             new Thread(new ThreadStart(() => {
                 while (true)
                 {
@@ -34,9 +34,9 @@ namespace ControlRoomApplication.Main
                     }
                     Thread.Sleep(1000);
                 }
-            })).Start();//*/
+            })).Start();
             ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
-
+//*/
 
 
 
