@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -58,9 +58,9 @@
             this.btnAddXTemp = new System.Windows.Forms.Button();
             this.lblShutdown = new System.Windows.Forms.Label();
             this.selectDemo = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.btnSubtractOneTemp = new System.Windows.Forms.Button();
+            this.btnSubtractFiveTemp = new System.Windows.Forms.Button();
+            this.btnSubtractXTemp = new System.Windows.Forms.Button();
             this.txtCustTemp = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -87,14 +87,14 @@
             this.lblDisplayDegreesEncoders = new System.Windows.Forms.Label();
             this.lblEncoderTicks = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
+            this.btnAddOneEncoder = new System.Windows.Forms.Button();
+            this.btnAddFiveEncoder = new System.Windows.Forms.Button();
+            this.btnAddXEncoder = new System.Windows.Forms.Button();
+            this.btnSubtractOneEncoder = new System.Windows.Forms.Button();
+            this.btnSubtractFiveEncoder = new System.Windows.Forms.Button();
+            this.btnSubtractXEncoder = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtCustEncoderVal = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -105,14 +105,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(9, 10);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -393,35 +393,35 @@
             this.selectDemo.Text = "Run Demo";
             this.selectDemo.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // btnSubtractOneTemp
             // 
-            this.button1.Location = new System.Drawing.Point(521, 158);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(35, 35);
-            this.button1.TabIndex = 30;
-            this.button1.Text = "-1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnSubtractOneTemp.Location = new System.Drawing.Point(521, 158);
+            this.btnSubtractOneTemp.Name = "btnSubtractOneTemp";
+            this.btnSubtractOneTemp.Size = new System.Drawing.Size(35, 35);
+            this.btnSubtractOneTemp.TabIndex = 30;
+            this.btnSubtractOneTemp.Text = "-1";
+            this.btnSubtractOneTemp.UseVisualStyleBackColor = true;
+            this.btnSubtractOneTemp.Click += new System.EventHandler(this.button1_Click);
             // 
-            // button2
+            // btnSubtractFiveTemp
             // 
-            this.button2.Location = new System.Drawing.Point(574, 158);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(35, 35);
-            this.button2.TabIndex = 31;
-            this.button2.Text = "-5";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnSubtractFiveTemp.Location = new System.Drawing.Point(574, 158);
+            this.btnSubtractFiveTemp.Name = "btnSubtractFiveTemp";
+            this.btnSubtractFiveTemp.Size = new System.Drawing.Size(35, 35);
+            this.btnSubtractFiveTemp.TabIndex = 31;
+            this.btnSubtractFiveTemp.Text = "-5";
+            this.btnSubtractFiveTemp.UseVisualStyleBackColor = true;
+            this.btnSubtractFiveTemp.Click += new System.EventHandler(this.button2_Click);
             // 
-            // button3
+            // btnSubtractXTemp
             // 
-            this.button3.Location = new System.Drawing.Point(622, 158);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(35, 35);
-            this.button3.TabIndex = 32;
-            this.button3.Text = "-X";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.btnSubtractXTemp.Location = new System.Drawing.Point(622, 158);
+            this.btnSubtractXTemp.Name = "btnSubtractXTemp";
+            this.btnSubtractXTemp.Size = new System.Drawing.Size(35, 35);
+            this.btnSubtractXTemp.TabIndex = 32;
+            this.btnSubtractXTemp.Text = "-X";
+            this.btnSubtractXTemp.UseVisualStyleBackColor = true;
+            this.btnSubtractXTemp.Click += new System.EventHandler(this.button3_Click);
             // 
             // txtCustTemp
             // 
@@ -692,60 +692,65 @@
             this.label13.TabIndex = 40;
             this.label13.Text = "0";
             // 
-            // button4
+            // btnAddOneEncoder
             // 
-            this.button4.Location = new System.Drawing.Point(10, 437);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(35, 35);
-            this.button4.TabIndex = 41;
-            this.button4.Text = "+1";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.btnAddOneEncoder.Location = new System.Drawing.Point(10, 437);
+            this.btnAddOneEncoder.Name = "btnAddOneEncoder";
+            this.btnAddOneEncoder.Size = new System.Drawing.Size(35, 35);
+            this.btnAddOneEncoder.TabIndex = 41;
+            this.btnAddOneEncoder.Text = "+1";
+            this.btnAddOneEncoder.UseVisualStyleBackColor = true;
+            this.btnAddOneEncoder.Click += new System.EventHandler(this.button4_Click);
             // 
-            // button5
+            // btnAddFiveEncoder
             // 
-            this.button5.Location = new System.Drawing.Point(54, 437);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(35, 35);
-            this.button5.TabIndex = 42;
-            this.button5.Text = "+5";
-            this.button5.UseVisualStyleBackColor = true;
+            this.btnAddFiveEncoder.Location = new System.Drawing.Point(54, 437);
+            this.btnAddFiveEncoder.Name = "btnAddFiveEncoder";
+            this.btnAddFiveEncoder.Size = new System.Drawing.Size(35, 35);
+            this.btnAddFiveEncoder.TabIndex = 42;
+            this.btnAddFiveEncoder.Text = "+5";
+            this.btnAddFiveEncoder.UseVisualStyleBackColor = true;
+            this.btnAddFiveEncoder.Click += new System.EventHandler(this.button5_Click);
             // 
-            // button6
+            // btnAddXEncoder
             // 
-            this.button6.Location = new System.Drawing.Point(96, 437);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(35, 35);
-            this.button6.TabIndex = 43;
-            this.button6.Text = "+X";
-            this.button6.UseVisualStyleBackColor = true;
+            this.btnAddXEncoder.Location = new System.Drawing.Point(96, 437);
+            this.btnAddXEncoder.Name = "btnAddXEncoder";
+            this.btnAddXEncoder.Size = new System.Drawing.Size(35, 35);
+            this.btnAddXEncoder.TabIndex = 43;
+            this.btnAddXEncoder.Text = "+X";
+            this.btnAddXEncoder.UseVisualStyleBackColor = true;
+            this.btnAddXEncoder.Click += new System.EventHandler(this.btnAddXEncoder_Click);
             // 
-            // button7
+            // btnSubtractOneEncoder
             // 
-            this.button7.Location = new System.Drawing.Point(9, 478);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(35, 35);
-            this.button7.TabIndex = 44;
-            this.button7.Text = "-1";
-            this.button7.UseVisualStyleBackColor = true;
+            this.btnSubtractOneEncoder.Location = new System.Drawing.Point(9, 478);
+            this.btnSubtractOneEncoder.Name = "btnSubtractOneEncoder";
+            this.btnSubtractOneEncoder.Size = new System.Drawing.Size(35, 35);
+            this.btnSubtractOneEncoder.TabIndex = 44;
+            this.btnSubtractOneEncoder.Text = "-1";
+            this.btnSubtractOneEncoder.UseVisualStyleBackColor = true;
+            this.btnSubtractOneEncoder.Click += new System.EventHandler(this.btnSubtractOneEncoder_Click);
             // 
-            // button8
+            // btnSubtractFiveEncoder
             // 
-            this.button8.Location = new System.Drawing.Point(54, 478);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(35, 35);
-            this.button8.TabIndex = 45;
-            this.button8.Text = "-5";
-            this.button8.UseVisualStyleBackColor = true;
+            this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(54, 478);
+            this.btnSubtractFiveEncoder.Name = "btnSubtractFiveEncoder";
+            this.btnSubtractFiveEncoder.Size = new System.Drawing.Size(35, 35);
+            this.btnSubtractFiveEncoder.TabIndex = 45;
+            this.btnSubtractFiveEncoder.Text = "-5";
+            this.btnSubtractFiveEncoder.UseVisualStyleBackColor = true;
+            this.btnSubtractFiveEncoder.Click += new System.EventHandler(this.btnSubtractFiveEncoder_Click);
             // 
-            // button9
+            // btnSubtractXEncoder
             // 
-            this.button9.Location = new System.Drawing.Point(95, 478);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(35, 35);
-            this.button9.TabIndex = 46;
-            this.button9.Text = "-X";
-            this.button9.UseVisualStyleBackColor = true;
+            this.btnSubtractXEncoder.Location = new System.Drawing.Point(95, 478);
+            this.btnSubtractXEncoder.Name = "btnSubtractXEncoder";
+            this.btnSubtractXEncoder.Size = new System.Drawing.Size(35, 35);
+            this.btnSubtractXEncoder.TabIndex = 46;
+            this.btnSubtractXEncoder.Text = "-X";
+            this.btnSubtractXEncoder.UseVisualStyleBackColor = true;
+            this.btnSubtractXEncoder.Click += new System.EventHandler(this.btnSubtractXEncoder_Click);
             // 
             // label9
             // 
@@ -756,26 +761,26 @@
             this.label9.TabIndex = 47;
             this.label9.Text = "Custom Value";
             // 
-            // textBox1
+            // txtCustEncoderVal
             // 
-            this.textBox1.Location = new System.Drawing.Point(140, 478);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(51, 20);
-            this.textBox1.TabIndex = 48;
+            this.txtCustEncoderVal.Location = new System.Drawing.Point(140, 478);
+            this.txtCustEncoderVal.Name = "txtCustEncoderVal";
+            this.txtCustEncoderVal.Size = new System.Drawing.Size(51, 20);
+            this.txtCustEncoderVal.TabIndex = 48;
             // 
             // DiagnosticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(905, 608);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtCustEncoderVal);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.button9);
-            this.Controls.Add(this.button8);
-            this.Controls.Add(this.button7);
-            this.Controls.Add(this.button6);
-            this.Controls.Add(this.button5);
-            this.Controls.Add(this.button4);
+            this.Controls.Add(this.btnSubtractXEncoder);
+            this.Controls.Add(this.btnSubtractFiveEncoder);
+            this.Controls.Add(this.btnSubtractOneEncoder);
+            this.Controls.Add(this.btnAddXEncoder);
+            this.Controls.Add(this.btnAddFiveEncoder);
+            this.Controls.Add(this.btnAddOneEncoder);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.lblEncoderTicks);
             this.Controls.Add(this.lblDisplayDegreesEncoders);
@@ -784,9 +789,9 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.txtCustTemp);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnSubtractXTemp);
+            this.Controls.Add(this.btnSubtractFiveTemp);
+            this.Controls.Add(this.btnSubtractOneTemp);
             this.Controls.Add(this.selectDemo);
             this.Controls.Add(this.lblShutdown);
             this.Controls.Add(this.btnAddXTemp);
@@ -857,9 +862,9 @@
         private System.Windows.Forms.Button btnAddXTemp;
         private System.Windows.Forms.Label lblShutdown;
         private System.Windows.Forms.CheckBox selectDemo;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button btnSubtractOneTemp;
+        private System.Windows.Forms.Button btnSubtractFiveTemp;
+        private System.Windows.Forms.Button btnSubtractXTemp;
         private System.Windows.Forms.TextBox txtCustTemp;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Panel panel1;
@@ -886,13 +891,13 @@
         private System.Windows.Forms.Label lblDisplayDegreesEncoders;
         private System.Windows.Forms.Label lblEncoderTicks;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button btnAddOneEncoder;
+        private System.Windows.Forms.Button btnAddFiveEncoder;
+        private System.Windows.Forms.Button btnAddXEncoder;
+        private System.Windows.Forms.Button btnSubtractOneEncoder;
+        private System.Windows.Forms.Button btnSubtractFiveEncoder;
+        private System.Windows.Forms.Button btnSubtractXEncoder;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtCustEncoderVal;
     }
 }

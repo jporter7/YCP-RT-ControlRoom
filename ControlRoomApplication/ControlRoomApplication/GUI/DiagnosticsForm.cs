@@ -18,6 +18,7 @@ namespace ControlRoomApplication.GUI
         double _encoderDegrees = 0;
         double _elevationTemp = 0;
         double _azimuthTemp = 0;
+        double _encoderTicks = 0;
         
         bool warningSent = false;
         bool shutdownSent = false;
@@ -33,11 +34,14 @@ namespace ControlRoomApplication.GUI
         /// Initializes the diagnostic form based off of the specified configuration.
         /// </summary>
         /// 
+
+        
+
         public DiagnosticsForm(bool tempSensorSimulated = false)
         {
             InitializeComponent();
-
-            if(tempSensorSimulated == true)
+           
+            if (tempSensorSimulated == true)
             {
                // temperatureSensor = new FakeTemperatureSensor();
             }
@@ -170,7 +174,7 @@ namespace ControlRoomApplication.GUI
             {
                 timer1.Interval = 1000;
                 elevationTemperature = myTemp.GetElevationTemperature();
-                azimuthTemperature = myTemp.GetAzimuthTemp();
+                azimuthTemperature = myTemp.GetAzimuthTemperature();
             }
             
             
@@ -351,6 +355,51 @@ namespace ControlRoomApplication.GUI
         private void button4_Click(object sender, System.EventArgs e)
         {
             _encoderDegrees += 1;
+        }
+
+        private void button5_Click(object sender, System.EventArgs e)
+        {
+            _encoderDegrees += 5;
+        }
+
+        private void btnSubtractOneEncoder_Click(object sender, System.EventArgs e)
+        {
+            _encoderDegrees -= 1;
+        }
+
+        private void btnSubtractFiveEncoder_Click(object sender, System.EventArgs e)
+        {
+            _encoderDegrees -= 5;
+        }
+
+        private void btnAddXEncoder_Click(object sender, System.EventArgs e)
+        {
+            double encVal; //encoder value
+
+
+            if (double.TryParse(txtCustEncoderVal.Text, out encVal))
+            {
+                _encoderDegrees += encVal;
+            }
+            else
+            {
+                MessageBox.Show("Invalid entry in Encoder field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnSubtractXEncoder_Click(object sender, System.EventArgs e)
+        {
+            double encVal; //encoder value
+
+
+            if (double.TryParse(txtCustEncoderVal.Text, out encVal))
+            {
+                _encoderDegrees -= encVal;
+            }
+            else
+            {
+                MessageBox.Show("Invalid entry in Encoder field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
