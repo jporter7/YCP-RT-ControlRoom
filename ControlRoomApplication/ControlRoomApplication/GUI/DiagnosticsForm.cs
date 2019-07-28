@@ -3,6 +3,9 @@ using ControlRoomApplication.Simulators.Hardware;
 using System.Windows.Forms;
 using System.Drawing;
 using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
+using ControlRoomApplication.Simulators.Hardware.MCU;
+using ControlRoomApplication.Controllers;
+    
 
 
 namespace ControlRoomApplication.GUI
@@ -10,15 +13,35 @@ namespace ControlRoomApplication.GUI
     public partial class DiagnosticsForm : Form
     {
         private ControlRoom controlRoom;
-     
+        private SimulationMCU mtrCtrl;
+        private int timerTick = 0;
+        private int demoIndex = 0;
+        //private PLC PLC; This needs to be defined once I can get find the currect import
+        
         //TemperatureSensor myTemp = new TemperatureSensor();
         FakeTempSensor myTemp = new FakeTempSensor();
+        
+        SimulationAbsoluteEncoder azEncoder = new SimulationAbsoluteEncoder(10, 1, 0.0);
+        SimulationAbsoluteEncoder elEncoder = new SimulationAbsoluteEncoder(10, 1, 0.0);
+        /***********DEMO MODE VARIABLES**************/
+        private double[] azEncDemo = {0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
+        private double[] elEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //10 bits of precision, 2.8 
+       
 
-        SimulationAbsoluteEncoder myEncoder;
-        double _encoderDegrees = 0;
+
+
+         
+ 
+        /***********DEMO MODE VARIABLES END*********/
+    
+       
+        double _azEncoderDegrees = 0;
+        double _elEncoderDegrees = 0;
         double _elevationTemp = 0;
         double _azimuthTemp = 0;
-        double _encoderTicks = 0;
+        int _azEncoderTicks = 0;
+        int _elEncoderTicks = 0;
+        
         
         bool warningSent = false;
         bool shutdownSent = false;
@@ -37,10 +60,23 @@ namespace ControlRoomApplication.GUI
 
         
 
-        public DiagnosticsForm(bool tempSensorSimulated = false)
+        public DiagnosticsForm(string ip, string port, bool tempSensorSimulated = false, bool MCUSimulated = false, bool PLCSimulated = false)
         {
             InitializeComponent();
-           
+
+      
+            if (PLCSimulated == false)
+            {
+                ip = "127.0.0.1";
+                port = "8808";
+                SimulationPLCDriver PLC = new SimulationPLCDriver(ip, int.Parse(port));
+
+            }
+            else
+            {
+
+            }
+         
             if (tempSensorSimulated == true)
             {
                // temperatureSensor = new FakeTemperatureSensor();
@@ -48,6 +84,15 @@ namespace ControlRoomApplication.GUI
             else
             {
                // temperatureSensor = new RealTemperatureSensor();
+            }
+
+            if (MCUSimulated == true)
+            {
+                mtrCtrl = new SimulationMCU(azEncoder, elEncoder);
+            }
+            else
+            {
+                //mtrCtrl = new Real MCU
             }
 
             az = 0.0;
@@ -66,6 +111,9 @@ namespace ControlRoomApplication.GUI
             InitializeComponent();
             az = 0.0;
             el = 0.0;
+            
+
+
 
             this.controlRoom = controlRoom;
             
@@ -166,21 +214,48 @@ namespace ControlRoomApplication.GUI
         {
             double elevationTemperature = 0.0;
             double azimuthTemperature = 0.0;
-            
-            timer1.Interval = 100;
+            int ticks = azEncoder.CurrentPositionTicks;
+           
+
+            timer1.Interval = 200;
            
 
             if (selectDemo.Checked == true)
             {
-                timer1.Interval = 1000;
-                elevationTemperature = myTemp.GetElevationTemperature();
-                azimuthTemperature = myTemp.GetAzimuthTemperature();
+               
+                //timer1.Interval = 100;
+                
+
+                
+                
+                    elevationTemperature = myTemp.GetElevationTemperature();
+                    azimuthTemperature = myTemp.GetAzimuthTemperature();
+                
+
+                if(demoIndex < 79)
+                {
+                    _azEncoderDegrees = azEncDemo[demoIndex++];
+                    _elEncoderDegrees = elEncDemo[demoIndex];
+                    _azEncoderTicks = (int)(_azEncoderDegrees * 11.38);
+                    _elEncoderTicks = (int)(_elEncoderDegrees * 2.8);
+                }
+                else
+                {
+                    demoIndex = 0;
+                }
+               
+
+
+
             }
             
             
             fldElTemp.Text = elevationTemperature.ToString();
             fldAzTemp.Text = azimuthTemperature.ToString();
-            lblDisplayDegreesEncoders.Text = _encoderDegrees.ToString();
+            lblAzEncoderDegrees.Text = _azEncoderDegrees.ToString();
+            lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
+            lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
+            lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
 
             /*** Temperature Logic Start***/
@@ -354,22 +429,24 @@ namespace ControlRoomApplication.GUI
 
         private void button4_Click(object sender, System.EventArgs e)
         {
-            _encoderDegrees += 1;
+            _azEncoderDegrees += 1;
+            
         }
 
         private void button5_Click(object sender, System.EventArgs e)
         {
-            _encoderDegrees += 5;
+            _azEncoderDegrees += 5;
         }
 
         private void btnSubtractOneEncoder_Click(object sender, System.EventArgs e)
         {
-            _encoderDegrees -= 1;
+            _azEncoderDegrees -= 1;
+            
         }
 
         private void btnSubtractFiveEncoder_Click(object sender, System.EventArgs e)
         {
-            _encoderDegrees -= 5;
+            _azEncoderDegrees -= 5;
         }
 
         private void btnAddXEncoder_Click(object sender, System.EventArgs e)
@@ -379,7 +456,7 @@ namespace ControlRoomApplication.GUI
 
             if (double.TryParse(txtCustEncoderVal.Text, out encVal))
             {
-                _encoderDegrees += encVal;
+                _azEncoderDegrees += encVal;
             }
             else
             {
@@ -394,7 +471,7 @@ namespace ControlRoomApplication.GUI
 
             if (double.TryParse(txtCustEncoderVal.Text, out encVal))
             {
-                _encoderDegrees -= encVal;
+                _azEncoderDegrees -= encVal;
             }
             else
             {
