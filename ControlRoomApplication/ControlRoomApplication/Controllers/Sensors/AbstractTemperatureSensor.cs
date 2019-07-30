@@ -28,7 +28,7 @@ namespace ControlRoomApplication.Controllers.Sensors
         /// 
         /// </summary>
         /// 
-       // public abstract void SetElevationTemperatuer();
+       // public abstract void SetElevationTemperature();
 
         /// <summary>
         /// 
@@ -36,42 +36,7 @@ namespace ControlRoomApplication.Controllers.Sensors
         /// 
         //public abstract void SetAzimuthTemperature();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// 
-        //public abstract double GetAverageElevationTemperature();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// 
-       // public abstract double GetAverageAzimuthTemperature();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// 
-       // public abstract double GetMinimumElevationTemperature();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// 
-        //public abstract double GetMaximumElevationTemperature();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// 
-       // public abstract double GetMinimumAzimuthTemperature();
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// 
-       // public abstract double GetMaximumAzimuthTemperature();
-            
+       
 
        
 
