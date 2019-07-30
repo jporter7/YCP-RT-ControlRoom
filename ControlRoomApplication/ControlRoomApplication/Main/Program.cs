@@ -37,10 +37,39 @@ namespace ControlRoomApplication.Main
             })).Start();
             ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
 //*/
+            /*
+            Console.WriteLine(ushort.MaxValue);
+            new Thread(new ThreadStart(() => {
+                Console.WriteLine("---------------------------------");
+                Controllers.ProductionPLCDriver APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
+                ushort i = 0;//7500
+                while (i< ushort.MaxValue)
+                {
+                    //Thread.Sleep(1000);
+                    ushort[] one;
+                    try
+                    {
+                        one = APLCDriver.readregisters(i, (ushort)1);
+                    }
+                    catch(Exception e)
+                    {
+                        Console.WriteLine("read reg {0,6} failed",i);
+                        continue;
+                    }
+                    finally { i++; }
+                    if (one == null) { return; }
+                    string outp="";
+                    for (int v=0; v < one.Length; v++)
+                    {
+                        outp += Convert.ToString(one[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                    }
+                    Console.WriteLine("read reg {0,6} suceded {1}   *****************************", i,outp);
+                    break;
+                    //Thread.Sleep(10);
+                }
+            })).Start();
 
-
-
-
+//*/
 
 
 

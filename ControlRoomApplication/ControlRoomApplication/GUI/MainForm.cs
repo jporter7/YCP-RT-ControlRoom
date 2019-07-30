@@ -277,7 +277,7 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info("Building ProductionPLCDriver");
-                    return new ProductionPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    return new ProductionMCUDriver(textBox2.Text, int.Parse(textBox1.Text));
 
                 case 1:
                     logger.Info("Building ScaleModelPLCDriver");

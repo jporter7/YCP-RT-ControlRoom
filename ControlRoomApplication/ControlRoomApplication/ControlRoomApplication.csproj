@@ -122,6 +122,7 @@
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionMCUDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />

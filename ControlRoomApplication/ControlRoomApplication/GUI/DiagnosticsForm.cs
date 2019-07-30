@@ -170,7 +170,7 @@ namespace ControlRoomApplication.GUI
             {
                 timer1.Interval = 1000;
                 elevationTemperature = myTemp.GetElevationTemperature();
-                azimuthTemperature = myTemp.GetAzimuthTemp();
+                //azimuthTemperature = myTemp.GetAzimuthTemp();
             }
             
             
