@@ -222,7 +222,7 @@ namespace ControlRoomApplication.GUI
 
             if (selectDemo.Checked == true)
             {
-               
+              
                 //timer1.Interval = 100;
                 
 
@@ -244,8 +244,6 @@ namespace ControlRoomApplication.GUI
                     demoIndex = 0;
                 }
                
-
-
 
             }
             

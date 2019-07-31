@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Modbus.Data;
+using Modbus.Device;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -10,14 +12,16 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private TcpListener PLCTCPListener;
+        protected TcpListener PLCTCPListener;
         private Thread ClientManagmentThread;
-        private volatile bool KillClientManagementThreadFlag;
+        protected volatile bool KillClientManagementThreadFlag;
+        protected ModbusSlave Modbusserver;
 
         public AbstractPLCDriver(IPAddress ip_address, int port)
         {
             try
             {
+                ip_address= IPAddress.Parse("192.168.0.70");
                 PLCTCPListener = new TcpListener(new IPEndPoint(ip_address, port));
                 ClientManagmentThread = new Thread(new ThreadStart(HandleClientManagementThread));
             }
@@ -34,7 +38,6 @@ namespace ControlRoomApplication.Controllers
                     throw e;
                 }
             }
-
             try
             {
                 PLCTCPListener.Start(1);
@@ -117,77 +120,22 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        private void HandleClientManagementThread()
-        {
-            TcpClient AcceptedClient = null;
-            byte[] StreamBuffer = new byte[256];
-            byte[] ClippedData;
+       // public delegate void ReadReghandler<ModbusSlaveRequestEventArgs>(object sender, ModbusSlaveRequestEventArgs e);
 
-            while (!KillClientManagementThreadFlag)
-            {
-                if (PLCTCPListener.Pending())
-                {
-                    AcceptedClient = PLCTCPListener.AcceptTcpClient();
-                    logger.Info("[AbstractPLCDriver] Connected to new client.");
 
-                    NetworkStream ClientStream = AcceptedClient.GetStream();
+        /// <summary>
+        /// modbuss server
+        /// </summary>
+        protected abstract void HandleClientManagementThread();
 
-                    int Fd;
-                    while ((!KillClientManagementThreadFlag) && (ClientStream != null))
-                    {
-                        if ((!ClientStream.CanRead) || (!ClientStream.DataAvailable))
-                        {
-                            continue;
-                        }
 
-                        Fd = ClientStream.Read(StreamBuffer, 0, StreamBuffer.Length);
-
-                        if (Fd == 0)
-                        {
-                            continue;
-                        }
-
-                        try
-                        {
-                            ClippedData = new byte[Fd];
-                            Array.Copy(StreamBuffer, ClippedData, ClippedData.Length);
-
-                            if (!ProcessRequest(ClientStream, ClippedData))
-                            {
-                                logger.Info("[AbstractPLCDriver] FAILED to write server.");
-                            }
-                            else
-                            {
-                                //logger.Info("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
-                                //logger.Info("[AbstractPLCDriver] Successfully wrote to server!");
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            if ((e is ArgumentNullException)
-                                || (e is RankException)
-                                || (e is ArrayTypeMismatchException)
-                                || (e is InvalidCastException)
-                                || (e is ArgumentOutOfRangeException)
-                                || (e is ArgumentException))
-                            {
-                                logger.Info("[AbstractPLCDriver] ERROR: copying buffer array into clipped array {" + Fd + "}, skipping... [" + e.ToString());
-                                continue;
-                            }
-                            else
-                            {
-                                // Unexpected exception
-                                throw e;
-                            }
-                        }
-                    }
-
-                    ClientStream.Dispose();
-                    AcceptedClient.Dispose();
-                }
-            }
-        }
-
+        /// <summary>
+        /// processes requests from the clientmanagementthread
+        /// !not used in the production PLC driver
+        /// </summary>
+        /// <param name="ActiveClientStream"></param>
+        /// <param name="query"></param>
+        /// <returns></returns>
         protected abstract bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query);
     }
 }

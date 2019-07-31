@@ -9,7 +9,7 @@
         public const int ACTUAL_MCU_DEFAULT_ACCELERATION = 1000; // steps/ms/s
         public const double ACTUAL_MCU_STEPS_PER_DEGREE = 166 + (2.0 / 3);
 
-        public const string ACTUAL_MCU_IP_ADDRESS = "192.168.0.50";
+        public const string ACTUAL_MCU_IP_ADDRESS = "192.168.0.2";
         public const int ACTUAL_MCU_MODBUS_TCP_PORT = 502;
         public const ushort ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS = 0;
         public const ushort ACTUAL_MCU_READ_INPUT_REGISTER_HEARTBEAT_ADDRESS = 9;
