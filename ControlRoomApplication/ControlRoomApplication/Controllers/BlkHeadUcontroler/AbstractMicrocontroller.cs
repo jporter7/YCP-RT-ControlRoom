@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
 {
 
@@ -14,6 +15,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     public abstract class AbstractMicrocontroller
     {
 
+        public AbstractMicrocontroller() { }
 
         //FourierTransform Class
         /// <summary>
@@ -34,7 +36,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// 
         /// </summary>
         /// 
-        public void interpretData(dynamic data)
+        protected void interpretData(dynamic data)
         {
             double threshold = 0;
             try
@@ -43,13 +45,13 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 {
                     threshold = 80;
                 }
-                else if (data.type == "vibration")
+                else if (data.type == "acc")
                 {
                     threshold = 1.65;
                 }
                 else
                 {
-                    Console.WriteLine("datatype not found");
+                    Console.WriteLine("Datatype not found");
                     return;
                 }
                 foreach (dynamic element in data.data)

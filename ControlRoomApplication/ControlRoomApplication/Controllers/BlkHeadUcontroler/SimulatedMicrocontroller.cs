@@ -33,10 +33,12 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// 
         public override bool bringUp()
         {
-            //Thread connectionThread = new Thread();
-            dynamic data;
+            
+            
 
             data = generateTemperatureData();
+
+            //interpretData
 
             
 
@@ -50,14 +52,40 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         public dynamic generateTemperatureData()
         {
 
-            var sensorData = new
+            var list = new dynamic[1];
+
+            for (int i = 0; i < list.Length; i++)
             {
-                type = "temp",
-                val = rand.Next(70,100),
-                time = new DateTime().Date
-            };
+                list[i] = new { val = rand.Next(70, 100), time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + i };
+
+            }
+            var temperatureData = new { type = "temp", data = list };
+
+           
+
+            return temperatureData;
+        }
+
+
+        public dynamic generateAccelerometerData()
+        {
+            var list = new dynamic[100];
+
+            double x, y, z;
             
-            return sensorData;
+            for (int i = 0; i < list.Length; i++)
+            {
+                x = rand.Next();
+                y = rand.Next();
+                z = rand.Next();
+
+                list[i] = new { x = x, y = y, z = z, val = Math.Sqrt(x*x + y*y + z*z) , time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + i*10 };
+
+            }
+
+            var accelData = new { type = "acc", data = list };
+
+            return accelData;
         }
 
 

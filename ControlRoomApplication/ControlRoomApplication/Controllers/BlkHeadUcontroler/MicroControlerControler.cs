@@ -13,8 +13,9 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     /// <summary>
     /// controler for micro prosor in the 
     /// </summary>
-    public class MicroControlerControler
+    public class MicroControlerControler : AbstractMicrocontroller
     {
+        public MicroControlerControler() : base() { }
         /// <summary>
         /// state of tcp conection
         /// </summary>
@@ -134,6 +135,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                             dynamic respobj = JsonConvert.DeserializeObject(content);
                             //Console.WriteLine(respobj);
                             interpretData(respobj);
+                            
                             Send(handler, "200-"+ respobj.uuid);
 
                         }
@@ -195,6 +197,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 }
             }
 
+            /*
             static void interpretData(dynamic data)
             {
                 double threshold = 0;
@@ -231,6 +234,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                     Console.WriteLine(e + "line 229");
                 }
             }
+            */
         }
     }
 }
