@@ -134,7 +134,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                         {
                             dynamic respobj = JsonConvert.DeserializeObject(content);
                             //Console.WriteLine(respobj);
-                            interpretData(respobj);
+                       //     interpretData(respobj);
                             
                             Send(handler, "200-"+ respobj.uuid);
 

@@ -29,7 +29,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// Start listetning for TCP Connection
         /// </summary>
         ///  
-        public abstract bool bringUp();
+       // public abstract bool bringUp();
 
 
         /// <summary>

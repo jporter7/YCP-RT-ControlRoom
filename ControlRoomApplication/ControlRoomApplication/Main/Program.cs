@@ -73,19 +73,21 @@ namespace ControlRoomApplication.Main
  //*/
         /*
             Controllers.ProductionPLCDriver APLCDriver;
-            //new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() => {
                 Console.WriteLine("---------------------------------");
                 APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
-                //.Sleep(Timeout.Infinite);
-           // })).Start();
+                Thread.Sleep(Timeout.Infinite);
+            })).Start();
             ///
 
             new Thread(new ThreadStart(() => {
                 bool up = true;
                 ushort i = 0;
                 Random rand = new Random();
+                Thread.Sleep(10000);
                 while (true)
                 {
+                    Thread.Sleep(1000);
                     string outp = "";
                     for (ushort v = 0; v < 10; v++)
                     {
@@ -96,21 +98,9 @@ namespace ControlRoomApplication.Main
                     if (i>=10){ up = false; }
                     if (i <=0){ up = true; }
                     APLCDriver.setregvalue(i, (ushort) (rand.Next() /(2^16) ));
-                    Thread.Sleep(1000);
+                   
                 }
             })).Start();
-            ///
-           // var[] list = new var[100];
-            var list = new dynamic[100];
-            for (int i=0;i< list.Length;i++)
-            {
-                list[i] = new { val = 1234, time=98342341342};
-
-            }
-            var data = new { type = "cwg", data = list };
-
-
-            Console.WriteLine(data);
             //*/
 
             //string localhostIP = PLCConstants.LOCAL_HOST_IP;
