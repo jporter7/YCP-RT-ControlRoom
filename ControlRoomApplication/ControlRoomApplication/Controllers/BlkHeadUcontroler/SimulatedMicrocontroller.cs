@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using System.
+
 namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
 {
 
@@ -15,6 +15,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     public class SimulatedMicrocontroller : AbstractMicrocontroller
     {
         Random rand = new Random();
+        dynamic sensorData;
 
         /// <summary>
         /// 
@@ -22,44 +23,45 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// 
         public SimulatedMicrocontroller()
         {
-            
+
             //create a fake sensor
         }
-           
-        public void bringUp()
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// 
+        public override bool bringUp()
         {
-            Thread connectionThread = new Thread();
+            //Thread connectionThread = new Thread();
+            dynamic data;
+
+            data = generateTemperatureData();
 
             
+
+            return true;
         }
 
         /// <summary>
         /// Creates a data point with a random value, the time it was created (now), and type: temp
         /// </summary>
         /// Returns SensorData containing the value, time, and type
-        public SensorData generateTemperatureData()
+        public dynamic generateTemperatureData()
         {
 
-            double temperatureValue = rand.Next(70, 80) * 100; //Generate a random temperatuer between 70 and 80 for variety in db
-           
-            SensorData temperature = new SensorData(temperatureValue, new DataTime().Now, "temp");
-
+            var sensorData = new
+            {
+                type = "temp",
+                val = rand.Next(70,100),
+                time = new DateTime().Date
+            };
+            
+            return sensorData;
         }
+
+
+       
 
     }
-}
-
-public struct SensorData
-{
-    double value = 0;
-    DateTime time = 0;
-    String type = "";
-
-        public data(double val, DateTime date, String dataType)
-        {
-        value = val;
-        time = date;
-        type = dataType;
-        }
-
 }
