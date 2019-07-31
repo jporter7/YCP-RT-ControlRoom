@@ -31,6 +31,21 @@ namespace ControlRoomApplication.Main
             Simulation
         }
 
+        enum MCUType
+        {
+            Production,
+            Simulation
+        }
+
+        enum PLCType
+        {
+            Production, 
+            Scale,
+            Simulation,
+            Test
+
+        }
+
         /// <summary>
         /// Constructor for the main GUI form. Initializes the GUI form by calling the
         /// initialization method in another partial class. Initializes the datagridview
@@ -64,8 +79,8 @@ namespace ControlRoomApplication.Main
         private void button1_Click(object sender, EventArgs e)
         {
             logger.Info("Start Telescope Button Clicked");
-            if (textBox1.Text != null 
-                && textBox2.Text != null 
+            if (txtPLCPort.Text != null 
+                && txtPLCIP.Text != null 
                 && comboBox1.SelectedIndex > -1)
             {
                 current_rt_id++;
@@ -157,7 +172,7 @@ namespace ControlRoomApplication.Main
         private void AddConfigurationToDataGrid()
         {
             logger.Info("Adding Configuration To DataGrid");
-            string[] row = { (current_rt_id).ToString(), textBox2.Text, textBox1.Text };
+            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -206,7 +221,7 @@ namespace ControlRoomApplication.Main
         private void textBox2_Focus(object sender, EventArgs e)
         {
             logger.Info("textBox2_Focus Event");
-            textBox2.Text = "";
+            txtPLCIP.Text = "";
         }
 
         /// <summary>
@@ -215,7 +230,7 @@ namespace ControlRoomApplication.Main
         private void textBox1_Focus(object sender, EventArgs e)
         {
             logger.Info("textBox1_Focus Event");
-            textBox1.Text = "";
+            txtPLCPort.Text = "";
         }
 
         /// <summary>
@@ -236,7 +251,7 @@ namespace ControlRoomApplication.Main
         public RadioTelescope BuildRT()
         {
             logger.Info("Building RadioTelescope");
-            PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(textBox2.Text, int.Parse(textBox1.Text));
+            PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
 
             // Create Radio Telescope Location
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
@@ -273,26 +288,55 @@ namespace ControlRoomApplication.Main
         /// <returns> A plc driver based off of the configuration specified by the GUI. </returns>
         public AbstractPLCDriver BuildPLCDriver()
         {
-            switch (comboBox3.SelectedIndex)
+            switch (comboPLCType.SelectedIndex)
             {
                 case 0:
                     logger.Info("Building ProductionPLCDriver");
-                    return new ProductionPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    return new ProductionPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
 
                 case 1:
                     logger.Info("Building ScaleModelPLCDriver");
-                    return new ScaleModelPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    return new ScaleModelPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
 
                 case 3:
                     logger.Info("Building TestPLCDriver");
-                    return new TestPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    return new TestPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
 
                 case 2:
                 default:
                     logger.Info("Building SimulationPLCDriver");
-                    return new SimulationPLCDriver(textBox2.Text, int.Parse(textBox1.Text));
+                    return new SimulationPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
             }
         }
+
+
+        /// <summary>
+        /// Builds a PLC driver based off of the input from the GUI.
+        /// </summary>
+        /// <returns> A plc driver based off of the configuration specified by the GUI. </returns>
+        public bool IsPLCSimulated()
+        {
+            bool isSimulated = false;
+
+            logger.Info("Selected PLC Driver type: " + comboPLCType.Text);
+
+            if (comboPLCType.SelectedIndex == (int)PLCType.Production)
+            {
+                isSimulated = false;
+            }
+            else
+            {
+                isSimulated = true;
+            }
+
+            return isSimulated;
+        }
+
+
+
+
+
+
 
         /// <summary>
         /// Build a weather station based off of the input from the GUI form.
@@ -340,6 +384,29 @@ namespace ControlRoomApplication.Main
             return isSimulated;
         }
 
+        /// <summary>
+        /// Determine if the MCU is going to be real or simulated
+        /// </summary>
+        /// <returns> True when simulated, false when real </returns>
+        public bool IsMCUSimulated()
+        {
+            bool isSimulated = false;
+
+            logger.Info("Selected MCU Type: " + comboMCUType.Text);
+
+            if(comboMCUType.SelectedIndex == (int)MCUType.Production)
+            {
+                isSimulated = false;
+            }
+            else
+            {
+                isSimulated = true;
+            }
+
+            return isSimulated;
+        }
+
+
 
         /// <summary>
         /// Generates a free control form that allows free control access to a radio telescope
@@ -382,9 +449,15 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Diagnostics Form Button Clicked");
 
-            bool isTempSensorSimulated = IsTempSensorSimulated();
             
-            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(isTempSensorSimulated);
+            bool isTempSensorSimulated = IsTempSensorSimulated();
+
+            bool isMCUSimulated = IsMCUSimulated();
+
+            bool isPLCSimulated = IsPLCSimulated();
+            
+            
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isMCUSimulated, isPLCSimulated);
             
             diagnosticsWindows.Show();
             
