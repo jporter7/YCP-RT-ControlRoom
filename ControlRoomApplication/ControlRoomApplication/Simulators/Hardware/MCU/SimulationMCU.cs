@@ -5,6 +5,10 @@ using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
 
 namespace ControlRoomApplication.Simulators.Hardware.MCU
 {
+    /// <summary>
+    ///
+    /// </summary>
+    /// 
     public class SimulationMCU
     {
         private SimulationAbsoluteEncoder AzEncoder;
@@ -17,6 +21,10 @@ namespace ControlRoomApplication.Simulators.Hardware.MCU
 
         private SimulationStopTypeEnum RequestedStopType;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// 
         public SimulationMCU(SimulationAbsoluteEncoder azEncoder, SimulationAbsoluteEncoder elEncoder)
         {
             AzEncoder = azEncoder;
