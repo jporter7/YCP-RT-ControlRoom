@@ -14,7 +14,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     public abstract class AbstractMicrocontroller
     {
 
-      
+
         //FourierTransform Class
         /// <summary>
         /// 
@@ -24,12 +24,23 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
 
 
         /// <summary>
+        /// Start listetning for TCP Connection
+        /// </summary>
+        /// 
+        public abstract void bringUp();
+
+
+        /// <summary>
         /// 
         /// </summary>
         /// 
+       
 
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// 
 
 
 
