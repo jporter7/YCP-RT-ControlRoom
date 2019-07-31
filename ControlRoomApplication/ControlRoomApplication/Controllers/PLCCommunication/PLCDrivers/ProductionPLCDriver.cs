@@ -3,6 +3,7 @@ using Modbus.Device;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace ControlRoomApplication.Controllers
@@ -14,8 +15,8 @@ namespace ControlRoomApplication.Controllers
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private TcpClient MCUTCPClient;
-        private ModbusIpMaster MCUModbusMaster;
+        private TcpClient PLCTCPClient;
+        private ModbusIpMaster PLCModbusMaster;
 
         /// <summary>
         /// 
@@ -30,8 +31,8 @@ namespace ControlRoomApplication.Controllers
             //IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 1600);
             try
             {
-                MCUTCPClient = new TcpClient(ipLocal, 502);///////
-                MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
+                PLCTCPClient = new TcpClient(ipLocal, 502);///////
+                PLCModbusMaster = ModbusIpMaster.CreateIp(PLCTCPClient);
             }
             catch(Exception err)//unknown err
             {
@@ -51,11 +52,59 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         ~ProductionPLCDriver()
         {
-            if (MCUTCPClient != null)
+            if (PLCTCPClient != null)
             {
-                MCUTCPClient.Close();
+                PLCTCPClient.Close();
             }
         }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="header"></param>
+        public void PrintReadInputRegsiterContents(string header)
+        {
+
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool SendResetErrorsCommand()
+        {
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool SendHoldMoveCommand()
+        {
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool SendImmediateStopCommand()
+        {
+            return true;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public bool SendEmptyMoveCommand()
+        {
+            return true;
+        }
+
+
+
+
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -64,7 +113,29 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public ushort[] readregisters(ushort adr, ushort numreg)
         {
-            return MCUModbusMaster.ReadInputRegisters(adr, numreg);
+            /*
+            bool[] bools= PLCModbusMaster.ReadCoils(adr, numreg);
+            ushort[] temp2=new ushort[numreg];
+            for (int t=0;t< bools.Length; t++)
+            {
+                if (bools[t])
+                {
+                    temp2[t] = (ushort)1;
+                }else { temp2[t] = (ushort)0; }
+            }
+            return temp2;
+
+
+
+
+            ushort[] Arr = (new ushort[1]);
+            Arr[0] = 54;
+            PLCModbusMaster.WriteMultipleRegisters(adr, Arr);
+            return new ushort[2];
+//*/
+
+            return PLCModbusMaster.ReadHoldingRegisters(adr, numreg);
+
             /*
             try
             {
@@ -73,9 +144,9 @@ namespace ControlRoomApplication.Controllers
                 //MCUModbusMaster.WriteSingleRegister(adr, 38);
                 //Console.WriteLine(MCUModbusMaster.ReadCoils(adr, numreg));
                 //Console.WriteLine(MCUModbusMaster.ReadInputs(adr, numreg));
-                //return MCUModbusMaster.ReadHoldingRegisters(adr, numreg);
-                //return MCUModbusMaster.ReadInputRegisters(adr, numreg);
-                return MCUModbusMaster.ReadHoldingRegisters(adr, numreg);
+                //return PLCModbusMaster.ReadHoldingRegisters(adr, numreg);
+                //return PLCModbusMaster.ReadInputRegisters(adr, numreg);
+                return PLCModbusMaster.ReadHoldingRegisters(adr, numreg);
             }
             catch(Exception e)
             {
@@ -93,7 +164,19 @@ namespace ControlRoomApplication.Controllers
         /// <param name="e"></param>
         private void ReadReghandler(object sender, ModbusSlaveRequestEventArgs e)
         {
-            //Console.WriteLine(e.ToString());
+            Console.WriteLine(e.Message);
+
+            Regex rx = new Regex(@"\b(?:Read )([0-9]+)(?:.+)(?:address )([0-9]+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            MatchCollection matches = rx.Matches(e.Message.ToString());
+            foreach (Match match in matches)
+            {
+                GroupCollection groups = match.Groups;
+                Console.WriteLine("'{0}' repeated at positions {1} and {2}",
+                                  groups["word"].Value,
+                                  groups[0].Index,
+                                  groups[1].Index);
+            }
+            // Modbusserver.DataStore.HoldingRegisters[e.] += 1;
             //throw new NotImplementedException();
         }
 
@@ -110,8 +193,25 @@ namespace ControlRoomApplication.Controllers
             //Modbusserver.DataStore.HoldingRegisters.Count;
             //throw new NotImplementedException();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="adr"></param>
+        /// <param name="value"></param>
+        public void setregvalue(ushort adr, ushort value)
+        {
+            Modbusserver.DataStore.HoldingRegisters[adr] = value;
+        }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="adr"></param>
+        /// <returns></returns>
+        public ushort readregval(ushort adr)
+        {
+            return Modbusserver.DataStore.HoldingRegisters[adr];
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -130,7 +230,7 @@ namespace ControlRoomApplication.Controllers
             Modbusserver.Listen();
 
             //Modbusserver.ListenAsync().GetAwaiter().GetResult();
-
+            
             // prevent the main thread from exiting
             Thread.Sleep(Timeout.Infinite);
         }

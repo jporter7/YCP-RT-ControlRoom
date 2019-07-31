@@ -5,7 +5,7 @@ const config = require('./config.json');
 const Gpio = require('onoff').Gpio;
 
 
-var SPIdevice = spi.openSync(2, 1, [{/////////this throws an error if spi buss is not properly configured
+var SPIdevice = spi.openSync(1, 1, [{/////////this throws an error if spi buss is not properly configured
     mode: 0,
     chipSelectHigh: false,
     lsbFirst: false,

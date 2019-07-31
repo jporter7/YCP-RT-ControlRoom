@@ -230,7 +230,7 @@ function run() {
     }
 
     function sendVipration() {
-        trysend({ type: "vibration", data: vibrationBuffer });
+        trysend({ type: "acc", data: vibrationBuffer });
         vibrationBuffer = [];
     }
 }

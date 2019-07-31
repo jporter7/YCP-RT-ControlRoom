@@ -167,6 +167,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ConfigureRadioTelescope(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
+            return true;
             if ((startSpeedAzimuth < 1) || (startSpeedElevation < 1) || (homeTimeoutAzimuth < 0) || (homeTimeoutElevation < 0)
                 || (startSpeedAzimuth > 1000000) || (startSpeedElevation > 1000000) || (homeTimeoutAzimuth > 300) || (homeTimeoutElevation > 300))
             {
@@ -288,7 +289,7 @@ namespace ControlRoomApplication.Controllers
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
         {
-            return ((ResponseBytes[0] + (ResponseBytes[1] * 256)) == ExpectedSize) && (ResponseBytes[2] == 0x1);
+            return ((ResponseBytes[0] + (ResponseBytes[1] * 256)) == ExpectedSize) && (ResponseBytes[2] == 0x1);//TODO: throws object is not instance of object 
         }
 
         private static bool MinorResponseIsValid(byte[] MinorResponseBytes)

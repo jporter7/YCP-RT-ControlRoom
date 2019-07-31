@@ -21,7 +21,6 @@ namespace ControlRoomApplication.Main
 
 
 
-
             /*
             new Thread(new ThreadStart(() => {
                 while (true)
@@ -38,40 +37,81 @@ namespace ControlRoomApplication.Main
             ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
 //*/
             /*
-            Console.WriteLine(ushort.MaxValue);
-            new Thread(new ThreadStart(() => {
+             Console.WriteLine(ushort.MaxValue);
+             new Thread(new ThreadStart(() => {
+                 Console.WriteLine("---------------------------------");
+                 Controllers.ProductionPLCDriver APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
+                 ushort i = 0;//7500
+                 while (i< ushort.MaxValue)
+                 {
+                     //Thread.Sleep(1000);
+
+                     ushort[] one;
+                     try
+                     {
+                        // i = 25;
+                         one = APLCDriver.readregisters(i, (ushort)1);
+                     }
+                     catch(Exception e)
+                     {
+                         Console.WriteLine("read reg {0,6} failed",i);
+                         continue;
+                     }
+                     finally { i++; }
+                     if (one == null) { return; }
+                     string outp="";
+                     for (int v=0; v < one.Length; v++)
+                     {
+                         outp += Convert.ToString(one[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                     }
+                     Console.WriteLine("read reg {0,6} suceded {1}   *****************************************************", i,outp);
+                     break;
+                     //Thread.Sleep(10);
+                 }
+             })).Start();
+
+ //*/
+        /*
+            Controllers.ProductionPLCDriver APLCDriver;
+            //new Thread(new ThreadStart(() => {
                 Console.WriteLine("---------------------------------");
-                Controllers.ProductionPLCDriver APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
-                ushort i = 0;//7500
-                while (i< ushort.MaxValue)
+                APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
+                //.Sleep(Timeout.Infinite);
+           // })).Start();
+            ///
+
+            new Thread(new ThreadStart(() => {
+                bool up = true;
+                ushort i = 0;
+                Random rand = new Random();
+                while (true)
                 {
-                    //Thread.Sleep(1000);
-                    ushort[] one;
-                    try
+                    string outp = "";
+                    for (ushort v = 0; v < 10; v++)
                     {
-                        one = APLCDriver.readregisters(i, (ushort)1);
+                        outp += Convert.ToString(APLCDriver.readregval(v), 2).PadLeft(16).Replace(" ", "0") + " , ";
                     }
-                    catch(Exception e)
-                    {
-                        Console.WriteLine("read reg {0,6} failed",i);
-                        continue;
-                    }
-                    finally { i++; }
-                    if (one == null) { return; }
-                    string outp="";
-                    for (int v=0; v < one.Length; v++)
-                    {
-                        outp += Convert.ToString(one[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
-                    }
-                    Console.WriteLine("read reg {0,6} suceded {1}   *****************************", i,outp);
-                    break;
-                    //Thread.Sleep(10);
+                    Console.WriteLine(outp);
+                    if (up) { i++; } else { i--; }
+                    if (i>=10){ up = false; }
+                    if (i <=0){ up = true; }
+                    APLCDriver.setregvalue(i, (ushort) (rand.Next() /(2^16) ));
+                    Thread.Sleep(1000);
                 }
             })).Start();
+            ///
+           // var[] list = new var[100];
+            var list = new dynamic[100];
+            for (int i=0;i< list.Length;i++)
+            {
+                list[i] = new { val = 1234, time=98342341342};
 
-//*/
+            }
+            var data = new { type = "cwg", data = list };
 
 
+            Console.WriteLine(data);
+            //*/
 
             //string localhostIP = PLCConstants.LOCAL_HOST_IP;
             //int localhostPort = PLCConstants.PORT_8080;
