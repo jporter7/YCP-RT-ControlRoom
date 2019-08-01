@@ -31,16 +31,22 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// 
         /// </summary>
         /// 
-        public  bool bringUp()
+        public override bool BringUp()
         {
-            
+            try
+            {
+                while (true)
+                {
+                    interpretData(generateTemperatureData());
+                    interpretData(generateAccelerometerData());
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
             
 
-            //data = generateTemperatureData();
-
-            //interpretData
-
-            
 
             return true;
         }

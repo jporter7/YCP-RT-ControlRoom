@@ -21,8 +21,9 @@ namespace ControlRoomApplication.Controllers
         {
             try
             {
-                ip_address= IPAddress.Parse("192.168.0.70");
-                PLCTCPListener = new TcpListener(new IPEndPoint(ip_address, port));
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+                IPAddress ipAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length - 1];//this get the ip of this machine
+                PLCTCPListener = new TcpListener(new IPEndPoint(ipAddress, port));//this starts a tcp server pointed to listen to that ip
                 ClientManagmentThread = new Thread(new ThreadStart(HandleClientManagementThread));
             }
             catch (Exception e)
@@ -40,7 +41,7 @@ namespace ControlRoomApplication.Controllers
             }
             try
             {
-                PLCTCPListener.Start(1);
+                PLCTCPListener.Start(1);//start listing for tcp requests
             }
             catch (Exception e)
             {
@@ -124,7 +125,7 @@ namespace ControlRoomApplication.Controllers
 
 
         /// <summary>
-        /// modbuss server
+        /// modbuss server implamentation specific to each device
         /// </summary>
         protected abstract void HandleClientManagementThread();
 
@@ -132,6 +133,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// processes requests from the clientmanagementthread
         /// !not used in the production PLC driver
+        ///is used in simulation although it may not be later
         /// </summary>
         /// <param name="ActiveClientStream"></param>
         /// <param name="query"></param>
