@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            Application.Run(new MainForm());
+            // Application.Run(new MainForm());
 
 
 
@@ -34,38 +34,89 @@ namespace ControlRoomApplication.Main
                     Thread.Sleep(1000);
                 }
             })).Start();
-            ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
+            ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();ProductionMCUDriver
 //*/
-            /*
-             Console.WriteLine(ushort.MaxValue);
+            //*
+
+            Controllers.ProductionMCUDriver MCUDriver = new ControlRoomApplication.Controllers.ProductionMCUDriver("192.168.0.50", 502);
+            int gearedSpeedAZ = 2000, gearedSpeedEL = 2000;
+            ushort homeTimeoutSecondsElevation = 0, homeTimeoutSecondsAzimuth = 0;
+            MCUDriver.configureaxies(gearedSpeedAZ, gearedSpeedEL, homeTimeoutSecondsAzimuth, homeTimeoutSecondsElevation);
+            //MCUDriver.
+
+
+            Console.WriteLine(ushort.MaxValue);
              new Thread(new ThreadStart(() => {
                  Console.WriteLine("---------------------------------");
-                 Controllers.ProductionPLCDriver APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
-                 ushort i = 0;//7500
-                 while (i< ushort.MaxValue)
-                 {
-                     //Thread.Sleep(1000);
+                 Controllers.ProductionPLCDriver APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.50", 502);
+                 ushort i = 0,j=1024;//7500
 
-                     ushort[] one;
+
+
+                 //return;
+                 while (true)
+                 {
+                     Thread.Sleep(5000);
+
+                     ushort[] inreg,outreg;
                      try
                      {
-                        // i = 25;
-                         one = APLCDriver.readregisters(i, (ushort)1);
+                         ushort positionTranslationELInt=1000, positionTranslationELMSW=0;
+                         ushort positionTranslationAZInt = 1000, positionTranslationAZMSW = 0;
+                         ushort aCCELERATION = 5, programmedPeakSpeedAZInt = 1200;
+
+                         ushort[] data2 = {             0x0,                                        // Reserved 
+                                                        0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,                                        // Denotes a relative linear interpolated move and a Trapezoidal S-Curve profile 
+                         };
+
+                         APLCDriver.PLCModbusMaster.WriteMultipleRegisters(j, data2);
+                         Thread.Sleep(100);
+                         ushort[] data = {              0,                                            // Reserved 
+                                                        0x403,                                        // Denotes a relative linear interpolated move and a Trapezoidal S-Curve profile
+                                                        (ushort)(programmedPeakSpeedAZInt >> 0x10),   // MSW for azimuth speed
+                                                        (ushort)(programmedPeakSpeedAZInt & 0xFFFF),  // LSW for azimuth speed
+                                                        aCCELERATION,                                 // Acceleration for azimuth
+                                                        aCCELERATION,                                 // Deceleration for azimuth
+                                                        positionTranslationAZMSW,                     // MSW for azimuth position 6
+                                                        (ushort)(positionTranslationAZInt & 0xFFFF),  // LSW for azimuth position 7
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        positionTranslationELMSW,                     // MSW for elevation position 12
+                                                        (ushort)(positionTranslationELInt & 0xFFFF),  // LSW for elevation position 13
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved
+                                                        0                                             // Reserved 
+                         };
+
+                         APLCDriver.PLCModbusMaster.WriteMultipleRegisters(j, data);
+                         // i = 25;
+                         inreg = APLCDriver.readregisters(i, (ushort)20);
+                         outreg = APLCDriver.readregisters(j, (ushort)20);
                      }
                      catch(Exception e)
                      {
                          Console.WriteLine("read reg {0,6} failed",i);
                          continue;
                      }
-                     finally { i++; }
-                     if (one == null) { return; }
-                     string outp="";
-                     for (int v=0; v < one.Length; v++)
+                     if (inreg == null) { return; }
+                     string outstr="";
+                     for (int v=0; v < inreg.Length; v++)
                      {
-                         outp += Convert.ToString(one[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                         outstr += Convert.ToString(inreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
                      }
-                     Console.WriteLine("read reg {0,6} suceded {1}   *****************************************************", i,outp);
-                     break;
+                     outstr += "\n";
+                     for (int v = 0; v < outreg.Length; v++)
+                     {
+                         outstr += Convert.ToString(outreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                     }
+                     Console.WriteLine(outstr);
+                     //Console.WriteLine("read reg {0,6} suceded {1}   *****************************************************", i, outstr);
+                     //break;
                      //Thread.Sleep(10);
                  }
              })).Start();

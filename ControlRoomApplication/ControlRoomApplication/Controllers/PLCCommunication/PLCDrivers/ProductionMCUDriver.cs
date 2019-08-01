@@ -24,7 +24,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="portLocal"></param>
         public ProductionMCUDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
         {
-            MCUTCPClient = new TcpClient(MCUConstants.ACTUAL_MCU_IP_ADDRESS, MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
+            MCUTCPClient = new TcpClient("192.168.0.50", MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
         }
         /// <summary>
@@ -103,7 +103,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
         /// <summary>
-        /// 
+        /// this stops the mcudirectly in a controld maner
         /// </summary>
         /// <returns></returns>
         public bool SendEmptyMoveCommand()
@@ -117,7 +117,38 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
         /// <summary>
+        /// configures the axies 
+        /// </summary>
+        /// <returns></returns>
+       public bool configureaxies(int gearedSpeedAZ, int gearedSpeedEL, ushort homeTimeoutSecondsAzimuth, ushort homeTimeoutSecondsElevation)
+        {
+            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), homeTimeoutSecondsAzimuth,
+                                0x0,    0x0,    0x0,                                 0x0,                            0x0,
+                                0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), homeTimeoutSecondsElevation,
+                                };//0x0,    0x0,    0x0,                                0x0,                             0x0
+            Console.WriteLine(data.Length);
+            MCUModbusMaster.WriteMultipleRegisters(1024, data);
+            data = new ushort[20];
+            Console.WriteLine(data.Length);
+            MCUModbusMaster.WriteMultipleRegisters(1024, data);
+
+            return true;
+        }
+
+
+
+
+
+
+
+
+
+
+        /// <summary>
         /// handle conection data comming from modbus device
+        /// this serves as part of a tcp server along with HandleClientManagementThread
+        /// it apears to have been designed for ethernet/ip which we found out our plc cant do 
+        /// this is probably unnecicary in the mcu drivers.
         /// </summary>
         /// <param name="ActiveClientStream"></param>
         /// <param name="query"></param>

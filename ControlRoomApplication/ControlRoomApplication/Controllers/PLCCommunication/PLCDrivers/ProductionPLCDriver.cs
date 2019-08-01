@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private TcpClient PLCTCPClient;
-        private ModbusIpMaster PLCModbusMaster;
+        public ModbusIpMaster PLCModbusMaster;
 
         /// <summary>
         /// 
@@ -104,7 +104,6 @@ namespace ControlRoomApplication.Controllers
 
 
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -154,6 +153,11 @@ namespace ControlRoomApplication.Controllers
                 return null;
             }
             //*/
+        }
+
+        public void wiritemasterregs(ushort adr, ushort[] data)
+        {
+            PLCModbusMaster.WriteMultipleRegisters(adr,data);
         }
 
 

@@ -6,7 +6,7 @@ namespace ControlRoomApplication.Entities
     {
         UNDEFINED = 0x0,
         TEST_CONNECTION = 0x1,
-        GET_CURRENT_AZEL_POSITIONS = 0x2,
+        GET_CURRENT_AZEL_POSITIONS = 0x2,// remove, encoders not handled by plc anymore
         GET_CURRENT_LIMIT_SWITCH_STATUSES = 0x3,
         GET_CURRENT_SAFETY_INTERLOCK_STATUS = 0x4,
         CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION = 0x5,

@@ -56,6 +56,7 @@ namespace ControlRoomApplication.Controllers
             {
                 PLCTCPClient = new TcpClient(ip, port);
                 PLCTCPStream = PLCTCPClient.GetStream();
+                
             }
             catch (Exception e)
             {
@@ -177,10 +178,28 @@ namespace ControlRoomApplication.Controllers
             OutgoingDataSet = true;
 
             StreamCommunicationThreadMutex.ReleaseMutex();
+
         }
 
         private byte[] SendMessageWithResponse(byte[] ByteData, int ExpectedResponseSize, int TimeoutMS = 10000)
         {
+            /*
+            TcpClient PLCTCPClient;
+            NetworkStream PLCTCPStream;
+                PLCTCPClient = new TcpClient("192.168.0.50", 502);
+                PLCTCPStream = PLCTCPClient.GetStream();
+
+            PLCTCPStream.Write(ByteData, 0, ByteData.Length);
+
+            byte[] data = new byte[ExpectedResponseDataSize];
+            String responseData = String.Empty;
+
+            Int32 bytes = PLCTCPStream.Read(data, 0, data.Length);
+
+            PLCTCPClient.Close();
+            PLCTCPStream.Close();
+            return data;
+            //*/
             SendMessage(ByteData, ExpectedResponseSize, TimeoutMS);
             return ReadResponse();
         }
