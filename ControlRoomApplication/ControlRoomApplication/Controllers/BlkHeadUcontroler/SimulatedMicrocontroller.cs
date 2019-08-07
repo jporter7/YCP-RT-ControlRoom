@@ -16,15 +16,19 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     {
         Random rand = new Random();
         dynamic sensorData;
+        private double _minMotorTemperature;
+        private double _maxMotorTemperature;
 
         /// <summary>
         /// 
         /// </summary>
         /// 
-        public SimulatedMicrocontroller()
+        public SimulatedMicrocontroller(double minMotorTemperature, double maxMotorTemperature)
         {
-
-            //create a fake sensor
+            //Set the minimum and maximum temperature for the motors
+            _minMotorTemperature = minMotorTemperature;
+            _maxMotorTemperature = maxMotorTemperature;
+            
         }
 
         /// <summary>

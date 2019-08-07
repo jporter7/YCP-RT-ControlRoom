@@ -5,7 +5,9 @@ using System.Drawing;
 using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
 using ControlRoomApplication.Simulators.Hardware.MCU;
 using ControlRoomApplication.Controllers;
-    
+using ControlRoomApplication.Controllers.BlkHeadUcontroler;
+
+
 
 
 namespace ControlRoomApplication.GUI
@@ -13,6 +15,10 @@ namespace ControlRoomApplication.GUI
     public partial class DiagnosticsForm : Form
     {
         private ControlRoom controlRoom;
+        EncoderReader encoderReader = new EncoderReader();
+        ControlRoomApplication.Entities.Orientation azimuthOrientation = new ControlRoomApplication.Entities.Orientation();
+        
+
         private SimulationMCU mtrCtrl;
         private int timerTick = 0;
         private int demoIndex = 0;
@@ -63,7 +69,7 @@ namespace ControlRoomApplication.GUI
         public DiagnosticsForm(string ip, string port, bool tempSensorSimulated = false, bool MCUSimulated = false, bool PLCSimulated = false)
         {
             InitializeComponent();
-
+           
       
             if (PLCSimulated == false)
             {
@@ -86,14 +92,7 @@ namespace ControlRoomApplication.GUI
                // temperatureSensor = new RealTemperatureSensor();
             }
 
-            if (MCUSimulated == true)
-            {
-                mtrCtrl = new SimulationMCU(azEncoder, elEncoder);
-            }
-            else
-            {
-                //mtrCtrl = new Real MCU
-            }
+            //Create if/else for Simulated Encoder thing
 
             az = 0.0;
             el = 0.0;
@@ -111,6 +110,8 @@ namespace ControlRoomApplication.GUI
             InitializeComponent();
             az = 0.0;
             el = 0.0;
+
+           
             
 
 
@@ -143,6 +144,8 @@ namespace ControlRoomApplication.GUI
         {
             label3.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString("0.00");
             label4.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString("0.00");
+             
+           
         }
 
         /// <summary>
@@ -210,12 +213,22 @@ namespace ControlRoomApplication.GUI
             }
         }
 
+
+        /***************************************************************
+         * ***************TIMER TICK FUNCTION STARTS HERE***************
+         * ******this comment was added to make this easier to find*****
+         * ************************************************************/
         private void timer1_Tick(object sender, System.EventArgs e)
         {
+            
             double elevationTemperature = 0.0;
             double azimuthTemperature = 0.0;
             int ticks = azEncoder.CurrentPositionTicks;
-           
+            
+            //Read actual encoder values
+            lblAzEncoderDegrees.Text = encoderReader.GetCurentOrientation().Azimuth.ToString();
+            lblElEncoderDegrees.Text = encoderReader.GetCurentOrientation().Elevation.ToString();
+
 
             timer1.Interval = 200;
            
