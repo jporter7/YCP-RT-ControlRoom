@@ -60,9 +60,9 @@ function getAZposition() {
                 var read = message[0].receiveBuffer;
                 var datagood = (read[2] >> 7);
                 if (datagood == 0) {
-                    reject("bad_data")
+                    //reject("bad_data")
                     console.log("data bad");
-                    return;
+                    //return;
                 }
                 var chcksum = read[5] & 0x7f;
                 var val = (read[3] << 8) + read[4];
@@ -103,6 +103,8 @@ function makeUUid() {
     });
     return uuid;
 }
+
+function nothing(){}
 
 /*
     return new Promise((resolve, reject) => {

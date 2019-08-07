@@ -36,12 +36,12 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
 
                 Int32 bytes = stream.Read(data, 0, data.Length);
                 responseData = System.Text.Encoding.ASCII.GetString(data, 0, bytes);
-                //Console.WriteLine("Received: {0}", responseData);
+                Console.WriteLine("Received: {0}", responseData);
                 dynamic respobj = null;
                 try
                 {
-                    respobj=JsonConvert.DeserializeObject(responseData);
-                    //Console.WriteLine(respobj.AZ+" "+ respobj.EL);
+                    respobj =JsonConvert.DeserializeObject(responseData);
+                    Console.WriteLine(respobj.AZ+" "+ respobj.EL);
                     return new Orientation((double)respobj.AZ, (double)respobj.EL);
                     //return new Orientation(0, (double)0);
                 }
