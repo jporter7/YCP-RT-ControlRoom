@@ -46,4 +46,34 @@ namespace ControlRoomApplication.Entities
             }
         }
     }
+
+
+    /// <summary>
+    /// the cctrlroom has a modbus server running on it that is maped to input and output regs on the plc 
+    /// 0-20 arr comand bytes that go through the plc to the mcu
+    /// warnings, limits and other boolean values are sent as ints with 0 for false and 1 for true
+    /// 
+    /// </summary>
+    public enum PLC_modbus_server_register_mapping : ushort
+    {
+        /// <summary>
+        /// plc will write to this register to acknoldge that a comand has been routed through the plc to the mcu
+        /// </summary>
+        CMD_ACK = 22,
+
+        AZ_LEFT_WARNING = 24,
+        AZ_LEFT_LIMIT = 26,
+        AZ_RIGHT_WARNING = 28,
+        AZ_RIGHT_LIMIT = 30,
+
+        EL_LEFT_WARNING = 32,
+        EL_LEFT_LIMIT = 34,
+        EL_RIGHT_WARNING = 36,
+        EL_RIGHT_LIMIT = 38,
+
+        AZ_MOTOR_CURRENT = 40,
+        EL_MOTOR_CURRENT = 42
+    }
+
+
 }

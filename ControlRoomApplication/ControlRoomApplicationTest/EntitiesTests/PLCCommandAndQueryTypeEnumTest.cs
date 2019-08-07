@@ -58,6 +58,9 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreEqual(PLCCommandAndQueryTypeEnum.CALIBRATE, PLCCommandAndQueryTypeConversionHelper.GetFromByte(0x7));
 
             Assert.AreEqual(0x8, PLCCommandAndQueryTypeConversionHelper.ConvertToByte(_input_set_objective_azel_position));
+            //the above test fails becasue the falue of _input_set_objective_azel_position is set to 0xb but their testing it against 0x8
+            //i don't intend to use the comand and querrie schema the previous team set up because it is not compatable with the modbus that the plc uses
+            //thus i am leaving this test failing (jacob minor)
             Assert.AreEqual(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, PLCCommandAndQueryTypeConversionHelper.GetFromByte(0x8));
         }
     }

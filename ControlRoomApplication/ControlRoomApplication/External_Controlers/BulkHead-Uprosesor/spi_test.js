@@ -5,23 +5,42 @@ const config = require('./config.json');
 const Gpio = require('onoff').Gpio;
 
 
-var SPIdevice = spi.openSync(1, 1, [{/////////this throws an error if spi buss is not properly configured
-    mode: 0,
-    chipSelectHigh: false,
-    lsbFirst: false,
-    threeWire: true,
-    loopback: false,
-    noChipSelect: true,
-    bitsPerWord: 8,
-}]);
+var SPIdevice = spi.openSync(1, 0,);
 
 //10000010
 configure();
-function configure() {
+async function configure() {
+    console.log(SPIdevice.getOptionsSync());
+    SPIdevice.setOptionsSync({
+        mode: spi.MODE1
+    })
+    console.log(SPIdevice.getOptionsSync());
+    //.SetOptions(1,[{setMode:0b10}])
+    //*
+    spi_transfer(Buffer.from([0x0f]), 105, 1000000, SPIdevice).catch(reason => {//stop continuos recording cmd
+        console.log(reason)
+    });
+    await sleep(1);
+    writereg(0x03,0b10110000);//write drate register
+    await sleep(1);
+    spi_transfer(Buffer.from([0xf0]), 105, 1000000, SPIdevice).catch(reason => {//selfcal cmd
+        console.log(reason)
+    });
 
+    await sleep(5000);
+    //*/
     setInterval(loop, 1000)
 }
 
+function writereg(reg,val){
+    spi_transfer(Buffer.from([0x5|reg, 0x00,val]), 105, 1000000, SPIdevice).catch(reason => {
+        console.log(reason)
+    });
+}
+
+function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function loop() {
     /*
@@ -52,23 +71,38 @@ function loop() {
             console.log(val, val.toString(2));
         }).catch(reason=>{
             console.log(reason)
-        });//*/
-    spi_transfer(Buffer.from([0x10, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]), 105, 200000, SPIdevice).then(ret => {
+        });
+        
+
+                    var datagood = (ret[2] >> 7);
+            if (datagood == 0) {
+                //console.log("data bad");
+                //return;
+            }
+            var chcksum = ret[5] & 0x7f;
+            console.log((ret), " checksum: " + chcksum);
+            var val = (ret[3] << 8) + ret[4];
+            //(read[1]<<32)+(read[2]<<24)+
+            var vallow = (ret[3] << 16) + (ret[4] << 8) + ret[5];
+    
+            //console.log(vallow.toString(2))
+            console.log(val, val.toString(2));
+        
+        //*/
+        var time = process.hrtime();
+
+    spi_transfer(Buffer.from([0x10, 0x02,]), 105, 1000000, SPIdevice).then(nothing => {
+        var diff = process.hrtime(time);
+        //console.log("first  "+ diff[0] * 1e9 + diff[1]);
+    }).catch(reason => {
+        console.log(reason)
+    });
+    spi_transfer(Buffer.from([0x00, 0x00]), 105, 1000000, SPIdevice).then(ret => {
         //SPIdevice.close(nothing);
+        var diff = process.hrtime(time);
+        console.log("second "+diff[0] * 1e9 + diff[1]);
+        console.log(ret);
 
-        var datagood = (ret[2] >> 7);
-        if (datagood == 0) {
-            //console.log("data bad");
-            //return;
-        }
-        var chcksum = ret[5] & 0x7f;
-        console.log((ret), " checksum: " + chcksum);
-        var val = (ret[3] << 8) + ret[4];
-        //(read[1]<<32)+(read[2]<<24)+
-        var vallow = (ret[3] << 16) + (ret[4] << 8) + ret[5];
-
-        //console.log(vallow.toString(2))
-        console.log(val, val.toString(2));
     }).catch(reason => {
         console.log(reason)
     });
@@ -88,7 +122,7 @@ function spi_transfer(message, devicePinNumber, speed, SPIdevice) {
             receiveBuffer: Buffer.alloc(Buffer.byteLength(message)),
             byteLength: Buffer.byteLength(message),
             speedHz: speed,
-            microSecondDelay: 50
+            microSecondDelay: 10,
 
         }];
         SPIdevice.transfer(spimessage, (err, message) => {
