@@ -17,22 +17,22 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            //Application.Run(new MainForm());
+            Application.Run(new MainForm());
 
 
 
 
-            //*
+            /*
             new Thread(new ThreadStart(() => {
                 while (true)
                 {
-                    Console.WriteLine("---------------------------------");
+                    //Console.WriteLine("---------------------------------");
                     ControlRoomApplication.Entities.Orientation one = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation();
                     if (one != null)
                     {
                         Console.WriteLine(one.Azimuth + " " + one.Elevation);
                     }
-                    Thread.Sleep(1000);
+                    Thread.Sleep(100);
                 }
             })).Start();
             //ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.BringUp();

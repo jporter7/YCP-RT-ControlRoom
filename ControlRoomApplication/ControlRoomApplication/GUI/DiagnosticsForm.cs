@@ -229,16 +229,17 @@ namespace ControlRoomApplication.GUI
          * ************************************************************/
         private void timer1_Tick(object sender, System.EventArgs e)
         {
-            
+
             double elevationTemperature = 0.0;
             double azimuthTemperature = 0.0;
             int ticks = azEncoder.CurrentPositionTicks;
-            
-            //Read actual encoder values
-            lblAzEncoderDegrees.Text = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth.ToString();
-            lblElEncoderDegrees.Text = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation.ToString();
 
-            
+            //Read actual encoder values
+           // lblAzEncoderDegrees.Text = "63478";//Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth.ToString();
+            //lblElEncoderDegrees.Text = "ubern";//Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation.ToString();
+
+            _azEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth;
+            _elEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation;
 
             timer1.Interval = 200;
            
@@ -347,14 +348,14 @@ namespace ControlRoomApplication.GUI
             }
 
             /*** Temperature Logic End***/
-
+            /*
             if (controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay != null)
             {
                 SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToLocalTime().ToString("hh:mm tt"));
                 SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.EndTime.ToLocalTime().ToString("hh:mm tt"));
                 SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.Status.ToString());
             }
-
+            //*/
             GetHardwareStatuses();
 
             SetCurrentAzimuthAndElevation();
