@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// 
         /// </summary>
         /// <returns>current orentation</returns>
-        public static Orientation GetCurentOrientation()
+        public Orientation GetCurentOrientation()
         {
             string message = "moshi moshi controlroom desu";
             try
