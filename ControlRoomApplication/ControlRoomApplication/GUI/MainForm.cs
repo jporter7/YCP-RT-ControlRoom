@@ -46,6 +46,14 @@ namespace ControlRoomApplication.Main
 
         }
 
+        
+        enum MicrocontrollerType
+        {
+            Production,
+            Simulation
+        }
+        
+
         /// <summary>
         /// Constructor for the main GUI form. Initializes the GUI form by calling the
         /// initialization method in another partial class. Initializes the datagridview
@@ -332,7 +340,27 @@ namespace ControlRoomApplication.Main
             return isSimulated;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>  </returns>
+        public bool IsMicrocontrollerSimulated()
+        {
+            bool isSimulated = false;
 
+            logger.Info("Selected Microcontroller Type: ");
+
+            if (comboMicrocontrollerBox.SelectedIndex == (int)MicrocontrollerType.Production)
+            {
+                isSimulated = false;
+            }
+            else
+            {
+                isSimulated = true;
+            }
+
+            return isSimulated;
+        }
 
 
 
@@ -455,9 +483,11 @@ namespace ControlRoomApplication.Main
             bool isMCUSimulated = IsMCUSimulated();
 
             bool isPLCSimulated = IsPLCSimulated();
+
+            bool isMicroControllerSimulated = IsMicrocontrollerSimulated();
             
             
-            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isMCUSimulated, isPLCSimulated);
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isMCUSimulated, isPLCSimulated, isMicroControllerSimulated);
             
             diagnosticsWindows.Show();
             

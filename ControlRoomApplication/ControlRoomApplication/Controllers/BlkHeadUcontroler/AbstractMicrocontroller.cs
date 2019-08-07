@@ -31,7 +31,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         ///  
         public abstract bool bringUp();
 
-
+        public abstract bool gadsfadf();
         /// <summary>
         /// 
         /// </summary>

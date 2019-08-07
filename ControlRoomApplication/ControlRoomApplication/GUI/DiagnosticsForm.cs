@@ -66,11 +66,20 @@ namespace ControlRoomApplication.GUI
 
         
 
-        public DiagnosticsForm(string ip, string port, bool tempSensorSimulated = false, bool MCUSimulated = false, bool PLCSimulated = false)
+        public DiagnosticsForm(string ip, string port, bool tempSensorSimulated = false, bool MCUSimulated = false, bool PLCSimulated = false, bool MicrocontrollerSimulated = false)
         {
             InitializeComponent();
-           
-      
+
+
+            if (MicrocontrollerSimulated)
+            {
+                SimulatedMicrocontroller microcontroller = new SimulatedMicrocontroller(0, 100);
+            }
+            else
+            {
+                MicroControlerControler microcontroller = new MicroControlerControler();
+            }
+
             if (PLCSimulated == false)
             {
                 ip = "127.0.0.1";
@@ -229,6 +238,7 @@ namespace ControlRoomApplication.GUI
             lblAzEncoderDegrees.Text = encoderReader.GetCurentOrientation().Azimuth.ToString();
             lblElEncoderDegrees.Text = encoderReader.GetCurentOrientation().Elevation.ToString();
 
+            
 
             timer1.Interval = 200;
            
