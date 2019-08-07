@@ -33,8 +33,8 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// 
         public override bool bringUp()
         {
-            
-            
+
+            dynamic data;
 
             data = generateTemperatureData();
 
@@ -52,14 +52,14 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         public dynamic generateTemperatureData()
         {
 
-            var list = new dynamic[1];
+            var temperatureList = new dynamic[1];
 
-            for (int i = 0; i < list.Length; i++)
+            for (int i = 0; i < temperatureList.Length; i++)
             {
-                list[i] = new { val = rand.Next(70, 100), time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + i };
+                temperatureList[i] = new { val = rand.Next(70, 100), time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + i };
 
             }
-            var temperatureData = new { type = "temp", data = list };
+            var temperatureData = new { type = "temp", data = temperatureList };
 
            
 
