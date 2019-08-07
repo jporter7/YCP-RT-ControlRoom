@@ -27,7 +27,7 @@ namespace ControlRoomApplication.Main
                 while (true)
                 {
                     Console.WriteLine("---------------------------------");
-                    ControlRoomApplication.Entities.Orientation one = ControlRoomApplication.Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation();
+                    ControlRoomApplication.Entities.Orientation one = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation();
                     if (one != null)
                     {
                         Console.WriteLine(one.Azimuth + " " + one.Elevation);

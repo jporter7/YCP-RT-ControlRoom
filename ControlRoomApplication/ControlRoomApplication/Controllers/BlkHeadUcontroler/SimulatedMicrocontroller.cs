@@ -16,15 +16,19 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     {
         Random rand = new Random();
         dynamic sensorData;
+        private double _minMotorTemperature;
+        private double _maxMotorTemperature;
 
         /// <summary>
         /// 
         /// </summary>
         /// 
-        public SimulatedMicrocontroller()
+        public SimulatedMicrocontroller(double minMotorTemperature, double maxMotorTemperature)
         {
-
-            //create a fake sensor
+            //Set the minimum and maximum temperature for the motors
+            _minMotorTemperature = minMotorTemperature;
+            _maxMotorTemperature = maxMotorTemperature;
+            
         }
 
         /// <summary>
@@ -58,14 +62,14 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         public dynamic generateTemperatureData()
         {
 
-            var list = new dynamic[1];
+            var temperatureList = new dynamic[1];
 
-            for (int i = 0; i < list.Length; i++)
+            for (int i = 0; i < temperatureList.Length; i++)
             {
-                list[i] = new { val = rand.Next(70, 100), time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + i };
+                temperatureList[i] = new { val = rand.Next(70, 100), time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + i };
 
             }
-            var temperatureData = new { type = "temp", data = list };
+            var temperatureData = new { type = "temp", data = temperatureList };
 
            
 

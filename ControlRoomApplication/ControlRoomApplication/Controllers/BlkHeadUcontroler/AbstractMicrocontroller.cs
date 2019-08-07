@@ -31,7 +31,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         ///  
         public abstract bool BringUp();
 
-
         /// <summary>
         /// 
         /// </summary>

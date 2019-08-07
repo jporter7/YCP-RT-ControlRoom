@@ -13,12 +13,12 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     /// <summary>
     /// controler for micro prosor in the 
     /// </summary>
-    public class MicroControllerController : AbstractMicrocontroller
+    public class MicroControlerControler : AbstractMicrocontroller
     {
         /// <summary>
         /// constructor for the micrcontroler only has bring up method which starts a server listing on ip and port
         /// </summary>
-        MicroControllerController() : base() { }
+        MicroControlerControler() : base() { }
         /// <summary>
         /// state of tcp conection
         /// </summary>
