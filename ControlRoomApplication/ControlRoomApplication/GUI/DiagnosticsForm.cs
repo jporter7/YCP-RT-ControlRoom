@@ -61,11 +61,9 @@ namespace ControlRoomApplication.GUI
 
         /// <summary>
         /// Initializes the diagnostic form based off of the specified configuration.
+        /// called when clicking the general button
         /// </summary>
         /// 
-
-        
-
         public DiagnosticsForm(string ip, string port, bool tempSensorSimulated = false, bool MCUSimulated = false, bool PLCSimulated = false, bool MicrocontrollerSimulated = false)
         {
             InitializeComponent();
@@ -112,6 +110,7 @@ namespace ControlRoomApplication.GUI
 
         /// <summary>
         /// Initializes the diagnostic form based off of the specified configuration.
+        /// called when clicking on a specific telescope
         /// </summary>
         /// 
         public DiagnosticsForm(ControlRoom controlRoom, int rtId)
