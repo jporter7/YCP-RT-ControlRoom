@@ -281,7 +281,7 @@
             // 
             this.radioButton1.AutoSize = true;
             this.radioButton1.Location = new System.Drawing.Point(829, 110);
-            this.radioButton1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButton1.Margin = new System.Windows.Forms.Padding(4);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(74, 21);
             this.radioButton1.TabIndex = 16;
@@ -293,7 +293,7 @@
             // 
             this.radioButton2.AutoSize = true;
             this.radioButton2.Location = new System.Drawing.Point(701, 110);
-            this.radioButton2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.radioButton2.Margin = new System.Windows.Forms.Padding(4);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(97, 21);
             this.radioButton2.TabIndex = 17;
@@ -326,7 +326,7 @@
             // txtTemperature
             // 
             this.txtTemperature.Location = new System.Drawing.Point(1111, 28);
-            this.txtTemperature.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtTemperature.Margin = new System.Windows.Forms.Padding(4);
             this.txtTemperature.Name = "txtTemperature";
             this.txtTemperature.Size = new System.Drawing.Size(51, 22);
             this.txtTemperature.TabIndex = 20;
@@ -334,7 +334,7 @@
             // btnTest
             // 
             this.btnTest.Location = new System.Drawing.Point(1097, 65);
-            this.btnTest.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnTest.Margin = new System.Windows.Forms.Padding(4);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(79, 42);
             this.btnTest.TabIndex = 21;
@@ -371,7 +371,7 @@
             // btnAddOneTemp
             // 
             this.btnAddOneTemp.Location = new System.Drawing.Point(695, 144);
-            this.btnAddOneTemp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAddOneTemp.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddOneTemp.Name = "btnAddOneTemp";
             this.btnAddOneTemp.Size = new System.Drawing.Size(47, 43);
             this.btnAddOneTemp.TabIndex = 24;
@@ -382,7 +382,7 @@
             // btnAddFiveTemp
             // 
             this.btnAddFiveTemp.Location = new System.Drawing.Point(765, 144);
-            this.btnAddFiveTemp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAddFiveTemp.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddFiveTemp.Name = "btnAddFiveTemp";
             this.btnAddFiveTemp.Size = new System.Drawing.Size(47, 43);
             this.btnAddFiveTemp.TabIndex = 25;
@@ -393,7 +393,7 @@
             // btnAddXTemp
             // 
             this.btnAddXTemp.Location = new System.Drawing.Point(829, 144);
-            this.btnAddXTemp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAddXTemp.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddXTemp.Name = "btnAddXTemp";
             this.btnAddXTemp.Size = new System.Drawing.Size(47, 43);
             this.btnAddXTemp.TabIndex = 26;
@@ -418,7 +418,7 @@
             // 
             this.selectDemo.AutoSize = true;
             this.selectDemo.Location = new System.Drawing.Point(960, 126);
-            this.selectDemo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.selectDemo.Margin = new System.Windows.Forms.Padding(4);
             this.selectDemo.Name = "selectDemo";
             this.selectDemo.Size = new System.Drawing.Size(97, 21);
             this.selectDemo.TabIndex = 29;
@@ -428,7 +428,7 @@
             // btnSubtractOneTemp
             // 
             this.btnSubtractOneTemp.Location = new System.Drawing.Point(695, 194);
-            this.btnSubtractOneTemp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubtractOneTemp.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubtractOneTemp.Name = "btnSubtractOneTemp";
             this.btnSubtractOneTemp.Size = new System.Drawing.Size(47, 43);
             this.btnSubtractOneTemp.TabIndex = 30;
@@ -439,7 +439,7 @@
             // btnSubtractFiveTemp
             // 
             this.btnSubtractFiveTemp.Location = new System.Drawing.Point(765, 194);
-            this.btnSubtractFiveTemp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubtractFiveTemp.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubtractFiveTemp.Name = "btnSubtractFiveTemp";
             this.btnSubtractFiveTemp.Size = new System.Drawing.Size(47, 43);
             this.btnSubtractFiveTemp.TabIndex = 31;
@@ -450,7 +450,7 @@
             // btnSubtractXTemp
             // 
             this.btnSubtractXTemp.Location = new System.Drawing.Point(829, 194);
-            this.btnSubtractXTemp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubtractXTemp.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubtractXTemp.Name = "btnSubtractXTemp";
             this.btnSubtractXTemp.Size = new System.Drawing.Size(47, 43);
             this.btnSubtractXTemp.TabIndex = 32;
@@ -461,7 +461,7 @@
             // txtCustTemp
             // 
             this.txtCustTemp.Location = new System.Drawing.Point(897, 194);
-            this.txtCustTemp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtCustTemp.Margin = new System.Windows.Forms.Padding(4);
             this.txtCustTemp.Name = "txtCustTemp";
             this.txtCustTemp.Size = new System.Drawing.Size(67, 22);
             this.txtCustTemp.TabIndex = 33;
@@ -498,7 +498,7 @@
             this.panel1.Controls.Add(this.lblAzProx2);
             this.panel1.Controls.Add(this.lblAzProx1);
             this.panel1.Location = new System.Drawing.Point(660, 274);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(503, 423);
             this.panel1.TabIndex = 35;
@@ -756,7 +756,7 @@
             // btnAddOneEncoder
             // 
             this.btnAddOneEncoder.Location = new System.Drawing.Point(13, 538);
-            this.btnAddOneEncoder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAddOneEncoder.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddOneEncoder.Name = "btnAddOneEncoder";
             this.btnAddOneEncoder.Size = new System.Drawing.Size(47, 43);
             this.btnAddOneEncoder.TabIndex = 41;
@@ -767,7 +767,7 @@
             // btnAddFiveEncoder
             // 
             this.btnAddFiveEncoder.Location = new System.Drawing.Point(72, 538);
-            this.btnAddFiveEncoder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAddFiveEncoder.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddFiveEncoder.Name = "btnAddFiveEncoder";
             this.btnAddFiveEncoder.Size = new System.Drawing.Size(47, 43);
             this.btnAddFiveEncoder.TabIndex = 42;
@@ -778,7 +778,7 @@
             // btnAddXEncoder
             // 
             this.btnAddXEncoder.Location = new System.Drawing.Point(128, 538);
-            this.btnAddXEncoder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnAddXEncoder.Margin = new System.Windows.Forms.Padding(4);
             this.btnAddXEncoder.Name = "btnAddXEncoder";
             this.btnAddXEncoder.Size = new System.Drawing.Size(47, 43);
             this.btnAddXEncoder.TabIndex = 43;
@@ -789,7 +789,7 @@
             // btnSubtractOneEncoder
             // 
             this.btnSubtractOneEncoder.Location = new System.Drawing.Point(12, 588);
-            this.btnSubtractOneEncoder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubtractOneEncoder.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubtractOneEncoder.Name = "btnSubtractOneEncoder";
             this.btnSubtractOneEncoder.Size = new System.Drawing.Size(47, 43);
             this.btnSubtractOneEncoder.TabIndex = 44;
@@ -800,7 +800,7 @@
             // btnSubtractFiveEncoder
             // 
             this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(72, 588);
-            this.btnSubtractFiveEncoder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubtractFiveEncoder.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubtractFiveEncoder.Name = "btnSubtractFiveEncoder";
             this.btnSubtractFiveEncoder.Size = new System.Drawing.Size(47, 43);
             this.btnSubtractFiveEncoder.TabIndex = 45;
@@ -811,7 +811,7 @@
             // btnSubtractXEncoder
             // 
             this.btnSubtractXEncoder.Location = new System.Drawing.Point(127, 588);
-            this.btnSubtractXEncoder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSubtractXEncoder.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubtractXEncoder.Name = "btnSubtractXEncoder";
             this.btnSubtractXEncoder.Size = new System.Drawing.Size(47, 43);
             this.btnSubtractXEncoder.TabIndex = 46;
@@ -832,7 +832,7 @@
             // txtCustEncoderVal
             // 
             this.txtCustEncoderVal.Location = new System.Drawing.Point(187, 588);
-            this.txtCustEncoderVal.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtCustEncoderVal.Margin = new System.Windows.Forms.Padding(4);
             this.txtCustEncoderVal.Name = "txtCustEncoderVal";
             this.txtCustEncoderVal.Size = new System.Drawing.Size(67, 22);
             this.txtCustEncoderVal.TabIndex = 48;
@@ -840,7 +840,7 @@
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(504, 588);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(67, 22);
             this.textBox1.TabIndex = 56;
@@ -858,7 +858,7 @@
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(444, 588);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(47, 43);
             this.button1.TabIndex = 54;
@@ -868,7 +868,7 @@
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(389, 588);
-            this.button2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(47, 43);
             this.button2.TabIndex = 53;
@@ -878,7 +878,7 @@
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(329, 588);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(47, 43);
             this.button3.TabIndex = 52;
@@ -888,7 +888,7 @@
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(445, 538);
-            this.button4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button4.Margin = new System.Windows.Forms.Padding(4);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(47, 43);
             this.button4.TabIndex = 51;
@@ -898,7 +898,7 @@
             // button5
             // 
             this.button5.Location = new System.Drawing.Point(389, 538);
-            this.button5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button5.Margin = new System.Windows.Forms.Padding(4);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(47, 43);
             this.button5.TabIndex = 50;
@@ -908,7 +908,7 @@
             // button6
             // 
             this.button6.Location = new System.Drawing.Point(331, 538);
-            this.button6.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button6.Margin = new System.Windows.Forms.Padding(4);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(47, 43);
             this.button6.TabIndex = 49;
@@ -979,7 +979,7 @@
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(40, 688);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(51, 22);
             this.textBox2.TabIndex = 63;
@@ -1006,7 +1006,7 @@
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(39, 736);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(52, 22);
             this.textBox3.TabIndex = 66;
@@ -1014,7 +1014,7 @@
             // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(40, 784);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(4);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(51, 22);
             this.textBox4.TabIndex = 67;
@@ -1062,7 +1062,7 @@
             // PLC_regs
             // 
             this.PLC_regs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.PLC_regs.Location = new System.Drawing.Point(1257, 12);
+            this.PLC_regs.Location = new System.Drawing.Point(1183, 12);
             this.PLC_regs.Name = "PLC_regs";
             this.PLC_regs.RowTemplate.Height = 24;
             this.PLC_regs.Size = new System.Drawing.Size(514, 685);
@@ -1072,7 +1072,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1892, 839);
+            this.ClientSize = new System.Drawing.Size(1839, 839);
             this.Controls.Add(this.PLC_regs);
             this.Controls.Add(this.label22);
             this.Controls.Add(this.label21);

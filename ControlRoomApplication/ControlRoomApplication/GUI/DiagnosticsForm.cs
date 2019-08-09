@@ -6,9 +6,7 @@ using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
 using ControlRoomApplication.Simulators.Hardware.MCU;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
-
-
-
+using System;
 
 namespace ControlRoomApplication.GUI
 {
@@ -59,15 +57,23 @@ namespace ControlRoomApplication.GUI
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+
+
+        public ProductionPLCDriver PLC;
+
         /// <summary>
         /// Initializes the diagnostic form based off of the specified configuration.
         /// called when clicking the general button
         /// </summary>
         /// 
-        public DiagnosticsForm(string ip, string port, bool tempSensorSimulated = false, bool MCUSimulated = false, bool PLCSimulated = false, bool MicrocontrollerSimulated = false)
+        public DiagnosticsForm(string ip, string port, ProductionPLCDriver PLCin, bool tempSensorSimulated = false, bool MCUSimulated = false, bool PLCSimulated = false, bool MicrocontrollerSimulated = false)
         {
-            InitializeComponent();
+            PLC = PLCin;
 
+            InitializeComponent();
+            PLC_regs.ColumnCount = 2;
+            PLC_regs.Columns[0].HeaderText = "register";
+            PLC_regs.Columns[1].HeaderText = "data";
 
             if (MicrocontrollerSimulated)
             {
@@ -113,14 +119,19 @@ namespace ControlRoomApplication.GUI
         /// called when clicking on a specific telescope
         /// </summary>
         /// 
-        public DiagnosticsForm(ControlRoom controlRoom, int rtId)
+        public DiagnosticsForm(ControlRoom controlRoom, int rtId, ProductionPLCDriver PLCin)
         {
+
+            PLC = PLCin;
+
             InitializeComponent();
             az = 0.0;
             el = 0.0;
 
-           
-            
+
+            PLC_regs.ColumnCount = 2;
+            PLC_regs.Columns[0].HeaderText = "register";
+            PLC_regs.Columns[1].HeaderText = "data";
 
 
 
@@ -132,6 +143,11 @@ namespace ControlRoomApplication.GUI
             dataGridView1.ColumnCount = 2;
             dataGridView1.Columns[0].HeaderText = "Hardware";
             dataGridView1.Columns[1].HeaderText = "Status";
+
+
+            PLC_regs.ColumnCount = 2;
+            PLC_regs.Columns[0].HeaderText = "register";
+            PLC_regs.Columns[1].HeaderText = "data";
 
             GetHardwareStatuses();
             string[] spectraCyberRow = { "SpectraCyber", statuses[0] };
@@ -150,17 +166,19 @@ namespace ControlRoomApplication.GUI
 
         private void SetCurrentAzimuthAndElevation()
         {
-            label3.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString("0.00");
-            label4.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString("0.00");
-             
-           
+            // label3.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString("0.00");
+            //label4.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString("0.00");
+            label3.Text = Convert.ToString(_azEncoderDegrees);
+            label4.Text = Convert.ToString(_elEncoderDegrees);
+
+
         }
 
         /// <summary>
         /// Gets and displays the current statuses of the hardware components for the specified configuration.
         /// </summary>
         private void GetHardwareStatuses()
-        {
+        {/*
             if (controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive())
             {
                 statuses[0] = "Online";
@@ -170,7 +188,7 @@ namespace ControlRoomApplication.GUI
             {
                 statuses[1] = "Online";
             }
-
+            //*/
             
 
             
@@ -355,6 +373,39 @@ namespace ControlRoomApplication.GUI
                 SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.Status.ToString());
             }
             //*/
+
+
+            // Suit suit in (ushort[])Enum.GetValues(typeof(PLC_modbus_server_register_mapping))
+            if (PLC_regs.Rows.Count > 5)
+            {
+                int i = 0;
+                ushort[] val = PLC.Read_local_regs(0, 127);
+
+                foreach (ushort reg in (ushort[])Enum.GetValues(typeof(PLC_modbus_server_register_mapping)))
+                {
+                    string[] row = { ((PLC_modbus_server_register_mapping)reg).ToString(), Convert.ToString(val[reg+1]).PadLeft(5) };//.Replace(" ", "0") };
+                    //PLC_regs.Rows.Add(row);
+                    PLC_regs.Rows[i].SetValues(row); //= Convert.ToString(val, 2).PadLeft(16).Replace(" ", "0");
+                    i++;
+                }
+            }
+            else
+            {
+                PLC_regs.Rows.Clear();
+                foreach (ushort reg in (ushort[])Enum.GetValues(typeof(PLC_modbus_server_register_mapping)))
+                {
+                    ushort val = PLC.readregval(reg);
+                    string[] row = { ((PLC_modbus_server_register_mapping)reg).ToString(), Convert.ToString(val, 2).PadLeft(16).Replace(" ", "0") };
+                    PLC_regs.Rows.Add(row);
+
+                }
+            }
+
+            
+
+
+
+
             GetHardwareStatuses();
 
             SetCurrentAzimuthAndElevation();

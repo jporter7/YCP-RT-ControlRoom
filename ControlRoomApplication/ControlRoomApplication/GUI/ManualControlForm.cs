@@ -12,9 +12,12 @@ namespace ControlRoomApplication.Main
         public int speed { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private ProductionPLCDriver PLC;
 
-        public ManualControlForm(ControlRoom new_controlRoom, int rtId)
+        public ManualControlForm(ControlRoom new_controlRoom, int rtId, ProductionPLCDriver PLCin)
         {
+            PLC = PLCin;
+
             InitializeComponent();
 
             // Set ControlRoom
@@ -50,7 +53,8 @@ namespace ControlRoomApplication.Main
             UpdateText("Moving at -" + comboBox1.Text);
 
             // Start CCW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(speed, false);
+            PLC.sendmovecomand(speed , 5, 15000, 15000);
+            //rt_controller.StartRadioTelescopeAzimuthJog(speed, false);
         }
 
         private void NegButton_MouseUp(object sender, MouseEventArgs e)
@@ -68,7 +72,8 @@ namespace ControlRoomApplication.Main
             UpdateText("Moving at " + comboBox1.Text);
 
             // Start CW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+            PLC.sendmovecomand(speed, 5, 15000, 15000);
+            //rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
         }
 
         private void PosButton_MouseUp(object sender, MouseEventArgs e)
@@ -104,12 +109,12 @@ namespace ControlRoomApplication.Main
             if (radioButton1.Checked)
             {
                 logger.Info("Executed Controlled Stop");
-                rt_controller.ExecuteRadioTelescopeControlledStop();
+                //rt_controller.ExecuteRadioTelescopeControlledStop();
             }
             else if (radioButton2.Checked)
             {
                 logger.Info("Executed Immediate Stop");
-                rt_controller.ExecuteRadioTelescopeImmediateStop();
+               // rt_controller.ExecuteRadioTelescopeImmediateStop();
             }
             else
             {
@@ -122,14 +127,18 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Move Relative Button Clicked");
             int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
-            rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
+            // rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
+            
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Entities.Orientation currentOrienation = rt_controller.GetCurrentOrientation();
-            SetActualAZText(currentOrienation.Azimuth.ToString("0.##"));
-            SetActualELText(currentOrienation.Elevation.ToString("0.##"));
+           // Entities.Orientation currentOrienation = rt_controller.GetCurrentOrientation();//
+            //SetActualAZText(currentOrienation.Azimuth.ToString("0.##"));
+            //SetActualELText(currentOrienation.Elevation.ToString("0.##"));
+
+
+
         }
 
         delegate void SetActualAZTextCallback(string text);

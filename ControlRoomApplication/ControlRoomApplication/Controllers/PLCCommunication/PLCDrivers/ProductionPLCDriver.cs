@@ -103,7 +103,7 @@ namespace ControlRoomApplication.Controllers
 
 
             await MCUModbusMaster.WriteMultipleRegistersAsync(1024, no_op_cmd);//write a no-op to the mcu
-            Task task = Task.Delay(20);//wait to ensure it is porcessed
+            Task task = Task.Delay(100);//wait to ensure it is porcessed
             await task;
             //this is a linearly interpolated relative move
             ushort[] data = {0, 0x0403,
@@ -153,6 +153,17 @@ namespace ControlRoomApplication.Controllers
             //throw new NotImplementedException();
         }
 
+        public ushort[] Read_local_regs(ushort start_adr,ushort num_regs)
+        {
+            ushort[] data = new ushort[num_regs];
+            for (int i = start_adr; i < (start_adr + num_regs); i++)
+            {
+                data[i] = Modbusserver.DataStore.HoldingRegisters[i];
+            }
+
+            return data;
+        }
+
         private void Server_Written_to_handler(object sender, DataStoreEventArgs e)
         {
             //Console.Write("\n modbus request adr: " + e.StartAddress + "\n");
@@ -162,7 +173,7 @@ namespace ControlRoomApplication.Controllers
             //Modbusserver.DataStore.HoldingRegisters[e.StartAddress] += 1;
 
             //
-           // Console.WriteLine("current regs" );
+           //Console.WriteLine("current regs" );
             while (regs.MoveNext())
             {
                 if (regs.Current!=0)

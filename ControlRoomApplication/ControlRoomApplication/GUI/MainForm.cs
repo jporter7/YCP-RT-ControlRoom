@@ -25,6 +25,9 @@ namespace ControlRoomApplication.Main
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+
+        public ProductionPLCDriver tempProd;
+
         enum TempSensorType
         {
             Production,
@@ -152,7 +155,8 @@ namespace ControlRoomApplication.Main
 
                     if (APLCDriver is ProductionPLCDriver)
                     {
-                        ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(500, 500, 0, 0);
+                        //ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(500, 500, 0, 0);
+                        tempProd.configure_muc(1000,1000,0,0);
                     }
                 }
                 else
@@ -248,7 +252,7 @@ namespace ControlRoomApplication.Main
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             logger.Info("dataGridView1_CellContent Clicked");
-            DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, dataGridView1.CurrentCell.RowIndex);
+            DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, dataGridView1.CurrentCell.RowIndex, tempProd);
             diagnosticForm.Show();
         }
 
@@ -300,7 +304,9 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info("Building ProductionPLCDriver");
-                    return new ProductionMCUDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+                    tempProd = new ProductionPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+                    //return new ProductionMCUDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+                    return tempProd;
 
                 case 1:
                     logger.Info("Building ScaleModelPLCDriver");
@@ -459,7 +465,7 @@ namespace ControlRoomApplication.Main
         private void ManualControl_Click(object sender, EventArgs e)
         {
             logger.Info("Manual Control Button Clicked");
-            ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+            ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id, tempProd);
             // Create free control thread
             Thread ManualControlThread = new Thread(() => manualControlWindow.ShowDialog())
             {
@@ -487,7 +493,7 @@ namespace ControlRoomApplication.Main
             bool isMicroControllerSimulated = IsMicrocontrollerSimulated();
             
             
-            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isMCUSimulated, isPLCSimulated, isMicroControllerSimulated);
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, tempProd, isTempSensorSimulated, isMCUSimulated, isPLCSimulated, isMicroControllerSimulated);
             
             diagnosticsWindows.Show();
             
