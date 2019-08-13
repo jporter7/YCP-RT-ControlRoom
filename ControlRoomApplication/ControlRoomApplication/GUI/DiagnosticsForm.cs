@@ -162,6 +162,9 @@ namespace ControlRoomApplication.GUI
         /// </summary>
         private void GetHardwareStatuses()
         {
+
+            //TODO: this is currently broken, fix it.
+            //*
             if (controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive())
             {
                 statuses[0] = "Online";
@@ -171,7 +174,7 @@ namespace ControlRoomApplication.GUI
             {
                 statuses[1] = "Online";
             }
-
+            //*/
             
 
             
@@ -235,11 +238,8 @@ namespace ControlRoomApplication.GUI
             int ticks = azEncoder.CurrentPositionTicks;
 
             //Read actual encoder values
-           // lblAzEncoderDegrees.Text = "63478";//Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth.ToString();
-            //lblElEncoderDegrees.Text = "ubern";//Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation.ToString();
-
-            _azEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth;
-            _elEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation;
+            //_azEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth;
+            //_elEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation;
 
             timer1.Interval = 200;
            
