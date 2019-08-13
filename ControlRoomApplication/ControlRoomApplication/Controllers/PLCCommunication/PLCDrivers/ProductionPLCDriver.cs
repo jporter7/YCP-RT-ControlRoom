@@ -92,6 +92,9 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+
+
+
         public async Task<bool> sendmovecomand(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
         {
             bool Sucess = true;
