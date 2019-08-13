@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
+using System.Net;
 
 namespace ControlRoomApplication.Main
 {
@@ -62,6 +63,13 @@ namespace ControlRoomApplication.Main
         public MainForm()
         {
             InitializeComponent();
+
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress[] v4_list = new IPAddress[ipHostInfo.AddressList.Length / 2];
+            System.Array.Copy(ipHostInfo.AddressList, ipHostInfo.AddressList.Length / 2, v4_list, 0, ipHostInfo.AddressList.Length / 2);
+            this.LocalIPCombo.Items.AddRange(v4_list);
+
+
             DatabaseOperations.DeleteLocalDatabase();
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 3;
@@ -493,7 +501,18 @@ namespace ControlRoomApplication.Main
             
         }
 
+        private void loopBackBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (loopBackBox.Checked)
+            {
+                this.txtPLCIP.Text = "127.0.0.1";
+                if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
+                {
+                    this.LocalIPCombo.Items.Add(IPAddress.Parse("127.0.0.1"));
+                }
+                this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
+            }
 
-
+        }
     }
 }
