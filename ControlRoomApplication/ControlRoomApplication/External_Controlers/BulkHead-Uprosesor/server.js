@@ -23,7 +23,7 @@ server.on('connection', function (socket) {
     Promise.all([getAZposition(), getELposition()])
         .then(function (values) {//wait for all the promises to resolve
             clearTimeout(encodertimeout);
-            console.log(values)
+            //console.log(values)
             let msg = { uuid: uuid, type: "position", AZ: values[0], EL: values[1] };
             socket.write(JSON.stringify(msg));
         }).catch((reason) => {
@@ -50,26 +50,27 @@ var azEncoderMessage = [{
     microSecondDelay: 0xf
 
 }];
-
+//[{ threeWire: true, noChipSelect: true, }]
 function getAZposition() {
     return new Promise((resolve, reject) => {
-        let AZencoder = spi.open(config.azencoderSPIbus, config.azencoderSPIdeviceNumber, [{ threeWire: true, noChipSelect: true, }], (err) => {
+        let AZencoder = spi.open(2, 0, (err) => {
             if (err) reject(err);
             AZencoder.transfer(azEncoderMessage, (err, message) => {
                 if (err) reject(err);
                 var read = message[0].receiveBuffer;
                 var datagood = (read[2] >> 7);
                 if (datagood == 0) {
-                    reject("bad_data")
-                    console.log("data bad");
-                    return;
+                    //reject("bad_data")
+                    //console.log("data bad");
+                    //return;
                 }
                 var chcksum = read[5] & 0x7f;
-                var val = (read[3] << 8) + read[4];
+                var val = (read[2] << 16)+ (read[3] << 8) + read[4];
                 var vallow = (read[3] << 16) + (read[4] << 8) + read[5];
-                console.log((message[0].receiveBuffer), " checksum: " + chcksum);
-                console.log(vallow.toString(2))
-                console.log(val, val.toString(2));
+               //console.log((message[0].receiveBuffer));//, " checksum: " + chcksum);
+                //console.log(val.toString(2).padStart(21, '0') ,val)
+                console.log((read[0].toString(2).padStart(8, '0')+" "+read[1].toString(2).padStart(8, '0')+" "+read[2].toString(2).padStart(8, '0')+" "+read[3].toString(2).padStart(8, '0')+" "+read[4].toString(2).padStart(8, '0')+" "+read[5].toString(2).padStart(8, '0')), (message[0].receiveBuffer) )
+                //console.log(val, val.toString(2));
                 resolve(val);
                 AZencoder.close(nothing);
             });
@@ -79,7 +80,7 @@ function getAZposition() {
 
 function getELposition() {
     return new Promise((resolve, reject) => {
-        let AZencoder = spi.open(config.azencoderSPIbus, config.azencoderSPIdeviceNumber, (err) => {
+       /* let AZencoder = spi.open(config.azencoderSPIbus, config.azencoderSPIdeviceNumber, (err) => {
             if (err) reject(err);
             AZencoder.transfer(azEncoderMessage, (err, message) => {
                 if (err) reject(err);
@@ -89,6 +90,8 @@ function getELposition() {
                 resolve(rawValue);
             });
         });
+        /*/
+        resolve(0)
     });
 }
 
@@ -103,6 +106,8 @@ function makeUUid() {
     });
     return uuid;
 }
+
+function nothing(){}
 
 /*
     return new Promise((resolve, reject) => {

@@ -56,6 +56,7 @@ namespace ControlRoomApplication.Controllers
             {
                 PLCTCPClient = new TcpClient(ip, port);
                 PLCTCPStream = PLCTCPClient.GetStream();
+                
             }
             catch (Exception e)
             {
@@ -177,6 +178,7 @@ namespace ControlRoomApplication.Controllers
             OutgoingDataSet = true;
 
             StreamCommunicationThreadMutex.ReleaseMutex();
+
         }
 
         private byte[] SendMessageWithResponse(byte[] ByteData, int ExpectedResponseSize, int TimeoutMS = 10000)

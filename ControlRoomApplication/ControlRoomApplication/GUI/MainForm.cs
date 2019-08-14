@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows.Forms;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
+using System.Net;
 
 namespace ControlRoomApplication.Main
 {
@@ -46,6 +47,14 @@ namespace ControlRoomApplication.Main
 
         }
 
+        
+        enum MicrocontrollerType
+        {
+            Production,
+            Simulation
+        }
+        
+
         /// <summary>
         /// Constructor for the main GUI form. Initializes the GUI form by calling the
         /// initialization method in another partial class. Initializes the datagridview
@@ -54,6 +63,13 @@ namespace ControlRoomApplication.Main
         public MainForm()
         {
             InitializeComponent();
+
+            IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress[] v4_list = new IPAddress[ipHostInfo.AddressList.Length / 2];
+            System.Array.Copy(ipHostInfo.AddressList, ipHostInfo.AddressList.Length / 2, v4_list, 0, ipHostInfo.AddressList.Length / 2);
+            this.LocalIPCombo.Items.AddRange(v4_list);
+
+
             DatabaseOperations.DeleteLocalDatabase();
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 3;
@@ -292,7 +308,7 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info("Building ProductionPLCDriver");
-                    return new ProductionPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+                    return new ProductionMCUDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
 
                 case 1:
                     logger.Info("Building ScaleModelPLCDriver");
@@ -332,7 +348,27 @@ namespace ControlRoomApplication.Main
             return isSimulated;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>  </returns>
+        public bool IsMicrocontrollerSimulated()
+        {
+            bool isSimulated = false;
 
+            logger.Info("Selected Microcontroller Type: ");
+
+            if (comboMicrocontrollerBox.SelectedIndex == (int)MicrocontrollerType.Production)
+            {
+                isSimulated = false;
+            }
+            else
+            {
+                isSimulated = true;
+            }
+
+            return isSimulated;
+        }
 
 
 
@@ -455,15 +491,28 @@ namespace ControlRoomApplication.Main
             bool isMCUSimulated = IsMCUSimulated();
 
             bool isPLCSimulated = IsPLCSimulated();
+
+            bool isMicroControllerSimulated = IsMicrocontrollerSimulated();
             
             
-            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isMCUSimulated, isPLCSimulated);
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isMCUSimulated, isPLCSimulated, isMicroControllerSimulated);
             
             diagnosticsWindows.Show();
             
         }
 
+        private void loopBackBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (loopBackBox.Checked)
+            {
+                this.txtPLCIP.Text = "127.0.0.1";
+                if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
+                {
+                    this.LocalIPCombo.Items.Add(IPAddress.Parse("127.0.0.1"));
+                }
+                this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
+            }
 
-
+        }
     }
 }

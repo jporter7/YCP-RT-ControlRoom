@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private TcpClient MCUTCPClient;
-        private ModbusIpMaster MCUModbusMaster;
+        public ModbusIpMaster MCUModbusMaster;
         /// <summary>
         /// 
         /// </summary>
@@ -24,7 +24,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="portLocal"></param>
         public ProductionMCUDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
         {
-            MCUTCPClient = new TcpClient(MCUConstants.ACTUAL_MCU_IP_ADDRESS, MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
+            MCUTCPClient = new TcpClient("192.168.0.50", MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
         }
         /// <summary>
@@ -103,7 +103,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
         /// <summary>
-        /// 
+        /// this stops the mcudirectly in a controld maner
         /// </summary>
         /// <returns></returns>
         public bool SendEmptyMoveCommand()
@@ -117,7 +117,52 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
         /// <summary>
+        /// configures the axies 
+        /// </summary>
+        /// <returns></returns>
+       public bool configure_axies(int gearedSpeedAZ, int gearedSpeedEL, ushort homeTimeoutSecondsAzimuth, ushort homeTimeoutSecondsElevation)
+        {
+            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), homeTimeoutSecondsElevation,
+                                0x0,    0x0,    0x0,                                 0x0,                            0x0,
+                                0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), homeTimeoutSecondsAzimuth,
+                                0x0,    0x0,    0x0,                                0x0,                             0x0
+                                };
+            Console.WriteLine(data.Length);
+            MCUModbusMaster.WriteMultipleRegisters(1024, data);
+            return true;
+        }
+
+        /// <summary>
+        /// this returns the orientation relative to position when the MCU configured
+        /// </summary>
+        /// <returns></returns>
+        public Orientation read_Position_offset()
+        {
+            ushort[] inputs= MCUModbusMaster.ReadHoldingRegisters(0,20);
+            byte[] inbytes = new byte[inputs.Length * 2];
+            Buffer.BlockCopy(inputs, 0, inbytes, 0, inputs.Length * 2);
+
+            ushort msb, lsvb;
+            msb = inputs[2];
+            lsvb = inputs[3];
+            int ofset = lsvb + (msb << 16);
+            double azpos= (ofset/(20000*500))*360;
+
+            msb = inputs[12];
+            lsvb = inputs[13];
+            ofset = lsvb + (msb << 16);
+            double elpos = (ofset / (20000 * 50))*90;
+
+            return new Orientation(azpos, elpos);
+            //return new Orientation(BitConverter.ToDouble(inbytes, 4), BitConverter.ToDouble(inbytes, 24));
+        }
+
+
+        /// <summary>
         /// handle conection data comming from modbus device
+        /// this serves as part of a tcp server along with HandleClientManagementThread
+        /// it apears to have been designed for ethernet/ip which we found out our plc cant do 
+        /// this is probably unnecicary in the mcu drivers.
         /// </summary>
         /// <param name="ActiveClientStream"></param>
         /// <param name="query"></param>
@@ -394,9 +439,12 @@ namespace ControlRoomApplication.Controllers
 
             return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         protected override void HandleClientManagementThread()
         {
+            //return;
             TcpClient AcceptedClient = null;
             byte[] StreamBuffer = new byte[256];
             byte[] ClippedData;

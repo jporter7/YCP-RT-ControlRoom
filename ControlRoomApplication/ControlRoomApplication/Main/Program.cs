@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 //using System.Threading;
@@ -25,67 +26,151 @@ namespace ControlRoomApplication.Main
             new Thread(new ThreadStart(() => {
                 while (true)
                 {
-                    Console.WriteLine("---------------------------------");
-                    ControlRoomApplication.Entities.Orientation one = ControlRoomApplication.Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation();
+                    //Console.WriteLine("---------------------------------");
+                    ControlRoomApplication.Entities.Orientation one = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation();
                     if (one != null)
                     {
                         Console.WriteLine(one.Azimuth + " " + one.Elevation);
                     }
-                    Thread.Sleep(1000);
+                    Thread.Sleep(100);
                 }
             })).Start();
-            ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
+            //ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.BringUp();
 //*/
             /*
-             Console.WriteLine(ushort.MaxValue);
-             new Thread(new ThreadStart(() => {
-                 Console.WriteLine("---------------------------------");
-                 Controllers.ProductionPLCDriver APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
-                 ushort i = 0;//7500
-                 while (i< ushort.MaxValue)
-                 {
-                     //Thread.Sleep(1000);
+            runer();
+            async void runer()
+            {
+                Controllers.ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver(("192.168.0.02"), 502);
+                new Thread(plc.HandleClientManagementThread).Start();
 
-                     ushort[] one;
-                     try
-                     {
-                        // i = 25;
-                         one = APLCDriver.readregisters(i, (ushort)1);
-                     }
-                     catch(Exception e)
-                     {
-                         Console.WriteLine("read reg {0,6} failed",i);
-                         continue;
-                     }
-                     finally { i++; }
-                     if (one == null) { return; }
-                     string outp="";
-                     for (int v=0; v < one.Length; v++)
-                     {
-                         outp += Convert.ToString(one[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
-                     }
-                     Console.WriteLine("read reg {0,6} suceded {1}   *****************************************************", i,outp);
-                     break;
-                     //Thread.Sleep(10);
-                 }
-             })).Start();
+                Task task = Task.Delay(15000);
+                await task;
+                int gearedSpeedAZ = 500, gearedSpeedEL = 50;
+                ushort homeTimeoutSecondsElevation = 0, homeTimeoutSecondsAzimuth = 0;
+
+                Controllers.ProductionMCUDriver MCUDriver = new ControlRoomApplication.Controllers.ProductionMCUDriver("192.168.0.50", 502);
+               // MCUDriver.configure_axies(gearedSpeedAZ, gearedSpeedEL, homeTimeoutSecondsAzimuth, homeTimeoutSecondsElevation);
+                task = Task.Delay(3000);
+                await task;
+               // MCUDriver.SendEmptyMoveCommand();
+
+                Console.WriteLine(ushort.MaxValue);
+                new Thread(new ThreadStart(async () => {// IPAddress.Parse
+                    Console.WriteLine("---------------------------------");
+                    Thread.Sleep(1000);
+                    ushort i = 0, j = 1024;//7500
+                    plc.configure_muc(gearedSpeedAZ, gearedSpeedEL, homeTimeoutSecondsAzimuth, homeTimeoutSecondsElevation);
+                    task = Task.Delay(10000);
+                    await task;
+                    //Thread.Sleep(10000);
+
+                    //return;
+                    while (true)
+                    {
+                        Thread.Sleep(5000);
+                        ushort[] datax = new ushort[20];
+                        datax[1] = 3;
+                        datax[11] = 3;
+                        //Console.WriteLine(datax.Length);
+                        ushort[] inreg, outreg;
+
+                        inreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
+                        outreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
+                        try
+                        {
+                            ushort positionTranslationELInt = 1000, positionTranslationELMSW = 0;
+                            ushort positionTranslationAZInt = 1000, positionTranslationAZMSW = 0;
+                            ushort aCCELERATION = 5, programmedPeakSpeedAZInt = 1200;
+
+                            inreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
+                            outreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
+                            //Thread.Sleep(1000);
+                            ushort[] data = {              0,                                            // Reserved 
+                                                        0x0403,                                        // Denotes a relative linear interpolated move and a Trapezoidal S-Curve profile
+                                                        (ushort)(programmedPeakSpeedAZInt >> 0x10),   // MSW for azimuth speed
+                                                        (ushort)(programmedPeakSpeedAZInt & 0xFFFF),  // LSW for azimuth speed
+                                                        aCCELERATION,                                 // Acceleration for azimuth
+                                                        aCCELERATION,                                 // Deceleration for azimuth
+                                                        positionTranslationAZMSW,                     // MSW for azimuth position 6
+                                                        (ushort)(positionTranslationAZInt & 0xFFFF),  // LSW for azimuth position 7
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        positionTranslationELMSW,                     // MSW for elevation position 12
+                                                        (ushort)(positionTranslationELInt & 0xFFFF),  // LSW for elevation position 13
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved 
+                                                        0,                                            // Reserved
+                                                        0                                             // Reserved 
+                         };
+
+                           await plc.sendmovecomand(programmedPeakSpeedAZInt, aCCELERATION, positionTranslationAZInt, positionTranslationELInt);
+
+                            // MCUDriver.MCUModbusMaster.WriteMultipleRegisters(j, data);
+                            // Thread.Sleep(10);
+                            // MCUDriver.MCUModbusMaster.WriteMultipleRegisters(j, datax);
+
+                            // data[1] = 0x403;
+                            // APLCDriver.PLCModbusMaster.WriteMultipleRegisters(j, data);
+                            // i = 25;
+                            //MCUDriver.configureSingleaxys(gearedSpeedAZ, (ushort)gearedSpeedEL,0);
+                            //MCUDriver.configureaxies(gearedSpeedAZ, gearedSpeedEL, homeTimeoutSecondsAzimuth, homeTimeoutSecondsElevation);
+                            //MCUDriver.configureSingleaxys(gearedSpeedAZ, homeTimeoutSecondsAzimuth, 0);
+                            //System.Threading.Thread.Sleep(50);
+                            //MCUDriver.configureSingleaxys(gearedSpeedEL, homeTimeoutSecondsElevation, 1);
+                            inreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
+                            outreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            Console.WriteLine("read reg {0,6} failed", i);
+                            continue;
+                        }
+                        if (inreg == null) { return; }
+                        string outstr = " inreg";
+                        for (int v = 0; v < inreg.Length; v++)
+                        {
+                            //outstr += Convert.ToString(inreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                            outstr += Convert.ToString(inreg[v], 10).PadLeft(8) + ",";
+                        }
+                        outstr += "\noutreg";
+                        for (int v = 0; v < outreg.Length; v++)
+                        {
+                            //outstr += Convert.ToString(outreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                            outstr += Convert.ToString(outreg[v], 10).PadLeft(8) + ",";
+                        }
+                        Console.WriteLine(outstr);
+                        //Console.WriteLine("read reg {0,6} suceded {1}   *****************************************************", i, outstr);
+                        //break;
+                        //Thread.Sleep(10);
+                    }
+                })).Start();
+            }
+            
 
  //*/
         /*
             Controllers.ProductionPLCDriver APLCDriver;
-            //new Thread(new ThreadStart(() => {
+            new Thread(new ThreadStart(() => {
                 Console.WriteLine("---------------------------------");
                 APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
-                //.Sleep(Timeout.Infinite);
-           // })).Start();
+                Thread.Sleep(Timeout.Infinite);
+            })).Start();
             ///
 
             new Thread(new ThreadStart(() => {
                 bool up = true;
                 ushort i = 0;
                 Random rand = new Random();
+                Thread.Sleep(10000);
                 while (true)
                 {
+                    Thread.Sleep(1000);
                     string outp = "";
                     for (ushort v = 0; v < 10; v++)
                     {
@@ -96,21 +181,9 @@ namespace ControlRoomApplication.Main
                     if (i>=10){ up = false; }
                     if (i <=0){ up = true; }
                     APLCDriver.setregvalue(i, (ushort) (rand.Next() /(2^16) ));
-                    Thread.Sleep(1000);
+                   
                 }
             })).Start();
-            ///
-           // var[] list = new var[100];
-            var list = new dynamic[100];
-            for (int i=0;i< list.Length;i++)
-            {
-                list[i] = new { val = 1234, time=98342341342};
-
-            }
-            var data = new { type = "cwg", data = list };
-
-
-            Console.WriteLine(data);
             //*/
 
             //string localhostIP = PLCConstants.LOCAL_HOST_IP;

@@ -29,13 +29,12 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// Start listetning for TCP Connection
         /// </summary>
         ///  
-        public abstract bool bringUp();
-
+        public abstract bool BringUp();
 
         /// <summary>
         /// 
         /// </summary>
-        /// 
+        /// <param name="data"></param>
         protected void interpretData(dynamic data)
         {
             double threshold = 0;

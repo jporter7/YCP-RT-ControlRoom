@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
         /// 
         /// </summary>
         /// <returns>current orentation</returns>
-        public static Orientation GetCurentOrientation()
+        static public Orientation GetCurentOrientation()
         {
             string message = "moshi moshi controlroom desu";
             try
@@ -40,9 +40,12 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 dynamic respobj = null;
                 try
                 {
-                    respobj=JsonConvert.DeserializeObject(responseData);
+                    
+                    respobj =JsonConvert.DeserializeObject(responseData);
                     //Console.WriteLine(respobj.AZ+" "+ respobj.EL);
-                    return new Orientation((double)respobj.AZ, (double)respobj.EL);
+                    double AZ = respobj.AZ / (2048.0)*180;
+                    double EL = respobj.EL / (2048.0);
+                    return new Orientation(AZ, EL);
                     //return new Orientation(0, (double)0);
                 }
                 catch(Exception e)

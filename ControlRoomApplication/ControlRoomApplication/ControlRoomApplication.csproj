@@ -124,7 +124,7 @@
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\AbstractMicrocontroller.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\EncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\MicroControlerControler.cs" />
+    <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
