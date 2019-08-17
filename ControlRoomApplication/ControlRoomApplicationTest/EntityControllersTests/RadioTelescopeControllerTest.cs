@@ -19,14 +19,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static void SetUp(TestContext context)
         {
             //PLCClientCommunicationHandler PLCClientCommHandler = new PLCClientCommunicationHandler(ip, port);
-            SimulationPLCDriver PLCC = new SimulationPLCDriver(ip, ip, port, port);
+            TestRTPLC = new TestPLCDriver(ip, ip, port, port);
+
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
-            RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCC, location, new Orientation(0, 0));
+            RadioTelescope TestRT = new RadioTelescope(SCSimController, TestRTPLC, location, new Orientation(0, 0));
             TestRadioTelescopeController = new RadioTelescopeController(TestRT);
 
-            TestRTPLC = new TestPLCDriver(ip,ip, port,port);
-            TestRTPLC.StartAsyncAcceptingClients();
+
+            //TestRTPLC.StartAsyncAcceptingClients();
             //TestRT.PLCClient.ConnectToServer();
         }
 
@@ -51,8 +52,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Ensure the objects are identical
             Assert.IsTrue(response);
-            Assert.AreEqual(Orientation.Azimuth, CurrentOrientation.Azimuth);
-            Assert.AreEqual(Orientation.Elevation, CurrentOrientation.Elevation);
+            Assert.AreEqual(Orientation.Azimuth, CurrentOrientation.Azimuth,0.001);
+            Assert.AreEqual(Orientation.Elevation, CurrentOrientation.Elevation, 0.001);
         }
 
         [TestMethod]
@@ -128,15 +129,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Ensure the objects are identical
             Assert.IsTrue(response);
-            Assert.AreEqual(Orientation.Azimuth, CurrentOrientation.Azimuth);
-            Assert.AreEqual(Orientation.Elevation, CurrentOrientation.Elevation);
+            Assert.AreEqual(Orientation.Azimuth, CurrentOrientation.Azimuth,0.001);
+            Assert.AreEqual(Orientation.Elevation, CurrentOrientation.Elevation,0.001);
         }
 
         [ClassCleanup]
         public static void BringDown()
         {
             //TestRadioTelescopeController.RadioTelescope.PLCClient.TerminateTCPServerConnection();
-            TestRTPLC.RequestStopAsyncAcceptingClientsAndJoin();
+            //TestRTPLC.RequestStopAsyncAcceptingClientsAndJoin();
             TestRadioTelescopeController.RadioTelescope.PLCDriver.Bring_down();
         }
     }

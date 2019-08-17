@@ -29,8 +29,8 @@ namespace ControlRoomApplication.Controllers
             0, 0, 0, 0, 0
         };
         private bool keep_modbus_server_alive=true;
-
-
+        private bool is_test= false;
+        public bool set_is_test(bool val) { is_test = val;return is_test; }
         /// <summary>
         /// 
         /// </summary>
@@ -385,11 +385,13 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Shutdown_PLC_MCU()
         {
+            if (is_test) { return true; }
             throw new NotImplementedException();
         }
 
         public override bool Calibrate()
         {
+            if (is_test) { return true; }
             throw new NotImplementedException();
         }
 
@@ -424,8 +426,8 @@ namespace ControlRoomApplication.Controllers
         public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
             int positionTranslationAZ, positionTranslationEL;
-            positionTranslationAZ = (int) (((current_orientation.Azimuth - target_orientation.Azimuth)/360)*(20000*500));
-            positionTranslationEL = (int) (((current_orientation.Elevation - target_orientation.Elevation) / 360) * (20000*50));
+            positionTranslationAZ = (int) (((target_orientation.Azimuth - current_orientation.Azimuth)/360)*(20000*500));
+            positionTranslationEL = (int) (((target_orientation.Elevation - current_orientation.Elevation) / 360) * (20000*50));
             return relative_move(200000, 50, positionTranslationAZ, positionTranslationEL);
             //throw new NotImplementedException();
         }

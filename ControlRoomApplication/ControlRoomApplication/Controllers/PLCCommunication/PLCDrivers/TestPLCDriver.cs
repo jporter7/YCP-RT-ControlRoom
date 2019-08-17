@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -16,11 +18,131 @@ namespace ControlRoomApplication.Controllers
         public bool KillClientManagementThreadFlag;
         public TcpListener PLCTCPListener;
 
-        public TestPLCDriver(IPAddress local_ip_address, IPAddress MCU_ip_address, int MCU_port, int PLC_port) : base(local_ip_address, MCU_ip_address, MCU_port, PLC_port) {
+        private Test_control_pannel TestMCU;
+        private ProductionPLCDriver driver;
+
+        public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        {
             CurrentOrientation = new Orientation();
+
+            if (MCU_port == PLC_port)
+            {
+                MCU_port++;
+            }
+            TestMCU = new Test_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port);
+            Thread.Sleep(100);
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
+            driver.set_is_test(true);
+            //driver.StartAsyncAcceptingClients();
         }
 
-        public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : this(IPAddress.Parse(local_ip), IPAddress.Parse(MCU_ip), MCU_port, PLC_port) { }
+
+
+
+
+
+        public override bool StartAsyncAcceptingClients()
+        {
+            return driver.StartAsyncAcceptingClients();
+        }
+
+        public override bool RequestStopAsyncAcceptingClientsAndJoin()
+        {
+            return driver.RequestStopAsyncAcceptingClientsAndJoin();
+        }
+
+        public override void Bring_down()
+        {
+            TestMCU.Bring_down();
+            driver.Bring_down();
+        }
+
+        public override bool Test_Conection()
+        {
+            return driver.Test_Conection();
+        }
+
+        public override Orientation read_Position()
+        {
+            return driver.read_Position();
+        }
+
+        public override bool Cancle_move()
+        {
+            return driver.Cancle_move();
+        }
+
+        public override bool Shutdown_PLC_MCU()
+        {
+            return driver.Shutdown_PLC_MCU();
+        }
+
+        public override bool Calibrate()
+        {
+            return driver.Calibrate();
+        }
+
+        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        {
+            return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
+        }
+
+        public override bool Controled_stop()
+        {
+            return driver.Controled_stop();
+        }
+
+        public override bool Immediade_stop()
+        {
+            return driver.Immediade_stop();
+        }
+
+        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        {
+            return driver.relative_move(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL);
+        }
+
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        {
+            return driver.Move_to_orientation(target_orientation, current_orientation);
+        }
+
+        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        {
+            return driver.Start_jog(axis, speed, clockwise);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -279,76 +401,6 @@ namespace ControlRoomApplication.Controllers
             }
 
             return true;
-        }
-
-        public override bool StartAsyncAcceptingClients()
-        {
-            return true;
-        }
-
-        public override bool RequestStopAsyncAcceptingClientsAndJoin()
-        {
-            return true;
-        }
-
-        public override void Bring_down()
-        {
-            return;
-        }
-
-        public override bool Test_Conection()
-        {
-            return true;
-        }
-
-        public override Orientation read_Position()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Cancle_move()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Shutdown_PLC_MCU()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Calibrate()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
-        {
-            return true;
-        }
-
-        public override bool Controled_stop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Immediade_stop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
-        {
-            throw new NotImplementedException();
         }
     }
 }
