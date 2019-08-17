@@ -13,7 +13,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [ClassInitialize]
         public static void BringUp(TestContext context)
         {
-            DerivedAbstractPLCDriver = new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, 8080);
+            DerivedAbstractPLCDriver = new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP,8080, 8080);
         }
 
         [TestMethod]

@@ -84,7 +84,7 @@ namespace ControlRoomApplication.GUI
             {
                 ip = "127.0.0.1";
                 port = "8808";
-                SimulationPLCDriver PLC = new SimulationPLCDriver(ip, int.Parse(port));
+                //SimulationPLCDriver PLC = new SimulationPLCDriver(ip, int.Parse(port));
 
             }
             else

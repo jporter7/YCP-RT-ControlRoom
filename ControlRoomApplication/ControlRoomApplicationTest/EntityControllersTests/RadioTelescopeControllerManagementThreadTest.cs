@@ -17,8 +17,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         private Location JohnRudyPark;
         private Orientation CalibrationOrientation;
 
-        private PLCClientCommunicationHandler PLCCCH0;
-        private PLCClientCommunicationHandler PLCCCH1;
+        private SimulationPLCDriver PLCCCH0;
+        private SimulationPLCDriver PLCCCH1;
 
         private RadioTelescopeController RTC0;
         private RadioTelescopeController RTC1;
@@ -31,16 +31,16 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             IP = PLCConstants.LOCAL_HOST_IP;
             Port0 = 8080;
-            Port1 = 8081;
+            Port1 = 8083;
 
             JohnRudyPark = MiscellaneousConstants.JOHN_RUDY_PARK;
             CalibrationOrientation = new Orientation(0, 90);
 
-            PLCCCH0 = new PLCClientCommunicationHandler(IP, Port0);
+            PLCCCH0 = new SimulationPLCDriver(IP, IP, Port0, Port0);
             RTC0 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH0, JohnRudyPark, CalibrationOrientation, 1));
             RTCMT0 = new RadioTelescopeControllerManagementThread(RTC0);
 
-            PLCCCH1 = new PLCClientCommunicationHandler(IP, Port1);
+            PLCCCH1 = new SimulationPLCDriver(IP, IP, Port1, Port1);
             RTC1 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH1, JohnRudyPark, CalibrationOrientation, 2));
             RTCMT1 = new RadioTelescopeControllerManagementThread(RTC1);
         }

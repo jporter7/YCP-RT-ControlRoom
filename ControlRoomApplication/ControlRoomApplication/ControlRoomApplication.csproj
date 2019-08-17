@@ -219,6 +219,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Database\RemoteDb\RemoteDbConfiguration.cs" />
+    <Compile Include="Simulators\Hardware\PLC_MCU\Simulation_control_pannel.cs" />
     <Compile Include="Simulators\Hardware\WeatherStation\SimulationWeatherStation.cs" />
   </ItemGroup>
   <ItemGroup>

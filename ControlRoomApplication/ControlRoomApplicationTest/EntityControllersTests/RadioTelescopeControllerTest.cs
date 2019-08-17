@@ -18,15 +18,16 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [ClassInitialize]
         public static void SetUp(TestContext context)
         {
-            PLCClientCommunicationHandler PLCClientCommHandler = new PLCClientCommunicationHandler(ip, port);
+            //PLCClientCommunicationHandler PLCClientCommHandler = new PLCClientCommunicationHandler(ip, port);
+            SimulationPLCDriver PLCC = new SimulationPLCDriver(ip, ip, port, port);
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
-            RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCClientCommHandler, location, new Orientation(0, 0));
+            RadioTelescope TestRT = new RadioTelescope(SCSimController, PLCC, location, new Orientation(0, 0));
             TestRadioTelescopeController = new RadioTelescopeController(TestRT);
 
-            TestRTPLC = new TestPLCDriver(ip, port);
+            TestRTPLC = new TestPLCDriver(ip,ip, port,port);
             TestRTPLC.StartAsyncAcceptingClients();
-            TestRT.PLCClient.ConnectToServer();
+            //TestRT.PLCClient.ConnectToServer();
         }
 
         [TestMethod]
@@ -134,8 +135,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [ClassCleanup]
         public static void BringDown()
         {
-            TestRadioTelescopeController.RadioTelescope.PLCClient.TerminateTCPServerConnection();
+            //TestRadioTelescopeController.RadioTelescope.PLCClient.TerminateTCPServerConnection();
             TestRTPLC.RequestStopAsyncAcceptingClientsAndJoin();
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.Bring_down();
         }
     }
 }

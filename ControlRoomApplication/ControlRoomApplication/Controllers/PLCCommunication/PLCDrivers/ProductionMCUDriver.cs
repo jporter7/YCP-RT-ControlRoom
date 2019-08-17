@@ -17,12 +17,14 @@ namespace ControlRoomApplication.Controllers
 
         private TcpClient MCUTCPClient;
         public ModbusIpMaster MCUModbusMaster;
+        public bool KillClientManagementThreadFlag;
+        public TcpListener PLCTCPListener;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="ipLocal"></param>
         /// <param name="portLocal"></param>
-        public ProductionMCUDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
+        public ProductionMCUDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
             MCUTCPClient = new TcpClient("192.168.0.50", MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
@@ -167,7 +169,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="ActiveClientStream"></param>
         /// <param name="query"></param>
         /// <returns></returns>
-        protected override bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
+        public bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
         {
             int ExpectedSize = query[0] + (256 * query[1]);
             if (query.Length != ExpectedSize)
@@ -439,6 +441,12 @@ namespace ControlRoomApplication.Controllers
 
             return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
         }
+
+        private bool AttemptToWriteDataToServer(NetworkStream activeClientStream, byte[] finalResponseContainer)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -511,6 +519,76 @@ namespace ControlRoomApplication.Controllers
                     AcceptedClient.Dispose();
                 }
             }
+        }
+
+        public override bool StartAsyncAcceptingClients()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool RequestStopAsyncAcceptingClientsAndJoin()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Bring_down()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Test_Conection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Orientation read_Position()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Cancle_move()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Shutdown_PLC_MCU()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Calibrate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Controled_stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Immediade_stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        {
+            throw new NotImplementedException();
         }
     }
 }

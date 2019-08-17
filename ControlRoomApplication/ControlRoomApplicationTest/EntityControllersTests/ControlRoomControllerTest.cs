@@ -33,7 +33,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController0 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new PLCClientCommunicationHandler(IP, Port),
+                     new SimulationPLCDriver(IP, IP, Port, Port),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -42,7 +42,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController1 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new PLCClientCommunicationHandler(IP, Port),
+                    new SimulationPLCDriver(IP, IP, Port+3, Port+3),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -51,7 +51,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController2 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new PLCClientCommunicationHandler(IP, Port),
+                    new SimulationPLCDriver(IP, IP, Port+6, Port+6),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )

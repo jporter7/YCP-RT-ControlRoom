@@ -19,7 +19,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             int port = PLCConstants.PORT_8080;
 
             CommsHandler = new PLCClientCommunicationHandler(ip, port);
-            TestDriver = new TestPLCDriver(ip, port);
+            TestDriver = new TestPLCDriver(ip,ip, port,port);
 
             TestDriver.StartAsyncAcceptingClients();
 

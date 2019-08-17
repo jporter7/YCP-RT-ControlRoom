@@ -17,8 +17,10 @@ namespace ControlRoomApplication.Controllers
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private TcpListener PLCTCPListener;
         private TcpClient MCUTCPClient;
-        public ModbusIpMaster MCUModbusMaster;
+        private ModbusSlave PLC_Modbusserver;
+        private ModbusIpMaster MCUModbusMaster;
         private SemaphoreSlim comand_acknoledged = new SemaphoreSlim(0, 1);
         private static ushort[] no_op_cmd = {
             0, 3, 0, 0, 0,
@@ -26,16 +28,49 @@ namespace ControlRoomApplication.Controllers
             0, 3, 0, 0, 0,
             0, 0, 0, 0, 0
         };
+        private bool keep_modbus_server_alive=true;
+
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ipLocal"></param>
-        /// <param name="portLocal"></param>
-        public ProductionPLCDriver(string ipLocal, int portLocal) : base(ipLocal, portLocal)
+        /// <param name="local_ip"></param>
+        /// <param name="MCU_ip"></param>
+        /// <param name="MCU_port"></param>
+        /// <param name="PLC_port"></param>
+        public ProductionPLCDriver(string local_ip,  string MCU_ip, int MCU_port, int PLC_port) : base(local_ip,  MCU_ip, MCU_port, PLC_port)
         {
-            MCUTCPClient = new TcpClient("192.168.0.50", 502);
+            //MCUTCPClient = new TcpClient("127.0.0.2", 8080);
+            MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
+            
+            try
+            {
+                PLCTCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(local_ip), PLC_port));
+                ClientManagmentThread = new Thread(new ThreadStart(HandleClientManagementThread));
+            }
+            catch (Exception e)
+            {
+                if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
+                {
+                    logger.Info("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
+                    return;
+                }
+                else { throw e; }// Unexpected exception
+            }
+            try
+            {
+                PLCTCPListener.Start(1);
+            }
+            catch (Exception e)
+            {
+                if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException))
+                {
+                    logger.Info("[AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
+                    return;
+                }
+            }
+
         }
         /// <summary>
         /// 
@@ -47,40 +82,8 @@ namespace ControlRoomApplication.Controllers
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool SendResetErrorsCommand()
-        {
-            return true;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool SendHoldMoveCommand()
-        {
-            return true;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool SendImmediateStopCommand()
-        {
-            return true;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool SendEmptyMoveCommand()
-        {
-            return true;
-        }
 
-        public bool configure_muc(int gearedSpeedAZ, int gearedSpeedEL, ushort homeTimeoutSecondsAzimuth, ushort homeTimeoutSecondsElevation)
+        public bool configure_mcc(int gearedSpeedAZ, int gearedSpeedEL, ushort homeTimeoutSecondsAzimuth, ushort homeTimeoutSecondsElevation)
         {
             ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), homeTimeoutSecondsElevation,
                                 0x0,    0x0,    0x0,                                 0x0,                            0x0,
@@ -103,7 +106,7 @@ namespace ControlRoomApplication.Controllers
 
 
             await MCUModbusMaster.WriteMultipleRegistersAsync(1024, no_op_cmd);//write a no-op to the mcu
-            Task task = Task.Delay(20);//wait to ensure it is porcessed
+            Task task = Task.Delay(100);//wait to ensure it is porcessed
             await task;
             //this is a linearly interpolated relative move
             ushort[] data = {0, 0x0403,
@@ -125,8 +128,8 @@ namespace ControlRoomApplication.Controllers
             Console.WriteLine("{0}   dsv  {1} ",data.Length, starting_adress);
             for (int i = 1; i < (data.Length-1); i++)
             {
-                Modbusserver.DataStore.HoldingRegisters[i + starting_adress] = data[i];
-                Console.Write(" {0},", Modbusserver.DataStore.HoldingRegisters[i + starting_adress]);
+                PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] = data[i];
+                Console.Write(" {0},", PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress]);
             }
         }
 
@@ -144,22 +147,19 @@ namespace ControlRoomApplication.Controllers
             foreach (Match match in matches)
             {
                 GroupCollection groups = match.Groups;
-                Console.WriteLine("'{0}' repeated at positions {1} and {2}",
-                                  groups["word"].Value,
-                                  groups[0].Index,
-                                  groups[1].Index);
+                Console.WriteLine("'{0}' repeated at positions {1} and {2}", groups["word"].Value, groups[0].Index, groups[1].Index);
             }
-            // Modbusserver.DataStore.HoldingRegisters[e.] += 1;
+            // PLC_Modbusserver.DataStore.HoldingRegisters[e.] += 1;
             //throw new NotImplementedException();
         }
 
         private void Server_Written_to_handler(object sender, DataStoreEventArgs e)
         {
             //Console.Write("\n modbus request adr: " + e.StartAddress + "\n");
-            //Console.WriteLine(Modbusserver.DataStore.HoldingRegisters.Count);
-            System.Collections.Generic.IEnumerator<ushort> regs = Modbusserver.DataStore.HoldingRegisters.GetEnumerator();
+            //Console.WriteLine(PLC_Modbusserver.DataStore.HoldingRegisters.Count);
+            System.Collections.Generic.IEnumerator<ushort> regs = PLC_Modbusserver.DataStore.HoldingRegisters.GetEnumerator();
 
-            //Modbusserver.DataStore.HoldingRegisters[e.StartAddress] += 1;
+            //PLC_Modbusserver.DataStore.HoldingRegisters[e.StartAddress] += 1;
 
             //
            // Console.WriteLine("current regs" );
@@ -177,15 +177,15 @@ namespace ControlRoomApplication.Controllers
                 Console.WriteLine("plcdriver data writen 1 reg", e.Data.B[0]);
 
             }
-            //for (int j=1;j< Modbusserver.DataStore.HoldingRegisters.Count-1; j++)
+            //for (int j=1;j< PLC_Modbusserver.DataStore.HoldingRegisters.Count-1; j++)
             //{
-            //    Modbusserver.DataStore.HoldingRegisters[j]++;
+            //    PLC_Modbusserver.DataStore.HoldingRegisters[j]++;
             //}
             switch (e.StartAddress)
             {
                 case (ushort)PLC_modbus_server_register_mapping.CMD_ACK:
                     {
-                       // Console.WriteLine(" data {0} written to 22",Modbusserver.DataStore.HoldingRegisters[e.StartAddress]);
+                       // Console.WriteLine(" data {0} written to 22",PLC_Modbusserver.DataStore.HoldingRegisters[e.StartAddress]);
                         try
                         {
                             //comand_acknoledged.Release();
@@ -259,7 +259,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="value"></param>
         public void setregvalue(ushort adr, ushort value)
         {
-            Modbusserver.DataStore.HoldingRegisters[adr] = value;
+            PLC_Modbusserver.DataStore.HoldingRegisters[adr] = value;
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public ushort readregval(ushort adr)
         {
-            return Modbusserver.DataStore.HoldingRegisters[adr];
+            return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
         }
         /// <summary>
         /// 
@@ -279,33 +279,158 @@ namespace ControlRoomApplication.Controllers
         {
             byte slaveId = 1;
             // create and start the TCP slave
-            Modbusserver = ModbusTcpSlave.CreateTcp(slaveId, PLCTCPListener);
+            PLC_Modbusserver = ModbusTcpSlave.CreateTcp(slaveId, PLCTCPListener);
             //coils, inputs, holdingRegisters, inputRegisters
-            Modbusserver.DataStore = DataStoreFactory.CreateDefaultDataStore(0, 0, 256, 0);
-            // Modbusserver.DataStore.SyncRoot.ToString();
+            PLC_Modbusserver.DataStore = DataStoreFactory.CreateDefaultDataStore(0, 0, 256, 0);
+            // PLC_Modbusserver.DataStore.SyncRoot.ToString();
 
-            Modbusserver.ModbusSlaveRequestReceived += new EventHandler<ModbusSlaveRequestEventArgs>(Server_Read_handler);
-            Modbusserver.DataStore.DataStoreWrittenTo += new EventHandler<DataStoreEventArgs>(Server_Written_to_handler);
+            PLC_Modbusserver.ModbusSlaveRequestReceived += new EventHandler<ModbusSlaveRequestEventArgs>(Server_Read_handler);
+            PLC_Modbusserver.DataStore.DataStoreWrittenTo += new EventHandler<DataStoreEventArgs>(Server_Written_to_handler);
 
-            Modbusserver.Listen();
+            PLC_Modbusserver.Listen();
 
-            //Modbusserver.ListenAsync().GetAwaiter().GetResult();
-            
+            //PLC_Modbusserver.ListenAsync().GetAwaiter().GetResult();
+
             // prevent the main thread from exiting
-            Thread.Sleep(Timeout.Infinite);
+            while (keep_modbus_server_alive)
+            {
+                Thread.Sleep(100);
+            }
+            
         }
 
 
 
 
+        public override bool StartAsyncAcceptingClients()
+        {
+            keep_modbus_server_alive = true;
+            try
+            {
+                ClientManagmentThread.Start();
+            }
+            catch (Exception e)
+            {
+                if ((e is ThreadStateException) || (e is OutOfMemoryException))
+                {
+                    return false;
+                }
+                else{throw e;}// Unexpected exception
+            }
+            return true;
+        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="ActiveClientStream"></param>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        protected override bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
+        public override bool RequestStopAsyncAcceptingClientsAndJoin()
+        {
+            keep_modbus_server_alive = false;
+            try
+            {
+                ClientManagmentThread.Join();
+            }
+            catch (Exception e)
+            {
+                if ((e is ThreadStateException) || (e is ThreadStartException))
+                {
+                    Console.WriteLine(e);
+                    return false;
+                }
+                else { throw e; }// Unexpected exception
+            }
+            return true;
+        }
+
+        public override void Bring_down()
+        {
+            RequestStopAsyncAcceptingClientsAndJoin();
+        }
+
+        public override bool Test_Conection()//TODO: make moar godder
+        {
+            return true;
+        }
+
+        public override Orientation read_Position()
+        {
+            ushort[] inputs = MCUModbusMaster.ReadHoldingRegisters(0, 20);
+            byte[] inbytes = new byte[inputs.Length * 2];
+            Buffer.BlockCopy(inputs, 0, inbytes, 0, inputs.Length * 2);
+
+            ushort msb, lsvb;
+            msb = inputs[2];
+            lsvb = inputs[3];
+            int ofsetaz = lsvb + (msb << 16);
+            double azpos = (ofsetaz / (double)(20000 * 500)) * 360;
+
+            msb = inputs[12];
+            lsvb = inputs[13];
+            int ofsetel = lsvb + (msb << 16);
+            double elpos = (ofsetel / (double)(20000 * 50)) * 360;
+           // Console.WriteLine("attt: Az = " + azpos + ", El = " + elpos + "  ofset : Az = " + ofsetaz + ", El = " + ofsetel);
+            return new Orientation(azpos, elpos);
+            
+            //return new Orientation(BitConverter.ToDouble(inbytes, 4), BitConverter.ToDouble(inbytes, 24));
+        }
+
+        public override bool Cancle_move()
+        {
+            ushort[] data = {
+                0, 3, 0, 0, 0,
+                0, 0, 0, 0, 0,
+                0, 3, 0, 0, 0,
+                0, 0, 0, 0, 0
+            };
+            MCUModbusMaster.WriteMultipleRegisters(1024, data);
+            return true;
+        }
+
+        public override bool Shutdown_PLC_MCU()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Calibrate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation)
+        {
+            ushort[] data = {   0x8400, 0x0000, (ushort)(startSpeedElevation >> 0x0010), (ushort)(startSpeedElevation & 0xFFFF), (ushort)homeTimeoutSecondsElevation,
+                                0x0,    0x0,    0x0,                                 0x0,                            0x0,
+                                0x8400, 0x0000, (ushort)(startSpeedAzimuth >> 0x0010), (ushort)(startSpeedAzimuth & 0xFFFF), (ushort)homeTimeoutSecondsAzimuth,
+                                0x0,    0x0,    0x0,                                0x0,                             0x0
+                                };
+            //set_multiple_registers( data,  1);
+            MCUModbusMaster.WriteMultipleRegisters(1024, data);
+            return true;
+        }
+
+        public override bool Controled_stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Immediade_stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        {
+            return sendmovecomand(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL).GetAwaiter().GetResult();   //.ContinueWith(antecedent => { return antecedent.; });
+            //return true;
+        }
+
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        {
+            int positionTranslationAZ, positionTranslationEL;
+            positionTranslationAZ = (int) (((current_orientation.Azimuth - target_orientation.Azimuth)/360)*(20000*500));
+            positionTranslationEL = (int) (((current_orientation.Elevation - target_orientation.Elevation) / 360) * (20000*50));
+            return relative_move(200000, 50, positionTranslationAZ, positionTranslationEL);
+            //throw new NotImplementedException();
+        }
+
+        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
         {
             throw new NotImplementedException();
         }

@@ -13,14 +13,19 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation CurrentOrientation { get; private set; }
 
-        public TestPLCDriver(IPAddress ip_address, int port) : base(ip_address, port)
-        {
+        public bool KillClientManagementThreadFlag;
+        public TcpListener PLCTCPListener;
+
+        public TestPLCDriver(IPAddress local_ip_address, IPAddress MCU_ip_address, int MCU_port, int PLC_port) : base(local_ip_address, MCU_ip_address, MCU_port, PLC_port) {
             CurrentOrientation = new Orientation();
         }
 
-        public TestPLCDriver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
+        public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : this(IPAddress.Parse(local_ip), IPAddress.Parse(MCU_ip), MCU_port, PLC_port) { }
 
-        protected override bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
+
+
+
+        public bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
         {
             int ExpectedSize = query[0] + (256 * query[1]);
             if (query.Length != ExpectedSize)
@@ -255,6 +260,95 @@ namespace ControlRoomApplication.Controllers
                     AcceptedClient.Dispose();
                 }
             }
+        }
+
+
+        protected bool AttemptToWriteDataToServer(NetworkStream ActiveClientStream, byte[] ResponseData)
+        {
+            try
+            {
+                ActiveClientStream.Write(ResponseData, 0, ResponseData.Length);
+            }
+            catch (Exception e)
+            {
+                if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException) || (e is System.IO.IOException) || (e is ObjectDisposedException))
+                {
+                    logger.Info("[AbstractPLCDriver] ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override bool StartAsyncAcceptingClients()
+        {
+            return true;
+        }
+
+        public override bool RequestStopAsyncAcceptingClientsAndJoin()
+        {
+            return true;
+        }
+
+        public override void Bring_down()
+        {
+            return;
+        }
+
+        public override bool Test_Conection()
+        {
+            return true;
+        }
+
+        public override Orientation read_Position()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Cancle_move()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Shutdown_PLC_MCU()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Calibrate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        {
+            return true;
+        }
+
+        public override bool Controled_stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Immediade_stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        {
+            throw new NotImplementedException();
         }
     }
 }
