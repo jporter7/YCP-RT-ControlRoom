@@ -71,7 +71,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
-        public abstract bool Controled_stop();
+        public abstract bool Controled_stop(RadioTelescopeAxisEnum axis, bool both);
 
         public abstract bool Immediade_stop();
 
@@ -81,6 +81,9 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise);
 
+        public abstract bool Get_interlock_status();
+
+        public abstract bool[] Get_Limit_switches();
 
         /// <summary>
         /// processes requests from the clientmanagementthread

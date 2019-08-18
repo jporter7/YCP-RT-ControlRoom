@@ -27,7 +27,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             TestRadioTelescopeController = new RadioTelescopeController(TestRT);
 
 
-            //TestRTPLC.StartAsyncAcceptingClients();
+            TestRTPLC.StartAsyncAcceptingClients();
             //TestRT.PLCClient.ConnectToServer();
         }
 

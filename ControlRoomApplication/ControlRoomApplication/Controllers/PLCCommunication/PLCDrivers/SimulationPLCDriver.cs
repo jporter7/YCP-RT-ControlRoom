@@ -86,7 +86,7 @@ namespace ControlRoomApplication.Controllers
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
 
-        public override bool Controled_stop()
+        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
         {
             throw new NotImplementedException();
         }
@@ -108,7 +108,17 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
         {
-            throw new NotImplementedException();
+            return driver.Start_jog(axis, speed, clockwise);
+        }
+
+        public override bool Get_interlock_status()
+        {
+            return driver.Get_interlock_status();
+        }
+
+        public override bool[] Get_Limit_switches()
+        {
+            return driver.Get_Limit_switches();
         }
     }
 }

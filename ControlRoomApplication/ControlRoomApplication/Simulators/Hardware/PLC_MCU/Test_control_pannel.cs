@@ -1,4 +1,5 @@
-﻿using Modbus.Data;
+﻿using ControlRoomApplication.Entities;
+using Modbus.Data;
 using Modbus.Device;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
 
         private bool runsimulator = true;
 
-        private int speed, acc, distAZ, distEL, currentAZ, currentEL;
+        private int distAZ, distEL, currentAZ, currentEL;
 
         public Test_control_pannel(string PLC_ip, string MCU_ip, int MCU_port, int PLC_port)
         {
@@ -88,9 +89,10 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                 }
                 catch
                 {//no server setup on control room yet 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(10);
                 }
                 Console.WriteLine("________________PLC sim running");
+                PLCModbusMaster.WriteMultipleRegisters((ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK-1,new ushort[] { 12});
                 while (runsimulator)
                 {
                     Thread.Sleep(50);
@@ -136,30 +138,6 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
 
 
         }
-
-        private bool move()
-        {
-            //speed, acc, distAZ, distEL, currentAZ, currentEL
-            int travAZ = (distAZ < -speed) ? -speed : (distAZ > speed) ? speed : distAZ;
-            int travEL = (distEL < -speed) ? -speed : (distEL > speed) ? speed : distEL;
-            distAZ -= travAZ;
-            distEL -= travEL;
-            currentAZ += travAZ;
-            currentEL += travEL;
-            Console.WriteLine("offset: az" + currentAZ + " el " + currentEL);
-            MCU_Modbusserver.DataStore.HoldingRegisters[3] = (ushort)(currentAZ >> 16);
-            MCU_Modbusserver.DataStore.HoldingRegisters[4] = (ushort)(currentAZ);
-            MCU_Modbusserver.DataStore.HoldingRegisters[13] = (ushort)(currentEL >> 16);
-            MCU_Modbusserver.DataStore.HoldingRegisters[14] = (ushort)(currentEL);
-            string outstr = "outreg";
-            for (int v = 0; v < 20; v++)
-            {
-                outstr += Convert.ToString(MCU_Modbusserver.DataStore.HoldingRegisters[v], 16).PadLeft(5) + ",";
-            }
-            Console.WriteLine(outstr);
-            return true;
-        }
-
 
         private bool handleCMD(ushort[] data)
         {

@@ -84,14 +84,20 @@ namespace ControlRoomApplication.Controllers
         /// <returns>
         ///     An array of four booleans, where "true" means that the limit switch was triggered, and "false" means otherwise.
         ///     The order of the limit switches are as follows:
-        ///         0: Under rotation for azimuth
-        ///         1: Over rotation for azimuth
-        ///         2: Under rotation for elevation
-        ///         3: Over rotation for elevation
+        ///         0: Under limit    azimuth
+        ///         1: Under warning  azimuth
+        ///         2: Over  warning  azimuth
+        ///         3: Over  limit    azimuth
+        ///         4: Under limit    elevation
+        ///         5: Under warning  elevation
+        ///         6: Over  warning  elevation
+        ///         7: Over  limit    elevation
         /// </returns>
         public bool[] GetCurrentLimitSwitchStatuses()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return RadioTelescope.PLCDriver.Get_Limit_switches();
+
             /*
             byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_LIMIT_SWITCH_STATUSES);
 
@@ -140,7 +146,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> Returns true if the safety interlock system is still secured, false otherwise. </returns>
         public bool GetCurrentSafetyInterlockStatus()
         {
-            throw new NotImplementedException();
+            return RadioTelescope.PLCDriver.Get_interlock_status();
            // byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_SAFETY_INTERLOCK_STATUS);
             //return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
         }
@@ -289,7 +295,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeControlledStop()
         {
-            return RadioTelescope.PLCDriver.Controled_stop();
+            return RadioTelescope.PLCDriver.Controled_stop(RadioTelescopeAxisEnum.UNKNOWN, true);
             //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CONTROLLED_STOP));
         }
 

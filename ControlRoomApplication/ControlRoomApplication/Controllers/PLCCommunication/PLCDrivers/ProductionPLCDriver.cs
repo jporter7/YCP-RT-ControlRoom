@@ -1,4 +1,5 @@
-﻿using ControlRoomApplication.Entities;
+﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Entities;
 using Modbus.Data;
 using Modbus.Device;
 using System;
@@ -197,12 +198,12 @@ namespace ControlRoomApplication.Controllers
                         break;
 
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING:
+                case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT:
                     {
 
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT:
+                case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING:
                     {
 
                         break;
@@ -217,22 +218,22 @@ namespace ControlRoomApplication.Controllers
 
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_LEFT_WARNING:
+                case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT:
                     {
 
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_LEFT_LIMIT:
+                case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING:
                     {
 
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_RIGHT_WARNING:
+                case (ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING:
                     {
 
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_RIGHT_LIMIT:
+                case (ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT:
                     {
 
                         break;
@@ -273,7 +274,7 @@ namespace ControlRoomApplication.Controllers
             return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
         }
         /// <summary>
-        /// 
+        /// runs the modbus server to interface with the plc
         /// </summary>
         protected override void HandleClientManagementThread()
         {
@@ -379,7 +380,7 @@ namespace ControlRoomApplication.Controllers
                 0, 3, 0, 0, 0,
                 0, 0, 0, 0, 0
             };
-            MCUModbusMaster.WriteMultipleRegisters(1024, data);
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, data);
             return true;
         }
 
@@ -403,13 +404,23 @@ namespace ControlRoomApplication.Controllers
                                 0x0,    0x0,    0x0,                                0x0,                             0x0
                                 };
             //set_multiple_registers( data,  1);
-            MCUModbusMaster.WriteMultipleRegisters(1024, data);
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, data);
             return true;
         }
 
-        public override bool Controled_stop()
+        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
         {
-            throw new NotImplementedException();
+            ushort[] data;
+            if (both)
+            {
+                data =new ushort[] {
+                    0x4, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+                    0x4, 0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
+                };
+                MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, data);
+                return true;
+            }
+            else { throw new NotImplementedException(); }
         }
 
         public override bool Immediade_stop()
@@ -434,7 +445,50 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
         {
-            throw new NotImplementedException();
+            ushort programmedPeakSpeedUShortMSW = (ushort)(speed>>16);
+            ushort programmedPeakSpeedUShortLSW = (ushort)speed;
+
+            ushort[] data = new ushort[10];
+
+            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, data);
+            return true;
+            //throw new NotImplementedException();
+        }
+
+        public RadioTelescopeAxisEnum Is_jogging()//////////
+        {
+            MCUModbusMaster.ReadHoldingRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, 20);
+            return RadioTelescopeAxisEnum.ELEVATION;
+        }
+
+        private bool Int_to_bool(int val)
+        {
+            Console.WriteLine(val);
+            if (val == 0)
+            {
+                return false;
+            }
+            else { return true; }
+        }
+
+        public override bool Get_interlock_status()
+        {
+            return Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK]);
+        }
+
+        public override bool[] Get_Limit_switches()
+        {
+            return new bool[] {
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT]),
+
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT])
+            };
         }
     }
 }

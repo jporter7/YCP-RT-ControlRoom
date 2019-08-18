@@ -33,6 +33,7 @@ namespace ControlRoomApplication.Controllers
             Thread.Sleep(100);
             driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
             driver.set_is_test(true);
+            Thread.Sleep(1000);
             //driver.StartAsyncAcceptingClients();
         }
 
@@ -87,9 +88,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
 
-        public override bool Controled_stop()
+        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
         {
-            return driver.Controled_stop();
+            return driver.Controled_stop( axis, both);
         }
 
         public override bool Immediade_stop()
@@ -112,7 +113,15 @@ namespace ControlRoomApplication.Controllers
             return driver.Start_jog(axis, speed, clockwise);
         }
 
+        public override bool Get_interlock_status()
+        {
+            return driver.Get_interlock_status();
+        }
 
+        public override bool[] Get_Limit_switches()
+        {
+            return driver.Get_Limit_switches();
+        }
 
 
 
@@ -402,5 +411,7 @@ namespace ControlRoomApplication.Controllers
 
             return true;
         }
+
+
     }
 }

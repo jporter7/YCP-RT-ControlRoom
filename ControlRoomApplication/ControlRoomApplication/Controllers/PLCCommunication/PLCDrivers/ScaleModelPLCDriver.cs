@@ -310,7 +310,7 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Controled_stop()
+        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
         {
             throw new NotImplementedException();
         }
@@ -331,6 +331,16 @@ namespace ControlRoomApplication.Controllers
         }
 
         public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Get_interlock_status()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool[] Get_Limit_switches()
         {
             throw new NotImplementedException();
         }
