@@ -120,5 +120,10 @@ namespace ControlRoomApplication.Controllers
         {
             return driver.Get_Limit_switches();
         }
+
+        public override bool[] GET_MCU_Status()
+        {
+            return driver.GET_MCU_Status();
+        }
     }
 }

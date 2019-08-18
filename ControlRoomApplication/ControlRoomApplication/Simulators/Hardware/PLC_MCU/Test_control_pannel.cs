@@ -103,6 +103,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
 
         private void Server_Written_to_handler(object sender, DataStoreEventArgs e)
         {
+            MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
             Console.WriteLine("plcdriver data writen 1 reg "+ e.Data.B[0]+" start adr "+ e.StartAddress);
             ushort[] data = new ushort[e.Data.B.Count];
             for (int i = 0; i < e.Data.B.Count; i++)
@@ -149,11 +150,18 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             Console.WriteLine(outstr);
             if (data[1] == 0x0403)//move cmd
             {
+                int addaz = (data[6] << 16) + data[7];
+                int addel = (data[12] << 16) + data[13];
+               // MCU_Modbusserver.DataStore.HoldingRegisters[3] = data[6];
+               // MCU_Modbusserver.DataStore.HoldingRegisters[4] = data[7];
+               // MCU_Modbusserver.DataStore.HoldingRegisters[13] = data[12];
+               // MCU_Modbusserver.DataStore.HoldingRegisters[14] = data[13];
 
-                MCU_Modbusserver.DataStore.HoldingRegisters[3] = data[6];
-                MCU_Modbusserver.DataStore.HoldingRegisters[4] = data[7];
-                MCU_Modbusserver.DataStore.HoldingRegisters[13] = data[12];
-                MCU_Modbusserver.DataStore.HoldingRegisters[14] = data[13];
+                MCU_Modbusserver.DataStore.HoldingRegisters[3] += (ushort)((addaz & 0xffff0000) >> 16);
+                MCU_Modbusserver.DataStore.HoldingRegisters[4] += (ushort)(addaz & 0xffff);
+               MCU_Modbusserver.DataStore.HoldingRegisters[13] += (ushort)((addel & 0xffff0000) >> 16);
+               MCU_Modbusserver.DataStore.HoldingRegisters[14] += (ushort)(addel & 0xffff);
+                MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] | 0x0080);
                 return true;
             }
             return false;

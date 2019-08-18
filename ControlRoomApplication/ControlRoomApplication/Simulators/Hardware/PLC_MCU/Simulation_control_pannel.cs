@@ -22,7 +22,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
         private string PLC_ip;
         private int PLC_port;
 
-        private bool runsimulator = true;
+        private bool runsimulator = true, mooving = false;
 
         private int speed, acc, distAZ, distEL, currentAZ, currentEL;
 
@@ -125,9 +125,17 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                     handleCMD(current_out);
                     //Console.WriteLine("data changed");
                 }
-                if(distAZ!=0|| distEL != 0)
+                if (mooving)
                 {
-                    move();
+                    if (distAZ != 0 || distEL != 0)
+                    {
+                        move();
+                    }
+                    else
+                    {
+                        mooving = false;
+                        MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] | 0x0080);
+                    }
                 }
                 previos_out = current_out;
                 Thread.Sleep(50);
@@ -150,11 +158,11 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             MCU_Modbusserver.DataStore.HoldingRegisters[4] = (ushort)(currentAZ);
             MCU_Modbusserver.DataStore.HoldingRegisters[13] = (ushort)(currentEL >> 16);
             MCU_Modbusserver.DataStore.HoldingRegisters[14] = (ushort)(currentEL);
-            string outstr = "outreg";
-            for (int v = 0; v < 20; v++)
-            {
-                outstr += Convert.ToString(MCU_Modbusserver.DataStore.HoldingRegisters[v], 16).PadLeft(5) + ",";
-            }
+            //string outstr = "outreg";
+          //  for (int v = 0; v < 20; v++)
+          //  {
+         //       outstr += Convert.ToString(MCU_Modbusserver.DataStore.HoldingRegisters[v], 16).PadLeft(5) + ",";
+          //  }
            // Console.WriteLine(outstr);
             return true;
         }
@@ -170,6 +178,8 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             Console.WriteLine(outstr);
             if(data[1]== 0x0403)//move cmd
             {
+                mooving = true;
+                MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 speed = (data[2] << 16) + data[3];
                 speed /= 20;
                 acc = data[4];

@@ -54,6 +54,28 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.IsTrue(response);
             Assert.AreEqual(Orientation.Azimuth, CurrentOrientation.Azimuth,0.001);
             Assert.AreEqual(Orientation.Elevation, CurrentOrientation.Elevation, 0.001);
+
+            Orientation = new Orientation(28.0, 42.0);
+
+            // Set the RadioTelescope's CurrentOrientation field
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation);
+
+            // Call the GetCurrentOrientationMethod
+            CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+
+          //  Orientation = new Orientation(310.0, 42.0);
+
+            // Set the RadioTelescope's CurrentOrientation field
+        //    response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation);
+
+            // Call the GetCurrentOrientationMethod
+          //  CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+
+            // Ensure the objects are identical
+            Assert.IsTrue(response);
+            Assert.AreEqual(Orientation.Azimuth, CurrentOrientation.Azimuth, 0.001);
+            Assert.AreEqual(Orientation.Elevation, CurrentOrientation.Elevation, 0.001);
+
         }
 
         [TestMethod]

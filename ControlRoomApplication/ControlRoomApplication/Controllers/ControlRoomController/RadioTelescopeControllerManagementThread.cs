@@ -292,11 +292,11 @@ namespace ControlRoomApplication.Controllers
                             break;
                         }
 
-                        currentOrientation = RTController.GetCurrentOrientation();
-                        logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                        //currentOrientation = RTController.GetCurrentOrientation();
+                        //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
                         Thread.Sleep(100);
                     }
-                    while (!NextObjectiveOrientation.Equals(currentOrientation));
+                    while (!RTController.finished_exicuting_move());
 
                     NextObjectiveOrientation = null;
                 }

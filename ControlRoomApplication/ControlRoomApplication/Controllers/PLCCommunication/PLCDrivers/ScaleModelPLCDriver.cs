@@ -344,5 +344,10 @@ namespace ControlRoomApplication.Controllers
         {
             throw new NotImplementedException();
         }
+
+        public override bool[] GET_MCU_Status()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

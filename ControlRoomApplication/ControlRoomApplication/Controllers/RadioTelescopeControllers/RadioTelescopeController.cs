@@ -68,8 +68,8 @@ namespace ControlRoomApplication.Controllers
         public Orientation GetAbsoluteOrientation()
         {
 
-            return new Orientation(0, 0);
-         //   throw new NotImplementedException();
+         //   return new Orientation(0, 0);
+            throw new NotImplementedException();
             //return RadioTelescope.PLCDriver.read_Position();
         }
 
@@ -228,7 +228,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool MoveRadioTelescopeToOrientation(Orientation orientation)
         {
-            return RadioTelescope.PLCDriver.Move_to_orientation(orientation, GetAbsoluteOrientation());
+            return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position());
             //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation));
         }
 
@@ -337,6 +337,21 @@ namespace ControlRoomApplication.Controllers
             return RadioTelescope.PLCDriver.relative_move(speed, (ushort) 50, positionTranslationAZ, positionTranslationEL);
             //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION, axis, speed, position));
         }
+        /// <summary>
+        /// return true if the RT has finished the previous move comand
+        /// </summary>
+        public bool finished_exicuting_move()
+        {
+            bool[] flags =RadioTelescope.PLCDriver.GET_MCU_Status();
+            /*/Console.Write("\n");
+            foreach (bool flag in flags)
+            {
+                Console.Write(" " + flag + ",");
+            }
+            Console.Write("\n");//*/
+            return flags[7];
+        }
+
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
         {

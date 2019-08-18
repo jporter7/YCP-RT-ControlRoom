@@ -3,6 +3,7 @@ using ControlRoomApplication.Entities;
 using Modbus.Data;
 using Modbus.Device;
 using System;
+using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -262,6 +263,27 @@ namespace ControlRoomApplication.Controllers
         }
 
 
+        public override bool Get_interlock_status()
+        {
+            return Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK]);
+        }
+
+        public override bool[] Get_Limit_switches()
+        {
+            return new bool[] {
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT]),
+
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT])
+            };
+        }
+
+
 
         //above PLC modbus server ___below MCU comands
 
@@ -299,13 +321,13 @@ namespace ControlRoomApplication.Controllers
 
         public override Orientation read_Position()
         {
-            /*
+            //*
             ushort[] ClippedInputRegisterInfo = MCUModbusMaster.ReadHoldingRegisters(2, 12);
             return new Orientation(
                 ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[0]) + ClippedInputRegisterInfo[1], MotorConstants.GEARING_RATIO_AZIMUTH),
                 ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[10]) + ClippedInputRegisterInfo[11], MotorConstants.GEARING_RATIO_ELEVATION)
             );//*/
-            //*
+            /*
 
             ushort[] inputs = MCUModbusMaster.ReadHoldingRegisters(0, 20);
             byte[] inbytes = new byte[inputs.Length * 2];
@@ -316,12 +338,14 @@ namespace ControlRoomApplication.Controllers
             lsvb = inputs[3];
             int ofsetaz = lsvb + (msb << 16);
             double azpos = (ofsetaz / (double)(20000 * 500)) * 360;
+            azpos = ConversionHelper.StepsToDegrees(ofsetaz, MotorConstants.GEARING_RATIO_AZIMUTH);
 
             msb = inputs[12];
             lsvb = inputs[13];
             int ofsetel = lsvb + (msb << 16);
             double elpos = (ofsetel / (double)(20000 * 50)) * 360;
-           // Console.WriteLine("attt: Az = " + azpos + ", El = " + elpos + "  ofset : Az = " + ofsetaz + ", El = " + ofsetel);
+            elpos = ConversionHelper.StepsToDegrees(ofsetel, MotorConstants.GEARING_RATIO_ELEVATION);
+            // Console.WriteLine("attt: Az = " + azpos + ", El = " + elpos + "  ofset : Az = " + ofsetaz + ", El = " + ofsetel);
             return new Orientation(azpos, elpos);
             //*/
             //return new Orientation(BitConverter.ToDouble(inbytes, 4), BitConverter.ToDouble(inbytes, 24));
@@ -400,6 +424,18 @@ namespace ControlRoomApplication.Controllers
             int positionTranslationAZ, positionTranslationEL;
             positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
+            /*
+            ushort msb, lsvb;
+            msb = inputs[2];
+            lsvb = inputs[3];
+            int ofsetaz = lsvb + (msb << 16);
+            double azpos = (ofsetaz / (double)(20000 * 500)) * 360;
+
+            msb = inputs[12];
+            lsvb = inputs[13];
+            int ofsetel = lsvb + (msb << 16);
+            double elpos = (ofsetel / (double)(20000 * 50)) * 360;
+            //*/
 
             int ObjectivePositionStepsAZ = ConversionHelper.DegreesToSteps(target_orientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
             int ObjectivePositionStepsEL = ConversionHelper.DegreesToSteps(target_orientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
@@ -414,8 +450,11 @@ namespace ControlRoomApplication.Controllers
             int FixedSpeedDPS = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
+            Console.WriteLine("degrees target az "+target_orientation.Azimuth + " el " + target_orientation.Elevation);
+            Console.WriteLine("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
+            Console.WriteLine("degrees dist   az " + PositionTranslationDegreesAZ + " el " + PositionTranslationDegreesEL);
 
-            return sendmovecomand(FixedSpeedDPS*20, 50, positionTranslationAZ, positionTranslationEL).GetAwaiter().GetResult();
+            return sendmovecomand(FixedSpeedDPS*20, 50, ConversionHelper.DegreesToSteps(PositionTranslationDegreesAZ, MotorConstants.GEARING_RATIO_AZIMUTH), ConversionHelper.DegreesToSteps(PositionTranslationDegreesEL, MotorConstants.GEARING_RATIO_ELEVATION)).GetAwaiter().GetResult();
             //return ExecuteRelativeMove(FixedSpeedDPS, PositionTranslationDegreesAZ, FixedSpeedDPS, PositionTranslationDegreesEL);
             //throw new NotImplementedException();
         }
@@ -489,24 +528,17 @@ namespace ControlRoomApplication.Controllers
             else { return true; }
         }
 
-        public override bool Get_interlock_status()
-        {
-            return Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK]);
-        }
 
-        public override bool[] Get_Limit_switches()
+        public override bool[] GET_MCU_Status()
         {
-            return new bool[] {
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT]),
+           ushort data= MCUModbusMaster.ReadHoldingRegisters(0,1)[0];
+            bool[] target = new bool[16];
+            for (int i = 0; i < 16; i++)
+            {
+                target[i] = ((data >> i) & 1) == 1;
+            }
+            return target;
 
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT])
-            };
         }
     }
 }
