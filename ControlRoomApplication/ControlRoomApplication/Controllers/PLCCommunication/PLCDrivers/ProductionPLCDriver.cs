@@ -81,50 +81,7 @@ namespace ControlRoomApplication.Controllers
 
         }
 
-
-
-
-        public bool configure_mcc(int gearedSpeedAZ, int gearedSpeedEL, ushort homeTimeoutSecondsAzimuth, ushort homeTimeoutSecondsElevation)
-        {
-            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), homeTimeoutSecondsElevation,
-                                0x0,    0x0,    0x0,                                 0x0,                            0x0,
-                                0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), homeTimeoutSecondsAzimuth,
-                                0x0,    0x0,    0x0,                                0x0,                             0x0
-                                };
-            //set_multiple_registers( data,  1);
-            MCUModbusMaster.WriteMultipleRegisters(1024, data);
-            return true;
-        }
-
-        public async Task<bool> sendmovecomand(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
-        {
-            bool Sucess = true;
-            //the mcu registers need to be reset befor a new comand can be set in case the same comand is sent multiple times in a row
-            //set_multiple_registers(no_op_cmd, 0);
-            // wait for the plc to write to register 21 we defined as a comand acknoledged register
-            //Sucess = await comand_acknoledged.WaitAsync(4000);
-            //if (!Sucess) { return Sucess; }
-
-
-            await MCUModbusMaster.WriteMultipleRegistersAsync(1024, no_op_cmd);//write a no-op to the mcu
-            Task task = Task.Delay(100);//wait to ensure it is porcessed
-            await task;
-            //this is a linearly interpolated relative move
-            ushort[] data = {0, 0x0403,
-                            (ushort)(programmedPeakSpeedAZInt >> 0x10), (ushort)(programmedPeakSpeedAZInt & 0xFFFF), ACCELERATION, ACCELERATION,
-                            (ushort)((positionTranslationAZ & 0xFFFF0000)>>16), (ushort)(positionTranslationAZ & 0xFFFF),
-                            0, 0, 0, 0,
-                            (ushort)((positionTranslationEL & 0xFFFF0000)>>16) , (ushort)(positionTranslationEL & 0xFFFF),
-                            0, 0, 0, 0, 0, 0
-            };
-            //set_multiple_registers(data, 1);
-            //Sucess = await comand_acknoledged.WaitAsync(1000);
-            await MCUModbusMaster.WriteMultipleRegistersAsync(1024, data);
-
-            return Sucess;
-        }
-
-        private void set_multiple_registers(ushort[] data, ushort starting_adress)
+        private void set_Local_registers(ushort[] data, ushort starting_adress)
         {
             Console.WriteLine("{0}   dsv  {1} ",data.Length, starting_adress);
             for (int i = 1; i < (data.Length-1); i++)
@@ -156,32 +113,6 @@ namespace ControlRoomApplication.Controllers
 
         private void Server_Written_to_handler(object sender, DataStoreEventArgs e)
         {
-            //Console.Write("\n modbus request adr: " + e.StartAddress + "\n");
-            //Console.WriteLine(PLC_Modbusserver.DataStore.HoldingRegisters.Count);
-            System.Collections.Generic.IEnumerator<ushort> regs = PLC_Modbusserver.DataStore.HoldingRegisters.GetEnumerator();
-
-            //PLC_Modbusserver.DataStore.HoldingRegisters[e.StartAddress] += 1;
-
-            //
-           // Console.WriteLine("current regs" );
-            while (regs.MoveNext())
-            {
-                if (regs.Current!=0)
-                {
-                    //Console.Write(" {0},", regs.Current);
-                }
-                //Console.Write(", " + regs.Current);
-            }
-            //Console.Write("\n");
-            if (e.Data.B.Count != 1)
-            {
-                Console.WriteLine("plcdriver data writen 1 reg", e.Data.B[0]);
-
-            }
-            //for (int j=1;j< PLC_Modbusserver.DataStore.HoldingRegisters.Count-1; j++)
-            //{
-            //    PLC_Modbusserver.DataStore.HoldingRegisters[j]++;
-            //}
             switch (e.StartAddress)
             {
                 case (ushort)PLC_modbus_server_register_mapping.CMD_ACK:
@@ -240,18 +171,6 @@ namespace ControlRoomApplication.Controllers
                     }
 
             }
-
-
-            /*
-            for (int i =0;i< e.Data.B.Count; i++)
-            {
-                ushort adr = (ushort)(e.StartAddress + (ushort)i);
-                switch (adr)
-                {
-                    case : 
-                }
-            }//*/
-
         }
         /// <summary>
         /// 
@@ -300,9 +219,6 @@ namespace ControlRoomApplication.Controllers
             
         }
 
-
-
-
         public override bool StartAsyncAcceptingClients()
         {
             keep_modbus_server_alive = true;
@@ -345,6 +261,37 @@ namespace ControlRoomApplication.Controllers
             RequestStopAsyncAcceptingClientsAndJoin();
         }
 
+
+
+        //above PLC modbus server ___below MCU comands
+
+
+
+
+
+
+        public async Task<bool> sendmovecomand(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        {
+            bool Sucess = true;
+            //the mcu registers need to be reset befor a new comand can be set in case the same comand is sent multiple times in a row
+            await MCUModbusMaster.WriteMultipleRegistersAsync(1024, no_op_cmd);//write a no-op to the mcu
+            Task task = Task.Delay(100);//wait to ensure it is porcessed
+            await task;
+            //this is a linearly interpolated relative move
+            ushort[] data = {0, 0x0403,
+                            (ushort)(programmedPeakSpeedAZInt >> 0x10), (ushort)(programmedPeakSpeedAZInt & 0xFFFF), ACCELERATION, ACCELERATION,
+                            (ushort)((positionTranslationAZ & 0xFFFF0000)>>16), (ushort)(positionTranslationAZ & 0xFFFF),
+                            0, 0, 0, 0,
+                            (ushort)((positionTranslationEL & 0xFFFF0000)>>16) , (ushort)(positionTranslationEL & 0xFFFF),
+                            0, 0, 0, 0, 0, 0
+            };
+            //set_multiple_registers(data, 1);
+            //Sucess = await comand_acknoledged.WaitAsync(1000);
+            await MCUModbusMaster.WriteMultipleRegistersAsync(1024, data);
+
+            return Sucess;
+        }
+
         public override bool Test_Conection()//TODO: make moar godder
         {
             return true;
@@ -352,6 +299,14 @@ namespace ControlRoomApplication.Controllers
 
         public override Orientation read_Position()
         {
+            /*
+            ushort[] ClippedInputRegisterInfo = MCUModbusMaster.ReadHoldingRegisters(2, 12);
+            return new Orientation(
+                ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[0]) + ClippedInputRegisterInfo[1], MotorConstants.GEARING_RATIO_AZIMUTH),
+                ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[10]) + ClippedInputRegisterInfo[11], MotorConstants.GEARING_RATIO_ELEVATION)
+            );//*/
+            //*
+
             ushort[] inputs = MCUModbusMaster.ReadHoldingRegisters(0, 20);
             byte[] inbytes = new byte[inputs.Length * 2];
             Buffer.BlockCopy(inputs, 0, inbytes, 0, inputs.Length * 2);
@@ -368,17 +323,15 @@ namespace ControlRoomApplication.Controllers
             double elpos = (ofsetel / (double)(20000 * 50)) * 360;
            // Console.WriteLine("attt: Az = " + azpos + ", El = " + elpos + "  ofset : Az = " + ofsetaz + ", El = " + ofsetel);
             return new Orientation(azpos, elpos);
-            
+            //*/
             //return new Orientation(BitConverter.ToDouble(inbytes, 4), BitConverter.ToDouble(inbytes, 24));
         }
 
         public override bool Cancle_move()
         {
             ushort[] data = {
-                0, 3, 0, 0, 0,
-                0, 0, 0, 0, 0,
-                0, 3, 0, 0, 0,
-                0, 0, 0, 0, 0
+                0, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 3, 0, 0, 0, 0, 0, 0, 0, 0
             };
             MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, data);
             return true;
@@ -396,11 +349,18 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation)
+        public override bool Configure_MCU(int startSpeedDPSAzimuth, int startSpeedDPSElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation)
         {
-            ushort[] data = {   0x8400, 0x0000, (ushort)(startSpeedElevation >> 0x0010), (ushort)(startSpeedElevation & 0xFFFF), (ushort)homeTimeoutSecondsElevation,
+            int gearedSpeedAZ = ConversionHelper.DPSToSPS(startSpeedDPSAzimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int gearedSpeedEL = ConversionHelper.DPSToSPS(startSpeedDPSElevation, MotorConstants.GEARING_RATIO_ELEVATION);
+            if ((gearedSpeedAZ < 1)       || (gearedSpeedEL < 1)       || (homeTimeoutSecondsAzimuth < 0)   || (homeTimeoutSecondsElevation < 0)
+             || (gearedSpeedAZ > 1000000) || (gearedSpeedEL > 1000000) || (homeTimeoutSecondsAzimuth > 300) || (homeTimeoutSecondsElevation > 300))
+            {
+                return false;
+            }
+            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), (ushort)homeTimeoutSecondsAzimuth,
                                 0x0,    0x0,    0x0,                                 0x0,                            0x0,
-                                0x8400, 0x0000, (ushort)(startSpeedAzimuth >> 0x0010), (ushort)(startSpeedAzimuth & 0xFFFF), (ushort)homeTimeoutSecondsAzimuth,
+                                0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), (ushort)homeTimeoutSecondsElevation,
                                 0x0,    0x0,    0x0,                                0x0,                             0x0
                                 };
             //set_multiple_registers( data,  1);
@@ -436,29 +396,87 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
+
             int positionTranslationAZ, positionTranslationEL;
-            positionTranslationAZ = (int) (((target_orientation.Azimuth - current_orientation.Azimuth)/360)*(20000*500));
-            positionTranslationEL = (int) (((target_orientation.Elevation - current_orientation.Elevation) / 360) * (20000*50));
-            return relative_move(200000, 50, positionTranslationAZ, positionTranslationEL);
+            positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
+            positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
+
+            int ObjectivePositionStepsAZ = ConversionHelper.DegreesToSteps(target_orientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int ObjectivePositionStepsEL = ConversionHelper.DegreesToSteps(target_orientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            //Orientation CurrentMCUPosition = GetCurrentOrientation();
+            int CurrentPositionStepsAZ = ConversionHelper.DegreesToSteps(current_orientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int CurrentPositionStepsEL = ConversionHelper.DegreesToSteps(current_orientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            double PositionTranslationDegreesAZ = ConversionHelper.StepsToDegrees(ObjectivePositionStepsAZ - CurrentPositionStepsAZ, MotorConstants.GEARING_RATIO_AZIMUTH);
+            double PositionTranslationDegreesEL = ConversionHelper.StepsToDegrees(ObjectivePositionStepsEL - CurrentPositionStepsEL, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            int FixedSpeedDPS = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
+
+            //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
+
+            return sendmovecomand(FixedSpeedDPS*20, 50, positionTranslationAZ, positionTranslationEL).GetAwaiter().GetResult();
+            //return ExecuteRelativeMove(FixedSpeedDPS, PositionTranslationDegreesAZ, FixedSpeedDPS, PositionTranslationDegreesEL);
             //throw new NotImplementedException();
         }
 
         public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
         {
-            ushort programmedPeakSpeedUShortMSW = (ushort)(speed>>16);
-            ushort programmedPeakSpeedUShortLSW = (ushort)speed;
+            ushort adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, dir;
+            if (clockwise)
+            {
+                dir = 0x0080;
+            } else dir = 0x0100;
+            //                                         reserved       msb speed            lsb speed  acc  dcc  reserved
+            ushort[] data = new ushort[] {dir, 0x0003, 0x0, 0x0, (ushort)(speed >> 16), (ushort)speed, 50, 25, 0x0, 0x0 };// this is a jog comand for a single axis
+            RadioTelescopeAxisEnum jogging_axies = Is_jogging();
 
-            ushort[] data = new ushort[10];
-
-            MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, data);
+            switch (axis)
+            {
+                case RadioTelescopeAxisEnum.AZIMUTH:
+                    {
+                        break;
+                    }
+                case RadioTelescopeAxisEnum.ELEVATION:
+                    {
+                        adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + 10;
+                        break;
+                    }
+                case RadioTelescopeAxisEnum.BOTH:
+                    {
+                        ushort[] data2 = new ushort[data.Length*2];
+                        data.CopyTo(data2, 0);
+                        data.CopyTo(data2, data.Length);
+                        data = data2;
+                        break;
+                    }
+                default:
+                    {
+                        throw new ArgumentException("Invalid RadioTelescopeAxisEnum value can be AZIMUTH, ELEVATION or BOTH got: "+axis );
+                    }
+            }
+            MCUModbusMaster.WriteMultipleRegisters(adress, data);
             return true;
             //throw new NotImplementedException();
         }
 
         public RadioTelescopeAxisEnum Is_jogging()//////////
         {
-            MCUModbusMaster.ReadHoldingRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, 20);
-            return RadioTelescopeAxisEnum.ELEVATION;
+            ushort[] data = MCUModbusMaster.ReadHoldingRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, 20);
+            //word 0 and 10 indicate a jog comand for a specific axis however if the position registers(2,3  && 12,13) have non zero value then its a REGISTRATION MOVE
+            if ((data[10] == 0x0100|| data[10] == 0x0080) && (data[0] == 0x0100 || data[0] == 0x0080) && data[2] == 0x0 && data[3] == 0x0 && data[12] == 0x0 && data[13] == 0x0)//both jogging
+            {
+                return RadioTelescopeAxisEnum.BOTH;
+            }
+            else if ((data[10] == 0x0100 || data[10] == 0x0080) && data[12] == 0x0 && data[13] == 0x0)//el is jogging
+            {
+                return RadioTelescopeAxisEnum.ELEVATION;
+            }
+            else if ((data[0] == 0x0100 || data[0] == 0x0080) && data[2] == 0x0 && data[3] == 0x0)//az is jogging
+            {
+                return RadioTelescopeAxisEnum.AZIMUTH;
+            }
+            else return RadioTelescopeAxisEnum.UNKNOWN;
         }
 
         private bool Int_to_bool(int val)

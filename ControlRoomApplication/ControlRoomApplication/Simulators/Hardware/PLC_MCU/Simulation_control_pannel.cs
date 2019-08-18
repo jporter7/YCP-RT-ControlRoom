@@ -145,7 +145,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             distEL -= travEL;
             currentAZ += travAZ;
             currentEL += travEL;
-            Console.WriteLine("offset: az" + currentAZ + " el " + currentEL);
+         //   Console.WriteLine("offset: az" + currentAZ + " el " + currentEL);
             MCU_Modbusserver.DataStore.HoldingRegisters[3]= (ushort)(currentAZ>>16);
             MCU_Modbusserver.DataStore.HoldingRegisters[4] = (ushort)(currentAZ);
             MCU_Modbusserver.DataStore.HoldingRegisters[13] = (ushort)(currentEL >> 16);
@@ -155,7 +155,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             {
                 outstr += Convert.ToString(MCU_Modbusserver.DataStore.HoldingRegisters[v], 16).PadLeft(5) + ",";
             }
-            Console.WriteLine(outstr);
+           // Console.WriteLine(outstr);
             return true;
         }
 
