@@ -283,7 +283,15 @@ namespace ControlRoomApplication.Controllers
             };
         }
 
-
+        private bool Int_to_bool(int val)
+        {
+            Console.WriteLine(val);
+            if (val == 0)
+            {
+                return false;
+            }
+            else { return true; }
+        }
 
         //above PLC modbus server ___below MCU comands
 
@@ -297,8 +305,11 @@ namespace ControlRoomApplication.Controllers
             bool Sucess = true;
             //the mcu registers need to be reset befor a new comand can be set in case the same comand is sent multiple times in a row
             await MCUModbusMaster.WriteMultipleRegistersAsync(1024, no_op_cmd);//write a no-op to the mcu
-            Task task = Task.Delay(100);//wait to ensure it is porcessed
-            await task;
+            if (!is_test) {
+                Task task = Task.Delay(100);//wait to ensure it is porcessed
+                await task;
+            }
+
             //this is a linearly interpolated relative move
             ushort[] data = {0, 0x0403,
                             (ushort)(programmedPeakSpeedAZInt >> 0x10), (ushort)(programmedPeakSpeedAZInt & 0xFFFF), ACCELERATION, ACCELERATION,
@@ -321,12 +332,18 @@ namespace ControlRoomApplication.Controllers
 
         public override Orientation read_Position()
         {
-            //*
+
+            
             ushort[] ClippedInputRegisterInfo = MCUModbusMaster.ReadHoldingRegisters(2, 12);
+            Console.WriteLine("AZ_finni2 {0,10} EL_finni2 {1,10}", (65536 * ClippedInputRegisterInfo[0]) + ClippedInputRegisterInfo[1], (65536 * ClippedInputRegisterInfo[10]) + ClippedInputRegisterInfo[11]);
+            Orientation current_orientation = new Orientation(ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[0]) + ClippedInputRegisterInfo[1], MotorConstants.GEARING_RATIO_AZIMUTH), ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[10]) + ClippedInputRegisterInfo[11], MotorConstants.GEARING_RATIO_ELEVATION));
+            return current_orientation;
+/*
             return new Orientation(
                 ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[0]) + ClippedInputRegisterInfo[1], MotorConstants.GEARING_RATIO_AZIMUTH),
                 ConversionHelper.StepsToDegrees((65536 * ClippedInputRegisterInfo[10]) + ClippedInputRegisterInfo[11], MotorConstants.GEARING_RATIO_ELEVATION)
             );//*/
+
             /*
 
             ushort[] inputs = MCUModbusMaster.ReadHoldingRegisters(0, 20);
@@ -363,6 +380,9 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Shutdown_PLC_MCU()
         {
+            Orientation stow = new Orientation(0, 0);///////////////////////change this and the value in TestShutdownRadioTelescope
+
+            Move_to_orientation(stow, read_Position());
             if (is_test) { return true; }
             throw new NotImplementedException();
         }
@@ -453,8 +473,10 @@ namespace ControlRoomApplication.Controllers
             Console.WriteLine("degrees target az "+target_orientation.Azimuth + " el " + target_orientation.Elevation);
             Console.WriteLine("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
             Console.WriteLine("degrees dist   az " + PositionTranslationDegreesAZ + " el " + PositionTranslationDegreesEL);
-
             return sendmovecomand(FixedSpeedDPS*20, 50, ConversionHelper.DegreesToSteps(PositionTranslationDegreesAZ, MotorConstants.GEARING_RATIO_AZIMUTH), ConversionHelper.DegreesToSteps(PositionTranslationDegreesEL, MotorConstants.GEARING_RATIO_ELEVATION)).GetAwaiter().GetResult();
+
+           // return sendmovecomand(FixedSpeedDPS * 20, 50, positionTranslationAZ, positionTranslationEL).GetAwaiter().GetResult();
+
             //return ExecuteRelativeMove(FixedSpeedDPS, PositionTranslationDegreesAZ, FixedSpeedDPS, PositionTranslationDegreesEL);
             //throw new NotImplementedException();
         }
@@ -518,15 +540,7 @@ namespace ControlRoomApplication.Controllers
             else return RadioTelescopeAxisEnum.UNKNOWN;
         }
 
-        private bool Int_to_bool(int val)
-        {
-            Console.WriteLine(val);
-            if (val == 0)
-            {
-                return false;
-            }
-            else { return true; }
-        }
+
 
 
         public override bool[] GET_MCU_Status()
