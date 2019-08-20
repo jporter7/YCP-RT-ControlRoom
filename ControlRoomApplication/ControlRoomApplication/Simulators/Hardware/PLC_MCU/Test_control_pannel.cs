@@ -150,8 +150,8 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
            // Console.WriteLine(outstr);
             if (data[1] == 0x0403)//move cmd
             {
-                int addaz = (data[6] << 16) + data[7];
-                int addel = (data[12] << 16) + data[13];
+                distAZ = (data[6] << 16) + data[7];
+                distEL = (data[12] << 16) + data[13];
                 // MCU_Modbusserver.DataStore.HoldingRegisters[3] = data[6];
                 // MCU_Modbusserver.DataStore.HoldingRegisters[4] = data[7];
                 // MCU_Modbusserver.DataStore.HoldingRegisters[13] = data[12];
@@ -159,8 +159,8 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                 //Console.WriteLine("AZ_step2 {0,10} EL_step2 {1,10}", addaz, addel);
                 Console.WriteLine("AZ_22 {0,16} EL_22 {1,16}", (MCU_Modbusserver.DataStore.HoldingRegisters[3] << 16) + MCU_Modbusserver.DataStore.HoldingRegisters[4], (MCU_Modbusserver.DataStore.HoldingRegisters[13] << 16) + MCU_Modbusserver.DataStore.HoldingRegisters[14]);
 
-                currentAZ += addaz;
-                currentEL += addel;
+                currentAZ += distAZ;
+                currentEL += distEL;
 
                 MCU_Modbusserver.DataStore.HoldingRegisters[3] = (ushort)((currentAZ & 0xffff0000) >> 16);
                 MCU_Modbusserver.DataStore.HoldingRegisters[4] = (ushort)(currentAZ & 0xffff);
@@ -169,6 +169,23 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] | 0x0080);
 
                 Console.WriteLine("AZ_finni1 {0,10} EL_finni1 {1,10}", (MCU_Modbusserver.DataStore.HoldingRegisters[3]<<16)+ MCU_Modbusserver.DataStore.HoldingRegisters[4], (MCU_Modbusserver.DataStore.HoldingRegisters[13] << 16) + MCU_Modbusserver.DataStore.HoldingRegisters[14]);
+
+                return true;
+            } else if(data[0] == 0x0002 || data[0] == 0x0002) {//move cmd
+                MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
+               // AZ_speed = ((data[4] << 16) + data[5]) / 20;
+                //AZ_speed = ((data[14] << 16) + data[15]) / 20;
+               // acc = data[6];
+                distAZ = (data[2] << 16) + data[3];
+                distEL = (data[12] << 16) + data[13];
+                currentAZ += distAZ;
+                currentEL += distEL;
+
+                MCU_Modbusserver.DataStore.HoldingRegisters[3] = (ushort)((currentAZ & 0xffff0000) >> 16);
+                MCU_Modbusserver.DataStore.HoldingRegisters[4] = (ushort)(currentAZ & 0xffff);
+                MCU_Modbusserver.DataStore.HoldingRegisters[13] = (ushort)((currentEL & 0xffff0000) >> 16);
+                MCU_Modbusserver.DataStore.HoldingRegisters[14] = (ushort)(currentEL & 0xffff);
+                MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] | 0x0080);
 
                 return true;
             }

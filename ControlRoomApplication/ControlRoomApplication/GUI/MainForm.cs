@@ -257,8 +257,12 @@ namespace ControlRoomApplication.Main
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             logger.Info("dataGridView1_CellContent Clicked");
-            DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, dataGridView1.CurrentCell.RowIndex);
-            diagnosticForm.Show();
+            try {
+                DiagnosticsForm diagnosticForm = new DiagnosticsForm( MainControlRoomController.ControlRoom , dataGridView1.CurrentCell.RowIndex );
+                diagnosticForm.Show();
+            } catch {
+
+            }
         }
 
         /// <summary>
@@ -401,52 +405,6 @@ namespace ControlRoomApplication.Main
 
 
         /// <summary>
-        /// Determine if the Temp sensor is going to be real or simulated
-        /// </summary>
-        /// <returns> True when simulated, false when real </returns>
-        public bool IsTempSensorSimulated()
-        {
-            bool isSimulated = false;
-
-            logger.Info("Selected Temperature Sensor type: " + comboTempSensorType.Text);
-
-            if (comboTempSensorType.SelectedIndex == (int)TempSensorType.Production)               
-            {
-                isSimulated = false;
-            }
-            else
-            {
-                isSimulated = true;
-            }
-
-            return isSimulated;
-        }
-
-        /// <summary>
-        /// Determine if the MCU is going to be real or simulated
-        /// </summary>
-        /// <returns> True when simulated, false when real </returns>
-        public bool IsMCUSimulated()
-        {
-            bool isSimulated = false;
-
-            logger.Info("Selected MCU Type: " + comboMCUType.Text);
-
-            if(comboMCUType.SelectedIndex == (int)MCUType.Production)
-            {
-                isSimulated = false;
-            }
-            else
-            {
-                isSimulated = true;
-            }
-
-            return isSimulated;
-        }
-
-
-
-        /// <summary>
         /// Generates a free control form that allows free control access to a radio telescope
         /// instance through the generated form.
         /// </summary>
@@ -488,16 +446,14 @@ namespace ControlRoomApplication.Main
             logger.Info("Diagnostics Form Button Clicked");
 
             
-            bool isTempSensorSimulated = IsTempSensorSimulated();
-
-            bool isMCUSimulated = IsMCUSimulated();
+            bool isTempSensorSimulated = true;
 
             bool isPLCSimulated = IsPLCSimulated();
 
             bool isMicroControllerSimulated = IsMicrocontrollerSimulated();
             
             
-            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isMCUSimulated, isPLCSimulated, isMicroControllerSimulated);
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isPLCSimulated , isPLCSimulated, isMicroControllerSimulated);
             
             diagnosticsWindows.Show();
             
@@ -514,7 +470,7 @@ namespace ControlRoomApplication.Main
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
-
+            this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
         }
     }
 }

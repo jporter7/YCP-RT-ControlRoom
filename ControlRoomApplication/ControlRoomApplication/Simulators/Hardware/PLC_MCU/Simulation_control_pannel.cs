@@ -22,9 +22,9 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
         private string PLC_ip;
         private int PLC_port;
 
-        private bool runsimulator = true, mooving = false;
+        private bool runsimulator = true, mooving = false,jogging=false;
 
-        private int speed, acc, distAZ, distEL, currentAZ, currentEL;
+        private int  acc, distAZ, distEL, currentAZ, currentEL, AZ_speed, EL_speed;
 
         public Simulation_control_pannel(string PLC_ip, string MCU_ip, int MCU_port, int PLC_port)
         {
@@ -41,23 +41,17 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                 MCU_TCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(MCU_ip), MCU_port));
                 MCU_emulator_thread = new Thread(new ThreadStart(Run_MCU_server_thread));
             }
-            catch (Exception e)
-            {
-                if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
-                {
+            catch (Exception e){
+                if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)){
                     Console.WriteLine(e);
                     return;
                 }
                 else { throw e; }// Unexpected exception
             }
-            try
-            {
+            try{
                 MCU_TCPListener.Start(1);
-            }
-            catch (Exception e)
-            {
-                if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException))
-                {
+            }catch (Exception e){
+                if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException)){
                     Console.WriteLine(e);
                     return;
                 }
@@ -74,12 +68,9 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             MCU_emulator_thread.Join();
         }
 
-        private void Run_PLC_emulator_thread()
-        {
-            while (runsimulator)
-            {
-                try
-                {
+        private void Run_PLC_emulator_thread(){
+            while (runsimulator){
+                try{
                     PLCTCPClient = new TcpClient(this.PLC_ip, this.PLC_port);
                     PLCModbusMaster = ModbusIpMaster.CreateIp(PLCTCPClient);
                 }
@@ -88,18 +79,15 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                     Thread.Sleep(1000);
                 }
                 Console.WriteLine("________________PLC sim running");
-                while (runsimulator)
-                {
+                while (runsimulator){
                     Thread.Sleep(50);
                 }
             }
-
         }
 
 
 
-        private void Run_MCU_server_thread()
-        {
+        private void Run_MCU_server_thread(){
             byte slaveId = 1;
             // create and start the TCP slave
             MCU_Modbusserver = ModbusTcpSlave.CreateTcp(slaveId, MCU_TCPListener);
@@ -112,30 +100,30 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
 
             MCU_Modbusserver.Listen();
 
-            //PLC_Modbusserver.ListenAsync().GetAwaiter().GetResult();
-
             // prevent the main thread from exiting
             ushort[] previos_out,current_out;
             previos_out = Copy_modbus_registers(1025, 20);
-            while (runsimulator)
-            {
+            while (runsimulator){
                 current_out = Copy_modbus_registers(1025, 20);
-                if(!current_out.SequenceEqual(previos_out))
-                {
+                if(!current_out.SequenceEqual(previos_out)){
                     handleCMD(current_out);
                     //Console.WriteLine("data changed");
                 }
-                if (mooving)
-                {
+                if (mooving){
                     if (distAZ != 0 || distEL != 0)
                     {
-                        move();
+                        int travAZ = (distAZ < -AZ_speed) ? -AZ_speed : (distAZ > AZ_speed) ? AZ_speed : distAZ;
+                        int travEL = (distEL < -EL_speed) ? -EL_speed : (distEL > EL_speed) ? EL_speed : distEL;
+                        move( travAZ , travEL );
                     }
                     else
                     {
                         mooving = false;
                         MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] | 0x0080);
                     }
+                }
+                if(jogging) {
+                    move( AZ_speed , EL_speed );
                 }
                 previos_out = current_out;
                 Thread.Sleep(50);
@@ -144,11 +132,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             
         }
 
-        private bool move()
-        {
-            //speed, acc, distAZ, distEL, currentAZ, currentEL
-            int travAZ = (distAZ < -speed) ? -speed : (distAZ > speed) ? speed : distAZ;
-            int travEL = (distEL < -speed) ? -speed : (distEL > speed) ? speed : distEL;
+        private bool move(int travAZ , int travEL ){
             distAZ -= travAZ;
             distEL -= travEL;
             currentAZ += travAZ;
@@ -168,27 +152,56 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
         }
 
 
-        private bool handleCMD(ushort[] data)
-        {
+        private bool handleCMD( ushort[] data ) {
             string outstr = " inreg";
-            for (int v = 0; v < data.Length; v++)
-            {
-                outstr += Convert.ToString(data[v], 16).PadLeft(5) + ",";
+            for(int v = 0; v < data.Length; v++) {
+                outstr += Convert.ToString( data[v] , 16 ).PadLeft( 5 ) + ",";
             }
-            Console.WriteLine(outstr);
-            if(data[1]== 0x0403)//move cmd
-            {
+            Console.WriteLine( outstr );
+            jogging = false;
+            if(data[1] == 0x0403) {//move cmd
                 mooving = true;
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
-                speed = (data[2] << 16) + data[3];
-                speed /= 20;
+                AZ_speed = (data[2] << 16) + data[3];
+                AZ_speed /= 5;
+                EL_speed = AZ_speed;
                 acc = data[4];
                 distAZ = (data[6] << 16) + data[7];
+                distEL = (data[12] << 16) + data[13];
+                return true;
+            } else if(data[0] == 0x0080 || data[0] == 0x0100 || data[10] == 0x0080 || data[10] == 0x0100) {
+                jogging = true;
+                MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
+                if(data[0] == 0x0080) {
+                    AZ_speed = ((data[4] << 16) + data[5]) / 20;
+                }
+                else if(data[0] == 0x0100) {
+                    AZ_speed = -((data[4] << 16) + data[5]) / 20;
+                } else {
+                    AZ_speed = 0;
+                }
+                if(data[10] == 0x0080) {
+                    EL_speed = ((data[14] << 16) + data[15]) / 20;
+                }
+                else if(data[10] == 0x0100) {
+                    EL_speed = -((data[14] << 16) + data[15]) / 20;
+                } else {
+                    EL_speed = 0;
+                }
+                return true;
+            } else if(data[0] == 0x0002 || data[0] == 0x0002) {//move cmd
+                mooving = true;
+                MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
+                AZ_speed = ((data[4] << 16) + data[5]) / 5;
+                EL_speed = ((data[14] << 16) + data[15]) / 5;
+                acc = data[6];
+                distAZ = (data[2] << 16) + data[3];
                 distEL = (data[12] << 16) + data[13];
                 return true;
             }
             return false;
         }
+
 
         private ushort[] Copy_modbus_registers(int start_index,int length)
         {

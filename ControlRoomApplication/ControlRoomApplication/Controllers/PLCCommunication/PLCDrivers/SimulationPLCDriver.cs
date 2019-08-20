@@ -16,19 +16,12 @@ namespace ControlRoomApplication.Controllers
 
         public SimulationPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
-            // Create the Simulation Motor Controller Unit to have absolute encoders with:
-            //   1.) 12 bits of precision on the azimuth
-            //   2.) 10 bits of precision on the elevation
-            //SimMCU = new SimulationMCU(12, 10);
-            //
-
-            
-            if (MCU_port== PLC_port)
+            if (MCU_port== PLC_port)//cant have 2 servers on the same port and ip 
             {
                 MCU_port++;
             }
             SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port);
-            Thread.Sleep(3000);
+            Thread.Sleep(1000);//wait for server in simMcu to come up
             driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
             driver.StartAsyncAcceptingClients();
         }
@@ -88,12 +81,12 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
         {
-            throw new NotImplementedException();
+            return driver.Controled_stop(axis , both );
         }
 
         public override bool Immediade_stop()
         {
-            throw new NotImplementedException();
+            return driver.Immediade_stop();
         }
 
         public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)

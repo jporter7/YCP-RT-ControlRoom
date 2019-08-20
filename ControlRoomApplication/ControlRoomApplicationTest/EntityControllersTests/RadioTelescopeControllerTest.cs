@@ -118,8 +118,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // The Radio Telescope should now have a CurrentOrientation of (0, -90)
             Assert.IsTrue(response);
-            Assert.AreEqual(orientation.Azimuth, 0.0);
-            Assert.AreEqual(orientation.Elevation, 0.0);
+            Assert.AreEqual(orientation.Azimuth, 0.0 ,0.001);
+            Assert.AreEqual(orientation.Elevation, 0.0, 0.001 );
         }
 
         [TestMethod]

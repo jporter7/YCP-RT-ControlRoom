@@ -19,24 +19,12 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            Application.Run(new MainForm());
+           Application.Run(new MainForm());
 
-            /*
-            SimulationPLCDriver plcc = new SimulationPLCDriver("127.0.0.1", "127.0.0.1", 8080, 8080);
-
-            plcc.Configure_MCU(100, 100, 0, 0);
-            Thread.Sleep(500);
-            plcc.relative_move(1000, 1000, 4000, 7000);
-            Thread.Sleep(500);
-            plcc.Bring_down();
-            //TcpListener MCU_TCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080));
 
             // MCU_TCPListener.Start(1);
 
             //TcpClient MCUTCPClient = new TcpClient("127.0.0.1", 8080);
-
-            //*/
-
             /*
             new Thread(new ThreadStart(() => {
                 while (true)

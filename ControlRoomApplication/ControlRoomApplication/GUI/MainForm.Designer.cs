@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button2 = new System.Windows.Forms.Button();
@@ -41,13 +41,11 @@
             this.comboPLCType = new System.Windows.Forms.ComboBox();
             this.ManualControl = new System.Windows.Forms.Button();
             this.FreeControl = new System.Windows.Forms.Button();
-            this.btnGoToDiagnosticsForm = new System.Windows.Forms.Button();
-            this.comboTempSensorType = new System.Windows.Forms.ComboBox();
             this.comboEncoderType = new System.Windows.Forms.ComboBox();
-            this.comboMCUType = new System.Windows.Forms.ComboBox();
             this.comboMicrocontrollerBox = new System.Windows.Forms.ComboBox();
             this.loopBackBox = new System.Windows.Forms.CheckBox();
             this.LocalIPCombo = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -71,24 +69,24 @@
             this.dataGridView1.AllowUserToAddRows = false;
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridView1.Location = new System.Drawing.Point(12, 12);
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle4;
+            this.dataGridView1.Location = new System.Drawing.Point(12, 28);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
@@ -226,34 +224,6 @@
             this.FreeControl.UseVisualStyleBackColor = false;
             this.FreeControl.Click += new System.EventHandler(this.FreeControl_Click);
             // 
-            // btnGoToDiagnosticsForm
-            // 
-            this.btnGoToDiagnosticsForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGoToDiagnosticsForm.Location = new System.Drawing.Point(667, 39);
-            this.btnGoToDiagnosticsForm.Margin = new System.Windows.Forms.Padding(4);
-            this.btnGoToDiagnosticsForm.Name = "btnGoToDiagnosticsForm";
-            this.btnGoToDiagnosticsForm.Size = new System.Drawing.Size(247, 89);
-            this.btnGoToDiagnosticsForm.TabIndex = 10;
-            this.btnGoToDiagnosticsForm.Text = "Diagnostics Form";
-            this.btnGoToDiagnosticsForm.UseVisualStyleBackColor = true;
-            this.btnGoToDiagnosticsForm.Click += new System.EventHandler(this.btnGoToDiagnosticsForm_Click);
-            // 
-            // comboTempSensorType
-            // 
-            this.comboTempSensorType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.comboTempSensorType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.comboTempSensorType.FormattingEnabled = true;
-            this.comboTempSensorType.Items.AddRange(new object[] {
-            "Production Temp Sensor",
-            "Simulated Temp Sensor",
-            "Test Temp Sensor"});
-            this.comboTempSensorType.Location = new System.Drawing.Point(371, 647);
-            this.comboTempSensorType.Margin = new System.Windows.Forms.Padding(4);
-            this.comboTempSensorType.Name = "comboTempSensorType";
-            this.comboTempSensorType.Size = new System.Drawing.Size(315, 37);
-            this.comboTempSensorType.TabIndex = 11;
-            this.comboTempSensorType.Text = "Simulated Temp Sensor";
-            // 
             // comboEncoderType
             // 
             this.comboEncoderType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -270,20 +240,6 @@
             this.comboEncoderType.TabIndex = 12;
             this.comboEncoderType.Text = "Simulated Absolute Encoder";
             // 
-            // comboMCUType
-            // 
-            this.comboMCUType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.comboMCUType.FormattingEnabled = true;
-            this.comboMCUType.Items.AddRange(new object[] {
-            "Production MCU",
-            "Simulated MCU"});
-            this.comboMCUType.Location = new System.Drawing.Point(371, 529);
-            this.comboMCUType.Margin = new System.Windows.Forms.Padding(4);
-            this.comboMCUType.Name = "comboMCUType";
-            this.comboMCUType.Size = new System.Drawing.Size(315, 37);
-            this.comboMCUType.TabIndex = 13;
-            this.comboMCUType.Text = "Simulated MCU";
-            // 
             // comboMicrocontrollerBox
             // 
             this.comboMicrocontrollerBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
@@ -291,7 +247,7 @@
             this.comboMicrocontrollerBox.Items.AddRange(new object[] {
             "Production Microcontroller",
             "Simulated Microcontroller"});
-            this.comboMicrocontrollerBox.Location = new System.Drawing.Point(371, 468);
+            this.comboMicrocontrollerBox.Location = new System.Drawing.Point(371, 527);
             this.comboMicrocontrollerBox.Margin = new System.Windows.Forms.Padding(4);
             this.comboMicrocontrollerBox.Name = "comboMicrocontrollerBox";
             this.comboMicrocontrollerBox.Size = new System.Drawing.Size(315, 37);
@@ -321,18 +277,25 @@
             this.LocalIPCombo.TabIndex = 16;
             this.LocalIPCombo.Text = "this box IP";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(373, 17);
+            this.label1.TabIndex = 17;
+            this.label1.Text = "clik on the IP adress of the RT to open the diagnostic view";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1483, 747);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.LocalIPCombo);
             this.Controls.Add(this.loopBackBox);
             this.Controls.Add(this.comboMicrocontrollerBox);
-            this.Controls.Add(this.comboMCUType);
             this.Controls.Add(this.comboEncoderType);
-            this.Controls.Add(this.comboTempSensorType);
-            this.Controls.Add(this.btnGoToDiagnosticsForm);
             this.Controls.Add(this.FreeControl);
             this.Controls.Add(this.ManualControl);
             this.Controls.Add(this.comboPLCType);
@@ -368,12 +331,10 @@
         private System.Windows.Forms.ComboBox comboPLCType;
         private System.Windows.Forms.Button ManualControl;
         private System.Windows.Forms.Button FreeControl;
-        private System.Windows.Forms.Button btnGoToDiagnosticsForm;
-        private System.Windows.Forms.ComboBox comboTempSensorType;
         private System.Windows.Forms.ComboBox comboEncoderType;
-        private System.Windows.Forms.ComboBox comboMCUType;
         private System.Windows.Forms.ComboBox comboMicrocontrollerBox;
         private System.Windows.Forms.CheckBox loopBackBox;
         private System.Windows.Forms.ComboBox LocalIPCombo;
+        private System.Windows.Forms.Label label1;
     }
 }
