@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
 using System.Net;
+using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 
 namespace ControlRoomApplication.Main
 {
@@ -100,8 +101,11 @@ namespace ControlRoomApplication.Main
                 && comboBox1.SelectedIndex > -1)
             {
                 current_rt_id++;
-                AbstractPLCDriver APLCDriver = BuildPLCDriver();//////////##############################
-                RadioTelescope ARadioTelescope = BuildRT(APLCDriver);
+                AbstractPLCDriver APLCDriver = BuildPLCDriver();
+                AbstractMicrocontroller ctrler= build_CTRL();
+                ctrler.BringUp();
+                AbstractEncoderReader encoder= build_encoder( APLCDriver );
+               RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder );
                 
 
                 // Add the RT/PLC driver pair and the RT controller to their respective lists
@@ -269,7 +273,7 @@ namespace ControlRoomApplication.Main
         /// Builds a radio telescope instance based off of the input from the GUI form.
         /// </summary>
         /// <returns> A radio telescope instance representing the configuration chosen. </returns>
-        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver)
+        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver , AbstractMicrocontroller ctrler , AbstractEncoderReader encoder )
         {
             logger.Info("Building RadioTelescope");
 
@@ -279,7 +283,7 @@ namespace ControlRoomApplication.Main
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
 
             // Return Radio Telescope
-            RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id);
+            RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id, ctrler, encoder );
 
             logger.Info("RadioTelescope Built Successfully");
             return rt;
@@ -331,27 +335,24 @@ namespace ControlRoomApplication.Main
             }
         }
 
+        public AbstractEncoderReader build_encoder( AbstractPLCDriver plc ) {
+            return new SimulatedEncoder(plc , LocalIPCombo.Text , 1602 );
+        }
 
-        /// <summary>
-        /// Builds a PLC driver based off of the input from the GUI.
-        /// </summary>
-        /// <returns> A plc driver based off of the configuration specified by the GUI. </returns>
-        public bool IsPLCSimulated()
-        {
-            bool isSimulated = false;
+        public AbstractMicrocontroller build_CTRL() {
+            switch(comboMicrocontrollerBox.SelectedIndex) {
+                case 0:
+                    logger.Info( "Building ProductionPLCDriver" );
+                    return new MicroControlerControler( LocalIPCombo.Text , 1600);
 
-            logger.Info("Selected PLC Driver type: " + comboPLCType.Text);
+                case 1:
+                    logger.Info( "Building ScaleModelPLCDriver" );
+                    return new SimulatedMicrocontroller( -20,100 );
 
-            if (comboPLCType.SelectedIndex == (int)PLCType.Production)
-            {
-                isSimulated = false;
+                default:
+                    logger.Info( "Building SimulationPLCDriver" );
+                    return new SimulatedMicrocontroller( -20,100);
             }
-            else
-            {
-                isSimulated = true;
-            }
-
-            return isSimulated;
         }
 
         /// <summary>
@@ -439,24 +440,6 @@ namespace ControlRoomApplication.Main
         private void MainForm_Load(object sender, EventArgs e)
         {
 
-        }
-
-        private void btnGoToDiagnosticsForm_Click(object sender, EventArgs e)
-        {
-            logger.Info("Diagnostics Form Button Clicked");
-
-            
-            bool isTempSensorSimulated = true;
-
-            bool isPLCSimulated = IsPLCSimulated();
-
-            bool isMicroControllerSimulated = IsMicrocontrollerSimulated();
-            
-            
-            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isPLCSimulated , isPLCSimulated, isMicroControllerSimulated);
-            
-            diagnosticsWindows.Show();
-            
         }
 
         private void loopBackBox_CheckedChanged(object sender, EventArgs e)

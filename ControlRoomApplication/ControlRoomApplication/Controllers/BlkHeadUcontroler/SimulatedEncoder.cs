@@ -57,14 +57,15 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 StreamWriter sw = new StreamWriter( ClientStream );
                 StreamReader sr = new StreamReader( sw.BaseStream );
                 Orientation or = PCL.read_Position();
-                int az = (int)((or.Azimuth / 360.0) * 2048);
-                int el = (int)((or.Elevation / 360.0) * 2048);
+                int az = (int)((or.Azimuth / 360.0) * 4096);
+                int el = (int)((or.Elevation / 20.0) * 4096*10);
                 var obj = new {
                     uuid = "xxxxxxxxxxxxx" ,
                     type = "position" ,
                     AZ = az ,
                     EL = el
                 };
+                //Console.WriteLine(az +" "+el);
                 string json = JsonConvert.SerializeObject( obj );
                 sw.WriteLine( json );
                 sw.Flush();

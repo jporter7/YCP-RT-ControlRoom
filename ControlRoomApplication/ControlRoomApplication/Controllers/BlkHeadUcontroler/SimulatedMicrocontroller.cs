@@ -41,6 +41,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             while(true) {
                 interpretData( generateTemperatureData() );
                 interpretData( generateAccelerometerData() );
+                Thread.Sleep( 1000 );
             }
         }
 

@@ -369,17 +369,22 @@ namespace ControlRoomApplication.Database
             }
         }
 
-        public static List<Acceleration> GetACCData( DateTime starttime , DateTime endTime ) {
+        public static List<Acceleration> GetACCData( long starttime , long endTime, SensorLocationEnum loc ) {
             using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
-                return Context.Accelerations.Where( x => (x.TimeCaptured > starttime ) ).ToList();
+                return Context.Accelerations.Where( x => x.TimeCaptured > starttime && x.location_ID == (int)loc ).ToList();
             }
         }
 
-        public static List<Temperature> GetTEMPData( DateTime starttime , DateTime endTime ) {
-            using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )
-                return Context.Temperatures.Where( x => (x.TimeCaptured > starttime ) ).ToList();
+        public static List<Temperature> GetTEMPData( long starttime , long endTime, SensorLocationEnum loc ) {
+            using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )   && x.TimeCaptured.Ticks < endTime.Ticks
+                return Context.Temperatures.Where( x => x.TimeCapturedUTC > starttime && x.location_ID == (int)loc ).ToList();
             }
         }
 
+        public static Temperature GetCurrentTemp( SensorLocationEnum loc ) {
+            using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )   && x.TimeCaptured.Ticks < endTime.Ticks
+                return Context.Temperatures.Where( x => x.location_ID == (int)loc ).OrderByDescending( x => x.TimeCapturedUTC ).First();
+            }
+        }
     }
 }

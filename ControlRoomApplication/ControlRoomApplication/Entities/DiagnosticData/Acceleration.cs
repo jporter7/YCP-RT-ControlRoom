@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Entities {
 
         [Required]
         [Column( "time_captured" )]
-        public DateTime TimeCaptured { get; set; }
+        public long TimeCaptured { get; set; }
 
         [Required]
         [Column( "value" )]
@@ -43,7 +43,7 @@ namespace ControlRoomApplication.Entities {
 
         public static Acceleration Generate( long UTCtics , double acc , double x , double y , double z , SensorLocationEnum loc ) {
             Acceleration acx = new Acceleration();
-            acx.TimeCaptured = Constants.TIME.UnixEpoch.AddMilliseconds( UTCtics );
+            acx.TimeCaptured = UTCtics;// Constants.TIME.UnixEpoch.AddMilliseconds( UTCtics );
             acx.acc = acc;
             acx.x = x;
             acx.y = y;

@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Entities {
 
         [Required]
         [Column( "time_captured" )]
-        public DateTime TimeCaptured { get; set; }
+        public long TimeCapturedUTC { get; set; }
 
         [Required]
         [Column( "value" )]
@@ -29,7 +29,7 @@ namespace ControlRoomApplication.Entities {
         public static Temperature Generate( long UTCtics, double temperature , SensorLocationEnum loc  ) {
             Temperature temp = new Temperature();
             //Console.WriteLine( UTCtics );
-            temp.TimeCaptured = Constants.TIME.UnixEpoch.AddMilliseconds( UTCtics ); 
+            temp.TimeCapturedUTC = UTCtics;// Constants.TIME.UnixEpoch.AddMilliseconds( UTCtics ); 
             //Console.WriteLine( temp.TimeCaptured );
             temp.temp = temperature;
             temp.location_ID = (int)loc;

@@ -1,6 +1,7 @@
 ﻿using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities;
 using System;
 using System.Diagnostics;
 using System.Net;
@@ -19,20 +20,22 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            //Application.Run(new MainForm());
+            Application.Run(new MainForm());
 
             //DatabaseOperations.DeleteLocalDatabase();
-
+            /*
             SimulatedMicrocontroller micro = new SimulatedMicrocontroller( -20 , 100 );
             micro.BringUp();
             new Thread( new ThreadStart( async () => {// IPAddress.Parse
                 while(true) {
-                    Console.WriteLine( DatabaseOperations.GetTEMPData( DateTime.Now.AddMinutes( -5 ), DateTime.Now ).Count);
-                    Console.WriteLine( DatabaseOperations.GetACCData( DateTime.Now.AddSeconds( -1 ) , DateTime.Now ).Count );
+                    //Console.WriteLine( DateTime.Now ); DateTime.Now.AddSeconds( -1 ) , DateTime.Now
+                    //Console.WriteLine( DatabaseOperations.GetTEMPData( DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()-(1000*60)*5 , DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() , SensorLocationEnum.AZ_MOTOR ).Count);
+                    Console.WriteLine( DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp+"  "+ Constants.TIME.UnixEpoch.AddMilliseconds( DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).TimeCapturedUTC) );
+                    Console.WriteLine( DatabaseOperations.GetACCData( DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - 10000 , DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), SensorLocationEnum.AZ_MOTOR ).Count );
                     Thread.Sleep( 1000 );
                 }
             })).Start();
-
+            //*/
 
 
             /*
