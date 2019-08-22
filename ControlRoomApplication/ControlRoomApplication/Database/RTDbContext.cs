@@ -22,5 +22,9 @@ namespace ControlRoomApplication.Main
         public DbSet<Orientation> Orientations { get; set; }
         public DbSet<Coordinate> Coordinates { get; set; }
         public DbSet<Log> Logs { get; set; }
+        public DbSet<Temperature> Temperatures { get; set; }
+        public DbSet<Acceleration> Accelerations { get; set; }
+        
+
     }
 }

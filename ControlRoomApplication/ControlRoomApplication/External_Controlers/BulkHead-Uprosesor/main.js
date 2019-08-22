@@ -2,6 +2,13 @@
 npm install --global --production windows-build-tools
 npm install spi-device
 npm install onoff
+
+UNDEFINED = -1,
+AZ_MOTOR = 0,
+EL_MOTOR = 1,
+END_OF_COUNTER_BALLENCE = 2,
+MICRO_CTRL = 3,
+MICRO_CTRL_BOX = 4
 */
 //192.168.1.39
 //192.168.43.86
@@ -22,7 +29,7 @@ var runMode = "";
 
 const net = require('net');
 const spi = require('spi-device');
-const config=require('./config.json');
+const config = require('./config.json');
 /*
 var hrTime = process.hrtime();
 let acc = { x: 0, y: 0, z: 0, time: (hrTime[0] * 1000 + hrTime[1] / 1000000), netAcc: 0 }
@@ -36,7 +43,7 @@ var temperatureInterval, vibrationInterval, vibrationSendInterval/*, positionInt
 function startup() {
     const client = new net.Socket();
     try {
-        let conectTimeout = setTimeout(() => { client.destroy();startup(); }, 20000);
+        let conectTimeout = setTimeout(() => { client.destroy(); startup(); }, 20000);
         client.connect(config.controlRoom.TCPportrecive, config.controlRoom.IP, function () {
             client.write("getMode<EOF>");
             //client.destroy();
@@ -56,7 +63,7 @@ var out = fs.openSync('./out.log', 'a');
 var err = fs.openSync('./out.log', 'a');
 */
 var cp = require('child_process');
-var child = cp.spawn('node', ['server.js'],{ detached: true, stdio: [ 'ignore'] });
+var child = cp.spawn('node', ['server.js'], { detached: true, stdio: ['ignore'] });
 child.unref();
 
 startup();
@@ -90,7 +97,7 @@ class SendBuffer {//in the event that coms are down this will acumulate data to 
     };
     order = [];
     inTransit = {};
-    addData = function (data = { type: "", data: [{ val: 0, time: 0 }] }) {
+    addData = function (data = { type: "", data: [{ val: 0, time: 0, loc: 0 }] }) {
         let combined = false;
         //console.log(Object.keys(this.stored));
         //console.log(Object.keys(data))
@@ -139,33 +146,33 @@ class SendBuffer {//in the event that coms are down this will acumulate data to 
 }
 function run() {
     let buffer = new SendBuffer();
-    function trysend(data = { type: "", data: [{ val: 0, time: 0 }] }) {
+    function trysend(data = { type: "", data: [{ val: 0, time: 0, loc: 0 }] }) {
         buffer.addData(data);
         let nextdata = buffer.GetNextSend();
         if (nextdata != null) {
             //console.log("sending"+JSON.stringify(nextdata))
             sendData(nextdata);
-        } else { console.log("norywtvr "+buffer.CanSend()) }
+        } else { console.log("norywtvr " + buffer.CanSend()) }
     }
 
-    function sendData(data = { type: "", data: [{ val: 0, time: 0 }], uuid: "xxxxxxxxxxxxxxx" }) {
+    function sendData(data = { type: "", data: [{ val: 0, time: 0, loc: 0 }], uuid: "xxxxxxxxxxxxxxx" }) {
         let client = new net.Socket();
-        let conectTimeout ;
+        let conectTimeout;
         client.connect(config.controlRoom.TCPportrecive, config.controlRoom.IP, function () {
             client.write(JSON.stringify(data) + "<EOF>"); //send first data
-            conectTimeout = setTimeout(function(dat){ client.destroy();sendData(dat); }.bind(data), 20000);//if the socket times out destroy it and resend the data 20 seconds
+            conectTimeout = setTimeout(function (dat) { client.destroy(); sendData(dat); }.bind(data), 20000);//if the socket times out destroy it and resend the data 20 seconds
         });
         client.on('data', function (resp) {
             clearTimeout(conectTimeout);//remove the timeout on sucessfull responce
             if (resp.indexOf("200") != -1) {
                 // (?:200-)([0-9a-zA-Z]{15})//alternative regex
-                let uuid=/(?:200-)(.*)/.exec(resp);// find uuid of last packet in responce
+                let uuid = /(?:200-)(.*)/.exec(resp);// find uuid of last packet in responce
                 buffer.ConfirmSend(uuid[1]);
                 let nextdata = buffer.GetNextSend();
                 if (nextdata == null) { client.destroy(); }
                 else {//there is moar data to send so just reuse this existing conection
-                    client.write(JSON.stringify(nextdata) + "<EOF>"); 
-                    conectTimeout = setTimeout(function(dat){ client.destroy();sendData(dat); }.bind(nextdata), 20000); 
+                    client.write(JSON.stringify(nextdata) + "<EOF>");
+                    conectTimeout = setTimeout(function (dat) { client.destroy(); sendData(dat); }.bind(nextdata), 20000);
                 }
             }
             else { client.write(JSON.stringify(data) + "<EOF>"); }
@@ -201,7 +208,7 @@ function run() {
                     setfanrunning(true)
                 } else if (celcius < config.motorfanOnTemperature - 3) { setfanrunning(false) }//hysteris for fan
                 let now = new Date().getTime();
-                trysend({ type: "temp", data: [{ val: celcius, time: now }] });
+                trysend({ type: "temp", data: [{ val: celcius, time: now, loc: 0 }] });
             });
         });
     }
@@ -219,7 +226,7 @@ function run() {
         //var hrTime = process.hrtime();
         //(hrTime[0] * 1000 + hrTime[1] / 1000000)
         //Math.floor(time / 1000)*1000;
-        let acc = { x: 0, y: 0, z: 0, time: new Date().getTime(), val: 0 }
+        let acc = { x: 0, y: 0, z: 0, time: new Date().getTime(), val: 0, loc: 0 }
         //TODO:get the acc
         acc.x = Math.random();
         acc.z = Math.random();

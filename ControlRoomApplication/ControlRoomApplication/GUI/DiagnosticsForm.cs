@@ -15,7 +15,7 @@ namespace ControlRoomApplication.GUI
     public partial class DiagnosticsForm : Form
     {
         private ControlRoom controlRoom;
-        EncoderReader encoderReader = new EncoderReader();
+        EncoderReader encoderReader = new EncoderReader("192.168.7.2",1602);
         ControlRoomApplication.Entities.Orientation azimuthOrientation = new ControlRoomApplication.Entities.Orientation();
         
 

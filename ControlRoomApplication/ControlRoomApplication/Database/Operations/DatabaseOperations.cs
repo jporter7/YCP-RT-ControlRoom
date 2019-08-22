@@ -346,5 +346,40 @@ namespace ControlRoomApplication.Database
                     appt.Status.Equals(AppointmentStatusEnum.REQUESTED) ||
                     appt.Status.Equals(AppointmentStatusEnum.SCHEDULED);
         }
+        
+        public static void AddSensorData( List<Temperature> temp ) {
+            if(temp.Count <= 0) { return; }
+            if(!USING_REMOTE_DATABASE) {
+                using(RTDbContext Context = InitializeDatabaseContext()) {
+                    Context.Temperatures.AddRange( temp );
+                    //foreach(Temperature tump in temp) {}
+                    SaveContext( Context );
+                }
+            }
+        }
+
+        public static void AddSensorData( List<Acceleration> acc ) {
+            if(acc.Count <= 0) { return; }
+            if(!USING_REMOTE_DATABASE) {
+                using(RTDbContext Context = InitializeDatabaseContext()) {
+                    Context.Accelerations.AddRange( acc );
+                    //foreach(Temperature tump in temp) {}
+                    SaveContext( Context );
+                }
+            }
+        }
+
+        public static List<Acceleration> GetACCData( DateTime starttime , DateTime endTime ) {
+            using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
+                return Context.Accelerations.Where( x => (x.TimeCaptured > starttime ) ).ToList();
+            }
+        }
+
+        public static List<Temperature> GetTEMPData( DateTime starttime , DateTime endTime ) {
+            using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )
+                return Context.Temperatures.Where( x => (x.TimeCaptured > starttime ) ).ToList();
+            }
+        }
+
     }
 }
