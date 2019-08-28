@@ -18,7 +18,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
         private ModbusSlave MCU_Modbusserver;
 
         private TcpClient PLCTCPClient;
-        private ModbusIpMaster PLCModbusMaster;
+        public ModbusIpMaster PLCModbusMaster;
 
         private Thread MCU_emulator_thread;
         private Thread PLC_emulator_thread;

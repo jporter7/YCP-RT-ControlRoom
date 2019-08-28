@@ -123,25 +123,16 @@ namespace ControlRoomApplication.GUI
         /// <summary>
         /// Gets and displays the current statuses of the hardware components for the specified configuration.
         /// </summary>
-        private void GetHardwareStatuses()
-        {
-
-            //TODO: this is currently broken, fix it.
-            //*
-            if (controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive())
-            {
+        private void GetHardwareStatuses() {
+            if(controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive()) {
                 statuses[0] = "Online";
-            } 
+            }
 
-            if (controlRoom.WeatherStation.IsConsideredAlive())
-            {
+            if(controlRoom.WeatherStation.IsConsideredAlive()) {
                 statuses[1] = "Online";
             }
-            //*/
-            
-
-            
         }
+
 
        
       
@@ -204,12 +195,14 @@ namespace ControlRoomApplication.GUI
             // _azEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth;
             // _elEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation;
 
-            _azEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].RadioTelescope.Encoders.GetCurentOrientation().Azimuth;//.GetCurrentOrientation().Azimuth;
-            _elEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].RadioTelescope.Encoders.GetCurentOrientation().Elevation; //GetCurrentOrientation().Elevation;
+            _azEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Azimuth;//.GetCurrentOrientation().Azimuth;
+            _elEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Elevation; //GetCurrentOrientation().Elevation;
 
 
             elevationTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
             azimuthTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
+
+            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move()).ToString();
 
             timer1.Interval = 200;
            

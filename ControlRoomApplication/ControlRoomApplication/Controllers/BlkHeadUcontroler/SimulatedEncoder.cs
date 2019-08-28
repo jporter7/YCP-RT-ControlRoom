@@ -17,11 +17,20 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         AbstractPLCDriver plc;
         string micro_ctrl_IP;
         int port;
+        bool keepalive;
         public SimulatedEncoder( string micro_ctrl_IP , int port ) : base( micro_ctrl_IP , port ) {
 
         }
-
+        /// <summary>
+        /// start a simulated encoder and driver, the simulator runs a tcp server,
+        ///the simulator uses the PLC as its source of position information, 
+        /// and the driver is an instance of a production encoder reader to comunicate with it
+        /// </summary>
+        /// <param name="plc"></param>
+        /// <param name="micro_ctrl_IP"></param>
+        /// <param name="port"></param>
         public SimulatedEncoder( AbstractPLCDriver plc , string micro_ctrl_IP , int port ) : base( plc , micro_ctrl_IP , port ) {
+            keepalive = true;
             driver = new EncoderReader( micro_ctrl_IP , port );
             this.plc = plc;
             this.micro_ctrl_IP = micro_ctrl_IP;
@@ -36,7 +45,8 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         private void run_simulation() {
             TcpListener server = new TcpListener( IPAddress.Parse( micro_ctrl_IP ) , port );
             server.Start();
-            while(true) {
+            while(keepalive) {
+                Thread.Sleep( 10 );
                 ClientWorking cw = new ClientWorking( server.AcceptTcpClient() , plc );
                 cw.DoSomethingWithClient();
             }
@@ -53,7 +63,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 ClientStream = Client.GetStream();
             }
 
-            public void DoSomethingWithClient() {
+            public void DoSomethingWithClient() {//once the server has a client send the position data imediatly to the driver which will then close the conection
                 StreamWriter sw = new StreamWriter( ClientStream );
                 StreamReader sr = new StreamReader( sw.BaseStream );
                 Orientation or = PCL.read_Position();

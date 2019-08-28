@@ -1,4 +1,5 @@
-﻿using Modbus.Data;
+﻿using ControlRoomApplication.Entities;
+using Modbus.Data;
 using Modbus.Device;
 using System;
 using System.Linq;
@@ -64,7 +65,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
         public void Bring_down()
         {
             runsimulator = false;
-            PLC_emulator_thread.Join();
+            PLC_emulator_thread.Join(100);
             MCU_emulator_thread.Join();
         }
 
@@ -79,6 +80,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                     Thread.Sleep(1000);
                 }
                 Console.WriteLine("________________PLC sim running");
+                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK-1 ,new ushort[] {1} );
                 while (runsimulator){
                     Thread.Sleep(50);
                 }

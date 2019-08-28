@@ -346,7 +346,10 @@ namespace ControlRoomApplication.Database
                     appt.Status.Equals(AppointmentStatusEnum.REQUESTED) ||
                     appt.Status.Equals(AppointmentStatusEnum.SCHEDULED);
         }
-        
+        /// <summary>
+        /// add an array of sensor data to the apropriat table
+        /// </summary>
+        /// <param name="temp"></param>
         public static void AddSensorData( List<Temperature> temp ) {
             if(temp.Count <= 0) { return; }
             if(!USING_REMOTE_DATABASE) {
@@ -381,9 +384,18 @@ namespace ControlRoomApplication.Database
             }
         }
 
+        /// <summary>
+        /// returns the most recent temerature for a given location
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <returns></returns>
         public static Temperature GetCurrentTemp( SensorLocationEnum loc ) {
             using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )   && x.TimeCaptured.Ticks < endTime.Ticks
-                return Context.Temperatures.Where( x => x.location_ID == (int)loc ).OrderByDescending( x => x.TimeCapturedUTC ).First();
+                try {
+                    return Context.Temperatures.Where( x => x.location_ID == (int)loc ).OrderByDescending( x => x.TimeCapturedUTC ).First();
+                } catch {
+                    return new Temperature();
+                }
             }
         }
     }

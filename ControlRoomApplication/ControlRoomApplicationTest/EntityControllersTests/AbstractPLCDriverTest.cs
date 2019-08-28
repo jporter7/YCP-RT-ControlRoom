@@ -8,12 +8,12 @@ namespace ControlRoomApplicationTest.EntityControllersTests
     [TestClass]
     public class AbstractPLCDriverTest
     {
-        private static TestPLCDriver DerivedAbstractPLCDriver;
+        public static TestPLCDriver DerivedAbstractPLCDriver;
 
         [ClassInitialize]
         public static void BringUp(TestContext context)
         {
-            DerivedAbstractPLCDriver = new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP,8080, 8080);
+            DerivedAbstractPLCDriver = new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP,8089, 8089);
         }
 
         [TestMethod]
@@ -21,6 +21,13 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             Assert.AreEqual(true, DerivedAbstractPLCDriver.StartAsyncAcceptingClients());
             Assert.AreEqual(true, DerivedAbstractPLCDriver.RequestStopAsyncAcceptingClientsAndJoin());
+        }
+
+        [ClassCleanup]
+        public static void Bringdown( ) {
+            //DerivedAbstractPLCDriver.Calibrate();
+            DerivedAbstractPLCDriver.Bring_down();
+            DerivedAbstractPLCDriver = null;
         }
     }
 }

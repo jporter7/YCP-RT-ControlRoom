@@ -118,5 +118,10 @@ namespace ControlRoomApplication.Controllers
         {
             return driver.GET_MCU_Status();
         }
+
+        protected override bool TestIfComponentIsAlive() {
+            return driver.workaroundAlive();
+        }
+
     }
 }

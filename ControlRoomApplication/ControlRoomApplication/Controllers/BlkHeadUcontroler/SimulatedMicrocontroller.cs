@@ -19,17 +19,16 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         private List<int> ACClocations = new List<int> { 0 , 1 , 2 };
         private Thread simthread;
         /// <summary>
-        /// 
+        ///Set the minimum and maximum temperature for the motors
         /// </summary>
         public SimulatedMicrocontroller( double minMotorTemperature , double maxMotorTemperature ) {
-            //Set the minimum and maximum temperature for the motors
             _minMotorTemperature = minMotorTemperature;
             _maxMotorTemperature = maxMotorTemperature;
 
         }
 
         /// <summary>
-        /// 
+        /// start the simulation thread
         /// </summary>
         public override bool BringUp() {
             simthread = new Thread( new ThreadStart( Run_sim ) );
@@ -49,7 +48,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         /// <summary>
         /// Creates a data point with a random value, the time it was created (now), and type: temp
         /// </summary>
-        /// Returns SensorData containing the value, time, and type
+        /// Returns SensorData containing the value, time, and type, and an int representing location
         public dynamic generateTemperatureData() {
             var temperatureList = new dynamic[1];
 

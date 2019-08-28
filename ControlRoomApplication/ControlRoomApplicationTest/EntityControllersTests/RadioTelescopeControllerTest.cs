@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Entities;
+using System.Threading;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
@@ -10,7 +11,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
     public class RadioTelescopeControllerTest
     {
         private static string ip = PLCConstants.LOCAL_HOST_IP;
-        private static int port = PLCConstants.PORT_8080;
+        private static int port = 8086;
 
         private static RadioTelescopeController TestRadioTelescopeController;
         private static TestPLCDriver TestRTPLC;
@@ -29,6 +30,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             TestRTPLC.StartAsyncAcceptingClients();
             //TestRT.PLCClient.ConnectToServer();
+
         }
 
         [TestMethod]
@@ -91,6 +93,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestGetCurrentSafetyInterlockStatus()
         {
+            Thread.Sleep( 1000 );
+            //estRTPLC.setSaftyInterlock();
+
             // Test the safety interlock status
             var response = TestRadioTelescopeController.GetCurrentSafetyInterlockStatus();
 

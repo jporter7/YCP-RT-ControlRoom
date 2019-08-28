@@ -67,10 +67,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public Orientation GetAbsoluteOrientation()
         {
-
-         //   return new Orientation(0, 0);
-            throw new NotImplementedException();
-            //return RadioTelescope.PLCDriver.read_Position();
+            return RadioTelescope.Encoders.GetCurentOrientation();
         }
 
 
