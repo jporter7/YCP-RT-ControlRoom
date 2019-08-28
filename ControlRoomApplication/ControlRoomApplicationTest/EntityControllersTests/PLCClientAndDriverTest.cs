@@ -16,7 +16,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static void BuildUp(TestContext testContext)
         {
             string ip = PLCConstants.LOCAL_HOST_IP;
-            int port = PLCConstants.PORT_8080;
+            int port = 8091;
 
             CommsHandler = new PLCClientCommunicationHandler(ip, port);
             TestDriver = new TestPLCDriver(ip,ip, port,port);

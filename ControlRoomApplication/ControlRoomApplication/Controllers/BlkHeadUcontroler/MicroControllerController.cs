@@ -15,10 +15,17 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     /// </summary>
     public class MicroControlerControler : AbstractMicrocontroller
     {
+        private string local_adress;
+        private int port;
         /// <summary>
         /// constructor for the micrcontroler only has bring up method which starts a server listing on ip and port
         /// </summary>
-        MicroControlerControler() : base() { }
+        public MicroControlerControler() : base() { }
+
+        public MicroControlerControler(string IP,int port ) {
+            this.port = port;
+            local_adress = IP;
+        }
         /// <summary>
         /// state of tcp conection
         /// </summary>
@@ -46,8 +53,8 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
             // running the listener is "host.contoso.com".  
             IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length-1];
-            //ipAddress= IPAddress.Parse("169.254.28.40");
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 1600);
+            ipAddress= IPAddress.Parse( local_adress );
+            IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
             Console.WriteLine("this ip "+ localEndPoint);
             // Create a TCP/IP socket.  
             Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -56,7 +63,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
             try
             {
                 listener.Bind(localEndPoint);
-                listener.Listen(100);//takes that max number of conections to store in the backlog
+                listener.Listen(20);//takes that max number of conections to store in the backlog
                 while (true)
                 {
                     // Set the event to nonsignaled state.  

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 
 namespace ControlRoomApplication.Entities
 {
@@ -14,6 +15,17 @@ namespace ControlRoomApplication.Entities
             CalibrationOrientation = calibrationOrientation;
             Location = location;
             CurrentOrientation = new Orientation();
+        }
+
+        public RadioTelescope( AbstractSpectraCyberController spectraCyberController , AbstractPLCDriver plcCommsHandler , Location location , Orientation calibrationOrientation , int localDBID , AbstractMicrocontroller ctrler , AbstractEncoderReader encoder ) {
+            PLCDriver = plcCommsHandler;
+            SpectraCyberController = spectraCyberController;
+            CalibrationOrientation = calibrationOrientation;
+            Location = location;
+            CurrentOrientation = new Orientation();
+            Encoders = encoder;
+            Micro_controler = ctrler;
+            Id = localDBID;
         }
 
         //
@@ -41,5 +53,7 @@ namespace ControlRoomApplication.Entities
 
         public AbstractPLCDriver PLCDriver { get; set; }
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
+        public AbstractMicrocontroller Micro_controler { get; set; }
+        public AbstractEncoderReader Encoders { get; set; }
     }
 }

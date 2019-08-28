@@ -6,16 +6,14 @@ using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
 using ControlRoomApplication.Simulators.Hardware.MCU;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
-
-
-
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplication.GUI
 {
     public partial class DiagnosticsForm : Form
     {
         private ControlRoom controlRoom;
-        EncoderReader encoderReader = new EncoderReader();
+        EncoderReader encoderReader = new EncoderReader("192.168.7.2",1602);
         ControlRoomApplication.Entities.Orientation azimuthOrientation = new ControlRoomApplication.Entities.Orientation();
         
 
@@ -23,12 +21,9 @@ namespace ControlRoomApplication.GUI
         private int timerTick = 0;
         private int demoIndex = 0;
         //private PLC PLC; This needs to be defined once I can get find the currect import
-        
+
         //TemperatureSensor myTemp = new TemperatureSensor();
         FakeTempSensor myTemp = new FakeTempSensor();
-        
-        SimulationAbsoluteEncoder azEncoder = new SimulationAbsoluteEncoder(10, 1, 0.0);
-        SimulationAbsoluteEncoder elEncoder = new SimulationAbsoluteEncoder(10, 1, 0.0);
         /***********DEMO MODE VARIABLES**************/
         private double[] azEncDemo = {0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
         private double[] elEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //10 bits of precision, 2.8 
@@ -66,42 +61,10 @@ namespace ControlRoomApplication.GUI
 
         
 
-        public DiagnosticsForm(string ip, string port, bool tempSensorSimulated = false, bool MCUSimulated = false, bool PLCSimulated = false, bool MicrocontrollerSimulated = false)
+        public DiagnosticsForm()
         {
             InitializeComponent();
 
-
-            if (MicrocontrollerSimulated)
-            {
-                SimulatedMicrocontroller microcontroller = new SimulatedMicrocontroller(0, 100);
-            }
-            else
-            {
-                //MicroControlerControler microcontroller = new MicroControlerControler();
-            }
-
-            if (PLCSimulated == false)
-            {
-                ip = "127.0.0.1";
-                port = "8808";
-                //SimulationPLCDriver PLC = new SimulationPLCDriver(ip, int.Parse(port));
-
-            }
-            else
-            {
-
-            }
-         
-            if (tempSensorSimulated == true)
-            {
-               // temperatureSensor = new FakeTemperatureSensor();
-            }
-            else
-            {
-               // temperatureSensor = new RealTemperatureSensor();
-            }
-
-            //Create if/else for Simulated Encoder thing
 
             az = 0.0;
             el = 0.0;
@@ -120,9 +83,9 @@ namespace ControlRoomApplication.GUI
             az = 0.0;
             el = 0.0;
 
-           
-            
 
+
+            
 
 
             this.controlRoom = controlRoom;
@@ -160,25 +123,16 @@ namespace ControlRoomApplication.GUI
         /// <summary>
         /// Gets and displays the current statuses of the hardware components for the specified configuration.
         /// </summary>
-        private void GetHardwareStatuses()
-        {
-
-            //TODO: this is currently broken, fix it.
-            //*
-            if (controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive())
-            {
+        private void GetHardwareStatuses() {
+            if(controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive()) {
                 statuses[0] = "Online";
-            } 
+            }
 
-            if (controlRoom.WeatherStation.IsConsideredAlive())
-            {
+            if(controlRoom.WeatherStation.IsConsideredAlive()) {
                 statuses[1] = "Online";
             }
-            //*/
-            
-
-            
         }
+
 
        
       
@@ -235,31 +189,36 @@ namespace ControlRoomApplication.GUI
 
             double elevationTemperature = 0.0;
             double azimuthTemperature = 0.0;
-            int ticks = azEncoder.CurrentPositionTicks;
+            //int ticks = azEncoder.CurrentPositionTicks;
 
             //Read actual encoder values
-            //_azEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth;
-            //_elEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation;
+            // _azEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Azimuth;
+            // _elEncoderDegrees = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation().Elevation;
+
+            _azEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Azimuth;//.GetCurrentOrientation().Azimuth;
+            _elEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Elevation; //GetCurrentOrientation().Elevation;
+
+
+            elevationTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
+            azimuthTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
+
+            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move()).ToString();
 
             timer1.Interval = 200;
            
 
             if (selectDemo.Checked == true)
             {
-              
-                //timer1.Interval = 100;
-                
+                elevationTemperature = myTemp.GetElevationTemperature();
+                azimuthTemperature = myTemp.GetAzimuthTemperature();
 
-                
-                
-                    elevationTemperature = myTemp.GetElevationTemperature();
-                    azimuthTemperature = myTemp.GetAzimuthTemperature();
-                
 
                 if(demoIndex < 79)
                 {
                     _azEncoderDegrees = azEncDemo[demoIndex++];
                     _elEncoderDegrees = elEncDemo[demoIndex];
+
+
                     _azEncoderTicks = (int)(_azEncoderDegrees * 11.38);
                     _elEncoderTicks = (int)(_elEncoderDegrees * 2.8);
                 }

@@ -38,7 +38,9 @@ namespace ControlRoomApplication.Controllers
         }
 
 
-
+        public void setSaftyInterlock() {
+            TestMCU.PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , new ushort[] { 12 } );
+        }
 
 
 
@@ -113,10 +115,11 @@ namespace ControlRoomApplication.Controllers
             return driver.Start_jog(axis, speed, clockwise);
         }
 
-        public override bool Get_interlock_status()
-        {
+        public override bool Get_interlock_status() {
+            //TestMCU.PLCModbusMaster.WriteSingleRegister( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , 123 );
             return driver.Get_interlock_status();
         }
+
 
         public override bool[] Get_Limit_switches()
         {
@@ -126,6 +129,10 @@ namespace ControlRoomApplication.Controllers
         public override bool[] GET_MCU_Status()
         {
             return driver.GET_MCU_Status();
+        }
+
+        protected override bool TestIfComponentIsAlive() {
+            return true;
         }
 
 

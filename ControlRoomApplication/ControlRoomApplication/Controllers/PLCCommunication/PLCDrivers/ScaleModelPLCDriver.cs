@@ -349,5 +349,10 @@ namespace ControlRoomApplication.Controllers
         {
             throw new NotImplementedException();
         }
+
+        protected override bool TestIfComponentIsAlive() {
+            throw new NotImplementedException();
+        }
+
     }
 }

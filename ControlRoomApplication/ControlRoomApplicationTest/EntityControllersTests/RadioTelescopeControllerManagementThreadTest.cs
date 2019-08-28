@@ -20,18 +20,18 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         private SimulationPLCDriver PLCCCH0;
         private SimulationPLCDriver PLCCCH1;
 
-        private RadioTelescopeController RTC0;
-        private RadioTelescopeController RTC1;
+        public static RadioTelescopeController RTC0;
+        public static RadioTelescopeController RTC1;
 
-        private RadioTelescopeControllerManagementThread RTCMT0;
-        private RadioTelescopeControllerManagementThread RTCMT1;
+        private static RadioTelescopeControllerManagementThread RTCMT0;
+        private static RadioTelescopeControllerManagementThread RTCMT1;
 
         [TestInitialize]
         public void BringUp()
         {
             IP = PLCConstants.LOCAL_HOST_IP;
-            Port0 = 8080;
-            Port1 = 8083;
+            Port0 = 8112;
+            Port1 = 8115;
 
             JohnRudyPark = MiscellaneousConstants.JOHN_RUDY_PARK;
             CalibrationOrientation = new Orientation(0, 90);
@@ -81,5 +81,22 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(false, RTCMT0.Busy);
             Assert.AreEqual(false, RTCMT1.Busy);
         }
+        //TestCleanup      ClassCleanup
+        [TestCleanup]
+        public void Bringdown() {
+           // RTC0.RadioTelescope.PLCDriver.Bring_down();
+          //  RTC1.RadioTelescope.PLCDriver.Bring_down();
+            RTC0 = null;
+            RTC1 = null;
+            RTCMT0.RequestToKill();
+            RTCMT1.RequestToKill();
+            RTCMT1 = null;
+            RTCMT0 = null;
+            PLCCCH0 = null;
+            PLCCCH1 = null;
+            // PLCCCH0.Bring_down();
+            Thread.Sleep( 100 );
+        }
+        //*/
     }
 }

@@ -346,5 +346,57 @@ namespace ControlRoomApplication.Database
                     appt.Status.Equals(AppointmentStatusEnum.REQUESTED) ||
                     appt.Status.Equals(AppointmentStatusEnum.SCHEDULED);
         }
+        /// <summary>
+        /// add an array of sensor data to the apropriat table
+        /// </summary>
+        /// <param name="temp"></param>
+        public static void AddSensorData( List<Temperature> temp ) {
+            if(temp.Count <= 0) { return; }
+            if(!USING_REMOTE_DATABASE) {
+                using(RTDbContext Context = InitializeDatabaseContext()) {
+                    Context.Temperatures.AddRange( temp );
+                    //foreach(Temperature tump in temp) {}
+                    SaveContext( Context );
+                }
+            }
+        }
+
+        public static void AddSensorData( List<Acceleration> acc ) {
+            if(acc.Count <= 0) { return; }
+            if(!USING_REMOTE_DATABASE) {
+                using(RTDbContext Context = InitializeDatabaseContext()) {
+                    Context.Accelerations.AddRange( acc );
+                    //foreach(Temperature tump in temp) {}
+                    SaveContext( Context );
+                }
+            }
+        }
+
+        public static List<Acceleration> GetACCData( long starttime , long endTime, SensorLocationEnum loc ) {
+            using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
+                return Context.Accelerations.Where( x => x.TimeCaptured > starttime && x.location_ID == (int)loc ).ToList();
+            }
+        }
+
+        public static List<Temperature> GetTEMPData( long starttime , long endTime, SensorLocationEnum loc ) {
+            using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )   && x.TimeCaptured.Ticks < endTime.Ticks
+                return Context.Temperatures.Where( x => x.TimeCapturedUTC > starttime && x.location_ID == (int)loc ).ToList();
+            }
+        }
+
+        /// <summary>
+        /// returns the most recent temerature for a given location
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <returns></returns>
+        public static Temperature GetCurrentTemp( SensorLocationEnum loc ) {
+            using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )   && x.TimeCaptured.Ticks < endTime.Ticks
+                try {
+                    return Context.Temperatures.Where( x => x.location_ID == (int)loc ).OrderByDescending( x => x.TimeCapturedUTC ).First();
+                } catch {
+                    return new Temperature();
+                }
+            }
+        }
     }
 }

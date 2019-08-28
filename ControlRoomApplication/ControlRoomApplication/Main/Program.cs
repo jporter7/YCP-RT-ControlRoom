@@ -1,14 +1,15 @@
 ﻿using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Controllers.BlkHeadUcontroler;
+using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-//using System.Threading;
 using System.Windows.Forms;
-//using ControlRoomApplication.Constants;
-//using ControlRoomApplication.Entities;
-//using ControlRoomApplication.Controllers;
+
 
 namespace ControlRoomApplication.Main
 {
@@ -19,7 +20,58 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-           Application.Run(new MainForm());
+            Application.Run(new MainForm());
+
+            //DatabaseOperations.DeleteLocalDatabase();
+            /*
+            SimulatedMicrocontroller micro = new SimulatedMicrocontroller( -20 , 100 );
+            micro.BringUp();
+            new Thread( new ThreadStart( async () => {// IPAddress.Parse
+                while(true) {
+                    //Console.WriteLine( DateTime.Now ); DateTime.Now.AddSeconds( -1 ) , DateTime.Now
+                    //Console.WriteLine( DatabaseOperations.GetTEMPData( DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()-(1000*60)*5 , DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() , SensorLocationEnum.AZ_MOTOR ).Count);
+                    Console.WriteLine( DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp+"  "+ Constants.TIME.UnixEpoch.AddMilliseconds( DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).TimeCapturedUTC) );
+                    Console.WriteLine( DatabaseOperations.GetACCData( DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - 10000 , DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), SensorLocationEnum.AZ_MOTOR ).Count );
+                    Thread.Sleep( 1000 );
+                }
+            })).Start();
+            //*/
+
+
+            /*
+            //SimulationPLCDriver plc = new SimulationPLCDriver( "127.0.0.1" , "127.0.0.1" , 8080 , 8080 );
+            //SimulatedEncoder encoderReader = new SimulatedEncoder( plc, "127.0.0.2" , 1602 );
+            EncoderReader encoderReader = new EncoderReader( "192.168.7.2" , 1602 );
+
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Interval = 1;
+            timer.Enabled = true;
+
+            Stopwatch sw = Stopwatch.StartNew();
+            long start = 0;
+
+            Console.WriteLine( encoderReader.GetCurentOrientation().Azimuth );
+            Console.WriteLine( encoderReader.GetCurentOrientation().Elevation );
+
+            for(int i = 0; i < 1000; i++) {
+                encoderReader.GetCurentOrientation();
+            }
+
+            long end = sw.ElapsedMilliseconds;
+
+            Console.WriteLine( "{0} milliseconds passed" , end - start );
+
+            /*
+            timer.Elapsed += ( o , e ) =>
+            {
+                start = end;
+                end = sw.ElapsedMilliseconds;
+                Console.WriteLine( "{0} milliseconds passed" , end - start );
+            };
+            //*/
+
+
+
 
 
             // MCU_TCPListener.Start(1);

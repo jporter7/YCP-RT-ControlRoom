@@ -24,6 +24,7 @@ namespace ControlRoomApplication.Controllers
         private ModbusSlave PLC_Modbusserver;
         private ModbusIpMaster MCUModbusMaster;
         private SemaphoreSlim comand_acknoledged = new SemaphoreSlim(0, 1);
+        private long PLC_last_contact;
 
         private static readonly ushort[] MESSAGE_CONTENTS_IMMEDIATE_STOP = new ushort[] {
             0x0010, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -153,6 +154,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="e"></param>
         private void Server_Read_handler(object sender, ModbusSlaveRequestEventArgs e)
         {
+            PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
            // Console.WriteLine(e.Message);
             return;
             Regex rx = new Regex(@"\b(?:Read )([0-9]+)(?:.+)(?:address )([0-9]+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -496,5 +498,13 @@ namespace ControlRoomApplication.Controllers
             else return RadioTelescopeAxisEnum.UNKNOWN;
         }
 
+        protected override bool TestIfComponentIsAlive() {
+            if(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact > 3000) {
+                return false;
+            } else return true;
+        }
+        public bool workaroundAlive() {
+            return TestIfComponentIsAlive();
+        }
     }
 }

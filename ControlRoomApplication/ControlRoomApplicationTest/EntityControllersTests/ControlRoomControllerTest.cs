@@ -14,7 +14,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static ControlRoom ControlRoom;
         public static Orientation CalibrationOrientation;
         public static string IP = PLCConstants.LOCAL_HOST_IP;
-        public static int Port = PLCConstants.PORT_8080;
+        public static int Port = 8094;
         public static RadioTelescopeController RTController0;
         public static RadioTelescopeController RTController1;
         public static RadioTelescopeController RTController2;
@@ -135,6 +135,12 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(true, CRController.AddRadioTelescopeControllerAndStart(RTController0));
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController0, true));
             Assert.AreEqual(false, CRController.RemoveRadioTelescopeController(RTController0, true));
+        }
+        [ClassCleanup]
+        public static void Bringdown( ) {
+            RTController0.RadioTelescope.PLCDriver.Bring_down();
+            RTController1.RadioTelescope.PLCDriver.Bring_down();
+            RTController2.RadioTelescope.PLCDriver.Bring_down();
         }
     }
 }

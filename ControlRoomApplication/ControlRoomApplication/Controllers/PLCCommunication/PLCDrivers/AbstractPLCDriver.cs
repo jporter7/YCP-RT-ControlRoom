@@ -8,8 +8,7 @@ using System.Threading;
 
 namespace ControlRoomApplication.Controllers
 {
-    public abstract class AbstractPLCDriver
-    {
+    public abstract class AbstractPLCDriver : HeartbeatInterface {
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -29,13 +28,16 @@ namespace ControlRoomApplication.Controllers
         /// 
         /// </summary>
         /// <param name="local_ip"></param>
-        /// <param name="PLC_ip"></param>
         /// <param name="MCU_ip"></param>
-        /// <param name="port"></param>
+        /// <param name="MCU_port"></param>
+        /// <param name="PLC_port"></param>
         public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : this(IPAddress.Parse(local_ip), IPAddress.Parse(MCU_ip), MCU_port, PLC_port) { }
 
 
-
+        protected override bool KillHeartbeatComponent() {
+             Bring_down();
+            return true;
+        }
 
         // public delegate void ReadReghandler<ModbusSlaveRequestEventArgs>(object sender, ModbusSlaveRequestEventArgs e);
 
@@ -86,6 +88,8 @@ namespace ControlRoomApplication.Controllers
         public abstract bool[] Get_Limit_switches();
 
         public abstract bool[] GET_MCU_Status();
+
+
 
         /// <summary>
         /// processes requests from the clientmanagementthread
