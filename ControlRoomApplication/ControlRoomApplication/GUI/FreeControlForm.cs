@@ -201,7 +201,12 @@ namespace ControlRoomApplication.Main
             if (ActualRATextBox.InvokeRequired)
             {
                 SetActualRATextCallback d = new SetActualRATextCallback(SetActualRAText);
-                Invoke(d, new object[] { text });
+                try
+                {
+                    Invoke(d, new object[] { text });
+
+                }
+                catch (Exception e) { }
             }
             else
             {
@@ -218,7 +223,12 @@ namespace ControlRoomApplication.Main
             if (ActualDecTextBox.InvokeRequired)
             {
                 SetActualDecTextCallback d = new SetActualDecTextCallback(SetActualDecText);
-                Invoke(d, new object[] { text });
+                try
+                {
+                    Invoke(d, new object[] { text });
+
+                }
+                catch (Exception e) { }
             }
             else
             {

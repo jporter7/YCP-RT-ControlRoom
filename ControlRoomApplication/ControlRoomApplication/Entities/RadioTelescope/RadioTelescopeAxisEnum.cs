@@ -4,6 +4,7 @@
     {
         UNKNOWN,
         AZIMUTH,
-        ELEVATION
+        ELEVATION,
+        BOTH
     }
 }

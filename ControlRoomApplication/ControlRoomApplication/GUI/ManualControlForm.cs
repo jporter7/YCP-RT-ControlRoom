@@ -140,8 +140,14 @@ namespace ControlRoomApplication.Main
             // If these threads are different, it returns true.
             if (ActualAZTextBox.InvokeRequired)
             {
-                SetActualAZTextCallback d = new SetActualAZTextCallback(SetActualAZText);
-                Invoke(d, new object[] { text });
+                //SetActualAZTextCallback d = new SetActualAZTextCallback(SetActualAZText);
+                var d = new SetActualAZTextCallback(SetActualAZText);
+                try
+                {
+                    Invoke(d, new object[] { text });
+
+                }
+                catch (Exception e) { }
             }
             else
             {
@@ -157,8 +163,14 @@ namespace ControlRoomApplication.Main
             // If these threads are different, it returns true.
             if (ActualELTextBox.InvokeRequired)
             {
-                SetActualELTextCallback d = new SetActualELTextCallback(SetActualELText);
-                Invoke(d, new object[] { text });
+                //SetActualELTextCallback d = new SetActualELTextCallback(SetActualELText);
+                var d = new SetActualELTextCallback(SetActualELText);
+                try
+                {
+                    Invoke(d, new object[] { text });
+
+                }
+                catch (Exception e) { }
             }
             else
             {

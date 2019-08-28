@@ -9,9 +9,12 @@ namespace ControlRoomApplication.Controllers
     {
         private static readonly log4net.ILog logger =  log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public ScaleModelPLCDriver(IPAddress ip_address, int port) : base(ip_address, port) { }
+        public ScaleModelPLCDriver(IPAddress local_ip_address, IPAddress MCU_ip_address, int MCU_port, int PLC_port) : base(local_ip_address, MCU_ip_address,  MCU_port,  PLC_port) { }
 
-        public ScaleModelPLCDriver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
+        public ScaleModelPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : this(IPAddress.Parse(local_ip), IPAddress.Parse(MCU_ip), MCU_port, PLC_port) { }
+
+        public bool KillClientManagementThreadFlag;
+        public TcpListener PLCTCPListener;
 
         protected override void HandleClientManagementThread()
         {
@@ -83,7 +86,7 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        protected override bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
+        public bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
         {
             int ExpectedSize = query[0] + (256 * query[1]);
             if (query.Length != ExpectedSize)
@@ -241,6 +244,110 @@ namespace ControlRoomApplication.Controllers
             }
 
             return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
+        }
+
+
+        protected bool AttemptToWriteDataToServer(NetworkStream ActiveClientStream, byte[] ResponseData)
+        {
+            try
+            {
+                ActiveClientStream.Write(ResponseData, 0, ResponseData.Length);
+            }
+            catch (Exception e)
+            {
+                if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException) || (e is System.IO.IOException) || (e is ObjectDisposedException))
+                {
+                    logger.Info("[AbstractPLCDriver] ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override bool StartAsyncAcceptingClients()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool RequestStopAsyncAcceptingClientsAndJoin()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Bring_down()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Test_Conection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Orientation read_Position()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Cancle_move()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Shutdown_PLC_MCU()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Calibrate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Immediade_stop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Get_interlock_status()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool[] Get_Limit_switches()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool[] GET_MCU_Status()
+        {
+            throw new NotImplementedException();
         }
     }
 }

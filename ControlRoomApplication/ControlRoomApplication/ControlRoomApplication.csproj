@@ -119,6 +119,7 @@
     <Compile Include="Constants\MCUConstants.cs" />
     <Compile Include="Constants\MiscellaneousConstants.cs" />
     <Compile Include="Constants\HeartbeatConstants.cs" />
+    <Compile Include="Constants\MotorConstants.cs" />
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\ThreadNameConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
+    <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionMCUDriver.cs" />
@@ -219,6 +221,8 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Database\RemoteDb\RemoteDbConfiguration.cs" />
+    <Compile Include="Simulators\Hardware\PLC_MCU\Test_control_pannel.cs" />
+    <Compile Include="Simulators\Hardware\PLC_MCU\Simulation_control_pannel.cs" />
     <Compile Include="Simulators\Hardware\WeatherStation\SimulationWeatherStation.cs" />
   </ItemGroup>
   <ItemGroup>

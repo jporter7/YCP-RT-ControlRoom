@@ -30,8 +30,10 @@ namespace ControlRoomApplication.Controllers
         /// <returns> Whether or not the RT responded. </returns>
         public bool TestCommunication()
         {
-            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TEST_CONNECTION);
-            return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
+            return RadioTelescope.PLCDriver.Test_Conection();
+
+            //byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TEST_CONNECTION);
+            //return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
         }
 
         /// <summary>
@@ -44,15 +46,33 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
 
+            return RadioTelescope.PLCDriver.read_Position();
+            /*
+            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS);
             if (!ResponseMetBasicExpectations(ByteResponse, 0x13))
             {
                 return null;
             }
 
             return new Orientation(BitConverter.ToDouble(ByteResponse, 3), BitConverter.ToDouble(ByteResponse, 11));
+            //*/
         }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Orientation GetAbsoluteOrientation()
+        {
+
+         //   return new Orientation(0, 0);
+            throw new NotImplementedException();
+            //return RadioTelescope.PLCDriver.read_Position();
+        }
+
 
         /// <summary>
         /// Gets the current status of the four limit switches.
@@ -64,13 +84,21 @@ namespace ControlRoomApplication.Controllers
         /// <returns>
         ///     An array of four booleans, where "true" means that the limit switch was triggered, and "false" means otherwise.
         ///     The order of the limit switches are as follows:
-        ///         0: Under rotation for azimuth
-        ///         1: Over rotation for azimuth
-        ///         2: Under rotation for elevation
-        ///         3: Over rotation for elevation
+        ///         0: Under limit    azimuth
+        ///         1: Under warning  azimuth
+        ///         2: Over  warning  azimuth
+        ///         3: Over  limit    azimuth
+        ///         4: Under limit    elevation
+        ///         5: Under warning  elevation
+        ///         6: Over  warning  elevation
+        ///         7: Over  limit    elevation
         /// </returns>
         public bool[] GetCurrentLimitSwitchStatuses()
         {
+            //throw new NotImplementedException();
+            return RadioTelescope.PLCDriver.Get_Limit_switches();
+
+            /*
             byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_LIMIT_SWITCH_STATUSES);
 
             if (!ResponseMetBasicExpectations(ByteResponse, 0x13))
@@ -105,6 +133,7 @@ namespace ControlRoomApplication.Controllers
             }
 
             return Statuses;
+            //*/
         }
 
         /// <summary>
@@ -117,8 +146,9 @@ namespace ControlRoomApplication.Controllers
         /// <returns> Returns true if the safety interlock system is still secured, false otherwise. </returns>
         public bool GetCurrentSafetyInterlockStatus()
         {
-            byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_SAFETY_INTERLOCK_STATUS);
-            return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
+            return RadioTelescope.PLCDriver.Get_interlock_status();
+           // byte[] ByteResponse = RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.GET_CURRENT_SAFETY_INTERLOCK_STATUS);
+            //return ResponseMetBasicExpectations(ByteResponse, 0x13) && (ByteResponse[3] == 0x1);
         }
 
         /// <summary>
@@ -130,7 +160,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool CancelCurrentMoveCommand()
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION));
+            return RadioTelescope.PLCDriver.Cancle_move();
+            //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION));
         }
 
         /// <summary>
@@ -143,7 +174,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ShutdownRadioTelescope()
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SHUTDOWN));
+            return RadioTelescope.PLCDriver.Shutdown_PLC_MCU();
+            //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SHUTDOWN));
         }
 
         /// <summary>
@@ -155,7 +187,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool CalibrateRadioTelescope()
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE));
+            return RadioTelescope.PLCDriver.Calibrate();
+            //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE));
         }
 
         /// <summary>
@@ -167,7 +200,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ConfigureRadioTelescope(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
-            return true;
+            return RadioTelescope.PLCDriver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
+            /*
             if ((startSpeedAzimuth < 1) || (startSpeedElevation < 1) || (homeTimeoutAzimuth < 0) || (homeTimeoutElevation < 0)
                 || (startSpeedAzimuth > 1000000) || (startSpeedElevation > 1000000) || (homeTimeoutAzimuth > 300) || (homeTimeoutElevation > 300))
             {
@@ -181,6 +215,7 @@ namespace ControlRoomApplication.Controllers
                 homeTimeoutAzimuth,
                 homeTimeoutElevation
             ));
+            //*/
         }
 
         /// <summary>
@@ -193,7 +228,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool MoveRadioTelescopeToOrientation(Orientation orientation)
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation));
+            return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position());
+            //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION, orientation));
         }
 
         /// <summary>
@@ -219,7 +255,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.START_JOG_MOVEMENT, axis, speed, clockwise));
+            return RadioTelescope.PLCDriver.Start_jog(axis, speed, clockwise);
+            //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.START_JOG_MOVEMENT, axis, speed, clockwise));
         }
 
         /// <summary>
@@ -258,7 +295,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeControlledStop()
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CONTROLLED_STOP));
+            return RadioTelescope.PLCDriver.Controled_stop(RadioTelescopeAxisEnum.UNKNOWN, true);
+            //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CONTROLLED_STOP));
         }
 
         /// <summary>
@@ -271,7 +309,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeImmediateStop()
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP));
+            return RadioTelescope.PLCDriver.Immediade_stop();
+            //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP));
         }
 
         /// <summary>
@@ -284,8 +323,35 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, int position)
         {
-            return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION, axis, speed, position));
+            int positionTranslationAZ=0, positionTranslationEL=0;
+            if (axis == RadioTelescopeAxisEnum.ELEVATION)
+            {
+                positionTranslationEL = position;
+            }
+            else if (axis == RadioTelescopeAxisEnum.AZIMUTH)
+            {
+                positionTranslationAZ = position;
+            }
+            else return false;
+
+            return RadioTelescope.PLCDriver.relative_move(speed, (ushort) 50, positionTranslationAZ, positionTranslationEL);
+            //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.TRANSLATE_AZEL_POSITION, axis, speed, position));
         }
+        /// <summary>
+        /// return true if the RT has finished the previous move comand
+        /// </summary>
+        public bool finished_exicuting_move()
+        {
+            bool[] flags =RadioTelescope.PLCDriver.GET_MCU_Status();
+            /*/Console.Write("\n");
+            foreach (bool flag in flags)
+            {
+                Console.Write(" " + flag + ",");
+            }
+            Console.Write("\n");//*/
+            return flags[7];
+        }
+
 
         private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
         {

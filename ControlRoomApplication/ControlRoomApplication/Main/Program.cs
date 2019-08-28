@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ControlRoomApplication.Controllers;
+using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 //using System.Threading;
@@ -17,11 +19,12 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            Application.Run(new MainForm());
+           Application.Run(new MainForm());
 
 
+            // MCU_TCPListener.Start(1);
 
-
+            //TcpClient MCUTCPClient = new TcpClient("127.0.0.1", 8080);
             /*
             new Thread(new ThreadStart(() => {
                 while (true)
@@ -154,37 +157,37 @@ namespace ControlRoomApplication.Main
             
 
  //*/
-        /*
-            Controllers.ProductionPLCDriver APLCDriver;
-            new Thread(new ThreadStart(() => {
-                Console.WriteLine("---------------------------------");
-                APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
-                Thread.Sleep(Timeout.Infinite);
-            })).Start();
-            ///
+            /*
+                Controllers.ProductionPLCDriver APLCDriver;
+                new Thread(new ThreadStart(() => {
+                    Console.WriteLine("---------------------------------");
+                    APLCDriver = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.2", 502);
+                    Thread.Sleep(Timeout.Infinite);
+                })).Start();
+                ///
 
-            new Thread(new ThreadStart(() => {
-                bool up = true;
-                ushort i = 0;
-                Random rand = new Random();
-                Thread.Sleep(10000);
-                while (true)
-                {
-                    Thread.Sleep(1000);
-                    string outp = "";
-                    for (ushort v = 0; v < 10; v++)
+                new Thread(new ThreadStart(() => {
+                    bool up = true;
+                    ushort i = 0;
+                    Random rand = new Random();
+                    Thread.Sleep(10000);
+                    while (true)
                     {
-                        outp += Convert.ToString(APLCDriver.readregval(v), 2).PadLeft(16).Replace(" ", "0") + " , ";
+                        Thread.Sleep(1000);
+                        string outp = "";
+                        for (ushort v = 0; v < 10; v++)
+                        {
+                            outp += Convert.ToString(APLCDriver.readregval(v), 2).PadLeft(16).Replace(" ", "0") + " , ";
+                        }
+                        Console.WriteLine(outp);
+                        if (up) { i++; } else { i--; }
+                        if (i>=10){ up = false; }
+                        if (i <=0){ up = true; }
+                        APLCDriver.setregvalue(i, (ushort) (rand.Next() /(2^16) ));
+
                     }
-                    Console.WriteLine(outp);
-                    if (up) { i++; } else { i--; }
-                    if (i>=10){ up = false; }
-                    if (i <=0){ up = true; }
-                    APLCDriver.setregvalue(i, (ushort) (rand.Next() /(2^16) ));
-                   
-                }
-            })).Start();
-            //*/
+                })).Start();
+                //*/
 
             //string localhostIP = PLCConstants.LOCAL_HOST_IP;
             //int localhostPort = PLCConstants.PORT_8080;

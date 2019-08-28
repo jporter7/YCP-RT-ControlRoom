@@ -100,8 +100,9 @@ namespace ControlRoomApplication.Main
                 && comboBox1.SelectedIndex > -1)
             {
                 current_rt_id++;
-                RadioTelescope ARadioTelescope = BuildRT();
-                AbstractPLCDriver APLCDriver = BuildPLCDriver();
+                AbstractPLCDriver APLCDriver = BuildPLCDriver();//////////##############################
+                RadioTelescope ARadioTelescope = BuildRT(APLCDriver);
+                
 
                 // Add the RT/PLC driver pair and the RT controller to their respective lists
                 AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
@@ -134,7 +135,7 @@ namespace ControlRoomApplication.Main
                 // Start plc server and attempt to connect to it.
                 logger.Info("Starting plc server and attempting to connect to it");
                 ProgramPLCDriverList[current_rt_id - 1].StartAsyncAcceptingClients();
-                ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();
+//ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();//////####################################
 
                 logger.Info("Adding RadioTelescope Controller");
                 MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
@@ -222,7 +223,7 @@ namespace ControlRoomApplication.Main
                 }
 
                 ProgramRTControllerList[0].RadioTelescope.SpectraCyberController.BringDown();
-                ProgramRTControllerList[0].RadioTelescope.PLCClient.TerminateTCPServerConnection();
+                ProgramRTControllerList[0].RadioTelescope.PLCDriver.Bring_down();
                 ProgramPLCDriverList[0].RequestStopAsyncAcceptingClientsAndJoin();
             }
 
@@ -256,24 +257,29 @@ namespace ControlRoomApplication.Main
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             logger.Info("dataGridView1_CellContent Clicked");
-            DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, dataGridView1.CurrentCell.RowIndex);
-            diagnosticForm.Show();
+            try {
+                DiagnosticsForm diagnosticForm = new DiagnosticsForm( MainControlRoomController.ControlRoom , dataGridView1.CurrentCell.RowIndex );
+                diagnosticForm.Show();
+            } catch {
+
+            }
         }
 
         /// <summary>
         /// Builds a radio telescope instance based off of the input from the GUI form.
         /// </summary>
         /// <returns> A radio telescope instance representing the configuration chosen. </returns>
-        public RadioTelescope BuildRT()
+        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver)
         {
             logger.Info("Building RadioTelescope");
-            PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+
+           // PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(txtPLCIP.Text, int.Parse(txtPLCPort.Text));///###############################
 
             // Create Radio Telescope Location
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
 
             // Return Radio Telescope
-            RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), PLCCommsHandler, location, new Entities.Orientation(0,90), current_rt_id);
+            RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id);
 
             logger.Info("RadioTelescope Built Successfully");
             return rt;
@@ -308,20 +314,20 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info("Building ProductionPLCDriver");
-                    return new ProductionMCUDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+                    return new ProductionMCUDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text));
 
                 case 1:
                     logger.Info("Building ScaleModelPLCDriver");
-                    return new ScaleModelPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+                    return new ScaleModelPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text));
 
                 case 3:
                     logger.Info("Building TestPLCDriver");
-                    return new TestPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+                    return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text));
 
                 case 2:
                 default:
                     logger.Info("Building SimulationPLCDriver");
-                    return new SimulationPLCDriver(txtPLCIP.Text, int.Parse(txtPLCPort.Text));
+                    return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text));
             }
         }
 
@@ -399,52 +405,6 @@ namespace ControlRoomApplication.Main
 
 
         /// <summary>
-        /// Determine if the Temp sensor is going to be real or simulated
-        /// </summary>
-        /// <returns> True when simulated, false when real </returns>
-        public bool IsTempSensorSimulated()
-        {
-            bool isSimulated = false;
-
-            logger.Info("Selected Temperature Sensor type: " + comboTempSensorType.Text);
-
-            if (comboTempSensorType.SelectedIndex == (int)TempSensorType.Production)               
-            {
-                isSimulated = false;
-            }
-            else
-            {
-                isSimulated = true;
-            }
-
-            return isSimulated;
-        }
-
-        /// <summary>
-        /// Determine if the MCU is going to be real or simulated
-        /// </summary>
-        /// <returns> True when simulated, false when real </returns>
-        public bool IsMCUSimulated()
-        {
-            bool isSimulated = false;
-
-            logger.Info("Selected MCU Type: " + comboMCUType.Text);
-
-            if(comboMCUType.SelectedIndex == (int)MCUType.Production)
-            {
-                isSimulated = false;
-            }
-            else
-            {
-                isSimulated = true;
-            }
-
-            return isSimulated;
-        }
-
-
-
-        /// <summary>
         /// Generates a free control form that allows free control access to a radio telescope
         /// instance through the generated form.
         /// </summary>
@@ -486,16 +446,14 @@ namespace ControlRoomApplication.Main
             logger.Info("Diagnostics Form Button Clicked");
 
             
-            bool isTempSensorSimulated = IsTempSensorSimulated();
-
-            bool isMCUSimulated = IsMCUSimulated();
+            bool isTempSensorSimulated = true;
 
             bool isPLCSimulated = IsPLCSimulated();
 
             bool isMicroControllerSimulated = IsMicrocontrollerSimulated();
             
             
-            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isMCUSimulated, isPLCSimulated, isMicroControllerSimulated);
+            DiagnosticsForm diagnosticsWindows = new DiagnosticsForm(txtPLCIP.Text, txtPLCPort.Text, isTempSensorSimulated, isPLCSimulated , isPLCSimulated, isMicroControllerSimulated);
             
             diagnosticsWindows.Show();
             
@@ -512,7 +470,7 @@ namespace ControlRoomApplication.Main
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
-
+            this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
         }
     }
 }

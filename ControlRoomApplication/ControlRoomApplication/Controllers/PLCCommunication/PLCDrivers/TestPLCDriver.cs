@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -13,14 +15,152 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation CurrentOrientation { get; private set; }
 
-        public TestPLCDriver(IPAddress ip_address, int port) : base(ip_address, port)
+        public bool KillClientManagementThreadFlag;
+        public TcpListener PLCTCPListener;
+
+        private Test_control_pannel TestMCU;
+        private ProductionPLCDriver driver;
+
+        public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
             CurrentOrientation = new Orientation();
+
+            if (MCU_port == PLC_port)
+            {
+                MCU_port++;
+            }
+            TestMCU = new Test_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port);
+            Thread.Sleep(100);
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
+            driver.set_is_test(true);
+            Thread.Sleep(1000);
+            //driver.StartAsyncAcceptingClients();
         }
 
-        public TestPLCDriver(string ip, int port) : this(IPAddress.Parse(ip), port) { }
 
-        protected override bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
+
+
+
+
+        public override bool StartAsyncAcceptingClients()
+        {
+            return driver.StartAsyncAcceptingClients();
+        }
+
+        public override bool RequestStopAsyncAcceptingClientsAndJoin()
+        {
+            return driver.RequestStopAsyncAcceptingClientsAndJoin();
+        }
+
+        public override void Bring_down()
+        {
+            TestMCU.Bring_down();
+            driver.Bring_down();
+        }
+
+        public override bool Test_Conection()
+        {
+            return driver.Test_Conection();
+        }
+
+        public override Orientation read_Position()
+        {
+            return driver.read_Position();
+        }
+
+        public override bool Cancle_move()
+        {
+            return driver.Cancle_move();
+        }
+
+        public override bool Shutdown_PLC_MCU()
+        {
+            return driver.Shutdown_PLC_MCU();
+        }
+
+        public override bool Calibrate()
+        {
+            return driver.Calibrate();
+        }
+
+        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        {
+            return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
+        }
+
+        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
+        {
+            return driver.Controled_stop( axis, both);
+        }
+
+        public override bool Immediade_stop()
+        {
+            return driver.Immediade_stop();
+        }
+
+        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        {
+            return driver.relative_move(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL);
+        }
+
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        {
+            return driver.Move_to_orientation(target_orientation, current_orientation);
+        }
+
+        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        {
+            return driver.Start_jog(axis, speed, clockwise);
+        }
+
+        public override bool Get_interlock_status()
+        {
+            return driver.Get_interlock_status();
+        }
+
+        public override bool[] Get_Limit_switches()
+        {
+            return driver.Get_Limit_switches();
+        }
+
+        public override bool[] GET_MCU_Status()
+        {
+            return driver.GET_MCU_Status();
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
         {
             int ExpectedSize = query[0] + (256 * query[1]);
             if (query.Length != ExpectedSize)
@@ -256,5 +396,26 @@ namespace ControlRoomApplication.Controllers
                 }
             }
         }
+
+
+        protected bool AttemptToWriteDataToServer(NetworkStream ActiveClientStream, byte[] ResponseData)
+        {
+            try
+            {
+                ActiveClientStream.Write(ResponseData, 0, ResponseData.Length);
+            }
+            catch (Exception e)
+            {
+                if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException) || (e is System.IO.IOException) || (e is ObjectDisposedException))
+                {
+                    logger.Info("[AbstractPLCDriver] ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
     }
 }
