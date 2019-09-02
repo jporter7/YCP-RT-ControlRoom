@@ -296,7 +296,7 @@ namespace ControlRoomApplication.Controllers
                         //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
                         Thread.Sleep(100);
                     }
-                    while (!RTController.finished_exicuting_move());
+                    while (!RTController.finished_exicuting_move( RadioTelescopeAxisEnum.BOTH));
 
                     NextObjectiveOrientation = null;
                 }

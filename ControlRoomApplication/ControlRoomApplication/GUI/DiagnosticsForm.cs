@@ -7,6 +7,8 @@ using ControlRoomApplication.Simulators.Hardware.MCU;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Constants;
+using System;
 
 namespace ControlRoomApplication.GUI
 {
@@ -108,6 +110,11 @@ namespace ControlRoomApplication.GUI
             dataGridView1.Rows.Add(mcuRow);
             dataGridView1.Update();
 
+
+            MCU_Statui.ColumnCount = 2;
+            MCU_Statui.Columns[0].HeaderText = "Status name";
+            MCU_Statui.Columns[1].HeaderText = "value";
+
             SetCurrentAzimuthAndElevation();
             logger.Info("DiagnosticsForm Initalized");
         }
@@ -202,7 +209,7 @@ namespace ControlRoomApplication.GUI
             elevationTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
             azimuthTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
 
-            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move()).ToString();
+            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
 
             timer1.Interval = 200;
            
@@ -320,7 +327,29 @@ namespace ControlRoomApplication.GUI
             SetCurrentAzimuthAndElevation();
 
             dataGridView1.Update();
-           
+
+
+            if(MCU_Statui.Rows.Count > 5) {
+                bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
+                foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
+                    string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
+                    //MCU_Statui.Rows[(int)stutusBit][1] = stuti[(int)stutusBit].ToString();
+                    //string[] row = { ((PLC_modbus_server_register_mapping)reg).ToString() , Convert.ToString( val[reg + 1] ).PadLeft( 5 ) };//.Replace(" ", "0") };
+                    //PLC_regs.Rows.Add(row);
+                    MCU_Statui.Rows[(int)stutusBit].SetValues( row );
+                }
+            } else {
+                MCU_Statui.Rows.Clear();
+                bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
+                foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
+                    string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
+                    MCU_Statui.Rows.Add( row );
+                }
+                MCU_Statui.Update();
+            }
+
+
+
 
         }
 

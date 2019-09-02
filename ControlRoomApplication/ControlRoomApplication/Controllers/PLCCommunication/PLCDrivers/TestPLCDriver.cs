@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
@@ -18,7 +19,7 @@ namespace ControlRoomApplication.Controllers
         public bool KillClientManagementThreadFlag;
         public TcpListener PLCTCPListener;
 
-        private Test_control_pannel TestMCU;
+        private Simulation_control_pannel TestMCU;
         private ProductionPLCDriver driver;
 
         public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
@@ -29,7 +30,7 @@ namespace ControlRoomApplication.Controllers
             {
                 MCU_port++;
             }
-            TestMCU = new Test_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port);
+            TestMCU = new Simulation_control_pannel( local_ip, MCU_ip, MCU_port, PLC_port,true);
             Thread.Sleep(100);
             driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
             driver.set_is_test(true);
@@ -85,7 +86,7 @@ namespace ControlRoomApplication.Controllers
             return driver.Calibrate();
         }
 
-        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation , int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
@@ -126,9 +127,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Get_Limit_switches();
         }
 
-        public override bool[] GET_MCU_Status()
+        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
         {
-            return driver.GET_MCU_Status();
+            return driver.GET_MCU_Status( axis );
         }
 
         protected override bool TestIfComponentIsAlive() {

@@ -296,20 +296,22 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Configure_MCU( int startSpeedDPSAzimuth , int startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
+        public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
             int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );
+            //gearedSpeedAZ = startSpeedDPSAzimuth;
+            //gearedSpeedEL = startSpeedDPSElevation;
             if((gearedSpeedAZ < 1) || (gearedSpeedEL < 1) || (homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsElevation < 0)
              || (gearedSpeedAZ > 1000000) || (gearedSpeedEL > 1000000) || (homeTimeoutSecondsAzimuth > 300) || (homeTimeoutSecondsElevation > 300)) {
                 return false;
             }
-            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), (ushort)homeTimeoutSecondsAzimuth,
-                                0x0,    0x0,    0x0,                                 0x0,                            0x0,
-                                0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), (ushort)homeTimeoutSecondsElevation,
-                                0x0,    0x0,    0x0,                                0x0,                             0x0
+            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), (ushort)homeTimeoutSecondsAzimuth,   0x0,    0x0,    0x0,                                 0x0,                            0x0,
+                                0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), (ushort)homeTimeoutSecondsElevation, 0x0,    0x0,    0x0,                                0x0,                             0x0
                                 };
             //set_multiple_registers( data,  1);
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
+            Thread.Sleep( 100 );
+            MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
             return true;
         }
         /// <summary>
@@ -327,16 +329,23 @@ namespace ControlRoomApplication.Controllers
         }
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
+        /// does not suport RadioTelescopeAxisEnum.BOTH
         /// </summary>
-        public override bool[] GET_MCU_Status() {
-            ushort data = MCUModbusMaster.ReadHoldingRegisters( 0 , 1 )[0];
-            bool[] target = new bool[16];
+        public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
+            ushort start = 0;
+            if(axis == RadioTelescopeAxisEnum.ELEVATION) {
+                start = 10;
+            }
+            ushort[] data = MCUModbusMaster.ReadHoldingRegisters( start , 2 );
+            bool[] target = new bool[32];
             for(int i = 0; i < 16; i++) {
-                target[i] = ((data >> i) & 1) == 1;
+                target[i] = ((data[0] >> i) & 1) == 1;
+                target[i + 16] = ((data[1] >> i) & 1) == 1;
+
             }
             return target;
-
         }
+
         /// <summary>
         /// clears the previos move comand from mthe PLC
         /// </summary>
@@ -348,6 +357,14 @@ namespace ControlRoomApplication.Controllers
 
 
         public override bool Controled_stop( RadioTelescopeAxisEnum axis , bool both ) {
+            ushort[] data = new ushort[] {
+                0x0004 , 0x0003 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0,
+                0x0004 , 0x0003 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0
+            };
+            //MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
+            //return true;
+            return Cancle_move();
+            /*
             ushort[] data = new ushort[] { 0x4 , 0x3 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 };
             if(both) {
                 MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_HOLD_MOVE );
@@ -360,6 +377,7 @@ namespace ControlRoomApplication.Controllers
                 return true;
             }
             return false;
+            //*/
         }
 
         public override bool Immediade_stop() {
@@ -381,7 +399,7 @@ namespace ControlRoomApplication.Controllers
 
 
         public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+            return send_relative_move_sync( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
             //return sendmovecomand( programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();   //.ContinueWith(antecedent => { return antecedent.; });
         }
 
@@ -459,6 +477,20 @@ namespace ControlRoomApplication.Controllers
             return Sucess;
         }
 
+        public  bool send_relative_move_sync( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+            bool Sucess = true;
+            MCUModbusMaster.WriteMultipleRegisters( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
+            if(!is_test) {
+                Task task = Task.Delay( 100 );//wait to ensure it is porcessed
+                task.Wait();
+            }
+            ushort[] data = {
+                0x0002 , 0x0003, (ushort)((positionTranslationAZ & 0xFFFF0000)>>16),(ushort)(positionTranslationAZ & 0xFFFF),(ushort)((SpeedAZ & 0xFFFF0000)>>16),(ushort)(SpeedAZ & 0xFFFF), ACCELERATION,ACCELERATION ,0,0,
+                0x0002 , 0x0003, (ushort)((positionTranslationEL & 0xFFFF0000)>>16),(ushort)(positionTranslationEL & 0xFFFF),(ushort)((SpeedEL & 0xFFFF0000)>>16),(ushort)(SpeedEL & 0xFFFF), ACCELERATION,ACCELERATION ,0,0
+            };
+            MCUModbusMaster.WriteMultipleRegisters( 1024 , data );
+            return Sucess;
+        }
 
         public async Task<bool> sendmovecomand( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
             bool Sucess = true;

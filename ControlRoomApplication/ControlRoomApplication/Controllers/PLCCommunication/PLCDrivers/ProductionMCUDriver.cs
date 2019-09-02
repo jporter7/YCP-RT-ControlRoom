@@ -2,6 +2,7 @@
 
 using System;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using Modbus.Device;
@@ -561,7 +562,7 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation , int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             throw new NotImplementedException();
         }
@@ -601,7 +602,7 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool[] GET_MCU_Status()
+        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
         {
             throw new NotImplementedException();
         }
