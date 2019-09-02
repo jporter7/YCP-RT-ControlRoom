@@ -237,6 +237,7 @@ namespace ControlRoomApplication.Database
         /// Creates and stores and RFData reading in the local database.
         /// </summary>
         /// <param name="data">The RFData reading to be created/stored.</param>
+        /// <param name="apptId"></param>
         public static void CreateRFData(int apptId, RFData data)
         {
             

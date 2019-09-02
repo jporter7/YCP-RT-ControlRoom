@@ -157,6 +157,7 @@ namespace ControlRoomApplication.Controllers
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
            // Console.WriteLine(e.Message);
             return;
+            /*
             Regex rx = new Regex(@"\b(?:Read )([0-9]+)(?:.+)(?:address )([0-9]+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             MatchCollection matches = rx.Matches(e.Message.ToString());
             foreach (Match match in matches)
@@ -164,8 +165,8 @@ namespace ControlRoomApplication.Controllers
                 GroupCollection groups = match.Groups;
                 Console.WriteLine("'{0}' repeated at positions {1} and {2}", groups["word"].Value, groups[0].Index, groups[1].Index);
             }
+            //*/
             // PLC_Modbusserver.DataStore.HoldingRegisters[e.] += 1;
-            //throw new NotImplementedException();
         }
 
         /// <summary>

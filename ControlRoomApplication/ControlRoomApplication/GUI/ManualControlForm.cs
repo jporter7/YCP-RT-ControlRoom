@@ -152,7 +152,7 @@ namespace ControlRoomApplication.Main
                         throw new Exception( "Timed out" );
 
                 }
-                catch (Exception e) {
+                catch  {
 
                 }
             }
@@ -179,7 +179,7 @@ namespace ControlRoomApplication.Main
                         throw new Exception( "Timed out" );
 
                 }
-                catch (Exception e) { }
+                catch { }
             }
             else
             {

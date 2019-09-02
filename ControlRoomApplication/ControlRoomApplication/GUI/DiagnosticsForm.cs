@@ -19,8 +19,6 @@ namespace ControlRoomApplication.GUI
         ControlRoomApplication.Entities.Orientation azimuthOrientation = new ControlRoomApplication.Entities.Orientation();
         
 
-        private SimulationMCU mtrCtrl;
-        private int timerTick = 0;
         private int demoIndex = 0;
         //private PLC PLC; This needs to be defined once I can get find the currect import
 
@@ -41,7 +39,6 @@ namespace ControlRoomApplication.GUI
         double _azEncoderDegrees = 0;
         double _elEncoderDegrees = 0;
         double _elevationTemp = 0;
-        double _azimuthTemp = 0;
         int _azEncoderTicks = 0;
         int _elEncoderTicks = 0;
         
@@ -50,29 +47,9 @@ namespace ControlRoomApplication.GUI
         bool shutdownSent = false;
         
         private int rtId;
-        private double az;
-        private double el;
         private string[] statuses = { "Offline", "Offline", "Offline", "Offline" };
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        /// <summary>
-        /// Initializes the diagnostic form based off of the specified configuration.
-        /// </summary>
-        /// 
-
-        
-
-        public DiagnosticsForm()
-        {
-            InitializeComponent();
-
-
-            az = 0.0;
-            el = 0.0;
-            timer1.Start();
-            logger.Info("DiagnosticsForm Initalized");
-        }
 
 
         /// <summary>
@@ -82,13 +59,6 @@ namespace ControlRoomApplication.GUI
         public DiagnosticsForm(ControlRoom controlRoom, int rtId)
         {
             InitializeComponent();
-            az = 0.0;
-            el = 0.0;
-
-
-
-            
-
 
             this.controlRoom = controlRoom;
             

@@ -283,8 +283,7 @@ namespace ControlRoomApplication.Controllers
                     logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                     RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
 
-                    // Wait until telescope reaches destination
-                    Orientation currentOrientation;
+                    // Wait until MCU issues finished move status
                     do
                     {
                         if (InterruptAppointmentFlag)
