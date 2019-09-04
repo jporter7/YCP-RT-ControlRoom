@@ -40,8 +40,6 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        // public delegate void ReadReghandler<ModbusSlaveRequestEventArgs>(object sender, ModbusSlaveRequestEventArgs e);
-
 
         /// <summary>
         /// modbuss server implamentation specific to each device
