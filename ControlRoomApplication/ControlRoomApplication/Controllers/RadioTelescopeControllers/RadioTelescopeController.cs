@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Controllers
@@ -191,11 +192,10 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Method used to request to set configuration of elements of the RT.
         /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
+        /// takes the starting speed of the motor in degrees per second (speed of tellescope after gearing)
+        /// and home timeout which is currently unused
         /// </summary>
-        public bool ConfigureRadioTelescope(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return RadioTelescope.PLCDriver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
             /*
@@ -337,16 +337,23 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// return true if the RT has finished the previous move comand
         /// </summary>
-        public bool finished_exicuting_move()
+        public bool finished_exicuting_move( RadioTelescopeAxisEnum axis )//[7]
         {
-            bool[] flags =RadioTelescope.PLCDriver.GET_MCU_Status();
-            /*/Console.Write("\n");
-            foreach (bool flag in flags)
-            {
-                Console.Write(" " + flag + ",");
+             
+            var Taz = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH );  //Task.Run( async () => { await  } );
+            var Tel = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.ELEVATION );
+
+            Taz.Wait();
+            bool azFin = Taz.Result[7];
+            bool elFin = Tel.GetAwaiter().GetResult()[7];
+            if(axis == RadioTelescopeAxisEnum.BOTH) {
+                return elFin && azFin;
+            } else if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
+                return azFin;
+            } else if(axis == RadioTelescopeAxisEnum.ELEVATION) {
+                return elFin;
             }
-            Console.Write("\n");//*/
-            return flags[7];
+            return false;
         }
 
 

@@ -16,6 +16,11 @@ namespace ControlRoomApplication.Entities {
     }
 
     public class SensorLocationEnumTypeConversionHelper {
+        /// <summary>
+        /// if input is not in SensorLocationEnum returns undefined
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static SensorLocationEnum FromInt( int input ) {
             if(!Enum.IsDefined( typeof( SensorLocationEnum ) , input )) {
                 return SensorLocationEnum.UNDEFINED;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
@@ -20,7 +21,7 @@ namespace ControlRoomApplication.Controllers
             {
                 MCU_port++;
             }
-            SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port);
+            SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, false);
             Thread.Sleep(1000);//wait for server in simMcu to come up
             driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
             driver.StartAsyncAcceptingClients();
@@ -74,7 +75,7 @@ namespace ControlRoomApplication.Controllers
             return driver.Calibrate();
         }
 
-        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
@@ -114,9 +115,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Get_Limit_switches();
         }
 
-        public override bool[] GET_MCU_Status()
+        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
         {
-            return driver.GET_MCU_Status();
+            return driver.GET_MCU_Status( axis );
         }
 
         protected override bool TestIfComponentIsAlive() {

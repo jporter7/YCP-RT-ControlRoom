@@ -206,7 +206,7 @@ namespace ControlRoomApplication.Main
                     Invoke(d, new object[] { text });
 
                 }
-                catch (Exception e) { }
+                catch { }
             }
             else
             {
@@ -228,7 +228,7 @@ namespace ControlRoomApplication.Main
                     Invoke(d, new object[] { text });
 
                 }
-                catch (Exception e) { }
+                catch { }
             }
             else
             {

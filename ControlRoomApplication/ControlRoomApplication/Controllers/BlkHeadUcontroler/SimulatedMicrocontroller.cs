@@ -12,7 +12,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
     /// </summary>
     public class SimulatedMicrocontroller : AbstractMicrocontroller {
         Random rand = new Random();
-        dynamic sensorData;
         private double _minMotorTemperature;
         private double _maxMotorTemperature;
         private List<int> Templocations = new List<int> { 0 , 1 , 3 };

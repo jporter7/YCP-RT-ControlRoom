@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -39,8 +40,6 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        // public delegate void ReadReghandler<ModbusSlaveRequestEventArgs>(object sender, ModbusSlaveRequestEventArgs e);
-
 
         /// <summary>
         /// modbuss server implamentation specific to each device
@@ -71,7 +70,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Calibrate();
 
-        public abstract bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
+        public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
         public abstract bool Controled_stop(RadioTelescopeAxisEnum axis, bool both);
 
@@ -86,8 +85,14 @@ namespace ControlRoomApplication.Controllers
         public abstract bool Get_interlock_status();
 
         public abstract bool[] Get_Limit_switches();
-
-        public abstract bool[] GET_MCU_Status();
+        /// <summary>
+        ///  get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation, 
+        /// also see MCUConstants.MCUStutusBits
+        /// does not suport RadioTelescopeAxisEnum.BOTH
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
 
 
 

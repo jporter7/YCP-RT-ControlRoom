@@ -283,8 +283,7 @@ namespace ControlRoomApplication.Controllers
                     logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                     RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
 
-                    // Wait until telescope reaches destination
-                    Orientation currentOrientation;
+                    // Wait until MCU issues finished move status
                     do
                     {
                         if (InterruptAppointmentFlag)
@@ -296,7 +295,7 @@ namespace ControlRoomApplication.Controllers
                         //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
                         Thread.Sleep(100);
                     }
-                    while (!RTController.finished_exicuting_move());
+                    while (!RTController.finished_exicuting_move( RadioTelescopeAxisEnum.BOTH));
 
                     NextObjectiveOrientation = null;
                 }

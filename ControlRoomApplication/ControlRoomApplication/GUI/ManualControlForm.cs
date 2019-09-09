@@ -2,6 +2,8 @@
 using System.Windows.Forms;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
+using System.Threading.Tasks;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Main
 {
@@ -101,7 +103,7 @@ namespace ControlRoomApplication.Main
 
         private void ExecuteCorrectStop()
         {
-            if (radioButton1.Checked)
+            if (ControledButtonRadio.Checked)
             {
                 logger.Info("Executed Controlled Stop");
                 rt_controller.ExecuteRadioTelescopeControlledStop();
@@ -121,7 +123,8 @@ namespace ControlRoomApplication.Main
         private void button1_Click(object sender, EventArgs e)
         {
             logger.Info("Move Relative Button Clicked");
-            int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
+            //int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
+            int pos = ConversionHelper.DegreesToSteps( (int)numericUpDown1.Value , MotorConstants.GEARING_RATIO_AZIMUTH );
             rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
         }
 
@@ -144,10 +147,14 @@ namespace ControlRoomApplication.Main
                 var d = new SetActualAZTextCallback(SetActualAZText);
                 try
                 {
-                    Invoke(d, new object[] { text });
+                    var task = Task.Run( () => Invoke( d , new object[] { text } ));
+                    if(!task.Wait( 300 ))
+                        throw new Exception( "Timed out" );
 
                 }
-                catch (Exception e) { }
+                catch  {
+
+                }
             }
             else
             {
@@ -167,10 +174,12 @@ namespace ControlRoomApplication.Main
                 var d = new SetActualELTextCallback(SetActualELText);
                 try
                 {
-                    Invoke(d, new object[] { text });
+                    var task = Task.Run( () => Invoke( d , new object[] { text } ) );
+                    if(!task.Wait( 300 ))
+                        throw new Exception( "Timed out" );
 
                 }
-                catch (Exception e) { }
+                catch { }
             }
             else
             {
