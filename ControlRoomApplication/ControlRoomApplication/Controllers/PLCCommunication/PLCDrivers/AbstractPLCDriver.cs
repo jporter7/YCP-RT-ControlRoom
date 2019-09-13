@@ -17,14 +17,7 @@ namespace ControlRoomApplication.Controllers
         protected Thread ClientManagmentThread;
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="local_ip_address"></param>
-        /// <param name="MCU_ip_address"></param>
-        /// <param name="MCU_port"></param>
-        /// <param name="PLC_port"></param>
-        public AbstractPLCDriver(IPAddress local_ip_address, IPAddress MCU_ip_address, int MCU_port, int PLC_port) { }
+
         /// <summary>
         /// 
         /// </summary>
@@ -32,7 +25,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : this(IPAddress.Parse(local_ip), IPAddress.Parse(MCU_ip), MCU_port, PLC_port) { }
+        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) { }
 
 
         protected override bool KillHeartbeatComponent() {
