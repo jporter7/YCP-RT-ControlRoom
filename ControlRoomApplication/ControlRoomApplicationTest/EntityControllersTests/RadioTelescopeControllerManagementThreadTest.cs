@@ -27,23 +27,23 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         private static RadioTelescopeControllerManagementThread RTCMT1;
 
         [TestInitialize]
-        public void BringUp()
-        {
+        public void BringUp() {
             IP = PLCConstants.LOCAL_HOST_IP;
             Port0 = 8112;
             Port1 = 8115;
 
             JohnRudyPark = MiscellaneousConstants.JOHN_RUDY_PARK;
-            CalibrationOrientation = new Orientation(0, 90);
+            CalibrationOrientation = new Orientation( 0 , 90 );
 
-            PLCCCH0 = new SimulationPLCDriver(IP, IP, Port0, Port0);
-            RTC0 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH0, JohnRudyPark, CalibrationOrientation, 1));
-            RTCMT0 = new RadioTelescopeControllerManagementThread(RTC0);
+            PLCCCH0 = new SimulationPLCDriver( IP , IP , Port0 , Port0 , true );
+            RTC0 = new RadioTelescopeController( new RadioTelescope( new SpectraCyberSimulatorController( new SpectraCyberSimulator() ) , PLCCCH0 , JohnRudyPark , CalibrationOrientation , 1 ) );
+            RTCMT0 = new RadioTelescopeControllerManagementThread( RTC0 );
 
-            PLCCCH1 = new SimulationPLCDriver(IP, IP, Port1, Port1);
-            RTC1 = new RadioTelescopeController(new RadioTelescope(new SpectraCyberSimulatorController(new SpectraCyberSimulator()), PLCCCH1, JohnRudyPark, CalibrationOrientation, 2));
-            RTCMT1 = new RadioTelescopeControllerManagementThread(RTC1);
+            PLCCCH1 = new SimulationPLCDriver( IP , IP , Port1 , Port1 , true );
+            RTC1 = new RadioTelescopeController( new RadioTelescope( new SpectraCyberSimulatorController( new SpectraCyberSimulator() ) , PLCCCH1 , JohnRudyPark , CalibrationOrientation , 2 ) );
+            RTCMT1 = new RadioTelescopeControllerManagementThread( RTC1 );
         }
+
 
         [TestMethod]
         public void TestConstructorsAndProperties()

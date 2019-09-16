@@ -28,7 +28,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public ProductionMCUDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        public ProductionMCUDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port,bool startPLC ) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC )
         {
             MCUTCPClient = new TcpClient("192.168.0.50", MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);

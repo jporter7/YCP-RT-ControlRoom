@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
+    /*
     [TestClass]
     public class PLCClientAndDriverTest
     {
@@ -135,4 +136,5 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             TestDriver.RequestStopAsyncAcceptingClientsAndJoin();
         }
     }
+    */
 }

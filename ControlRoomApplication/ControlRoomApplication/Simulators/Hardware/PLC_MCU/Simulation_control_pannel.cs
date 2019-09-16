@@ -7,10 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
-{
-    class Simulation_control_pannel
-    {
+namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
+    class Simulation_control_pannel {
         private TcpListener MCU_TCPListener;
         private ModbusSlave MCU_Modbusserver;
 
@@ -23,66 +21,80 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
         private string PLC_ip;
         private int PLC_port;
 
-        private bool runsimulator = true, mooving = false,jogging=false , isconfigured = false, isTest = false;
+        private bool runsimulator = true, mooving = false, jogging = false, isconfigured = false, isTest = false;
 
-        private int  acc, distAZ, distEL, currentAZ, currentEL, AZ_speed, EL_speed;
+        private int acc, distAZ, distEL, currentAZ, currentEL, AZ_speed, EL_speed;
 
-        public Simulation_control_pannel(string PLC_ip, string MCU_ip, int MCU_port, int PLC_port , bool istest)
-        {
+        public Simulation_control_pannel( string PLC_ip , string MCU_ip , int MCU_port , int PLC_port , bool istest ) {
             // PLCTCPClient = new TcpClient(PLC_ip, PLC_port);
             // PLCModbusMaster = ModbusIpMaster.CreateIp(PLCTCPClient);
             this.PLC_ip = PLC_ip;
             this.PLC_port = PLC_port;
             isTest = istest;
-            try
-            {
-                PLC_emulator_thread = new Thread(new ThreadStart(Run_PLC_emulator_thread));
+            try {
                 //MCU_TCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse("127.0.0.2"), 8080));
                 //Console.WriteLine(MCU_ip,)
-                MCU_TCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(MCU_ip), MCU_port));
-                MCU_emulator_thread = new Thread(new ThreadStart(Run_MCU_server_thread));
-            }
-            catch (Exception e){
-                if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)){
-                    Console.WriteLine(e);
+                MCU_TCPListener = new TcpListener( new IPEndPoint( IPAddress.Parse( MCU_ip ) , MCU_port ) );
+                MCU_emulator_thread = new Thread( new ThreadStart( Run_MCU_server_thread ) );
+            } catch(Exception e) {
+                if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
+                    Console.WriteLine( e );
                     return;
-                }
-                else { throw e; }// Unexpected exception
+                } else { throw e; }// Unexpected exception
             }
-            try{
-                MCU_TCPListener.Start(1);
-            }catch (Exception e){
-                if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException)){
-                    Console.WriteLine(e);
+            try {
+                MCU_TCPListener.Start( 1 );
+            } catch(Exception e) {
+                if((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException)) {
+                    Console.WriteLine( e );
                     return;
                 }
             }
             runsimulator = true;
-            PLC_emulator_thread.Start();
             MCU_emulator_thread.Start();
         }
 
-        public void Bring_down()
-        {
+        public void startPLC() {
+            try {
+                PLC_emulator_thread = new Thread( new ThreadStart( Run_PLC_emulator_thread ) );
+                PLC_emulator_thread.Start();
+            } catch(Exception e) {
+                if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
+                    Console.WriteLine( e );
+                    return;
+                }
+
+            }
+        }
+        public void Bring_down() {
             runsimulator = false;
-            PLC_emulator_thread.Join(100);
+            PLC_emulator_thread.Join();
+            PLCTCPClient.Dispose();
+            PLCModbusMaster.Dispose();
             MCU_emulator_thread.Join();
+            MCU_TCPListener.Stop();
+            MCU_Modbusserver.Dispose();
         }
 
-        private void Run_PLC_emulator_thread(){
-            while (runsimulator){
-                try{
-                    PLCTCPClient = new TcpClient(this.PLC_ip, this.PLC_port);
-                    PLCModbusMaster = ModbusIpMaster.CreateIp(PLCTCPClient);
+        private void Run_PLC_emulator_thread() {
+            while(runsimulator) {
+                try {
+                    PLCTCPClient = new TcpClient( this.PLC_ip , this.PLC_port );
+                    PLCModbusMaster = ModbusIpMaster.CreateIp( PLCTCPClient );
+                } catch {//no server setup on control room yet 
+                    Console.WriteLine( "________________PLC sim awaiting control room" );
+
+                    //Thread.Sleep(1000);
                 }
-                catch {//no server setup on control room yet 
-                    Console.WriteLine("________________PLC sim awaiting control room");
-                    Thread.Sleep(1000);
-                }
-                Console.WriteLine("________________PLC sim running");
-                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK-1 ,new ushort[] {1} );
-                while (runsimulator){
-                    Thread.Sleep(50);
+                Console.WriteLine( "________________PLC sim running" );
+                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , new ushort[] { 1 } );
+                while(runsimulator) {
+                    if(isTest) {
+                        PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , new ushort[] { 1 } );
+                        Thread.Sleep( 5 );
+                        continue;
+                    }
+                    Thread.Sleep( 50 );
                 }
             }
         }
@@ -98,12 +110,12 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             handleTestCMD( data );
         }
 
-        private void Run_MCU_server_thread(){
+        private void Run_MCU_server_thread() {
             byte slaveId = 1;
             // create and start the TCP slave
-            MCU_Modbusserver = ModbusTcpSlave.CreateTcp(slaveId, MCU_TCPListener);
+            MCU_Modbusserver = ModbusTcpSlave.CreateTcp( slaveId , MCU_TCPListener );
             //coils, inputs, holdingRegisters, inputRegisters
-            MCU_Modbusserver.DataStore = DataStoreFactory.CreateDefaultDataStore(0, 0, 1054, 0);
+            MCU_Modbusserver.DataStore = DataStoreFactory.CreateDefaultDataStore( 0 , 0 , 1054 , 0 );
             // PLC_Modbusserver.DataStore.SyncRoot.ToString();
 
             //MCU_Modbusserver.ModbusSlaveRequestReceived += new EventHandler<ModbusSlaveRequestEventArgs>(Server_Read_handler);
@@ -114,28 +126,25 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             MCU_Modbusserver.Listen();
 
             // prevent the main thread from exiting
-            ushort[] previos_out,current_out;
-            previos_out = Copy_modbus_registers(1025, 20);
-            while (runsimulator){
-                Thread.Sleep( 50 );
+            ushort[] previos_out, current_out;
+            previos_out = Copy_modbus_registers( 1025 , 20 );
+            while(runsimulator) {
                 if(isTest) {
-                    Thread.Sleep( 100 );
+                    Thread.Sleep( 5 );
                     continue;
                 }
-                current_out = Copy_modbus_registers(1025, 20);
-                if(!current_out.SequenceEqual(previos_out)){
-                    handleCMD(current_out);
+                Thread.Sleep( 50 );
+                current_out = Copy_modbus_registers( 1025 , 20 );
+                if(!current_out.SequenceEqual( previos_out )) {
+                    handleCMD( current_out );
                     //Console.WriteLine("data changed");
                 }
-                if (mooving){
-                    if (distAZ != 0 || distEL != 0)
-                    {
+                if(mooving) {
+                    if(distAZ != 0 || distEL != 0) {
                         int travAZ = (distAZ < -AZ_speed) ? -AZ_speed : (distAZ > AZ_speed) ? AZ_speed : distAZ;
                         int travEL = (distEL < -EL_speed) ? -EL_speed : (distEL > EL_speed) ? EL_speed : distEL;
                         move( travAZ , travEL );
-                    }
-                    else
-                    {
+                    } else {
                         mooving = false;
                         MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] | 0x0080);
                         MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] | 0x0080);
@@ -147,15 +156,15 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                 previos_out = current_out;
             }
 
-            
+
         }
 
-        private bool move(int travAZ , int travEL ){
+        private bool move( int travAZ , int travEL ) {
             distAZ -= travAZ;
             distEL -= travEL;
             currentAZ += travAZ;
             currentEL += travEL;
-         //   Console.WriteLine("offset: az" + currentAZ + " el " + currentEL);
+            //   Console.WriteLine("offset: az" + currentAZ + " el " + currentEL);
             MCU_Modbusserver.DataStore.HoldingRegisters[3] = (ushort)((currentAZ & 0xffff0000) >> 16);
             MCU_Modbusserver.DataStore.HoldingRegisters[4] = (ushort)(currentAZ & 0xffff);
             MCU_Modbusserver.DataStore.HoldingRegisters[13] = (ushort)((currentEL & 0xffff0000) >> 16);
@@ -174,7 +183,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             if(data[0] == 0x8400) {//if not configured dont move
 
                 isconfigured = true;
-            }else if(!isconfigured) {
+            } else if(!isconfigured) {
                 return true;
             }
 
@@ -195,16 +204,14 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
                 if(data[0] == 0x0080) {
                     AZ_speed = ((data[4] << 16) + data[5]) / 20;
-                }
-                else if(data[0] == 0x0100) {
+                } else if(data[0] == 0x0100) {
                     AZ_speed = -((data[4] << 16) + data[5]) / 20;
                 } else {
                     AZ_speed = 0;
                 }
                 if(data[10] == 0x0080) {
                     EL_speed = ((data[14] << 16) + data[15]) / 20;
-                }
-                else if(data[10] == 0x0100) {
+                } else if(data[10] == 0x0100) {
                     EL_speed = -((data[14] << 16) + data[15]) / 20;
                 } else {
                     EL_speed = 0;
@@ -259,12 +266,10 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
             return false;
         }
 
-        private ushort[] Copy_modbus_registers(int start_index,int length)
-        {
+        private ushort[] Copy_modbus_registers( int start_index , int length ) {
             ushort[] data = new ushort[length];
-            for(int i = 0; i < length; i++)
-            {
-                data[i] = MCU_Modbusserver.DataStore.HoldingRegisters[i+start_index];
+            for(int i = 0; i < length; i++) {
+                data[i] = MCU_Modbusserver.DataStore.HoldingRegisters[i + start_index];
             }
             return data;
         }
@@ -272,3 +277,4 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU
 
     }
 }
+

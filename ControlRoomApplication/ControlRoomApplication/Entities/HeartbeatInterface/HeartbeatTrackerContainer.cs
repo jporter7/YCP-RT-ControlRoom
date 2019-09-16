@@ -52,5 +52,9 @@
         {
             return HeartbeatTracker.GetNumberOfChildren();
         }
+
+        public static void clearChildren() {
+            HeartbeatTracker.clearHeartbeatTracker();
+        }
     }
 }
