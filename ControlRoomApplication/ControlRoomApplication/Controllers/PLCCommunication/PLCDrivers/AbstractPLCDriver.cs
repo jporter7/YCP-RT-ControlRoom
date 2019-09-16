@@ -33,6 +33,9 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+        public bool publicKillHeartbeatComponent() {
+            return KillHeartbeatComponent();
+        }
 
         /// <summary>
         /// modbuss server implamentation specific to each device

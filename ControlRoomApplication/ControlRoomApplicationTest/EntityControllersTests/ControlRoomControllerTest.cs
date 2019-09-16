@@ -58,6 +58,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             );
         }
 
+        [TestCleanup]
+        public void testClean() {
+            try {
+                RTController0.RadioTelescope.PLCDriver.Bring_down();
+                RTController1.RadioTelescope.PLCDriver.Bring_down();
+                RTController2.RadioTelescope.PLCDriver.Bring_down();
+            } catch { }
+        }
+
         [TestMethod]
         public void TestConstructorAndProperties()
         {

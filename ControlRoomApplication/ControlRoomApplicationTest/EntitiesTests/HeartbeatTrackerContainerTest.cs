@@ -17,12 +17,14 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestInitialize]
         public void BuildUp()
         {
+            HeartbeatTrackerContainer.clearChildren();
             HBISCSController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             HBISCSController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
             HBISCSController.BringUp();
 
             HBISimWeatherStation = new SimulationWeatherStation(100);
             HBISimWeatherStation.Start();
+            
         }
 
         [TestMethod]

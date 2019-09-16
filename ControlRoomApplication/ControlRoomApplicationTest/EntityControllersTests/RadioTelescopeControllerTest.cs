@@ -42,7 +42,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestCleanup]
         public void testClean() {
             try {
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.Bring_down();
+                TestRadioTelescopeController.RadioTelescope.PLCDriver.publicKillHeartbeatComponent();
+            //TestRadioTelescopeController.RadioTelescope.PLCDriver.Bring_down();
             }catch { }
         }
 
