@@ -14,25 +14,25 @@ namespace ControlRoomApplicationTest.EntitiesTests
         private List<RadioTelescopeControllerManagementThread> rtManagementThreads;
 
         [TestInitialize]
-        public void BuildUp()
-        {
+        public void BuildUp() {
             string IP = PLCConstants.LOCAL_HOST_IP;
 
             rtManagementThreads = new List<RadioTelescopeControllerManagementThread>()
             {
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()),  new  SimulationPLCDriver(IP, IP, 8103, 8103), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()),  new  SimulationPLCDriver(IP, IP, 8103, 8103,true), new Location(), new Orientation()))),
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()),  new  SimulationPLCDriver(IP, IP, 8106, 8106), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()),  new  SimulationPLCDriver(IP, IP, 8106, 8106,true), new Location(), new Orientation()))),
                 new RadioTelescopeControllerManagementThread(new RadioTelescopeController(
-                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new  SimulationPLCDriver(IP, IP, 8109, 8109), new Location(), new Orientation()))),
+                    new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new  SimulationPLCDriver(IP, IP, 8109, 8109,true), new Location(), new Orientation()))),
             };
 
-            controlRoom = new ControlRoom(weatherStation);
-            controlRoom.RTControllerManagementThreads.Add(rtManagementThreads[0]);
-            controlRoom.RTControllerManagementThreads.Add(rtManagementThreads[1]);
-            controlRoom.RTControllerManagementThreads.Add(rtManagementThreads[2]);
+            controlRoom = new ControlRoom( weatherStation );
+            controlRoom.RTControllerManagementThreads.Add( rtManagementThreads[0] );
+            controlRoom.RTControllerManagementThreads.Add( rtManagementThreads[1] );
+            controlRoom.RTControllerManagementThreads.Add( rtManagementThreads[2] );
         }
+
         
         [TestMethod]
         public void TestGettersAndSetters()

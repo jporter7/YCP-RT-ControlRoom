@@ -205,7 +205,7 @@ namespace ControlRoomApplication.Controllers {
         public PLCConnector PlcConnector { get; set; }
 
 
-        public ScaleModelPLCDriver( string local_ip , string MCU_ip , int MCU_port , int PLC_port ):base( local_ip , MCU_ip, MCU_port, PLC_port ) {
+        public ScaleModelPLCDriver( string local_ip , string MCU_ip , int MCU_port , int PLC_port , bool startPLC ) :base( local_ip , MCU_ip, MCU_port, PLC_port, startPLC ) {
             Console.WriteLine( MCU_ip );
         }
 
@@ -263,28 +263,15 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            /*
-                    if(Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT) {
-                        logger.Error( $"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range." );
-                        throw new System.Exception();
-                    } else if(Plc.OutgoingOrientation.Elevation < PLCConstants.DECLINATION_LOWER_LIMIT || Plc.OutgoingOrientation.Elevation > PLCConstants.DECLINATION_UPPER_LIMIT) {
-                        logger.Error( $"Elevation ({Plc.OutgoingOrientation.Elevation} was out of range.)" );
-                        throw new System.Exception();
-                    }
-                    */
-            // Convert orientation object to a json string
-            //string jsonOrientation = JsonConvert.SerializeObject( Plc.OutgoingOrientation );
-            throw new NotImplementedException();
-
-        }
-
-        public override bool Move_to_orientation( Orientation target_orientation , Orientation current_orientation ) {
-
+        public bool send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
             // Move the scale model's azimuth motor on com3 and its elevation on com4
             // make sure there is a delay in this thread for enough time to have the arduino
             // move the first motor (azimuth)
-            string jsonOrientation = JsonConvert.SerializeObject( target_orientation );
+            string jsonOrientation = JsonConvert.SerializeObject( new {
+                CMD = "relMove",
+                az =positionTranslationAZ,
+                el = positionTranslationEL
+            } );
             PlcConnector = new PLCConnector( "COM12" );
             PlcConnector.SendSerialPortMessage( jsonOrientation );
 
@@ -299,8 +286,47 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
+        public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+            /*
+                    if(Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT) {
+                        logger.Error( $"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range." );
+                        throw new System.Exception();
+                    } else if(Plc.OutgoingOrientation.Elevation < PLCConstants.DECLINATION_LOWER_LIMIT || Plc.OutgoingOrientation.Elevation > PLCConstants.DECLINATION_UPPER_LIMIT) {
+                        logger.Error( $"Elevation ({Plc.OutgoingOrientation.Elevation} was out of range.)" );
+                        throw new System.Exception();
+                    }
+                    */
+            // Convert orientation object to a json string
+            //string jsonOrientation = JsonConvert.SerializeObject( Plc.OutgoingOrientation );
+            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
+
+        }
+
+
+
+        public override bool Move_to_orientation( Orientation target_orientation , Orientation current_orientation ) {
+
+
+            int positionTranslationAZ, positionTranslationEL;
+            positionTranslationAZ = ConversionHelper.DegreesToSteps( (target_orientation.Azimuth - current_orientation.Azimuth) , MotorConstants.GEARING_RATIO_AZIMUTH );
+            positionTranslationEL = ConversionHelper.DegreesToSteps( (target_orientation.Elevation - current_orientation.Elevation) , MotorConstants.GEARING_RATIO_ELEVATION );
+
+            int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_ELEVATION );
+            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
+
+            //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
+            Console.WriteLine( "degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation );
+            Console.WriteLine( "degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation );
+
+
+            //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+            return send_relative_move( AZ_Speed , EL_Speed , 50 , positionTranslationAZ , positionTranslationEL );
+
+
+        }
+
         public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {
-            return true;
+            throw new NotImplementedException();
 
         }
 
@@ -313,7 +339,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
+        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {//set 
             bool[] stuf = new bool[33];
             for(int i = 0; i < 32; i++) {
                 stuf[i] = true;

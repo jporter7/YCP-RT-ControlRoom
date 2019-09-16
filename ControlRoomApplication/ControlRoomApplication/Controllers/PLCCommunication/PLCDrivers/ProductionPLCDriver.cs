@@ -64,7 +64,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public ProductionPLCDriver(string local_ip,  string MCU_ip, int MCU_port, int PLC_port) : base(local_ip,  MCU_ip, MCU_port, PLC_port)
+        public ProductionPLCDriver(string local_ip,  string MCU_ip, int MCU_port, int PLC_port, bool startPLC) : base(local_ip,  MCU_ip, MCU_port, PLC_port, startPLC )
         {
             MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
@@ -131,6 +131,7 @@ namespace ControlRoomApplication.Controllers
                 ClientManagmentThread.Start();
             } catch(Exception e) {
                 if((e is ThreadStateException) || (e is OutOfMemoryException)) {
+                    Console.WriteLine( "failed to start prodi=uction plc and mcu threads err:____    {0}" ,e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -141,6 +142,8 @@ namespace ControlRoomApplication.Controllers
         public override bool RequestStopAsyncAcceptingClientsAndJoin() {
             keep_modbus_server_alive = false;
             try {
+                PLCTCPListener.Stop();
+                PLC_Modbusserver.Dispose();
                 ClientManagmentThread.Join();
                 MCU_Monitor_Thread.Join();
             } catch(Exception e) {
@@ -163,6 +166,9 @@ namespace ControlRoomApplication.Controllers
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Server_Read_handler( object sender , ModbusSlaveRequestEventArgs e ) {
+            if(is_test) {
+                Console.WriteLine( "PLC Red data from the the control room" );
+            }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             // Console.WriteLine(e.Message);
             return;
@@ -185,7 +191,10 @@ namespace ControlRoomApplication.Controllers
         /// <param name="e"></param>
         private void Server_Written_to_handler( object sender , DataStoreEventArgs e ) {
             //e.Data.B //array representing data   
-
+            if(is_test) {
+                Console.WriteLine( "recived message from PLC" );
+            }
+            PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             switch(e.StartAddress) {
                 case (ushort)PLC_modbus_server_register_mapping.CMD_ACK: {
                         // Console.WriteLine(" data {0} written to 22",PLC_Modbusserver.DataStore.HoldingRegisters[e.StartAddress]);
@@ -552,9 +561,14 @@ namespace ControlRoomApplication.Controllers
         }
 
         protected override bool TestIfComponentIsAlive() {
+
             bool PLC_alive, MCU_alive;
             PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
             MCU_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) < 3000;
+            if(is_test) {
+                //return true;
+                Console.WriteLine( "{0}   {1} ",(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) , (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) );
+            }
             return PLC_alive && MCU_alive;
         }
         /// <summary>

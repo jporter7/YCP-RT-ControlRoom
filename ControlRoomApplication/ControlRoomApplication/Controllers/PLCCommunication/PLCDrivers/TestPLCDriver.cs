@@ -22,7 +22,7 @@ namespace ControlRoomApplication.Controllers
         private Simulation_control_pannel TestMCU;
         private ProductionPLCDriver driver;
 
-        public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port , bool startPLC ) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC )
         {
             CurrentOrientation = new Orientation();
 
@@ -31,10 +31,14 @@ namespace ControlRoomApplication.Controllers
                 MCU_port++;
             }
             TestMCU = new Simulation_control_pannel( local_ip, MCU_ip, MCU_port, PLC_port,true);
-            Thread.Sleep(100);
-            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
+            //Thread.Sleep(100);
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port,false);
+            if(startPLC) {
+                driver.StartAsyncAcceptingClients();
+            }
             driver.set_is_test(true);
-            Thread.Sleep(1000);
+            TestMCU.startPLC();
+            //Thread.Sleep(100);
             //driver.StartAsyncAcceptingClients();
         }
 
@@ -57,8 +61,8 @@ namespace ControlRoomApplication.Controllers
 
         public override void Bring_down()
         {
-            TestMCU.Bring_down();
             driver.Bring_down();
+            TestMCU.Bring_down();
         }
 
         public override bool Test_Conection()

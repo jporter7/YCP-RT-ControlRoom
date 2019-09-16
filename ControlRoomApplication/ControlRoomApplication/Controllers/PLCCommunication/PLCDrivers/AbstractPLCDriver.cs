@@ -25,7 +25,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) { }
+        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool autoStartPLCThread) { }
 
 
         protected override bool KillHeartbeatComponent() {

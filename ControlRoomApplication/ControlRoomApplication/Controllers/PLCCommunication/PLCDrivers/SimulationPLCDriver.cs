@@ -15,7 +15,7 @@ namespace ControlRoomApplication.Controllers
         private Simulation_control_pannel SimMCU;
         private ProductionPLCDriver driver; 
 
-        public SimulationPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        public SimulationPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC ) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC )
         {
             if (MCU_port== PLC_port)//cant have 2 servers on the same port and ip 
             {
@@ -23,8 +23,11 @@ namespace ControlRoomApplication.Controllers
             }
             SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, false);
             Thread.Sleep(1000);//wait for server in simMcu to come up
-            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
-            driver.StartAsyncAcceptingClients();
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port,false);
+            if(startPLC) {
+                driver.StartAsyncAcceptingClients();
+            }
+            SimMCU.startPLC();
         }
 
 
