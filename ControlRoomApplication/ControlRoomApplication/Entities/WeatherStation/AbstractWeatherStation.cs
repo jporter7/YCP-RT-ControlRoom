@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Entities
             get
             {
                 OperatingMutex.WaitOne();
-                double read = _CurrentWindSpeedMPH;
+                double read = GetWindSpeed();
                 OperatingMutex.ReleaseMutex();
 
                 return read;
@@ -50,6 +50,7 @@ namespace ControlRoomApplication.Entities
             try
             {
                 OperatingThread.Start();
+                InitializeStation();
             }
             catch (Exception e)
             {
@@ -116,6 +117,8 @@ namespace ControlRoomApplication.Entities
             return RequestKillAndJoin();
         }
 
+
+        protected abstract void InitializeStation();
         
         protected abstract float GetBarometricPressure();
         protected abstract float GetOutsideTemp();
@@ -130,5 +133,7 @@ namespace ControlRoomApplication.Entities
         protected abstract float GetRainRate();
         protected abstract int GetHeatIndex();
 
+        // TODO: add an abstract method that will get all of the information
+        // to be able to put into the database cleanly
     }
 }

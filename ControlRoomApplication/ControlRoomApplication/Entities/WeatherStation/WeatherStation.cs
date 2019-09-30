@@ -3,19 +3,48 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace ControlRoomApplication.Entities.WeatherStation
 {
     public class WeatherStation : AbstractWeatherStation
     {
+        [DllImport("VantageProDll242\\VantagePro.dll")]
 
-        public WeatherStation()
+        // declarations of all methods we will use in the dll
+        public static extern short OpenCommPort_V(short comPort, int baudRate);
+        public static extern short InitStation_V();
+        public static extern float GetWindSpeed_V();
+
+
+        // TODO: figure out this parameter
+        // where the 5 is will be the currentWindSpeedScanDelayMS value
+        public WeatherStation() : base(5)
         {
-            // initialize the variables
-          
-            // connect to the weather station here
+            
         }
 
+        // From the HeartbeatInterface
+        protected override bool TestIfComponentIsAlive()
+        {
+            // either find dll method that returns if it is connected or just simply get data   
+            throw new NotImplementedException();
+        }
+
+        protected override void InitializeStation()
+        {
+            try
+            {
+                // OpenCommPort_V(comPort, baudRate);
+
+                // configures the dll
+                // InitStation_V();
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+        }
 
         protected override float GetBarometricPressure()
         {
@@ -59,7 +88,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
         protected override float GetWindSpeed()
         {
-            throw new NotImplementedException();
+            return GetWindSpeed_V();
         }
 
         protected override String GetWindDirection()

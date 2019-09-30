@@ -14,7 +14,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             Rand = new Random();
         }
 
-        protected override double ReadCurrentWindSpeedMPH()
+        /*protected override double ReadCurrentWindSpeedMPH()
         {
             // Generate a Gaussian random distribution through a Box-Muller transform
             double rand1 = 1 - Rand.NextDouble();
@@ -29,11 +29,76 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             }
 
             return randNormValue;
-        }
+        }*/
 
         protected override bool TestIfComponentIsAlive()
         {
             return true;
+        }
+
+        protected override short OpenCommPort(short comPort, int baudRate)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetBarometricPressure()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetOutsideTemp()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetDewPoint()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetWindChill()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override int GetHumidity()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetTotalRain()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetDailyRain()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetMonthlyRain()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetWindSpeed()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override String GetWindDirection()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override float GetRainRate()
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override int GetHeatIndex()
+        {
+            throw new NotImplementedException();
         }
     }
 }
