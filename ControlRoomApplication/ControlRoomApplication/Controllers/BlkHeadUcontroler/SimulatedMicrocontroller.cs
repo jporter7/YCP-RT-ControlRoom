@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
 
@@ -14,16 +15,19 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         Random rand = new Random();
         private double _minMotorTemperature;
         private double _maxMotorTemperature;
+        private bool _stableOrTesting;
+        private int count;
         private List<int> Templocations = new List<int> { 0 , 1 , 3 };
         private List<int> ACClocations = new List<int> { 0 , 1 , 2 };
         private Thread simthread;
         /// <summary>
-        ///Set the minimum and maximum temperature for the motors
+        ///Set the minimum and maximum temperature for the motors and set whether it will be a static run or a testing run
         /// </summary>
-        public SimulatedMicrocontroller( double minMotorTemperature , double maxMotorTemperature ) {
+        public SimulatedMicrocontroller( double minMotorTemperature , double maxMotorTemperature, bool motorSimType ) {
             _minMotorTemperature = minMotorTemperature;
             _maxMotorTemperature = maxMotorTemperature;
-
+            _stableOrTesting = motorSimType;
+            count = 0;
         }
 
         /// <summary>
@@ -40,6 +44,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 interpretData( generateTemperatureData() );
                 interpretData( generateAccelerometerData() );
                 Thread.Sleep( 1000 );
+                count++;
             }
         }
 
@@ -51,11 +56,25 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         public dynamic generateTemperatureData() {
             var temperatureList = new dynamic[1];
 
-            for(int i = 0; i < temperatureList.Length; i++) {
-                int index = rand.Next( Templocations.Count );
-                temperatureList[i] = new { val = rand.Next( (int)_minMotorTemperature , (int)_maxMotorTemperature ) , time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + i , loc = Templocations[index] };
-
+            if (_stableOrTesting)
+            {
+                    int index = rand.Next(Templocations.Count);
+                    temperatureList[0] = new {val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
             }
+            else
+            {
+                if (count < 10 || count > 15)
+                {
+                    int index = rand.Next(Templocations.Count);
+                    temperatureList[0] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
+                }
+                else
+                {
+                    int index = rand.Next(Templocations.Count);
+                    temperatureList[0] = new { val = SimulationConstants.OVERHEAT_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
+                }
+            }
+
             var temperatureData = new { type = "temp" , data = temperatureList };
             return temperatureData;
         }
