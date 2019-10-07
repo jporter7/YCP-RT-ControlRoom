@@ -80,9 +80,15 @@ namespace ControlRoomApplication.Controllers
                 if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
                 {
                     logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+
+                    //shut down telescopes
+                    foreach (RadioTelescopeController telescopeController in ControlRoom.RadioTelescopeControllers)
+                    {
+                        telescopeController.ShutdownRadioTelescope();
+                    }
                 }
 
-                Thread.Sleep(1000);
+                Thread.Sleep(1000);                
             }
         }
 
