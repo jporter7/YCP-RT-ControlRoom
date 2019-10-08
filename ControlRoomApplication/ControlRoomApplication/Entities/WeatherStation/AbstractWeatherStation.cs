@@ -135,6 +135,6 @@ namespace ControlRoomApplication.Entities
 
         // An abstract method that will get all of the information
         // to be able to put into the database cleanly
-        protected abstract short GetAllRecords();
+        //protected abstract short GetAllRecords();
     }
 }

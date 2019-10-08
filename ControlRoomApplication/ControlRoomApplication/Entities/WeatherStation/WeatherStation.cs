@@ -27,7 +27,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
         public static extern float GetRainRate_V();
         public static extern int GetHeatIndex_V();
         public static extern short GetModelNo_V();
-        public static extern short GetArchiveRecord_V(WeatherRecordStruct newRecord, short i);
+        //public static extern short GetArchiveRecord_V(WeatherRecordStruct newRecord, short i);
 
         private const int COM_ERROR = -101;
         private const int MEMORY_ERROR = -102;
@@ -124,10 +124,12 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return GetHeatIndex_V();
         }
 
-        protected override short GetAllRecords() 
+        // TODO: Need to figure out the structure we want for this in order to put it into 
+        // the database with the most ease
+        /*protected override short GetAllRecords() 
         {
             // call the GetArchiveRecord_V function that fills a struct with data and check if it was accessible
             throw new NotImplementedException();
-        }
+        }*/
     }
 }
