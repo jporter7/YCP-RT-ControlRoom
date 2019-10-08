@@ -296,6 +296,24 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// This is a script that is called when we want to dump snow out of the dish
+        /// </summary>
+        public override bool SnowDump()
+        {
+            // default is azimuth of 0 and elevation of 0
+            Orientation dump = new Orientation();
+            Orientation current = read_Position();
+
+            // move to dump snow
+            if(Move_to_orientation(dump, current))
+            {
+                // move back to initial orientation
+                return Move_to_orientation(current, read_Position());
+            }
+            return false;
+        }
+
         public override bool Configure_MCU( int startSpeedDPSAzimuth , int startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
             int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );

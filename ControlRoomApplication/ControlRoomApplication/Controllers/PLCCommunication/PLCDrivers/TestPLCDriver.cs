@@ -85,6 +85,11 @@ namespace ControlRoomApplication.Controllers
             return driver.Calibrate();
         }
 
+        public override bool SnowDump()
+        {
+            return driver.SnowDump();
+        }
+
         public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
