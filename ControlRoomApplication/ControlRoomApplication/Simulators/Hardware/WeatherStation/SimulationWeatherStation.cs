@@ -36,7 +36,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             return true;
         }
 
-        protected override short OpenCommPort(short comPort, int baudRate)
+        protected override void InitializeStation()
         {
             throw new NotImplementedException();
         }
@@ -86,7 +86,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             throw new NotImplementedException();
         }
 
-        protected override String GetWindDirection()
+        protected override char GetWindDirection()
         {
             throw new NotImplementedException();
         }

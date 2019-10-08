@@ -129,11 +129,12 @@ namespace ControlRoomApplication.Entities
         protected abstract float GetDailyRain();
         protected abstract float GetMonthlyRain();
         protected abstract float GetWindSpeed();
-        protected abstract String GetWindDirection();
+        protected abstract char GetWindDirection();
         protected abstract float GetRainRate();
         protected abstract int GetHeatIndex();
 
-        // TODO: add an abstract method that will get all of the information
+        // An abstract method that will get all of the information
         // to be able to put into the database cleanly
+        protected abstract short GetAllRecords();
     }
 }

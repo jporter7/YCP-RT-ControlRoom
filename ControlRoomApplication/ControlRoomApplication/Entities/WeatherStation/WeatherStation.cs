@@ -15,75 +15,53 @@ namespace ControlRoomApplication.Entities.WeatherStation
         public static extern short OpenCommPort_V(short comPort, int baudRate);
         public static extern short InitStation_V();
         public static extern float GetWindSpeed_V();
+        public static extern float GetBarometer_V();
+        public static extern float GetOutsideTemp_V();
+        public static extern float GetDewPt_V();
+        public static extern float GetWindChill_V();
+        public static extern short GetOutsideHumidity_V();
+        public static extern float GetTotalRain_V();
+        public static extern float GetDailyRain_V();
+        public static extern float GetMonthlyRain_V();
+        public static extern char GetWindDirStr_V();
+        public static extern float GetRainRate_V();
+        public static extern int GetHeatIndex_V();
+        public static extern short GetModelNo_V();
+        public static extern short GetArchiveRecord_V(WeatherRecordStruct newRecord, short i);
 
-
+        private const int COM_ERROR = -101;
+        private const int MEMORY_ERROR = -102;
+        private const int COM_OPEN_ERROR = -103;
+        private const int NOT_LOADED_ERROR = -104;
+        private const int BAD_DATA = -32768;
+    
         // TODO: figure out this parameter
         // where the 5 is will be the currentWindSpeedScanDelayMS value
         public WeatherStation() : base(5)
         {
-            
+
         }
 
         // From the HeartbeatInterface
         protected override bool TestIfComponentIsAlive()
         {
-            // either find dll method that returns if it is connected or just simply get data   
-            throw new NotImplementedException();
+            // see if we can connect to the weather station
+            return GetModelNo_V() != COM_ERROR;
         }
 
         protected override void InitializeStation()
         {
-            try
+            if (OpenCommPort_V(5, 7600) != 0)
             {
-                // OpenCommPort_V(comPort, baudRate);
-
-                // configures the dll
-                // InitStation_V();
+                // we were unsuccesful
+                // need to throw an exception
             }
-            catch(Exception e)
+
+            if (InitStation_V() == COM_ERROR)
             {
-                throw e;
+                // we were unsuccessful
+                // need to throw an exception
             }
-        }
-
-        protected override float GetBarometricPressure()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override float GetOutsideTemp()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override float GetDewPoint()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override float GetWindChill()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override int GetHumidity()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override float GetTotalRain()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override float GetDailyRain()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override float GetMonthlyRain()
-        {
-            throw new NotImplementedException();
         }
 
         protected override float GetWindSpeed()
@@ -91,18 +69,64 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return GetWindSpeed_V();
         }
 
-        protected override String GetWindDirection()
+        protected override float GetBarometricPressure()
         {
-            throw new NotImplementedException();
+            return GetBarometer_V();
+        }
+
+        protected override float GetOutsideTemp()
+        {
+            return GetOutsideTemp_V();
+        }
+
+        protected override float GetDewPoint()
+        {
+            return GetDewPt_V();
+        }
+
+        protected override float GetWindChill()
+        {
+            return GetWindChill_V();
+        }
+
+        protected override int GetHumidity()
+        {
+            return GetOutsideHumidity_V();
+        }
+
+        protected override float GetTotalRain()
+        {
+            return GetTotalRain_V();
+        }
+
+        protected override float GetDailyRain()
+        {
+            return GetDailyRain_V();
+        }
+
+        protected override float GetMonthlyRain()
+        {
+            return GetMonthlyRain_V();
+        }
+
+        protected override char GetWindDirection()
+        {
+            return GetWindDirStr_V();
         }
 
         protected override float GetRainRate()
         {
-            throw new NotImplementedException();
+            return GetRainRate_V();
         }
 
         protected override int GetHeatIndex()
         {
+            return GetHeatIndex_V();
+        }
+
+        protected override short GetAllRecords() 
+        {
+            // call the GetArchiveRecord_V function that fills a struct with data and check if it was accessible
             throw new NotImplementedException();
         }
     }
