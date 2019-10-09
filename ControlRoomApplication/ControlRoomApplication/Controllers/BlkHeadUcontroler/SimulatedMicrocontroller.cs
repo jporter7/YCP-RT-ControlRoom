@@ -94,5 +94,15 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             var accelData = new { type = "acc" , data = list };
             return accelData;
         }
+
+        public bool getStableOrTesting()
+        {
+            return _stableOrTesting;
+        }
+
+        public void setStableOrTesting(bool testOrNot)
+        {
+            _stableOrTesting = testOrNot;
+        }
     }
 }
