@@ -322,9 +322,14 @@ namespace ControlRoomApplication.Main
             NegDecButton.Enabled = save_state;
             PosRAButton.Enabled = save_state;
             NegRAButton.Enabled = save_state;
-            CalibrateButton.Enabled = save_state;
+            //CalibrateButton.Enabled = save_state;
             TargetRATextBox.ReadOnly = save_state;
             TargetDecTextBox.ReadOnly = save_state;
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

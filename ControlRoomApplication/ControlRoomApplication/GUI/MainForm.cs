@@ -119,13 +119,13 @@ namespace ControlRoomApplication.Main
                     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
                     Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).StartTime.ToString());
                     logger.Info("Disabling ManualControl and FreeControl");
-                    ManualControl.Enabled = false;
+                    //ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
                 }
                 else
                 {
                     logger.Info("Enabling ManualControl and FreeControl");
-                    ManualControl.Enabled = true;
+                   // ManualControl.Enabled = true;
                     FreeControl.Enabled = true;
                 }
 
