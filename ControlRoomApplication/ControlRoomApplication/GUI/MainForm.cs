@@ -334,11 +334,11 @@ namespace ControlRoomApplication.Main
 
                 case 1:
                     logger.Info( "Building ScaleModelPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100 );
+                    return new SimulatedMicrocontroller( -20,100,true );
 
                 default:
                     logger.Info( "Building SimulationPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100);
+                    return new SimulatedMicrocontroller( -20,100,true);
             }
         }
 
