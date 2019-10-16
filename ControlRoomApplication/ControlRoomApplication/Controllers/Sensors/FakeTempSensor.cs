@@ -12,44 +12,46 @@ namespace ControlRoomApplication.Simulators.Hardware
     /// Class for the simulated temperature sensor
     /// </summary>
     /// 
-    public class FakeTempSensor : AbstractTemperatureSensor
+    public class FakeTempSensor
     {
 
         double _elTemperature;
         double _azTemperature;
-        int _elTempDemoIndex = 0;
-        int _azTempDemoIndex = 0;
-        bool stableOrTesting = true;
 
         /// <summary>
-        /// Simulates getting the elevation temperature
+        /// Simulates getting the unstable elevation temperature
         /// </summary>
         /// 
-        public override double GetElevationTemperature()
+        public double GetElevationTemperatureUnstable()
         {
-            return ReadElevationTempDemo(); //Iterates through an array to
-                                            //simulate reading the temperature like the
-                                            //real device will do
+            return SimulationConstants.OVERHEAT_MOTOR_TEMP;
         }
 
         /// <summary>
-        /// Simulates getting the azimuth temperature
+        /// Simulates getting the unstable azimuth temperature
         /// </summary>
         /// 
-
-        public void setStableOrTesting(bool testOrNot)
+        public double GetAzimuthTemperatureUnstable()
         {
-            stableOrTesting = testOrNot;
+            return SimulationConstants.OVERHEAT_MOTOR_TEMP;
         }
 
-        public bool getStableOrTesting()
+        /// <summary>
+        /// Simulates getting the stable elevation temperature
+        /// </summary>
+        /// 
+        public double GetElevationTemperatureStable()
         {
-            return stableOrTesting;
+            return SimulationConstants.STABLE_MOTOR_TEMP;
         }
 
-        public override double GetAzimuthTemperature()
+        /// <summary>
+        /// Simulates getting the stable azimuth temperature
+        /// </summary>
+        /// 
+        public double GetAzimuthTemperatureStable()
         {
-            return ReadAzimuthTempDemo(); 
+            return SimulationConstants.STABLE_MOTOR_TEMP;
         }
 
         public void SetElevationTemp(double elTemp)
@@ -60,16 +62,6 @@ namespace ControlRoomApplication.Simulators.Hardware
         public void SetAzimuthTemp(double azTemp)
         {
             _azTemperature = azTemp;
-        }
-
-        public double ReadElevationTempDemo()
-        {
-            return SimulationConstants.OVERHEAT_MOTOR_TEMP;
-        }
-
-        public double ReadAzimuthTempDemo()
-        {
-            return SimulationConstants.OVERHEAT_MOTOR_TEMP;
         }
 
         /******END*******/
