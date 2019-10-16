@@ -367,34 +367,34 @@ namespace ControlRoomApplication.GUI
             _elevationTemp -= 5;
         }
 
-        private void btnAddXTemp_Click(object sender, System.EventArgs e)
-        {
-            double tempVal; //temperature value
+        //private void btnAddXTemp_Click(object sender, System.EventArgs e)
+        //{
+        //    double tempVal; //temperature value
            
 
-            if (double.TryParse(txtCustTemp.Text, out tempVal))
-            {
-                _elevationTemp += tempVal;
-            }
-            else
-            {
-                MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+        //    if (double.TryParse(txtCustTemp.Text, out tempVal))
+        //    {
+        //        _elevationTemp += tempVal;
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         private void button3_Click(object sender, System.EventArgs e)
         {
             double tempVal; //temperature value
 
 
-            if (double.TryParse(txtCustTemp.Text, out tempVal))
-            {
-                _elevationTemp -= tempVal;
-            }
-            else
-            {
-                MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //if (double.TryParse(txtCustTemp.Text, out tempVal))
+            //{
+            //    _elevationTemp -= tempVal;
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
         }
 
         private void timer2_Tick(object sender, System.EventArgs e)
@@ -457,6 +457,51 @@ namespace ControlRoomApplication.GUI
             {
                 MessageBox.Show("Invalid entry in Encoder field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox4_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox6_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
