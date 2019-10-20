@@ -289,6 +289,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Migrations\README.txt" />
+    <Content Include="VantageProDll242\CP210xManufacturing.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VantageProDll242\SiUSBXp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VantageProDll242\VantagePro.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="GUI\DiagnosticsForm.resx">

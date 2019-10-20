@@ -92,6 +92,7 @@ namespace ControlRoomApplication.Controllers
 
                 Thread.Sleep(1000);                
             }
+            logger.Info( "! exiting weather monitor loop" );
         }
 
         public bool AddRadioTelescopeController(RadioTelescopeController rtController)

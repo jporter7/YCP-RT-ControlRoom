@@ -22,10 +22,8 @@ namespace ControlRoomApplication.Entities.WeatherStation
         };
 
         // declarations of all methods we will use in the dll
-        [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short OpenCommPort_V(short comPort, int baudRate);
-        [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short InitStation_V();
-        [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short OpenUSBPort_V();
-        [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short SetUnits_V(WeatherUnits units);
+
+        //getters, get data from dll
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetWindSpeed_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetBarometer_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetOutsideTemp_V();
@@ -39,10 +37,21 @@ namespace ControlRoomApplication.Entities.WeatherStation
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetRainRate_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern int GetHeatIndex_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short GetModelNo_V();
+
+        //setup
+        [DllImport( "VantageProDll242\\VantagePro.dll" )] public static extern short OpenCommPort_V( short comPort , int baudRate );
+        [DllImport( "VantageProDll242\\VantagePro.dll" )] public static extern short InitStation_V();
+        [DllImport( "VantageProDll242\\VantagePro.dll" )] public static extern short OpenUSBPort_V();
+        [DllImport( "VantageProDll242\\VantagePro.dll" )] public static extern short SetUnits_V( WeatherUnits units );
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short SetVantageTimeoutVal_V(short TimeOutType);
+        [DllImport( "VantageProDll242\\VantagePro.dll" )] public static extern short SetCommTimeoutVal_V( short ReadTimeout , short WriteTimeout );
+
+        //loaders, call these to get from weather station into dll
+        [DllImport( "VantageProDll242\\VantagePro.dll" )] public static extern short LoadCurrentVantageData_V();
+        [DllImport( "VantageProDll242\\VantagePro.dll" )] public static extern int LoadVantageHiLows_V();
         //public static extern short GetArchiveRecord_V(WeatherRecordStruct newRecord, short i);
 
-        private const int COM_ERROR = -101;
+        private const int COM_ERROR = -32701;
         private const int MEMORY_ERROR = -102;
         private const int COM_OPEN_ERROR = -103;
         private const int NOT_LOADED_ERROR = -104;
@@ -59,23 +68,25 @@ namespace ControlRoomApplication.Entities.WeatherStation
         protected override bool TestIfComponentIsAlive()
         {
             // see if we can connect to the weather station
-            return GetModelNo_V() != COM_ERROR;
+            // return GetModelNo_V() != COM_ERROR;
+            return true;
         }
 
         protected override void InitializeStation()
         {
+            
             // TODO: make com port a parameter for InitializeStation
 
-            if (OpenCommPort_V(8, 9600) != 0)
+            if (OpenCommPort_V(13, 19200) != 0)
             {
                 logger.Error("OpenCommPort unsuccessful!");
                     throw new ExternalException();
             }
 
-            if (SetVantageTimeoutVal_V(8) == COM_ERROR)
+            if(SetCommTimeoutVal_V( 1000 , 500 ) == COM_ERROR)
             {
                 logger.Error("OpenCommPort unsuccessful!");
-                throw new ExternalException();
+               // throw new ExternalException();
             }
 
             // BELOW THROWS unable to find access point for setunits error
@@ -90,7 +101,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
              {
                  logger.Error("SetUnits unsuccessful!");
                  throw new ExternalException();
-             }*/
+             }*/ 
 
             if (InitStation_V() == COM_ERROR)
             {
@@ -98,13 +109,36 @@ namespace ControlRoomApplication.Entities.WeatherStation
                 throw new ExternalException();
             }
 
-        
+            if(LoadCurrentVantageData_V() == COM_ERROR || LoadVantageHiLows_V() == COM_ERROR) {
+                logger.Info( "failed to collect data from weather station" );
+            }
+
             logger.Info("Initialize Concrete Weather Station successful!");
+
+
+            Console.WriteLine( GetWindSpeed_V() );
+            /*
+            Console.WriteLine( OpenCommPort_V( 13 , 19200 ) );
+
+            //SetVantageTimeoutVal_V( 8 ) 
+
+            Console.WriteLine( SetCommTimeoutVal_V( 1000 , 500 ) );
+
+            Console.WriteLine( InitStation_V() );
+
+            Console.WriteLine( LoadCurrentVantageData_V() );
+            Console.WriteLine( LoadVantageHiLows_V() );
+
+            */
+            Console.WriteLine( GetOutsideTemp_V() );
+
         }
 
         public override float GetWindSpeed()
         {
-            return GetWindSpeed_V();
+            var tem = LoadCurrentVantageData_V();
+            var ten = GetWindSpeed_V();
+            return ten;
         }
 
         protected override float GetBarometricPressure()
