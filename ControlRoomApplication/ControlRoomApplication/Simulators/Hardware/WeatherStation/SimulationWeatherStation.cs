@@ -81,7 +81,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             throw new NotImplementedException();
         }
 
-        protected override float GetWindSpeed()
+        public override float GetWindSpeed()
         {
             throw new NotImplementedException();
         }

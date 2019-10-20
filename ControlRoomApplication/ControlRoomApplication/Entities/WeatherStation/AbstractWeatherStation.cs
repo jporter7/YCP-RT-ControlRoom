@@ -50,7 +50,6 @@ namespace ControlRoomApplication.Entities
             try
             {
                 OperatingThread.Start();
-                InitializeStation();
             }
             catch (Exception e)
             {
@@ -128,7 +127,7 @@ namespace ControlRoomApplication.Entities
         protected abstract float GetTotalRain();
         protected abstract float GetDailyRain();
         protected abstract float GetMonthlyRain();
-        protected abstract float GetWindSpeed();
+        public abstract float GetWindSpeed();
         protected abstract char GetWindDirection();
         protected abstract float GetRainRate();
         protected abstract int GetHeatIndex();

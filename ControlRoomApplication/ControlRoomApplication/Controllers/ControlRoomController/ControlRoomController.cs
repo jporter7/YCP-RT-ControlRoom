@@ -88,6 +88,8 @@ namespace ControlRoomApplication.Controllers
                     }
                 }
 
+                logger.Info("Current wind speed is: " + ControlRoom.WeatherStation.GetWindSpeed());
+
                 Thread.Sleep(1000);                
             }
         }
