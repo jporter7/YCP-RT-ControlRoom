@@ -323,7 +323,8 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        public AbstractEncoderReader build_encoder( AbstractPLCDriver plc ) {
+        public AbstractEncoderReader build_encoder( AbstractPLCDriver plc )
+        {
             return new SimulatedEncoder(plc , LocalIPCombo.Text , 1602 );
         }
 
@@ -451,6 +452,16 @@ namespace ControlRoomApplication.Main
         }
 
         private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtPLCPort_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void LocalIPCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

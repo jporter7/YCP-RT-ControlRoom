@@ -83,18 +83,18 @@ namespace ControlRoomApplication.GUI
             MCU_Statui.Columns[0].HeaderText = "Status name";
             MCU_Statui.Columns[1].HeaderText = "value";
 
-            SetCurrentAzimuthAndElevation();
+            SetCurrentWeatherData();
             logger.Info("DiagnosticsForm Initalized");
         }
 
-        private void SetCurrentAzimuthAndElevation()
+        private void SetCurrentWeatherData()
         {
-            windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
-            windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
-            dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
-            rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
-            outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
-            barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
+            //windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
+            //windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
+            //dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
+            //rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
+            //outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
+            //barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
 
 
         }
@@ -165,14 +165,13 @@ namespace ControlRoomApplication.GUI
          * ************************************************************/
         private void timer1_Tick(object sender, System.EventArgs e)
         {
-            double currWindSpeed = 0.0;//wind speed
-            string currWindDir = "North"; //wind direction
-            double currRainfall = 0.0; //Daily Rainfall
-            double currRainRate = 0.0; //Rate of rainfall
-            double currTempOutside = 0.0; //Outdoor Temperature(Celsius or Farenheight)
-            double currBarPressure = 0.0; //Barometric pressure (Inches/mg)
+            //double currWindSpeed = 0.0;//wind speed
+            //string currWindDir = "North"; //wind direction
+            //double currRainfall = 0.0; //Daily Rainfall
+            //double currRainRate = 0.0; //Rate of rainfall
+            //double currTempOutside = 0.0; //Outdoor Temperature(Celsius or Farenheight)
+            //double currBarPressure = 0.0; //Barometric pressure (Inches/mg)
 
-            //--------------------------------------------------------
             double elevationTemperature = 0.0;
             double azimuthTemperature = 0.0;
             //int ticks = azEncoder.CurrentPositionTicks;
@@ -318,7 +317,7 @@ namespace ControlRoomApplication.GUI
             //*/
             GetHardwareStatuses();
 
-            SetCurrentAzimuthAndElevation();
+            SetCurrentWeatherData();
 
             dataGridView1.Update();
 
