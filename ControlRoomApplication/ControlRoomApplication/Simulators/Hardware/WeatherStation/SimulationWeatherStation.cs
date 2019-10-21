@@ -31,6 +31,10 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             return randNormValue;
         }*/
 
+
+        // IMPORTANT!!!!! Returning 0 for now until the simulation is implemented. Without this, the application
+        // would not be able to work unless you use production with the new gui changes.
+
         protected override bool TestIfComponentIsAlive()
         {
             return true;
@@ -38,62 +42,62 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
 
         protected override float GetBarometricPressure()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override float GetOutsideTemp()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override float GetDewPoint()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override float GetWindChill()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override int GetHumidity()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override float GetTotalRain()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override float GetDailyRain()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override float GetMonthlyRain()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         public override float GetWindSpeed()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override char GetWindDirection()
         {
-            throw new NotImplementedException();
+            return ' ';
         }
 
         protected override float GetRainRate()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         protected override int GetHeatIndex()
         {
-            throw new NotImplementedException();
+            return 0;
         }
     }
 }
