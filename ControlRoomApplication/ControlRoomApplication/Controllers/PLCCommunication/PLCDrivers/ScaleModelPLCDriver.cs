@@ -181,25 +181,6 @@ namespace ControlRoomApplication.Controllers {
             log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public class ScaleModelPLCDriver : AbstractPLCDriver {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
         public PLCConnector PlcConnector { get; set; }
@@ -304,34 +285,30 @@ namespace ControlRoomApplication.Controllers {
 
 
 
-        public override bool Move_to_orientation( Orientation target_orientation , Orientation current_orientation ) {
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        {
 
 
             int positionTranslationAZ, positionTranslationEL;
-            positionTranslationAZ = ConversionHelper.DegreesToSteps( (target_orientation.Azimuth - current_orientation.Azimuth) , MotorConstants.GEARING_RATIO_AZIMUTH );
-            positionTranslationEL = ConversionHelper.DegreesToSteps( (target_orientation.Elevation - current_orientation.Elevation) , MotorConstants.GEARING_RATIO_ELEVATION );
+            positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
+            positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
 
-            int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_ELEVATION );
-            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_AZIMUTH);
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
-            Console.WriteLine( "degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation );
-            Console.WriteLine( "degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation );
+            Console.WriteLine("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
+            Console.WriteLine("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move( AZ_Speed , EL_Speed , 50 , positionTranslationAZ , positionTranslationEL );
+            return send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL);
+
+        }
 
         public override bool SnowDump()
         {
             throw new NotImplementedException();
-        }
-
-        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
-        {
-            throw new NotImplementedException();
-        }
-
         }
 
         public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {

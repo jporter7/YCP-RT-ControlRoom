@@ -570,7 +570,6 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation , int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             throw new NotImplementedException();
