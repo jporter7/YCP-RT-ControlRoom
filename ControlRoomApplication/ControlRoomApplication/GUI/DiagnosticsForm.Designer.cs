@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
             this.lblCurrentElOrientation = new System.Windows.Forms.Label();
@@ -122,7 +122,7 @@
             this.label26 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.rainRateLabel = new System.Windows.Forms.Label();
-            this.barometricpressureLabel = new System.Windows.Forms.Label();
+            this.barometricPressureLabel = new System.Windows.Forms.Label();
             this.dailyRainfallLabel = new System.Windows.Forms.Label();
             this.outsideTempLabel = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
@@ -162,14 +162,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.Location = new System.Drawing.Point(6, 10);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -219,9 +219,9 @@
             this.windDirLabel.Location = new System.Drawing.Point(230, 57);
             this.windDirLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.windDirLabel.Name = "windDirLabel";
-            this.windDirLabel.Size = new System.Drawing.Size(31, 20);
+            this.windDirLabel.Size = new System.Drawing.Size(23, 20);
             this.windDirLabel.TabIndex = 4;
-            this.windDirLabel.Text = "0.0";
+            this.windDirLabel.Text = " --";
             this.windDirLabel.Click += new System.EventHandler(this.windDirLabel_Click);
             // 
             // label6
@@ -1068,7 +1068,7 @@
             this.groupBox6.Controls.Add(this.splitContainer1);
             this.groupBox6.Location = new System.Drawing.Point(353, 233);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(266, 195);
+            this.groupBox6.Size = new System.Drawing.Size(280, 195);
             this.groupBox6.TabIndex = 38;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Motor Sensor Data";
@@ -1127,7 +1127,7 @@
             // 
             this.groupBox5.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox5.Controls.Add(this.rainRateLabel);
-            this.groupBox5.Controls.Add(this.barometricpressureLabel);
+            this.groupBox5.Controls.Add(this.barometricPressureLabel);
             this.groupBox5.Controls.Add(this.dailyRainfallLabel);
             this.groupBox5.Controls.Add(this.outsideTempLabel);
             this.groupBox5.Controls.Add(this.label19);
@@ -1140,7 +1140,7 @@
             this.groupBox5.Controls.Add(this.windSpeedLabel);
             this.groupBox5.Location = new System.Drawing.Point(353, 17);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(266, 199);
+            this.groupBox5.Size = new System.Drawing.Size(280, 199);
             this.groupBox5.TabIndex = 37;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Weather Sensor Data";
@@ -1156,15 +1156,15 @@
             this.rainRateLabel.TabIndex = 19;
             this.rainRateLabel.Text = "0.0";
             // 
-            // barometricpressureLabel
+            // barometricPressureLabel
             // 
-            this.barometricpressureLabel.AutoSize = true;
-            this.barometricpressureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.barometricpressureLabel.Location = new System.Drawing.Point(229, 156);
-            this.barometricpressureLabel.Name = "barometricpressureLabel";
-            this.barometricpressureLabel.Size = new System.Drawing.Size(31, 20);
-            this.barometricpressureLabel.TabIndex = 21;
-            this.barometricpressureLabel.Text = "0.0";
+            this.barometricPressureLabel.AutoSize = true;
+            this.barometricPressureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.barometricPressureLabel.Location = new System.Drawing.Point(229, 156);
+            this.barometricPressureLabel.Name = "barometricPressureLabel";
+            this.barometricPressureLabel.Size = new System.Drawing.Size(31, 20);
+            this.barometricPressureLabel.TabIndex = 21;
+            this.barometricPressureLabel.Text = "0.0";
             // 
             // dailyRainfallLabel
             // 
@@ -1435,7 +1435,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.Label barometricpressureLabel;
+        private System.Windows.Forms.Label barometricPressureLabel;
         private System.Windows.Forms.Label outsideTempLabel;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Label label25;

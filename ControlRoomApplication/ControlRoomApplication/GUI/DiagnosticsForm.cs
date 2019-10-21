@@ -89,10 +89,14 @@ namespace ControlRoomApplication.GUI
 
         private void SetCurrentAzimuthAndElevation()
         {
-            windSpeedLabel.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString("0.00");
-            windDirLabel.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString("0.00");
-             
-           
+            windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
+            windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
+            dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
+            rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
+            outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
+            barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
+
+
         }
 
         /// <summary>
@@ -160,7 +164,15 @@ namespace ControlRoomApplication.GUI
          * ******this comment was added to make this easier to find*****
          * ************************************************************/
         private void timer1_Tick(object sender, System.EventArgs e)
-        { 
+        {
+            double currWindSpeed = 0.0;//wind speed
+            string currWindDir = "North"; //wind direction
+            double currRainfall = 0.0; //Daily Rainfall
+            double currRainRate = 0.0; //Rate of rainfall
+            double currTempOutside = 0.0; //Outdoor Temperature(Celsius or Farenheight)
+            double currBarPressure = 0.0; //Barometric pressure (Inches/mg)
+
+            //--------------------------------------------------------
             double elevationTemperature = 0.0;
             double azimuthTemperature = 0.0;
             //int ticks = azEncoder.CurrentPositionTicks;
