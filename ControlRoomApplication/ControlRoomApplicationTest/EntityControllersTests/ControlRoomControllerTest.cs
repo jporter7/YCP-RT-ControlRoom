@@ -33,7 +33,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController0 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                     new TestPLCDriver(IP, IP, Port, Port),
+                     new TestPLCDriver(IP, IP, Port, Port,true),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -42,7 +42,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController1 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new TestPLCDriver(IP, IP, Port+3, Port+3),
+                    new TestPLCDriver(IP, IP, Port+3, Port+3,true),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -51,11 +51,20 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController2 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new TestPLCDriver(IP, IP, Port+6, Port+6),
+                    new TestPLCDriver(IP, IP, Port+6, Port+6,true),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
             );
+        }
+
+        [TestCleanup]
+        public void testClean() {
+            try {
+                RTController0.RadioTelescope.PLCDriver.Bring_down();
+                RTController1.RadioTelescope.PLCDriver.Bring_down();
+                RTController2.RadioTelescope.PLCDriver.Bring_down();
+            } catch { }
         }
 
         [TestMethod]

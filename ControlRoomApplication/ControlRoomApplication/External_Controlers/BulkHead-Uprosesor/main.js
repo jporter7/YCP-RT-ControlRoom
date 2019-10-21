@@ -57,15 +57,12 @@ function startup() {
         });
     } catch (err) { console.log(err); client.destroy(); startup(); }
 }
-/*
-var fs = require('fs');
-var out = fs.openSync('./out.log', 'a');
-var err = fs.openSync('./out.log', 'a');
-*/
+
+/* spawn child process to colect position data on seprate process
 var cp = require('child_process');
 var child = cp.spawn('node', ['server.js'], { detached: true, stdio: ['ignore'] });
 child.unref();
-
+*/
 startup();
 
 function cleanup() {

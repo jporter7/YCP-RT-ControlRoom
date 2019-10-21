@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
@@ -18,10 +19,10 @@ namespace ControlRoomApplication.Controllers
         public bool KillClientManagementThreadFlag;
         public TcpListener PLCTCPListener;
 
-        private Test_control_pannel TestMCU;
+        private Simulation_control_pannel TestMCU;
         private ProductionPLCDriver driver;
 
-        public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        public TestPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port , bool startPLC ) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC )
         {
             CurrentOrientation = new Orientation();
 
@@ -29,11 +30,15 @@ namespace ControlRoomApplication.Controllers
             {
                 MCU_port++;
             }
-            TestMCU = new Test_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port);
-            Thread.Sleep(100);
-            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
+            TestMCU = new Simulation_control_pannel( local_ip, MCU_ip, MCU_port, PLC_port,true);
+            //Thread.Sleep(100);
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port,false);
+            if(startPLC) {
+                driver.StartAsyncAcceptingClients();
+            }
             driver.set_is_test(true);
-            Thread.Sleep(1000);
+            TestMCU.startPLC();
+            //Thread.Sleep(100);
             //driver.StartAsyncAcceptingClients();
         }
 
@@ -56,8 +61,8 @@ namespace ControlRoomApplication.Controllers
 
         public override void Bring_down()
         {
-            TestMCU.Bring_down();
             driver.Bring_down();
+            TestMCU.Bring_down();
         }
 
         public override bool Test_Conection()
@@ -131,9 +136,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Get_Limit_switches();
         }
 
-        public override bool[] GET_MCU_Status()
+        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
         {
-            return driver.GET_MCU_Status();
+            return driver.GET_MCU_Status( axis );
         }
 
         protected override bool TestIfComponentIsAlive() {

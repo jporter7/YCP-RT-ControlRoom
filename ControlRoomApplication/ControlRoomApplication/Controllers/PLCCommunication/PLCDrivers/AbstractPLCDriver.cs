@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -16,14 +17,7 @@ namespace ControlRoomApplication.Controllers
         protected Thread ClientManagmentThread;
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="local_ip_address"></param>
-        /// <param name="MCU_ip_address"></param>
-        /// <param name="MCU_port"></param>
-        /// <param name="PLC_port"></param>
-        public AbstractPLCDriver(IPAddress local_ip_address, IPAddress MCU_ip_address, int MCU_port, int PLC_port) { }
+
         /// <summary>
         /// 
         /// </summary>
@@ -31,7 +25,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : this(IPAddress.Parse(local_ip), IPAddress.Parse(MCU_ip), MCU_port, PLC_port) { }
+        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool autoStartPLCThread) { }
 
 
         protected override bool KillHeartbeatComponent() {
@@ -39,8 +33,9 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        // public delegate void ReadReghandler<ModbusSlaveRequestEventArgs>(object sender, ModbusSlaveRequestEventArgs e);
-
+        public bool publicKillHeartbeatComponent() {
+            return KillHeartbeatComponent();
+        }
 
         /// <summary>
         /// modbuss server implamentation specific to each device
@@ -74,6 +69,7 @@ namespace ControlRoomApplication.Controllers
         public abstract bool SnowDump();
 
         public abstract bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
+        public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
         public abstract bool Controled_stop(RadioTelescopeAxisEnum axis, bool both);
 
@@ -88,8 +84,14 @@ namespace ControlRoomApplication.Controllers
         public abstract bool Get_interlock_status();
 
         public abstract bool[] Get_Limit_switches();
-
-        public abstract bool[] GET_MCU_Status();
+        /// <summary>
+        ///  get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation, 
+        /// also see MCUConstants.MCUStutusBits
+        /// does not suport RadioTelescopeAxisEnum.BOTH
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
 
 
 

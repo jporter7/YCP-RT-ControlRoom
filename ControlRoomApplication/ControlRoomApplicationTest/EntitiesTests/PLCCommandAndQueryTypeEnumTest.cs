@@ -14,7 +14,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         private PLCCommandAndQueryTypeEnum _input_cancel_active_objective_azel_position;
         private PLCCommandAndQueryTypeEnum _input_shutdown;
         private PLCCommandAndQueryTypeEnum _input_calibrate;
-        private PLCCommandAndQueryTypeEnum _input_set_objective_azel_position;
+       // private PLCCommandAndQueryTypeEnum _input_set_objective_azel_position;
 
         [TestInitialize]
         public void BuildUp()
@@ -27,7 +27,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             _input_cancel_active_objective_azel_position = PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION;
             _input_shutdown = PLCCommandAndQueryTypeEnum.SHUTDOWN;
             _input_calibrate = PLCCommandAndQueryTypeEnum.CALIBRATE;
-            _input_set_objective_azel_position = PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION;            
+           // _input_set_objective_azel_position = PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION;            
         }
 
         [TestMethod]

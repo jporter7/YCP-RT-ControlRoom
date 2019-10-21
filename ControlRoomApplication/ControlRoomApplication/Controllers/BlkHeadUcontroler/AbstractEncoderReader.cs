@@ -11,9 +11,11 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
 
         public AbstractEncoderReader(string micro_ctrl_IP, int port) { }
         /// <summary>
-        /// this should only be used for the simulator
+        /// only used for simulator as the simulator uses the plc to determine its position
         /// </summary>
         /// <param name="plc"></param>
+        /// <param name="micro_ctrl_IP"></param>
+        /// <param name="port"></param>
         public AbstractEncoderReader( AbstractPLCDriver plc, string micro_ctrl_IP , int port ) { }
 
         public abstract Orientation GetCurentOrientation();

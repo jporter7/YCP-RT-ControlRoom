@@ -58,5 +58,11 @@ namespace ControlRoomApplication.Entities
 
             return SINGLETON;
         }
+        /// <summary>
+        /// only use this for tests
+        /// </summary>
+        public void clearHeartbeatTracker() {
+            Children.Clear();
+        }
     }
 }

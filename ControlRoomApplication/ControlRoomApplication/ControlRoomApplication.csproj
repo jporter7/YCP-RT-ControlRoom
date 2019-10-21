@@ -42,8 +42,8 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AASharp, Version=1.99.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AASharp.1.99.1\lib\net45\AASharp.dll</HintPath>
+    <Reference Include="AASharp, Version=1.93.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AASharp.1.93.3\lib\net45\AASharp.dll</HintPath>
     </Reference>
     <Reference Include="ArduinoDriver, Version=2.4.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ArduinoDriver.2.4.6\lib\net452\ArduinoDriver.dll</HintPath>
@@ -159,6 +159,7 @@
     <Compile Include="Constants\AbstractSpectraCyberConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\CelestialBodyConstants.cs" />
+    <Compile Include="Constants\SimulationConstants.cs" />
     <Compile Include="Constants\TIME.cs" />
     <Compile Include="Constants\MiscellaneousHardwareConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\Sensors\AbstractTemperatureSensor.cs" />
+    <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
@@ -254,6 +256,11 @@
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
     </Compile>
     <Compile Include="Controllers\Sensors\FakeTempSensor.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Simulators\Hardware\LimitSwitches\SimulateLimitSwitches.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
@@ -273,7 +280,6 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Database\RemoteDb\RemoteDbConfiguration.cs" />
-    <Compile Include="Simulators\Hardware\PLC_MCU\Test_control_pannel.cs" />
     <Compile Include="Simulators\Hardware\PLC_MCU\Simulation_control_pannel.cs" />
     <Compile Include="Simulators\Hardware\WeatherStation\SimulationWeatherStation.cs" />
   </ItemGroup>
@@ -314,6 +320,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904150402332_LoggingUpdgrades.resx">
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

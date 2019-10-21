@@ -7,6 +7,8 @@ using ControlRoomApplication.Simulators.Hardware.MCU;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Constants;
+using System;
 
 namespace ControlRoomApplication.GUI
 {
@@ -17,21 +19,17 @@ namespace ControlRoomApplication.GUI
         ControlRoomApplication.Entities.Orientation azimuthOrientation = new ControlRoomApplication.Entities.Orientation();
         
 
-        private SimulationMCU mtrCtrl;
-        private int timerTick = 0;
         private int demoIndex = 0;
         //private PLC PLC; This needs to be defined once I can get find the currect import
 
         //TemperatureSensor myTemp = new TemperatureSensor();
         FakeTempSensor myTemp = new FakeTempSensor();
+        FakeEncoderSensor myEncoder = new FakeEncoderSensor();
         /***********DEMO MODE VARIABLES**************/
         private double[] azEncDemo = {0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
         private double[] elEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //10 bits of precision, 2.8 
-       
 
-
-
-         
+        DateTime currentTempDate = DateTime.Now;
  
         /***********DEMO MODE VARIABLES END*********/
     
@@ -39,7 +37,6 @@ namespace ControlRoomApplication.GUI
         double _azEncoderDegrees = 0;
         double _elEncoderDegrees = 0;
         double _elevationTemp = 0;
-        double _azimuthTemp = 0;
         int _azEncoderTicks = 0;
         int _elEncoderTicks = 0;
         
@@ -48,29 +45,9 @@ namespace ControlRoomApplication.GUI
         bool shutdownSent = false;
         
         private int rtId;
-        private double az;
-        private double el;
         private string[] statuses = { "Offline", "Offline", "Offline", "Offline" };
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        /// <summary>
-        /// Initializes the diagnostic form based off of the specified configuration.
-        /// </summary>
-        /// 
-
-        
-
-        public DiagnosticsForm()
-        {
-            InitializeComponent();
-
-
-            az = 0.0;
-            el = 0.0;
-            timer1.Start();
-            logger.Info("DiagnosticsForm Initalized");
-        }
 
 
         /// <summary>
@@ -80,13 +57,6 @@ namespace ControlRoomApplication.GUI
         public DiagnosticsForm(ControlRoom controlRoom, int rtId)
         {
             InitializeComponent();
-            az = 0.0;
-            el = 0.0;
-
-
-
-            
-
 
             this.controlRoom = controlRoom;
             
@@ -107,6 +77,11 @@ namespace ControlRoomApplication.GUI
             dataGridView1.Rows.Add(weatherStationRow);
             dataGridView1.Rows.Add(mcuRow);
             dataGridView1.Update();
+
+
+            MCU_Statui.ColumnCount = 2;
+            MCU_Statui.Columns[0].HeaderText = "Status name";
+            MCU_Statui.Columns[1].HeaderText = "value";
 
             SetCurrentAzimuthAndElevation();
             logger.Info("DiagnosticsForm Initalized");
@@ -185,8 +160,7 @@ namespace ControlRoomApplication.GUI
          * ******this comment was added to make this easier to find*****
          * ************************************************************/
         private void timer1_Tick(object sender, System.EventArgs e)
-        {
-
+        { 
             double elevationTemperature = 0.0;
             double azimuthTemperature = 0.0;
             //int ticks = azEncoder.CurrentPositionTicks;
@@ -202,32 +176,47 @@ namespace ControlRoomApplication.GUI
             elevationTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
             azimuthTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
 
-            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move()).ToString();
+            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
 
             timer1.Interval = 200;
            
 
             if (selectDemo.Checked == true)
             {
-                elevationTemperature = myTemp.GetElevationTemperature();
-                azimuthTemperature = myTemp.GetAzimuthTemperature();
+                TimeSpan elapsedTempTime = DateTime.Now - currentTempDate;
 
-
-                if(demoIndex < 79)
+                // Simulating Temperature Sensor
+                if(elapsedTempTime.TotalSeconds < 5)
                 {
-                    _azEncoderDegrees = azEncDemo[demoIndex++];
-                    _elEncoderDegrees = elEncDemo[demoIndex];
-
-
-                    _azEncoderTicks = (int)(_azEncoderDegrees * 11.38);
-                    _elEncoderTicks = (int)(_elEncoderDegrees * 2.8);
+                    elevationTemperature = myTemp.GetElevationTemperatureStable();
+                    azimuthTemperature = myTemp.GetAzimuthTemperatureStable();
+                }
+                else if(elapsedTempTime.TotalSeconds > 5 && elapsedTempTime.TotalSeconds < 10)
+                {
+                    elevationTemperature = myTemp.GetElevationTemperatureUnstable();
+                    azimuthTemperature = myTemp.GetAzimuthTemperatureUnstable();
                 }
                 else
                 {
-                    demoIndex = 0;
+                    currentTempDate = DateTime.Now;
                 }
-               
 
+                // Simulating Encoder SensorSS
+                _azEncoderDegrees = myEncoder.GetAzimuthAngle();
+                _elEncoderDegrees = myEncoder.GetElevationAngle();
+
+                _azEncoderTicks = (int)(_azEncoderDegrees * 11.38);
+                _elEncoderTicks = (int)(_elEncoderDegrees * 2.8);
+                
+
+            }
+            else
+            {
+                myEncoder.SetAzimuthAngle(0.0);
+                myEncoder.SetElevationAngle(0.0);
+
+                _azEncoderTicks = 0;
+                _elEncoderTicks = 0;
             }
             
             
@@ -320,7 +309,29 @@ namespace ControlRoomApplication.GUI
             SetCurrentAzimuthAndElevation();
 
             dataGridView1.Update();
-           
+
+
+            if(MCU_Statui.Rows.Count > 5) {
+                bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
+                foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
+                    string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
+                    //MCU_Statui.Rows[(int)stutusBit][1] = stuti[(int)stutusBit].ToString();
+                    //string[] row = { ((PLC_modbus_server_register_mapping)reg).ToString() , Convert.ToString( val[reg + 1] ).PadLeft( 5 ) };//.Replace(" ", "0") };
+                    //PLC_regs.Rows.Add(row);
+                    MCU_Statui.Rows[(int)stutusBit].SetValues( row );
+                }
+            } else {
+                MCU_Statui.Rows.Clear();
+                bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
+                foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
+                    string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
+                    MCU_Statui.Rows.Add( row );
+                }
+                MCU_Statui.Update();
+            }
+
+
+
 
         }
 
@@ -368,34 +379,34 @@ namespace ControlRoomApplication.GUI
             _elevationTemp -= 5;
         }
 
-        private void btnAddXTemp_Click(object sender, System.EventArgs e)
-        {
-            double tempVal; //temperature value
+        //private void btnAddXTemp_Click(object sender, System.EventArgs e)
+        //{
+        //    double tempVal; //temperature value
            
 
-            if (double.TryParse(txtCustTemp.Text, out tempVal))
-            {
-                _elevationTemp += tempVal;
-            }
-            else
-            {
-                MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
+        //    if (double.TryParse(txtCustTemp.Text, out tempVal))
+        //    {
+        //        _elevationTemp += tempVal;
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         private void button3_Click(object sender, System.EventArgs e)
         {
             double tempVal; //temperature value
 
 
-            if (double.TryParse(txtCustTemp.Text, out tempVal))
-            {
-                _elevationTemp -= tempVal;
-            }
-            else
-            {
-                MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //if (double.TryParse(txtCustTemp.Text, out tempVal))
+            //{
+            //    _elevationTemp -= tempVal;
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
         }
 
         private void timer2_Tick(object sender, System.EventArgs e)
@@ -458,6 +469,51 @@ namespace ControlRoomApplication.GUI
             {
                 MessageBox.Show("Invalid entry in Encoder field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox1_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox4_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox6_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

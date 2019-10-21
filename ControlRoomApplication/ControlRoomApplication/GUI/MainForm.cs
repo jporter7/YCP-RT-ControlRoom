@@ -120,13 +120,13 @@ namespace ControlRoomApplication.Main
                     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
                     Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).StartTime.ToString());
                     logger.Info("Disabling ManualControl and FreeControl");
-                    ManualControl.Enabled = false;
+                    //ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
                 }
                 else
                 {
                     logger.Info("Enabling ManualControl and FreeControl");
-                    ManualControl.Enabled = true;
+                   // ManualControl.Enabled = true;
                     FreeControl.Enabled = true;
                 }
 
@@ -164,10 +164,7 @@ namespace ControlRoomApplication.Main
                 {
                     logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
 
-                    if (APLCDriver is ProductionPLCDriver)
-                    {
-                        ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(500, 500, 0, 0);
-                    }
+                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(.1, .1, 0, 0);
                 }
                 else
                 {
@@ -175,16 +172,6 @@ namespace ControlRoomApplication.Main
                 }
 
                 AddConfigurationToDataGrid();
-
-
-                /*
-                Console.WriteLine("at microtherad start");
-                MicroctrlServerThread = new Thread(new ThreadStart(ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp));
-                MicroctrlServerThread.Start();
-                //ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.AsynchronousSocketListener.BringUp();
-                */
-
-
             }
         }
 
@@ -319,20 +306,20 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info("Building ProductionPLCDriver");
-                    return new ProductionMCUDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text));
+                    return new ProductionPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text),false);
 
                 case 1:
                     logger.Info("Building ScaleModelPLCDriver");
-                    return new ScaleModelPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text));
+                    return new ScaleModelPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text),false);
 
                 case 3:
                     logger.Info("Building TestPLCDriver");
-                    return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text));
+                    return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text),false);
 
                 case 2:
                 default:
                     logger.Info("Building SimulationPLCDriver");
-                    return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text));
+                    return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text),false);
             }
         }
 
@@ -348,11 +335,11 @@ namespace ControlRoomApplication.Main
 
                 case 1:
                     logger.Info( "Building ScaleModelPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100 );
+                    return new SimulatedMicrocontroller( -20,100,true );
 
                 default:
                     logger.Info( "Building SimulationPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100);
+                    return new SimulatedMicrocontroller( -20,100,true);
             }
         }
 
@@ -429,6 +416,7 @@ namespace ControlRoomApplication.Main
         private void ManualControl_Click(object sender, EventArgs e)
         {
             logger.Info("Manual Control Button Clicked");
+            ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope( .1 , .1 , 0 , 0 );
             ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
             // Create free control thread
             Thread ManualControlThread = new Thread(() => manualControlWindow.ShowDialog())

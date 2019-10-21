@@ -35,7 +35,7 @@
             this.errorLabel = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.ControledButtonRadio = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.button1 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -124,16 +124,16 @@
             // 
             // radioButton1
             // 
-            this.radioButton1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(366, 319);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(97, 17);
-            this.radioButton1.TabIndex = 21;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Controlled Stop";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.ControledButtonRadio.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ControledButtonRadio.AutoSize = true;
+            this.ControledButtonRadio.Checked = true;
+            this.ControledButtonRadio.Location = new System.Drawing.Point(366, 319);
+            this.ControledButtonRadio.Name = "radioButton1";
+            this.ControledButtonRadio.Size = new System.Drawing.Size(97, 17);
+            this.ControledButtonRadio.TabIndex = 21;
+            this.ControledButtonRadio.TabStop = true;
+            this.ControledButtonRadio.Text = "Controlled Stop";
+            this.ControledButtonRadio.UseVisualStyleBackColor = true;
             // 
             // radioButton2
             // 
@@ -255,7 +255,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.radioButton2);
-            this.Controls.Add(this.radioButton1);
+            this.Controls.Add(this.ControledButtonRadio);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.errorLabel);
@@ -278,7 +278,7 @@
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.RadioButton ControledButtonRadio;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label2;

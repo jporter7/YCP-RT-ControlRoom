@@ -237,6 +237,7 @@ namespace ControlRoomApplication.Database
         /// Creates and stores and RFData reading in the local database.
         /// </summary>
         /// <param name="data">The RFData reading to be created/stored.</param>
+        /// <param name="apptId"></param>
         public static void CreateRFData(int apptId, RFData data)
         {
             
@@ -360,7 +361,10 @@ namespace ControlRoomApplication.Database
                 }
             }
         }
-
+        /// <summary>
+        /// add an array of sensor data to the apropriat table
+        /// </summary>
+        /// <param name="acc"></param>
         public static void AddSensorData( List<Acceleration> acc ) {
             if(acc.Count <= 0) { return; }
             if(!USING_REMOTE_DATABASE) {
@@ -371,13 +375,26 @@ namespace ControlRoomApplication.Database
                 }
             }
         }
-
+        /// <summary>
+        /// get acc between starttime and now from sensor location loc
+        /// </summary>
+        /// <param name="starttime"></param>
+        /// <param name="endTime"> currently unused</param>
+        /// <param name="loc"></param>
+        /// <returns></returns>
         public static List<Acceleration> GetACCData( long starttime , long endTime, SensorLocationEnum loc ) {
             using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
                 return Context.Accelerations.Where( x => x.TimeCaptured > starttime && x.location_ID == (int)loc ).ToList();
             }
         }
 
+        /// <summary>
+        /// get temp between starttime and now from sensor location loc
+        /// </summary>
+        /// <param name="starttime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="loc"></param>
+        /// <returns></returns>
         public static List<Temperature> GetTEMPData( long starttime , long endTime, SensorLocationEnum loc ) {
             using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )   && x.TimeCaptured.Ticks < endTime.Ticks
                 return Context.Temperatures.Where( x => x.TimeCapturedUTC > starttime && x.location_ID == (int)loc ).ToList();

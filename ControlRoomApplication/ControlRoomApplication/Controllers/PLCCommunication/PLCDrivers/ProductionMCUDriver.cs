@@ -2,6 +2,7 @@
 
 using System;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using Modbus.Device;
@@ -19,12 +20,15 @@ namespace ControlRoomApplication.Controllers
         public ModbusIpMaster MCUModbusMaster;
         public bool KillClientManagementThreadFlag;
         public TcpListener PLCTCPListener;
+
         /// <summary>
-        /// 
+        /// !!!! Depricated !!!! use PLC driver 
         /// </summary>
-        /// <param name="ipLocal"></param>
-        /// <param name="portLocal"></param>
-        public ProductionMCUDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        /// <param name="local_ip"></param>
+        /// <param name="MCU_ip"></param>
+        /// <param name="MCU_port"></param>
+        /// <param name="PLC_port"></param>
+        public ProductionMCUDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port,bool startPLC ) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC )
         {
             MCUTCPClient = new TcpClient("192.168.0.50", MCUConstants.ACTUAL_MCU_MODBUS_TCP_PORT);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
@@ -567,6 +571,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation , int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             throw new NotImplementedException();
         }
@@ -606,7 +611,7 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool[] GET_MCU_Status()
+        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
         {
             throw new NotImplementedException();
         }
