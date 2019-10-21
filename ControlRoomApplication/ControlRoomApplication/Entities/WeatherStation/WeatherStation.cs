@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Runtime.InteropServices;
 
 namespace ControlRoomApplication.Entities.WeatherStation
@@ -20,6 +21,13 @@ namespace ControlRoomApplication.Entities.WeatherStation
             public char WindUnit;
             public char elevUnit;
         };
+
+        private float windSpeed = 0;
+        private char windDirection = ' ';
+        private float dailyRain = 0;
+        private float rainRate = 0;
+        private float outsideTemp = 0;
+        private float baromPressure = 0;
 
         // declarations of all methods we will use in the dll
 
@@ -53,55 +61,40 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
         private const int COM_ERROR = -32701;
         private const int MEMORY_ERROR = -102;
-        private const int COM_OPEN_ERROR = -103;
+        private const int COM_OPEN_ERROR = -32701;
         private const int NOT_LOADED_ERROR = -104;
-        private const int BAD_DATA = -32768;
+        private const int BAD_DATA = -32704;
     
 
-        public WeatherStation(int currentWindSpeedScanDelayMS)
+        public WeatherStation(int currentWindSpeedScanDelayMS, int commPort = 8)
             : base(currentWindSpeedScanDelayMS)
         {
-            InitializeStation();
+            InitializeStation(commPort);
         }
 
         // From the HeartbeatInterface
         protected override bool TestIfComponentIsAlive()
         {
             // see if we can connect to the weather station
-            // return GetModelNo_V() != COM_ERROR;
-            return true;
+            return GetModelNo_V() != COM_ERROR;
         }
 
-        protected override void InitializeStation()
+        /// <summary>
+        /// Sets up connection with the production weather station. 
+        /// If loading the data fails, its no big deal. We are going to attempt to load the data every time
+        /// a getter method is called.
+        /// </summary>
+        /// <returns> void </returns>
+        protected void InitializeStation(int commPort)
         {
             
             // TODO: make com port a parameter for InitializeStation
 
-            if (OpenCommPort_V(13, 19200) != 0)
+            if (OpenCommPort_V((short)commPort, 19200) != 0)
             {
                 logger.Error("OpenCommPort unsuccessful!");
                     throw new ExternalException();
             }
-
-            if(SetCommTimeoutVal_V( 1000 , 500 ) == COM_ERROR)
-            {
-                logger.Error("OpenCommPort unsuccessful!");
-               // throw new ExternalException();
-            }
-
-            // BELOW THROWS unable to find access point for setunits error
-            /* WeatherUnits units = new WeatherUnits();
-             units.tempUnit = '0';
-             units.BaromUnit = '0';
-             units.elevUnit = '0';
-             units.RainUnit = '0';
-             units.WindUnit = '0';
-
-             if (SetUnits_V(units) != 0)
-             {
-                 logger.Error("SetUnits unsuccessful!");
-                 throw new ExternalException();
-             }*/ 
 
             if (InitStation_V() == COM_ERROR)
             {
@@ -110,45 +103,45 @@ namespace ControlRoomApplication.Entities.WeatherStation
             }
 
             if(LoadCurrentVantageData_V() == COM_ERROR || LoadVantageHiLows_V() == COM_ERROR) {
-                logger.Info( "failed to collect data from weather station" );
+                logger.Info( "failed to collect data from weather station. will attempt again." );
             }
 
             logger.Info("Initialize Concrete Weather Station successful!");
+        }
 
-
-            Console.WriteLine( GetWindSpeed_V() );
-            /*
-            Console.WriteLine( OpenCommPort_V( 13 , 19200 ) );
-
-            //SetVantageTimeoutVal_V( 8 ) 
-
-            Console.WriteLine( SetCommTimeoutVal_V( 1000 , 500 ) );
-
-            Console.WriteLine( InitStation_V() );
-
-            Console.WriteLine( LoadCurrentVantageData_V() );
-            Console.WriteLine( LoadVantageHiLows_V() );
-
-            */
-            Console.WriteLine( GetOutsideTemp_V() );
-
+        private Boolean ReloadData()
+        {
+            return LoadCurrentVantageData_V() != COM_ERROR;
         }
 
         public override float GetWindSpeed()
         {
-            var tem = LoadCurrentVantageData_V();
-            var ten = GetWindSpeed_V();
-            return ten;
+            if (ReloadData())
+            {
+                return windSpeed = GetWindSpeed_V();
+            }
+
+            return windSpeed;
         }
 
         protected override float GetBarometricPressure()
         {
-            return GetBarometer_V();
+            if (ReloadData())
+            {
+                return baromPressure = GetBarometer_V();
+            }
+
+            return baromPressure;
         }
 
         protected override float GetOutsideTemp()
         {
-            return GetOutsideTemp_V();
+            if (ReloadData())
+            {
+                return outsideTemp = GetOutsideTemp_V();
+            }
+
+            return outsideTemp;
         }
 
         protected override float GetDewPoint()
@@ -173,7 +166,12 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
         protected override float GetDailyRain()
         {
-            return GetDailyRain_V();
+            if (ReloadData())
+            {
+                return dailyRain = GetDailyRain_V();
+            }
+
+            return dailyRain;
         }
 
         protected override float GetMonthlyRain()
@@ -183,25 +181,27 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
         protected override char GetWindDirection()
         {
-            return GetWindDirStr_V();
+            if (ReloadData())
+            {
+                return windDirection = GetWindDirStr_V();
+            }
+
+            return windDirection;
         }
 
         protected override float GetRainRate()
         {
-            return GetRainRate_V();
+            if (ReloadData())
+            {
+                return rainRate = GetRainRate_V();
+            }
+
+            return rainRate;
         }
 
         protected override int GetHeatIndex()
         {
             return GetHeatIndex_V();
         }
-
-        // TODO: Need to figure out the structure we want for this in order to put it into 
-        // the database with the most ease
-        /*protected override short GetAllRecords() 
-        {
-            // call the GetArchiveRecord_V function that fills a struct with data and check if it was accessible
-            throw new NotImplementedException();
-        }*/
     }
 }

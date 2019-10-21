@@ -115,9 +115,6 @@ namespace ControlRoomApplication.Entities
         {
             return RequestKillAndJoin();
         }
-
-
-        protected abstract void InitializeStation();
         
         protected abstract float GetBarometricPressure();
         protected abstract float GetOutsideTemp();

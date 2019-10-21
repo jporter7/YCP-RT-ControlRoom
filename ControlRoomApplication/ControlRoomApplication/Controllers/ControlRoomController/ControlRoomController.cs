@@ -76,7 +76,6 @@ namespace ControlRoomApplication.Controllers
         {
             while (KeepWeatherMonitoringThreadAlive)
             {
-                // logger.Info("[ControlRoomController] Weather station reading: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
                 if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
                 {
                     logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
@@ -92,7 +91,6 @@ namespace ControlRoomApplication.Controllers
 
                 Thread.Sleep(1000);                
             }
-            logger.Info( "! exiting weather monitor loop" );
         }
 
         public bool AddRadioTelescopeController(RadioTelescopeController rtController)

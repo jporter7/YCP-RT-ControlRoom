@@ -36,11 +36,6 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             return true;
         }
 
-        protected override void InitializeStation()
-        {
-            throw new NotImplementedException();
-        }
-
         protected override float GetBarometricPressure()
         {
             throw new NotImplementedException();
