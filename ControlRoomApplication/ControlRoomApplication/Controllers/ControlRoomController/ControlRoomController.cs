@@ -76,13 +76,20 @@ namespace ControlRoomApplication.Controllers
         {
             while (KeepWeatherMonitoringThreadAlive)
             {
-                // logger.Info("[ControlRoomController] Weather station reading: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
                 if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
                 {
                     logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+
+                    //shut down telescopes
+                    foreach (RadioTelescopeController telescopeController in ControlRoom.RadioTelescopeControllers)
+                    {
+                        telescopeController.ShutdownRadioTelescope();
+                    }
                 }
 
-                Thread.Sleep(1000);
+                logger.Info("Current wind speed is: " + ControlRoom.WeatherStation.GetWindSpeed());
+
+                Thread.Sleep(1000);                
             }
         }
 

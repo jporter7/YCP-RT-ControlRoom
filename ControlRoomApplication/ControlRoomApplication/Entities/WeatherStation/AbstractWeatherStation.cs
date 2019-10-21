@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Entities
             get
             {
                 OperatingMutex.WaitOne();
-                double read = _CurrentWindSpeedMPH;
+                double read = GetWindSpeed();
                 OperatingMutex.ReleaseMutex();
 
                 return read;
@@ -103,7 +103,7 @@ namespace ControlRoomApplication.Entities
             while (KeepAlive)
             {
                 OperatingMutex.WaitOne();
-                _CurrentWindSpeedMPH = ReadCurrentWindSpeedMPH();
+                _CurrentWindSpeedMPH = GetWindSpeed();
                 KeepAlive = KeepOperatingThreadAlive;
                 OperatingMutex.ReleaseMutex();
 
@@ -115,7 +115,22 @@ namespace ControlRoomApplication.Entities
         {
             return RequestKillAndJoin();
         }
+        
+        protected abstract float GetBarometricPressure();
+        protected abstract float GetOutsideTemp();
+        protected abstract float GetDewPoint();
+        protected abstract float GetWindChill();
+        protected abstract int GetHumidity();
+        protected abstract float GetTotalRain();
+        protected abstract float GetDailyRain();
+        protected abstract float GetMonthlyRain();
+        public abstract float GetWindSpeed();
+        protected abstract char GetWindDirection();
+        protected abstract float GetRainRate();
+        protected abstract int GetHeatIndex();
 
-        protected abstract double ReadCurrentWindSpeedMPH();
+        // An abstract method that will get all of the information
+        // to be able to put into the database cleanly
+        //protected abstract short GetAllRecords();
     }
 }

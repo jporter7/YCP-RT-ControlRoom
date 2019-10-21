@@ -10,6 +10,7 @@ using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
 using System.Net;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
+using ControlRoomApplication.Entities.WeatherStation;
 
 namespace ControlRoomApplication.Main
 {
@@ -377,8 +378,8 @@ namespace ControlRoomApplication.Main
             switch (comboBox2.SelectedIndex)
             {
                 case 0:
-                    logger.Error("The production weather station is not yet supported.");
-                    throw new NotImplementedException("The production weather station is not yet supported.");
+                    logger.Info("Building ProductionWeatherStation");
+                    return new WeatherStation(1000);
 
                 case 2:
                     logger.Error("The test weather station is not yet supported.");
