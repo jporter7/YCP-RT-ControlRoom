@@ -14,7 +14,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             Rand = new Random();
         }
 
-        protected override double ReadCurrentWindSpeedMPH()
+        /*protected override double ReadCurrentWindSpeedMPH()
         {
             // Generate a Gaussian random distribution through a Box-Muller transform
             double rand1 = 1 - Rand.NextDouble();
@@ -29,11 +29,75 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             }
 
             return randNormValue;
-        }
+        }*/
+
+
+        // IMPORTANT!!!!! Returning 0 for now until the simulation is implemented. Without this, the application
+        // would not be able to work unless you use production with the new gui changes.
 
         protected override bool TestIfComponentIsAlive()
         {
             return true;
+        }
+
+        protected override float GetBarometricPressure()
+        {
+            return 0;
+        }
+
+        protected override float GetOutsideTemp()
+        {
+            return 0;
+        }
+
+        protected override float GetDewPoint()
+        {
+            return 0;
+        }
+
+        protected override float GetWindChill()
+        {
+            return 0;
+        }
+
+        protected override int GetHumidity()
+        {
+            return 0;
+        }
+
+        protected override float GetTotalRain()
+        {
+            return 0;
+        }
+
+        protected override float GetDailyRain()
+        {
+            return 0;
+        }
+
+        protected override float GetMonthlyRain()
+        {
+            return 0;
+        }
+
+        public override float GetWindSpeed()
+        {
+            return 0;
+        }
+
+        protected override char GetWindDirection()
+        {
+            return ' ';
+        }
+
+        protected override float GetRainRate()
+        {
+            return 0;
+        }
+
+        protected override int GetHeatIndex()
+        {
+            return 0;
         }
     }
 }

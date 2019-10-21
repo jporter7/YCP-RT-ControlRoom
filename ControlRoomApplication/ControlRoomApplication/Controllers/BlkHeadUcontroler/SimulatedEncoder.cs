@@ -63,7 +63,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 ClientStream = Client.GetStream();
             }
 
-            public void DoSomethingWithClient() {//once the server has a client send the position data imediatly to the driver which will then close the conection
+            public void DoSomethingWithClient() {//once the server has a client send the position data immediately to the driver which will then close the conection
                 StreamWriter sw = new StreamWriter( ClientStream );
                 StreamReader sr = new StreamReader( sw.BaseStream );
                 Orientation or = PCL.read_Position();
