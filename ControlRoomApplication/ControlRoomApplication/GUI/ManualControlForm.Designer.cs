@@ -59,6 +59,7 @@
             this.NegButton.TabIndex = 2;
             this.NegButton.Text = "- Jog";
             this.NegButton.UseVisualStyleBackColor = false;
+            this.NegButton.Click += new System.EventHandler(this.NegButton_Click);
             this.NegButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.NegButton_MouseDown);
             this.NegButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.NegButton_MouseUp);
             // 
@@ -122,13 +123,13 @@
             this.label1.TabIndex = 20;
             this.label1.Text = "Speed";
             // 
-            // radioButton1
+            // ControledButtonRadio
             // 
             this.ControledButtonRadio.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.ControledButtonRadio.AutoSize = true;
             this.ControledButtonRadio.Checked = true;
             this.ControledButtonRadio.Location = new System.Drawing.Point(366, 319);
-            this.ControledButtonRadio.Name = "radioButton1";
+            this.ControledButtonRadio.Name = "ControledButtonRadio";
             this.ControledButtonRadio.Size = new System.Drawing.Size(97, 17);
             this.ControledButtonRadio.TabIndex = 21;
             this.ControledButtonRadio.TabStop = true;

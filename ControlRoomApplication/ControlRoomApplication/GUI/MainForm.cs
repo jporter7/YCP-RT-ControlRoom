@@ -443,5 +443,15 @@ namespace ControlRoomApplication.Main
             }
             this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
         }
+
+        private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

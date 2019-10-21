@@ -91,8 +91,8 @@ namespace ControlRoomApplication.GUI
 
         private void SetCurrentAzimuthAndElevation()
         {
-            label3.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString("0.00");
-            label4.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString("0.00");
+            windSpeedLabel.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString("0.00");
+            windDirLabel.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString("0.00");
              
            
         }
@@ -500,6 +500,31 @@ namespace ControlRoomApplication.GUI
         }
 
         private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void windSpeedLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void windDirLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fldAzTemp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label25_Click(object sender, EventArgs e)
         {
 
         }

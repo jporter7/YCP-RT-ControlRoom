@@ -186,5 +186,10 @@ namespace ControlRoomApplication.Main
                 ActualELTextBox.Text = text;
             }
         }
+
+        private void NegButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
