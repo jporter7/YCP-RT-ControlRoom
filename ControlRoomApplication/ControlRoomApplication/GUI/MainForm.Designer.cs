@@ -63,12 +63,12 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(677, 376);
+            this.button1.Location = new System.Drawing.Point(685, 376);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(198, 40);
+            this.button1.Size = new System.Drawing.Size(190, 40);
             this.button1.TabIndex = 6;
-            this.button1.Text = "Start Telescope";
+            this.button1.Text = "Start RT";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -114,9 +114,9 @@
             this.button2.Location = new System.Drawing.Point(458, 376);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(202, 40);
+            this.button2.Size = new System.Drawing.Size(190, 40);
             this.button2.TabIndex = 7;
-            this.button2.Text = "Shut Down Telescope";
+            this.button2.Text = "Shut Down RT";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -137,7 +137,6 @@
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
@@ -146,7 +145,7 @@
             this.comboBox1.Location = new System.Drawing.Point(260, 30);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(239, 32);
+            this.comboBox1.Size = new System.Drawing.Size(234, 32);
             this.comboBox1.TabIndex = 2;
             this.comboBox1.Text = "Simulated SpectraCyber";
             // 
@@ -166,7 +165,6 @@
             // 
             this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox2.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
@@ -197,7 +195,6 @@
             // 
             this.comboPLCType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboPLCType.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboPLCType.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboPLCType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboPLCType.FormattingEnabled = true;
             this.comboPLCType.Items.AddRange(new object[] {
@@ -232,7 +229,6 @@
             // 
             this.comboEncoderType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboEncoderType.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboEncoderType.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboEncoderType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboEncoderType.FormattingEnabled = true;
             this.comboEncoderType.Items.AddRange(new object[] {
@@ -248,7 +244,6 @@
             // comboMicrocontrollerBox
             // 
             this.comboMicrocontrollerBox.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboMicrocontrollerBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboMicrocontrollerBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboMicrocontrollerBox.FormattingEnabled = true;
             this.comboMicrocontrollerBox.Items.AddRange(new object[] {
@@ -277,7 +272,6 @@
             // 
             this.LocalIPCombo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LocalIPCombo.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.LocalIPCombo.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.LocalIPCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.LocalIPCombo.FormattingEnabled = true;
             this.LocalIPCombo.Location = new System.Drawing.Point(260, 123);
@@ -294,9 +288,9 @@
             this.label1.Location = new System.Drawing.Point(9, 7);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(291, 13);
+            this.label1.Size = new System.Drawing.Size(271, 13);
             this.label1.TabIndex = 17;
-            this.label1.Text = "Click on the IP adress of the RT to open the diagnostic view";
+            this.label1.Text = "Click on the IP adress of the RT to open diagnostic form";
             // 
             // groupBox1
             // 
@@ -313,7 +307,7 @@
             this.groupBox1.Size = new System.Drawing.Size(499, 170);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "RT Simulation settings";
+            this.groupBox1.Text = "RT Individual Component Simulation settings";
             // 
             // label2
             // 

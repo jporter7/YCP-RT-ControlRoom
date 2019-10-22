@@ -163,7 +163,7 @@ namespace ControlRoomApplication.GUI
          * ************************************************************/
         private void timer1_Tick(object sender, System.EventArgs e)
         {
-            //double currWindSpeed = 0.0;//wind speed
+            double currWindSpeed = controlRoom.WeatherStation.GetWindSpeed();//wind speed
             //string currWindDir = "North"; //wind direction
             //double currRainfall = 0.0; //Daily Rainfall
             //double currRainRate = 0.0; //Rate of rainfall
@@ -558,6 +558,11 @@ namespace ControlRoomApplication.GUI
         }
 
         private void fldElTemp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void barometricPressureLabel_Click(object sender, EventArgs e)
         {
 
         }
