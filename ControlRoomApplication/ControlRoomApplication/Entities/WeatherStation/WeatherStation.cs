@@ -124,7 +124,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return windSpeed;
         }
 
-        protected override float GetBarometricPressure()
+        public override float GetBarometricPressure()
         {
             if (ReloadData())
             {
@@ -134,7 +134,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return baromPressure;
         }
 
-        protected override float GetOutsideTemp()
+        public override float GetOutsideTemp()
         {
             if (ReloadData())
             {
@@ -144,27 +144,27 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return outsideTemp;
         }
 
-        protected override float GetDewPoint()
+        public override float GetDewPoint()
         {
             return GetDewPt_V();
         }
 
-        protected override float GetWindChill()
+        public override float GetWindChill()
         {
             return GetWindChill_V();
         }
 
-        protected override int GetHumidity()
+        public override int GetHumidity()
         {
             return GetOutsideHumidity_V();
         }
 
-        protected override float GetTotalRain()
+        public override float GetTotalRain()
         {
             return GetTotalRain_V();
         }
 
-        protected override float GetDailyRain()
+        public override float GetDailyRain()
         {
             if (ReloadData())
             {
@@ -174,12 +174,12 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return dailyRain;
         }
 
-        protected override float GetMonthlyRain()
+        public override float GetMonthlyRain()
         {
             return GetMonthlyRain_V();
         }
 
-        protected override char GetWindDirection()
+        public override char GetWindDirection()
         {
             if (ReloadData())
             {
@@ -189,7 +189,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return windDirection;
         }
 
-        protected override float GetRainRate()
+        public override float GetRainRate()
         {
             if (ReloadData())
             {
@@ -199,7 +199,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return rainRate;
         }
 
-        protected override int GetHeatIndex()
+        public override int GetHeatIndex()
         {
             return GetHeatIndex_V();
         }

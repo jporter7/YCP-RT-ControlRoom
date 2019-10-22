@@ -116,18 +116,18 @@ namespace ControlRoomApplication.Entities
             return RequestKillAndJoin();
         }
         
-        protected abstract float GetBarometricPressure();
-        protected abstract float GetOutsideTemp();
-        protected abstract float GetDewPoint();
-        protected abstract float GetWindChill();
-        protected abstract int GetHumidity();
-        protected abstract float GetTotalRain();
-        protected abstract float GetDailyRain();
-        protected abstract float GetMonthlyRain();
+        public abstract float GetBarometricPressure();
+        public abstract float GetOutsideTemp();
+        public abstract float GetDewPoint();
+        public abstract float GetWindChill();
+        public abstract int GetHumidity();
+        public abstract float GetTotalRain();
+        public abstract float GetDailyRain();
+        public abstract float GetMonthlyRain();
         public abstract float GetWindSpeed();
-        protected abstract char GetWindDirection();
-        protected abstract float GetRainRate();
-        protected abstract int GetHeatIndex();
+        public abstract char GetWindDirection();
+        public abstract float GetRainRate();
+        public abstract int GetHeatIndex();
 
         // An abstract method that will get all of the information
         // to be able to put into the database cleanly

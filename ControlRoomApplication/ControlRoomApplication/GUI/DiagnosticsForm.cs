@@ -89,14 +89,12 @@ namespace ControlRoomApplication.GUI
 
         private void SetCurrentWeatherData()
         {
-            //windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
-            //windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
-            //dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
-            //rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
-            //outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
-            //barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
-
-
+            windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
+            windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
+            dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
+            rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
+            outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
+            barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
         }
 
         /// <summary>
@@ -182,8 +180,15 @@ namespace ControlRoomApplication.GUI
 
             _azEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Azimuth;//.GetCurrentOrientation().Azimuth;
             _elEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Elevation; //GetCurrentOrientation().Elevation;
-
-
+            
+            //-----------------------------Weather Station----------------------------------------------------
+            //windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
+            //windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
+            //dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
+            //rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
+            //outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
+            //barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
+            //------------------------------Azimuth and elevation motor temp sensors--------------------------
             elevationTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
             azimuthTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
 
@@ -548,6 +553,11 @@ namespace ControlRoomApplication.GUI
         }
 
         private void label25_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fldElTemp_Click(object sender, EventArgs e)
         {
 
         }

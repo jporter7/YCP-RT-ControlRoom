@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
             this.lblCurrentElOrientation = new System.Windows.Forms.Label();
@@ -162,19 +162,19 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.Location = new System.Drawing.Point(6, 10);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(290, 178);
+            this.dataGridView1.Size = new System.Drawing.Size(337, 178);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -207,9 +207,9 @@
             this.windSpeedLabel.Location = new System.Drawing.Point(230, 29);
             this.windSpeedLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.windSpeedLabel.Name = "windSpeedLabel";
-            this.windSpeedLabel.Size = new System.Drawing.Size(31, 20);
+            this.windSpeedLabel.Size = new System.Drawing.Size(23, 20);
             this.windSpeedLabel.TabIndex = 3;
-            this.windSpeedLabel.Text = "0.0";
+            this.windSpeedLabel.Text = " --";
             this.windSpeedLabel.Click += new System.EventHandler(this.windSpeedLabel_Click);
             // 
             // windDirLabel
@@ -336,9 +336,9 @@
             this.fldAzTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fldAzTemp.Location = new System.Drawing.Point(182, 11);
             this.fldAzTemp.Name = "fldAzTemp";
-            this.fldAzTemp.Size = new System.Drawing.Size(31, 20);
+            this.fldAzTemp.Size = new System.Drawing.Size(23, 20);
             this.fldAzTemp.TabIndex = 18;
-            this.fldAzTemp.Text = "0.0";
+            this.fldAzTemp.Text = " --";
             this.fldAzTemp.Click += new System.EventHandler(this.fldAzTemp_Click);
             // 
             // fldElTemp
@@ -347,9 +347,10 @@
             this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fldElTemp.Location = new System.Drawing.Point(182, 33);
             this.fldElTemp.Name = "fldElTemp";
-            this.fldElTemp.Size = new System.Drawing.Size(31, 20);
+            this.fldElTemp.Size = new System.Drawing.Size(23, 20);
             this.fldElTemp.TabIndex = 19;
-            this.fldElTemp.Text = "0.0";
+            this.fldElTemp.Text = " --";
+            this.fldElTemp.Click += new System.EventHandler(this.fldElTemp_Click);
             // 
             // txtTemperature
             // 
@@ -361,7 +362,8 @@
             // btnTest
             // 
             this.btnTest.BackColor = System.Drawing.Color.LimeGreen;
-            this.btnTest.Location = new System.Drawing.Point(557, 394);
+            this.btnTest.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnTest.Location = new System.Drawing.Point(547, 401);
             this.btnTest.Name = "btnTest";
             this.btnTest.Size = new System.Drawing.Size(59, 34);
             this.btnTest.TabIndex = 21;
@@ -654,7 +656,7 @@
             // 
             // btnAddFiveEncoder
             // 
-            this.btnAddFiveEncoder.Location = new System.Drawing.Point(184, 18);
+            this.btnAddFiveEncoder.Location = new System.Drawing.Point(180, 18);
             this.btnAddFiveEncoder.Name = "btnAddFiveEncoder";
             this.btnAddFiveEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddFiveEncoder.TabIndex = 42;
@@ -664,7 +666,7 @@
             // 
             // btnAddXEncoder
             // 
-            this.btnAddXEncoder.Location = new System.Drawing.Point(226, 18);
+            this.btnAddXEncoder.Location = new System.Drawing.Point(219, 18);
             this.btnAddXEncoder.Name = "btnAddXEncoder";
             this.btnAddXEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddXEncoder.TabIndex = 43;
@@ -684,7 +686,7 @@
             // 
             // btnSubtractFiveEncoder
             // 
-            this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(185, 48);
+            this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(180, 48);
             this.btnSubtractFiveEncoder.Name = "btnSubtractFiveEncoder";
             this.btnSubtractFiveEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractFiveEncoder.TabIndex = 45;
@@ -694,7 +696,7 @@
             // 
             // btnSubtractXEncoder
             // 
-            this.btnSubtractXEncoder.Location = new System.Drawing.Point(226, 48);
+            this.btnSubtractXEncoder.Location = new System.Drawing.Point(219, 48);
             this.btnSubtractXEncoder.Name = "btnSubtractXEncoder";
             this.btnSubtractXEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractXEncoder.TabIndex = 46;
@@ -736,7 +738,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(226, 55);
+            this.button1.Location = new System.Drawing.Point(219, 55);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(33, 24);
             this.button1.TabIndex = 54;
@@ -745,7 +747,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(185, 55);
+            this.button2.Location = new System.Drawing.Point(180, 55);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(33, 24);
             this.button2.TabIndex = 53;
@@ -763,7 +765,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(227, 14);
+            this.button4.Location = new System.Drawing.Point(219, 25);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(33, 24);
             this.button4.TabIndex = 51;
@@ -772,7 +774,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(185, 14);
+            this.button5.Location = new System.Drawing.Point(180, 25);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(33, 24);
             this.button5.TabIndex = 50;
@@ -781,7 +783,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(141, 14);
+            this.button6.Location = new System.Drawing.Point(141, 25);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(33, 24);
             this.button6.TabIndex = 49;
@@ -1107,9 +1109,9 @@
             this.label25.Location = new System.Drawing.Point(182, 39);
             this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(31, 20);
+            this.label25.Size = new System.Drawing.Size(23, 20);
             this.label25.TabIndex = 6;
-            this.label25.Text = "0.0";
+            this.label25.Text = " --";
             this.label25.Click += new System.EventHandler(this.label25_Click);
             // 
             // label26
@@ -1119,9 +1121,9 @@
             this.label26.Location = new System.Drawing.Point(182, 16);
             this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(31, 20);
+            this.label26.Size = new System.Drawing.Size(23, 20);
             this.label26.TabIndex = 5;
-            this.label26.Text = "0.0";
+            this.label26.Text = " --";
             // 
             // groupBox5
             // 
@@ -1152,9 +1154,9 @@
             this.rainRateLabel.Location = new System.Drawing.Point(229, 104);
             this.rainRateLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.rainRateLabel.Name = "rainRateLabel";
-            this.rainRateLabel.Size = new System.Drawing.Size(31, 20);
+            this.rainRateLabel.Size = new System.Drawing.Size(23, 20);
             this.rainRateLabel.TabIndex = 19;
-            this.rainRateLabel.Text = "0.0";
+            this.rainRateLabel.Text = " --";
             // 
             // barometricPressureLabel
             // 
@@ -1162,9 +1164,9 @@
             this.barometricPressureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.barometricPressureLabel.Location = new System.Drawing.Point(229, 156);
             this.barometricPressureLabel.Name = "barometricPressureLabel";
-            this.barometricPressureLabel.Size = new System.Drawing.Size(31, 20);
+            this.barometricPressureLabel.Size = new System.Drawing.Size(23, 20);
             this.barometricPressureLabel.TabIndex = 21;
-            this.barometricPressureLabel.Text = "0.0";
+            this.barometricPressureLabel.Text = " --";
             // 
             // dailyRainfallLabel
             // 
@@ -1173,9 +1175,9 @@
             this.dailyRainfallLabel.Location = new System.Drawing.Point(229, 82);
             this.dailyRainfallLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.dailyRainfallLabel.Name = "dailyRainfallLabel";
-            this.dailyRainfallLabel.Size = new System.Drawing.Size(31, 20);
+            this.dailyRainfallLabel.Size = new System.Drawing.Size(23, 20);
             this.dailyRainfallLabel.TabIndex = 18;
-            this.dailyRainfallLabel.Text = "0.0";
+            this.dailyRainfallLabel.Text = " --";
             // 
             // outsideTempLabel
             // 
@@ -1183,9 +1185,9 @@
             this.outsideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.outsideTempLabel.Location = new System.Drawing.Point(229, 128);
             this.outsideTempLabel.Name = "outsideTempLabel";
-            this.outsideTempLabel.Size = new System.Drawing.Size(31, 20);
+            this.outsideTempLabel.Size = new System.Drawing.Size(23, 20);
             this.outsideTempLabel.TabIndex = 20;
-            this.outsideTempLabel.Text = "0.0";
+            this.outsideTempLabel.Text = " --";
             // 
             // label19
             // 
