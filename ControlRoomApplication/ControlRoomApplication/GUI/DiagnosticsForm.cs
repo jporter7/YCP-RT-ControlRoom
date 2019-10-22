@@ -561,5 +561,10 @@ namespace ControlRoomApplication.GUI
         {
 
         }
+
+        private void barometricPressureLabel_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -10,6 +10,9 @@ namespace ControlRoomApplication.Entities
         protected Thread OperatingThread;
         protected bool KeepOperatingThreadAlive;
 
+        public Thread ReloadWeatherDataThread;
+        public bool KeepReloadWeatherDataThreadAlive;
+
         private double _CurrentWindSpeedMPH;
 
         public double CurrentWindSpeedMPH
@@ -41,7 +44,10 @@ namespace ControlRoomApplication.Entities
             OperatingMutex = new Mutex();
             OperatingThread = new Thread(new ThreadStart(OperationLoop));
             KeepOperatingThreadAlive = false;
-        }
+
+            ReloadWeatherDataThread = null;
+            KeepReloadWeatherDataThreadAlive = false;
+    }
 
         public bool Start()
         {
@@ -75,6 +81,8 @@ namespace ControlRoomApplication.Entities
                 KeepOperatingThreadAlive = false;
                 OperatingMutex.ReleaseMutex();
 
+                KeepReloadWeatherDataThreadAlive = false;
+                ReloadWeatherDataThread.Join();
                 OperatingThread.Join();
             }
             catch (Exception e)
