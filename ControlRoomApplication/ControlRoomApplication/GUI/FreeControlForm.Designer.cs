@@ -54,10 +54,10 @@
             this.errorLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.tenButtonDec = new System.Windows.Forms.Button();
+            this.fiveButtonDec = new System.Windows.Forms.Button();
+            this.oneButtonDec = new System.Windows.Forms.Button();
+            this.oneForthButtonDec = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -65,16 +65,16 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.button10 = new System.Windows.Forms.Button();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.manualControlButton = new System.Windows.Forms.Button();
+            this.immediateRadioButton = new System.Windows.Forms.RadioButton();
             this.ControledButtonRadio = new System.Windows.Forms.RadioButton();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.speedComboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
+            this.subJogButton = new System.Windows.Forms.Button();
+            this.plusElaButton = new System.Windows.Forms.Button();
+            this.subElaButton = new System.Windows.Forms.Button();
+            this.plusJogButton = new System.Windows.Forms.Button();
             this.IncrementButtons.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -369,10 +369,10 @@
             // 
             this.groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.groupBox2.BackColor = System.Drawing.Color.Gray;
-            this.groupBox2.Controls.Add(this.button1);
-            this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Controls.Add(this.button3);
-            this.groupBox2.Controls.Add(this.button4);
+            this.groupBox2.Controls.Add(this.tenButtonDec);
+            this.groupBox2.Controls.Add(this.fiveButtonDec);
+            this.groupBox2.Controls.Add(this.oneButtonDec);
+            this.groupBox2.Controls.Add(this.oneForthButtonDec);
             this.groupBox2.Location = new System.Drawing.Point(6, 128);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
@@ -382,53 +382,53 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Declanation Increment";
             // 
-            // button1
+            // tenButtonDec
             // 
-            this.button1.BackColor = System.Drawing.Color.DarkGray;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Location = new System.Drawing.Point(182, 18);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(30, 30);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "10";
-            this.button1.UseVisualStyleBackColor = false;
+            this.tenButtonDec.BackColor = System.Drawing.Color.DarkGray;
+            this.tenButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.tenButtonDec.Location = new System.Drawing.Point(182, 18);
+            this.tenButtonDec.Margin = new System.Windows.Forms.Padding(2);
+            this.tenButtonDec.Name = "tenButtonDec";
+            this.tenButtonDec.Size = new System.Drawing.Size(30, 30);
+            this.tenButtonDec.TabIndex = 3;
+            this.tenButtonDec.Text = "10";
+            this.tenButtonDec.UseVisualStyleBackColor = false;
             // 
-            // button2
+            // fiveButtonDec
             // 
-            this.button2.BackColor = System.Drawing.Color.DarkGray;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button2.Location = new System.Drawing.Point(124, 18);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(30, 30);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "5";
-            this.button2.UseVisualStyleBackColor = false;
+            this.fiveButtonDec.BackColor = System.Drawing.Color.DarkGray;
+            this.fiveButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.fiveButtonDec.Location = new System.Drawing.Point(124, 18);
+            this.fiveButtonDec.Margin = new System.Windows.Forms.Padding(2);
+            this.fiveButtonDec.Name = "fiveButtonDec";
+            this.fiveButtonDec.Size = new System.Drawing.Size(30, 30);
+            this.fiveButtonDec.TabIndex = 2;
+            this.fiveButtonDec.Text = "5";
+            this.fiveButtonDec.UseVisualStyleBackColor = false;
             // 
-            // button3
+            // oneButtonDec
             // 
-            this.button3.BackColor = System.Drawing.Color.DarkGray;
-            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button3.Location = new System.Drawing.Point(65, 18);
-            this.button3.Margin = new System.Windows.Forms.Padding(2);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(30, 30);
-            this.button3.TabIndex = 1;
-            this.button3.Text = "1";
-            this.button3.UseVisualStyleBackColor = false;
+            this.oneButtonDec.BackColor = System.Drawing.Color.DarkGray;
+            this.oneButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.oneButtonDec.Location = new System.Drawing.Point(65, 18);
+            this.oneButtonDec.Margin = new System.Windows.Forms.Padding(2);
+            this.oneButtonDec.Name = "oneButtonDec";
+            this.oneButtonDec.Size = new System.Drawing.Size(30, 30);
+            this.oneButtonDec.TabIndex = 1;
+            this.oneButtonDec.Text = "1";
+            this.oneButtonDec.UseVisualStyleBackColor = false;
             // 
-            // button4
+            // oneForthButtonDec
             // 
-            this.button4.BackColor = System.Drawing.Color.DarkGray;
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button4.Location = new System.Drawing.Point(7, 18);
-            this.button4.Margin = new System.Windows.Forms.Padding(2);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(30, 30);
-            this.button4.TabIndex = 0;
-            this.button4.Text = "0.25";
-            this.button4.UseVisualStyleBackColor = false;
+            this.oneForthButtonDec.BackColor = System.Drawing.Color.DarkGray;
+            this.oneForthButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.oneForthButtonDec.Location = new System.Drawing.Point(7, 18);
+            this.oneForthButtonDec.Margin = new System.Windows.Forms.Padding(2);
+            this.oneForthButtonDec.Name = "oneForthButtonDec";
+            this.oneForthButtonDec.Size = new System.Drawing.Size(30, 30);
+            this.oneForthButtonDec.TabIndex = 0;
+            this.oneForthButtonDec.Text = "0.25";
+            this.oneForthButtonDec.UseVisualStyleBackColor = false;
             // 
             // groupBox3
             // 
@@ -474,16 +474,16 @@
             this.groupBox5.Controls.Add(this.label4);
             this.groupBox5.Controls.Add(this.label5);
             this.groupBox5.Controls.Add(this.label3);
-            this.groupBox5.Controls.Add(this.button10);
-            this.groupBox5.Controls.Add(this.radioButton3);
+            this.groupBox5.Controls.Add(this.manualControlButton);
+            this.groupBox5.Controls.Add(this.immediateRadioButton);
             this.groupBox5.Controls.Add(this.ControledButtonRadio);
-            this.groupBox5.Controls.Add(this.comboBox2);
+            this.groupBox5.Controls.Add(this.speedComboBox);
             this.groupBox5.Controls.Add(this.label2);
             this.groupBox5.Controls.Add(this.label1);
-            this.groupBox5.Controls.Add(this.button6);
-            this.groupBox5.Controls.Add(this.button7);
-            this.groupBox5.Controls.Add(this.button8);
-            this.groupBox5.Controls.Add(this.button9);
+            this.groupBox5.Controls.Add(this.subJogButton);
+            this.groupBox5.Controls.Add(this.plusElaButton);
+            this.groupBox5.Controls.Add(this.subElaButton);
+            this.groupBox5.Controls.Add(this.plusJogButton);
             this.groupBox5.Location = new System.Drawing.Point(455, 186);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(302, 228);
@@ -495,7 +495,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(105, 46);
+            this.label4.Location = new System.Drawing.Point(102, 86);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(22, 13);
@@ -506,7 +506,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(105, 27);
+            this.label5.Location = new System.Drawing.Point(102, 67);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(22, 13);
@@ -522,28 +522,29 @@
             this.label3.TabIndex = 26;
             this.label3.Text = "Speed";
             // 
-            // button10
+            // manualControlButton
             // 
-            this.button10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button10.BackColor = System.Drawing.Color.OrangeRed;
-            this.button10.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button10.Location = new System.Drawing.Point(155, 27);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(136, 25);
-            this.button10.TabIndex = 25;
-            this.button10.Text = "Activate Manual Control";
-            this.button10.UseVisualStyleBackColor = false;
+            this.manualControlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.manualControlButton.BackColor = System.Drawing.Color.OrangeRed;
+            this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.manualControlButton.Location = new System.Drawing.Point(61, 19);
+            this.manualControlButton.Name = "manualControlButton";
+            this.manualControlButton.Size = new System.Drawing.Size(186, 25);
+            this.manualControlButton.TabIndex = 25;
+            this.manualControlButton.Text = "Activate Manual Control";
+            this.manualControlButton.UseVisualStyleBackColor = false;
+            this.manualControlButton.Click += new System.EventHandler(this.manualControlButton_Click);
             // 
-            // radioButton3
+            // immediateRadioButton
             // 
-            this.radioButton3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(6, 139);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(98, 17);
-            this.radioButton3.TabIndex = 24;
-            this.radioButton3.Text = "Immediate Stop";
-            this.radioButton3.UseVisualStyleBackColor = true;
+            this.immediateRadioButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.immediateRadioButton.AutoSize = true;
+            this.immediateRadioButton.Location = new System.Drawing.Point(6, 139);
+            this.immediateRadioButton.Name = "immediateRadioButton";
+            this.immediateRadioButton.Size = new System.Drawing.Size(98, 17);
+            this.immediateRadioButton.TabIndex = 24;
+            this.immediateRadioButton.Text = "Immediate Stop";
+            this.immediateRadioButton.UseVisualStyleBackColor = true;
             // 
             // ControledButtonRadio
             // 
@@ -558,18 +559,22 @@
             this.ControledButtonRadio.Text = "Controlled Stop";
             this.ControledButtonRadio.UseVisualStyleBackColor = true;
             // 
-            // comboBox2
+            // speedComboBox
             // 
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(9, 198);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(121, 21);
-            this.comboBox2.TabIndex = 10;
+            this.speedComboBox.FormattingEnabled = true;
+            this.speedComboBox.Items.AddRange(new object[] {
+            "0.1 RPM",
+            "2 RPM"});
+            this.speedComboBox.Location = new System.Drawing.Point(9, 198);
+            this.speedComboBox.Name = "speedComboBox";
+            this.speedComboBox.Size = new System.Drawing.Size(121, 21);
+            this.speedComboBox.TabIndex = 10;
+            this.speedComboBox.SelectedIndexChanged += new System.EventHandler(this.speedComboBox_SelectedIndexChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 47);
+            this.label2.Location = new System.Drawing.Point(3, 87);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(87, 13);
             this.label2.TabIndex = 9;
@@ -578,60 +583,60 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 27);
+            this.label1.Location = new System.Drawing.Point(3, 67);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 8;
             this.label1.Text = "Current Elavation: ";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
-            // button6
+            // subJogButton
             // 
-            this.button6.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button6.BackColor = System.Drawing.Color.DarkGray;
-            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button6.Location = new System.Drawing.Point(155, 132);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(40, 40);
-            this.button6.TabIndex = 6;
-            this.button6.Text = "- Jog";
-            this.button6.UseVisualStyleBackColor = false;
+            this.subJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.subJogButton.BackColor = System.Drawing.Color.DarkGray;
+            this.subJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.subJogButton.Location = new System.Drawing.Point(155, 132);
+            this.subJogButton.Name = "subJogButton";
+            this.subJogButton.Size = new System.Drawing.Size(40, 40);
+            this.subJogButton.TabIndex = 6;
+            this.subJogButton.Text = "- Jog";
+            this.subJogButton.UseVisualStyleBackColor = false;
             // 
-            // button7
+            // plusElaButton
             // 
-            this.button7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button7.BackColor = System.Drawing.Color.DarkGray;
-            this.button7.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button7.Location = new System.Drawing.Point(196, 81);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(40, 40);
-            this.button7.TabIndex = 4;
-            this.button7.Text = "+ Ela";
-            this.button7.UseVisualStyleBackColor = false;
+            this.plusElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.plusElaButton.BackColor = System.Drawing.Color.DarkGray;
+            this.plusElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.plusElaButton.Location = new System.Drawing.Point(196, 81);
+            this.plusElaButton.Name = "plusElaButton";
+            this.plusElaButton.Size = new System.Drawing.Size(40, 40);
+            this.plusElaButton.TabIndex = 4;
+            this.plusElaButton.Text = "+ Ela";
+            this.plusElaButton.UseVisualStyleBackColor = false;
             // 
-            // button8
+            // subElaButton
             // 
-            this.button8.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button8.BackColor = System.Drawing.Color.DarkGray;
-            this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button8.Location = new System.Drawing.Point(196, 178);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(40, 40);
-            this.button8.TabIndex = 5;
-            this.button8.Text = "- Ela";
-            this.button8.UseVisualStyleBackColor = false;
+            this.subElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.subElaButton.BackColor = System.Drawing.Color.DarkGray;
+            this.subElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.subElaButton.Location = new System.Drawing.Point(196, 178);
+            this.subElaButton.Name = "subElaButton";
+            this.subElaButton.Size = new System.Drawing.Size(40, 40);
+            this.subElaButton.TabIndex = 5;
+            this.subElaButton.Text = "- Ela";
+            this.subElaButton.UseVisualStyleBackColor = false;
             // 
-            // button9
+            // plusJogButton
             // 
-            this.button9.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button9.BackColor = System.Drawing.Color.DarkGray;
-            this.button9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button9.Location = new System.Drawing.Point(241, 132);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(40, 40);
-            this.button9.TabIndex = 7;
-            this.button9.Text = "+ Jog";
-            this.button9.UseVisualStyleBackColor = false;
+            this.plusJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.plusJogButton.BackColor = System.Drawing.Color.DarkGray;
+            this.plusJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.plusJogButton.Location = new System.Drawing.Point(241, 132);
+            this.plusJogButton.Name = "plusJogButton";
+            this.plusJogButton.Size = new System.Drawing.Size(40, 40);
+            this.plusJogButton.TabIndex = 7;
+            this.plusJogButton.Text = "+ Jog";
+            this.plusJogButton.UseVisualStyleBackColor = false;
             // 
             // FreeControlForm
             // 
@@ -688,24 +693,24 @@
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button tenButtonDec;
+        private System.Windows.Forms.Button fiveButtonDec;
+        private System.Windows.Forms.Button oneButtonDec;
+        private System.Windows.Forms.Button oneForthButtonDec;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Button subJogButton;
+        private System.Windows.Forms.Button plusElaButton;
+        private System.Windows.Forms.Button subElaButton;
+        private System.Windows.Forms.Button plusJogButton;
+        private System.Windows.Forms.ComboBox speedComboBox;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.RadioButton immediateRadioButton;
         private System.Windows.Forms.RadioButton ControledButtonRadio;
-        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button manualControlButton;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
