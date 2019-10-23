@@ -22,12 +22,40 @@ namespace ControlRoomApplication.Entities.WeatherStation
             public char elevUnit;
         };
 
-        private float windSpeed = 0;
-        private char windDirection = ' ';
-        private float dailyRain = 0;
-        private float rainRate = 0;
-        private float outsideTemp = 0;
-        private float baromPressure = 0;
+        private struct Weather_Data
+        {
+            public float windSpeed;
+            public char windDirection;
+            public float dailyRain;
+            public float rainRate;
+            public float outsideTemp;
+            public float baromPressure;
+            public float dewPoint;
+            public float windChill;
+            public float outsideHumidity;
+            public float totalRain;
+            public float monthlyRain;
+            public float heatIndex;
+
+            public Weather_Data (float windSpeedIN, char windDirectionIN, float dailyRainIN, float rainRateIN,
+                                    float outsideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
+                                    float outsideHumidityIN, float totalRainIN, float monthlyRainIN, float heatIndexIN) {
+                windSpeed = windSpeedIN;
+                windDirection = windDirectionIN;
+                dailyRain = dailyRainIN;
+                rainRate = rainRateIN;
+                outsideTemp = outsideTempIN;
+                baromPressure = baromPressureIN;
+                dewPoint = dewPointIN;
+                windChill = windChillIN;
+                outsideHumidity = outsideHumidityIN;
+                totalRain = totalRainIN;
+                monthlyRain = monthlyRainIN;
+                heatIndex = heatIndexIN;
+            }
+        };
+
+       
 
         // declarations of all methods we will use in the dll
 
@@ -64,12 +92,21 @@ namespace ControlRoomApplication.Entities.WeatherStation
         private const int COM_OPEN_ERROR = -32701;
         private const int NOT_LOADED_ERROR = -104;
         private const int BAD_DATA = -32704;
-    
+
+        Weather_Data data;
+
 
         public WeatherStation(int currentWindSpeedScanDelayMS, int commPort = 8)
             : base(currentWindSpeedScanDelayMS)
         {
+
+            data = new Weather_Data(0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+ 
             InitializeStation(commPort);
+
+            ReloadWeatherDataThread = new Thread(new ThreadStart(ReloadWeatherDataRoutine));
+            KeepReloadWeatherDataThreadAlive = true;
+            ReloadWeatherDataThread.Start();
         }
 
         // From the HeartbeatInterface
@@ -102,106 +139,124 @@ namespace ControlRoomApplication.Entities.WeatherStation
                 throw new ExternalException();
             }
 
-            if(LoadCurrentVantageData_V() == COM_ERROR || LoadVantageHiLows_V() == COM_ERROR) {
-                logger.Info( "failed to collect data from weather station. will attempt again." );
-            }
+          //  if(LoadCurrentVantageData_V() == COM_ERROR || LoadVantageHiLows_V() == COM_ERROR) {
+          //      logger.Info( "failed to collect data from weather station. will attempt again." );
+          //  }
 
             logger.Info("Initialize Concrete Weather Station successful!");
         }
 
-        private Boolean ReloadData()
+        private void ReloadWeatherDataRoutine()
         {
-            return LoadCurrentVantageData_V() != COM_ERROR;
+            while (KeepReloadWeatherDataThreadAlive) {
+                if (LoadCurrentVantageData_V() != COM_ERROR)
+                {
+                    data.windSpeed = GetWindSpeed_V();
+                   // data.windDirection = GetWindDirStr_V();
+                    data.dailyRain = GetDailyRain_V();
+                    data.rainRate = GetRainRate_V();
+                    data.outsideTemp = GetOutsideTemp_V();
+                    data.baromPressure = GetBarometer_V();
+                    data.dewPoint = GetDewPt_V();
+                    data.windChill = GetWindChill_V();
+                    data.outsideHumidity = GetOutsideHumidity_V();
+                    data.totalRain = GetTotalRain_V();
+                    data.monthlyRain = GetMonthlyRain_V();
+                    data.heatIndex = GetHeatIndex_V();
+
+                    logger.Info("Weather Data update successful");
+                }
+                else
+                {
+                    logger.Info("Weather Data update failed");
+                }
+
+                Thread.Sleep(1000);
+            }
+        }
+
+        public bool RequestToKillReloadWeatherDataRoutine()
+        {
+            KeepReloadWeatherDataThreadAlive = false;
+
+            try
+            {
+                ReloadWeatherDataThread.Join();
+            }
+            catch (Exception e)
+            {
+                if ((e is ThreadStateException) || (e is ThreadInterruptedException))
+                {
+                    return false;
+                }
+                else
+                {
+                    // Unexpected exception
+                    throw e;
+                }
+            }
+
+            return true;
         }
 
         public override float GetWindSpeed()
         {
-            if (ReloadData())
-            {
-                return windSpeed = GetWindSpeed_V();
-            }
-
-            return windSpeed;
+            return data.windSpeed;
         }
 
         public override float GetBarometricPressure()
         {
-            if (ReloadData())
-            {
-                return baromPressure = GetBarometer_V();
-            }
-
-            return baromPressure;
+            return data.baromPressure;
         }
 
         public override float GetOutsideTemp()
         {
-            if (ReloadData())
-            {
-                return outsideTemp = GetOutsideTemp_V();
-            }
-
-            return outsideTemp;
+            return data.outsideTemp;
         }
 
         public override float GetDewPoint()
         {
-            return GetDewPt_V();
+            return data.dewPoint;
         }
 
         public override float GetWindChill()
         {
-            return GetWindChill_V();
+            return data.windChill;
         }
 
         public override int GetHumidity()
         {
-            return GetOutsideHumidity_V();
+            return (int)data.outsideHumidity;
         }
 
         public override float GetTotalRain()
         {
-            return GetTotalRain_V();
+            return data.totalRain;
         }
 
         public override float GetDailyRain()
         {
-            if (ReloadData())
-            {
-                return dailyRain = GetDailyRain_V();
-            }
-
-            return dailyRain;
+            return data.dailyRain;
         }
 
         public override float GetMonthlyRain()
         {
-            return GetMonthlyRain_V();
+            return data.monthlyRain;
         }
 
         public override char GetWindDirection()
-        {
-            if (ReloadData())
-            {
-                return windDirection = GetWindDirStr_V();
-            }
-
-            return windDirection;
+        { 
+            return data.windDirection;
         }
 
         public override float GetRainRate()
         {
-            if (ReloadData())
-            {
-                return rainRate = GetRainRate_V();
-            }
-
-            return rainRate;
+            return data.rainRate;
         }
 
         public override int GetHeatIndex()
         {
-            return GetHeatIndex_V();
+            return (int)data.heatIndex;
         }
     }
 }

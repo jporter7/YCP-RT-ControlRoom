@@ -12,7 +12,10 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             : base(currentWindSpeedScanDelayMS)
         {
             Rand = new Random();
-        }
+
+            ReloadWeatherDataThread = null;
+            KeepReloadWeatherDataThreadAlive = false;
+    }
 
         /*protected override double ReadCurrentWindSpeedMPH()
         {
