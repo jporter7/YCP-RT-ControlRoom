@@ -45,7 +45,7 @@
             this.TargetRATextBox = new System.Windows.Forms.TextBox();
             this.Title = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.IncrementButtons = new System.Windows.Forms.GroupBox();
+            this.RAIncGroupbox = new System.Windows.Forms.GroupBox();
             this.tenButton = new System.Windows.Forms.Button();
             this.fiveButton = new System.Windows.Forms.Button();
             this.oneButton = new System.Windows.Forms.Button();
@@ -53,12 +53,12 @@
             this.editButton = new System.Windows.Forms.Button();
             this.errorLabel = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.decIncGroupbox = new System.Windows.Forms.GroupBox();
             this.tenButtonDec = new System.Windows.Forms.Button();
             this.fiveButtonDec = new System.Windows.Forms.Button();
             this.oneButtonDec = new System.Windows.Forms.Button();
             this.oneForthButtonDec = new System.Windows.Forms.Button();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.freeControlGroupbox = new System.Windows.Forms.GroupBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -75,10 +75,11 @@
             this.plusElaButton = new System.Windows.Forms.Button();
             this.subElaButton = new System.Windows.Forms.Button();
             this.plusJogButton = new System.Windows.Forms.Button();
-            this.IncrementButtons.SuspendLayout();
+            this.button1 = new System.Windows.Forms.Button();
+            this.RAIncGroupbox.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.decIncGroupbox.SuspendLayout();
+            this.freeControlGroupbox.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.SuspendLayout();
@@ -88,7 +89,7 @@
             this.PosDecButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.PosDecButton.BackColor = System.Drawing.Color.DarkGray;
             this.PosDecButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.PosDecButton.Location = new System.Drawing.Point(296, 55);
+            this.PosDecButton.Location = new System.Drawing.Point(297, 56);
             this.PosDecButton.Name = "PosDecButton";
             this.PosDecButton.Size = new System.Drawing.Size(40, 40);
             this.PosDecButton.TabIndex = 0;
@@ -158,7 +159,7 @@
             this.ActualPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualPositionLabel.AutoSize = true;
             this.ActualPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.ActualPositionLabel.Location = new System.Drawing.Point(127, 29);
+            this.ActualPositionLabel.Location = new System.Drawing.Point(127, 16);
             this.ActualPositionLabel.Name = "ActualPositionLabel";
             this.ActualPositionLabel.Size = new System.Drawing.Size(114, 20);
             this.ActualPositionLabel.TabIndex = 7;
@@ -209,7 +210,7 @@
             this.TargetPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetPositionLabel.AutoSize = true;
             this.TargetPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.TargetPositionLabel.Location = new System.Drawing.Point(6, 29);
+            this.TargetPositionLabel.Location = new System.Drawing.Point(6, 16);
             this.TargetPositionLabel.Name = "TargetPositionLabel";
             this.TargetPositionLabel.Size = new System.Drawing.Size(115, 20);
             this.TargetPositionLabel.TabIndex = 12;
@@ -251,22 +252,22 @@
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // IncrementButtons
+            // RAIncGroupbox
             // 
-            this.IncrementButtons.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.IncrementButtons.BackColor = System.Drawing.Color.Gray;
-            this.IncrementButtons.Controls.Add(this.tenButton);
-            this.IncrementButtons.Controls.Add(this.fiveButton);
-            this.IncrementButtons.Controls.Add(this.oneButton);
-            this.IncrementButtons.Controls.Add(this.oneForthButton);
-            this.IncrementButtons.Location = new System.Drawing.Point(6, 54);
-            this.IncrementButtons.Margin = new System.Windows.Forms.Padding(2);
-            this.IncrementButtons.Name = "IncrementButtons";
-            this.IncrementButtons.Padding = new System.Windows.Forms.Padding(2);
-            this.IncrementButtons.Size = new System.Drawing.Size(219, 55);
-            this.IncrementButtons.TabIndex = 16;
-            this.IncrementButtons.TabStop = false;
-            this.IncrementButtons.Text = "Right Ascension Increment";
+            this.RAIncGroupbox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.RAIncGroupbox.BackColor = System.Drawing.Color.Gray;
+            this.RAIncGroupbox.Controls.Add(this.tenButton);
+            this.RAIncGroupbox.Controls.Add(this.fiveButton);
+            this.RAIncGroupbox.Controls.Add(this.oneButton);
+            this.RAIncGroupbox.Controls.Add(this.oneForthButton);
+            this.RAIncGroupbox.Location = new System.Drawing.Point(6, 54);
+            this.RAIncGroupbox.Margin = new System.Windows.Forms.Padding(2);
+            this.RAIncGroupbox.Name = "RAIncGroupbox";
+            this.RAIncGroupbox.Padding = new System.Windows.Forms.Padding(2);
+            this.RAIncGroupbox.Size = new System.Drawing.Size(219, 55);
+            this.RAIncGroupbox.TabIndex = 16;
+            this.RAIncGroupbox.TabStop = false;
+            this.RAIncGroupbox.Text = "Right Ascension Increment";
             // 
             // tenButton
             // 
@@ -325,9 +326,9 @@
             this.editButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.editButton.BackColor = System.Drawing.Color.OrangeRed;
             this.editButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.editButton.Location = new System.Drawing.Point(281, 14);
+            this.editButton.Location = new System.Drawing.Point(250, 10);
             this.editButton.Name = "editButton";
-            this.editButton.Size = new System.Drawing.Size(100, 25);
+            this.editButton.Size = new System.Drawing.Size(131, 25);
             this.editButton.TabIndex = 17;
             this.editButton.Text = "Edit Position";
             this.editButton.UseVisualStyleBackColor = false;
@@ -365,22 +366,22 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Position Information";
             // 
-            // groupBox2
+            // decIncGroupbox
             // 
-            this.groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.groupBox2.BackColor = System.Drawing.Color.Gray;
-            this.groupBox2.Controls.Add(this.tenButtonDec);
-            this.groupBox2.Controls.Add(this.fiveButtonDec);
-            this.groupBox2.Controls.Add(this.oneButtonDec);
-            this.groupBox2.Controls.Add(this.oneForthButtonDec);
-            this.groupBox2.Location = new System.Drawing.Point(6, 128);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Size = new System.Drawing.Size(219, 55);
-            this.groupBox2.TabIndex = 20;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Declanation Increment";
+            this.decIncGroupbox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.decIncGroupbox.BackColor = System.Drawing.Color.Gray;
+            this.decIncGroupbox.Controls.Add(this.tenButtonDec);
+            this.decIncGroupbox.Controls.Add(this.fiveButtonDec);
+            this.decIncGroupbox.Controls.Add(this.oneButtonDec);
+            this.decIncGroupbox.Controls.Add(this.oneForthButtonDec);
+            this.decIncGroupbox.Location = new System.Drawing.Point(6, 128);
+            this.decIncGroupbox.Margin = new System.Windows.Forms.Padding(2);
+            this.decIncGroupbox.Name = "decIncGroupbox";
+            this.decIncGroupbox.Padding = new System.Windows.Forms.Padding(2);
+            this.decIncGroupbox.Size = new System.Drawing.Size(219, 55);
+            this.decIncGroupbox.TabIndex = 20;
+            this.decIncGroupbox.TabStop = false;
+            this.decIncGroupbox.Text = "Declanation Increment";
             // 
             // tenButtonDec
             // 
@@ -430,40 +431,41 @@
             this.oneForthButtonDec.Text = "0.25";
             this.oneForthButtonDec.UseVisualStyleBackColor = false;
             // 
-            // groupBox3
+            // freeControlGroupbox
             // 
-            this.groupBox3.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox3.Controls.Add(this.NegRAButton);
-            this.groupBox3.Controls.Add(this.PosDecButton);
-            this.groupBox3.Controls.Add(this.groupBox2);
-            this.groupBox3.Controls.Add(this.NegDecButton);
-            this.groupBox3.Controls.Add(this.PosRAButton);
-            this.groupBox3.Controls.Add(this.IncrementButtons);
-            this.groupBox3.Controls.Add(this.editButton);
-            this.groupBox3.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.groupBox3.Location = new System.Drawing.Point(19, 213);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(405, 201);
-            this.groupBox3.TabIndex = 22;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Edit Target Position";
+            this.freeControlGroupbox.BackColor = System.Drawing.Color.Gainsboro;
+            this.freeControlGroupbox.Controls.Add(this.NegRAButton);
+            this.freeControlGroupbox.Controls.Add(this.PosDecButton);
+            this.freeControlGroupbox.Controls.Add(this.decIncGroupbox);
+            this.freeControlGroupbox.Controls.Add(this.NegDecButton);
+            this.freeControlGroupbox.Controls.Add(this.PosRAButton);
+            this.freeControlGroupbox.Controls.Add(this.RAIncGroupbox);
+            this.freeControlGroupbox.Controls.Add(this.editButton);
+            this.freeControlGroupbox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.freeControlGroupbox.Location = new System.Drawing.Point(19, 213);
+            this.freeControlGroupbox.Name = "freeControlGroupbox";
+            this.freeControlGroupbox.Size = new System.Drawing.Size(405, 201);
+            this.freeControlGroupbox.TabIndex = 22;
+            this.freeControlGroupbox.TabStop = false;
+            this.freeControlGroupbox.Text = "Edit Target Position";
             // 
             // comboBox1
             // 
             this.comboBox1.BackColor = System.Drawing.Color.DarkGray;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(51, 19);
+            this.comboBox1.Location = new System.Drawing.Point(20, 27);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(234, 21);
+            this.comboBox1.Size = new System.Drawing.Size(243, 21);
             this.comboBox1.TabIndex = 23;
             // 
             // groupBox4
             // 
             this.groupBox4.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox4.Controls.Add(this.button1);
             this.groupBox4.Controls.Add(this.comboBox1);
             this.groupBox4.Location = new System.Drawing.Point(417, 67);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(340, 69);
+            this.groupBox4.Size = new System.Drawing.Size(371, 69);
             this.groupBox4.TabIndex = 24;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Scripts";
@@ -495,7 +497,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(102, 86);
+            this.label4.Location = new System.Drawing.Point(105, 68);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(22, 13);
@@ -506,7 +508,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(102, 67);
+            this.label5.Location = new System.Drawing.Point(105, 49);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(22, 13);
@@ -516,7 +518,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 182);
+            this.label3.Location = new System.Drawing.Point(3, 173);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(38, 13);
             this.label3.TabIndex = 26;
@@ -527,9 +529,9 @@
             this.manualControlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.manualControlButton.BackColor = System.Drawing.Color.OrangeRed;
             this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.manualControlButton.Location = new System.Drawing.Point(61, 19);
+            this.manualControlButton.Location = new System.Drawing.Point(155, 19);
             this.manualControlButton.Name = "manualControlButton";
-            this.manualControlButton.Size = new System.Drawing.Size(186, 25);
+            this.manualControlButton.Size = new System.Drawing.Size(126, 25);
             this.manualControlButton.TabIndex = 25;
             this.manualControlButton.Text = "Activate Manual Control";
             this.manualControlButton.UseVisualStyleBackColor = false;
@@ -565,7 +567,7 @@
             this.speedComboBox.Items.AddRange(new object[] {
             "0.1 RPM",
             "2 RPM"});
-            this.speedComboBox.Location = new System.Drawing.Point(9, 198);
+            this.speedComboBox.Location = new System.Drawing.Point(6, 189);
             this.speedComboBox.Name = "speedComboBox";
             this.speedComboBox.Size = new System.Drawing.Size(121, 21);
             this.speedComboBox.TabIndex = 10;
@@ -574,7 +576,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 87);
+            this.label2.Location = new System.Drawing.Point(6, 69);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(87, 13);
             this.label2.TabIndex = 9;
@@ -583,7 +585,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 67);
+            this.label1.Location = new System.Drawing.Point(6, 49);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 8;
@@ -638,6 +640,18 @@
             this.plusJogButton.Text = "+ Jog";
             this.plusJogButton.UseVisualStyleBackColor = false;
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.DarkGray;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button1.Location = new System.Drawing.Point(290, 27);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 34);
+            this.button1.TabIndex = 24;
+            this.button1.Text = "Add New Script";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // FreeControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -646,18 +660,18 @@
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.freeControlGroupbox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.errorLabel);
             this.Controls.Add(this.Title);
             this.MinimumSize = new System.Drawing.Size(816, 489);
             this.Name = "FreeControlForm";
             this.Text = "FreeControlForm";
-            this.IncrementButtons.ResumeLayout(false);
+            this.RAIncGroupbox.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
+            this.decIncGroupbox.ResumeLayout(false);
+            this.freeControlGroupbox.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
@@ -684,7 +698,7 @@
         private System.Windows.Forms.TextBox TargetRATextBox;
         private System.Windows.Forms.Label Title;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.GroupBox IncrementButtons;
+        private System.Windows.Forms.GroupBox RAIncGroupbox;
         private System.Windows.Forms.Button tenButton;
         private System.Windows.Forms.Button fiveButton;
         private System.Windows.Forms.Button oneButton;
@@ -692,12 +706,12 @@
         private System.Windows.Forms.Button editButton;
         private System.Windows.Forms.Label errorLabel;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox decIncGroupbox;
         private System.Windows.Forms.Button tenButtonDec;
         private System.Windows.Forms.Button fiveButtonDec;
         private System.Windows.Forms.Button oneButtonDec;
         private System.Windows.Forms.Button oneForthButtonDec;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox freeControlGroupbox;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox5;
@@ -714,5 +728,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button button1;
     }
 }

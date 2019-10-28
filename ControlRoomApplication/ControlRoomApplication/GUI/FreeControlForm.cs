@@ -266,10 +266,10 @@ namespace ControlRoomApplication.Main
 
         private void UpdateIncrementButtons()
         {
-            oneForthButton.BackColor = System.Drawing.Color.LightGray;
-            oneButton.BackColor = System.Drawing.Color.LightGray;
-            fiveButton.BackColor = System.Drawing.Color.LightGray;
-            tenButton.BackColor = System.Drawing.Color.LightGray;
+            //oneForthButton.BackColor = System.Drawing.Color.LightGray;
+            //oneButton.BackColor = System.Drawing.Color.LightGray;
+            //fiveButton.BackColor = System.Drawing.Color.LightGray;
+            //tenButton.BackColor = System.Drawing.Color.LightGray;
 
             switch (Increment)
             {
@@ -298,6 +298,7 @@ namespace ControlRoomApplication.Main
             {
                 editButton.Text = "Edit Position";
                 editButton.BackColor = System.Drawing.Color.Red;
+                freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
                 double newRA;
                 double newDec;
                 double.TryParse(TargetRATextBox.Text, out newRA);
@@ -318,8 +319,8 @@ namespace ControlRoomApplication.Main
             {
                 editButton.Text = "Save Position";
                 editButton.BackColor = System.Drawing.Color.LimeGreen;
+                freeControlGroupbox.BackColor = System.Drawing.Color.Gainsboro;
             }
-
             PosDecButton.Enabled = !save_state;
             NegDecButton.Enabled = !save_state;
             PosRAButton.Enabled = !save_state;
@@ -332,7 +333,6 @@ namespace ControlRoomApplication.Main
             fiveButtonDec.Enabled = !save_state;
             tenButton.Enabled = !save_state;
             tenButtonDec.Enabled = !save_state;
-            //CalibrateButton.Enabled = save_state;
             TargetRATextBox.ReadOnly = save_state;
             TargetDecTextBox.ReadOnly = save_state;
         }
@@ -366,6 +366,11 @@ namespace ControlRoomApplication.Main
         }
 
         private void speedComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
         {
 
         }

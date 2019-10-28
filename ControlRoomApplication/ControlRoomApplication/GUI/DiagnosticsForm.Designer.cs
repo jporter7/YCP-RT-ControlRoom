@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -111,14 +111,14 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
-            this.lblCurrentElOrientation = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
+            this.lblCurrentElOrientation = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.rainRateLabel = new System.Windows.Forms.Label();
             this.barometricPressureLabel = new System.Windows.Forms.Label();
@@ -157,16 +157,16 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(6, 10);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(337, 178);
@@ -222,7 +222,7 @@
             // startTimeTextBox
             // 
             this.startTimeTextBox.Location = new System.Drawing.Point(16, 35);
-            this.startTimeTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.startTimeTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.startTimeTextBox.Name = "startTimeTextBox";
             this.startTimeTextBox.Size = new System.Drawing.Size(76, 20);
             this.startTimeTextBox.TabIndex = 8;
@@ -230,7 +230,7 @@
             // endTimeTextBox
             // 
             this.endTimeTextBox.Location = new System.Drawing.Point(16, 87);
-            this.endTimeTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.endTimeTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.endTimeTextBox.Name = "endTimeTextBox";
             this.endTimeTextBox.Size = new System.Drawing.Size(76, 20);
             this.endTimeTextBox.TabIndex = 9;
@@ -238,7 +238,7 @@
             // statusTextBox
             // 
             this.statusTextBox.Location = new System.Drawing.Point(123, 35);
-            this.statusTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.statusTextBox.Name = "statusTextBox";
             this.statusTextBox.Size = new System.Drawing.Size(102, 20);
             this.statusTextBox.TabIndex = 10;
@@ -283,7 +283,7 @@
             // 
             this.radioButton1.AutoSize = true;
             this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(9, 115);
+            this.radioButton1.Location = new System.Drawing.Point(11, 123);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(59, 17);
             this.radioButton1.TabIndex = 16;
@@ -295,7 +295,7 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(84, 115);
+            this.radioButton2.Location = new System.Drawing.Point(86, 123);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(75, 17);
             this.radioButton2.TabIndex = 17;
@@ -351,9 +351,9 @@
             this.warningLabel.ForeColor = System.Drawing.Color.Chartreuse;
             this.warningLabel.Location = new System.Drawing.Point(17, 39);
             this.warningLabel.Name = "warningLabel";
-            this.warningLabel.Size = new System.Drawing.Size(104, 16);
+            this.warningLabel.Size = new System.Drawing.Size(108, 16);
             this.warningLabel.TabIndex = 22;
-            this.warningLabel.Text = "warning Label";
+            this.warningLabel.Text = "Warning Label";
             this.warningLabel.Visible = false;
             // 
             // fanLabel
@@ -363,9 +363,9 @@
             this.fanLabel.ForeColor = System.Drawing.Color.Chartreuse;
             this.fanLabel.Location = new System.Drawing.Point(17, 16);
             this.fanLabel.Name = "fanLabel";
-            this.fanLabel.Size = new System.Drawing.Size(72, 16);
+            this.fanLabel.Size = new System.Drawing.Size(77, 16);
             this.fanLabel.TabIndex = 23;
-            this.fanLabel.Text = "fan Label";
+            this.fanLabel.Text = "Fan Label";
             this.fanLabel.Visible = false;
             // 
             // lblShutdown
@@ -375,9 +375,9 @@
             this.lblShutdown.ForeColor = System.Drawing.Color.Chartreuse;
             this.lblShutdown.Location = new System.Drawing.Point(17, 64);
             this.lblShutdown.Name = "lblShutdown";
-            this.lblShutdown.Size = new System.Drawing.Size(111, 16);
+            this.lblShutdown.Size = new System.Drawing.Size(117, 16);
             this.lblShutdown.TabIndex = 27;
-            this.lblShutdown.Text = "shutdownLabel";
+            this.lblShutdown.Text = "Shutdown Label";
             this.lblShutdown.Visible = false;
             // 
             // selectDemo
@@ -619,7 +619,7 @@
             // 
             // btnAddOneEncoder
             // 
-            this.btnAddOneEncoder.Location = new System.Drawing.Point(140, 18);
+            this.btnAddOneEncoder.Location = new System.Drawing.Point(112, 18);
             this.btnAddOneEncoder.Name = "btnAddOneEncoder";
             this.btnAddOneEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddOneEncoder.TabIndex = 41;
@@ -629,7 +629,7 @@
             // 
             // btnAddFiveEncoder
             // 
-            this.btnAddFiveEncoder.Location = new System.Drawing.Point(180, 18);
+            this.btnAddFiveEncoder.Location = new System.Drawing.Point(152, 18);
             this.btnAddFiveEncoder.Name = "btnAddFiveEncoder";
             this.btnAddFiveEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddFiveEncoder.TabIndex = 42;
@@ -639,7 +639,7 @@
             // 
             // btnAddXEncoder
             // 
-            this.btnAddXEncoder.Location = new System.Drawing.Point(219, 18);
+            this.btnAddXEncoder.Location = new System.Drawing.Point(191, 18);
             this.btnAddXEncoder.Name = "btnAddXEncoder";
             this.btnAddXEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddXEncoder.TabIndex = 43;
@@ -649,7 +649,7 @@
             // 
             // btnSubtractOneEncoder
             // 
-            this.btnSubtractOneEncoder.Location = new System.Drawing.Point(141, 48);
+            this.btnSubtractOneEncoder.Location = new System.Drawing.Point(113, 48);
             this.btnSubtractOneEncoder.Name = "btnSubtractOneEncoder";
             this.btnSubtractOneEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractOneEncoder.TabIndex = 44;
@@ -659,7 +659,7 @@
             // 
             // btnSubtractFiveEncoder
             // 
-            this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(180, 48);
+            this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(152, 48);
             this.btnSubtractFiveEncoder.Name = "btnSubtractFiveEncoder";
             this.btnSubtractFiveEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractFiveEncoder.TabIndex = 45;
@@ -669,7 +669,7 @@
             // 
             // btnSubtractXEncoder
             // 
-            this.btnSubtractXEncoder.Location = new System.Drawing.Point(219, 48);
+            this.btnSubtractXEncoder.Location = new System.Drawing.Point(191, 48);
             this.btnSubtractXEncoder.Name = "btnSubtractXEncoder";
             this.btnSubtractXEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractXEncoder.TabIndex = 46;
@@ -711,7 +711,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(219, 55);
+            this.button1.Location = new System.Drawing.Point(191, 55);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(33, 24);
             this.button1.TabIndex = 54;
@@ -720,7 +720,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(180, 55);
+            this.button2.Location = new System.Drawing.Point(152, 55);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(33, 24);
             this.button2.TabIndex = 53;
@@ -729,7 +729,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(140, 55);
+            this.button3.Location = new System.Drawing.Point(112, 55);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(33, 24);
             this.button3.TabIndex = 52;
@@ -738,7 +738,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(219, 25);
+            this.button4.Location = new System.Drawing.Point(191, 25);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(33, 24);
             this.button4.TabIndex = 51;
@@ -747,7 +747,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(180, 25);
+            this.button5.Location = new System.Drawing.Point(152, 25);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(33, 24);
             this.button5.TabIndex = 50;
@@ -756,7 +756,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(141, 25);
+            this.button6.Location = new System.Drawing.Point(113, 25);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(33, 24);
             this.button6.TabIndex = 49;
@@ -887,7 +887,7 @@
             // 
             this.MCU_Statui.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.MCU_Statui.Location = new System.Drawing.Point(71, 5);
-            this.MCU_Statui.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MCU_Statui.Margin = new System.Windows.Forms.Padding(2);
             this.MCU_Statui.Name = "MCU_Statui";
             this.MCU_Statui.RowTemplate.Height = 24;
             this.MCU_Statui.Size = new System.Drawing.Size(491, 449);
@@ -918,7 +918,7 @@
             this.tabPage1.Controls.Add(this.label21);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(639, 458);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Appointment Control";
@@ -993,6 +993,72 @@
             this.splitContainer2.SplitterDistance = 84;
             this.splitContainer2.TabIndex = 18;
             // 
+            // groupBox1
+            // 
+            this.groupBox1.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox1.Controls.Add(this.startTimeTextBox);
+            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.statusTextBox);
+            this.groupBox1.Controls.Add(this.endTimeTextBox);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Location = new System.Drawing.Point(367, 10);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(239, 141);
+            this.groupBox1.TabIndex = 73;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Current Appointment";
+            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.BackColor = System.Drawing.Color.Gray;
+            this.tabPage2.Controls.Add(this.groupBox7);
+            this.tabPage2.Controls.Add(this.groupBox6);
+            this.tabPage2.Controls.Add(this.groupBox5);
+            this.tabPage2.Controls.Add(this.groupBox4);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(639, 458);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Sensor Data";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox7.Controls.Add(this.warningLabel);
+            this.groupBox7.Controls.Add(this.fanLabel);
+            this.groupBox7.Controls.Add(this.lblShutdown);
+            this.groupBox7.Location = new System.Drawing.Point(22, 349);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(202, 92);
+            this.groupBox7.TabIndex = 39;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Status Labels";
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox6.Controls.Add(this.lblAzimuthTemp);
+            this.groupBox6.Controls.Add(this.fldElTemp);
+            this.groupBox6.Controls.Add(this.label25);
+            this.groupBox6.Controls.Add(this.lblElevationTemp);
+            this.groupBox6.Controls.Add(this.label26);
+            this.groupBox6.Controls.Add(this.radioButton1);
+            this.groupBox6.Controls.Add(this.lblCurrentAzOrientation);
+            this.groupBox6.Controls.Add(this.fldAzTemp);
+            this.groupBox6.Controls.Add(this.lblCurrentElOrientation);
+            this.groupBox6.Controls.Add(this.radioButton2);
+            this.groupBox6.Location = new System.Drawing.Point(333, 279);
+            this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(300, 162);
+            this.groupBox6.TabIndex = 38;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Motor Sensor Data";
+            this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
+            // 
             // label25
             // 
             this.label25.AutoSize = true;
@@ -1038,72 +1104,6 @@
             this.lblCurrentElOrientation.TabIndex = 8;
             this.lblCurrentElOrientation.Text = "Current Elevation: ";
             // 
-            // groupBox1
-            // 
-            this.groupBox1.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox1.Controls.Add(this.startTimeTextBox);
-            this.groupBox1.Controls.Add(this.label8);
-            this.groupBox1.Controls.Add(this.statusTextBox);
-            this.groupBox1.Controls.Add(this.endTimeTextBox);
-            this.groupBox1.Controls.Add(this.label7);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Location = new System.Drawing.Point(367, 10);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(239, 141);
-            this.groupBox1.TabIndex = 73;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Current Appointment";
-            this.groupBox1.Enter += new System.EventHandler(this.groupBox1_Enter);
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.BackColor = System.Drawing.Color.Gray;
-            this.tabPage2.Controls.Add(this.groupBox7);
-            this.tabPage2.Controls.Add(this.groupBox6);
-            this.tabPage2.Controls.Add(this.groupBox5);
-            this.tabPage2.Controls.Add(this.groupBox4);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabPage2.Size = new System.Drawing.Size(639, 458);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Sensor Data";
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox7.Controls.Add(this.warningLabel);
-            this.groupBox7.Controls.Add(this.fanLabel);
-            this.groupBox7.Controls.Add(this.lblShutdown);
-            this.groupBox7.Location = new System.Drawing.Point(22, 349);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(202, 92);
-            this.groupBox7.TabIndex = 39;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Emergencey Labels";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox6.Controls.Add(this.lblAzimuthTemp);
-            this.groupBox6.Controls.Add(this.fldElTemp);
-            this.groupBox6.Controls.Add(this.label25);
-            this.groupBox6.Controls.Add(this.lblElevationTemp);
-            this.groupBox6.Controls.Add(this.label26);
-            this.groupBox6.Controls.Add(this.radioButton1);
-            this.groupBox6.Controls.Add(this.lblCurrentAzOrientation);
-            this.groupBox6.Controls.Add(this.fldAzTemp);
-            this.groupBox6.Controls.Add(this.lblCurrentElOrientation);
-            this.groupBox6.Controls.Add(this.radioButton2);
-            this.groupBox6.Location = new System.Drawing.Point(353, 294);
-            this.groupBox6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(280, 147);
-            this.groupBox6.TabIndex = 38;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Motor Sensor Data";
-            this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
-            // 
             // groupBox5
             // 
             this.groupBox5.BackColor = System.Drawing.Color.Gainsboro;
@@ -1119,9 +1119,9 @@
             this.groupBox5.Controls.Add(this.windDirLabel);
             this.groupBox5.Controls.Add(this.label11);
             this.groupBox5.Controls.Add(this.windSpeedLabel);
-            this.groupBox5.Location = new System.Drawing.Point(353, 17);
+            this.groupBox5.Location = new System.Drawing.Point(323, 17);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(280, 199);
+            this.groupBox5.Size = new System.Drawing.Size(310, 215);
             this.groupBox5.TabIndex = 37;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Weather Sensor Data";
@@ -1265,7 +1265,7 @@
             this.tabPage3.Controls.Add(this.txtTemperature);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(639, 458);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Other";
@@ -1278,7 +1278,7 @@
             this.ClientSize = new System.Drawing.Size(647, 500);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label15);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(614, 246);
             this.Name = "DiagnosticsForm";
             this.Text = "DiagnosticsForm";

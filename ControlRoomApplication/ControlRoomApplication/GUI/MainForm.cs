@@ -181,7 +181,7 @@ namespace ControlRoomApplication.Main
         private void AddConfigurationToDataGrid()
         {
             logger.Info("Adding Configuration To DataGrid");
-            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text, txtWSCOMPort.Text };
+            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text,txtMcuCOMPort.Text, txtWSCOMPort.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -443,6 +443,7 @@ namespace ControlRoomApplication.Main
             if (loopBackBox.Checked)
             {
                 this.txtWSCOMPort.Text = "221"; //default WS COM port # is 221
+                this.txtMcuCOMPort.Text = "222"; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
@@ -469,6 +470,26 @@ namespace ControlRoomApplication.Main
         }
 
         private void LocalIPCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtPLCIP_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
 
         }
