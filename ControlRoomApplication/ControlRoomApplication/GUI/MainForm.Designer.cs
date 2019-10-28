@@ -46,8 +46,14 @@
             this.LocalIPCombo = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtWSCOMPort = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -57,12 +63,12 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(708, 310);
+            this.button1.Location = new System.Drawing.Point(685, 376);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(187, 68);
+            this.button1.Size = new System.Drawing.Size(190, 40);
             this.button1.TabIndex = 6;
-            this.button1.Text = "Start Telescope";
+            this.button1.Text = "Start RT";
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -105,73 +111,70 @@
             this.button2.BackColor = System.Drawing.Color.Red;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.button2.Location = new System.Drawing.Point(464, 308);
+            this.button2.Location = new System.Drawing.Point(458, 376);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(187, 68);
+            this.button2.Size = new System.Drawing.Size(190, 40);
             this.button2.TabIndex = 7;
-            this.button2.Text = "Shut Down Telescope";
+            this.button2.Text = "Shut Down RT";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // txtPLCPort
             // 
             this.txtPLCPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtPLCPort.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.txtPLCPort.BackColor = System.Drawing.Color.Gainsboro;
             this.txtPLCPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtPLCPort.Location = new System.Drawing.Point(280, 150);
+            this.txtPLCPort.Location = new System.Drawing.Point(236, 75);
             this.txtPLCPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtPLCPort.Name = "txtPLCPort";
-            this.txtPLCPort.Size = new System.Drawing.Size(114, 29);
+            this.txtPLCPort.Size = new System.Drawing.Size(107, 29);
             this.txtPLCPort.TabIndex = 5;
-            this.txtPLCPort.Text = "PLC Port";
+            this.txtPLCPort.TextChanged += new System.EventHandler(this.txtPLCPort_TextChanged);
             this.txtPLCPort.GotFocus += new System.EventHandler(this.textBox1_Focus);
             // 
             // comboBox1
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Production SpectraCyber",
             "Simulated SpectraCyber"});
-            this.comboBox1.Location = new System.Drawing.Point(6, 105);
+            this.comboBox1.Location = new System.Drawing.Point(260, 30);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(237, 32);
+            this.comboBox1.Size = new System.Drawing.Size(234, 32);
             this.comboBox1.TabIndex = 2;
             this.comboBox1.Text = "Simulated SpectraCyber";
             // 
             // txtPLCIP
             // 
             this.txtPLCIP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtPLCIP.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.txtPLCIP.BackColor = System.Drawing.Color.Gainsboro;
             this.txtPLCIP.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtPLCIP.Location = new System.Drawing.Point(280, 108);
+            this.txtPLCIP.Location = new System.Drawing.Point(236, 40);
             this.txtPLCIP.Margin = new System.Windows.Forms.Padding(2);
             this.txtPLCIP.Name = "txtPLCIP";
-            this.txtPLCIP.Size = new System.Drawing.Size(114, 29);
+            this.txtPLCIP.Size = new System.Drawing.Size(107, 29);
             this.txtPLCIP.TabIndex = 4;
-            this.txtPLCIP.Text = "PLC IP";
             this.txtPLCIP.GotFocus += new System.EventHandler(this.textBox2_Focus);
             // 
             // comboBox2
             // 
             this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox2.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboBox2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
             "Production Weather Station",
             "Simulated Weather Station",
             "Test Weather Station"});
-            this.comboBox2.Location = new System.Drawing.Point(5, 150);
+            this.comboBox2.Location = new System.Drawing.Point(5, 76);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(252, 32);
+            this.comboBox2.Size = new System.Drawing.Size(247, 32);
             this.comboBox2.TabIndex = 1;
             this.comboBox2.Text = "Simulated Weather Station";
             // 
@@ -180,7 +183,7 @@
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.checkBox1.Location = new System.Drawing.Point(464, 260);
+            this.checkBox1.Location = new System.Drawing.Point(458, 325);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(228, 28);
@@ -192,20 +195,19 @@
             // 
             this.comboPLCType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboPLCType.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboPLCType.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboPLCType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboPLCType.FormattingEnabled = true;
             this.comboPLCType.Items.AddRange(new object[] {
             "Production PLC",
             "Scale PLC",
-            "Simulation PLC",
+            "Simulated PLC",
             "Test PLC"});
-            this.comboPLCType.Location = new System.Drawing.Point(280, 18);
+            this.comboPLCType.Location = new System.Drawing.Point(260, 76);
             this.comboPLCType.Margin = new System.Windows.Forms.Padding(2);
             this.comboPLCType.Name = "comboPLCType";
             this.comboPLCType.Size = new System.Drawing.Size(153, 32);
             this.comboPLCType.TabIndex = 3;
-            this.comboPLCType.Text = "Simulation PLC";
+            this.comboPLCType.Text = "Simulated PLC";
             // 
             // FreeControl
             // 
@@ -214,10 +216,10 @@
             this.FreeControl.Enabled = false;
             this.FreeControl.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.FreeControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.FreeControl.Location = new System.Drawing.Point(53, 308);
+            this.FreeControl.Location = new System.Drawing.Point(458, 258);
             this.FreeControl.Margin = new System.Windows.Forms.Padding(2);
             this.FreeControl.Name = "FreeControl";
-            this.FreeControl.Size = new System.Drawing.Size(320, 72);
+            this.FreeControl.Size = new System.Drawing.Size(417, 51);
             this.FreeControl.TabIndex = 9;
             this.FreeControl.Text = "Radio Telescope Control";
             this.FreeControl.UseVisualStyleBackColor = false;
@@ -227,14 +229,13 @@
             // 
             this.comboEncoderType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboEncoderType.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboEncoderType.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboEncoderType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboEncoderType.FormattingEnabled = true;
             this.comboEncoderType.Items.AddRange(new object[] {
             "Production Absolute Encoder",
             "Simulated Absolute Encoder",
             "Test Absolute Encoder"});
-            this.comboEncoderType.Location = new System.Drawing.Point(5, 60);
+            this.comboEncoderType.Location = new System.Drawing.Point(6, 123);
             this.comboEncoderType.Name = "comboEncoderType";
             this.comboEncoderType.Size = new System.Drawing.Size(237, 32);
             this.comboEncoderType.TabIndex = 12;
@@ -243,22 +244,22 @@
             // comboMicrocontrollerBox
             // 
             this.comboMicrocontrollerBox.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboMicrocontrollerBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.comboMicrocontrollerBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.comboMicrocontrollerBox.FormattingEnabled = true;
             this.comboMicrocontrollerBox.Items.AddRange(new object[] {
             "Production Microcontroller",
             "Simulated Microcontroller"});
-            this.comboMicrocontrollerBox.Location = new System.Drawing.Point(6, 17);
+            this.comboMicrocontrollerBox.Location = new System.Drawing.Point(6, 30);
             this.comboMicrocontrollerBox.Name = "comboMicrocontrollerBox";
             this.comboMicrocontrollerBox.Size = new System.Drawing.Size(237, 32);
             this.comboMicrocontrollerBox.TabIndex = 14;
             this.comboMicrocontrollerBox.Text = "Simulated Microcontroller";
+            this.comboMicrocontrollerBox.SelectedIndexChanged += new System.EventHandler(this.comboMicrocontrollerBox_SelectedIndexChanged);
             // 
             // loopBackBox
             // 
             this.loopBackBox.AutoSize = true;
-            this.loopBackBox.Location = new System.Drawing.Point(708, 255);
+            this.loopBackBox.Location = new System.Drawing.Point(756, 325);
             this.loopBackBox.Margin = new System.Windows.Forms.Padding(2);
             this.loopBackBox.Name = "loopBackBox";
             this.loopBackBox.Size = new System.Drawing.Size(93, 43);
@@ -271,15 +272,15 @@
             // 
             this.LocalIPCombo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LocalIPCombo.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.LocalIPCombo.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.LocalIPCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.LocalIPCombo.FormattingEnabled = true;
-            this.LocalIPCombo.Location = new System.Drawing.Point(280, 60);
+            this.LocalIPCombo.Location = new System.Drawing.Point(260, 123);
             this.LocalIPCombo.Margin = new System.Windows.Forms.Padding(2);
             this.LocalIPCombo.Name = "LocalIPCombo";
             this.LocalIPCombo.Size = new System.Drawing.Size(198, 32);
             this.LocalIPCombo.TabIndex = 16;
-            this.LocalIPCombo.Text = "this box IP";
+            this.LocalIPCombo.Text = "RT IP Address";
+            this.LocalIPCombo.SelectedIndexChanged += new System.EventHandler(this.LocalIPCombo_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -287,28 +288,83 @@
             this.label1.Location = new System.Drawing.Point(9, 7);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(291, 13);
+            this.label1.Size = new System.Drawing.Size(271, 13);
             this.label1.TabIndex = 17;
-            this.label1.Text = "Click on the IP adress of the RT to open the diagnostic view";
+            this.label1.Text = "Click on the IP adress of the RT to open diagnostic form";
             // 
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.Gray;
             this.groupBox1.Controls.Add(this.comboBox2);
             this.groupBox1.Controls.Add(this.LocalIPCombo);
-            this.groupBox1.Controls.Add(this.txtPLCPort);
             this.groupBox1.Controls.Add(this.comboMicrocontrollerBox);
-            this.groupBox1.Controls.Add(this.txtPLCIP);
             this.groupBox1.Controls.Add(this.comboEncoderType);
             this.groupBox1.Controls.Add(this.comboPLCType);
             this.groupBox1.Controls.Add(this.comboBox1);
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.groupBox1.Location = new System.Drawing.Point(417, 46);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(487, 187);
+            this.groupBox1.Size = new System.Drawing.Size(499, 170);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "RT Simulation settings";
+            this.groupBox1.Text = "RT Individual Component Simulation settings";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(7, 116);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(211, 18);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "Weather station COM port:";
+            this.label2.Click += new System.EventHandler(this.label2_Click);
+            // 
+            // txtWSCOMPort
+            // 
+            this.txtWSCOMPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.txtWSCOMPort.BackColor = System.Drawing.Color.Gainsboro;
+            this.txtWSCOMPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.txtWSCOMPort.Location = new System.Drawing.Point(236, 109);
+            this.txtWSCOMPort.Margin = new System.Windows.Forms.Padding(2);
+            this.txtWSCOMPort.Name = "txtWSCOMPort";
+            this.txtWSCOMPort.Size = new System.Drawing.Size(107, 29);
+            this.txtWSCOMPort.TabIndex = 18;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.Location = new System.Drawing.Point(7, 82);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(85, 18);
+            this.label3.TabIndex = 19;
+            this.label3.Text = " PLC port:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(6, 47);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(136, 18);
+            this.label4.TabIndex = 20;
+            this.label4.Text = " PLC IP Address:";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.txtPLCPort);
+            this.groupBox2.Controls.Add(this.label4);
+            this.groupBox2.Controls.Add(this.txtPLCIP);
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.label2);
+            this.groupBox2.Controls.Add(this.txtWSCOMPort);
+            this.groupBox2.Location = new System.Drawing.Point(12, 258);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(364, 165);
+            this.groupBox2.TabIndex = 21;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "System IP Address and Port Numbers";
             // 
             // MainForm
             // 
@@ -316,6 +372,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
             this.ClientSize = new System.Drawing.Size(919, 432);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.loopBackBox);
@@ -331,7 +388,8 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -355,5 +413,10 @@
         private System.Windows.Forms.ComboBox LocalIPCombo;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtWSCOMPort;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }

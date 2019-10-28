@@ -1,0 +1,9 @@
+﻿language: csharp
+
+dotnet: 4.6.1
+
+solution: ControlRoomApplication.sln
+
+script:
+    - cd ControlRoomApplicationTests.Test
+    - dotnet test

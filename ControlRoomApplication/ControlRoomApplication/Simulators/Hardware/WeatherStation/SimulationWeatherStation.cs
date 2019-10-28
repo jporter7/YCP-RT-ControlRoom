@@ -12,7 +12,10 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             : base(currentWindSpeedScanDelayMS)
         {
             Rand = new Random();
-        }
+
+            ReloadWeatherDataThread = null;
+            KeepReloadWeatherDataThreadAlive = false;
+    }
 
         /*protected override double ReadCurrentWindSpeedMPH()
         {
@@ -40,42 +43,42 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             return true;
         }
 
-        protected override float GetBarometricPressure()
+        public override float GetBarometricPressure()
         {
             return 0;
         }
 
-        protected override float GetOutsideTemp()
+        public override float GetOutsideTemp()
         {
             return 0;
         }
 
-        protected override float GetDewPoint()
+        public override float GetDewPoint()
         {
             return 0;
         }
 
-        protected override float GetWindChill()
+        public override float GetWindChill()
         {
             return 0;
         }
 
-        protected override int GetHumidity()
+        public override int GetHumidity()
         {
             return 0;
         }
 
-        protected override float GetTotalRain()
+        public override float GetTotalRain()
         {
             return 0;
         }
 
-        protected override float GetDailyRain()
+        public override float GetDailyRain()
         {
             return 0;
         }
 
-        protected override float GetMonthlyRain()
+        public override float GetMonthlyRain()
         {
             return 0;
         }
@@ -85,17 +88,17 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             return 0;
         }
 
-        protected override char GetWindDirection()
+        public override char GetWindDirection()
         {
             return ' ';
         }
 
-        protected override float GetRainRate()
+        public override float GetRainRate()
         {
             return 0;
         }
 
-        protected override int GetHeatIndex()
+        public override int GetHeatIndex()
         {
             return 0;
         }

@@ -181,7 +181,7 @@ namespace ControlRoomApplication.Main
         private void AddConfigurationToDataGrid()
         {
             logger.Info("Adding Configuration To DataGrid");
-            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text };
+            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text, txtWSCOMPort.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -223,6 +223,12 @@ namespace ControlRoomApplication.Main
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
         }
+        private void textBox3_Focus(object sender, EventArgs e)
+        {
+            logger.Info("textBox3_Focus Event");
+            txtWSCOMPort.Text = "";
+        }
+
 
         /// <summary>
         /// Erases the current text in the plc port textbox. 
@@ -323,7 +329,8 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        public AbstractEncoderReader build_encoder( AbstractPLCDriver plc ) {
+        public AbstractEncoderReader build_encoder( AbstractPLCDriver plc )
+        {
             return new SimulatedEncoder(plc , LocalIPCombo.Text , 1602 );
         }
 
@@ -379,7 +386,7 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info("Building ProductionWeatherStation");
-                    return new WeatherStation(1000);
+                    return new WeatherStation(1000, int.Parse(txtWSCOMPort.Text));
 
                 case 2:
                     logger.Error("The test weather station is not yet supported.");
@@ -413,18 +420,18 @@ namespace ControlRoomApplication.Main
         /// Generates a manual control form that allows manual control access to a radio telescope
         /// instance through the generated form.
         /// </summary>
-        private void ManualControl_Click(object sender, EventArgs e)
-        {
-            logger.Info("Manual Control Button Clicked");
-            ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope( .1 , .1 , 0 , 0 );
-            ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
-            // Create free control thread
-            Thread ManualControlThread = new Thread(() => manualControlWindow.ShowDialog())
-            {
-                Name = "Manual Control Thread"
-            };
-            ManualControlThread.Start();
-        }
+        //private void ManualControl_Click(object sender, EventArgs e)
+        //{
+        //    logger.Info("Manual Control Button Clicked");
+        //    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope( .1 , .1 , 0 , 0 );
+        //    ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+        //    // Create free control thread
+        //    Thread ManualControlThread = new Thread(() => manualControlWindow.ShowDialog())
+        //    {
+        //        Name = "Manual Control Thread"
+        //    };
+        //    ManualControlThread.Start();
+        //}
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -435,7 +442,8 @@ namespace ControlRoomApplication.Main
         {
             if (loopBackBox.Checked)
             {
-                this.txtPLCIP.Text = "127.0.0.1";
+                this.txtWSCOMPort.Text = "221"; //default WS COM port # is 221
+                this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("127.0.0.1"));
@@ -443,6 +451,26 @@ namespace ControlRoomApplication.Main
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
             this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
+        }
+
+        private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtPLCPort_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void LocalIPCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -83,16 +83,18 @@ namespace ControlRoomApplication.GUI
             MCU_Statui.Columns[0].HeaderText = "Status name";
             MCU_Statui.Columns[1].HeaderText = "value";
 
-            SetCurrentAzimuthAndElevation();
+            SetCurrentWeatherData();
             logger.Info("DiagnosticsForm Initalized");
         }
 
-        private void SetCurrentAzimuthAndElevation()
+        private void SetCurrentWeatherData()
         {
-            label3.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Azimuth.ToString("0.00");
-            label4.Text = controlRoom.RadioTelescopeControllers[rtId].GetCurrentOrientation().Elevation.ToString("0.00");
-             
-           
+            windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
+            windDirLabel.Text = "N";
+            dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
+            rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
+            outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
+            barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
         }
 
         /// <summary>
@@ -160,7 +162,14 @@ namespace ControlRoomApplication.GUI
          * ******this comment was added to make this easier to find*****
          * ************************************************************/
         private void timer1_Tick(object sender, System.EventArgs e)
-        { 
+        {
+            double currWindSpeed = controlRoom.WeatherStation.GetWindSpeed();//wind speed
+            //string currWindDir = "North"; //wind direction
+            //double currRainfall = 0.0; //Daily Rainfall
+            //double currRainRate = 0.0; //Rate of rainfall
+            //double currTempOutside = 0.0; //Outdoor Temperature(Celsius or Farenheight)
+            //double currBarPressure = 0.0; //Barometric pressure (Inches/mg)
+
             double elevationTemperature = 0.0;
             double azimuthTemperature = 0.0;
             //int ticks = azEncoder.CurrentPositionTicks;
@@ -171,8 +180,15 @@ namespace ControlRoomApplication.GUI
 
             _azEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Azimuth;//.GetCurrentOrientation().Azimuth;
             _elEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Elevation; //GetCurrentOrientation().Elevation;
-
-
+            
+            //-----------------------------Weather Station----------------------------------------------------
+            //windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
+            //windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
+            //dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
+            //rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
+            //outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
+            //barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
+            //------------------------------Azimuth and elevation motor temp sensors--------------------------
             elevationTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
             azimuthTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
 
@@ -306,7 +322,7 @@ namespace ControlRoomApplication.GUI
             //*/
             GetHardwareStatuses();
 
-            SetCurrentAzimuthAndElevation();
+            SetCurrentWeatherData();
 
             dataGridView1.Update();
 
@@ -512,6 +528,46 @@ namespace ControlRoomApplication.GUI
         }
 
         private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void windSpeedLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void windDirLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fldAzTemp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label25_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fldElTemp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void barometricPressureLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
         {
 
         }

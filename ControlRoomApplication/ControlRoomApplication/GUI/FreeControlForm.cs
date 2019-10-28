@@ -293,10 +293,11 @@ namespace ControlRoomApplication.Main
         private void editButton_Click(object sender, EventArgs e)
         {
             logger.Info("Edit Button Clicked");
-            bool save_state = (editButton.Text == "Save Position");
+            bool save_state = (editButton.Text == "Save Position" );
             if (save_state)
             {
                 editButton.Text = "Edit Position";
+                editButton.BackColor = System.Drawing.Color.Red;
                 double newRA;
                 double newDec;
                 double.TryParse(TargetRATextBox.Text, out newRA);
@@ -316,18 +317,55 @@ namespace ControlRoomApplication.Main
             else
             {
                 editButton.Text = "Save Position";
+                editButton.BackColor = System.Drawing.Color.LimeGreen;
             }
 
-            PosDecButton.Enabled = save_state;
-            NegDecButton.Enabled = save_state;
-            PosRAButton.Enabled = save_state;
-            NegRAButton.Enabled = save_state;
+            PosDecButton.Enabled = !save_state;
+            NegDecButton.Enabled = !save_state;
+            PosRAButton.Enabled = !save_state;
+            NegRAButton.Enabled = !save_state;
+            oneForthButton.Enabled = !save_state;
+            oneForthButtonDec.Enabled = !save_state;
+            oneButton.Enabled = !save_state;
+            oneButtonDec.Enabled = !save_state;
+            fiveButton.Enabled = !save_state;
+            fiveButtonDec.Enabled = !save_state;
+            tenButton.Enabled = !save_state;
+            tenButtonDec.Enabled = !save_state;
             //CalibrateButton.Enabled = save_state;
             TargetRATextBox.ReadOnly = save_state;
             TargetDecTextBox.ReadOnly = save_state;
         }
 
         private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void manualControlButton_Click(object sender, EventArgs e)
+        {
+            logger.Info("Activate Manual Control Clicked");
+            bool manual_save_state = (manualControlButton.Text == "Activate Manual Control");
+            if (!manual_save_state)
+            {
+                manualControlButton.Text = "Activate Manual Control";
+                manualControlButton.BackColor = System.Drawing.Color.Red;
+            }
+            else if(manual_save_state)
+            {
+                manualControlButton.Text = "Deactivate Manual Control";
+                manualControlButton.BackColor = System.Drawing.Color.LimeGreen;
+            }
+            plusElaButton.Enabled = manual_save_state;
+            plusJogButton.Enabled = manual_save_state;
+            subJogButton.Enabled = manual_save_state;
+            subElaButton.Enabled = manual_save_state;
+            ControledButtonRadio.Enabled = manual_save_state;
+            immediateRadioButton.Enabled = manual_save_state;
+            speedComboBox.Enabled = manual_save_state;
+        }
+
+        private void speedComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
