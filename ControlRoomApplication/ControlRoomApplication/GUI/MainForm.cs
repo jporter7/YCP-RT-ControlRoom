@@ -386,7 +386,7 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info("Building ProductionWeatherStation");
-                    return new WeatherStation(1000);
+                    return new WeatherStation(1000, int.Parse(txtWSCOMPort.Text));
 
                 case 2:
                     logger.Error("The test weather station is not yet supported.");

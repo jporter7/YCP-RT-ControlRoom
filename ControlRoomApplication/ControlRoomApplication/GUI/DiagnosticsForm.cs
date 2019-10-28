@@ -90,7 +90,7 @@ namespace ControlRoomApplication.GUI
         private void SetCurrentWeatherData()
         {
             windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
-            windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
+            windDirLabel.Text = "N";
             dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
             rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
             outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
