@@ -10,6 +10,7 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private Thread WeatherMonitoringThread;
+        private Thread EditScriptThread;
         private bool KeepWeatherMonitoringThreadAlive;
 
         public ControlRoomController(ControlRoom controlRoom)

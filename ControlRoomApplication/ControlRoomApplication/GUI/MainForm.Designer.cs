@@ -65,10 +65,10 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(685, 376);
+            this.button1.Location = new System.Drawing.Point(741, 376);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(190, 40);
+            this.button1.Size = new System.Drawing.Size(158, 40);
             this.button1.TabIndex = 6;
             this.button1.Text = "Start RT";
             this.button1.UseVisualStyleBackColor = false;
@@ -97,13 +97,13 @@
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
-            this.dataGridView1.GridColor = System.Drawing.Color.Wheat;
+            this.dataGridView1.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.dataGridView1.Location = new System.Drawing.Point(9, 23);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.RowTemplate.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(403, 230);
+            this.dataGridView1.Size = new System.Drawing.Size(512, 230);
             this.dataGridView1.TabIndex = 7;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -113,10 +113,10 @@
             this.button2.BackColor = System.Drawing.Color.Red;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.button2.Location = new System.Drawing.Point(458, 376);
+            this.button2.Location = new System.Drawing.Point(548, 376);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(190, 40);
+            this.button2.Size = new System.Drawing.Size(169, 40);
             this.button2.TabIndex = 7;
             this.button2.Text = "Shut Down RT";
             this.button2.UseVisualStyleBackColor = false;
@@ -127,7 +127,7 @@
             this.txtPLCPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.txtPLCPort.BackColor = System.Drawing.Color.Gainsboro;
             this.txtPLCPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtPLCPort.Location = new System.Drawing.Point(241, 59);
+            this.txtPLCPort.Location = new System.Drawing.Point(241, 58);
             this.txtPLCPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtPLCPort.Name = "txtPLCPort";
             this.txtPLCPort.Size = new System.Drawing.Size(107, 29);
@@ -156,7 +156,7 @@
             this.txtPLCIP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.txtPLCIP.BackColor = System.Drawing.Color.Gainsboro;
             this.txtPLCIP.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtPLCIP.Location = new System.Drawing.Point(241, 26);
+            this.txtPLCIP.Location = new System.Drawing.Point(241, 25);
             this.txtPLCIP.Margin = new System.Windows.Forms.Padding(2);
             this.txtPLCIP.Name = "txtPLCIP";
             this.txtPLCIP.Size = new System.Drawing.Size(107, 29);
@@ -186,7 +186,7 @@
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.checkBox1.Location = new System.Drawing.Point(458, 325);
+            this.checkBox1.Location = new System.Drawing.Point(548, 325);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(228, 28);
@@ -219,10 +219,10 @@
             this.FreeControl.Enabled = false;
             this.FreeControl.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.FreeControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.FreeControl.Location = new System.Drawing.Point(458, 258);
+            this.FreeControl.Location = new System.Drawing.Point(548, 258);
             this.FreeControl.Margin = new System.Windows.Forms.Padding(2);
             this.FreeControl.Name = "FreeControl";
-            this.FreeControl.Size = new System.Drawing.Size(417, 51);
+            this.FreeControl.Size = new System.Drawing.Size(360, 51);
             this.FreeControl.TabIndex = 9;
             this.FreeControl.Text = "Radio Telescope Control";
             this.FreeControl.UseVisualStyleBackColor = false;
@@ -262,7 +262,7 @@
             // loopBackBox
             // 
             this.loopBackBox.AutoSize = true;
-            this.loopBackBox.Location = new System.Drawing.Point(756, 325);
+            this.loopBackBox.Location = new System.Drawing.Point(806, 325);
             this.loopBackBox.Margin = new System.Windows.Forms.Padding(2);
             this.loopBackBox.Name = "loopBackBox";
             this.loopBackBox.Size = new System.Drawing.Size(93, 43);
@@ -305,7 +305,7 @@
             this.groupBox1.Controls.Add(this.comboPLCType);
             this.groupBox1.Controls.Add(this.comboBox1);
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.groupBox1.Location = new System.Drawing.Point(417, 46);
+            this.groupBox1.Location = new System.Drawing.Point(12, 258);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(499, 170);
             this.groupBox1.TabIndex = 18;
@@ -328,7 +328,7 @@
             this.txtWSCOMPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.txtWSCOMPort.BackColor = System.Drawing.Color.Gainsboro;
             this.txtWSCOMPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtWSCOMPort.Location = new System.Drawing.Point(241, 125);
+            this.txtWSCOMPort.Location = new System.Drawing.Point(241, 124);
             this.txtWSCOMPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtWSCOMPort.Name = "txtWSCOMPort";
             this.txtWSCOMPort.Size = new System.Drawing.Size(107, 29);
@@ -339,7 +339,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(7, 60);
+            this.label3.Location = new System.Drawing.Point(6, 58);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(85, 18);
             this.label3.TabIndex = 19;
@@ -367,9 +367,9 @@
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.txtWSCOMPort);
-            this.groupBox2.Location = new System.Drawing.Point(12, 258);
+            this.groupBox2.Location = new System.Drawing.Point(545, 41);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(364, 165);
+            this.groupBox2.Size = new System.Drawing.Size(354, 164);
             this.groupBox2.TabIndex = 21;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "System IP Address and Port Numbers";
@@ -378,7 +378,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(7, 99);
+            this.label5.Location = new System.Drawing.Point(7, 98);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(93, 18);
             this.label5.TabIndex = 21;
@@ -389,7 +389,7 @@
             this.txtMcuCOMPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.txtMcuCOMPort.BackColor = System.Drawing.Color.Gainsboro;
             this.txtMcuCOMPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtMcuCOMPort.Location = new System.Drawing.Point(241, 92);
+            this.txtMcuCOMPort.Location = new System.Drawing.Point(241, 91);
             this.txtMcuCOMPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtMcuCOMPort.Name = "txtMcuCOMPort";
             this.txtMcuCOMPort.Size = new System.Drawing.Size(107, 29);

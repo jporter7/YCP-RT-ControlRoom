@@ -74,10 +74,13 @@ namespace ControlRoomApplication.Main
 
             DatabaseOperations.DeleteLocalDatabase();
             logger.Info("<--------------- Control Room Application Started --------------->");
-            dataGridView1.ColumnCount = 3;
+            dataGridView1.ColumnCount = 5;
             dataGridView1.Columns[0].HeaderText = "ID";
             dataGridView1.Columns[1].HeaderText = "PLC IP";
             dataGridView1.Columns[2].HeaderText = "PLC Port";
+            dataGridView1.Columns[3].HeaderText = "MCU Port";
+            dataGridView1.Columns[4].HeaderText = "WS Port";
+            //dataGridView1.Columns[3].HeaderText = "MCU Port";
 
             AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
@@ -442,8 +445,8 @@ namespace ControlRoomApplication.Main
         {
             if (loopBackBox.Checked)
             {
-                this.txtWSCOMPort.Text = "221"; //default WS COM port # is 221
-                this.txtMcuCOMPort.Text = "222"; //default MCU Port
+                this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
+                this.txtMcuCOMPort.Text = "221"; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
