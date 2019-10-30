@@ -133,7 +133,7 @@ namespace ControlRoomApplication.Entities
         public abstract float GetDailyRain();
         public abstract float GetMonthlyRain();
         public abstract float GetWindSpeed();
-        public abstract char GetWindDirection();
+        public abstract String GetWindDirection();
         public abstract float GetRainRate();
         public abstract int GetHeatIndex();
 
