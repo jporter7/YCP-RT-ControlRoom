@@ -25,7 +25,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
         private struct Weather_Data
         {
             public float windSpeed;
-            public char windDirection;
+            public String windDirection;
             public float dailyRain;
             public float rainRate;
             public float outsideTemp;
@@ -37,7 +37,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             public float monthlyRain;
             public float heatIndex;
 
-            public Weather_Data (float windSpeedIN, char windDirectionIN, float dailyRainIN, float rainRateIN,
+            public Weather_Data (float windSpeedIN, String windDirectionIN, float dailyRainIN, float rainRateIN,
                                     float outsideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
                                     float outsideHumidityIN, float totalRainIN, float monthlyRainIN, float heatIndexIN) {
                 windSpeed = windSpeedIN;
@@ -100,7 +100,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             : base(currentWindSpeedScanDelayMS)
         {
 
-            data = new Weather_Data(0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            data = new Weather_Data(0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
  
             InitializeStation(commPort);
 
@@ -244,7 +244,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             return data.monthlyRain;
         }
 
-        public override char GetWindDirection()
+        public override String GetWindDirection()
         { 
             return data.windDirection;
         }
