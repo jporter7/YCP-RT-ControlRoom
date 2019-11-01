@@ -26,6 +26,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
         {
             public float windSpeed;
             public String windDirection;
+            public float windDirectionDegrees;
             public float dailyRain;
             public float rainRate;
             public float outsideTemp;
@@ -37,11 +38,12 @@ namespace ControlRoomApplication.Entities.WeatherStation
             public float monthlyRain;
             public float heatIndex;
 
-            public Weather_Data (float windSpeedIN, String windDirectionIN, float dailyRainIN, float rainRateIN,
+            public Weather_Data (float windSpeedIN, String windDirectionIN, float windDirectionDegreesIN, float dailyRainIN, float rainRateIN,
                                     float outsideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
                                     float outsideHumidityIN, float totalRainIN, float monthlyRainIN, float heatIndexIN) {
                 windSpeed = windSpeedIN;
                 windDirection = windDirectionIN;
+                windDirectionDegrees = windDirectionDegreesIN;
                 dailyRain = dailyRainIN;
                 rainRate = rainRateIN;
                 outsideTemp = outsideTempIN;
@@ -55,7 +57,10 @@ namespace ControlRoomApplication.Entities.WeatherStation
             }
         };
 
-       
+        private String[] windDirections = { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
+                                                "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"};
+
+
 
         // declarations of all methods we will use in the dll
 
@@ -69,7 +74,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetTotalRain_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetDailyRain_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetMonthlyRain_V();
-        [DllImport("VantageProDll242\\VantagePro.dll")] public static extern char GetWindDirStr_V();
+        [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short GetWindDir_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetRainRate_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern int GetHeatIndex_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short GetModelNo_V();
@@ -100,7 +105,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             : base(currentWindSpeedScanDelayMS)
         {
 
-            data = new Weather_Data(0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            data = new Weather_Data(0, " ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
  
             InitializeStation(commPort);
 
@@ -152,7 +157,8 @@ namespace ControlRoomApplication.Entities.WeatherStation
                 if (LoadCurrentVantageData_V() != COM_ERROR)
                 {
                     data.windSpeed = GetWindSpeed_V();
-                   // data.windDirection = GetWindDirStr_V();
+                    data.windDirectionDegrees = GetWindDir_V();
+                    data.windDirection = ConvertWindDirDegreesToStr(data.windDirectionDegrees);
                     data.dailyRain = GetDailyRain_V();
                     data.rainRate = GetRainRate_V();
                     data.outsideTemp = GetOutsideTemp_V();
@@ -257,6 +263,22 @@ namespace ControlRoomApplication.Entities.WeatherStation
         public override int GetHeatIndex()
         {
             return (int)data.heatIndex;
+        }
+
+        private string ConvertWindDirDegreesToStr(float degrees)
+        {
+            double leftBoundary = 348.75;
+            double rightBoundary = 11.25;
+
+            for(int i = 0; i < windDirections.Length ; i++)
+            {
+                if (degrees > (leftBoundary+(22.5*i)) % 360 && degrees < rightBoundary+(22.5 * i))
+                {
+                    return windDirections[i - 1];
+                }
+            }
+
+            return "";
         }
     }
 }
