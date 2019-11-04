@@ -40,9 +40,10 @@ namespace ControlRoomApplication.GUI
 
         DateTime currentTempDate = DateTime.Now;
         DateTime currentEncodDate = DateTime.Now;
- 
+
         /***********DEMO MODE VARIABLES END*********/
-    
+
+        bool celOrFar;
        
         double _azEncoderDegrees = 0;
         double _elEncoderDegrees = 0;
@@ -332,7 +333,12 @@ namespace ControlRoomApplication.GUI
 
             }
             
-            
+            if(celOrFar)
+            {
+                elevationTemperature = (elevationTemperature - 32) * (5.0 / 9);
+                azimuthTemperature = (azimuthTemperature - 32) * (5.0 / 9);
+            }
+
             fldElTemp.Text = elevationTemperature.ToString();
             fldAzTemp.Text = azimuthTemperature.ToString();
 
