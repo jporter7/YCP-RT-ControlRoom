@@ -30,9 +30,9 @@ namespace ControlRoomApplication.Simulators.Hardware
 
         public double GetAzimuthAngle()
         {
-            if (_elAngle < SimulationConstants.MIN_AZIMUTH_ANGLE)
+            if (_azAngle < SimulationConstants.MIN_AZIMUTH_ANGLE)
                 leftOrRight = true;
-            else if (_elAngle > SimulationConstants.MAX_AZIMUTH_ANGLE)
+            else if (_azAngle > SimulationConstants.MAX_AZIMUTH_ANGLE)
                 leftOrRight = false;
 
             return ReadAzimuthAngleDemo();
@@ -78,6 +78,16 @@ namespace ControlRoomApplication.Simulators.Hardware
         public void SetAzimuthAngle(double azAngle)
         {
             _azAngle = azAngle;
+        }
+
+        public bool getUpOrDown()
+        {
+            return upOrDown;
+        }
+
+        public bool getLeftOrRight()
+        {
+            return leftOrRight;
         }
 
 
