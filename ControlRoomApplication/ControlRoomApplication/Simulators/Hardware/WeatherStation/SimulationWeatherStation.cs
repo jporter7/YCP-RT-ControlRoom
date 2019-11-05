@@ -81,7 +81,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
                 data.windChill = (float)GetRandomValue(30, (40 - 30) / 6);
 
                 data.windDirection = windDirections[windDirectionCounter];
-                if (windDirectionCounter++ > 16)
+                if (++windDirectionCounter >= 16)
                 {
                     windDirectionCounter = 0;
                 }
