@@ -89,12 +89,12 @@ namespace ControlRoomApplication.GUI
 
         private void SetCurrentWeatherData()
         {
-            windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
+            windSpeedLabel.Text = Math.Round(controlRoom.WeatherStation.GetWindSpeed(), 2).ToString();
             windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection();
-            dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
-            rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
-            outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
-            barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
+            dailyRainfallLabel.Text = Math.Round(controlRoom.WeatherStation.GetDailyRain(), 2).ToString();
+            rainRateLabel.Text = Math.Round(controlRoom.WeatherStation.GetRainRate(), 2).ToString();
+            outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
+            barometricPressureLabel.Text = Math.Round(controlRoom.WeatherStation.GetBarometricPressure(), 2).ToString();
         }
 
         /// <summary>
@@ -568,6 +568,11 @@ namespace ControlRoomApplication.GUI
         }
 
         private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
         }
