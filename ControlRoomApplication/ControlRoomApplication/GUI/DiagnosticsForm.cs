@@ -25,22 +25,42 @@ namespace ControlRoomApplication.GUI
         //TemperatureSensor myTemp = new TemperatureSensor();
         FakeTempSensor myTemp = new FakeTempSensor();
         FakeEncoderSensor myEncoder = new FakeEncoderSensor();
+        FakeLimitSwitches elLowerLimit = new FakeLimitSwitches();
+        FakeLimitSwitches elUpperLimit = new FakeLimitSwitches();
+        FakeLimitSwitches azLowerLimit = new FakeLimitSwitches();
+        FakeLimitSwitches azUpperLimit = new FakeLimitSwitches();
+        FakeProximitySensors azUpperProx = new FakeProximitySensors();
+        FakeProximitySensors azCloserUpperProx = new FakeProximitySensors();
+        FakeProximitySensors azLowerProx = new FakeProximitySensors();
+        FakeProximitySensors elUpperProx = new FakeProximitySensors();
+        FakeProximitySensors elLowerProx = new FakeProximitySensors();
         /***********DEMO MODE VARIABLES**************/
         private double[] azEncDemo = {0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
         private double[] elEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //10 bits of precision, 2.8 
 
         DateTime currentTempDate = DateTime.Now;
- 
+        DateTime currentEncodDate = DateTime.Now;
+
         /***********DEMO MODE VARIABLES END*********/
-    
+
+        bool celOrFar;
        
         double _azEncoderDegrees = 0;
         double _elEncoderDegrees = 0;
         double _elevationTemp = 0;
         int _azEncoderTicks = 0;
         int _elEncoderTicks = 0;
-        
-        
+
+        bool _azLowerLimit = false;
+        bool _azUpperLimit = false;
+        bool _elLowerLimit = false;
+        bool _elUpperLimit = false;
+        bool _azLowerProx = false;
+        bool _azUpperProx = false;
+        bool _azCloserUpperProx = false;
+        bool _elLowerProx = false;
+        bool _elUpperProx = false;
+
         bool warningSent = false;
         bool shutdownSent = false;
         
@@ -89,12 +109,12 @@ namespace ControlRoomApplication.GUI
 
         private void SetCurrentWeatherData()
         {
-            windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
+            windSpeedLabel.Text = Math.Round(controlRoom.WeatherStation.GetWindSpeed(), 2).ToString();
             windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection();
-            dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
-            rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
-            outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
-            barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
+            dailyRainfallLabel.Text = Math.Round(controlRoom.WeatherStation.GetDailyRain(), 2).ToString();
+            rainRateLabel.Text = Math.Round(controlRoom.WeatherStation.GetRainRate(), 2).ToString();
+            outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
+            barometricPressureLabel.Text = Math.Round(controlRoom.WeatherStation.GetBarometricPressure(), 2).ToString();
         }
 
         /// <summary>
@@ -217,13 +237,79 @@ namespace ControlRoomApplication.GUI
                     currentTempDate = DateTime.Now;
                 }
 
-                // Simulating Encoder SensorSS
+                // Simulating Encoder Sensors
+                TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
+
+                if(elapsedEncodTime.TotalSeconds > 15)
+                {
+                    if (myEncoder.getLeftOrRight() == true && (myEncoder.GetAzimuthAngle() < 340 && myEncoder.GetAzimuthAngle() > 15))
+                        myEncoder.SetAzimuthAngle(340);
+                    else if (myEncoder.getLeftOrRight() == false && (myEncoder.GetAzimuthAngle() > 15 && myEncoder.GetAzimuthAngle() < 340))
+                        myEncoder.SetAzimuthAngle(15);
+
+                    if (myEncoder.getUpOrDown() == true && (myEncoder.GetElevationAngle() < 80 && myEncoder.GetElevationAngle() > 0))
+                        myEncoder.SetElevationAngle(80);
+                    else if (myEncoder.getUpOrDown() == false && (myEncoder.GetElevationAngle() > 0 && myEncoder.GetElevationAngle() < 80))
+                        myEncoder.SetElevationAngle(0);
+
+                    currentEncodDate = DateTime.Now;
+                }
+
                 _azEncoderDegrees = myEncoder.GetAzimuthAngle();
                 _elEncoderDegrees = myEncoder.GetElevationAngle();
 
                 _azEncoderTicks = (int)(_azEncoderDegrees * 11.38);
                 _elEncoderTicks = (int)(_elEncoderDegrees * 2.8);
-                
+
+                // Azimuth Limit Switch sim logic
+                if (_azEncoderDegrees < -5)
+                    _azLowerLimit = true;
+                else if (_azEncoderDegrees > 365)
+                    _azUpperLimit = true;
+                else
+                {
+                    _azLowerLimit = false;
+                    _azUpperLimit = false;
+                }
+
+                // Elevation Limit Switch sim logic
+                if (_elEncoderDegrees < -15)
+                    _elLowerLimit = true;
+                else if (_elEncoderDegrees > 93)
+                    _elUpperLimit = true;
+                else
+                {
+                    _elLowerLimit = false;
+                    _elUpperLimit = false;
+                }
+
+                // Azimuth Proximity Sensor Logic
+                if (_azEncoderDegrees < 10)
+                    _azLowerProx = true;
+                else if (_azEncoderDegrees > 345)
+                {
+                    _azUpperProx = true;
+                    if (_azEncoderDegrees > 355)
+                        _azCloserUpperProx = true;
+                }
+                else
+                {
+                    _azLowerProx = false;
+                    _azUpperProx = false;
+                    _azCloserUpperProx = false;
+                }
+
+                // Elevation Proximity Logic
+                if (_elEncoderDegrees < -5)
+                    _elLowerProx = true;
+                else if (_elEncoderDegrees > 85)
+                    _elUpperProx = true;
+                else
+                {
+                    _elLowerProx = false;
+                    _elUpperProx = false;
+                }
+
 
             }
             else
@@ -233,16 +319,48 @@ namespace ControlRoomApplication.GUI
 
                 _azEncoderTicks = 0;
                 _elEncoderTicks = 0;
+
+                _azLowerLimit = false;
+                _azUpperLimit = false;
+                _elLowerLimit = false;
+                _elUpperLimit = false;
+
+                _azLowerProx = false;
+                _azUpperProx = false;
+                _azCloserUpperProx = false;
+                _elLowerProx = false;
+                _elUpperProx = false;
+
             }
             
-            
+            if(celOrFar)
+            {
+                elevationTemperature = (elevationTemperature - 32) * (5.0 / 9);
+                azimuthTemperature = (azimuthTemperature - 32) * (5.0 / 9);
+            }
+
             fldElTemp.Text = elevationTemperature.ToString();
             fldAzTemp.Text = azimuthTemperature.ToString();
-            lblAzEncoderDegrees.Text = _azEncoderDegrees.ToString();
-            lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
-            lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
-            lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
+            lblAzEncoderDegrees.Text = _azEncoderDegrees.ToString();
+            lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
+
+            lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
+            lblElEncoderTicks.Text = _elEncoderTicks.ToString();
+            
+            /** Proximity and Limit Switches based on encoder pos **/
+            lblAzLimStatus1.Text = _azLowerLimit.ToString();
+            lblAzLimStatus2.Text = _azUpperLimit.ToString();
+
+            lblElLimStatus1.Text = _elLowerLimit.ToString();
+            lblElLimStatus2.Text = _elUpperLimit.ToString();
+
+            lblAzProxStatus1.Text = _azLowerProx.ToString();
+            lblAzProxStatus2.Text = _azUpperProx.ToString();
+            lblAzProxStatus3.Text = _azCloserUpperProx.ToString();
+
+            lblEleProx1.Text = _elLowerProx.ToString();
+            lblEleProx2.Text = _elUpperProx.ToString();
 
             /*** Temperature Logic Start***/
 
@@ -573,6 +691,11 @@ namespace ControlRoomApplication.GUI
         }
 
         private void MCU_Statui_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
         }
