@@ -690,6 +690,11 @@ namespace ControlRoomApplication.GUI
 
         }
 
+        private void MCU_Statui_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
 

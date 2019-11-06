@@ -1,7 +1,10 @@
 ﻿using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.GUI;
+//using ControlRoomApplication.GUI;
 using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ControlRoomApplication.Main
@@ -13,9 +16,14 @@ namespace ControlRoomApplication.Main
         public double Increment { get; set; }
         public CoordinateCalculationController CoordCalc { set; get; }
         public ControlRoom controlRoom { get; set; }
+       // private ControlRoomController MainControlRoomController { get; set; }
+        private Thread ControlRoomThread { get; set; }
         public int rtId { get; set; }
+        private static int current_rt_id;
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public bool freeEditActive;
+        public bool manualControlActive;
 
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
@@ -42,6 +50,12 @@ namespace ControlRoomApplication.Main
             //Calibrate Move
             CalibrateMove();
 
+            // If the main control room controller hasn't been initialized, initialize it.
+            //if (ControlRoomController == null)
+            //{
+            //    logger.Info("Initializing ControlRoomController");
+            //    ControlRoomController = new ControlRoomController(new ControlRoom());
+            //}
             logger.Info("FreeControl Form Initalized");
         }
 
@@ -50,6 +64,8 @@ namespace ControlRoomApplication.Main
             logger.Info("FreeControl Form Closing");
             timer1.Enabled = false;
         }
+       // logger.Info("Adding RadioTelescope Controller");
+       //MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
 
         private void PosDecButton_Click(object sender, EventArgs e)
         {
@@ -266,10 +282,10 @@ namespace ControlRoomApplication.Main
 
         private void UpdateIncrementButtons()
         {
-            oneForthButton.BackColor = System.Drawing.Color.LightGray;
-            oneButton.BackColor = System.Drawing.Color.LightGray;
-            fiveButton.BackColor = System.Drawing.Color.LightGray;
-            tenButton.BackColor = System.Drawing.Color.LightGray;
+            //oneForthButton.BackColor = System.Drawing.Color.LightGray;
+            //oneButton.BackColor = System.Drawing.Color.LightGray;
+            //fiveButton.BackColor = System.Drawing.Color.LightGray;
+            //tenButton.BackColor = System.Drawing.Color.LightGray;
 
             switch (Increment)
             {
@@ -294,10 +310,14 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Edit Button Clicked");
             bool save_state = (editButton.Text == "Save Position" );
+            freeEditActive = !freeEditActive;
             if (save_state)
             {
                 editButton.Text = "Edit Position";
                 editButton.BackColor = System.Drawing.Color.Red;
+                freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                decIncGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                RAIncGroupbox.BackColor = System.Drawing.Color.DarkGray;
                 double newRA;
                 double newDec;
                 double.TryParse(TargetRATextBox.Text, out newRA);
@@ -318,6 +338,9 @@ namespace ControlRoomApplication.Main
             {
                 editButton.Text = "Save Position";
                 editButton.BackColor = System.Drawing.Color.LimeGreen;
+                freeControlGroupbox.BackColor = System.Drawing.Color.Gainsboro;
+                decIncGroupbox.BackColor = System.Drawing.Color.Gray;
+                RAIncGroupbox.BackColor = System.Drawing.Color.Gray;
             }
 
             PosDecButton.Enabled = !save_state;
@@ -332,7 +355,6 @@ namespace ControlRoomApplication.Main
             fiveButtonDec.Enabled = !save_state;
             tenButton.Enabled = !save_state;
             tenButtonDec.Enabled = !save_state;
-            //CalibrateButton.Enabled = save_state;
             TargetRATextBox.ReadOnly = save_state;
             TargetDecTextBox.ReadOnly = save_state;
         }
@@ -346,15 +368,26 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Activate Manual Control Clicked");
             bool manual_save_state = (manualControlButton.Text == "Activate Manual Control");
+            //manualControlActive = !manualControlActive
             if (!manual_save_state)
             {
                 manualControlButton.Text = "Activate Manual Control";
                 manualControlButton.BackColor = System.Drawing.Color.Red;
+                manualGroupBox.BackColor = System.Drawing.Color.DarkGray;
+                //plusElaButton.BackColor = System.Drawing.Color.DarkGray;
+                //plusJogButton.BackColor = System.Drawing.Color.DarkGray;
+                //subElaButton.BackColor = System.Drawing.Color.DarkGray;
+                //subJogButton.BackColor = System.Drawing.Color.DarkGray;
             }
             else if(manual_save_state)
             {
                 manualControlButton.Text = "Deactivate Manual Control";
                 manualControlButton.BackColor = System.Drawing.Color.LimeGreen;
+                manualGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+                //plusElaButton.BackColor = System.Drawing.Color.DarkGray;
+                //plusJogButton.BackColor = System.Drawing.Color.DarkGray;
+                //subElaButton.BackColor = System.Drawing.Color.DarkGray;
+                //subJogButton.BackColor = System.Drawing.Color.DarkGray;
             }
             plusElaButton.Enabled = manual_save_state;
             plusJogButton.Enabled = manual_save_state;
@@ -366,6 +399,26 @@ namespace ControlRoomApplication.Main
         }
 
         private void speedComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            logger.Info("Edit Scripts Button Clicked");
+
+            editTestForm editTestForm = new editTestForm();
+            //EditScriptsForm editScriptsForm = new EditScriptsForm(MainControlRoomController.ControlRoom, current_rt_id);
+            editTestForm.Show();
+     
+        }
+
+        private void RAIncGroupbox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void manualGroupBox_Enter(object sender, EventArgs e)
         {
 
         }

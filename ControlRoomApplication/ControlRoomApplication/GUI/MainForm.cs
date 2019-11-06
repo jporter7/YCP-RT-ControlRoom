@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Main
         public List<RadioTelescopeController> ProgramRTControllerList { get; set; }
         public List<AbstractPLCDriver> ProgramPLCDriverList { get; set; }
         public List<ControlRoomController> ProgramControlRoomControllerList { get; set; }
-        private ControlRoomController MainControlRoomController { get; set; }
+        public ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         private Thread MicroctrlServerThread { get; set; }
         private CancellationTokenSource CancellationSource { get; set; }
@@ -74,10 +74,13 @@ namespace ControlRoomApplication.Main
 
             DatabaseOperations.DeleteLocalDatabase();
             logger.Info("<--------------- Control Room Application Started --------------->");
-            dataGridView1.ColumnCount = 3;
+            dataGridView1.ColumnCount = 5;
             dataGridView1.Columns[0].HeaderText = "ID";
             dataGridView1.Columns[1].HeaderText = "PLC IP";
             dataGridView1.Columns[2].HeaderText = "PLC Port";
+            dataGridView1.Columns[3].HeaderText = "MCU Port";
+            dataGridView1.Columns[4].HeaderText = "WS Port";
+            //dataGridView1.Columns[3].HeaderText = "MCU Port";
 
             AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
@@ -181,7 +184,7 @@ namespace ControlRoomApplication.Main
         private void AddConfigurationToDataGrid()
         {
             logger.Info("Adding Configuration To DataGrid");
-            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text, txtWSCOMPort.Text };
+            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text,txtMcuCOMPort.Text, txtWSCOMPort.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -258,7 +261,8 @@ namespace ControlRoomApplication.Main
             try {
                 DiagnosticsForm diagnosticForm = new DiagnosticsForm( MainControlRoomController.ControlRoom , dataGridView1.CurrentCell.RowIndex );
                 diagnosticForm.Show();
-            } catch {
+            }
+            catch {
 
             }
         }
@@ -442,7 +446,8 @@ namespace ControlRoomApplication.Main
         {
             if (loopBackBox.Checked)
             {
-                this.txtWSCOMPort.Text = "221"; //default WS COM port # is 221
+                this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
+                this.txtMcuCOMPort.Text = "221"; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
@@ -469,6 +474,26 @@ namespace ControlRoomApplication.Main
         }
 
         private void LocalIPCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtPLCIP_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
 
         }
