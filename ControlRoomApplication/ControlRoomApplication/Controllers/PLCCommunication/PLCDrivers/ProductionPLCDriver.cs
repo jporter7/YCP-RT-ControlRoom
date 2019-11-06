@@ -354,6 +354,13 @@ namespace ControlRoomApplication.Controllers
             return false;
         }
 
+        public override bool Stow()
+        {
+            Orientation stow = new Orientation(0, 90);
+
+            return Move_to_orientation(stow, read_Position());
+        }
+
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
             int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );
@@ -443,18 +450,11 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+        // Is called when the PLC and/or MCU is shutdown, stows the telescope
         public override bool Shutdown_PLC_MCU()
         {
-            Orientation stow = new Orientation(0, 0);///////////////////////change this and the value in TestShutdownRadioTelescope
-
-            Move_to_orientation(stow, read_Position());
-            if (is_test) { return true; }
-            throw new NotImplementedException();
+            return Stow();
         }
-
-
-
-
 
         public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
             return send_relative_move_sync( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );

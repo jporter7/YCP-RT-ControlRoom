@@ -83,6 +83,11 @@ namespace ControlRoomApplication.Controllers
             return driver.SnowDump();
         }
 
+        public override bool Stow()
+        {
+            return driver.Stow();
+        }
+
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);

@@ -311,6 +311,11 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
+        public override bool Stow()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {
             throw new NotImplementedException();
 
