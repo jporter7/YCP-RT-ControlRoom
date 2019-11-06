@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Main
         public List<RadioTelescopeController> ProgramRTControllerList { get; set; }
         public List<AbstractPLCDriver> ProgramPLCDriverList { get; set; }
         public List<ControlRoomController> ProgramControlRoomControllerList { get; set; }
-        private ControlRoomController MainControlRoomController { get; set; }
+        public ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         private Thread MicroctrlServerThread { get; set; }
         private CancellationTokenSource CancellationSource { get; set; }
@@ -261,7 +261,8 @@ namespace ControlRoomApplication.Main
             try {
                 DiagnosticsForm diagnosticForm = new DiagnosticsForm( MainControlRoomController.ControlRoom , dataGridView1.CurrentCell.RowIndex );
                 diagnosticForm.Show();
-            } catch {
+            }
+            catch {
 
             }
         }

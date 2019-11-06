@@ -1,6 +1,8 @@
 ﻿using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.GUI;
+//using ControlRoomApplication.GUI;
 using System;
 using System.Threading;
 using System.Windows.Forms;
@@ -14,7 +16,7 @@ namespace ControlRoomApplication.Main
         public double Increment { get; set; }
         public CoordinateCalculationController CoordCalc { set; get; }
         public ControlRoom controlRoom { get; set; }
-        private ControlRoomController FreeControlRoomController { get; set; }
+       // private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         public int rtId { get; set; }
         private static int current_rt_id;
@@ -48,6 +50,12 @@ namespace ControlRoomApplication.Main
             //Calibrate Move
             CalibrateMove();
 
+            // If the main control room controller hasn't been initialized, initialize it.
+            //if (ControlRoomController == null)
+            //{
+            //    logger.Info("Initializing ControlRoomController");
+            //    ControlRoomController = new ControlRoomController(new ControlRoom());
+            //}
             logger.Info("FreeControl Form Initalized");
         }
 
@@ -57,7 +65,7 @@ namespace ControlRoomApplication.Main
             timer1.Enabled = false;
         }
        // logger.Info("Adding RadioTelescope Controller");
-       // MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
+       //MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
 
         private void PosDecButton_Click(object sender, EventArgs e)
         {
@@ -398,13 +406,11 @@ namespace ControlRoomApplication.Main
         private void button1_Click(object sender, EventArgs e)
         {
             logger.Info("Edit Scripts Button Clicked");
-            EditScriptsForm editScriptsWindow = new EditScriptsForm(FreeControlRoomController.ControlRoom, current_rt_id);
-            // Create free control thread
-            Thread EditScriptsThread = new Thread(() => editScriptsWindow.ShowDialog())
-            {
-                Name = "Edit Scripts Thread"
-            };
-            EditScriptsThread.Start();
+
+            editTestForm editTestForm = new editTestForm();
+            //EditScriptsForm editScriptsForm = new EditScriptsForm(MainControlRoomController.ControlRoom, current_rt_id);
+            editTestForm.Show();
+     
         }
 
         private void RAIncGroupbox_Enter(object sender, EventArgs e)

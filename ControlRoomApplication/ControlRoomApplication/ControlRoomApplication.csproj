@@ -239,6 +239,12 @@
     <Compile Include="GUI\DiagnosticsForm.Designer.cs">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\EditTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\EditTestForm.Designer.cs">
+      <DependentUpon>EditTestForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\RTControlForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -308,6 +314,9 @@
   <ItemGroup>
     <EmbeddedResource Include="GUI\DiagnosticsForm.resx">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\EditTestForm.resx">
+      <DependentUpon>EditTestForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\RTControlForm.resx">
       <DependentUpon>RTControlForm.cs</DependentUpon>

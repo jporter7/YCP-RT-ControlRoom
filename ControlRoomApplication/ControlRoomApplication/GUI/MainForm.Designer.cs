@@ -51,8 +51,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label5 = new System.Windows.Forms.Label();
             this.txtMcuCOMPort = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -65,10 +65,10 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(741, 376);
+            this.button1.Location = new System.Drawing.Point(738, 376);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(158, 40);
+            this.button1.Size = new System.Drawing.Size(161, 40);
             this.button1.TabIndex = 6;
             this.button1.Text = "Start RT";
             this.button1.UseVisualStyleBackColor = false;
@@ -101,6 +101,7 @@
             this.dataGridView1.Location = new System.Drawing.Point(9, 23);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.RowTemplate.ReadOnly = true;
             this.dataGridView1.Size = new System.Drawing.Size(512, 230);
@@ -113,12 +114,12 @@
             this.button2.BackColor = System.Drawing.Color.Red;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.button2.Location = new System.Drawing.Point(548, 376);
+            this.button2.Location = new System.Drawing.Point(545, 376);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(169, 40);
+            this.button2.Size = new System.Drawing.Size(171, 40);
             this.button2.TabIndex = 7;
-            this.button2.Text = "Shut Down RT";
+            this.button2.Text = "Shutdown RT";
             this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -374,16 +375,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "System IP Address and Port Numbers";
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(7, 98);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(93, 18);
-            this.label5.TabIndex = 21;
-            this.label5.Text = "MCU Port: ";
-            // 
             // txtMcuCOMPort
             // 
             this.txtMcuCOMPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -394,6 +385,16 @@
             this.txtMcuCOMPort.Name = "txtMcuCOMPort";
             this.txtMcuCOMPort.Size = new System.Drawing.Size(107, 29);
             this.txtMcuCOMPort.TabIndex = 22;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(7, 98);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(93, 18);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "MCU Port: ";
             // 
             // MainForm
             // 

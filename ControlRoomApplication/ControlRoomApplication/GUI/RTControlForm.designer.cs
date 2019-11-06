@@ -454,6 +454,12 @@
             // 
             this.comboBox1.BackColor = System.Drawing.Color.DarkGray;
             this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "Snow Dump",
+            "Stow Telescope",
+            "Full 360 Clockwise",
+            "Full 360 Counter-Clockwise",
+            "Calibrate Telescope"});
             this.comboBox1.Location = new System.Drawing.Point(20, 27);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(243, 21);
