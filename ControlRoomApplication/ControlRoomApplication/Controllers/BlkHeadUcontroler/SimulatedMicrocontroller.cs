@@ -20,6 +20,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         private List<int> Templocations = new List<int> { 0 , 1 , 3 };
         private List<int> ACClocations = new List<int> { 0 , 1 , 2 };
         private Thread simthread;
+        public MicroControllerData myData;
         /// <summary>
         ///Set the minimum and maximum temperature for the motors and set whether it will be a static run or a testing run
         /// </summary>
@@ -28,6 +29,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             _maxMotorTemperature = maxMotorTemperature;
             _stableOrTesting = motorSimType;
             count = 0;
+            myData = new MicroControllerData();
         }
 
         /// <summary>
@@ -63,15 +65,21 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             }
             else
             {
-                if (count < 10 || count > 15)
+                if (count < 10)
                 {
                     int index = rand.Next(Templocations.Count);
                     temperatureList[0] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
                 }
-                else
+                else if (count >= 10 && count <= 15)
                 {
                     int index = rand.Next(Templocations.Count);
                     temperatureList[0] = new { val = SimulationConstants.OVERHEAT_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
+                }
+                else if (count > 15)
+                {
+                    int index = rand.Next(Templocations.Count);
+                    temperatureList[0] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
+                    count = 0;
                 }
             }
 
