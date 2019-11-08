@@ -570,6 +570,16 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
+        public override bool Full_360_CCW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Full_360_CW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation , int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             throw new NotImplementedException();

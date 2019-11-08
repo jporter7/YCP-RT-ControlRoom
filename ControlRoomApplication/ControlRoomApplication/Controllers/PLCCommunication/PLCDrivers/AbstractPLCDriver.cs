@@ -79,6 +79,10 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool SnowDump();
 
+        public abstract bool Full_360_CCW_Rotation();
+
+        public abstract bool Full_360_CW_Rotation();
+
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
         public abstract bool Controled_stop(RadioTelescopeAxisEnum axis, bool both);

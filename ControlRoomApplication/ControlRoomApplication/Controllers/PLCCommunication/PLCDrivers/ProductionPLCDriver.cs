@@ -367,6 +367,33 @@ namespace ControlRoomApplication.Controllers
             return false;
         }
 
+        public override bool Full_360_CCW_Rotation()
+        {
+            Orientation current = read_Position();
+            Orientation start = new Orientation(360, 0);
+            Orientation finish = new Orientation(0, 0);
+
+            if(Move_to_orientation(start, current) && Move_to_orientation(finish, start))
+            {
+                return Move_to_orientation(current, finish);
+            }
+            return false;
+
+        }
+
+        public override bool Full_360_CW_Rotation()
+        {
+            Orientation current = read_Position();
+            Orientation start = new Orientation(0, 0);
+            Orientation finish = new Orientation(360, 0);
+
+            if (Move_to_orientation(start, current) && Move_to_orientation(finish, start))
+            {
+                return Move_to_orientation(current, finish);
+            }
+            return false;
+        }
+
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
             int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );

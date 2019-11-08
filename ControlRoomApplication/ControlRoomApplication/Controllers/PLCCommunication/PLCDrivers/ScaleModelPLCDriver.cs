@@ -311,6 +311,16 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
+        public override bool Full_360_CCW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Full_360_CW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {
             throw new NotImplementedException();
 
