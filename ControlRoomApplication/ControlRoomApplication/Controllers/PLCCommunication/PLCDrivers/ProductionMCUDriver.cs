@@ -550,7 +550,7 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Cancle_move()
+        public override bool Cancel_move()
         {
             throw new NotImplementedException();
         }
@@ -560,7 +560,7 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Calibrate()
+        public override bool Thermal_Calibrate()
         {
             throw new NotImplementedException();
         }

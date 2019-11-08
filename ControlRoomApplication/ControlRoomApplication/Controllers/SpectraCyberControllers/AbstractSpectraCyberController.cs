@@ -156,7 +156,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         // Perform a single scan, based on current mode
-        protected SpectraCyberResponse DoSpectraCyberScan()
+        public SpectraCyberResponse DoSpectraCyberScan()
         {
             SpectraCyberResponse Response = new SpectraCyberResponse();
 

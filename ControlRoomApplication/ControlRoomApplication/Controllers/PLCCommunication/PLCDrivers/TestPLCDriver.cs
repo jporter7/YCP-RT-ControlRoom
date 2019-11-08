@@ -75,9 +75,9 @@ namespace ControlRoomApplication.Controllers
             return driver.read_Position();
         }
 
-        public override bool Cancle_move()
+        public override bool Cancel_move()
         {
-            return driver.Cancle_move();
+            return driver.Cancel_move();
         }
 
         public override bool Shutdown_PLC_MCU()
@@ -85,9 +85,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Shutdown_PLC_MCU();
         }
 
-        public override bool Calibrate()
+        public override bool Thermal_Calibrate()
         {
-            return driver.Calibrate();
+            return driver.Thermal_Calibrate();
         }
 
         public override bool SnowDump()
@@ -276,7 +276,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                     case PLCCommandAndQueryTypeEnum.SHUTDOWN:
-                    case PLCCommandAndQueryTypeEnum.CALIBRATE:
+                    case PLCCommandAndQueryTypeEnum.THERMAL_CALIBRATE:
                         {
                             FinalResponseContainer[2] = 0x1;
                             break;

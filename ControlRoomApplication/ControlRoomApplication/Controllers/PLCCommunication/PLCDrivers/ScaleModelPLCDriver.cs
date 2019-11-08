@@ -215,7 +215,7 @@ namespace ControlRoomApplication.Controllers {
             return new Orientation();
         }
 
-        public override bool Cancle_move() {
+        public override bool Cancel_move() {
             return true;
 
         }
@@ -225,7 +225,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Calibrate() {
+        public override bool Thermal_Calibrate() {
             return true;
 
         }

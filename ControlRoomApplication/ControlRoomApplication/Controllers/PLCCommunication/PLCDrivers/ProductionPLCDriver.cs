@@ -101,7 +101,7 @@ namespace ControlRoomApplication.Controllers
 
         }
 
-
+       
 
         /// <summary>
         /// runs the modbus server to interface with the plc
@@ -331,9 +331,22 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        public override bool Calibrate() {//im uncertin what tasks we want this method to preform, this will likley have to be done at a higher level which involves the encoder or homing sensors
-            if(is_test) { return true; }
-            throw new NotImplementedException();
+        public override bool Thermal_Calibrate() {
+            Orientation current = read_Position();
+            Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
+
+            // read data
+            SpectraCyberResponse response = Parent.SpectraCyberController.DoSpectraCyberScan();
+            RFData rfResponse = RFData.GenerateFrom(response);
+
+            // move back to previous location
+            Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
+
+            //analyze data
+           
+
+            // return true if working correctly, false if not
+            return true;
         }
 
         /// <summary>
@@ -408,7 +421,7 @@ namespace ControlRoomApplication.Controllers
         /// clears the previos move comand from mthe PLC
         /// </summary>
         /// <returns></returns>
-        public override bool Cancle_move() {
+        public override bool Cancel_move() {
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
             return true;
         }
@@ -421,7 +434,7 @@ namespace ControlRoomApplication.Controllers
             };
             //MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
             //return true;
-            return Cancle_move();
+            return Cancel_move();
             /*
             ushort[] data = new ushort[] { 0x4 , 0x3 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 };
             if(both) {

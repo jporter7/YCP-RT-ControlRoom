@@ -16,6 +16,7 @@ namespace ControlRoomApplication.Controllers
 
         protected Thread ClientManagmentThread;
 
+        protected RadioTelescope Parent;
 
 
         /// <summary>
@@ -54,17 +55,27 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public abstract bool RequestStopAsyncAcceptingClientsAndJoin();
 
+        public RadioTelescope GetParent()
+        {
+            return Parent;
+        }
+
+        public void SetParent(RadioTelescope rt)
+        {
+            Parent = rt;
+        }
+
         public abstract void Bring_down();
 
         public abstract bool Test_Conection();
 
         public abstract Orientation read_Position();
 
-        public abstract bool Cancle_move();
+        public abstract bool Cancel_move();
 
         public abstract bool Shutdown_PLC_MCU();
 
-        public abstract bool Calibrate();
+        public abstract bool Thermal_Calibrate();
 
         public abstract bool SnowDump();
 
