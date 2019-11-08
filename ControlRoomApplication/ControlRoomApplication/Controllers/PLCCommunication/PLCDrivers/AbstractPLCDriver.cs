@@ -83,6 +83,10 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Full_360_CW_Rotation();
 
+        public abstract bool Recover_CW_Hardstop();
+
+        public abstract bool Recover_CCW_Hardstop();
+
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
         public abstract bool Controled_stop(RadioTelescopeAxisEnum axis, bool both);

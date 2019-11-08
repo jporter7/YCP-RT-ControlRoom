@@ -580,6 +580,16 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
+        public override bool Recover_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Recover_CCW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation , int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             throw new NotImplementedException();

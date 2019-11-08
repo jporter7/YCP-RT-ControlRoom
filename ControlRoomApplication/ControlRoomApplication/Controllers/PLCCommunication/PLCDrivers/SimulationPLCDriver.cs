@@ -93,6 +93,16 @@ namespace ControlRoomApplication.Controllers
             return driver.Full_360_CW_Rotation();
         }
 
+        public override bool Recover_CW_Hardstop()
+        {
+            return driver.Recover_CW_Hardstop();
+        }
+
+        public override bool Recover_CCW_Hardstop()
+        {
+            return driver.Recover_CCW_Hardstop();
+        }
+
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);

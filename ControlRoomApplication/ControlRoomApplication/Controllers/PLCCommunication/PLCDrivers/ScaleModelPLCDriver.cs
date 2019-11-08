@@ -321,6 +321,16 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
+        public override bool Recover_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Recover_CCW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {
             throw new NotImplementedException();
 
