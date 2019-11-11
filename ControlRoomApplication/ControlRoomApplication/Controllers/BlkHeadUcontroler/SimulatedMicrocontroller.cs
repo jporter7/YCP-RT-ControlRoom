@@ -17,10 +17,10 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         private double _maxMotorTemperature;
         private bool _stableOrTesting;
         private int count;
-        private List<int> Templocations = new List<int> { 0 , 1 , 3 };
         private List<int> ACClocations = new List<int> { 0 , 1 , 2 };
         private Thread simthread;
-        public MicroControllerData myData;
+        public Sensors.TempSensorData tempData;
+
         /// <summary>
         ///Set the minimum and maximum temperature for the motors and set whether it will be a static run or a testing run
         /// </summary>
@@ -29,7 +29,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             _maxMotorTemperature = maxMotorTemperature;
             _stableOrTesting = motorSimType;
             count = 0;
-            myData = new MicroControllerData();
+            tempData = new Sensors.TempSensorData();
         }
 
         /// <summary>
@@ -46,39 +46,64 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 interpretData( generateTemperatureData() );
                 interpretData( generateAccelerometerData() );
                 Thread.Sleep( 1000 );
-                count++;
             }
         }
 
 
         /// <summary>
-        /// Creates a data point with a random value, the time it was created (now), and type: temp
+        /// Creates a data point with a constant value, the time it was created (now), and location: 0 for azimuth and 1 for elevation
         /// </summary>
         /// Returns SensorData containing the value, time, and type, and an int representing location
         public dynamic generateTemperatureData() {
-            var temperatureList = new dynamic[1];
+            var temperatureList = new dynamic[2];
 
             if (_stableOrTesting)
             {
-                    int index = rand.Next(Templocations.Count);
-                    temperatureList[0] = new {val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
+                Console.WriteLine("Stable");
+                Console.WriteLine("Count is at: " + count);
+                temperatureList[0] = new {val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 0 };
+                temperatureList[1] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
+
+
+
+                tempData.azimuthTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                tempData.elevationTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+
+                count = 0;
             }
             else
             {
+                Console.WriteLine("Testing");
+                Console.WriteLine("Count is at: " + count);
+
                 if (count < 10)
                 {
-                    int index = rand.Next(Templocations.Count);
-                    temperatureList[0] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
+                    temperatureList[0] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 0 };
+                    temperatureList[1] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
+
+                    tempData.azimuthTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                    tempData.elevationTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+
+                    count++;
                 }
                 else if (count >= 10 && count <= 15)
                 {
-                    int index = rand.Next(Templocations.Count);
-                    temperatureList[0] = new { val = SimulationConstants.OVERHEAT_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
+                    temperatureList[0] = new { val = SimulationConstants.OVERHEAT_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 0 };
+                    temperatureList[1] = new { val = SimulationConstants.OVERHEAT_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
+
+                    tempData.azimuthTemp = SimulationConstants.OVERHEAT_MOTOR_TEMP;
+                    tempData.elevationTemp = SimulationConstants.OVERHEAT_MOTOR_TEMP;
+
+                    count++;
                 }
-                else if (count > 15)
+                else
                 {
-                    int index = rand.Next(Templocations.Count);
-                    temperatureList[0] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = Templocations[index] };
+                    temperatureList[0] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 0 };
+                    temperatureList[1] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
+
+                    tempData.azimuthTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                    tempData.elevationTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+
                     count = 0;
                 }
             }

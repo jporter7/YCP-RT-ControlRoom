@@ -324,7 +324,7 @@ namespace ControlRoomApplication.GUI
                 _elUpperProx = false;
 
             }
-            
+
             /** Conversion from fahrenheit to celsius (Currently not being used) 
             if(celOrFar)
             {
@@ -333,8 +333,11 @@ namespace ControlRoomApplication.GUI
             }**/
 
             /** Temperature of motors **/
-            fldElTemp.Text = simMicroController.myData.elevationTemp.ToString();
-            fldAzTemp.Text = simMicroController.myData.azimuthTemp.ToString();
+            Console.WriteLine("The azimuth temp from the struct is: " + simMicroController.tempData.azimuthTemp.ToString());
+            Console.WriteLine("The elevation temp from the struct is: " + simMicroController.tempData.azimuthTemp.ToString());
+
+            fldElTemp.Text = simMicroController.tempData.elevationTemp.ToString();
+            fldAzTemp.Text = simMicroController.tempData.azimuthTemp.ToString();
 
             /** Encoder Position in both degrees and motor ticks **/
             lblAzEncoderDegrees.Text = _azEncoderDegrees.ToString();
