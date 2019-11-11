@@ -136,7 +136,7 @@
             this.editDiagScriptsButton = new System.Windows.Forms.Button();
             this.diagnosticScriptCombo = new System.Windows.Forms.ComboBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.insideTempLabel = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MCU_Statui)).BeginInit();
@@ -1141,7 +1141,7 @@
             // groupBox5
             // 
             this.groupBox5.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox5.Controls.Add(this.label4);
+            this.groupBox5.Controls.Add(this.insideTempLabel);
             this.groupBox5.Controls.Add(this.label23);
             this.groupBox5.Controls.Add(this.rainRateLabel);
             this.groupBox5.Controls.Add(this.barometricPressureLabel);
@@ -1358,15 +1358,15 @@
             this.groupBox9.TabIndex = 77;
             this.groupBox9.TabStop = false;
             // 
-            // label4
+            // insideTempLabel
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(257, 122);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 20);
-            this.label4.TabIndex = 23;
-            this.label4.Text = "76.4";
+            this.insideTempLabel.AutoSize = true;
+            this.insideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.insideTempLabel.Location = new System.Drawing.Point(257, 122);
+            this.insideTempLabel.Name = "insideTempLabel";
+            this.insideTempLabel.Size = new System.Drawing.Size(40, 20);
+            this.insideTempLabel.TabIndex = 23;
+            this.insideTempLabel.Text = "76.4";
             // 
             // label23
             // 
@@ -1533,7 +1533,7 @@
         private System.Windows.Forms.Button editDiagScriptsButton;
         private System.Windows.Forms.ComboBox diagnosticScriptCombo;
         private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label insideTempLabel;
         private System.Windows.Forms.Label label23;
     }
 }
