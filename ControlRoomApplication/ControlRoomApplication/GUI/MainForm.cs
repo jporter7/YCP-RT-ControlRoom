@@ -87,6 +87,12 @@ namespace ControlRoomApplication.Main
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
+
+            if(comboBox2.Text == "Test Weather Station")
+            {
+                createWSButton.Enabled = true;
+            }
+
             logger.Info("MainForm Initalized");
         }
 
@@ -97,7 +103,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         /// <param name="sender"> Object specifying the sender of this Event. </param>
         /// <param name="e"> The eventargs from the button being clicked on the GUI. </param>
-        private void button1_Click(object sender, EventArgs e)
+        private void startButton_Click(object sender, EventArgs e)
         {
             logger.Info("Start Telescope Button Clicked");
             if (txtPLCPort.Text != null 
@@ -125,12 +131,14 @@ namespace ControlRoomApplication.Main
                     logger.Info("Disabling ManualControl and FreeControl");
                     //ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
+                    createWSButton.Enabled = false;
                 }
                 else
                 {
                     logger.Info("Enabling ManualControl and FreeControl");
                    // ManualControl.Enabled = true;
                     FreeControl.Enabled = true;
+                    
                 }
 
                 // If the main control room controller hasn't been initialized, initialize it.

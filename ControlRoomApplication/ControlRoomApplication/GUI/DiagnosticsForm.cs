@@ -505,7 +505,7 @@ namespace ControlRoomApplication.GUI
 
         private void button1_Click(object sender, System.EventArgs e)
         {
-            _elevationTemp -= 1;
+
         }
 
         private void button2_Click(object sender, System.EventArgs e)
@@ -696,6 +696,61 @@ namespace ControlRoomApplication.GUI
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElevationTemp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElProx1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblEleProx1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzProx2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzProxStatus2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElLimit1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElLimStatus1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzLimit2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fanLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label24_Click(object sender, EventArgs e)
         {
 
         }
