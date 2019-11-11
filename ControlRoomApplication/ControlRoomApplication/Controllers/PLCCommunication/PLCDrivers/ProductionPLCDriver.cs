@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -335,15 +336,31 @@ namespace ControlRoomApplication.Controllers
             Orientation current = read_Position();
             Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
 
+            // start a timer so we can have a time variable
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             // read data
             SpectraCyberResponse response = Parent.SpectraCyberController.DoSpectraCyberScan();
+
+            // end the timer
+            stopWatch.Stop();
+            double time = stopWatch.Elapsed.TotalSeconds;
+
             RFData rfResponse = RFData.GenerateFrom(response);
 
             // move back to previous location
             Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
 
-            //analyze data
-           
+            // analyze data
+            // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
+            double weinConstant = 2.8977729;
+            double planckConstant = 6.62607004 * Math.Pow(10, - 34);
+            double speedConstant = 299792458;
+            double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
+
+            // check against weather station reading
+            
 
             // return true if working correctly, false if not
             return true;

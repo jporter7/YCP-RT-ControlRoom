@@ -55,5 +55,17 @@ namespace ControlRoomApplication.Entities
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
         public AbstractMicrocontroller Micro_controler { get; set; }
         public AbstractEncoderReader Encoders { get; set; }
+
+        protected RadioTelescopeController Parent;
+
+        public RadioTelescopeController GetParent()
+        {
+            return Parent;
+        }
+
+        public void SetParent(RadioTelescopeController rt)
+        {
+            Parent = rt;
+        }
     }
 }
