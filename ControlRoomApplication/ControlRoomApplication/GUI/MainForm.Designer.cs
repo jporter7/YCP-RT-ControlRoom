@@ -30,7 +30,7 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.button1 = new System.Windows.Forms.Button();
+            this.startButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button2 = new System.Windows.Forms.Button();
             this.txtPLCPort = new System.Windows.Forms.TextBox();
@@ -53,26 +53,27 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.txtMcuCOMPort = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.createWSButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button1
+            // startButton
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.BackColor = System.Drawing.Color.LimeGreen;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(738, 376);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(161, 40);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Start RT";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.startButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.startButton.BackColor = System.Drawing.Color.LimeGreen;
+            this.startButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.startButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
+            this.startButton.ForeColor = System.Drawing.Color.Black;
+            this.startButton.Location = new System.Drawing.Point(729, 376);
+            this.startButton.Margin = new System.Windows.Forms.Padding(2);
+            this.startButton.Name = "startButton";
+            this.startButton.Size = new System.Drawing.Size(170, 40);
+            this.startButton.TabIndex = 6;
+            this.startButton.Text = "Start RT";
+            this.startButton.UseVisualStyleBackColor = false;
+            this.startButton.Click += new System.EventHandler(this.startButton_Click);
             // 
             // dataGridView1
             // 
@@ -117,7 +118,7 @@
             this.button2.Location = new System.Drawing.Point(545, 376);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(171, 40);
+            this.button2.Size = new System.Drawing.Size(170, 40);
             this.button2.TabIndex = 7;
             this.button2.Text = "Shutdown RT";
             this.button2.UseVisualStyleBackColor = false;
@@ -187,7 +188,7 @@
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.checkBox1.Location = new System.Drawing.Point(548, 325);
+            this.checkBox1.Location = new System.Drawing.Point(545, 338);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(228, 28);
@@ -220,10 +221,10 @@
             this.FreeControl.Enabled = false;
             this.FreeControl.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.FreeControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.FreeControl.Location = new System.Drawing.Point(548, 258);
+            this.FreeControl.Location = new System.Drawing.Point(545, 269);
             this.FreeControl.Margin = new System.Windows.Forms.Padding(2);
             this.FreeControl.Name = "FreeControl";
-            this.FreeControl.Size = new System.Drawing.Size(360, 51);
+            this.FreeControl.Size = new System.Drawing.Size(354, 51);
             this.FreeControl.TabIndex = 9;
             this.FreeControl.Text = "Radio Telescope Control";
             this.FreeControl.UseVisualStyleBackColor = false;
@@ -263,7 +264,7 @@
             // loopBackBox
             // 
             this.loopBackBox.AutoSize = true;
-            this.loopBackBox.Location = new System.Drawing.Point(806, 325);
+            this.loopBackBox.Location = new System.Drawing.Point(806, 331);
             this.loopBackBox.Margin = new System.Windows.Forms.Padding(2);
             this.loopBackBox.Name = "loopBackBox";
             this.loopBackBox.Size = new System.Drawing.Size(93, 43);
@@ -396,12 +397,28 @@
             this.label5.TabIndex = 21;
             this.label5.Text = "MCU Port: ";
             // 
+            // createWSButton
+            // 
+            this.createWSButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.createWSButton.BackColor = System.Drawing.Color.LightGray;
+            this.createWSButton.Enabled = false;
+            this.createWSButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.createWSButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.createWSButton.Location = new System.Drawing.Point(545, 210);
+            this.createWSButton.Margin = new System.Windows.Forms.Padding(2);
+            this.createWSButton.Name = "createWSButton";
+            this.createWSButton.Size = new System.Drawing.Size(170, 51);
+            this.createWSButton.TabIndex = 22;
+            this.createWSButton.Text = "Create Production Weather Station";
+            this.createWSButton.UseVisualStyleBackColor = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
             this.ClientSize = new System.Drawing.Size(919, 432);
+            this.Controls.Add(this.createWSButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
@@ -410,7 +427,7 @@
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.startButton);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(921, 366);
             this.Name = "MainForm";
@@ -427,7 +444,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox txtPLCPort;
@@ -450,5 +467,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox txtMcuCOMPort;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button createWSButton;
     }
 }

@@ -67,5 +67,6 @@ namespace ControlRoomApplication.Entities
         {
             Parent = rt;
         }
+        public AbstractWeatherStation WeatherStation { get; set; }
     }
 }
