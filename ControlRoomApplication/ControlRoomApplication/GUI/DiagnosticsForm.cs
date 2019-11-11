@@ -333,8 +333,11 @@ namespace ControlRoomApplication.GUI
             }**/
 
             /** Temperature of motors **/
-            Console.WriteLine("The azimuth temp from the struct is: " + simMicroController.tempData.azimuthTemp.ToString());
-            Console.WriteLine("The elevation temp from the struct is: " + simMicroController.tempData.azimuthTemp.ToString());
+            Console.WriteLine("Azimuth temp: " + simMicroController.tempData.azimuthTemp.ToString());
+            Console.WriteLine("Azimuth temp time" + simMicroController.tempData.azimuthTempTime.ToString());
+
+            Console.WriteLine("Elevation temp: " + simMicroController.tempData.azimuthTemp.ToString());
+            Console.WriteLine("Elevation temp time" + simMicroController.tempData.elevationTempTime.ToString());
 
             fldElTemp.Text = simMicroController.tempData.elevationTemp.ToString();
             fldAzTemp.Text = simMicroController.tempData.azimuthTemp.ToString();

@@ -64,10 +64,11 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 temperatureList[0] = new {val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 0 };
                 temperatureList[1] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
 
-
-
                 tempData.azimuthTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                tempData.azimuthTempTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
                 tempData.elevationTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                tempData.elevationTempTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
                 count = 0;
             }
@@ -82,7 +83,10 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                     temperatureList[1] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
 
                     tempData.azimuthTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                    tempData.azimuthTempTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
                     tempData.elevationTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                    tempData.elevationTempTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
                     count++;
                 }
@@ -92,7 +96,10 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                     temperatureList[1] = new { val = SimulationConstants.OVERHEAT_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
 
                     tempData.azimuthTemp = SimulationConstants.OVERHEAT_MOTOR_TEMP;
+                    tempData.azimuthTempTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
                     tempData.elevationTemp = SimulationConstants.OVERHEAT_MOTOR_TEMP;
+                    tempData.elevationTempTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
                     count++;
                 }
@@ -102,7 +109,10 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                     temperatureList[1] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
 
                     tempData.azimuthTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                    tempData.azimuthTempTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
                     tempData.elevationTemp = SimulationConstants.STABLE_MOTOR_TEMP;
+                    tempData.elevationTempTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
                     count = 0;
                 }
