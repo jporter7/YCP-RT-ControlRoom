@@ -30,6 +30,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             public float dailyRain;
             public float rainRate;
             public float outsideTemp;
+            public float insideTemp;
             public float baromPressure;
             public float dewPoint;
             public float windChill;
@@ -39,7 +40,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             public float heatIndex;
 
             public Weather_Data (float windSpeedIN, String windDirectionIN, float windDirectionDegreesIN, float dailyRainIN, float rainRateIN,
-                                    float outsideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
+                                    float outsideTempIN, float insideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
                                     float outsideHumidityIN, float totalRainIN, float monthlyRainIN, float heatIndexIN) {
                 windSpeed = windSpeedIN;
                 windDirection = windDirectionIN;
@@ -47,6 +48,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
                 dailyRain = dailyRainIN;
                 rainRate = rainRateIN;
                 outsideTemp = outsideTempIN;
+                insideTemp = insideTempIN;
                 baromPressure = baromPressureIN;
                 dewPoint = dewPointIN;
                 windChill = windChillIN;
@@ -68,6 +70,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetWindSpeed_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetBarometer_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetOutsideTemp_V();
+        [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetInsideTemp_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetDewPt_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern float GetWindChill_V();
         [DllImport("VantageProDll242\\VantagePro.dll")] public static extern short GetOutsideHumidity_V();
@@ -105,7 +108,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
             : base(currentWindSpeedScanDelayMS)
         {
 
-            data = new Weather_Data(0, " ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            data = new Weather_Data(0, " ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
  
             InitializeStation(commPort);
 
@@ -218,6 +221,11 @@ namespace ControlRoomApplication.Entities.WeatherStation
         public override float GetOutsideTemp()
         {
             return data.outsideTemp;
+        }
+
+        public override float GetInsideTemp()
+        {
+            return data.insideTemp;
         }
 
         public override float GetDewPoint()

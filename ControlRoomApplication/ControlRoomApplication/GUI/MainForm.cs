@@ -28,6 +28,8 @@ namespace ControlRoomApplication.Main
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public AbstractWeatherStation lastCreatedProductionWeatherStation = null;
+
         enum TempSensorType
         {
             Production,
@@ -88,7 +90,7 @@ namespace ControlRoomApplication.Main
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
 
-            if(comboBox2.Text == "Test Weather Station")
+            if(comboBox2.Text == "Production Weather Station")
             {
                 createWSButton.Enabled = true;
             }
@@ -110,18 +112,7 @@ namespace ControlRoomApplication.Main
                 && txtPLCIP.Text != null 
                 && comboBox1.SelectedIndex > -1)
             {
-                current_rt_id++;
-                AbstractPLCDriver APLCDriver = BuildPLCDriver();
-                AbstractMicrocontroller ctrler= build_CTRL();
-                ctrler.BringUp();
-                AbstractEncoderReader encoder= build_encoder( APLCDriver );
-               RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder );
-                
-
-                // Add the RT/PLC driver pair and the RT controller to their respective lists
-                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
-                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
-                ProgramPLCDriverList.Add(APLCDriver);
+               
 
                 if (checkBox1.Checked)
                 {
@@ -145,8 +136,24 @@ namespace ControlRoomApplication.Main
                 if (MainControlRoomController == null)
                 {
                     logger.Info("Initializing ControlRoomController");
-                    MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                    if (lastCreatedProductionWeatherStation == null)
+                        MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                    else
+                        MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
                 }
+
+                current_rt_id++;
+                AbstractPLCDriver APLCDriver = BuildPLCDriver();
+                AbstractMicrocontroller ctrler = build_CTRL();
+                ctrler.BringUp();
+                AbstractEncoderReader encoder = build_encoder(APLCDriver);
+                RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder);
+                ARadioTelescope.WeatherStation = MainControlRoomController.ControlRoom.WeatherStation;
+
+                // Add the RT/PLC driver pair and the RT controller to their respective lists
+                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
+                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
+                ProgramPLCDriverList.Add(APLCDriver);
 
                 // Start plc server and attempt to connect to it.
                 logger.Info("Starting plc server and attempting to connect to it");
@@ -476,6 +483,9 @@ namespace ControlRoomApplication.Main
 
         }
 
+        private void comboBox2_Click(object sender, EventArgs e) { 
+}
+
         private void txtPLCPort_TextChanged(object sender, EventArgs e)
         {
 
@@ -504,6 +514,11 @@ namespace ControlRoomApplication.Main
         private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void createWSButton_Click(object sender, EventArgs e)
+        {
+            lastCreatedProductionWeatherStation = BuildWeatherStation();
         }
     }
 }
