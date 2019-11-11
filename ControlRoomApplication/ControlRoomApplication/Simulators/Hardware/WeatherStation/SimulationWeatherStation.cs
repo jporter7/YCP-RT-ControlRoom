@@ -71,6 +71,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             {
                 // redo all the data
                 data.outsideTemp = (float)GetRandomValue(58.44, (91 - 58.44) / 6);
+                data.insideTemp = (float)GetRandomValue(70, (80 - 70) / 6);
                 data.dewPoint = (float)GetRandomValue(48.43, (69 - 48.43) / 6);
                 data.outsideHumidity = (int)GetRandomValue(50, (100 - 50) / 6);
                 data.totalRain = (float)GetRandomValue(42, (54 - 42) / 6);
