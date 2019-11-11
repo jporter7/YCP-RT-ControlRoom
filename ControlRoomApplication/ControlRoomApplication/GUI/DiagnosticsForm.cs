@@ -21,11 +21,7 @@ namespace ControlRoomApplication.GUI
 
         private int demoIndex = 0;
         //private PLC PLC; This needs to be defined once I can get find the currect import
-
-        //TemperatureSensor myTemp = new TemperatureSensor();
-        SimulatedMicrocontroller simMicroController = new SimulatedMicrocontroller(SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
-
-        //FakeTempSensor myTemp = new FakeTempSensor();
+        
         FakeEncoderSensor myEncoder = new FakeEncoderSensor();
         FakeLimitSwitches elLowerLimit = new FakeLimitSwitches();
         FakeLimitSwitches elUpperLimit = new FakeLimitSwitches();
@@ -105,7 +101,7 @@ namespace ControlRoomApplication.GUI
             MCU_Statui.Columns[0].HeaderText = "Status name";
             MCU_Statui.Columns[1].HeaderText = "value";
 
-            simMicroController.BringUp();
+            controlRoom.RadioTelescopes[rtId].Micro_controler.BringUp();
 
             SetCurrentWeatherData();
             logger.Info("DiagnosticsForm Initalized");
@@ -133,10 +129,6 @@ namespace ControlRoomApplication.GUI
                 statuses[1] = "Online";
             }
         }
-
-
-       
-      
 
         public delegate void SetStartTimeTextCallback(string text);
         public void SetStartTimeText(string text)
@@ -225,7 +217,7 @@ namespace ControlRoomApplication.GUI
 
             if (selectDemo.Checked == true)
             {
-                simMicroController.setStableOrTesting(false);
+                controlRoom.RadioTelescopes[rtId].Micro_controler.setStableOrTesting(false);
 
                 // Simulating Encoder Sensors
                 TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
@@ -304,7 +296,7 @@ namespace ControlRoomApplication.GUI
             }
             else
             {
-                simMicroController.setStableOrTesting(true);
+                controlRoom.RadioTelescopes[rtId].Micro_controler.setStableOrTesting(true);
 
                 myEncoder.SetAzimuthAngle(0.0);
                 myEncoder.SetElevationAngle(0.0);
@@ -333,14 +325,11 @@ namespace ControlRoomApplication.GUI
             }**/
 
             /** Temperature of motors **/
-            Console.WriteLine("Azimuth temp: " + simMicroController.tempData.azimuthTemp.ToString());
-            Console.WriteLine("Azimuth temp time" + simMicroController.tempData.azimuthTempTime.ToString());
+            Console.WriteLine("Azimuth temp: " + controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString());
+            Console.WriteLine("Elevation temp: " + controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString());
 
-            Console.WriteLine("Elevation temp: " + simMicroController.tempData.azimuthTemp.ToString());
-            Console.WriteLine("Elevation temp time" + simMicroController.tempData.elevationTempTime.ToString());
-
-            fldElTemp.Text = simMicroController.tempData.elevationTemp.ToString();
-            fldAzTemp.Text = simMicroController.tempData.azimuthTemp.ToString();
+            fldElTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.elevationTemp.ToString();
+            fldAzTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString();
 
             /** Encoder Position in both degrees and motor ticks **/
             lblAzEncoderDegrees.Text = _azEncoderDegrees.ToString();

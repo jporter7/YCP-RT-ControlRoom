@@ -15,11 +15,9 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         Random rand = new Random();
         private double _minMotorTemperature;
         private double _maxMotorTemperature;
-        private bool _stableOrTesting;
         private int count;
         private List<int> ACClocations = new List<int> { 0 , 1 , 2 };
         private Thread simthread;
-        public Sensors.TempSensorData tempData;
 
         /// <summary>
         ///Set the minimum and maximum temperature for the motors and set whether it will be a static run or a testing run
@@ -27,7 +25,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         public SimulatedMicrocontroller( double minMotorTemperature , double maxMotorTemperature, bool motorSimType ) {
             _minMotorTemperature = minMotorTemperature;
             _maxMotorTemperature = maxMotorTemperature;
-            _stableOrTesting = motorSimType;
+            setStableOrTesting(motorSimType);
             count = 0;
             tempData = new Sensors.TempSensorData();
         }
@@ -57,7 +55,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         public dynamic generateTemperatureData() {
             var temperatureList = new dynamic[2];
 
-            if (_stableOrTesting)
+            if (getStableOrTesting())
             {
                 Console.WriteLine("Stable");
                 Console.WriteLine("Count is at: " + count);
@@ -136,16 +134,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             }
             var accelData = new { type = "acc" , data = list };
             return accelData;
-        }
-
-        public bool getStableOrTesting()
-        {
-            return _stableOrTesting;
-        }
-
-        public void setStableOrTesting(bool testOrNot)
-        {
-            _stableOrTesting = testOrNot;
         }
     }
 }

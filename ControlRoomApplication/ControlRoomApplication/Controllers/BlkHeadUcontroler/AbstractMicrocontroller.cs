@@ -16,6 +16,9 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
     /// 
     public abstract class AbstractMicrocontroller {
 
+        public Sensors.TempSensorData tempData;
+        private bool _stableOrTesting;
+
         public AbstractMicrocontroller()
         {
         }
@@ -66,5 +69,16 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 Console.WriteLine( e + "line 229" );
             }
         }
+
+        public bool getStableOrTesting()
+        {
+            return _stableOrTesting;
+        }
+
+        public void setStableOrTesting(bool testOrNot)
+        {
+            _stableOrTesting = testOrNot;
+        }
+
     }
 }

@@ -106,7 +106,7 @@ namespace ControlRoomApplication.Main
                 AbstractMicrocontroller ctrler= build_CTRL();
                 ctrler.BringUp();
                 AbstractEncoderReader encoder= build_encoder( APLCDriver );
-               RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder );
+                RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder );
                 
 
                 // Add the RT/PLC driver pair and the RT controller to their respective lists
@@ -346,7 +346,7 @@ namespace ControlRoomApplication.Main
 
                 default:
                     logger.Info( "Building SimulationPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100,true);
+                    return new SimulatedMicrocontroller( SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
             }
         }
 
