@@ -88,6 +88,36 @@ namespace ControlRoomApplication.Controllers
             return driver.Stow();
         }
 
+        public override bool HitAzimuthLeftLimitSwitch()
+        {
+            return driver.HitAzimuthLeftLimitSwitch();
+        }
+
+        public override bool HitAzimuthRightLimitSwitch()
+        {
+            return driver.HitAzimuthRightLimitSwitch();
+        }
+
+        public override bool HitElevationLowerLimitSwitch()
+        {
+            return driver.HitElevationLowerLimitSwitch();
+        }
+
+        public override bool HitElevationUpperLimitSwitch()
+        {
+            return driver.HitElevationUpperLimitSwitch();
+        }
+
+        public override bool RecoverFromLimitSwitch()
+        {
+            return driver.RecoverFromLimitSwitch();
+        }
+
+        public override bool FullElevationMove()
+        {
+            return driver.FullElevationMove();
+        }
+
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);

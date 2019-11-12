@@ -316,6 +316,36 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
+        public override bool HitAzimuthLeftLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitAzimuthRightLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitElevationLowerLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitElevationUpperLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool RecoverFromLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool FullElevationMove()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {
             throw new NotImplementedException();
 

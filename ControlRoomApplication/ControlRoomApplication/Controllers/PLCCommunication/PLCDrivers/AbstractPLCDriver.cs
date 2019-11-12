@@ -70,6 +70,18 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Stow();
 
+        public abstract bool HitAzimuthLeftLimitSwitch();
+
+        public abstract bool HitAzimuthRightLimitSwitch();
+
+        public abstract bool HitElevationLowerLimitSwitch();
+
+        public abstract bool HitElevationUpperLimitSwitch();
+
+        public abstract bool RecoverFromLimitSwitch();
+
+        public abstract bool FullElevationMove();
+
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
         public abstract bool Controled_stop(RadioTelescopeAxisEnum axis, bool both);
