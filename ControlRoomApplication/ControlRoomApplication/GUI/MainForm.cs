@@ -87,11 +87,15 @@ namespace ControlRoomApplication.Main
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
+          
+            // Initialize Button Settings 
 
-            if(comboBox2.Text == "Test Weather Station")
-            {
-                createWSButton.Enabled = true;
-            }
+            createWSButton.Enabled = true;
+            startButton.BackColor = System.Drawing.Color.Gainsboro;
+            startButton.Enabled = false;
+            shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
+            shutdownButton.Enabled = false;
+
 
             logger.Info("MainForm Initalized");
         }
@@ -106,6 +110,8 @@ namespace ControlRoomApplication.Main
         private void startButton_Click(object sender, EventArgs e)
         {
             logger.Info("Start Telescope Button Clicked");
+            shutdownButton.BackColor = System.Drawing.Color.Red;
+            shutdownButton.Enabled = true;
             if (txtPLCPort.Text != null 
                 && txtPLCIP.Text != null 
                 && comboBox1.SelectedIndex > -1)
@@ -131,7 +137,7 @@ namespace ControlRoomApplication.Main
                     logger.Info("Disabling ManualControl and FreeControl");
                     //ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
-                    createWSButton.Enabled = false;
+                   // createWSButton.Enabled = false;
                 }
                 else
                 {
@@ -452,6 +458,13 @@ namespace ControlRoomApplication.Main
 
         private void loopBackBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (comboBox2.Text != "Production Weather Station")
+            {
+                startButton.BackColor = System.Drawing.Color.LimeGreen;
+                startButton.Enabled = true;
+            }
+            
+
             if (loopBackBox.Checked)
             {
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
@@ -464,6 +477,12 @@ namespace ControlRoomApplication.Main
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
             this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
+        }
+
+        private void createWSButton_Click(object sender, EventArgs e)
+        {
+            startButton.BackColor = System.Drawing.Color.LimeGreen;
+            startButton.Enabled = true;
         }
 
         private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)

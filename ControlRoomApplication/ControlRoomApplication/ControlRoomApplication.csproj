@@ -259,11 +259,11 @@
     <Compile Include="GUI\RTControlForm.designer.cs">
       <DependentUpon>RTControlForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\EditScriptsForm.cs">
+    <Compile Include="GUI\ManualControl.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\EditScriptsForm.Designer.cs">
-      <DependentUpon>EditScriptsForm.cs</DependentUpon>
+    <Compile Include="GUI\ManualControl.Designer.cs">
+      <DependentUpon>ManualControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.cs" />
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.Designer.cs">
@@ -332,8 +332,8 @@
     <EmbeddedResource Include="GUI\RTControlForm.resx">
       <DependentUpon>RTControlForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\EditScriptsForm.resx">
-      <DependentUpon>EditScriptsForm.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\ManualControl.resx">
+      <DependentUpon>ManualControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

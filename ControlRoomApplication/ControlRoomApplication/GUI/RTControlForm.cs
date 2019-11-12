@@ -405,7 +405,7 @@ namespace ControlRoomApplication.Main
 
         private void button1_Click(object sender, EventArgs e)
         {
-            logger.Info("Edit Scripts Button Clicked");
+            logger.Info("Edit Control Scripts Button Clicked");
 
             editTestForm editTestForm = new editTestForm();
             //EditScriptsForm editScriptsForm = new EditScriptsForm(MainControlRoomController.ControlRoom, current_rt_id);
@@ -419,6 +419,11 @@ namespace ControlRoomApplication.Main
         }
 
         private void manualGroupBox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void subJogButton_Click(object sender, EventArgs e)
         {
 
         }

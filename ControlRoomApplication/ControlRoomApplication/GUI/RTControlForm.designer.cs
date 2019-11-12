@@ -623,6 +623,7 @@
             this.subJogButton.TabIndex = 6;
             this.subJogButton.Text = "- Jog";
             this.subJogButton.UseVisualStyleBackColor = false;
+            this.subJogButton.Click += new System.EventHandler(this.subJogButton_Click);
             // 
             // plusElaButton
             // 

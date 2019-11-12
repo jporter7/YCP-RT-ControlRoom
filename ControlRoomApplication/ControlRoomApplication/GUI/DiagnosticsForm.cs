@@ -9,6 +9,7 @@ using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Constants;
 using System;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.GUI
 {
@@ -605,6 +606,14 @@ namespace ControlRoomApplication.GUI
             }
         }
 
+        private void editDiagScriptsButton_Click(object sender, EventArgs e)
+        {
+            logger.Info("Edit Scripts Button Clicked");
+
+            EditDiagScriptsForm editDiagScriptsForm = new EditDiagScriptsForm();
+            editDiagScriptsForm.Show();
+        }
+
         private void tabPage1_Click(object sender, EventArgs e)
         {
 
@@ -754,5 +763,7 @@ namespace ControlRoomApplication.GUI
         {
 
         }
+
+       
     }
 }
