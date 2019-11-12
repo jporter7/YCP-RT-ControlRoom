@@ -490,6 +490,7 @@ namespace ControlRoomApplication.Main
         {
             startButton.BackColor = System.Drawing.Color.LimeGreen;
             startButton.Enabled = true;
+            lastCreatedProductionWeatherStation = BuildWeatherStation();
         }
 
         private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -533,11 +534,6 @@ namespace ControlRoomApplication.Main
         private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
 
-        }
-
-        private void createWSButton_Click(object sender, EventArgs e)
-        {
-            lastCreatedProductionWeatherStation = BuildWeatherStation();
-        }
+        } 
     }
 }

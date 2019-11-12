@@ -105,6 +105,7 @@ namespace ControlRoomApplication.GUI
             MCU_Statui.Columns[1].HeaderText = "value";
 
             SetCurrentWeatherData();
+            editDiagScriptsButton.Enabled = false;
             logger.Info("DiagnosticsForm Initalized");
         }
 

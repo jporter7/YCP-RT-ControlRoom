@@ -25,6 +25,7 @@ namespace ControlRoomApplication.Main
         public bool freeEditActive;
         public bool manualControlActive;
 
+
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
             InitializeComponent();
@@ -49,6 +50,7 @@ namespace ControlRoomApplication.Main
             DatabaseOperations.AddAppointment(CurrentAppointment);
             //Calibrate Move
             CalibrateMove();
+            editControlScripts.Enabled = false;
 
             // If the main control room controller hasn't been initialized, initialize it.
             //if (ControlRoomController == null)
