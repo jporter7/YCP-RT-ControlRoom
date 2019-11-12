@@ -332,6 +332,12 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
+        /// <summary>
+        /// This is a script that is called when we want to check the current thermal calibration of the telescope
+        /// Moves to point to the tree, reads in data, gets data from weather station, and compares
+        /// Postcondition: return true if the telescope data IS within 0.001 degrees Farenheit
+        ///                return false if the telescope data IS NOT within 0.001 degrees Farenheit
+        /// </summary>
         public override bool Thermal_Calibrate() {
             Orientation current = read_Position();
             Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
@@ -387,6 +393,10 @@ namespace ControlRoomApplication.Controllers
             return false;
         }
 
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
+        /// The counter clockwise direction
+        /// </summary>
         public override bool Full_360_CCW_Rotation()
         {
             Orientation current = read_Position();
@@ -401,6 +411,10 @@ namespace ControlRoomApplication.Controllers
 
         }
 
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
+        /// The clockwise direction
+        /// </summary>
         public override bool Full_360_CW_Rotation()
         {
             Orientation current = read_Position();
@@ -414,6 +428,12 @@ namespace ControlRoomApplication.Controllers
             return false;
         }
 
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope from the current position
+        /// to a safe position away from the hardstop
+        /// Precondition: The telescope just hit the clockwise hardstop
+        /// Postcondition: The telescope will be placed at 360 degrees azimuth (safe spot away from hard stop)
+        /// </summary>
         public override bool Recover_CW_Hardstop()
         {
             Orientation current = read_Position();
@@ -422,6 +442,12 @@ namespace ControlRoomApplication.Controllers
             return Move_to_orientation(recover, current);
         }
 
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope from the current position
+        /// to a safe position away from the hardstop
+        /// Precondition: The telescope just hit the counter clockwise hardstop
+        /// Postcondition: The telescope will be placed at 0 degrees azimuth (safe spot away from hard stop)
+        /// </summary>
         public override bool Recover_CCW_Hardstop()
         {
             Orientation current = read_Position();
