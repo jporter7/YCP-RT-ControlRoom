@@ -118,7 +118,13 @@ namespace ControlRoomApplication.Main
                 && txtPLCIP.Text != null 
                 && comboBox1.SelectedIndex > -1)
             {
-               
+                current_rt_id++;
+                AbstractPLCDriver APLCDriver = BuildPLCDriver();
+                AbstractMicrocontroller ctrler= build_CTRL();
+                ctrler.BringUp();
+                AbstractEncoderReader encoder= build_encoder( APLCDriver );
+                RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder );
+                
 
                 if (checkBox1.Checked)
                 {
@@ -371,7 +377,7 @@ namespace ControlRoomApplication.Main
 
                 default:
                     logger.Info( "Building SimulationPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100,true);
+                    return new SimulatedMicrocontroller( SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
             }
         }
 
