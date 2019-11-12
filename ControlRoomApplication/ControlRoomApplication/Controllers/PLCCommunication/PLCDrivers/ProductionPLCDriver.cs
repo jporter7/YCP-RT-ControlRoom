@@ -355,15 +355,18 @@ namespace ControlRoomApplication.Controllers
             // analyze data
             // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
             double weinConstant = 2.8977729;
-            double planckConstant = 6.62607004 * Math.Pow(10, - 34);
+            double planckConstant = 6.62607004 * Math.Pow(10, -34);
             double speedConstant = 299792458;
             double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
 
+            // convert to farenheit
+            temperature = temperature * (9 / 5) - 459.67;
+
             // check against weather station reading
-            
+            double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
 
             // return true if working correctly, false if not
-            return true;
+            return Math.Abs(weatherStationTemp - temperature) < 0.001;
         }
 
         /// <summary>
