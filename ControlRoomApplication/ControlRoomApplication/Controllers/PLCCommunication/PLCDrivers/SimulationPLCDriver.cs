@@ -63,9 +63,9 @@ namespace ControlRoomApplication.Controllers
             return driver.read_Position();
         }
 
-        public override bool Cancle_move()
+        public override bool Cancel_move()
         {
-            return driver.Cancle_move();
+            return driver.Cancel_move();
         }
 
         public override bool Shutdown_PLC_MCU()
@@ -73,9 +73,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Shutdown_PLC_MCU();
         }
 
-        public override bool Calibrate()
+        public override bool Thermal_Calibrate()
         {
-            return driver.Calibrate();
+            return driver.Thermal_Calibrate();
         }
 
         public override bool SnowDump()
@@ -116,6 +116,26 @@ namespace ControlRoomApplication.Controllers
         public override bool FullElevationMove()
         {
             return driver.FullElevationMove();
+        }
+
+        public override bool Full_360_CCW_Rotation()
+        {
+            return driver.Full_360_CCW_Rotation();
+        }
+
+        public override bool Full_360_CW_Rotation()
+        {
+            return driver.Full_360_CW_Rotation();
+        }
+
+        public override bool Recover_CW_Hardstop()
+        {
+            return driver.Recover_CW_Hardstop();
+        }
+
+        public override bool Recover_CCW_Hardstop()
+        {
+            return driver.Recover_CCW_Hardstop();
         }
 
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)

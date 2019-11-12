@@ -11,7 +11,7 @@ namespace ControlRoomApplication.Entities
         GET_CURRENT_SAFETY_INTERLOCK_STATUS = 0x4,
         CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION = 0x5,
         SHUTDOWN = 0x6,
-        CALIBRATE = 0x7,
+        THERMAL_CALIBRATE = 0x7,
         SET_CONFIGURATION = 0x8,
         CONTROLLED_STOP = 0x9,
         IMMEDIATE_STOP= 0xA,

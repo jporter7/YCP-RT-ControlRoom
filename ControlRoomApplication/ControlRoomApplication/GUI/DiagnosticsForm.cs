@@ -9,6 +9,7 @@ using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Constants;
 using System;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.GUI
 {
@@ -21,9 +22,7 @@ namespace ControlRoomApplication.GUI
 
         private int demoIndex = 0;
         //private PLC PLC; This needs to be defined once I can get find the currect import
-
-        //TemperatureSensor myTemp = new TemperatureSensor();
-        FakeTempSensor myTemp = new FakeTempSensor();
+        
         FakeEncoderSensor myEncoder = new FakeEncoderSensor();
         FakeLimitSwitches elLowerLimit = new FakeLimitSwitches();
         FakeLimitSwitches elUpperLimit = new FakeLimitSwitches();
@@ -38,7 +37,7 @@ namespace ControlRoomApplication.GUI
         private double[] azEncDemo = {0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
         private double[] elEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //10 bits of precision, 2.8 
 
-        DateTime currentTempDate = DateTime.Now;
+        //DateTime currentTempDate = DateTime.Now;
         DateTime currentEncodDate = DateTime.Now;
 
         /***********DEMO MODE VARIABLES END*********/
@@ -103,7 +102,10 @@ namespace ControlRoomApplication.GUI
             MCU_Statui.Columns[0].HeaderText = "Status name";
             MCU_Statui.Columns[1].HeaderText = "value";
 
+            controlRoom.RadioTelescopes[rtId].Micro_controler.BringUp();
+
             SetCurrentWeatherData();
+            editDiagScriptsButton.Enabled = false;
             logger.Info("DiagnosticsForm Initalized");
         }
 
@@ -114,6 +116,7 @@ namespace ControlRoomApplication.GUI
             dailyRainfallLabel.Text = Math.Round(controlRoom.WeatherStation.GetDailyRain(), 2).ToString();
             rainRateLabel.Text = Math.Round(controlRoom.WeatherStation.GetRainRate(), 2).ToString();
             outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
+            insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
             barometricPressureLabel.Text = Math.Round(controlRoom.WeatherStation.GetBarometricPressure(), 2).ToString();
         }
 
@@ -129,10 +132,6 @@ namespace ControlRoomApplication.GUI
                 statuses[1] = "Online";
             }
         }
-
-
-       
-      
 
         public delegate void SetStartTimeTextCallback(string text);
         public void SetStartTimeText(string text)
@@ -200,7 +199,7 @@ namespace ControlRoomApplication.GUI
 
             _azEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Azimuth;//.GetCurrentOrientation().Azimuth;
             _elEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Elevation; //GetCurrentOrientation().Elevation;
-            
+
             //-----------------------------Weather Station----------------------------------------------------
             //windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
             //windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
@@ -208,34 +207,20 @@ namespace ControlRoomApplication.GUI
             //rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
             //outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
             //barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
+            
             //------------------------------Azimuth and elevation motor temp sensors--------------------------
-            elevationTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
-            azimuthTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
+            //elevationTemperature = simMicroController.myData.elevationTemp;
+            //DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
+            //azimuthTemperature = simMicroController.myData.azimuthTemp;
+            //DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
 
             this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
 
             timer1.Interval = 200;
-           
 
             if (selectDemo.Checked == true)
             {
-                TimeSpan elapsedTempTime = DateTime.Now - currentTempDate;
-
-                // Simulating Temperature Sensor
-                if(elapsedTempTime.TotalSeconds < 5)
-                {
-                    elevationTemperature = myTemp.GetElevationTemperatureStable();
-                    azimuthTemperature = myTemp.GetAzimuthTemperatureStable();
-                }
-                else if(elapsedTempTime.TotalSeconds > 5 && elapsedTempTime.TotalSeconds < 10)
-                {
-                    elevationTemperature = myTemp.GetElevationTemperatureUnstable();
-                    azimuthTemperature = myTemp.GetAzimuthTemperatureUnstable();
-                }
-                else
-                {
-                    currentTempDate = DateTime.Now;
-                }
+                controlRoom.RadioTelescopes[rtId].Micro_controler.setStableOrTesting(false);
 
                 // Simulating Encoder Sensors
                 TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
@@ -314,6 +299,8 @@ namespace ControlRoomApplication.GUI
             }
             else
             {
+                controlRoom.RadioTelescopes[rtId].Micro_controler.setStableOrTesting(true);
+
                 myEncoder.SetAzimuthAngle(0.0);
                 myEncoder.SetElevationAngle(0.0);
 
@@ -332,16 +319,22 @@ namespace ControlRoomApplication.GUI
                 _elUpperProx = false;
 
             }
-            
+
+            /** Conversion from fahrenheit to celsius (Currently not being used) 
             if(celOrFar)
             {
                 elevationTemperature = (elevationTemperature - 32) * (5.0 / 9);
                 azimuthTemperature = (azimuthTemperature - 32) * (5.0 / 9);
-            }
+            }**/
 
-            fldElTemp.Text = elevationTemperature.ToString();
-            fldAzTemp.Text = azimuthTemperature.ToString();
+            /** Temperature of motors **/
+            Console.WriteLine("Azimuth temp: " + controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString());
+            Console.WriteLine("Elevation temp: " + controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString());
 
+            fldElTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.elevationTemp.ToString();
+            fldAzTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString();
+
+            /** Encoder Position in both degrees and motor ticks **/
             lblAzEncoderDegrees.Text = _azEncoderDegrees.ToString();
             lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
 
@@ -363,7 +356,6 @@ namespace ControlRoomApplication.GUI
             lblEleProx2.Text = _elUpperProx.ToString();
 
             /*** Temperature Logic Start***/
-
             if(elevationTemperature <= 79 && azimuthTemperature <= 79)
             {
                 warningLabel.Visible = false;
@@ -505,7 +497,7 @@ namespace ControlRoomApplication.GUI
 
         private void button1_Click(object sender, System.EventArgs e)
         {
-            _elevationTemp -= 1;
+
         }
 
         private void button2_Click(object sender, System.EventArgs e)
@@ -605,6 +597,14 @@ namespace ControlRoomApplication.GUI
             }
         }
 
+        private void editDiagScriptsButton_Click(object sender, EventArgs e)
+        {
+            logger.Info("Edit Scripts Button Clicked");
+
+            EditDiagScriptsForm editDiagScriptsForm = new EditDiagScriptsForm();
+            editDiagScriptsForm.Show();
+        }
+
         private void tabPage1_Click(object sender, EventArgs e)
         {
 
@@ -699,5 +699,62 @@ namespace ControlRoomApplication.GUI
         {
 
         }
+
+        private void lblElevationTemp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElProx1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblEleProx1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzProx2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzProxStatus2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElLimit1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElLimStatus1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzLimit2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fanLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label24_Click(object sender, EventArgs e)
+        {
+
+        }
+
+       
     }
 }

@@ -126,6 +126,7 @@ namespace ControlRoomApplication.Entities
         
         public abstract float GetBarometricPressure();
         public abstract float GetOutsideTemp();
+        public abstract float GetInsideTemp();
         public abstract float GetDewPoint();
         public abstract float GetWindChill();
         public abstract int GetHumidity();

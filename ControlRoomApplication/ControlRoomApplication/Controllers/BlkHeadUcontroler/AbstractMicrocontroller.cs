@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ControlRoomApplication.Controllers.Sensors;
 
 
 namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
@@ -15,15 +16,18 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
     /// 
     public abstract class AbstractMicrocontroller {
 
-        public AbstractMicrocontroller() { }
+        public Sensors.TempSensorData tempData;
+        private bool _stableOrTesting;
+
+        public AbstractMicrocontroller()
+        {
+        }
 
         //FourierTransform Class
         /// <summary>
         /// 
         /// </summary>
         /// 
-
-
 
         /// <summary>
         /// Start listetning for TCP Connection
@@ -58,11 +62,23 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                     }
 
                 }
+
                 DatabaseOperations.AddSensorData( temps );
                 DatabaseOperations.AddSensorData( accs );
             } catch(Exception e) {
                 Console.WriteLine( e + "line 229" );
             }
         }
+
+        public bool getStableOrTesting()
+        {
+            return _stableOrTesting;
+        }
+
+        public void setStableOrTesting(bool testOrNot)
+        {
+            _stableOrTesting = testOrNot;
+        }
+
     }
 }
