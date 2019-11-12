@@ -55,5 +55,6 @@ namespace ControlRoomApplication.Entities
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
         public AbstractMicrocontroller Micro_controler { get; set; }
         public AbstractEncoderReader Encoders { get; set; }
+        public AbstractWeatherStation WeatherStation { get; set; }
     }
 }

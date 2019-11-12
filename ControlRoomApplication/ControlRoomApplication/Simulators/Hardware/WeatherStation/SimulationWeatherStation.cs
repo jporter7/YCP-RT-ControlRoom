@@ -20,6 +20,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             public float dailyRain;
             public float rainRate;
             public float outsideTemp;
+            public float insideTemp;
             public float baromPressure;
             public float dewPoint;
             public float windChill;
@@ -29,7 +30,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             public float heatIndex;
 
             public Weather_Data(float windSpeedIN, String windDirectionIN, float dailyRainIN, float rainRateIN,
-                                    float outsideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
+                                    float outsideTempIN, float insideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
                                     float outsideHumidityIN, float totalRainIN, float monthlyRainIN, float heatIndexIN)
             {
                 windSpeed = windSpeedIN;
@@ -37,6 +38,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
                 dailyRain = dailyRainIN;
                 rainRate = rainRateIN;
                 outsideTemp = outsideTempIN;
+                insideTemp = insideTempIN;
                 baromPressure = baromPressureIN;
                 dewPoint = dewPointIN;
                 windChill = windChillIN;
@@ -55,7 +57,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             Rand = new Random();
             lastRefreshTime = (DateTime.Now).AddSeconds(-70);
             windDirectionCounter = 0;
-            data = new Weather_Data(0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            data = new Weather_Data(0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 
             ReloadWeatherDataThread = null;
@@ -69,6 +71,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             {
                 // redo all the data
                 data.outsideTemp = (float)GetRandomValue(58.44, (91 - 58.44) / 6);
+                data.insideTemp = (float)GetRandomValue(70, (80 - 70) / 6);
                 data.dewPoint = (float)GetRandomValue(48.43, (69 - 48.43) / 6);
                 data.outsideHumidity = (int)GetRandomValue(50, (100 - 50) / 6);
                 data.totalRain = (float)GetRandomValue(42, (54 - 42) / 6);
@@ -122,6 +125,11 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
         public override float GetOutsideTemp()
         {
             return data.outsideTemp;
+        }
+
+        public override float GetInsideTemp()
+        {
+            return data.insideTemp;
         }
 
         public override float GetDewPoint()
