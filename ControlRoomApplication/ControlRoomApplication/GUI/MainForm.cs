@@ -28,6 +28,8 @@ namespace ControlRoomApplication.Main
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public AbstractWeatherStation lastCreatedProductionWeatherStation = null;
+
         enum TempSensorType
         {
             Production,
@@ -87,6 +89,16 @@ namespace ControlRoomApplication.Main
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
+          
+            // Initialize Button Settings 
+
+            createWSButton.Enabled = true;
+            startButton.BackColor = System.Drawing.Color.Gainsboro;
+            startButton.Enabled = false;
+            shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
+            shutdownButton.Enabled = false;
+
+
             logger.Info("MainForm Initalized");
         }
 
@@ -97,9 +109,11 @@ namespace ControlRoomApplication.Main
         /// </summary>
         /// <param name="sender"> Object specifying the sender of this Event. </param>
         /// <param name="e"> The eventargs from the button being clicked on the GUI. </param>
-        private void button1_Click(object sender, EventArgs e)
+        private void startButton_Click(object sender, EventArgs e)
         {
             logger.Info("Start Telescope Button Clicked");
+            shutdownButton.BackColor = System.Drawing.Color.Red;
+            shutdownButton.Enabled = true;
             if (txtPLCPort.Text != null 
                 && txtPLCIP.Text != null 
                 && comboBox1.SelectedIndex > -1)
@@ -112,11 +126,6 @@ namespace ControlRoomApplication.Main
                 RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder );
                 
 
-                // Add the RT/PLC driver pair and the RT controller to their respective lists
-                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
-                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
-                ProgramPLCDriverList.Add(APLCDriver);
-
                 if (checkBox1.Checked)
                 {
                     logger.Info("Populating Local Database");
@@ -125,20 +134,38 @@ namespace ControlRoomApplication.Main
                     logger.Info("Disabling ManualControl and FreeControl");
                     //ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
+                   // createWSButton.Enabled = false;
                 }
                 else
                 {
                     logger.Info("Enabling ManualControl and FreeControl");
                    // ManualControl.Enabled = true;
                     FreeControl.Enabled = true;
+                    
                 }
 
                 // If the main control room controller hasn't been initialized, initialize it.
                 if (MainControlRoomController == null)
                 {
                     logger.Info("Initializing ControlRoomController");
-                    MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                    if (lastCreatedProductionWeatherStation == null)
+                        MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                    else
+                        MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
                 }
+
+                current_rt_id++;
+                AbstractPLCDriver APLCDriver = BuildPLCDriver();
+                AbstractMicrocontroller ctrler = build_CTRL();
+                ctrler.BringUp();
+                AbstractEncoderReader encoder = build_encoder(APLCDriver);
+                RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder);
+                ARadioTelescope.WeatherStation = MainControlRoomController.ControlRoom.WeatherStation;
+
+                // Add the RT/PLC driver pair and the RT controller to their respective lists
+                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
+                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
+                ProgramPLCDriverList.Add(APLCDriver);
 
                 // Start plc server and attempt to connect to it.
                 logger.Info("Starting plc server and attempting to connect to it");
@@ -444,6 +471,13 @@ namespace ControlRoomApplication.Main
 
         private void loopBackBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (comboBox2.Text != "Production Weather Station")
+            {
+                startButton.BackColor = System.Drawing.Color.LimeGreen;
+                startButton.Enabled = true;
+            }
+            
+
             if (loopBackBox.Checked)
             {
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
@@ -458,6 +492,13 @@ namespace ControlRoomApplication.Main
             this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
         }
 
+        private void createWSButton_Click(object sender, EventArgs e)
+        {
+            startButton.BackColor = System.Drawing.Color.LimeGreen;
+            startButton.Enabled = true;
+            lastCreatedProductionWeatherStation = BuildWeatherStation();
+        }
+
         private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
@@ -467,6 +508,9 @@ namespace ControlRoomApplication.Main
         {
 
         }
+
+        private void comboBox2_Click(object sender, EventArgs e) { 
+}
 
         private void txtPLCPort_TextChanged(object sender, EventArgs e)
         {
@@ -496,6 +540,6 @@ namespace ControlRoomApplication.Main
         private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
 
-        }
+        } 
     }
 }

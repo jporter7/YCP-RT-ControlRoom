@@ -25,6 +25,7 @@ namespace ControlRoomApplication.Main
         public bool freeEditActive;
         public bool manualControlActive;
 
+
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
             InitializeComponent();
@@ -49,6 +50,7 @@ namespace ControlRoomApplication.Main
             DatabaseOperations.AddAppointment(CurrentAppointment);
             //Calibrate Move
             CalibrateMove();
+            editControlScripts.Enabled = false;
 
             // If the main control room controller hasn't been initialized, initialize it.
             //if (ControlRoomController == null)
@@ -405,7 +407,7 @@ namespace ControlRoomApplication.Main
 
         private void button1_Click(object sender, EventArgs e)
         {
-            logger.Info("Edit Scripts Button Clicked");
+            logger.Info("Edit Control Scripts Button Clicked");
 
             editTestForm editTestForm = new editTestForm();
             //EditScriptsForm editScriptsForm = new EditScriptsForm(MainControlRoomController.ControlRoom, current_rt_id);
@@ -419,6 +421,11 @@ namespace ControlRoomApplication.Main
         }
 
         private void manualGroupBox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void subJogButton_Click(object sender, EventArgs e)
         {
 
         }

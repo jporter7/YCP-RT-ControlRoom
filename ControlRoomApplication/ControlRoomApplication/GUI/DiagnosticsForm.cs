@@ -9,6 +9,7 @@ using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Constants;
 using System;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.GUI
 {
@@ -104,6 +105,7 @@ namespace ControlRoomApplication.GUI
             controlRoom.RadioTelescopes[rtId].Micro_controler.BringUp();
 
             SetCurrentWeatherData();
+            editDiagScriptsButton.Enabled = false;
             logger.Info("DiagnosticsForm Initalized");
         }
 
@@ -114,6 +116,7 @@ namespace ControlRoomApplication.GUI
             dailyRainfallLabel.Text = Math.Round(controlRoom.WeatherStation.GetDailyRain(), 2).ToString();
             rainRateLabel.Text = Math.Round(controlRoom.WeatherStation.GetRainRate(), 2).ToString();
             outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
+            insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
             barometricPressureLabel.Text = Math.Round(controlRoom.WeatherStation.GetBarometricPressure(), 2).ToString();
         }
 
@@ -494,7 +497,7 @@ namespace ControlRoomApplication.GUI
 
         private void button1_Click(object sender, System.EventArgs e)
         {
-            _elevationTemp -= 1;
+
         }
 
         private void button2_Click(object sender, System.EventArgs e)
@@ -594,6 +597,14 @@ namespace ControlRoomApplication.GUI
             }
         }
 
+        private void editDiagScriptsButton_Click(object sender, EventArgs e)
+        {
+            logger.Info("Edit Scripts Button Clicked");
+
+            EditDiagScriptsForm editDiagScriptsForm = new EditDiagScriptsForm();
+            editDiagScriptsForm.Show();
+        }
+
         private void tabPage1_Click(object sender, EventArgs e)
         {
 
@@ -688,5 +699,62 @@ namespace ControlRoomApplication.GUI
         {
 
         }
+
+        private void lblElevationTemp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElProx1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblEleProx1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzProx2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzProxStatus2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElLimit1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblElLimStatus1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblAzLimit2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fanLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label24_Click(object sender, EventArgs e)
+        {
+
+        }
+
+       
     }
 }
