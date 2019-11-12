@@ -61,7 +61,7 @@
             this.freeControlGroupbox = new System.Windows.Forms.GroupBox();
             this.controlScriptsCombo = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.editControlScripts = new System.Windows.Forms.Button();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -468,7 +468,7 @@
             // groupBox4
             // 
             this.groupBox4.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox4.Controls.Add(this.button1);
+            this.groupBox4.Controls.Add(this.editControlScripts);
             this.groupBox4.Controls.Add(this.controlScriptsCombo);
             this.groupBox4.Location = new System.Drawing.Point(353, 77);
             this.groupBox4.Name = "groupBox4";
@@ -477,17 +477,17 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Control Scripts";
             // 
-            // button1
+            // editControlScripts
             // 
-            this.button1.BackColor = System.Drawing.Color.DarkGray;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Location = new System.Drawing.Point(308, 14);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 34);
-            this.button1.TabIndex = 24;
-            this.button1.Text = "Edit Scripts";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.editControlScripts.BackColor = System.Drawing.Color.DarkGray;
+            this.editControlScripts.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.editControlScripts.Location = new System.Drawing.Point(308, 14);
+            this.editControlScripts.Name = "editControlScripts";
+            this.editControlScripts.Size = new System.Drawing.Size(75, 34);
+            this.editControlScripts.TabIndex = 24;
+            this.editControlScripts.Text = "Edit Scripts";
+            this.editControlScripts.UseVisualStyleBackColor = false;
+            this.editControlScripts.Click += new System.EventHandler(this.button1_Click);
             // 
             // manualGroupBox
             // 
@@ -623,6 +623,7 @@
             this.subJogButton.TabIndex = 6;
             this.subJogButton.Text = "- Jog";
             this.subJogButton.UseVisualStyleBackColor = false;
+            this.subJogButton.Click += new System.EventHandler(this.subJogButton_Click);
             // 
             // plusElaButton
             // 
@@ -736,6 +737,6 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button editControlScripts;
     }
 }
