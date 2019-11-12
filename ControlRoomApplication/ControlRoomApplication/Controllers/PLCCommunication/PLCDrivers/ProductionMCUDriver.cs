@@ -550,7 +550,7 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Cancle_move()
+        public override bool Cancel_move()
         {
             throw new NotImplementedException();
         }
@@ -560,12 +560,32 @@ namespace ControlRoomApplication.Controllers
             throw new NotImplementedException();
         }
 
-        public override bool Calibrate()
+        public override bool Thermal_Calibrate()
         {
             throw new NotImplementedException();
         }
 
         public override bool SnowDump()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Full_360_CCW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Full_360_CW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Recover_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Recover_CCW_Hardstop()
         {
             throw new NotImplementedException();
         }

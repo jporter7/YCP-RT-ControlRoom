@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -101,7 +102,7 @@ namespace ControlRoomApplication.Controllers
 
         }
 
-
+       
 
         /// <summary>
         /// runs the modbus server to interface with the plc
@@ -331,9 +332,47 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        public override bool Calibrate() {//im uncertin what tasks we want this method to preform, this will likley have to be done at a higher level which involves the encoder or homing sensors
-            if(is_test) { return true; }
-            throw new NotImplementedException();
+        /// <summary>
+        /// This is a script that is called when we want to check the current thermal calibration of the telescope
+        /// Moves to point to the tree, reads in data, gets data from weather station, and compares
+        /// Postcondition: return true if the telescope data IS within 0.001 degrees Farenheit
+        ///                return false if the telescope data IS NOT within 0.001 degrees Farenheit
+        /// </summary>
+        public override bool Thermal_Calibrate() {
+            Orientation current = read_Position();
+            Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
+
+            // start a timer so we can have a time variable
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            // read data
+            SpectraCyberResponse response = Parent.SpectraCyberController.DoSpectraCyberScan();
+
+            // end the timer
+            stopWatch.Stop();
+            double time = stopWatch.Elapsed.TotalSeconds;
+
+            RFData rfResponse = RFData.GenerateFrom(response);
+
+            // move back to previous location
+            Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
+
+            // analyze data
+            // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
+            double weinConstant = 2.8977729;
+            double planckConstant = 6.62607004 * Math.Pow(10, -34);
+            double speedConstant = 299792458;
+            double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
+
+            // convert to farenheit
+            temperature = temperature * (9 / 5) - 459.67;
+
+            // check against weather station reading
+            double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
+
+            // return true if working correctly, false if not
+            return Math.Abs(weatherStationTemp - temperature) < 0.001;
         }
 
         /// <summary>
@@ -352,6 +391,69 @@ namespace ControlRoomApplication.Controllers
                 return Move_to_orientation(current, read_Position());
             }
             return false;
+        }
+
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
+        /// The counter clockwise direction
+        /// </summary>
+        public override bool Full_360_CCW_Rotation()
+        {
+            Orientation current = read_Position();
+            Orientation start = new Orientation(360, 0);
+            Orientation finish = new Orientation(0, 0);
+
+            if(Move_to_orientation(start, current) && Move_to_orientation(finish, start))
+            {
+                return Move_to_orientation(current, finish);
+            }
+            return false;
+
+        }
+
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
+        /// The clockwise direction
+        /// </summary>
+        public override bool Full_360_CW_Rotation()
+        {
+            Orientation current = read_Position();
+            Orientation start = new Orientation(0, 0);
+            Orientation finish = new Orientation(360, 0);
+
+            if (Move_to_orientation(start, current) && Move_to_orientation(finish, start))
+            {
+                return Move_to_orientation(current, finish);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope from the current position
+        /// to a safe position away from the hardstop
+        /// Precondition: The telescope just hit the clockwise hardstop
+        /// Postcondition: The telescope will be placed at 360 degrees azimuth (safe spot away from hard stop)
+        /// </summary>
+        public override bool Recover_CW_Hardstop()
+        {
+            Orientation current = read_Position();
+            Orientation recover = new Orientation(360, current.Elevation);
+
+            return Move_to_orientation(recover, current);
+        }
+
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope from the current position
+        /// to a safe position away from the hardstop
+        /// Precondition: The telescope just hit the counter clockwise hardstop
+        /// Postcondition: The telescope will be placed at 0 degrees azimuth (safe spot away from hard stop)
+        /// </summary>
+        public override bool Recover_CCW_Hardstop()
+        {
+            Orientation current = read_Position();
+            Orientation recover = new Orientation(0, current.Elevation);
+
+            return Move_to_orientation(recover, current);
         }
 
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
@@ -408,7 +510,7 @@ namespace ControlRoomApplication.Controllers
         /// clears the previos move comand from mthe PLC
         /// </summary>
         /// <returns></returns>
-        public override bool Cancle_move() {
+        public override bool Cancel_move() {
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
             return true;
         }
@@ -421,7 +523,7 @@ namespace ControlRoomApplication.Controllers
             };
             //MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
             //return true;
-            return Cancle_move();
+            return Cancel_move();
             /*
             ushort[] data = new ushort[] { 0x4 , 0x3 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 };
             if(both) {
