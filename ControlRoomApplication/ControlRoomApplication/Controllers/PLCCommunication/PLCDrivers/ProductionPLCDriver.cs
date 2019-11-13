@@ -394,6 +394,145 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// Moves the telescope to the stowed position
+        /// </summary>
+        public override bool Stow()
+        {
+            Orientation stow = new Orientation(0, 90);
+
+            return Move_to_orientation(stow, read_Position());
+        }
+
+        /// <summary>
+        /// Moves the telescope to the left azimuth switch
+        /// </summary>
+        public override bool HitAzimuthLeftLimitSwitch()
+        {
+            Orientation AZLeftLimit = new Orientation(-9, 0);
+
+            return Move_to_orientation(AZLeftLimit, read_Position());
+        }
+
+        /// <summary>
+        /// Moves the telescope to the right azimuth switch
+        /// </summary>
+        public override bool HitAzimuthRightLimitSwitch()
+        {
+            Orientation AZRightLimit = new Orientation(369, 0);
+
+            return Move_to_orientation(AZRightLimit, read_Position());
+        }
+
+        /// <summary>
+        /// Moves the telescope to the lower elevation switch
+        /// </summary>
+        public override bool HitElevationLowerLimitSwitch()
+        {
+            Orientation ELLowerLimit = new Orientation(0, -14);
+
+            return Move_to_orientation(ELLowerLimit, read_Position());
+        }
+
+        /// <summary>
+        /// Moves the telescope to the upper elevation switch
+        /// </summary>
+        public override bool HitElevationUpperLimitSwitch()
+        {
+            Orientation ELUpperLimit = new Orientation(0, 92);
+
+            return Move_to_orientation(ELUpperLimit, read_Position());
+        }
+
+        /// <summary>
+        /// Recovers the telescope when a limit switch is hit
+        /// </summary>
+        public override bool RecoverFromLimitSwitch()
+        {
+            Orientation currentPos = read_Position();
+
+            Orientation safe;
+
+            bool safeAz = false;
+            bool safeEl = false;
+
+            // Loops through just in case the move fails or if it as hit two limit switches
+            while (true)
+            {
+                // Checks to see if the left az switch has been hit
+                /// TODO: Update to also use limit switch sensors
+                if (currentPos.Azimuth <= -8 && !safeAz)
+                {
+                    safe = new Orientation(0, currentPos.Elevation);
+
+                    safeAz = Move_to_orientation(safe, currentPos);
+                }
+                // Checks to see if the right az switch has been hit
+                /// TODO: Update to also use limit switch sensors
+                else if (currentPos.Azimuth >= 368 && !safeAz)
+                {
+                    safe = new Orientation(360, currentPos.Elevation);
+
+                    safeAz = Move_to_orientation(safe, currentPos);
+                }
+                else
+                    safeAz = true;
+
+                // Checks to see if the lower el switch has been hit
+                /// TODO: Update to also use limit switch sensors
+                if (currentPos.Elevation <= -13 && !safeEl)
+                {
+                    safe = new Orientation(currentPos.Azimuth, 0);
+
+                    safeEl = Move_to_orientation(safe, currentPos);
+                }
+                // Checks to see if the upper el switch has been hit
+                /// TODO: Update to also use limit switch sensors
+                else if (currentPos.Elevation >= 91 && !safeEl)
+                {
+                    safe = new Orientation(currentPos.Azimuth, 85);
+
+                    safeEl = Move_to_orientation(safe, currentPos);
+                }
+                else
+                    safeEl = true;
+
+                // Check to see if the telescope is in a safe state
+                if (safeAz && safeEl)
+                    return true;
+            }
+        }
+
+        /// <summary>
+        /// Moves the telescope from its current position to a start position at
+        /// 0 degrees elevation, then moves to 90 degrees, then returns to its
+        /// initial position
+        /// </summary>
+        public override bool FullElevationMove()
+        {
+            Orientation currentPos = read_Position();
+
+            bool elStartFlag = false;
+            bool elFinishFlag = false;
+
+            Orientation elStart = new Orientation(currentPos.Azimuth, 0); ;
+            Orientation elFinish = new Orientation(currentPos.Azimuth, 90);
+
+            // Moves elevation to start position if not already there
+            if (currentPos.Elevation == 0)
+                elStartFlag = true;
+            else
+                elStartFlag = Move_to_orientation(elStart, currentPos);
+
+            // Moves elevation to the finish position
+            if (elStartFlag)
+                elFinishFlag = Move_to_orientation(elFinish, elStart);
+
+            // Moves elevation to the original position
+            if (elFinishFlag)
+                return Move_to_orientation(currentPos, elFinish);
+            else
+                return elFinishFlag;
+                
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
         /// </summary>
@@ -545,18 +684,11 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+        // Is called when the PLC and/or MCU is shutdown, stows the telescope
         public override bool Shutdown_PLC_MCU()
         {
-            Orientation stow = new Orientation(0, 0);///////////////////////change this and the value in TestShutdownRadioTelescope
-
-            Move_to_orientation(stow, read_Position());
-            if (is_test) { return true; }
-            throw new NotImplementedException();
+            return Stow();
         }
-
-
-
-
 
         public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
             return send_relative_move_sync( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );

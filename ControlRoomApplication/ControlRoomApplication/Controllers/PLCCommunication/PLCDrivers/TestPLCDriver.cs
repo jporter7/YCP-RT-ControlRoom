@@ -95,6 +95,41 @@ namespace ControlRoomApplication.Controllers
             return driver.SnowDump();
         }
 
+        public override bool Stow()
+        {
+            return driver.Stow();
+        }
+
+        public override bool HitAzimuthLeftLimitSwitch()
+        {
+            return driver.HitAzimuthLeftLimitSwitch();
+        }
+
+        public override bool HitAzimuthRightLimitSwitch()
+        {
+            return driver.HitAzimuthRightLimitSwitch();
+        }
+
+        public override bool HitElevationLowerLimitSwitch()
+        {
+            return driver.HitElevationLowerLimitSwitch();
+        }
+
+        public override bool HitElevationUpperLimitSwitch()
+        {
+            return driver.HitElevationUpperLimitSwitch();
+        }
+
+        public override bool RecoverFromLimitSwitch()
+        {
+            return driver.RecoverFromLimitSwitch();
+        }
+
+        public override bool FullElevationMove()
+        {
+            return driver.FullElevationMove();
+        }    
+
         public override bool Full_360_CCW_Rotation()
         {
             return driver.Full_360_CCW_Rotation();

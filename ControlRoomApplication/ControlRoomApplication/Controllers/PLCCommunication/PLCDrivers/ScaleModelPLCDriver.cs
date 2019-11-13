@@ -311,7 +311,17 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
+        public override bool Stow()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Full_360_CCW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitAzimuthLeftLimitSwitch()
         {
             throw new NotImplementedException();
         }
@@ -321,7 +331,32 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
+        public override bool HitAzimuthRightLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+      
         public override bool Recover_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitElevationLowerLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitElevationUpperLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool RecoverFromLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool FullElevationMove()
         {
             throw new NotImplementedException();
         }
