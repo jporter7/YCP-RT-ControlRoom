@@ -185,7 +185,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
-    <Compile Include="Controllers\Sensors\AbstractTemperatureSensor.cs" />
+    <Compile Include="Controllers\Sensors\TempSensorData.cs" />
     <Compile Include="Controllers\Sensors\FakeLimitSwitches.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
     <Compile Include="Controllers\Sensors\FakeProximitySensors.cs" />
@@ -269,7 +269,6 @@
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.Designer.cs">
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controllers\Sensors\FakeTempSensor.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

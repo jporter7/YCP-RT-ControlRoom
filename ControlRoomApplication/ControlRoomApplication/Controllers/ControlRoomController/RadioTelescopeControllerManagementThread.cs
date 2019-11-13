@@ -149,8 +149,8 @@ namespace ControlRoomApplication.Controllers
                     // Calibrate telescope
                     if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL)
                     {
-                        logger.Info("Calibrating RadioTelescope");
-                        RTController.CalibrateRadioTelescope();
+                        logger.Info("Themal Calibrating RadioTelescope");
+                        RTController.ThermalCalibrateRadioTelescope();
                     }
 
                     // Create movement thread

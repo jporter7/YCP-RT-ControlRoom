@@ -136,7 +136,7 @@ namespace ControlRoomApplication.Main
                 && txtPLCIP.Text != null 
                 && comboBox1.SelectedIndex > -1)
             {
-               
+                
 
                 if (checkBox1.Checked)
                 {
@@ -389,7 +389,7 @@ namespace ControlRoomApplication.Main
 
                 default:
                     logger.Info( "Building SimulationPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100,true);
+                    return new SimulatedMicrocontroller( SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
             }
         }
 

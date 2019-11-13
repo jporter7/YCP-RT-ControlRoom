@@ -148,9 +148,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
-        public void TestCalibrateRadioTelescope() {
+        public void TestThermalCalibrateRadioTelescope() {
             // Call the CalibrateRadioTelescope method
-            var response = TestRadioTelescopeController.CalibrateRadioTelescope();
+            var response = TestRadioTelescopeController.ThermalCalibrateRadioTelescope();
 
             // The Radio Telescope should now have a CurrentOrienation of (0,0)
             Assert.IsTrue( response );

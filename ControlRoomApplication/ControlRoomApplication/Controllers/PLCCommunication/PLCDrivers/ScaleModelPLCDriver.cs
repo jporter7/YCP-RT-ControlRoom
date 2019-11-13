@@ -215,7 +215,7 @@ namespace ControlRoomApplication.Controllers {
             return new Orientation();
         }
 
-        public override bool Cancle_move() {
+        public override bool Cancel_move() {
             return true;
 
         }
@@ -225,7 +225,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Calibrate() {
+        public override bool Thermal_Calibrate() {
             return true;
 
         }
@@ -307,6 +307,61 @@ namespace ControlRoomApplication.Controllers {
         }
 
         public override bool SnowDump()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Stow()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Full_360_CCW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitAzimuthLeftLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Full_360_CW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitAzimuthRightLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+      
+        public override bool Recover_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitElevationLowerLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitElevationUpperLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool RecoverFromLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool FullElevationMove()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Recover_CCW_Hardstop()
         {
             throw new NotImplementedException();
         }
