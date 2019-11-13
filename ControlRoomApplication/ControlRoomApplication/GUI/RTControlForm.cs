@@ -58,12 +58,38 @@ namespace ControlRoomApplication.Main
             //    logger.Info("Initializing ControlRoomController");
             //    ControlRoomController = new ControlRoomController(new ControlRoom());
             //}
-            logger.Info("FreeControl Form Initalized");
+
+            //Initialize Free control Box as disabled
+            freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
+            PosDecButton.Enabled = false;
+            NegDecButton.Enabled = false;
+            PosRAButton.Enabled = false;
+            NegRAButton.Enabled = false;
+            oneForthButton.Enabled = false;
+            oneForthButtonDec.Enabled = false;
+            oneButton.Enabled = false;
+            oneButtonDec.Enabled = false;
+            fiveButton.Enabled = false;
+            fiveButtonDec.Enabled = false;
+            tenButton.Enabled = false;
+            tenButtonDec.Enabled = false;
+
+            //Initialize Manual control Box as disabled
+            manualGroupBox.BackColor = System.Drawing.Color.DarkGray;
+            plusElaButton.Enabled = false;
+            plusJogButton.Enabled = false;
+            subJogButton.Enabled = false;
+            subElaButton.Enabled = false;
+            ControledButtonRadio.Enabled = false;
+            immediateRadioButton.Enabled = false;
+            speedComboBox.Enabled = false;
+
+            logger.Info("Radio Telescope Control Form Initalized");
         }
 
         private void FreeControlForm_FormClosing(Object sender, FormClosingEventArgs e)
         {
-            logger.Info("FreeControl Form Closing");
+            logger.Info("Radio Telescope Control Form Closing");
             timer1.Enabled = false;
         }
        // logger.Info("Adding RadioTelescope Controller");

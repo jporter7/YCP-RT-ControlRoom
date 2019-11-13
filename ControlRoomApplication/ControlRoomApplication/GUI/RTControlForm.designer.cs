@@ -457,9 +457,7 @@
             this.controlScriptsCombo.Items.AddRange(new object[] {
             "Snow Dump",
             "Stow Telescope",
-            "Full 360 Clockwise",
-            "Full 360 Counter-Clockwise",
-            "Calibrate Telescope"});
+            "Calibrate"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(20, 27);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
@@ -481,11 +479,11 @@
             // 
             this.editControlScripts.BackColor = System.Drawing.Color.DarkGray;
             this.editControlScripts.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.editControlScripts.Location = new System.Drawing.Point(308, 14);
+            this.editControlScripts.Location = new System.Drawing.Point(298, 14);
             this.editControlScripts.Name = "editControlScripts";
-            this.editControlScripts.Size = new System.Drawing.Size(75, 34);
+            this.editControlScripts.Size = new System.Drawing.Size(90, 34);
             this.editControlScripts.TabIndex = 24;
-            this.editControlScripts.Text = "Edit Scripts";
+            this.editControlScripts.Text = "Run Script";
             this.editControlScripts.UseVisualStyleBackColor = false;
             this.editControlScripts.Click += new System.EventHandler(this.button1_Click);
             // 

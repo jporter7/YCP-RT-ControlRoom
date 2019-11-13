@@ -45,18 +45,21 @@
             this.loopBackBox = new System.Windows.Forms.CheckBox();
             this.LocalIPCombo = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.simulationSettingsGroupbox = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtWSCOMPort = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.portGroupbox = new System.Windows.Forms.GroupBox();
             this.txtMcuCOMPort = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.createWSButton = new System.Windows.Forms.Button();
+            this.acceptSettings = new System.Windows.Forms.Button();
+            this.startRTGroupbox = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.simulationSettingsGroupbox.SuspendLayout();
+            this.portGroupbox.SuspendLayout();
+            this.startRTGroupbox.SuspendLayout();
             this.SuspendLayout();
             // 
             // startButton
@@ -66,7 +69,7 @@
             this.startButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.startButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.startButton.ForeColor = System.Drawing.Color.Black;
-            this.startButton.Location = new System.Drawing.Point(729, 376);
+            this.startButton.Location = new System.Drawing.Point(197, 105);
             this.startButton.Margin = new System.Windows.Forms.Padding(2);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(170, 40);
@@ -99,7 +102,7 @@
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.dataGridView1.Location = new System.Drawing.Point(9, 23);
+            this.dataGridView1.Location = new System.Drawing.Point(11, 22);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
@@ -115,7 +118,7 @@
             this.shutdownButton.BackColor = System.Drawing.Color.Red;
             this.shutdownButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.shutdownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.shutdownButton.Location = new System.Drawing.Point(545, 376);
+            this.shutdownButton.Location = new System.Drawing.Point(13, 105);
             this.shutdownButton.Margin = new System.Windows.Forms.Padding(2);
             this.shutdownButton.Name = "shutdownButton";
             this.shutdownButton.Size = new System.Drawing.Size(170, 40);
@@ -188,7 +191,7 @@
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.checkBox1.Location = new System.Drawing.Point(545, 338);
+            this.checkBox1.Location = new System.Drawing.Point(13, 73);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(228, 28);
@@ -221,10 +224,10 @@
             this.FreeControl.Enabled = false;
             this.FreeControl.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.FreeControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.FreeControl.Location = new System.Drawing.Point(545, 269);
+            this.FreeControl.Location = new System.Drawing.Point(13, 13);
             this.FreeControl.Margin = new System.Windows.Forms.Padding(2);
             this.FreeControl.Name = "FreeControl";
-            this.FreeControl.Size = new System.Drawing.Size(354, 51);
+            this.FreeControl.Size = new System.Drawing.Size(354, 44);
             this.FreeControl.TabIndex = 9;
             this.FreeControl.Text = "Radio Telescope Control";
             this.FreeControl.UseVisualStyleBackColor = false;
@@ -264,7 +267,7 @@
             // loopBackBox
             // 
             this.loopBackBox.AutoSize = true;
-            this.loopBackBox.Location = new System.Drawing.Point(806, 331);
+            this.loopBackBox.Location = new System.Drawing.Point(260, 61);
             this.loopBackBox.Margin = new System.Windows.Forms.Padding(2);
             this.loopBackBox.Name = "loopBackBox";
             this.loopBackBox.Size = new System.Drawing.Size(93, 43);
@@ -297,22 +300,22 @@
             this.label1.TabIndex = 17;
             this.label1.Text = "Click on the IP adress of the RT to open diagnostic form";
             // 
-            // groupBox1
+            // simulationSettingsGroupbox
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.Gray;
-            this.groupBox1.Controls.Add(this.comboBox2);
-            this.groupBox1.Controls.Add(this.LocalIPCombo);
-            this.groupBox1.Controls.Add(this.comboMicrocontrollerBox);
-            this.groupBox1.Controls.Add(this.comboEncoderType);
-            this.groupBox1.Controls.Add(this.comboPLCType);
-            this.groupBox1.Controls.Add(this.comboBox1);
-            this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.groupBox1.Location = new System.Drawing.Point(12, 258);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(499, 170);
-            this.groupBox1.TabIndex = 18;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "RT Individual Component Simulation settings";
+            this.simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
+            this.simulationSettingsGroupbox.Controls.Add(this.comboBox2);
+            this.simulationSettingsGroupbox.Controls.Add(this.LocalIPCombo);
+            this.simulationSettingsGroupbox.Controls.Add(this.comboMicrocontrollerBox);
+            this.simulationSettingsGroupbox.Controls.Add(this.comboEncoderType);
+            this.simulationSettingsGroupbox.Controls.Add(this.comboPLCType);
+            this.simulationSettingsGroupbox.Controls.Add(this.comboBox1);
+            this.simulationSettingsGroupbox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.simulationSettingsGroupbox.Location = new System.Drawing.Point(12, 258);
+            this.simulationSettingsGroupbox.Name = "simulationSettingsGroupbox";
+            this.simulationSettingsGroupbox.Size = new System.Drawing.Size(499, 170);
+            this.simulationSettingsGroupbox.TabIndex = 18;
+            this.simulationSettingsGroupbox.TabStop = false;
+            this.simulationSettingsGroupbox.Text = "RT Individual Component Simulation settings";
             // 
             // label2
             // 
@@ -359,22 +362,22 @@
             this.label4.Text = " PLC IP Address:";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
-            // groupBox2
+            // portGroupbox
             // 
-            this.groupBox2.Controls.Add(this.txtMcuCOMPort);
-            this.groupBox2.Controls.Add(this.label5);
-            this.groupBox2.Controls.Add(this.txtPLCPort);
-            this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Controls.Add(this.txtPLCIP);
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.txtWSCOMPort);
-            this.groupBox2.Location = new System.Drawing.Point(545, 41);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(354, 164);
-            this.groupBox2.TabIndex = 21;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "System IP Address and Port Numbers";
+            this.portGroupbox.Controls.Add(this.txtMcuCOMPort);
+            this.portGroupbox.Controls.Add(this.label5);
+            this.portGroupbox.Controls.Add(this.txtPLCPort);
+            this.portGroupbox.Controls.Add(this.label4);
+            this.portGroupbox.Controls.Add(this.txtPLCIP);
+            this.portGroupbox.Controls.Add(this.label3);
+            this.portGroupbox.Controls.Add(this.label2);
+            this.portGroupbox.Controls.Add(this.txtWSCOMPort);
+            this.portGroupbox.Location = new System.Drawing.Point(545, 41);
+            this.portGroupbox.Name = "portGroupbox";
+            this.portGroupbox.Size = new System.Drawing.Size(354, 164);
+            this.portGroupbox.TabIndex = 21;
+            this.portGroupbox.TabStop = false;
+            this.portGroupbox.Text = "System IP Address and Port Numbers";
             // 
             // txtMcuCOMPort
             // 
@@ -404,7 +407,7 @@
             this.createWSButton.Enabled = false;
             this.createWSButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.createWSButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.createWSButton.Location = new System.Drawing.Point(545, 210);
+            this.createWSButton.Location = new System.Drawing.Point(729, 214);
             this.createWSButton.Margin = new System.Windows.Forms.Padding(2);
             this.createWSButton.Name = "createWSButton";
             this.createWSButton.Size = new System.Drawing.Size(170, 51);
@@ -413,31 +416,60 @@
             this.createWSButton.UseVisualStyleBackColor = false;
             this.createWSButton.Click += new System.EventHandler(this.createWSButton_Click);
             // 
+            // acceptSettings
+            // 
+            this.acceptSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.acceptSettings.BackColor = System.Drawing.Color.LightGray;
+            this.acceptSettings.Enabled = false;
+            this.acceptSettings.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.acceptSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.acceptSettings.Location = new System.Drawing.Point(545, 214);
+            this.acceptSettings.Margin = new System.Windows.Forms.Padding(2);
+            this.acceptSettings.Name = "acceptSettings";
+            this.acceptSettings.Size = new System.Drawing.Size(170, 51);
+            this.acceptSettings.TabIndex = 23;
+            this.acceptSettings.Text = "Finalize settings";
+            this.acceptSettings.UseVisualStyleBackColor = false;
+            this.acceptSettings.Click += new System.EventHandler(this.acceptSettings_Click);
+            // 
+            // startRTGroupbox
+            // 
+            this.startRTGroupbox.Controls.Add(this.FreeControl);
+            this.startRTGroupbox.Controls.Add(this.checkBox1);
+            this.startRTGroupbox.Controls.Add(this.loopBackBox);
+            this.startRTGroupbox.Controls.Add(this.shutdownButton);
+            this.startRTGroupbox.Controls.Add(this.startButton);
+            this.startRTGroupbox.Location = new System.Drawing.Point(526, 270);
+            this.startRTGroupbox.Name = "startRTGroupbox";
+            this.startRTGroupbox.Size = new System.Drawing.Size(381, 150);
+            this.startRTGroupbox.TabIndex = 24;
+            this.startRTGroupbox.TabStop = false;
+            this.startRTGroupbox.Enter += new System.EventHandler(this.groupBox3_Enter);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
             this.ClientSize = new System.Drawing.Size(919, 432);
+            this.Controls.Add(this.startRTGroupbox);
+            this.Controls.Add(this.acceptSettings);
             this.Controls.Add(this.createWSButton);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.portGroupbox);
+            this.Controls.Add(this.simulationSettingsGroupbox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.loopBackBox);
-            this.Controls.Add(this.FreeControl);
-            this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.shutdownButton);
             this.Controls.Add(this.dataGridView1);
-            this.Controls.Add(this.startButton);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(921, 366);
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.simulationSettingsGroupbox.ResumeLayout(false);
+            this.portGroupbox.ResumeLayout(false);
+            this.portGroupbox.PerformLayout();
+            this.startRTGroupbox.ResumeLayout(false);
+            this.startRTGroupbox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -460,14 +492,16 @@
         private System.Windows.Forms.CheckBox loopBackBox;
         private System.Windows.Forms.ComboBox LocalIPCombo;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox simulationSettingsGroupbox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtWSCOMPort;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox portGroupbox;
         private System.Windows.Forms.TextBox txtMcuCOMPort;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button createWSButton;
+        private System.Windows.Forms.Button acceptSettings;
+        private System.Windows.Forms.GroupBox startRTGroupbox;
     }
 }

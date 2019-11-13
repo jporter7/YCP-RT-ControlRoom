@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -103,11 +103,13 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
             this.MCU_Statui = new System.Windows.Forms.DataGridView();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.editDiagScriptsButton = new System.Windows.Forms.Button();
+            this.diagnosticScriptCombo = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -120,6 +122,8 @@
             this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
             this.lblCurrentElOrientation = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.insideTempLabel = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
             this.rainRateLabel = new System.Windows.Forms.Label();
             this.barometricPressureLabel = new System.Windows.Forms.Label();
             this.dailyRainfallLabel = new System.Windows.Forms.Label();
@@ -132,16 +136,12 @@
             this.label11 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.editDiagScriptsButton = new System.Windows.Forms.Button();
-            this.diagnosticScriptCombo = new System.Windows.Forms.ComboBox();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.insideTempLabel = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MCU_Statui)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.groupBox9.SuspendLayout();
+            this.groupBox8.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -155,8 +155,6 @@
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.groupBox8.SuspendLayout();
-            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -165,14 +163,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(4, 8);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -185,7 +183,7 @@
             // 
             this.windSpeedLabel.AutoSize = true;
             this.windSpeedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.windSpeedLabel.Location = new System.Drawing.Point(258, 20);
+            this.windSpeedLabel.Location = new System.Drawing.Point(258, 15);
             this.windSpeedLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.windSpeedLabel.Name = "windSpeedLabel";
             this.windSpeedLabel.Size = new System.Drawing.Size(31, 20);
@@ -197,7 +195,7 @@
             // 
             this.windDirLabel.AutoSize = true;
             this.windDirLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.windDirLabel.Location = new System.Drawing.Point(268, 48);
+            this.windDirLabel.Location = new System.Drawing.Point(261, 46);
             this.windDirLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.windDirLabel.Name = "windDirLabel";
             this.windDirLabel.Size = new System.Drawing.Size(20, 20);
@@ -234,6 +232,7 @@
             this.startTimeTextBox.Name = "startTimeTextBox";
             this.startTimeTextBox.Size = new System.Drawing.Size(76, 20);
             this.startTimeTextBox.TabIndex = 8;
+            this.startTimeTextBox.TextChanged += new System.EventHandler(this.startTimeTextBox_TextChanged);
             // 
             // endTimeTextBox
             // 
@@ -342,6 +341,7 @@
             this.txtTemperature.Name = "txtTemperature";
             this.txtTemperature.Size = new System.Drawing.Size(39, 20);
             this.txtTemperature.TabIndex = 20;
+            this.txtTemperature.TextChanged += new System.EventHandler(this.txtTemperature_TextChanged);
             // 
             // btnTest
             // 
@@ -638,68 +638,80 @@
             // 
             // btnAddOneEncoder
             // 
+            this.btnAddOneEncoder.BackColor = System.Drawing.Color.DarkGray;
+            this.btnAddOneEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnAddOneEncoder.Location = new System.Drawing.Point(113, 23);
             this.btnAddOneEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddOneEncoder.Name = "btnAddOneEncoder";
             this.btnAddOneEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddOneEncoder.TabIndex = 41;
             this.btnAddOneEncoder.Text = "+1";
-            this.btnAddOneEncoder.UseVisualStyleBackColor = true;
+            this.btnAddOneEncoder.UseVisualStyleBackColor = false;
             this.btnAddOneEncoder.Click += new System.EventHandler(this.button4_Click);
             // 
             // btnAddFiveEncoder
             // 
-            this.btnAddFiveEncoder.Location = new System.Drawing.Point(152, 23);
+            this.btnAddFiveEncoder.BackColor = System.Drawing.Color.DarkGray;
+            this.btnAddFiveEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnAddFiveEncoder.Location = new System.Drawing.Point(162, 23);
             this.btnAddFiveEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddFiveEncoder.Name = "btnAddFiveEncoder";
             this.btnAddFiveEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddFiveEncoder.TabIndex = 42;
             this.btnAddFiveEncoder.Text = "+5";
-            this.btnAddFiveEncoder.UseVisualStyleBackColor = true;
+            this.btnAddFiveEncoder.UseVisualStyleBackColor = false;
             this.btnAddFiveEncoder.Click += new System.EventHandler(this.button5_Click);
             // 
             // btnAddXEncoder
             // 
-            this.btnAddXEncoder.Location = new System.Drawing.Point(189, 23);
+            this.btnAddXEncoder.BackColor = System.Drawing.Color.DarkGray;
+            this.btnAddXEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnAddXEncoder.Location = new System.Drawing.Point(209, 23);
             this.btnAddXEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddXEncoder.Name = "btnAddXEncoder";
             this.btnAddXEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddXEncoder.TabIndex = 43;
             this.btnAddXEncoder.Text = "+X";
-            this.btnAddXEncoder.UseVisualStyleBackColor = true;
+            this.btnAddXEncoder.UseVisualStyleBackColor = false;
             this.btnAddXEncoder.Click += new System.EventHandler(this.btnAddXEncoder_Click);
             // 
             // btnSubtractOneEncoder
             // 
-            this.btnSubtractOneEncoder.Location = new System.Drawing.Point(114, 47);
+            this.btnSubtractOneEncoder.BackColor = System.Drawing.Color.DarkGray;
+            this.btnSubtractOneEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSubtractOneEncoder.Location = new System.Drawing.Point(114, 53);
             this.btnSubtractOneEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnSubtractOneEncoder.Name = "btnSubtractOneEncoder";
             this.btnSubtractOneEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractOneEncoder.TabIndex = 44;
             this.btnSubtractOneEncoder.Text = "-1";
-            this.btnSubtractOneEncoder.UseVisualStyleBackColor = true;
+            this.btnSubtractOneEncoder.UseVisualStyleBackColor = false;
             this.btnSubtractOneEncoder.Click += new System.EventHandler(this.btnSubtractOneEncoder_Click);
             // 
             // btnSubtractFiveEncoder
             // 
-            this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(152, 47);
+            this.btnSubtractFiveEncoder.BackColor = System.Drawing.Color.DarkGray;
+            this.btnSubtractFiveEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(162, 53);
             this.btnSubtractFiveEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnSubtractFiveEncoder.Name = "btnSubtractFiveEncoder";
             this.btnSubtractFiveEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractFiveEncoder.TabIndex = 45;
             this.btnSubtractFiveEncoder.Text = "-5";
-            this.btnSubtractFiveEncoder.UseVisualStyleBackColor = true;
+            this.btnSubtractFiveEncoder.UseVisualStyleBackColor = false;
             this.btnSubtractFiveEncoder.Click += new System.EventHandler(this.btnSubtractFiveEncoder_Click);
             // 
             // btnSubtractXEncoder
             // 
-            this.btnSubtractXEncoder.Location = new System.Drawing.Point(189, 47);
+            this.btnSubtractXEncoder.BackColor = System.Drawing.Color.DarkGray;
+            this.btnSubtractXEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSubtractXEncoder.Location = new System.Drawing.Point(209, 53);
             this.btnSubtractXEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnSubtractXEncoder.Name = "btnSubtractXEncoder";
             this.btnSubtractXEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractXEncoder.TabIndex = 46;
             this.btnSubtractXEncoder.Text = "-X";
-            this.btnSubtractXEncoder.UseVisualStyleBackColor = true;
+            this.btnSubtractXEncoder.UseVisualStyleBackColor = false;
             this.btnSubtractXEncoder.Click += new System.EventHandler(this.btnSubtractXEncoder_Click);
             // 
             // label9
@@ -736,63 +748,75 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(189, 50);
+            this.button1.BackColor = System.Drawing.Color.DarkGray;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button1.Location = new System.Drawing.Point(209, 57);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(33, 24);
             this.button1.TabIndex = 54;
             this.button1.Text = "-X";
-            this.button1.UseVisualStyleBackColor = true;
+            this.button1.UseVisualStyleBackColor = false;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(152, 50);
+            this.button2.BackColor = System.Drawing.Color.DarkGray;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button2.Location = new System.Drawing.Point(162, 57);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(33, 24);
             this.button2.TabIndex = 53;
             this.button2.Text = "-5";
-            this.button2.UseVisualStyleBackColor = true;
+            this.button2.UseVisualStyleBackColor = false;
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(112, 50);
+            this.button3.BackColor = System.Drawing.Color.DarkGray;
+            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button3.Location = new System.Drawing.Point(112, 57);
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(33, 24);
             this.button3.TabIndex = 52;
             this.button3.Text = "-1";
-            this.button3.UseVisualStyleBackColor = true;
+            this.button3.UseVisualStyleBackColor = false;
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(189, 25);
+            this.button4.BackColor = System.Drawing.Color.DarkGray;
+            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button4.Location = new System.Drawing.Point(209, 25);
             this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(33, 24);
             this.button4.TabIndex = 51;
             this.button4.Text = "+X";
-            this.button4.UseVisualStyleBackColor = true;
+            this.button4.UseVisualStyleBackColor = false;
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(152, 25);
+            this.button5.BackColor = System.Drawing.Color.DarkGray;
+            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button5.Location = new System.Drawing.Point(162, 25);
             this.button5.Margin = new System.Windows.Forms.Padding(2);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(33, 24);
             this.button5.TabIndex = 50;
             this.button5.Text = "+5";
-            this.button5.UseVisualStyleBackColor = true;
+            this.button5.UseVisualStyleBackColor = false;
             // 
             // button6
             // 
+            this.button6.BackColor = System.Drawing.Color.DarkGray;
+            this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button6.Location = new System.Drawing.Point(113, 25);
             this.button6.Margin = new System.Windows.Forms.Padding(2);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(33, 24);
             this.button6.TabIndex = 49;
             this.button6.Text = "+1";
-            this.button6.UseVisualStyleBackColor = true;
+            this.button6.UseVisualStyleBackColor = false;
             // 
             // lblElEncoderTicks
             // 
@@ -851,7 +875,7 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(112, 39);
+            this.textBox2.Location = new System.Drawing.Point(137, 42);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(39, 20);
             this.textBox2.TabIndex = 63;
@@ -876,17 +900,18 @@
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(111, 69);
+            this.textBox3.Location = new System.Drawing.Point(137, 72);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(40, 20);
             this.textBox3.TabIndex = 66;
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(109, 102);
+            this.textBox4.Location = new System.Drawing.Point(138, 102);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(39, 20);
             this.textBox4.TabIndex = 67;
+            this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // label18
             // 
@@ -896,24 +921,6 @@
             this.label18.Size = new System.Drawing.Size(63, 13);
             this.label18.TabIndex = 68;
             this.label18.Text = "Set Position";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(278, 394);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(95, 13);
-            this.label21.TabIndex = 71;
-            this.label21.Text = "Has Active Move?";
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(379, 394);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(29, 13);
-            this.label22.TabIndex = 72;
-            this.label22.Text = "True";
             // 
             // MCU_Statui
             // 
@@ -947,8 +954,6 @@
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Controls.Add(this.dataGridView1);
-            this.tabPage1.Controls.Add(this.label22);
-            this.tabPage1.Controls.Add(this.label21);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
@@ -956,6 +961,53 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Appointment Control";
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox9.Controls.Add(this.btnTest);
+            this.groupBox9.Controls.Add(this.selectDemo);
+            this.groupBox9.Location = new System.Drawing.Point(416, 339);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(210, 66);
+            this.groupBox9.TabIndex = 77;
+            this.groupBox9.TabStop = false;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox8.Controls.Add(this.editDiagScriptsButton);
+            this.groupBox8.Controls.Add(this.diagnosticScriptCombo);
+            this.groupBox8.Location = new System.Drawing.Point(344, 123);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(287, 63);
+            this.groupBox8.TabIndex = 76;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Diagnostic Scripts";
+            // 
+            // editDiagScriptsButton
+            // 
+            this.editDiagScriptsButton.BackColor = System.Drawing.Color.DarkGray;
+            this.editDiagScriptsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.editDiagScriptsButton.Location = new System.Drawing.Point(203, 19);
+            this.editDiagScriptsButton.Name = "editDiagScriptsButton";
+            this.editDiagScriptsButton.Size = new System.Drawing.Size(75, 24);
+            this.editDiagScriptsButton.TabIndex = 24;
+            this.editDiagScriptsButton.Text = "Run Script";
+            this.editDiagScriptsButton.UseVisualStyleBackColor = false;
+            this.editDiagScriptsButton.Click += new System.EventHandler(this.editDiagScriptsButton_Click);
+            // 
+            // diagnosticScriptCombo
+            // 
+            this.diagnosticScriptCombo.BackColor = System.Drawing.Color.DarkGray;
+            this.diagnosticScriptCombo.FormattingEnabled = true;
+            this.diagnosticScriptCombo.Items.AddRange(new object[] {
+            "Full 360 Clockwise",
+            "Full 360 Counter-Clockwise"});
+            this.diagnosticScriptCombo.Location = new System.Drawing.Point(6, 22);
+            this.diagnosticScriptCombo.Name = "diagnosticScriptCombo";
+            this.diagnosticScriptCombo.Size = new System.Drawing.Size(180, 21);
+            this.diagnosticScriptCombo.TabIndex = 23;
             // 
             // groupBox3
             // 
@@ -966,9 +1018,9 @@
             this.groupBox3.Controls.Add(this.label13);
             this.groupBox3.Controls.Add(this.textBox4);
             this.groupBox3.Controls.Add(this.label18);
-            this.groupBox3.Location = new System.Drawing.Point(468, 195);
+            this.groupBox3.Location = new System.Drawing.Point(416, 197);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(154, 135);
+            this.groupBox3.Size = new System.Drawing.Size(210, 133);
             this.groupBox3.TabIndex = 75;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Settings";
@@ -979,7 +1031,7 @@
             this.groupBox2.Controls.Add(this.splitContainer2);
             this.groupBox2.Location = new System.Drawing.Point(6, 197);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(402, 210);
+            this.groupBox2.Size = new System.Drawing.Size(393, 210);
             this.groupBox2.TabIndex = 74;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Encoder Simulation";
@@ -1022,8 +1074,8 @@
             this.splitContainer2.Panel2.Controls.Add(this.button3);
             this.splitContainer2.Panel2.Controls.Add(this.button6);
             this.splitContainer2.Panel2.Controls.Add(this.button4);
-            this.splitContainer2.Size = new System.Drawing.Size(250, 170);
-            this.splitContainer2.SplitterDistance = 83;
+            this.splitContainer2.Size = new System.Drawing.Size(347, 185);
+            this.splitContainer2.SplitterDistance = 90;
             this.splitContainer2.TabIndex = 18;
             // 
             // groupBox1
@@ -1164,11 +1216,31 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Weather Sensor Data";
             // 
+            // insideTempLabel
+            // 
+            this.insideTempLabel.AutoSize = true;
+            this.insideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.insideTempLabel.Location = new System.Drawing.Point(257, 115);
+            this.insideTempLabel.Name = "insideTempLabel";
+            this.insideTempLabel.Size = new System.Drawing.Size(40, 20);
+            this.insideTempLabel.TabIndex = 23;
+            this.insideTempLabel.Text = "76.4";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label23.Location = new System.Drawing.Point(6, 115);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(154, 15);
+            this.label23.TabIndex = 22;
+            this.label23.Text = "Inside Temperature (F)";
+            // 
             // rainRateLabel
             // 
             this.rainRateLabel.AutoSize = true;
             this.rainRateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rainRateLabel.Location = new System.Drawing.Point(257, 95);
+            this.rainRateLabel.Location = new System.Drawing.Point(258, 91);
             this.rainRateLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.rainRateLabel.Name = "rainRateLabel";
             this.rainRateLabel.Size = new System.Drawing.Size(31, 20);
@@ -1179,7 +1251,7 @@
             // 
             this.barometricPressureLabel.AutoSize = true;
             this.barometricPressureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.barometricPressureLabel.Location = new System.Drawing.Point(258, 173);
+            this.barometricPressureLabel.Location = new System.Drawing.Point(258, 159);
             this.barometricPressureLabel.Name = "barometricPressureLabel";
             this.barometricPressureLabel.Size = new System.Drawing.Size(23, 20);
             this.barometricPressureLabel.TabIndex = 21;
@@ -1190,7 +1262,7 @@
             // 
             this.dailyRainfallLabel.AutoSize = true;
             this.dailyRainfallLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dailyRainfallLabel.Location = new System.Drawing.Point(257, 73);
+            this.dailyRainfallLabel.Location = new System.Drawing.Point(258, 68);
             this.dailyRainfallLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.dailyRainfallLabel.Name = "dailyRainfallLabel";
             this.dailyRainfallLabel.Size = new System.Drawing.Size(31, 20);
@@ -1201,7 +1273,7 @@
             // 
             this.outsideTempLabel.AutoSize = true;
             this.outsideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outsideTempLabel.Location = new System.Drawing.Point(257, 149);
+            this.outsideTempLabel.Location = new System.Drawing.Point(257, 139);
             this.outsideTempLabel.Name = "outsideTempLabel";
             this.outsideTempLabel.Size = new System.Drawing.Size(40, 20);
             this.outsideTempLabel.TabIndex = 20;
@@ -1211,7 +1283,7 @@
             // 
             this.label19.AutoSize = true;
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.Location = new System.Drawing.Point(5, 173);
+            this.label19.Location = new System.Drawing.Point(5, 164);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(216, 15);
             this.label19.TabIndex = 19;
@@ -1221,7 +1293,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(4, 149);
+            this.label20.Location = new System.Drawing.Point(6, 142);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(164, 15);
             this.label20.TabIndex = 18;
@@ -1231,7 +1303,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(5, 98);
+            this.label1.Location = new System.Drawing.Point(6, 91);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(127, 15);
             this.label1.TabIndex = 17;
@@ -1241,7 +1313,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(5, 73);
+            this.label2.Location = new System.Drawing.Point(5, 68);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(149, 15);
             this.label2.TabIndex = 16;
@@ -1261,7 +1333,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(5, 51);
+            this.label11.Location = new System.Drawing.Point(6, 46);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(105, 15);
             this.label11.TabIndex = 15;
@@ -1309,76 +1381,6 @@
             this.tabPage3.Text = "Other";
             this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
             // 
-            // groupBox8
-            // 
-            this.groupBox8.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox8.Controls.Add(this.editDiagScriptsButton);
-            this.groupBox8.Controls.Add(this.diagnosticScriptCombo);
-            this.groupBox8.Location = new System.Drawing.Point(344, 123);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(287, 63);
-            this.groupBox8.TabIndex = 76;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Diagnostic Scripts";
-            // 
-            // editDiagScriptsButton
-            // 
-            this.editDiagScriptsButton.BackColor = System.Drawing.Color.DarkGray;
-            this.editDiagScriptsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.editDiagScriptsButton.Location = new System.Drawing.Point(203, 19);
-            this.editDiagScriptsButton.Name = "editDiagScriptsButton";
-            this.editDiagScriptsButton.Size = new System.Drawing.Size(75, 24);
-            this.editDiagScriptsButton.TabIndex = 24;
-            this.editDiagScriptsButton.Text = "Edit Scripts";
-            this.editDiagScriptsButton.UseVisualStyleBackColor = false;
-            this.editDiagScriptsButton.Click += new System.EventHandler(this.editDiagScriptsButton_Click);
-            // 
-            // diagnosticScriptCombo
-            // 
-            this.diagnosticScriptCombo.BackColor = System.Drawing.Color.DarkGray;
-            this.diagnosticScriptCombo.FormattingEnabled = true;
-            this.diagnosticScriptCombo.Items.AddRange(new object[] {
-            "Snow Dump",
-            "Stow Telescope",
-            "Full 360 Clockwise",
-            "Full 360 Counter-Clockwise",
-            "Calibrate Telescope"});
-            this.diagnosticScriptCombo.Location = new System.Drawing.Point(6, 22);
-            this.diagnosticScriptCombo.Name = "diagnosticScriptCombo";
-            this.diagnosticScriptCombo.Size = new System.Drawing.Size(180, 21);
-            this.diagnosticScriptCombo.TabIndex = 23;
-            // 
-            // groupBox9
-            // 
-            this.groupBox9.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox9.Controls.Add(this.btnTest);
-            this.groupBox9.Controls.Add(this.selectDemo);
-            this.groupBox9.Location = new System.Drawing.Point(437, 347);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(189, 58);
-            this.groupBox9.TabIndex = 77;
-            this.groupBox9.TabStop = false;
-            // 
-            // insideTempLabel
-            // 
-            this.insideTempLabel.AutoSize = true;
-            this.insideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.insideTempLabel.Location = new System.Drawing.Point(257, 122);
-            this.insideTempLabel.Name = "insideTempLabel";
-            this.insideTempLabel.Size = new System.Drawing.Size(40, 20);
-            this.insideTempLabel.TabIndex = 23;
-            this.insideTempLabel.Text = "76.4";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label23.Location = new System.Drawing.Point(4, 122);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(154, 15);
-            this.label23.TabIndex = 22;
-            this.label23.Text = "Inside Temperature (F)";
-            // 
             // DiagnosticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1395,7 +1397,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.MCU_Statui)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
+            this.groupBox8.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -1418,9 +1422,6 @@
             this.groupBox4.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            this.groupBox8.ResumeLayout(false);
-            this.groupBox9.ResumeLayout(false);
-            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1501,8 +1502,6 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Label label22;
         private System.Windows.Forms.DataGridView MCU_Statui;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;

@@ -215,7 +215,7 @@ namespace ControlRoomApplication.GUI
             elevationTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
             azimuthTemperature = DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
 
-            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
+           // this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
 
             timer1.Interval = 200;
            
@@ -766,6 +766,19 @@ namespace ControlRoomApplication.GUI
 
         }
 
-       
+        private void txtTemperature_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void startTimeTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
