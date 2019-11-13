@@ -532,6 +532,7 @@ namespace ControlRoomApplication.Controllers
                 return Move_to_orientation(currentPos, elFinish);
             else
                 return elFinishFlag;
+        }
                 
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
