@@ -140,6 +140,16 @@ namespace ControlRoomApplication.Controllers
             return driver.Full_360_CW_Rotation();
         }
 
+        public override bool Hit_CW_Hardstop()
+        {
+            return driver.Hit_CW_Hardstop();
+        }
+
+        public override bool Hit_CCW_Hardstop()
+        {
+            return driver.Hit_CCW_Hardstop();
+        }
+
         public override bool Recover_CW_Hardstop()
         {
             return driver.Recover_CW_Hardstop();
