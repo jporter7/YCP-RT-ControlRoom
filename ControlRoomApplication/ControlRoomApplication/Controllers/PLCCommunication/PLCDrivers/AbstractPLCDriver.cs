@@ -97,6 +97,10 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Full_360_CW_Rotation();
 
+        public abstract bool Hit_CW_Hardstop();
+
+        public abstract bool Hit_CCW_Hardstop();
+
         public abstract bool Recover_CW_Hardstop();
 
         public abstract bool Recover_CCW_Hardstop();

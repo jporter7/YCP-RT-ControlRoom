@@ -532,6 +532,8 @@ namespace ControlRoomApplication.Controllers
                 return Move_to_orientation(currentPos, elFinish);
             else
                 return elFinishFlag;
+
+        }
                 
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
@@ -565,6 +567,28 @@ namespace ControlRoomApplication.Controllers
                 return Move_to_orientation(current, finish);
             }
             return false;
+        }
+
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope to the CW hardware stop
+        /// </summary>
+        public override bool Hit_CW_Hardstop()
+        {
+            Orientation current = read_Position();
+            Orientation hardstop = new Orientation(370, current.Elevation);
+
+            return Move_to_orientation(hardstop, current);
+        }
+
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope to the CCW hardware stop
+        /// </summary>
+        public override bool Hit_CCW_Hardstop()
+        {
+            Orientation current = read_Position();
+            Orientation hardstop = new Orientation(-10, current.Elevation);
+
+            return Move_to_orientation(hardstop, current);
         }
 
         /// <summary>
