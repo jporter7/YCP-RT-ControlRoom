@@ -19,6 +19,10 @@ namespace ControlRoomApplication.Controllers
         private volatile bool InterruptAppointmentFlag;
         private Orientation _NextObjectiveOrientation;
 
+        public List<Override> ActiveOverrides;
+        public List<Sensor> Sensors;
+        private bool OverallSensorStatus;
+
         public Orientation NextObjectiveOrientation
         {
             get
@@ -70,6 +74,10 @@ namespace ControlRoomApplication.Controllers
             KeepThreadAlive = false;
             _NextObjectiveOrientation = null;
             InterruptAppointmentFlag = false;
+
+            ActiveOverrides = new List<Override>();
+            Sensors = new List<Sensor>();
+            OverallSensorStatus = true;
         }
 
         public bool Start()
@@ -363,5 +371,38 @@ namespace ControlRoomApplication.Controllers
 
             return -1;
         }
+
+        /// <summary>
+        /// Checks to see if there are any sensors that are not overriden
+        /// calls the stop telescope function if it is not safe
+        /// Returns true if the telescope is safe to operate
+        /// Returns false if the telescope is not safe to operate
+        /// </summary>
+        public bool checkCurrentSensorAndOverrideStatus()
+        {
+            // loop through all the current sensors
+            foreach (Sensor curSensor in Sensors)
+            {
+                // if the sensor is in the ALARM state
+                if (curSensor.Status == SensorStatus.ALARM)
+                {
+                    // check to see if there is an override for that sensor
+                    if (ActiveOverrides.Find(i => i.Item == curSensor.Item) == null)
+                    {
+                        // if not, return false
+                        // we should not be operating the telescope
+                        logger.Fatal("Telescope in DANGER due to fatal sensors");
+                        RTController.ExecuteRadioTelescopeImmediateStop();
+                        OverallSensorStatus = false;
+                        return false;
+                    }                    
+                }
+            }
+
+            OverallSensorStatus = true;
+            logger.Info("Telescope in safe state.");
+            return true;
+        }
+
     }
 }

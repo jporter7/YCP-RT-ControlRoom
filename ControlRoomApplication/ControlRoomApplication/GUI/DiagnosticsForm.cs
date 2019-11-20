@@ -328,9 +328,7 @@ namespace ControlRoomApplication.GUI
             }**/
 
             /** Temperature of motors **/
-            Console.WriteLine("Azimuth temp: " + controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString());
-            Console.WriteLine("Elevation temp: " + controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString());
-
+           
             fldElTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.elevationTemp.ToString();
             fldAzTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString();
 
@@ -755,6 +753,11 @@ namespace ControlRoomApplication.GUI
 
         }
 
-       
+        private void buttonWS_Click(object sender, EventArgs e)
+        {
+            // create a override by the control room computer
+            controlRoom.RTControllerManagementThreads[0].ActiveOverrides.Add(new Override(SensorItemEnum.HIGH_WIND_SPEED, "Control Room Computer"));
+            controlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
+        }
     }
 }

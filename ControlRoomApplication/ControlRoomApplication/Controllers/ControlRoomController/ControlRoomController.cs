@@ -83,7 +83,10 @@ namespace ControlRoomApplication.Controllers
                     //shut down telescopes
                     foreach (RadioTelescopeController telescopeController in ControlRoom.RadioTelescopeControllers)
                     {
-                        telescopeController.ShutdownRadioTelescope();
+                        // change the sensor status in our Radio Telescope Controller Management Thread
+                        int id = ControlRoom.RadioTelescopes.Find(i => i.WeatherStation == ControlRoom.WeatherStation).Id;
+                        ControlRoom.RTControllerManagementThreads[0].Sensors.Add(new Sensor(SensorItemEnum.HIGH_WIND_SPEED, SensorStatus.ALARM));
+                        ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
                     }
                 }
 
