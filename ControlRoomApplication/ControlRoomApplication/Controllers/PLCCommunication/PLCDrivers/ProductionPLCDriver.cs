@@ -67,9 +67,6 @@ namespace ControlRoomApplication.Controllers
         /// <param name="PLC_port"></param>
         public ProductionPLCDriver(string local_ip,  string MCU_ip, int MCU_port, int PLC_port, bool startPLC) : base(local_ip,  MCU_ip, MCU_port, PLC_port, startPLC )
         {
-            if (PLC_port == MCU_port)
-                MCU_port++;
-
             MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
             try
