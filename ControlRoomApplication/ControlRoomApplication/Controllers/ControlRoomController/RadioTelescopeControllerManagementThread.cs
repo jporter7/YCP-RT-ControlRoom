@@ -256,56 +256,65 @@ namespace ControlRoomApplication.Controllers
             double duration = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? length.TotalSeconds : length.TotalMinutes;
             for (int i = 0; i <= (int) duration; i++)
             {
-                // Get orientation for current datetime
-                DateTime datetime = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? NextAppointment.StartTime.AddSeconds(i) : NextAppointment.StartTime.AddMinutes(i); 
-                NextObjectiveOrientation = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
-
-                // Wait for datetime
-                while (DateTime.UtcNow < datetime)
+                // before we move, check to see if it is safe
+                if (checkCurrentSensorAndOverrideStatus())
                 {
-                    if (InterruptAppointmentFlag)
-                    {
-                        logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
-                        break;
-                    }
 
-                    //logger.Debug(datetime.ToString() + " vs. " + DateTime.UtcNow.ToString());
-                    Thread.Sleep(1000);
-                }
+                    // Get orientation for current datetime
+                    DateTime datetime = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? NextAppointment.StartTime.AddSeconds(i) : NextAppointment.StartTime.AddMinutes(i);
+                    NextObjectiveOrientation = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
 
-                if (InterruptAppointmentFlag)
-                {
-                    break;
-                }
-
-                // Move to orientation
-                if (NextObjectiveOrientation != null)
-                {
-                    if (NextObjectiveOrientation.Azimuth < 0 || NextObjectiveOrientation.Elevation < 0)
-                    {
-                        logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                        InterruptAppointmentFlag = true;
-                        break;
-                    }
-
-                    logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                    RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
-
-                    // Wait until MCU issues finished move status
-                    do
+                    // Wait for datetime
+                    while (DateTime.UtcNow < datetime)
                     {
                         if (InterruptAppointmentFlag)
                         {
+                            logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                             break;
                         }
 
-                        //currentOrientation = RTController.GetCurrentOrientation();
-                        //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
-                        Thread.Sleep(100);
+                        //logger.Debug(datetime.ToString() + " vs. " + DateTime.UtcNow.ToString());
+                        Thread.Sleep(1000);
                     }
-                    while (!RTController.finished_exicuting_move( RadioTelescopeAxisEnum.BOTH));
 
-                    NextObjectiveOrientation = null;
+                    if (InterruptAppointmentFlag)
+                    {
+                        break;
+                    }
+
+                    // Move to orientation
+                    if (NextObjectiveOrientation != null)
+                    {
+                        if (NextObjectiveOrientation.Azimuth < 0 || NextObjectiveOrientation.Elevation < 0)
+                        {
+                            logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                            InterruptAppointmentFlag = true;
+                            break;
+                        }
+
+                        logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                        RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
+
+                        // Wait until MCU issues finished move status
+                        do
+                        {
+                            if (InterruptAppointmentFlag)
+                            {
+                                break;
+                            }
+
+                            //currentOrientation = RTController.GetCurrentOrientation();
+                            //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                            Thread.Sleep(100);
+                        }
+                        while (!RTController.finished_exicuting_move(RadioTelescopeAxisEnum.BOTH));
+
+                        NextObjectiveOrientation = null;
+                    }
+                } else
+                {
+                    logger.Info("Telescope stopped movement.");
+                    i--;
                 }
             }
 

@@ -76,6 +76,7 @@ namespace ControlRoomApplication.Controllers
         {
             while (KeepWeatherMonitoringThreadAlive)
             {
+                Sensor currentSensor = ControlRoom.RTControllerManagementThreads[0].Sensors.Find(i => i.Item == SensorItemEnum.HIGH_WIND_SPEED);
                 if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
                 {
                     logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
@@ -88,6 +89,13 @@ namespace ControlRoomApplication.Controllers
                         ControlRoom.RTControllerManagementThreads[0].Sensors.Add(new Sensor(SensorItemEnum.HIGH_WIND_SPEED, SensorStatus.ALARM));
                         ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
                     }
+                }
+                // there exists an alarm for this sensor but we are in a safe state now
+                else if(currentSensor != null && currentSensor.Status == SensorStatus.ALARM) {
+
+                    //change the status
+                    currentSensor.Status = SensorStatus.NORMAL;
+                    logger.Info("Wind speed sensor back in normal range.");
                 }
 
                 logger.Info("Current wind speed is: " + ControlRoom.WeatherStation.GetWindSpeed());
