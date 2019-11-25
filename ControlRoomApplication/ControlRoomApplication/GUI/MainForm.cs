@@ -129,7 +129,7 @@ namespace ControlRoomApplication.Main
             txtPLCIP.Enabled = true;
             txtMcuCOMPort.Enabled = true;
             txtWSCOMPort.Enabled = true;
-            txtPLCPort.Enabled = true;
+            txtPLCPort.Enabled = false;
 
 
             if (txtPLCPort.Text != null 
@@ -583,8 +583,17 @@ namespace ControlRoomApplication.Main
             txtMcuCOMPort.Enabled = false;
             txtWSCOMPort.Enabled = false;
             txtPLCPort.Enabled = false;
+        }
 
+        //Help button clicked ( user interface documentation PDF)
+        private void helpButton_click(object sender, EventArgs e)
+        {
+            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/TempFileLocations/UIDoc.pdf";
+            System.Diagnostics.Process.Start(filename);
+        }
 
+        private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)
+        {
 
         }
     }

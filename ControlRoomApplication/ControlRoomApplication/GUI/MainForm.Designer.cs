@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.startButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.shutdownButton = new System.Windows.Forms.Button();
@@ -56,6 +54,7 @@
             this.createWSButton = new System.Windows.Forms.Button();
             this.acceptSettings = new System.Windows.Forms.Button();
             this.startRTGroupbox = new System.Windows.Forms.GroupBox();
+            this.helpButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.simulationSettingsGroupbox.SuspendLayout();
             this.portGroupbox.SuspendLayout();
@@ -84,23 +83,7 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.BackgroundColor = System.Drawing.Color.Gainsboro;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.GridColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.dataGridView1.Location = new System.Drawing.Point(11, 22);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
@@ -108,7 +91,7 @@
             this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.RowTemplate.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(512, 230);
+            this.dataGridView1.Size = new System.Drawing.Size(509, 230);
             this.dataGridView1.TabIndex = 7;
             this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
@@ -144,7 +127,7 @@
             // 
             this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Production SpectraCyber",
@@ -152,7 +135,7 @@
             this.comboBox1.Location = new System.Drawing.Point(260, 30);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(234, 32);
+            this.comboBox1.Size = new System.Drawing.Size(234, 28);
             this.comboBox1.TabIndex = 2;
             this.comboBox1.Text = "Simulated SpectraCyber";
             // 
@@ -173,7 +156,7 @@
             // 
             this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox2.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
             "Production Weather Station",
@@ -182,7 +165,7 @@
             this.comboBox2.Location = new System.Drawing.Point(5, 76);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(247, 32);
+            this.comboBox2.Size = new System.Drawing.Size(247, 28);
             this.comboBox2.TabIndex = 1;
             this.comboBox2.Text = "Simulated Weather Station";
             // 
@@ -190,11 +173,11 @@
             // 
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.checkBox1.Location = new System.Drawing.Point(13, 73);
+            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox1.Location = new System.Drawing.Point(13, 74);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(228, 28);
+            this.checkBox1.Size = new System.Drawing.Size(140, 17);
             this.checkBox1.TabIndex = 0;
             this.checkBox1.Text = "Populate local database";
             this.checkBox1.UseVisualStyleBackColor = true;
@@ -203,7 +186,7 @@
             // 
             this.comboPLCType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboPLCType.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboPLCType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboPLCType.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboPLCType.FormattingEnabled = true;
             this.comboPLCType.Items.AddRange(new object[] {
             "Production PLC",
@@ -213,7 +196,7 @@
             this.comboPLCType.Location = new System.Drawing.Point(260, 76);
             this.comboPLCType.Margin = new System.Windows.Forms.Padding(2);
             this.comboPLCType.Name = "comboPLCType";
-            this.comboPLCType.Size = new System.Drawing.Size(153, 32);
+            this.comboPLCType.Size = new System.Drawing.Size(234, 28);
             this.comboPLCType.TabIndex = 3;
             this.comboPLCType.Text = "Simulated PLC";
             // 
@@ -237,7 +220,7 @@
             // 
             this.comboEncoderType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboEncoderType.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboEncoderType.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboEncoderType.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboEncoderType.FormattingEnabled = true;
             this.comboEncoderType.Items.AddRange(new object[] {
             "Production Absolute Encoder",
@@ -245,21 +228,21 @@
             "Test Absolute Encoder"});
             this.comboEncoderType.Location = new System.Drawing.Point(6, 123);
             this.comboEncoderType.Name = "comboEncoderType";
-            this.comboEncoderType.Size = new System.Drawing.Size(237, 32);
+            this.comboEncoderType.Size = new System.Drawing.Size(246, 28);
             this.comboEncoderType.TabIndex = 12;
             this.comboEncoderType.Text = "Simulated Absolute Encoder";
             // 
             // comboMicrocontrollerBox
             // 
             this.comboMicrocontrollerBox.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.comboMicrocontrollerBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.comboMicrocontrollerBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboMicrocontrollerBox.FormattingEnabled = true;
             this.comboMicrocontrollerBox.Items.AddRange(new object[] {
             "Production Microcontroller",
             "Simulated Microcontroller"});
             this.comboMicrocontrollerBox.Location = new System.Drawing.Point(6, 30);
             this.comboMicrocontrollerBox.Name = "comboMicrocontrollerBox";
-            this.comboMicrocontrollerBox.Size = new System.Drawing.Size(237, 32);
+            this.comboMicrocontrollerBox.Size = new System.Drawing.Size(246, 28);
             this.comboMicrocontrollerBox.TabIndex = 14;
             this.comboMicrocontrollerBox.Text = "Simulated Microcontroller";
             this.comboMicrocontrollerBox.SelectedIndexChanged += new System.EventHandler(this.comboMicrocontrollerBox_SelectedIndexChanged);
@@ -280,12 +263,12 @@
             // 
             this.LocalIPCombo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LocalIPCombo.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.LocalIPCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.LocalIPCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LocalIPCombo.FormattingEnabled = true;
             this.LocalIPCombo.Location = new System.Drawing.Point(260, 123);
             this.LocalIPCombo.Margin = new System.Windows.Forms.Padding(2);
             this.LocalIPCombo.Name = "LocalIPCombo";
-            this.LocalIPCombo.Size = new System.Drawing.Size(198, 32);
+            this.LocalIPCombo.Size = new System.Drawing.Size(234, 28);
             this.LocalIPCombo.TabIndex = 16;
             this.LocalIPCombo.Text = "RT IP Address";
             this.LocalIPCombo.SelectedIndexChanged += new System.EventHandler(this.LocalIPCombo_SelectedIndexChanged);
@@ -315,7 +298,8 @@
             this.simulationSettingsGroupbox.Size = new System.Drawing.Size(499, 170);
             this.simulationSettingsGroupbox.TabIndex = 18;
             this.simulationSettingsGroupbox.TabStop = false;
-            this.simulationSettingsGroupbox.Text = "RT Individual Component Simulation settings";
+            this.simulationSettingsGroupbox.Text = "Individual Component Simulation settings";
+            this.simulationSettingsGroupbox.Enter += new System.EventHandler(this.simulationSettingsGroupbox_Enter);
             // 
             // label2
             // 
@@ -407,7 +391,7 @@
             this.createWSButton.Enabled = false;
             this.createWSButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.createWSButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.createWSButton.Location = new System.Drawing.Point(729, 214);
+            this.createWSButton.Location = new System.Drawing.Point(721, 214);
             this.createWSButton.Margin = new System.Windows.Forms.Padding(2);
             this.createWSButton.Name = "createWSButton";
             this.createWSButton.Size = new System.Drawing.Size(170, 51);
@@ -423,7 +407,7 @@
             this.acceptSettings.Enabled = false;
             this.acceptSettings.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.acceptSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.acceptSettings.Location = new System.Drawing.Point(545, 214);
+            this.acceptSettings.Location = new System.Drawing.Point(537, 214);
             this.acceptSettings.Margin = new System.Windows.Forms.Padding(2);
             this.acceptSettings.Name = "acceptSettings";
             this.acceptSettings.Size = new System.Drawing.Size(170, 51);
@@ -446,12 +430,27 @@
             this.startRTGroupbox.TabStop = false;
             this.startRTGroupbox.Enter += new System.EventHandler(this.groupBox3_Enter);
             // 
+            // helpButton
+            // 
+            this.helpButton.BackColor = System.Drawing.Color.Gainsboro;
+            this.helpButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.helpButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.helpButton.ForeColor = System.Drawing.SystemColors.Desktop;
+            this.helpButton.Location = new System.Drawing.Point(877, 7);
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(22, 24);
+            this.helpButton.TabIndex = 27;
+            this.helpButton.Text = "?";
+            this.helpButton.UseVisualStyleBackColor = false;
+            this.helpButton.Click += new System.EventHandler(this.helpButton_click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
-            this.ClientSize = new System.Drawing.Size(919, 432);
+            this.ClientSize = new System.Drawing.Size(911, 432);
+            this.Controls.Add(this.helpButton);
             this.Controls.Add(this.startRTGroupbox);
             this.Controls.Add(this.acceptSettings);
             this.Controls.Add(this.createWSButton);
@@ -503,5 +502,6 @@
         private System.Windows.Forms.Button createWSButton;
         private System.Windows.Forms.Button acceptSettings;
         private System.Windows.Forms.GroupBox startRTGroupbox;
+        private System.Windows.Forms.Button helpButton;
     }
 }
