@@ -603,6 +603,7 @@ namespace ControlRoomApplication.Controllers
         public override bool FullElevationMove()
         {
             throw new NotImplementedException();
+
         }
         
         public override bool Full_360_CCW_Rotation()
@@ -611,6 +612,16 @@ namespace ControlRoomApplication.Controllers
         }
 
         public override bool Full_360_CW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Hit_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Hit_CCW_Hardstop()
         {
             throw new NotImplementedException();
         }
