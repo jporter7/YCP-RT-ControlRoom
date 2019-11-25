@@ -773,7 +773,7 @@ namespace ControlRoomApplication.GUI
 
         private void button7_Click(object sender, EventArgs e)
         {
-            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/TempFileLocations/UIDoc.pdf";
+            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
             System.Diagnostics.Process.Start(filename);
         }
 
@@ -791,6 +791,60 @@ namespace ControlRoomApplication.GUI
             {
                 ORAzimuthSens1.Text = "Over Ride";
                 ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
+
+            }
+        }
+
+        private void ORAzimuthSens2_Click(object sender, EventArgs e)
+        {
+                logger.Info("Over Ride azimuth sensor 2 clicked");
+                bool overRideAz2= (ORAzimuthSens2.Text == "Over Ridden");
+                if (!overRideAz2)
+                {
+                    ORAzimuthSens2.Text = "Over Ridden";
+                    ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
+
+                }
+                else if (overRideAz2)
+                {
+                    ORAzimuthSens2.Text = "Over Ride";
+                    ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
+
+                }
+        }
+
+        private void ElevationProximityOverideButton1_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride elevation Proximity Override 1 clicked");
+            bool overRideEl1 = (ElevationProximityOveride1.Text == "Over Ridden");
+            if (!overRideEl1)
+            {
+                ElevationProximityOveride1.Text = "Over Ridden";
+                ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+
+            }
+            else if (overRideEl1)
+            {
+                ElevationProximityOveride1.Text = "Over Ride";
+                ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+
+            }
+        }
+
+        private void ElevationProximityOverideButton2_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride elevation Proximity Override 2 clicked");
+            bool overRideEl2 = (ElevationProximityOveride2.Text == "Over Ridden");
+            if (!overRideEl2)
+            {
+                ElevationProximityOveride2.Text = "Over Ridden";
+                ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
+
+            }
+            else if (overRideEl2)
+            {
+                ElevationProximityOveride2.Text = "Over Ride";
+                ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
 
             }
         }

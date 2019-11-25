@@ -528,7 +528,7 @@ namespace ControlRoomApplication.Main
         //This Button executes a system call that opens up the user interface documentation as a PDF
         private void helpButton_click(object sender, EventArgs e)
         {
-            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/TempFileLocations/UIDoc.pdf";
+            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
             System.Diagnostics.Process.Start(filename);
         }
 
