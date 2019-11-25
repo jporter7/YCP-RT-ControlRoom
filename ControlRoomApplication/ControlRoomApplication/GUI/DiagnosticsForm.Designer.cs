@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -190,14 +190,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.Location = new System.Drawing.Point(4, 8);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -1425,9 +1425,9 @@
             this.groupBox11.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox11.Controls.Add(this.button8);
             this.groupBox11.Controls.Add(this.label24);
-            this.groupBox11.Location = new System.Drawing.Point(5, 66);
+            this.groupBox11.Location = new System.Drawing.Point(5, 42);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(334, 75);
+            this.groupBox11.Size = new System.Drawing.Size(334, 87);
             this.groupBox11.TabIndex = 27;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Weather Station";
@@ -1454,7 +1454,7 @@
             // 
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(6, 219);
+            this.label22.Location = new System.Drawing.Point(6, 210);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(190, 15);
             this.label22.TabIndex = 9;
@@ -1464,7 +1464,7 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(6, 140);
+            this.label21.Location = new System.Drawing.Point(6, 137);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(182, 15);
             this.label21.TabIndex = 8;
@@ -1474,7 +1474,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(6, 67);
+            this.label4.Location = new System.Drawing.Point(6, 56);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(182, 15);
             this.label4.TabIndex = 7;
@@ -1509,18 +1509,19 @@
             // 
             this.ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
             this.ORAzimuthSens1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ORAzimuthSens1.Location = new System.Drawing.Point(209, 64);
+            this.ORAzimuthSens1.Location = new System.Drawing.Point(209, 53);
             this.ORAzimuthSens1.Name = "ORAzimuthSens1";
             this.ORAzimuthSens1.Size = new System.Drawing.Size(75, 23);
             this.ORAzimuthSens1.TabIndex = 11;
             this.ORAzimuthSens1.Text = "OVER RIDE";
             this.ORAzimuthSens1.UseVisualStyleBackColor = false;
+            this.ORAzimuthSens1.Click += new System.EventHandler(this.ORAzimuthSens1_Click);
             // 
             // ORAzimuthSens2
             // 
             this.ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
             this.ORAzimuthSens2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ORAzimuthSens2.Location = new System.Drawing.Point(209, 137);
+            this.ORAzimuthSens2.Location = new System.Drawing.Point(209, 134);
             this.ORAzimuthSens2.Name = "ORAzimuthSens2";
             this.ORAzimuthSens2.Size = new System.Drawing.Size(75, 23);
             this.ORAzimuthSens2.TabIndex = 12;
@@ -1531,7 +1532,7 @@
             // 
             this.O.BackColor = System.Drawing.Color.Red;
             this.O.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.O.Location = new System.Drawing.Point(209, 216);
+            this.O.Location = new System.Drawing.Point(209, 210);
             this.O.Name = "O";
             this.O.Size = new System.Drawing.Size(75, 23);
             this.O.TabIndex = 13;
@@ -1553,7 +1554,7 @@
             // 
             this.button8.BackColor = System.Drawing.Color.Red;
             this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button8.Location = new System.Drawing.Point(253, 35);
+            this.button8.Location = new System.Drawing.Point(253, 48);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(75, 23);
             this.button8.TabIndex = 13;
@@ -1564,7 +1565,7 @@
             // 
             this.label24.AutoSize = true;
             this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label24.Location = new System.Drawing.Point(7, 43);
+            this.label24.Location = new System.Drawing.Point(7, 56);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(109, 15);
             this.label24.TabIndex = 12;
@@ -1575,9 +1576,9 @@
             this.groupBox12.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox12.Controls.Add(this.button9);
             this.groupBox12.Controls.Add(this.label27);
-            this.groupBox12.Location = new System.Drawing.Point(3, 147);
+            this.groupBox12.Location = new System.Drawing.Point(3, 135);
             this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(338, 80);
+            this.groupBox12.Size = new System.Drawing.Size(338, 92);
             this.groupBox12.TabIndex = 28;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Gate Sensor";
@@ -1586,7 +1587,7 @@
             // 
             this.button9.BackColor = System.Drawing.Color.Red;
             this.button9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button9.Location = new System.Drawing.Point(253, 27);
+            this.button9.Location = new System.Drawing.Point(255, 38);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(75, 23);
             this.button9.TabIndex = 13;
@@ -1597,7 +1598,7 @@
             // 
             this.label27.AutoSize = true;
             this.label27.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label27.Location = new System.Drawing.Point(6, 30);
+            this.label27.Location = new System.Drawing.Point(6, 41);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(122, 15);
             this.label27.TabIndex = 12;

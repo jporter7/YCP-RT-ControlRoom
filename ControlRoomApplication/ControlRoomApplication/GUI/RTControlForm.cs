@@ -397,7 +397,7 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Activate Manual Control Clicked");
             bool manual_save_state = (manualControlButton.Text == "Activate Manual Control");
-            //manualControlActive = !manualControlActive
+            
             if (!manual_save_state)
             {
                 manualControlButton.Text = "Activate Manual Control";
