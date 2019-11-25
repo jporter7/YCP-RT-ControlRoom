@@ -58,12 +58,38 @@ namespace ControlRoomApplication.Main
             //    logger.Info("Initializing ControlRoomController");
             //    ControlRoomController = new ControlRoomController(new ControlRoom());
             //}
-            logger.Info("FreeControl Form Initalized");
+
+            //Initialize Free control Box as disabled
+            freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
+            PosDecButton.Enabled = false;
+            NegDecButton.Enabled = false;
+            PosRAButton.Enabled = false;
+            NegRAButton.Enabled = false;
+            oneForthButton.Enabled = false;
+            oneForthButtonDec.Enabled = false;
+            oneButton.Enabled = false;
+            oneButtonDec.Enabled = false;
+            fiveButton.Enabled = false;
+            fiveButtonDec.Enabled = false;
+            tenButton.Enabled = false;
+            tenButtonDec.Enabled = false;
+
+            //Initialize Manual control Box as disabled
+            manualGroupBox.BackColor = System.Drawing.Color.DarkGray;
+            plusElaButton.Enabled = false;
+            plusJogButton.Enabled = false;
+            subJogButton.Enabled = false;
+            subElaButton.Enabled = false;
+            ControledButtonRadio.Enabled = false;
+            immediateRadioButton.Enabled = false;
+            speedComboBox.Enabled = false;
+
+            logger.Info("Radio Telescope Control Form Initalized");
         }
 
         private void FreeControlForm_FormClosing(Object sender, FormClosingEventArgs e)
         {
-            logger.Info("FreeControl Form Closing");
+            logger.Info("Radio Telescope Control Form Closing");
             timer1.Enabled = false;
         }
        // logger.Info("Adding RadioTelescope Controller");
@@ -366,6 +392,7 @@ namespace ControlRoomApplication.Main
 
         }
 
+        //
         private void manualControlButton_Click(object sender, EventArgs e)
         {
             logger.Info("Activate Manual Control Clicked");
@@ -402,17 +429,29 @@ namespace ControlRoomApplication.Main
 
         private void speedComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            {
+                if (speedComboBox.Text == "2 RPM")
+                {
+                    logger.Info("Speed set to 2 RPM");
+                   // speed = 333333;
+                }
+                 else if(speedComboBox.Text == "0.1 RPM")
+                {
+                    logger.Info("Speed set to 0.1 RPM");
+                   // speed = 16667;
+                }
 
+                else
+                {
+                    logger.Info("Invalid Speed Selected");
+                    throw new Exception();
+                }
+            }
         }
-
-        private void button1_Click(object sender, EventArgs e)
+        //Run Script Button Functionality
+        private void runControlScript_Click(object sender, EventArgs e)
         {
-            logger.Info("Edit Control Scripts Button Clicked");
-
-            editTestForm editTestForm = new editTestForm();
-            //EditScriptsForm editScriptsForm = new EditScriptsForm(MainControlRoomController.ControlRoom, current_rt_id);
-            editTestForm.Show();
-     
+        logger.Info("Run Script Button Clicked");
         }
 
         private void RAIncGroupbox_Enter(object sender, EventArgs e)
@@ -427,7 +466,237 @@ namespace ControlRoomApplication.Main
 
         private void subJogButton_Click(object sender, EventArgs e)
         {
+            //-----------------------If Mouse CLicked = True ----------------------------------
+            // {
+            //      logger.Info("Jog PosButton MouseDown");
+            //     // UpdateText("Moving at " + comboBox1.Text);
+
+            //      // Start CW Jog
+            //      rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+            // // }
+            //}
+            //-----------------------If Mouse CLicked != True ----------------------------------
+            //{
+            //  logger.Info("Jog PosButton MouseUp");
+            //  UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+            // Stop Move
+            //ExecuteCorrectStop();
+            //   }
+        }
+
+        private void plusJogButton_Click(object sender, EventArgs e)
+        {
+            //-----------------------If Mouse CLicked = True ----------------------------------
+            // {
+            //      logger.Info("Jog PosButton MouseDown");
+            //     // UpdateText("Moving at " + comboBox1.Text);
+
+            //      // Start CW Jog
+            //      rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+            // // }
+            //}
+            //-----------------------If Mouse CLicked != True ----------------------------------
+            //{
+            //  logger.Info("Jog PosButton MouseUp");
+            //  UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+            // Stop Move
+            //ExecuteCorrectStop();
+            //   }
+        }
+
+        private void ExecuteCorrectStop()
+        {
+            if (ControledButtonRadio.Checked)
+            {
+                logger.Info("Executed Controlled Stop");
+              //  rt_controller.ExecuteRadioTelescopeControlledStop();
+            }
+            else if (immediateRadioButton.Checked)
+            {
+                logger.Info("Executed Immediate Stop");
+             //  rt_controller.ExecuteRadioTelescopeImmediateStop();
+            }
+            else
+            {
+                logger.Info("Invalid Stop Selected");
+                throw new Exception();
+            }
+        }
+
+        //This Button executes a system call that opens up the user interface documentation as a PDF
+        private void helpButton_click(object sender, EventArgs e)
+        {
+            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/TempFileLocations/UIDoc.pdf";
+            System.Diagnostics.Process.Start(filename);
+        }
+
+        private void groupBox2_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ActualPositionLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TargetPositionLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void overRideButton_Click(object sender, EventArgs e)
+        {
 
         }
     }
 }
+
+
+
+
+
+
+
+//--------------------------------------------------------------------------------------------------------------------
+
+//- - - - - - - -Below this line is commented out code from the origional Radio Telescope Manual Form - - - - - - - - 
+
+//--------------------------------------------------------------------------------------------------------------------
+
+
+//  private void PosButton_MouseDown(object sender, MouseEventArgs e)
+////  {
+//      logger.Info("Jog PosButton MouseDown");
+//     // UpdateText("Moving at " + comboBox1.Text);
+
+//      // Start CW Jog
+//      rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+// // }
+
+//  private void PosButton_MouseUp(object sender, MouseEventArgs e)
+//{
+//  logger.Info("Jog PosButton MouseUp");
+//  UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+// Stop Move
+//ExecuteCorrectStop();
+//   }
+
+// private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+// {
+// if(comboBox1.Text == "2 RPM")
+// {
+//     logger.Info("Speed set to 2 RPM");
+//     speed = 333333;
+// }
+//// else if(comboBox1.Text == "0.1 RPM")
+// {
+//     logger.Info("Speed set to 0.1 RPM");
+//     speed = 16667;
+// }
+
+//else
+//{
+//    logger.Info("Invalid Speed Selected");
+//    throw new Exception();
+//}
+///
+
+//private void ExecuteCorrectStop()
+//{
+//   // //if (ControledButtonRadio.Checked)
+//   // {
+//   //     logger.Info("Executed Controlled Stop");
+//   //     rt_controller.ExecuteRadioTelescopeControlledStop();
+//   // }
+//   //// else if (radioButton2.Checked)
+//   // {
+//   //     logger.Info("Executed Immediate Stop");
+//   //     rt_controller.ExecuteRadioTelescopeImmediateStop();
+//   // }
+//    //else
+//    //{
+//    //    logger.Info("Invalid Stop Selected");
+//    //    throw new Exception();
+//    //}
+//}
+
+//private void button1_Click(object sender, EventArgs e)
+//{//
+//  //  logger.Info("Move Relative Button Clicked");
+//    //int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
+//    //int pos = ConversionHelper.DegreesToSteps( (int)numericUpDown1.Value , MotorConstants.GEARING_RATIO_AZIMUTH );
+//   // rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
+//}
+
+//private void timer1_Tick(object sender, EventArgs e)
+//{
+//   // Entities.Orientation currentOrienation = rt_controller.GetCurrentOrientation();
+//   // SetActualAZText(currentOrienation.Azimuth.ToString("0.##"));
+//  //  SetActualELText(currentOrienation.Elevation.ToString("0.##"));
+//}
+
+//  delegate void SetActualAZTextCallback(string text);
+//private void SetActualAZText(string text)
+//{
+//    // InvokeRequired required compares the thread ID of the
+//    // calling thread to the thread ID of the creating thread.
+//    // If these threads are different, it returns true.
+//   // if (ActualAZTextBox.InvokeRequired)
+//    {
+//        //SetActualAZTextCallback d = new SetActualAZTextCallback(SetActualAZText);
+//        var d = new SetActualAZTextCallback(SetActualAZText);
+//        try
+//        {
+//            var task = Task.Run( () => Invoke( d , new object[] { text } ));
+//            if(!task.Wait( 300 ))
+//                throw new Exception( "Timed out" );
+
+//        }
+//        catch  {
+
+//        }
+//    }
+//    else
+//    {
+//     //   ActualAZTextBox.Text = text;
+//    }
+//}
+
+//delegate void SetActualELTextCallback(string text);
+//private void SetActualELText(string text)
+//{ }
+// InvokeRequired required compares the thread ID of the
+// calling thread to the thread ID of the creating thread.
+// If these threads are different, it returns true.
+//    if (ActualELTextBox.InvokeRequired)
+//    {
+//        //SetActualELTextCallback d = new SetActualELTextCallback(SetActualELText);
+//        var d = new SetActualELTextCallback(SetActualELText);
+//        try
+//        {
+//            var task = Task.Run( () => Invoke( d , new object[] { text } ) );
+//            if(!task.Wait( 300 ))
+//                throw new Exception( "Timed out" );
+
+//        }
+//        catch { }
+//    }
+//    else
+//    {
+//        ActualELTextBox.Text = text;
+//    }
+//}
+
+//        private void NegButton_Click(object sender, EventArgs e)
+//        {
+
+//        }
+
+//        private void ManualControlForm_Load(object sender, EventArgs e)
+//        {
+
+//        }

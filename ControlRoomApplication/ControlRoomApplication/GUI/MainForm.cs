@@ -89,14 +89,17 @@ namespace ControlRoomApplication.Main
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
-          
-            // Initialize Button Settings 
 
+            // Initialize Button Settings 
+            startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
             createWSButton.Enabled = true;
+            acceptSettings.Enabled = true;
             startButton.BackColor = System.Drawing.Color.Gainsboro;
             startButton.Enabled = false;
             shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
             shutdownButton.Enabled = false;
+            loopBackBox.Enabled = false;
+            checkBox1.Enabled = false;
 
 
             logger.Info("MainForm Initalized");
@@ -114,6 +117,21 @@ namespace ControlRoomApplication.Main
             logger.Info("Start Telescope Button Clicked");
             shutdownButton.BackColor = System.Drawing.Color.Red;
             shutdownButton.Enabled = true;
+            simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
+            comboMicrocontrollerBox.Enabled = true;
+            comboBox2.Enabled = true;
+            comboBox1.Enabled = true;
+            comboEncoderType.Enabled = true;
+            comboPLCType.Enabled = true;
+            LocalIPCombo.Enabled = true;
+
+            portGroupbox.BackColor = System.Drawing.Color.Gray;
+            txtPLCIP.Enabled = true;
+            txtMcuCOMPort.Enabled = true;
+            txtWSCOMPort.Enabled = true;
+            txtPLCPort.Enabled = false;
+
+
             if (txtPLCPort.Text != null 
                 && txtPLCIP.Text != null 
                 && comboBox1.SelectedIndex > -1)
@@ -534,6 +552,49 @@ namespace ControlRoomApplication.Main
         private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
 
-        } 
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void acceptSettings_Click(object sender, EventArgs e)
+        {
+            if (comboBox2.Text != "Production Weather Station")
+            {
+                startButton.BackColor = System.Drawing.Color.LimeGreen;
+                startButton.Enabled = true;
+            }
+            startRTGroupbox.BackColor = System.Drawing.Color.Gray;
+            loopBackBox.Enabled = true;
+            checkBox1.Enabled = true;
+
+            simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
+            comboMicrocontrollerBox.Enabled = false;
+            comboBox2.Enabled = false;
+            comboBox1.Enabled = false;
+            comboEncoderType.Enabled = false;
+            comboPLCType.Enabled = false;
+            LocalIPCombo.Enabled = false;
+
+            portGroupbox.BackColor = System.Drawing.Color.DarkGray;
+            txtPLCIP.Enabled = false;
+            txtMcuCOMPort.Enabled = false;
+            txtWSCOMPort.Enabled = false;
+            txtPLCPort.Enabled = false;
+        }
+
+        //Help button clicked ( user interface documentation PDF)
+        private void helpButton_click(object sender, EventArgs e)
+        {
+            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/TempFileLocations/UIDoc.pdf";
+            System.Diagnostics.Process.Start(filename);
+        }
+
+        private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 }

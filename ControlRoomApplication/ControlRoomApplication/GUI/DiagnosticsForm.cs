@@ -214,7 +214,7 @@ namespace ControlRoomApplication.GUI
             //azimuthTemperature = simMicroController.myData.azimuthTemp;
             //DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
 
-            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
+           // this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
 
             timer1.Interval = 200;
 
@@ -755,6 +755,25 @@ namespace ControlRoomApplication.GUI
 
         }
 
-       
+        private void txtTemperature_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void startTimeTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/TempFileLocations/UIDoc.pdf";
+            System.Diagnostics.Process.Start(filename);
+        }
     }
 }
