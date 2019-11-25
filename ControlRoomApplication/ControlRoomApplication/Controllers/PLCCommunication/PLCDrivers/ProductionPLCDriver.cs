@@ -272,7 +272,7 @@ namespace ControlRoomApplication.Controllers
 
 
         public override bool Get_interlock_status() {
-            return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK] );
+            return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK] );
         }
 
 

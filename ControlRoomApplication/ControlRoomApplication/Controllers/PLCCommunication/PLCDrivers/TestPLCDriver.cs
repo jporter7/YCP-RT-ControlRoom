@@ -44,7 +44,7 @@ namespace ControlRoomApplication.Controllers
 
 
         public void setSaftyInterlock() {
-            TestMCU.PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , new ushort[] { 12 } );
+            TestMCU.PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 12 } );
         }
 
 
