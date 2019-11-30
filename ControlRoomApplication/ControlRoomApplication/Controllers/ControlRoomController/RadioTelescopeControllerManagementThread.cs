@@ -280,7 +280,10 @@ namespace ControlRoomApplication.Controllers
                 // Move to orientation
                 if (NextObjectiveOrientation != null)
                 {
-                    if (NextObjectiveOrientation.Azimuth < 0 || NextObjectiveOrientation.Elevation < 0)
+                    // Kate - removed the check for azumith < 0 in the below if statement due to Todd's request
+                    // Reason being, we should not have an azimuth below 0 be given to us. That check is in the
+                    // method calling this!
+                    if (NextObjectiveOrientation.Elevation < 0)
                     {
                         logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                         InterruptAppointmentFlag = true;

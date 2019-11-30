@@ -369,7 +369,7 @@ namespace ControlRoomApplication.Controllers
             double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
 
             // return true if working correctly, false if not
-            return Math.Abs(weatherStationTemp - temperature) < 0.001;
+            return Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET;
         }
 
         /// <summary>
