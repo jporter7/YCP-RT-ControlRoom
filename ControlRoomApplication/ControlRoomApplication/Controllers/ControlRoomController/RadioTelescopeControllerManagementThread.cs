@@ -3,6 +3,8 @@ using System.Threading;
 using System.Collections.Generic;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Database;
+using System.Net;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -18,6 +20,8 @@ namespace ControlRoomApplication.Controllers
         private volatile bool KeepThreadAlive;
         private volatile bool InterruptAppointmentFlag;
         private Orientation _NextObjectiveOrientation;
+
+        public RemoteListener TCPListener { get; }
 
         public Orientation NextObjectiveOrientation
         {
@@ -70,6 +74,9 @@ namespace ControlRoomApplication.Controllers
             KeepThreadAlive = false;
             _NextObjectiveOrientation = null;
             InterruptAppointmentFlag = false;
+
+            // currently just gets the 0th index management thread because multiple telescopes is not implemented yet!
+            TCPListener = new RemoteListener(8090, IPAddress.Parse("10.127.7.112"), controller);
         }
 
         public bool Start()
