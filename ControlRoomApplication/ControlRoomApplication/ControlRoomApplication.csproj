@@ -142,6 +142,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\Sensors\AbstractTemperatureSensor.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
+    <Compile Include="Controllers\TCPCommunication\RemoteListener.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
