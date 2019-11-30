@@ -13,7 +13,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         private PLCCommandAndQueryTypeEnum _input_get_current_safety_interlock_status;
         private PLCCommandAndQueryTypeEnum _input_cancel_active_objective_azel_position;
         private PLCCommandAndQueryTypeEnum _input_shutdown;
-        private PLCCommandAndQueryTypeEnum _input_calibrate;
+        private PLCCommandAndQueryTypeEnum _input_thermal_calibrate;
        // private PLCCommandAndQueryTypeEnum _input_set_objective_azel_position;
 
         [TestInitialize]
@@ -26,7 +26,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             _input_get_current_safety_interlock_status = PLCCommandAndQueryTypeEnum.GET_CURRENT_SAFETY_INTERLOCK_STATUS;
             _input_cancel_active_objective_azel_position = PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION;
             _input_shutdown = PLCCommandAndQueryTypeEnum.SHUTDOWN;
-            _input_calibrate = PLCCommandAndQueryTypeEnum.CALIBRATE;
+            _input_thermal_calibrate = PLCCommandAndQueryTypeEnum.THERMAL_CALIBRATE;
            // _input_set_objective_azel_position = PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION;            
         }
 
@@ -54,8 +54,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreEqual(0x6, PLCCommandAndQueryTypeConversionHelper.ConvertToByte(_input_shutdown));
             Assert.AreEqual(PLCCommandAndQueryTypeEnum.SHUTDOWN, PLCCommandAndQueryTypeConversionHelper.GetFromByte(0x6));
 
-            Assert.AreEqual(0x7, PLCCommandAndQueryTypeConversionHelper.ConvertToByte(_input_calibrate));
-            Assert.AreEqual(PLCCommandAndQueryTypeEnum.CALIBRATE, PLCCommandAndQueryTypeConversionHelper.GetFromByte(0x7));
+            Assert.AreEqual(0x7, PLCCommandAndQueryTypeConversionHelper.ConvertToByte(_input_thermal_calibrate));
+            Assert.AreEqual(PLCCommandAndQueryTypeEnum.THERMAL_CALIBRATE, PLCCommandAndQueryTypeConversionHelper.GetFromByte(0x7));
 
                 //Assert.AreEqual(0x8, PLCCommandAndQueryTypeConversionHelper.ConvertToByte(_input_set_objective_azel_position));
             //the above test fails becasue the falue of _input_set_objective_azel_position is set to 0xb but their testing it against 0x8

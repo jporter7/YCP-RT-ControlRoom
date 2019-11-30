@@ -212,7 +212,7 @@ namespace ControlRoomApplication.Controllers
 
                 case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
                 case PLCCommandAndQueryTypeEnum.SHUTDOWN:
-                case PLCCommandAndQueryTypeEnum.CALIBRATE:
+                case PLCCommandAndQueryTypeEnum.THERMAL_CALIBRATE:
                 case PLCCommandAndQueryTypeEnum.CONTROLLED_STOP:
                 case PLCCommandAndQueryTypeEnum.IMMEDIATE_STOP:
                     {

@@ -158,7 +158,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool CancelCurrentMoveCommand()
         {
-            return RadioTelescope.PLCDriver.Cancle_move();
+            return RadioTelescope.PLCDriver.Cancel_move();
             //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION));
         }
 
@@ -183,9 +183,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool CalibrateRadioTelescope()
+        public bool ThermalCalibrateRadioTelescope()
         {
-            return RadioTelescope.PLCDriver.Calibrate();
+            return RadioTelescope.PLCDriver.Thermal_Calibrate();
             //return MinorResponseIsValid(RadioTelescope.PLCClient.RequestMessageSend(PLCCommandAndQueryTypeEnum.CALIBRATE));
         }
 

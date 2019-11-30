@@ -10,6 +10,9 @@ namespace ControlRoomApplication.Entities
         protected Thread OperatingThread;
         protected bool KeepOperatingThreadAlive;
 
+        public Thread ReloadWeatherDataThread;
+        public bool KeepReloadWeatherDataThreadAlive;
+
         private double _CurrentWindSpeedMPH;
 
         public double CurrentWindSpeedMPH
@@ -17,7 +20,7 @@ namespace ControlRoomApplication.Entities
             get
             {
                 OperatingMutex.WaitOne();
-                double read = _CurrentWindSpeedMPH;
+                double read = GetWindSpeed();
                 OperatingMutex.ReleaseMutex();
 
                 return read;
@@ -41,7 +44,10 @@ namespace ControlRoomApplication.Entities
             OperatingMutex = new Mutex();
             OperatingThread = new Thread(new ThreadStart(OperationLoop));
             KeepOperatingThreadAlive = false;
-        }
+
+            ReloadWeatherDataThread = null;
+            KeepReloadWeatherDataThreadAlive = false;
+    }
 
         public bool Start()
         {
@@ -75,6 +81,8 @@ namespace ControlRoomApplication.Entities
                 KeepOperatingThreadAlive = false;
                 OperatingMutex.ReleaseMutex();
 
+                KeepReloadWeatherDataThreadAlive = false;
+                ReloadWeatherDataThread.Join();
                 OperatingThread.Join();
             }
             catch (Exception e)
@@ -103,7 +111,7 @@ namespace ControlRoomApplication.Entities
             while (KeepAlive)
             {
                 OperatingMutex.WaitOne();
-                _CurrentWindSpeedMPH = ReadCurrentWindSpeedMPH();
+                _CurrentWindSpeedMPH = GetWindSpeed();
                 KeepAlive = KeepOperatingThreadAlive;
                 OperatingMutex.ReleaseMutex();
 
@@ -115,7 +123,23 @@ namespace ControlRoomApplication.Entities
         {
             return RequestKillAndJoin();
         }
+        
+        public abstract float GetBarometricPressure();
+        public abstract float GetOutsideTemp();
+        public abstract float GetInsideTemp();
+        public abstract float GetDewPoint();
+        public abstract float GetWindChill();
+        public abstract int GetHumidity();
+        public abstract float GetTotalRain();
+        public abstract float GetDailyRain();
+        public abstract float GetMonthlyRain();
+        public abstract float GetWindSpeed();
+        public abstract String GetWindDirection();
+        public abstract float GetRainRate();
+        public abstract int GetHeatIndex();
 
-        protected abstract double ReadCurrentWindSpeedMPH();
+        // An abstract method that will get all of the information
+        // to be able to put into the database cleanly
+        //protected abstract short GetAllRecords();
     }
 }

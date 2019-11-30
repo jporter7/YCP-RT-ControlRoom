@@ -10,6 +10,7 @@ using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
 using System.Net;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
+using ControlRoomApplication.Entities.WeatherStation;
 
 namespace ControlRoomApplication.Main
 {
@@ -20,12 +21,14 @@ namespace ControlRoomApplication.Main
         public List<RadioTelescopeController> ProgramRTControllerList { get; set; }
         public List<AbstractPLCDriver> ProgramPLCDriverList { get; set; }
         public List<ControlRoomController> ProgramControlRoomControllerList { get; set; }
-        private ControlRoomController MainControlRoomController { get; set; }
+        public ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         private Thread MicroctrlServerThread { get; set; }
         private CancellationTokenSource CancellationSource { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        public AbstractWeatherStation lastCreatedProductionWeatherStation = null;
 
         enum TempSensorType
         {
@@ -73,16 +76,32 @@ namespace ControlRoomApplication.Main
 
             DatabaseOperations.DeleteLocalDatabase();
             logger.Info("<--------------- Control Room Application Started --------------->");
-            dataGridView1.ColumnCount = 3;
+            dataGridView1.ColumnCount = 5;
             dataGridView1.Columns[0].HeaderText = "ID";
             dataGridView1.Columns[1].HeaderText = "PLC IP";
             dataGridView1.Columns[2].HeaderText = "PLC Port";
+            dataGridView1.Columns[3].HeaderText = "MCU Port";
+            dataGridView1.Columns[4].HeaderText = "WS Port";
+            //dataGridView1.Columns[3].HeaderText = "MCU Port";
 
             AbstractRTDriverPairList = new List<KeyValuePair<RadioTelescope, AbstractPLCDriver>>();
             ProgramRTControllerList = new List<RadioTelescopeController>();
             ProgramPLCDriverList = new List<AbstractPLCDriver>();
             ProgramControlRoomControllerList = new List<ControlRoomController>();
             current_rt_id = 0;
+
+            // Initialize Button Settings 
+            startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
+            createWSButton.Enabled = true;
+            acceptSettings.Enabled = true;
+            startButton.BackColor = System.Drawing.Color.Gainsboro;
+            startButton.Enabled = false;
+            shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
+            shutdownButton.Enabled = false;
+            loopBackBox.Enabled = false;
+            checkBox1.Enabled = false;
+
+
             logger.Info("MainForm Initalized");
         }
 
@@ -93,25 +112,31 @@ namespace ControlRoomApplication.Main
         /// </summary>
         /// <param name="sender"> Object specifying the sender of this Event. </param>
         /// <param name="e"> The eventargs from the button being clicked on the GUI. </param>
-        private void button1_Click(object sender, EventArgs e)
+        private void startButton_Click(object sender, EventArgs e)
         {
             logger.Info("Start Telescope Button Clicked");
+            shutdownButton.BackColor = System.Drawing.Color.Red;
+            shutdownButton.Enabled = true;
+            simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
+            comboMicrocontrollerBox.Enabled = true;
+            comboBox2.Enabled = true;
+            comboBox1.Enabled = true;
+            comboEncoderType.Enabled = true;
+            comboPLCType.Enabled = true;
+            LocalIPCombo.Enabled = true;
+
+            portGroupbox.BackColor = System.Drawing.Color.Gray;
+            txtPLCIP.Enabled = true;
+            txtMcuCOMPort.Enabled = true;
+            txtWSCOMPort.Enabled = true;
+            txtPLCPort.Enabled = false;
+
+
             if (txtPLCPort.Text != null 
                 && txtPLCIP.Text != null 
                 && comboBox1.SelectedIndex > -1)
             {
-                current_rt_id++;
-                AbstractPLCDriver APLCDriver = BuildPLCDriver();
-                AbstractMicrocontroller ctrler= build_CTRL();
-                ctrler.BringUp();
-                AbstractEncoderReader encoder= build_encoder( APLCDriver );
-               RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder );
                 
-
-                // Add the RT/PLC driver pair and the RT controller to their respective lists
-                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
-                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
-                ProgramPLCDriverList.Add(APLCDriver);
 
                 if (checkBox1.Checked)
                 {
@@ -121,20 +146,38 @@ namespace ControlRoomApplication.Main
                     logger.Info("Disabling ManualControl and FreeControl");
                     //ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
+                   // createWSButton.Enabled = false;
                 }
                 else
                 {
                     logger.Info("Enabling ManualControl and FreeControl");
                    // ManualControl.Enabled = true;
                     FreeControl.Enabled = true;
+                    
                 }
 
                 // If the main control room controller hasn't been initialized, initialize it.
                 if (MainControlRoomController == null)
                 {
                     logger.Info("Initializing ControlRoomController");
-                    MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                    if (lastCreatedProductionWeatherStation == null)
+                        MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                    else
+                        MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
                 }
+
+                current_rt_id++;
+                AbstractPLCDriver APLCDriver = BuildPLCDriver();
+                AbstractMicrocontroller ctrler = build_CTRL();
+                ctrler.BringUp();
+                AbstractEncoderReader encoder = build_encoder(APLCDriver);
+                RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder);
+                ARadioTelescope.WeatherStation = MainControlRoomController.ControlRoom.WeatherStation;
+
+                // Add the RT/PLC driver pair and the RT controller to their respective lists
+                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
+                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
+                ProgramPLCDriverList.Add(APLCDriver);
 
                 // Start plc server and attempt to connect to it.
                 logger.Info("Starting plc server and attempting to connect to it");
@@ -180,7 +223,7 @@ namespace ControlRoomApplication.Main
         private void AddConfigurationToDataGrid()
         {
             logger.Info("Adding Configuration To DataGrid");
-            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text };
+            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text,txtMcuCOMPort.Text, txtWSCOMPort.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -222,6 +265,12 @@ namespace ControlRoomApplication.Main
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
         }
+        private void textBox3_Focus(object sender, EventArgs e)
+        {
+            logger.Info("textBox3_Focus Event");
+            txtWSCOMPort.Text = "";
+        }
+
 
         /// <summary>
         /// Erases the current text in the plc port textbox. 
@@ -251,7 +300,8 @@ namespace ControlRoomApplication.Main
             try {
                 DiagnosticsForm diagnosticForm = new DiagnosticsForm( MainControlRoomController.ControlRoom , dataGridView1.CurrentCell.RowIndex );
                 diagnosticForm.Show();
-            } catch {
+            }
+            catch {
 
             }
         }
@@ -322,7 +372,8 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        public AbstractEncoderReader build_encoder( AbstractPLCDriver plc ) {
+        public AbstractEncoderReader build_encoder( AbstractPLCDriver plc )
+        {
             return new SimulatedEncoder(plc , LocalIPCombo.Text , 1602 );
         }
 
@@ -338,7 +389,7 @@ namespace ControlRoomApplication.Main
 
                 default:
                     logger.Info( "Building SimulationPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100,true);
+                    return new SimulatedMicrocontroller( SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
             }
         }
 
@@ -377,8 +428,8 @@ namespace ControlRoomApplication.Main
             switch (comboBox2.SelectedIndex)
             {
                 case 0:
-                    logger.Error("The production weather station is not yet supported.");
-                    throw new NotImplementedException("The production weather station is not yet supported.");
+                    logger.Info("Building ProductionWeatherStation");
+                    return new WeatherStation(1000, int.Parse(txtWSCOMPort.Text));
 
                 case 2:
                     logger.Error("The test weather station is not yet supported.");
@@ -412,18 +463,18 @@ namespace ControlRoomApplication.Main
         /// Generates a manual control form that allows manual control access to a radio telescope
         /// instance through the generated form.
         /// </summary>
-        private void ManualControl_Click(object sender, EventArgs e)
-        {
-            logger.Info("Manual Control Button Clicked");
-            ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope( .1 , .1 , 0 , 0 );
-            ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
-            // Create free control thread
-            Thread ManualControlThread = new Thread(() => manualControlWindow.ShowDialog())
-            {
-                Name = "Manual Control Thread"
-            };
-            ManualControlThread.Start();
-        }
+        //private void ManualControl_Click(object sender, EventArgs e)
+        //{
+        //    logger.Info("Manual Control Button Clicked");
+        //    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope( .1 , .1 , 0 , 0 );
+        //    ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+        //    // Create free control thread
+        //    Thread ManualControlThread = new Thread(() => manualControlWindow.ShowDialog())
+        //    {
+        //        Name = "Manual Control Thread"
+        //    };
+        //    ManualControlThread.Start();
+        //}
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -432,9 +483,18 @@ namespace ControlRoomApplication.Main
 
         private void loopBackBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (comboBox2.Text != "Production Weather Station")
+            {
+                startButton.BackColor = System.Drawing.Color.LimeGreen;
+                startButton.Enabled = true;
+            }
+            
+
             if (loopBackBox.Checked)
             {
-                this.txtPLCIP.Text = "127.0.0.1";
+                this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
+                this.txtMcuCOMPort.Text = "221"; //default MCU Port
+                this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("127.0.0.1"));
@@ -442,6 +502,99 @@ namespace ControlRoomApplication.Main
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
             this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
+        }
+
+        private void createWSButton_Click(object sender, EventArgs e)
+        {
+            startButton.BackColor = System.Drawing.Color.LimeGreen;
+            startButton.Enabled = true;
+            lastCreatedProductionWeatherStation = BuildWeatherStation();
+        }
+
+        private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox2_Click(object sender, EventArgs e) { 
+}
+
+        private void txtPLCPort_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void LocalIPCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtPLCIP_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void acceptSettings_Click(object sender, EventArgs e)
+        {
+            if (comboBox2.Text != "Production Weather Station")
+            {
+                startButton.BackColor = System.Drawing.Color.LimeGreen;
+                startButton.Enabled = true;
+            }
+            startRTGroupbox.BackColor = System.Drawing.Color.Gray;
+            loopBackBox.Enabled = true;
+            checkBox1.Enabled = true;
+
+            simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
+            comboMicrocontrollerBox.Enabled = false;
+            comboBox2.Enabled = false;
+            comboBox1.Enabled = false;
+            comboEncoderType.Enabled = false;
+            comboPLCType.Enabled = false;
+            LocalIPCombo.Enabled = false;
+
+            portGroupbox.BackColor = System.Drawing.Color.DarkGray;
+            txtPLCIP.Enabled = false;
+            txtMcuCOMPort.Enabled = false;
+            txtWSCOMPort.Enabled = false;
+            txtPLCPort.Enabled = false;
+        }
+
+        //Help button clicked ( user interface documentation PDF)
+        private void helpButton_click(object sender, EventArgs e)
+        {
+            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
+            System.Diagnostics.Process.Start(filename);
+        }
+
+        private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

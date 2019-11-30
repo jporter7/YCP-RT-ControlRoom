@@ -87,10 +87,10 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                     //Thread.Sleep(1000);
                 }
                 Console.WriteLine( "________________PLC sim running" );
-                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , new ushort[] { 1 } );
+                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 1 } );
                 while(runsimulator) {
                     if(isTest) {
-                        PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , new ushort[] { 1 } );
+                        PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 1 } );
                         Thread.Sleep( 5 );
                         continue;
                     }

@@ -181,25 +181,6 @@ namespace ControlRoomApplication.Controllers {
             log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public class ScaleModelPLCDriver : AbstractPLCDriver {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
         public PLCConnector PlcConnector { get; set; }
@@ -234,7 +215,7 @@ namespace ControlRoomApplication.Controllers {
             return new Orientation();
         }
 
-        public override bool Cancle_move() {
+        public override bool Cancel_move() {
             return true;
 
         }
@@ -244,7 +225,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Calibrate() {
+        public override bool Thermal_Calibrate() {
             return true;
 
         }
@@ -304,25 +285,95 @@ namespace ControlRoomApplication.Controllers {
 
 
 
-        public override bool Move_to_orientation( Orientation target_orientation , Orientation current_orientation ) {
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        {
 
 
             int positionTranslationAZ, positionTranslationEL;
-            positionTranslationAZ = ConversionHelper.DegreesToSteps( (target_orientation.Azimuth - current_orientation.Azimuth) , MotorConstants.GEARING_RATIO_AZIMUTH );
-            positionTranslationEL = ConversionHelper.DegreesToSteps( (target_orientation.Elevation - current_orientation.Elevation) , MotorConstants.GEARING_RATIO_ELEVATION );
+            positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
+            positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
 
-            int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_ELEVATION );
-            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_AZIMUTH);
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
-            Console.WriteLine( "degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation );
-            Console.WriteLine( "degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation );
+            Console.WriteLine("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
+            Console.WriteLine("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move( AZ_Speed , EL_Speed , 50 , positionTranslationAZ , positionTranslationEL );
+            return send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL);
 
+        }
 
+        public override bool SnowDump()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Stow()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Full_360_CCW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitAzimuthLeftLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Full_360_CW_Rotation()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitAzimuthRightLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+      
+        public override bool Recover_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitElevationLowerLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool HitElevationUpperLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool RecoverFromLimitSwitch()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool FullElevationMove()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Hit_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Hit_CCW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Recover_CCW_Hardstop()
+        {
+            throw new NotImplementedException();
         }
 
         public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {

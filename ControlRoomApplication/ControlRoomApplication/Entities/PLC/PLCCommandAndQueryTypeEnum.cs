@@ -11,7 +11,7 @@ namespace ControlRoomApplication.Entities
         GET_CURRENT_SAFETY_INTERLOCK_STATUS = 0x4,
         CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION = 0x5,
         SHUTDOWN = 0x6,
-        CALIBRATE = 0x7,
+        THERMAL_CALIBRATE = 0x7,
         SET_CONFIGURATION = 0x8,
         CONTROLLED_STOP = 0x9,
         IMMEDIATE_STOP= 0xA,
@@ -71,7 +71,7 @@ namespace ControlRoomApplication.Entities
         EL_TOP_WARNING = 14 + 1,
         EL_TOP_LIMIT = 15 + 1,
 
-        Safty_INTERLOCK = 18 + 1,
+        Safety_INTERLOCK = 18 + 1,
 
         AZ_MOTOR_CURRENT = 40 + 1,
         EL_MOTOR_CURRENT = 42 + 1
