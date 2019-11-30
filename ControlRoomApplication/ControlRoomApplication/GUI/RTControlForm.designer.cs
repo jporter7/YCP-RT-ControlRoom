@@ -482,9 +482,9 @@
             this.groupBox4.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox4.Controls.Add(this.editControlScripts);
             this.groupBox4.Controls.Add(this.controlScriptsCombo);
-            this.groupBox4.Location = new System.Drawing.Point(297, 51);
+            this.groupBox4.Location = new System.Drawing.Point(297, 36);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(460, 84);
+            this.groupBox4.Size = new System.Drawing.Size(460, 99);
             this.groupBox4.TabIndex = 24;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Control Scripts";
