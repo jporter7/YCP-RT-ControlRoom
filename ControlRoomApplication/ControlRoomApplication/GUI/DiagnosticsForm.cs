@@ -105,7 +105,7 @@ namespace ControlRoomApplication.GUI
             controlRoom.RadioTelescopes[rtId].Micro_controler.BringUp();
 
             SetCurrentWeatherData();
-            editDiagScriptsButton.Enabled = false;
+            runDiagScriptsButton.Enabled = false;
             logger.Info("DiagnosticsForm Initalized");
         }
 
@@ -355,71 +355,71 @@ namespace ControlRoomApplication.GUI
             lblEleProx1.Text = _elLowerProx.ToString();
             lblEleProx2.Text = _elUpperProx.ToString();
 
-            /*** Temperature Logic Start***/
-            if (elevationTemperature <= 79 && azimuthTemperature <= 79)
-            {
-                warningLabel.Visible = false;
-                lblShutdown.Visible = false;
-                fanLabel.Visible = false;
-                warningSent = false;
-                shutdownSent = false;
-            }
-            else if (elevationTemperature > 79 && elevationTemperature < 100 || azimuthTemperature > 79 && azimuthTemperature < 100)
-            {
-                if (warningSent == false)
-                {
-                    warningLabel.Visible = true;
-                }
-                else
-                {
-                    warningLabel.Visible = false;
-                }
+            ///*** Temperature Logic Start***/
+            //if (elevationTemperature <= 79 && azimuthTemperature <= 79)
+            //{
+            //    warningLabel.Visible = false;
+            //    lblShutdown.Visible = false;
+            //    fanLabel.Visible = false;
+            //    warningSent = false;
+            //    shutdownSent = false;
+            //}
+            //else if (elevationTemperature > 79 && elevationTemperature < 100 || azimuthTemperature > 79 && azimuthTemperature < 100)
+            //{
+            //    if (warningSent == false)
+            //    {
+            //        warningLabel.Visible = true;
+            //    }
+            //    else
+            //    {
+            //        warningLabel.Visible = false;
+            //    }
 
-                lblShutdown.Visible = false;
-                warningLabel.ForeColor = Color.Yellow;
-                warningLabel.Text = "Warning Sent";
+            //    lblShutdown.Visible = false;
+            //    warningLabel.ForeColor = Color.Yellow;
+            //    warningLabel.Text = "Warning Sent";
 
-                warningSent = true;
+            //    warningSent = true;
 
-                fanLabel.Visible = true;
-                fanLabel.ForeColor = Color.Blue;
-                fanLabel.Text = "Fans On";
+            //    fanLabel.Visible = true;
+            //    fanLabel.ForeColor = Color.Blue;
+            //    fanLabel.Text = "Fans On";
 
-            }
-            else if (elevationTemperature >= 100 || azimuthTemperature >= 100)
-            {
-                warningLabel.Visible = false;
+            //}
+            //else if (elevationTemperature >= 100 || azimuthTemperature >= 100)
+            //{
+            //    warningLabel.Visible = false;
 
-                if (shutdownSent == false)
-                {
-                    lblShutdown.Visible = true;
-                }
-                else
-                {
-                    lblShutdown.Visible = false;
-                }
+            //    if (shutdownSent == false)
+            //    {
+            //        lblShutdown.Visible = true;
+            //    }
+            //    else
+            //    {
+            //        lblShutdown.Visible = false;
+            //    }
 
-                lblShutdown.ForeColor = Color.Red;
-                lblShutdown.Text = "Shutdown Sent";
+            //    lblShutdown.ForeColor = Color.Red;
+            //    lblShutdown.Text = "Shutdown Sent";
 
-                shutdownSent = true;
+            //    shutdownSent = true;
 
-                fanLabel.Visible = true;
-                fanLabel.ForeColor = Color.Blue;
-                fanLabel.Text = "Fans Stay On";
+            //    fanLabel.Visible = true;
+            //    fanLabel.ForeColor = Color.Blue;
+            //    fanLabel.Text = "Fans Stay On";
 
 
-            }
-            else
-            {
-                warningLabel.Visible = false;
-                warningLabel.ForeColor = Color.Black;
-                warningLabel.Text = "";
+            //}
+            //else
+            //{
+            //    warningLabel.Visible = false;
+            //    warningLabel.ForeColor = Color.Black;
+            //    warningLabel.Text = "";
 
-                fanLabel.Visible = false;
-                fanLabel.ForeColor = Color.Blue;
-                fanLabel.Text = "Fans On";
-            }
+            //    fanLabel.Visible = false;
+            //    fanLabel.ForeColor = Color.Blue;
+            //    fanLabel.Text = "Fans On";
+            //}
 
             /*** Temperature Logic End***/
             /*
@@ -522,7 +522,7 @@ namespace ControlRoomApplication.GUI
 
         private void button3_Click(object sender, System.EventArgs e)
         {
-            double tempVal; //temperature value
+           // double tempVal; //temperature value
 
 
             //if (double.TryParse(txtCustTemp.Text, out tempVal))
@@ -600,9 +600,25 @@ namespace ControlRoomApplication.GUI
         private void editDiagScriptsButton_Click(object sender, EventArgs e)
         {
             logger.Info("Edit Scripts Button Clicked");
+            int caseSwitch = diagnosticScriptCombo.SelectedIndex;
 
-            EditDiagScriptsForm editDiagScriptsForm = new EditDiagScriptsForm();
-            editDiagScriptsForm.Show();
+            switch (caseSwitch)
+            {
+                case 0:
+
+                    //360 Script selected (index 0 of control script combo)
+                    break;
+                case 1:
+
+                    //360 counter clock Script selected (index 0 of control script combo)
+                    break;
+             
+                default:
+
+                    //Script cannot be run
+                    break;
+            }
+
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
@@ -847,6 +863,30 @@ namespace ControlRoomApplication.GUI
                 ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
 
             }
+        }
+
+        private void splitContainer1_Panel1_Paint_1(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void diagnosticScriptCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (diagnosticScriptCombo.SelectedIndex >= 0)
+            {
+                runDiagScriptsButton.Enabled = true;
+                runDiagScriptsButton.BackColor = System.Drawing.Color.LimeGreen;
+            }
+        }
+
+        private void warningLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void selectDemo_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

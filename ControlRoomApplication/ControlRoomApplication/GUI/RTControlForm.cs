@@ -19,6 +19,7 @@ namespace ControlRoomApplication.Main
        // private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         public int rtId { get; set; }
+        
         private static int current_rt_id;
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -50,14 +51,9 @@ namespace ControlRoomApplication.Main
             DatabaseOperations.AddAppointment(CurrentAppointment);
             //Calibrate Move
             CalibrateMove();
-            editControlScripts.Enabled = false;
+            runControlScriptButton.Enabled = false;
 
-            // If the main control room controller hasn't been initialized, initialize it.
-            //if (ControlRoomController == null)
-            //{
-            //    logger.Info("Initializing ControlRoomController");
-            //    ControlRoomController = new ControlRoomController(new ControlRoom());
-            //}
+       
 
             //Initialize Free control Box as disabled
             freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
@@ -344,6 +340,7 @@ namespace ControlRoomApplication.Main
                 editButton.Text = "Edit Position";
                 editButton.BackColor = System.Drawing.Color.Red;
                 freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                manualControlButton.BackColor = System.Drawing.Color.Red;
                 decIncGroupbox.BackColor = System.Drawing.Color.DarkGray;
                 RAIncGroupbox.BackColor = System.Drawing.Color.DarkGray;
                 double newRA;
@@ -365,6 +362,7 @@ namespace ControlRoomApplication.Main
             else
             {
                 editButton.Text = "Save Position";
+                manualControlButton.BackColor = System.Drawing.Color.DarkGray;
                 editButton.BackColor = System.Drawing.Color.LimeGreen;
                 freeControlGroupbox.BackColor = System.Drawing.Color.Gainsboro;
                 decIncGroupbox.BackColor = System.Drawing.Color.Gray;
@@ -385,13 +383,9 @@ namespace ControlRoomApplication.Main
             tenButtonDec.Enabled = !save_state;
             TargetRATextBox.ReadOnly = save_state;
             TargetDecTextBox.ReadOnly = save_state;
+
+            manualControlButton.Enabled = save_state;
         }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         //
         private void manualControlButton_Click(object sender, EventArgs e)
         {
@@ -403,20 +397,15 @@ namespace ControlRoomApplication.Main
                 manualControlButton.Text = "Activate Manual Control";
                 manualControlButton.BackColor = System.Drawing.Color.Red;
                 manualGroupBox.BackColor = System.Drawing.Color.DarkGray;
-                //plusElaButton.BackColor = System.Drawing.Color.DarkGray;
-                //plusJogButton.BackColor = System.Drawing.Color.DarkGray;
-                //subElaButton.BackColor = System.Drawing.Color.DarkGray;
-                //subJogButton.BackColor = System.Drawing.Color.DarkGray;
+                editButton.BackColor = System.Drawing.Color.Red;
             }
             else if(manual_save_state)
             {
                 manualControlButton.Text = "Deactivate Manual Control";
                 manualControlButton.BackColor = System.Drawing.Color.LimeGreen;
                 manualGroupBox.BackColor = System.Drawing.Color.Gainsboro;
-                //plusElaButton.BackColor = System.Drawing.Color.DarkGray;
-                //plusJogButton.BackColor = System.Drawing.Color.DarkGray;
-                //subElaButton.BackColor = System.Drawing.Color.DarkGray;
-                //subJogButton.BackColor = System.Drawing.Color.DarkGray;
+                editButton.BackColor = System.Drawing.Color.DarkGray;
+
             }
             plusElaButton.Enabled = manual_save_state;
             plusJogButton.Enabled = manual_save_state;
@@ -425,6 +414,8 @@ namespace ControlRoomApplication.Main
             ControledButtonRadio.Enabled = manual_save_state;
             immediateRadioButton.Enabled = manual_save_state;
             speedComboBox.Enabled = manual_save_state;
+
+            editButton.Enabled = !manual_save_state;
         }
 
         private void speedComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -449,18 +440,41 @@ namespace ControlRoomApplication.Main
             }
         }
         //Run Script Button Functionality
+        //Case Depends on which script is currently selected 
         private void runControlScript_Click(object sender, EventArgs e)
         {
         logger.Info("Run Script Button Clicked");
+            int caseSwitch = controlScriptsCombo.SelectedIndex;
+
+            switch (caseSwitch)
+            {
+                case 0:
+
+                    //Snow Dump Script selected (index 0 of control script combo)
+                    break;
+                case 1:
+
+                    //Stow Script selected (index 0 of control script combo)
+                    break;
+                case 2:
+
+                    //Calibrate Script selected (index 0 of control script combo)
+                    break;
+                default:
+
+                    //Script cannot be run
+                    break;
+            }
         }
 
-        private void RAIncGroupbox_Enter(object sender, EventArgs e)
+        //Control Script combo box enables run button when a script has been selected
+        private void controlScriptsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-
-        }
-
-        private void manualGroupBox_Enter(object sender, EventArgs e)
-        {
+            if (controlScriptsCombo.SelectedIndex >= 0)
+            {
+                runControlScriptButton.Enabled = true;
+                runControlScriptButton.BackColor = System.Drawing.Color.LimeGreen;
+            }
 
         }
 
@@ -547,10 +561,22 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void overRideButton_Click(object sender, EventArgs e)
+        private void RAIncGroupbox_Enter(object sender, EventArgs e)
         {
 
         }
+
+        private void manualGroupBox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
     }
 }
 

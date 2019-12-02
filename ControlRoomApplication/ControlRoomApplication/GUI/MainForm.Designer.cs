@@ -65,7 +65,7 @@
             // 
             this.startButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.startButton.BackColor = System.Drawing.Color.LimeGreen;
-            this.startButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.startButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.startButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.startButton.ForeColor = System.Drawing.Color.Black;
             this.startButton.Location = new System.Drawing.Point(197, 105);
@@ -99,7 +99,7 @@
             // 
             this.shutdownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.shutdownButton.BackColor = System.Drawing.Color.Red;
-            this.shutdownButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.shutdownButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.shutdownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.shutdownButton.Location = new System.Drawing.Point(13, 105);
             this.shutdownButton.Margin = new System.Windows.Forms.Padding(2);
@@ -205,7 +205,7 @@
             this.FreeControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.FreeControl.BackColor = System.Drawing.Color.LightGray;
             this.FreeControl.Enabled = false;
-            this.FreeControl.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.FreeControl.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.FreeControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.FreeControl.Location = new System.Drawing.Point(13, 13);
             this.FreeControl.Margin = new System.Windows.Forms.Padding(2);
