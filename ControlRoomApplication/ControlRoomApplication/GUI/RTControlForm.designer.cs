@@ -62,7 +62,7 @@
             this.freeControlGroupbox = new System.Windows.Forms.GroupBox();
             this.controlScriptsCombo = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.editControlScripts = new System.Windows.Forms.Button();
+            this.runControlScriptButton = new System.Windows.Forms.Button();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -318,7 +318,7 @@
             // 
             this.editButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.editButton.BackColor = System.Drawing.Color.OrangeRed;
-            this.editButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.editButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.editButton.Location = new System.Drawing.Point(250, 10);
             this.editButton.Name = "editButton";
             this.editButton.Size = new System.Drawing.Size(131, 25);
@@ -476,11 +476,12 @@
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
             this.controlScriptsCombo.TabIndex = 23;
             this.controlScriptsCombo.Text = "Radio Telescope Control Scripts";
+            this.controlScriptsCombo.SelectedIndexChanged += new System.EventHandler(this.controlScriptsCombo_SelectedIndexChanged);
             // 
             // groupBox4
             // 
             this.groupBox4.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox4.Controls.Add(this.editControlScripts);
+            this.groupBox4.Controls.Add(this.runControlScriptButton);
             this.groupBox4.Controls.Add(this.controlScriptsCombo);
             this.groupBox4.Location = new System.Drawing.Point(297, 36);
             this.groupBox4.Name = "groupBox4";
@@ -489,17 +490,17 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Control Scripts";
             // 
-            // editControlScripts
+            // runControlScriptButton
             // 
-            this.editControlScripts.BackColor = System.Drawing.Color.DarkGray;
-            this.editControlScripts.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.editControlScripts.Location = new System.Drawing.Point(320, 32);
-            this.editControlScripts.Name = "editControlScripts";
-            this.editControlScripts.Size = new System.Drawing.Size(126, 33);
-            this.editControlScripts.TabIndex = 24;
-            this.editControlScripts.Text = "Run Script";
-            this.editControlScripts.UseVisualStyleBackColor = false;
-            this.editControlScripts.Click += new System.EventHandler(this.runControlScript_Click);
+            this.runControlScriptButton.BackColor = System.Drawing.Color.DarkGray;
+            this.runControlScriptButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.runControlScriptButton.Location = new System.Drawing.Point(320, 32);
+            this.runControlScriptButton.Name = "runControlScriptButton";
+            this.runControlScriptButton.Size = new System.Drawing.Size(126, 33);
+            this.runControlScriptButton.TabIndex = 24;
+            this.runControlScriptButton.Text = "Run Script";
+            this.runControlScriptButton.UseVisualStyleBackColor = false;
+            this.runControlScriptButton.Click += new System.EventHandler(this.runControlScript_Click);
             // 
             // manualGroupBox
             // 
@@ -560,7 +561,7 @@
             // 
             this.manualControlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.manualControlButton.BackColor = System.Drawing.Color.OrangeRed;
-            this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manualControlButton.Location = new System.Drawing.Point(179, 45);
             this.manualControlButton.Name = "manualControlButton";
             this.manualControlButton.Size = new System.Drawing.Size(150, 28);
@@ -762,7 +763,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button editControlScripts;
+        private System.Windows.Forms.Button runControlScriptButton;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox statusTextBox;

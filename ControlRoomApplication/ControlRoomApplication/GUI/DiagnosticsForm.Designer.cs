@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -42,14 +42,9 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.lblAzimuthTemp = new System.Windows.Forms.Label();
             this.lblElevationTemp = new System.Windows.Forms.Label();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.fldAzTemp = new System.Windows.Forms.Label();
             this.fldElTemp = new System.Windows.Forms.Label();
             this.btnTest = new System.Windows.Forms.Button();
-            this.warningLabel = new System.Windows.Forms.Label();
-            this.fanLabel = new System.Windows.Forms.Label();
-            this.lblShutdown = new System.Windows.Forms.Label();
             this.selectDemo = new System.Windows.Forms.CheckBox();
             this.lblElLimStatus2 = new System.Windows.Forms.Label();
             this.lblElLimStatus1 = new System.Windows.Forms.Label();
@@ -107,14 +102,13 @@
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.editDiagScriptsButton = new System.Windows.Forms.Button();
+            this.runDiagScriptsButton = new System.Windows.Forms.Button();
             this.diagnosticScriptCombo = new System.Windows.Forms.ComboBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
@@ -155,9 +149,10 @@
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.button8 = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.groupBox14 = new System.Windows.Forms.GroupBox();
+            this.button11 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -171,7 +166,6 @@
             this.splitContainer2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -180,8 +174,11 @@
             this.groupBox12.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox11.SuspendLayout();
-            this.tabPage4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.groupBox14.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -190,14 +187,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle6;
             this.dataGridView1.Location = new System.Drawing.Point(4, 8);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -297,7 +294,7 @@
             // 
             this.lblAzimuthTemp.AutoSize = true;
             this.lblAzimuthTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzimuthTemp.Location = new System.Drawing.Point(6, 82);
+            this.lblAzimuthTemp.Location = new System.Drawing.Point(10, 9);
             this.lblAzimuthTemp.Name = "lblAzimuthTemp";
             this.lblAzimuthTemp.Size = new System.Drawing.Size(109, 16);
             this.lblAzimuthTemp.TabIndex = 14;
@@ -307,44 +304,18 @@
             // 
             this.lblElevationTemp.AutoSize = true;
             this.lblElevationTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElevationTemp.Location = new System.Drawing.Point(6, 100);
+            this.lblElevationTemp.Location = new System.Drawing.Point(11, 31);
             this.lblElevationTemp.Name = "lblElevationTemp";
             this.lblElevationTemp.Size = new System.Drawing.Size(121, 16);
             this.lblElevationTemp.TabIndex = 15;
             this.lblElevationTemp.Text = "Elevation Temp:";
             this.lblElevationTemp.Click += new System.EventHandler(this.lblElevationTemp_Click);
             // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Location = new System.Drawing.Point(230, 79);
-            this.radioButton1.Margin = new System.Windows.Forms.Padding(2);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(59, 17);
-            this.radioButton1.TabIndex = 16;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Celcius";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(230, 100);
-            this.radioButton2.Margin = new System.Windows.Forms.Padding(2);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(75, 17);
-            this.radioButton2.TabIndex = 17;
-            this.radioButton2.Text = "Fahrenheit";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
             // fldAzTemp
             // 
             this.fldAzTemp.AutoSize = true;
             this.fldAzTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldAzTemp.Location = new System.Drawing.Point(184, 79);
+            this.fldAzTemp.Location = new System.Drawing.Point(216, 5);
             this.fldAzTemp.Name = "fldAzTemp";
             this.fldAzTemp.Size = new System.Drawing.Size(27, 20);
             this.fldAzTemp.TabIndex = 18;
@@ -355,7 +326,7 @@
             // 
             this.fldElTemp.AutoSize = true;
             this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldElTemp.Location = new System.Drawing.Point(184, 99);
+            this.fldElTemp.Location = new System.Drawing.Point(216, 33);
             this.fldElTemp.Name = "fldElTemp";
             this.fldElTemp.Size = new System.Drawing.Size(27, 20);
             this.fldElTemp.TabIndex = 19;
@@ -366,50 +337,13 @@
             // 
             this.btnTest.BackColor = System.Drawing.Color.LimeGreen;
             this.btnTest.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnTest.Location = new System.Drawing.Point(95, 12);
+            this.btnTest.Location = new System.Drawing.Point(115, 16);
             this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(82, 34);
+            this.btnTest.Size = new System.Drawing.Size(69, 27);
             this.btnTest.TabIndex = 21;
-            this.btnTest.Text = "Test Button";
+            this.btnTest.Text = "Test ";
             this.btnTest.UseVisualStyleBackColor = false;
             this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
-            // 
-            // warningLabel
-            // 
-            this.warningLabel.AutoSize = true;
-            this.warningLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.warningLabel.ForeColor = System.Drawing.Color.Black;
-            this.warningLabel.Location = new System.Drawing.Point(71, 16);
-            this.warningLabel.Name = "warningLabel";
-            this.warningLabel.Size = new System.Drawing.Size(69, 16);
-            this.warningLabel.TabIndex = 22;
-            this.warningLabel.Text = "Warning ";
-            this.warningLabel.Visible = false;
-            // 
-            // fanLabel
-            // 
-            this.fanLabel.AutoSize = true;
-            this.fanLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fanLabel.ForeColor = System.Drawing.Color.Black;
-            this.fanLabel.Location = new System.Drawing.Point(4, 16);
-            this.fanLabel.Name = "fanLabel";
-            this.fanLabel.Size = new System.Drawing.Size(38, 16);
-            this.fanLabel.TabIndex = 23;
-            this.fanLabel.Text = "Fan ";
-            this.fanLabel.Visible = false;
-            this.fanLabel.Click += new System.EventHandler(this.fanLabel_Click);
-            // 
-            // lblShutdown
-            // 
-            this.lblShutdown.AutoSize = true;
-            this.lblShutdown.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblShutdown.ForeColor = System.Drawing.Color.Black;
-            this.lblShutdown.Location = new System.Drawing.Point(185, 16);
-            this.lblShutdown.Name = "lblShutdown";
-            this.lblShutdown.Size = new System.Drawing.Size(74, 16);
-            this.lblShutdown.TabIndex = 27;
-            this.lblShutdown.Text = "Shutdown";
-            this.lblShutdown.Visible = false;
             // 
             // selectDemo
             // 
@@ -420,6 +354,7 @@
             this.selectDemo.TabIndex = 29;
             this.selectDemo.Text = "Run Demo";
             this.selectDemo.UseVisualStyleBackColor = true;
+            this.selectDemo.CheckedChanged += new System.EventHandler(this.selectDemo_CheckedChanged);
             // 
             // lblElLimStatus2
             // 
@@ -849,7 +784,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(4, 59);
+            this.label14.Location = new System.Drawing.Point(10, 59);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(33, 13);
             this.label14.TabIndex = 60;
@@ -867,7 +802,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(4, 36);
+            this.label16.Location = new System.Drawing.Point(10, 36);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(47, 13);
             this.label16.TabIndex = 58;
@@ -946,11 +881,10 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(2, 11);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(647, 437);
+            this.tabControl1.Size = new System.Drawing.Size(653, 437);
             this.tabControl1.TabIndex = 74;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -967,7 +901,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(639, 411);
+            this.tabPage1.Size = new System.Drawing.Size(645, 411);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Appointment Control";
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
@@ -999,7 +933,7 @@
             // groupBox8
             // 
             this.groupBox8.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox8.Controls.Add(this.editDiagScriptsButton);
+            this.groupBox8.Controls.Add(this.runDiagScriptsButton);
             this.groupBox8.Controls.Add(this.diagnosticScriptCombo);
             this.groupBox8.Location = new System.Drawing.Point(344, 120);
             this.groupBox8.Name = "groupBox8";
@@ -1008,17 +942,17 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Diagnostic Scripts";
             // 
-            // editDiagScriptsButton
+            // runDiagScriptsButton
             // 
-            this.editDiagScriptsButton.BackColor = System.Drawing.Color.DarkGray;
-            this.editDiagScriptsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.editDiagScriptsButton.Location = new System.Drawing.Point(203, 19);
-            this.editDiagScriptsButton.Name = "editDiagScriptsButton";
-            this.editDiagScriptsButton.Size = new System.Drawing.Size(75, 24);
-            this.editDiagScriptsButton.TabIndex = 24;
-            this.editDiagScriptsButton.Text = "Run Script";
-            this.editDiagScriptsButton.UseVisualStyleBackColor = false;
-            this.editDiagScriptsButton.Click += new System.EventHandler(this.editDiagScriptsButton_Click);
+            this.runDiagScriptsButton.BackColor = System.Drawing.Color.DarkGray;
+            this.runDiagScriptsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.runDiagScriptsButton.Location = new System.Drawing.Point(203, 19);
+            this.runDiagScriptsButton.Name = "runDiagScriptsButton";
+            this.runDiagScriptsButton.Size = new System.Drawing.Size(75, 24);
+            this.runDiagScriptsButton.TabIndex = 24;
+            this.runDiagScriptsButton.Text = "Run Script";
+            this.runDiagScriptsButton.UseVisualStyleBackColor = false;
+            this.runDiagScriptsButton.Click += new System.EventHandler(this.editDiagScriptsButton_Click);
             // 
             // diagnosticScriptCombo
             // 
@@ -1031,6 +965,7 @@
             this.diagnosticScriptCombo.Name = "diagnosticScriptCombo";
             this.diagnosticScriptCombo.Size = new System.Drawing.Size(180, 21);
             this.diagnosticScriptCombo.TabIndex = 23;
+            this.diagnosticScriptCombo.SelectedIndexChanged += new System.EventHandler(this.diagnosticScriptCombo_SelectedIndexChanged);
             // 
             // groupBox3
             // 
@@ -1061,7 +996,8 @@
             // 
             // splitContainer2
             // 
-            this.splitContainer2.Location = new System.Drawing.Point(10, 19);
+            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.splitContainer2.Location = new System.Drawing.Point(-6, 19);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -1097,8 +1033,8 @@
             this.splitContainer2.Panel2.Controls.Add(this.button3);
             this.splitContainer2.Panel2.Controls.Add(this.button6);
             this.splitContainer2.Panel2.Controls.Add(this.button4);
-            this.splitContainer2.Size = new System.Drawing.Size(347, 185);
-            this.splitContainer2.SplitterDistance = 90;
+            this.splitContainer2.Size = new System.Drawing.Size(410, 191);
+            this.splitContainer2.SplitterDistance = 92;
             this.splitContainer2.TabIndex = 18;
             // 
             // groupBox1
@@ -1121,48 +1057,26 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.Gray;
-            this.tabPage2.Controls.Add(this.groupBox7);
+            this.tabPage2.Controls.Add(this.groupBox14);
             this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(639, 411);
+            this.tabPage2.Size = new System.Drawing.Size(645, 411);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Sensor Data";
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox7.Controls.Add(this.warningLabel);
-            this.groupBox7.Controls.Add(this.fanLabel);
-            this.groupBox7.Controls.Add(this.lblShutdown);
-            this.groupBox7.Location = new System.Drawing.Point(317, 347);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(313, 54);
-            this.groupBox7.TabIndex = 39;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Status Labels";
             // 
             // groupBox6
             // 
             this.groupBox6.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox6.Controls.Add(this.lblAzimuthTemp);
-            this.groupBox6.Controls.Add(this.fldElTemp);
-            this.groupBox6.Controls.Add(this.label25);
-            this.groupBox6.Controls.Add(this.lblElevationTemp);
-            this.groupBox6.Controls.Add(this.label26);
-            this.groupBox6.Controls.Add(this.radioButton1);
-            this.groupBox6.Controls.Add(this.lblCurrentAzOrientation);
-            this.groupBox6.Controls.Add(this.fldAzTemp);
-            this.groupBox6.Controls.Add(this.lblCurrentElOrientation);
-            this.groupBox6.Controls.Add(this.radioButton2);
-            this.groupBox6.Location = new System.Drawing.Point(317, 201);
+            this.groupBox6.Controls.Add(this.splitContainer1);
+            this.groupBox6.Location = new System.Drawing.Point(314, 267);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox6.Size = new System.Drawing.Size(313, 141);
+            this.groupBox6.Size = new System.Drawing.Size(324, 140);
             this.groupBox6.TabIndex = 38;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Motor Sensor Data";
@@ -1172,7 +1086,7 @@
             // 
             this.label25.AutoSize = true;
             this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(184, 42);
+            this.label25.Location = new System.Drawing.Point(216, 30);
             this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(31, 20);
@@ -1184,7 +1098,7 @@
             // 
             this.label26.AutoSize = true;
             this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(184, 22);
+            this.label26.Location = new System.Drawing.Point(216, 6);
             this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(31, 20);
@@ -1195,7 +1109,7 @@
             // 
             this.lblCurrentAzOrientation.AutoSize = true;
             this.lblCurrentAzOrientation.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCurrentAzOrientation.Location = new System.Drawing.Point(6, 25);
+            this.lblCurrentAzOrientation.Location = new System.Drawing.Point(10, 7);
             this.lblCurrentAzOrientation.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCurrentAzOrientation.Name = "lblCurrentAzOrientation";
             this.lblCurrentAzOrientation.Size = new System.Drawing.Size(122, 16);
@@ -1206,7 +1120,7 @@
             // 
             this.lblCurrentElOrientation.AutoSize = true;
             this.lblCurrentElOrientation.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCurrentElOrientation.Location = new System.Drawing.Point(6, 48);
+            this.lblCurrentElOrientation.Location = new System.Drawing.Point(9, 30);
             this.lblCurrentElOrientation.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCurrentElOrientation.Name = "lblCurrentElOrientation";
             this.lblCurrentElOrientation.Size = new System.Drawing.Size(134, 16);
@@ -1230,11 +1144,11 @@
             this.groupBox5.Controls.Add(this.windDirLabel);
             this.groupBox5.Controls.Add(this.label11);
             this.groupBox5.Controls.Add(this.windSpeedLabel);
-            this.groupBox5.Location = new System.Drawing.Point(317, 4);
+            this.groupBox5.Location = new System.Drawing.Point(314, 78);
             this.groupBox5.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox5.Size = new System.Drawing.Size(313, 193);
+            this.groupBox5.Size = new System.Drawing.Size(324, 185);
             this.groupBox5.TabIndex = 37;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Weather Sensor Data";
@@ -1401,7 +1315,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(639, 411);
+            this.tabPage3.Size = new System.Drawing.Size(645, 411);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Sensor Over Rides";
             this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
@@ -1413,9 +1327,9 @@
             this.groupBox13.Controls.Add(this.label29);
             this.groupBox13.Controls.Add(this.button10);
             this.groupBox13.Controls.Add(this.label28);
-            this.groupBox13.Location = new System.Drawing.Point(6, 233);
+            this.groupBox13.Location = new System.Drawing.Point(3, 233);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(335, 157);
+            this.groupBox13.Size = new System.Drawing.Size(338, 157);
             this.groupBox13.TabIndex = 29;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Motor Temperature Sensors";
@@ -1424,7 +1338,7 @@
             // 
             this.button12.BackColor = System.Drawing.Color.Red;
             this.button12.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button12.Location = new System.Drawing.Point(236, 101);
+            this.button12.Location = new System.Drawing.Point(236, 96);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(91, 23);
             this.button12.TabIndex = 15;
@@ -1435,7 +1349,7 @@
             // 
             this.label29.AutoSize = true;
             this.label29.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label29.Location = new System.Drawing.Point(-3, 106);
+            this.label29.Location = new System.Drawing.Point(6, 96);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(214, 13);
             this.label29.TabIndex = 14;
@@ -1445,7 +1359,7 @@
             // 
             this.button10.BackColor = System.Drawing.Color.Red;
             this.button10.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button10.Location = new System.Drawing.Point(238, 28);
+            this.button10.Location = new System.Drawing.Point(238, 33);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(89, 23);
             this.button10.TabIndex = 13;
@@ -1456,7 +1370,7 @@
             // 
             this.label28.AutoSize = true;
             this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.Location = new System.Drawing.Point(-3, 33);
+            this.label28.Location = new System.Drawing.Point(3, 38);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(205, 13);
             this.label28.TabIndex = 12;
@@ -1489,7 +1403,7 @@
             // 
             this.label27.AutoSize = true;
             this.label27.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label27.Location = new System.Drawing.Point(6, 41);
+            this.label27.Location = new System.Drawing.Point(6, 38);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(108, 13);
             this.label27.TabIndex = 12;
@@ -1506,9 +1420,9 @@
             this.groupBox10.Controls.Add(this.label4);
             this.groupBox10.Controls.Add(this.label21);
             this.groupBox10.Controls.Add(this.label22);
-            this.groupBox10.Location = new System.Drawing.Point(347, 42);
+            this.groupBox10.Location = new System.Drawing.Point(347, 30);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(287, 348);
+            this.groupBox10.Size = new System.Drawing.Size(287, 360);
             this.groupBox10.TabIndex = 0;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = " Proximiry Sensors";
@@ -1517,7 +1431,7 @@
             // 
             this.ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
             this.ElevationProximityOveride2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElevationProximityOveride2.Location = new System.Drawing.Point(196, 287);
+            this.ElevationProximityOveride2.Location = new System.Drawing.Point(194, 282);
             this.ElevationProximityOveride2.Name = "ElevationProximityOveride2";
             this.ElevationProximityOveride2.Size = new System.Drawing.Size(88, 23);
             this.ElevationProximityOveride2.TabIndex = 14;
@@ -1529,7 +1443,7 @@
             // 
             this.ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
             this.ElevationProximityOveride1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElevationProximityOveride1.Location = new System.Drawing.Point(194, 210);
+            this.ElevationProximityOveride1.Location = new System.Drawing.Point(194, 224);
             this.ElevationProximityOveride1.Name = "ElevationProximityOveride1";
             this.ElevationProximityOveride1.Size = new System.Drawing.Size(90, 23);
             this.ElevationProximityOveride1.TabIndex = 13;
@@ -1565,7 +1479,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(0, 292);
+            this.label3.Location = new System.Drawing.Point(20, 292);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(168, 13);
             this.label3.TabIndex = 10;
@@ -1595,7 +1509,7 @@
             // 
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(6, 210);
+            this.label22.Location = new System.Drawing.Point(20, 229);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(168, 13);
             this.label22.TabIndex = 9;
@@ -1606,9 +1520,9 @@
             this.groupBox11.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox11.Controls.Add(this.button8);
             this.groupBox11.Controls.Add(this.label24);
-            this.groupBox11.Location = new System.Drawing.Point(5, 42);
+            this.groupBox11.Location = new System.Drawing.Point(5, 30);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(334, 87);
+            this.groupBox11.Size = new System.Drawing.Size(334, 99);
             this.groupBox11.TabIndex = 27;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Weather Station";
@@ -1617,7 +1531,7 @@
             // 
             this.button8.BackColor = System.Drawing.Color.Red;
             this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button8.Location = new System.Drawing.Point(239, 48);
+            this.button8.Location = new System.Drawing.Point(239, 39);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(89, 23);
             this.button8.TabIndex = 13;
@@ -1628,46 +1542,76 @@
             // 
             this.label24.AutoSize = true;
             this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label24.Location = new System.Drawing.Point(7, 56);
+            this.label24.Location = new System.Drawing.Point(13, 39);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(99, 13);
             this.label24.TabIndex = 12;
             this.label24.Text = "Weather Station";
             // 
-            // tabPage4
+            // splitContainer1
             // 
-            this.tabPage4.Controls.Add(this.textBox5);
-            this.tabPage4.Controls.Add(this.dataGridView2);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(639, 411);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Other Information";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.splitContainer1.Location = new System.Drawing.Point(-7, 18);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // textBox5
+            // splitContainer1.Panel1
             // 
-            this.textBox5.Location = new System.Drawing.Point(15, 89);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(39, 20);
-            this.textBox5.TabIndex = 75;
+            this.splitContainer1.Panel1.Controls.Add(this.lblCurrentAzOrientation);
+            this.splitContainer1.Panel1.Controls.Add(this.lblCurrentElOrientation);
+            this.splitContainer1.Panel1.Controls.Add(this.label25);
+            this.splitContainer1.Panel1.Controls.Add(this.label26);
+            this.splitContainer1.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer1_Panel1_Paint_1);
             // 
-            // dataGridView2
+            // splitContainer1.Panel2
             // 
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Location = new System.Drawing.Point(115, 3);
-            this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.RowTemplate.Height = 24;
-            this.dataGridView2.Size = new System.Drawing.Size(491, 403);
-            this.dataGridView2.TabIndex = 74;
+            this.splitContainer1.Panel2.Controls.Add(this.lblAzimuthTemp);
+            this.splitContainer1.Panel2.Controls.Add(this.fldElTemp);
+            this.splitContainer1.Panel2.Controls.Add(this.fldAzTemp);
+            this.splitContainer1.Panel2.Controls.Add(this.lblElevationTemp);
+            this.splitContainer1.Size = new System.Drawing.Size(333, 123);
+            this.splitContainer1.SplitterDistance = 55;
+            this.splitContainer1.TabIndex = 20;
+            // 
+            // groupBox14
+            // 
+            this.groupBox14.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox14.Controls.Add(this.button13);
+            this.groupBox14.Controls.Add(this.button11);
+            this.groupBox14.Location = new System.Drawing.Point(314, 19);
+            this.groupBox14.Name = "groupBox14";
+            this.groupBox14.Size = new System.Drawing.Size(324, 54);
+            this.groupBox14.TabIndex = 39;
+            this.groupBox14.TabStop = false;
+            this.groupBox14.Text = "Temperature Conversion";
+            // 
+            // button11
+            // 
+            this.button11.BackColor = System.Drawing.Color.Silver;
+            this.button11.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button11.Location = new System.Drawing.Point(9, 19);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(130, 23);
+            this.button11.TabIndex = 0;
+            this.button11.Text = "Celsius";
+            this.button11.UseVisualStyleBackColor = false;
+            // 
+            // button13
+            // 
+            this.button13.BackColor = System.Drawing.Color.Silver;
+            this.button13.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button13.Location = new System.Drawing.Point(183, 19);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(130, 23);
+            this.button13.TabIndex = 1;
+            this.button13.Text = "Farenheit";
+            this.button13.UseVisualStyleBackColor = false;
             // 
             // DiagnosticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(647, 446);
+            this.ClientSize = new System.Drawing.Size(655, 446);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label15);
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -1693,10 +1637,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -1710,9 +1651,13 @@
             this.groupBox10.PerformLayout();
             this.groupBox11.ResumeLayout(false);
             this.groupBox11.PerformLayout();
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.groupBox14.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1732,14 +1677,9 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label lblAzimuthTemp;
         private System.Windows.Forms.Label lblElevationTemp;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.Label fldAzTemp;
         private System.Windows.Forms.Label fldElTemp;
         private System.Windows.Forms.Button btnTest;
-        private System.Windows.Forms.Label warningLabel;
-        private System.Windows.Forms.Label fanLabel;
-        private System.Windows.Forms.Label lblShutdown;
         private System.Windows.Forms.CheckBox selectDemo;
         private System.Windows.Forms.Label lblElLimStatus2;
         private System.Windows.Forms.Label lblElLimStatus1;
@@ -1809,7 +1749,6 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label barometricPressureLabel;
         private System.Windows.Forms.Label outsideTempLabel;
-        private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Label rainRateLabel;
         private System.Windows.Forms.Label dailyRainfallLabel;
         private System.Windows.Forms.SplitContainer splitContainer2;
@@ -1818,15 +1757,12 @@
         private System.Windows.Forms.Label lblCurrentAzOrientation;
         private System.Windows.Forms.Label lblCurrentElOrientation;
         private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.Button editDiagScriptsButton;
+        private System.Windows.Forms.Button runDiagScriptsButton;
         private System.Windows.Forms.ComboBox diagnosticScriptCombo;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.Label insideTempLabel;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox10;
         private System.Windows.Forms.Button ElevationProximityOveride2;
@@ -1848,5 +1784,9 @@
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.GroupBox groupBox14;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button button11;
     }
 }

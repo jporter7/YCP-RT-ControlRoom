@@ -129,7 +129,7 @@ namespace ControlRoomApplication.Main
             txtPLCIP.Enabled = true;
             txtMcuCOMPort.Enabled = true;
             txtWSCOMPort.Enabled = true;
-            txtPLCPort.Enabled = false;
+            txtPLCPort.Enabled = true;
 
 
             if (txtPLCPort.Text != null 
@@ -589,7 +589,7 @@ namespace ControlRoomApplication.Main
         private void helpButton_click(object sender, EventArgs e)
         {
             string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
-            System.Diagnostics.Process.Start(filename);
+                System.Diagnostics.Process.Start(filename);
         }
 
         private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)
