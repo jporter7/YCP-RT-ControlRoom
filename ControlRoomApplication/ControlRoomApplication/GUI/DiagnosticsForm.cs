@@ -16,13 +16,13 @@ namespace ControlRoomApplication.GUI
     public partial class DiagnosticsForm : Form
     {
         private ControlRoom controlRoom;
-        EncoderReader encoderReader = new EncoderReader("192.168.7.2",1602);
+        EncoderReader encoderReader = new EncoderReader("192.168.7.2", 1602);
         ControlRoomApplication.Entities.Orientation azimuthOrientation = new ControlRoomApplication.Entities.Orientation();
-        
+
 
         private int demoIndex = 0;
         //private PLC PLC; This needs to be defined once I can get find the currect import
-        
+
         FakeEncoderSensor myEncoder = new FakeEncoderSensor();
         FakeLimitSwitches elLowerLimit = new FakeLimitSwitches();
         FakeLimitSwitches elUpperLimit = new FakeLimitSwitches();
@@ -34,7 +34,7 @@ namespace ControlRoomApplication.GUI
         FakeProximitySensors elUpperProx = new FakeProximitySensors();
         FakeProximitySensors elLowerProx = new FakeProximitySensors();
         /***********DEMO MODE VARIABLES**************/
-        private double[] azEncDemo = {0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
+        private double[] azEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
         private double[] elEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //10 bits of precision, 2.8 
 
         //DateTime currentTempDate = DateTime.Now;
@@ -43,7 +43,7 @@ namespace ControlRoomApplication.GUI
         /***********DEMO MODE VARIABLES END*********/
 
         bool celOrFar;
-       
+
         double _azEncoderDegrees = 0;
         double _elEncoderDegrees = 0;
         double _elevationTemp = 0;
@@ -62,7 +62,7 @@ namespace ControlRoomApplication.GUI
 
         bool warningSent = false;
         bool shutdownSent = false;
-        
+
         private int rtId;
         private string[] statuses = { "Offline", "Offline", "Offline", "Offline" };
         private static readonly log4net.ILog logger =
@@ -78,7 +78,7 @@ namespace ControlRoomApplication.GUI
             InitializeComponent();
 
             this.controlRoom = controlRoom;
-            
+
 
             this.rtId = rtId;
 
@@ -98,14 +98,14 @@ namespace ControlRoomApplication.GUI
             dataGridView1.Update();
 
 
-            MCU_Statui.ColumnCount = 2;
-            MCU_Statui.Columns[0].HeaderText = "Status name";
-            MCU_Statui.Columns[1].HeaderText = "value";
+            //MCU_Statui.ColumnCount = 2;
+            //MCU_Statui.Columns[0].HeaderText = "Status name";
+            //MCU_Statui.Columns[1].HeaderText = "value";
 
             controlRoom.RadioTelescopes[rtId].Micro_controler.BringUp();
 
             SetCurrentWeatherData();
-            editDiagScriptsButton.Enabled = false;
+            runDiagScriptsButton.Enabled = false;
             logger.Info("DiagnosticsForm Initalized");
         }
 
@@ -124,11 +124,11 @@ namespace ControlRoomApplication.GUI
         /// Gets and displays the current statuses of the hardware components for the specified configuration.
         /// </summary>
         private void GetHardwareStatuses() {
-            if(controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive()) {
+            if (controlRoom.RadioTelescopes[rtId].SpectraCyberController.IsConsideredAlive()) {
                 statuses[0] = "Online";
             }
 
-            if(controlRoom.WeatherStation.IsConsideredAlive()) {
+            if (controlRoom.WeatherStation.IsConsideredAlive()) {
                 statuses[1] = "Online";
             }
         }
@@ -207,14 +207,14 @@ namespace ControlRoomApplication.GUI
             //rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
             //outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
             //barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
-            
+
             //------------------------------Azimuth and elevation motor temp sensors--------------------------
             //elevationTemperature = simMicroController.myData.elevationTemp;
             //DatabaseOperations.GetCurrentTemp( SensorLocationEnum.EL_MOTOR ).temp;
             //azimuthTemperature = simMicroController.myData.azimuthTemp;
             //DatabaseOperations.GetCurrentTemp( SensorLocationEnum.AZ_MOTOR ).temp;
 
-            this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
+            // this.label22.Text = (!controlRoom.RadioTelescopeControllers[rtId].finished_exicuting_move( RadioTelescopeAxisEnum.AZIMUTH)).ToString();
 
             timer1.Interval = 200;
 
@@ -225,7 +225,7 @@ namespace ControlRoomApplication.GUI
                 // Simulating Encoder Sensors
                 TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
 
-                if(elapsedEncodTime.TotalSeconds > 15)
+                if (elapsedEncodTime.TotalSeconds > 15)
                 {
                     if (myEncoder.getLeftOrRight() == true && (myEncoder.GetAzimuthAngle() < 340 && myEncoder.GetAzimuthAngle() > 15))
                         myEncoder.SetAzimuthAngle(340);
@@ -337,7 +337,7 @@ namespace ControlRoomApplication.GUI
 
             lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
-            
+
             /** Proximity and Limit Switches based on encoder pos **/
             lblAzLimStatus1.Text = _azLowerLimit.ToString();
             lblAzLimStatus2.Text = _azUpperLimit.ToString();
@@ -352,71 +352,71 @@ namespace ControlRoomApplication.GUI
             lblEleProx1.Text = _elLowerProx.ToString();
             lblEleProx2.Text = _elUpperProx.ToString();
 
-            /*** Temperature Logic Start***/
-            if(elevationTemperature <= 79 && azimuthTemperature <= 79)
-            {
-                warningLabel.Visible = false;
-                lblShutdown.Visible = false;
-                fanLabel.Visible = false;
-                warningSent = false;
-                shutdownSent = false;
-            }
-            else if(elevationTemperature > 79 && elevationTemperature < 100 || azimuthTemperature > 79 && azimuthTemperature < 100)
-            {
-                if(warningSent == false)
-                {
-                    warningLabel.Visible = true;
-                }
-                else
-                {
-                    warningLabel.Visible = false;
-                }
-               
-                lblShutdown.Visible = false;
-                warningLabel.ForeColor = Color.Yellow;
-                warningLabel.Text = "Warning Sent";
+            ///*** Temperature Logic Start***/
+            //if (elevationTemperature <= 79 && azimuthTemperature <= 79)
+            //{
+            //    warningLabel.Visible = false;
+            //    lblShutdown.Visible = false;
+            //    fanLabel.Visible = false;
+            //    warningSent = false;
+            //    shutdownSent = false;
+            //}
+            //else if (elevationTemperature > 79 && elevationTemperature < 100 || azimuthTemperature > 79 && azimuthTemperature < 100)
+            //{
+            //    if (warningSent == false)
+            //    {
+            //        warningLabel.Visible = true;
+            //    }
+            //    else
+            //    {
+            //        warningLabel.Visible = false;
+            //    }
 
-                warningSent = true;
+            //    lblShutdown.Visible = false;
+            //    warningLabel.ForeColor = Color.Yellow;
+            //    warningLabel.Text = "Warning Sent";
 
-                fanLabel.Visible = true;
-                fanLabel.ForeColor = Color.Blue;
-                fanLabel.Text = "Fans On";
-               
-            }
-            else if(elevationTemperature >= 100 || azimuthTemperature >= 100)
-            {
-                warningLabel.Visible = false;
+            //    warningSent = true;
 
-                if (shutdownSent == false)
-                {
-                    lblShutdown.Visible = true;
-                }
-                else
-                {
-                    lblShutdown.Visible = false;
-                }
-               
-                lblShutdown.ForeColor = Color.Red;
-                lblShutdown.Text = "Shutdown Sent";
+            //    fanLabel.Visible = true;
+            //    fanLabel.ForeColor = Color.Blue;
+            //    fanLabel.Text = "Fans On";
 
-                shutdownSent = true;
+            //}
+            //else if (elevationTemperature >= 100 || azimuthTemperature >= 100)
+            //{
+            //    warningLabel.Visible = false;
 
-                fanLabel.Visible = true;
-                fanLabel.ForeColor = Color.Blue;
-                fanLabel.Text = "Fans Stay On";
+            //    if (shutdownSent == false)
+            //    {
+            //        lblShutdown.Visible = true;
+            //    }
+            //    else
+            //    {
+            //        lblShutdown.Visible = false;
+            //    }
+
+            //    lblShutdown.ForeColor = Color.Red;
+            //    lblShutdown.Text = "Shutdown Sent";
+
+            //    shutdownSent = true;
+
+            //    fanLabel.Visible = true;
+            //    fanLabel.ForeColor = Color.Blue;
+            //    fanLabel.Text = "Fans Stay On";
 
 
-            }
-            else
-            {
-                warningLabel.Visible = false;
-                warningLabel.ForeColor = Color.Black;
-                warningLabel.Text = "";
+            //}
+            //else
+            //{
+            //    warningLabel.Visible = false;
+            //    warningLabel.ForeColor = Color.Black;
+            //    warningLabel.Text = "";
 
-                fanLabel.Visible = false;
-                fanLabel.ForeColor = Color.Blue;
-                fanLabel.Text = "Fans On";
-            }
+            //    fanLabel.Visible = false;
+            //    fanLabel.ForeColor = Color.Blue;
+            //    fanLabel.Text = "Fans On";
+            //}
 
             /*** Temperature Logic End***/
             /*
@@ -434,24 +434,24 @@ namespace ControlRoomApplication.GUI
             dataGridView1.Update();
 
 
-            if(MCU_Statui.Rows.Count > 5) {
-                bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
-                foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
-                    string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
-                    //MCU_Statui.Rows[(int)stutusBit][1] = stuti[(int)stutusBit].ToString();
-                    //string[] row = { ((PLC_modbus_server_register_mapping)reg).ToString() , Convert.ToString( val[reg + 1] ).PadLeft( 5 ) };//.Replace(" ", "0") };
-                    //PLC_regs.Rows.Add(row);
-                    MCU_Statui.Rows[(int)stutusBit].SetValues( row );
-                }
-            } else {
-                MCU_Statui.Rows.Clear();
-                bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
-                foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
-                    string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
-                    MCU_Statui.Rows.Add( row );
-                }
-                MCU_Statui.Update();
-            }
+            //if(MCU_Statui.Rows.Count > 5) {
+            //    bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
+            //    foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
+            //        string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
+            //        //MCU_Statui.Rows[(int)stutusBit][1] = stuti[(int)stutusBit].ToString();
+            //        //string[] row = { ((PLC_modbus_server_register_mapping)reg).ToString() , Convert.ToString( val[reg + 1] ).PadLeft( 5 ) };//.Replace(" ", "0") };
+            //        //PLC_regs.Rows.Add(row);
+            //        MCU_Statui.Rows[(int)stutusBit].SetValues( row );
+            //    }
+            //} else {
+            //    MCU_Statui.Rows.Clear();
+            //    bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
+            //    foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
+            //        string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
+            //        MCU_Statui.Rows.Add( row );
+            //    }
+            //    MCU_Statui.Update();
+            //}
 
 
 
@@ -472,14 +472,14 @@ namespace ControlRoomApplication.GUI
         {
             double temperature = 0;
 
-            if(double.TryParse(txtTemperature.Text, out temperature))
-            {
-                fldAzTemp.Text = temperature.ToString();
-            }
-            else
-            {
-                MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //if(double.TryParse(txtTemperature.Text, out temperature))
+            //{
+            //    fldAzTemp.Text = temperature.ToString();
+            //}
+            //else
+            //{
+            //    MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
         }
 
         private void btnAddOneTemp_Click(object sender, System.EventArgs e)
@@ -505,7 +505,7 @@ namespace ControlRoomApplication.GUI
         //private void btnAddXTemp_Click(object sender, System.EventArgs e)
         //{
         //    double tempVal; //temperature value
-           
+
 
         //    if (double.TryParse(txtCustTemp.Text, out tempVal))
         //    {
@@ -519,7 +519,7 @@ namespace ControlRoomApplication.GUI
 
         private void button3_Click(object sender, System.EventArgs e)
         {
-            double tempVal; //temperature value
+           // double tempVal; //temperature value
 
 
             //if (double.TryParse(txtCustTemp.Text, out tempVal))
@@ -545,7 +545,7 @@ namespace ControlRoomApplication.GUI
         private void button4_Click(object sender, System.EventArgs e)
         {
             _azEncoderDegrees += 1;
-            
+
         }
 
         private void button5_Click(object sender, System.EventArgs e)
@@ -556,7 +556,7 @@ namespace ControlRoomApplication.GUI
         private void btnSubtractOneEncoder_Click(object sender, System.EventArgs e)
         {
             _azEncoderDegrees -= 1;
-            
+
         }
 
         private void btnSubtractFiveEncoder_Click(object sender, System.EventArgs e)
@@ -597,9 +597,25 @@ namespace ControlRoomApplication.GUI
         private void editDiagScriptsButton_Click(object sender, EventArgs e)
         {
             logger.Info("Edit Scripts Button Clicked");
+            int caseSwitch = diagnosticScriptCombo.SelectedIndex;
 
-            EditDiagScriptsForm editDiagScriptsForm = new EditDiagScriptsForm();
-            editDiagScriptsForm.Show();
+            switch (caseSwitch)
+            {
+                case 0:
+
+                    //360 Script selected (index 0 of control script combo)
+                    break;
+                case 1:
+
+                    //360 counter clock Script selected (index 0 of control script combo)
+                    break;
+             
+                default:
+
+                    //Script cannot be run
+                    break;
+            }
+
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
@@ -634,6 +650,7 @@ namespace ControlRoomApplication.GUI
 
         private void tabPage3_Click(object sender, EventArgs e)
         {
+
 
         }
 
@@ -752,6 +769,123 @@ namespace ControlRoomApplication.GUI
 
         }
 
-       
+        private void txtTemperature_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void startTimeTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
+            System.Diagnostics.Process.Start(filename);
+        }
+
+        private void ORAzimuthSens1_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride azimuth sensor 1 clicked");
+            bool overRideAz1 = (ORAzimuthSens1.Text == "Over Ridden");
+            if (!overRideAz1)
+            {
+                ORAzimuthSens1.Text = "Over Ridden";
+                ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
+                
+            }
+            else if (overRideAz1)
+            {
+                ORAzimuthSens1.Text = "Over Ride";
+                ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
+
+            }
+        }
+
+        private void ORAzimuthSens2_Click(object sender, EventArgs e)
+        {
+                logger.Info("Over Ride azimuth sensor 2 clicked");
+                bool overRideAz2= (ORAzimuthSens2.Text == "Over Ridden");
+                if (!overRideAz2)
+                {
+                    ORAzimuthSens2.Text = "Over Ridden";
+                    ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
+
+                }
+                else if (overRideAz2)
+                {
+                    ORAzimuthSens2.Text = "Over Ride";
+                    ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
+
+                }
+        }
+
+        private void ElevationProximityOverideButton1_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride elevation Proximity Override 1 clicked");
+            bool overRideEl1 = (ElevationProximityOveride1.Text == "Over Ridden");
+            if (!overRideEl1)
+            {
+                ElevationProximityOveride1.Text = "Over Ridden";
+                ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+
+            }
+            else if (overRideEl1)
+            {
+                ElevationProximityOveride1.Text = "Over Ride";
+                ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+
+            }
+        }
+
+        private void ElevationProximityOverideButton2_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride elevation Proximity Override 2 clicked");
+            bool overRideEl2 = (ElevationProximityOveride2.Text == "Over Ridden");
+            if (!overRideEl2)
+            {
+                ElevationProximityOveride2.Text = "Over Ridden";
+                ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
+
+            }
+            else if (overRideEl2)
+            {
+                ElevationProximityOveride2.Text = "Over Ride";
+                ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
+
+            }
+        }
+
+        private void splitContainer1_Panel1_Paint_1(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void diagnosticScriptCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (diagnosticScriptCombo.SelectedIndex >= 0)
+            {
+                runDiagScriptsButton.Enabled = true;
+                runDiagScriptsButton.BackColor = System.Drawing.Color.LimeGreen;
+            }
+        }
+
+        private void warningLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void selectDemo_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
+
+

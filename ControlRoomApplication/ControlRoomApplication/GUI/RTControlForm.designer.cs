@@ -43,7 +43,6 @@
             this.TargetPositionLabel = new System.Windows.Forms.Label();
             this.TargetDecTextBox = new System.Windows.Forms.TextBox();
             this.TargetRATextBox = new System.Windows.Forms.TextBox();
-            this.Title = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.RAIncGroupbox = new System.Windows.Forms.GroupBox();
             this.tenButton = new System.Windows.Forms.Button();
@@ -52,7 +51,9 @@
             this.oneForthButton = new System.Windows.Forms.Button();
             this.editButton = new System.Windows.Forms.Button();
             this.errorLabel = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.overRideGroupbox = new System.Windows.Forms.GroupBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.statusTextBox = new System.Windows.Forms.TextBox();
             this.decIncGroupbox = new System.Windows.Forms.GroupBox();
             this.tenButtonDec = new System.Windows.Forms.Button();
             this.fiveButtonDec = new System.Windows.Forms.Button();
@@ -61,7 +62,7 @@
             this.freeControlGroupbox = new System.Windows.Forms.GroupBox();
             this.controlScriptsCombo = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.editControlScripts = new System.Windows.Forms.Button();
+            this.runControlScriptButton = new System.Windows.Forms.Button();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -76,8 +77,9 @@
             this.plusElaButton = new System.Windows.Forms.Button();
             this.subElaButton = new System.Windows.Forms.Button();
             this.plusJogButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.RAIncGroupbox.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.overRideGroupbox.SuspendLayout();
             this.decIncGroupbox.SuspendLayout();
             this.freeControlGroupbox.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -139,7 +141,7 @@
             // ActualRATextBox
             // 
             this.ActualRATextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ActualRATextBox.Location = new System.Drawing.Point(125, 68);
+            this.ActualRATextBox.Location = new System.Drawing.Point(153, 74);
             this.ActualRATextBox.Name = "ActualRATextBox";
             this.ActualRATextBox.ReadOnly = true;
             this.ActualRATextBox.Size = new System.Drawing.Size(100, 20);
@@ -148,7 +150,7 @@
             // ActualDecTextBox
             // 
             this.ActualDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ActualDecTextBox.Location = new System.Drawing.Point(125, 121);
+            this.ActualDecTextBox.Location = new System.Drawing.Point(154, 120);
             this.ActualDecTextBox.Name = "ActualDecTextBox";
             this.ActualDecTextBox.ReadOnly = true;
             this.ActualDecTextBox.Size = new System.Drawing.Size(100, 20);
@@ -159,17 +161,18 @@
             this.ActualPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualPositionLabel.AutoSize = true;
             this.ActualPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.ActualPositionLabel.Location = new System.Drawing.Point(127, 16);
+            this.ActualPositionLabel.Location = new System.Drawing.Point(149, 27);
             this.ActualPositionLabel.Name = "ActualPositionLabel";
             this.ActualPositionLabel.Size = new System.Drawing.Size(114, 20);
             this.ActualPositionLabel.TabIndex = 7;
             this.ActualPositionLabel.Text = "Actual Position";
+            this.ActualPositionLabel.Click += new System.EventHandler(this.ActualPositionLabel_Click);
             // 
             // ActualRALabel
             // 
             this.ActualRALabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualRALabel.AutoSize = true;
-            this.ActualRALabel.Location = new System.Drawing.Point(123, 50);
+            this.ActualRALabel.Location = new System.Drawing.Point(150, 56);
             this.ActualRALabel.Name = "ActualRALabel";
             this.ActualRALabel.Size = new System.Drawing.Size(84, 13);
             this.ActualRALabel.TabIndex = 8;
@@ -179,7 +182,7 @@
             // 
             this.ActualDecLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualDecLabel.AutoSize = true;
-            this.ActualDecLabel.Location = new System.Drawing.Point(123, 103);
+            this.ActualDecLabel.Location = new System.Drawing.Point(151, 102);
             this.ActualDecLabel.Name = "ActualDecLabel";
             this.ActualDecLabel.Size = new System.Drawing.Size(60, 13);
             this.ActualDecLabel.TabIndex = 9;
@@ -189,7 +192,7 @@
             // 
             this.TargetDecLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetDecLabel.AutoSize = true;
-            this.TargetDecLabel.Location = new System.Drawing.Point(6, 103);
+            this.TargetDecLabel.Location = new System.Drawing.Point(18, 102);
             this.TargetDecLabel.Name = "TargetDecLabel";
             this.TargetDecLabel.Size = new System.Drawing.Size(60, 13);
             this.TargetDecLabel.TabIndex = 14;
@@ -199,7 +202,7 @@
             // 
             this.TargetRALabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetRALabel.AutoSize = true;
-            this.TargetRALabel.Location = new System.Drawing.Point(7, 50);
+            this.TargetRALabel.Location = new System.Drawing.Point(16, 56);
             this.TargetRALabel.Name = "TargetRALabel";
             this.TargetRALabel.Size = new System.Drawing.Size(84, 13);
             this.TargetRALabel.TabIndex = 13;
@@ -210,16 +213,17 @@
             this.TargetPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetPositionLabel.AutoSize = true;
             this.TargetPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.TargetPositionLabel.Location = new System.Drawing.Point(6, 16);
+            this.TargetPositionLabel.Location = new System.Drawing.Point(12, 27);
             this.TargetPositionLabel.Name = "TargetPositionLabel";
             this.TargetPositionLabel.Size = new System.Drawing.Size(115, 20);
             this.TargetPositionLabel.TabIndex = 12;
             this.TargetPositionLabel.Text = "Target Position";
+            this.TargetPositionLabel.Click += new System.EventHandler(this.TargetPositionLabel_Click);
             // 
             // TargetDecTextBox
             // 
             this.TargetDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.TargetDecTextBox.Location = new System.Drawing.Point(8, 121);
+            this.TargetDecTextBox.Location = new System.Drawing.Point(20, 120);
             this.TargetDecTextBox.Name = "TargetDecTextBox";
             this.TargetDecTextBox.ReadOnly = true;
             this.TargetDecTextBox.Size = new System.Drawing.Size(100, 20);
@@ -228,23 +232,11 @@
             // TargetRATextBox
             // 
             this.TargetRATextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.TargetRATextBox.Location = new System.Drawing.Point(8, 68);
+            this.TargetRATextBox.Location = new System.Drawing.Point(19, 74);
             this.TargetRATextBox.Name = "TargetRATextBox";
             this.TargetRATextBox.ReadOnly = true;
             this.TargetRATextBox.Size = new System.Drawing.Size(100, 20);
             this.TargetRATextBox.TabIndex = 10;
-            // 
-            // Title
-            // 
-            this.Title.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.Title.AutoSize = true;
-            this.Title.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F);
-            this.Title.Location = new System.Drawing.Point(11, 9);
-            this.Title.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.Title.Name = "Title";
-            this.Title.Size = new System.Drawing.Size(462, 46);
-            this.Title.TabIndex = 15;
-            this.Title.Text = "Radio Telescope Control";
             // 
             // timer1
             // 
@@ -326,7 +318,7 @@
             // 
             this.editButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.editButton.BackColor = System.Drawing.Color.OrangeRed;
-            this.editButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.editButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.editButton.Location = new System.Drawing.Point(250, 10);
             this.editButton.Name = "editButton";
             this.editButton.Size = new System.Drawing.Size(131, 25);
@@ -340,32 +332,53 @@
             this.errorLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.errorLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.errorLabel.ForeColor = System.Drawing.Color.Red;
-            this.errorLabel.Location = new System.Drawing.Point(283, 422);
+            this.errorLabel.Location = new System.Drawing.Point(265, 423);
             this.errorLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.errorLabel.Name = "errorLabel";
             this.errorLabel.Size = new System.Drawing.Size(230, 19);
             this.errorLabel.TabIndex = 18;
             this.errorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // groupBox1
+            // overRideGroupbox
             // 
-            this.groupBox1.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox1.Controls.Add(this.ActualRATextBox);
-            this.groupBox1.Controls.Add(this.ActualDecTextBox);
-            this.groupBox1.Controls.Add(this.ActualPositionLabel);
-            this.groupBox1.Controls.Add(this.ActualRALabel);
-            this.groupBox1.Controls.Add(this.ActualDecLabel);
-            this.groupBox1.Controls.Add(this.TargetDecLabel);
-            this.groupBox1.Controls.Add(this.TargetRATextBox);
-            this.groupBox1.Controls.Add(this.TargetRALabel);
-            this.groupBox1.Controls.Add(this.TargetDecTextBox);
-            this.groupBox1.Controls.Add(this.TargetPositionLabel);
-            this.groupBox1.Location = new System.Drawing.Point(19, 58);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(272, 149);
-            this.groupBox1.TabIndex = 19;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Position Information";
+            this.overRideGroupbox.BackColor = System.Drawing.Color.Gainsboro;
+            this.overRideGroupbox.Controls.Add(this.label8);
+            this.overRideGroupbox.Controls.Add(this.statusTextBox);
+            this.overRideGroupbox.Controls.Add(this.ActualRATextBox);
+            this.overRideGroupbox.Controls.Add(this.ActualDecTextBox);
+            this.overRideGroupbox.Controls.Add(this.ActualPositionLabel);
+            this.overRideGroupbox.Controls.Add(this.ActualRALabel);
+            this.overRideGroupbox.Controls.Add(this.ActualDecLabel);
+            this.overRideGroupbox.Controls.Add(this.TargetDecLabel);
+            this.overRideGroupbox.Controls.Add(this.TargetRATextBox);
+            this.overRideGroupbox.Controls.Add(this.TargetRALabel);
+            this.overRideGroupbox.Controls.Add(this.TargetDecTextBox);
+            this.overRideGroupbox.Controls.Add(this.TargetPositionLabel);
+            this.overRideGroupbox.Location = new System.Drawing.Point(12, 9);
+            this.overRideGroupbox.Name = "overRideGroupbox";
+            this.overRideGroupbox.Size = new System.Drawing.Size(279, 198);
+            this.overRideGroupbox.TabIndex = 19;
+            this.overRideGroupbox.TabStop = false;
+            this.overRideGroupbox.Text = "Position Information";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(18, 167);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(121, 13);
+            this.label8.TabIndex = 16;
+            this.label8.Text = "Radio Telescope Status";
+            // 
+            // statusTextBox
+            // 
+            this.statusTextBox.Location = new System.Drawing.Point(152, 164);
+            this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.statusTextBox.Name = "statusTextBox";
+            this.statusTextBox.Size = new System.Drawing.Size(102, 20);
+            this.statusTextBox.TabIndex = 15;
             // 
             // decIncGroupbox
             // 
@@ -443,7 +456,7 @@
             this.freeControlGroupbox.Controls.Add(this.RAIncGroupbox);
             this.freeControlGroupbox.Controls.Add(this.editButton);
             this.freeControlGroupbox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.freeControlGroupbox.Location = new System.Drawing.Point(19, 213);
+            this.freeControlGroupbox.Location = new System.Drawing.Point(12, 213);
             this.freeControlGroupbox.Name = "freeControlGroupbox";
             this.freeControlGroupbox.Size = new System.Drawing.Size(405, 201);
             this.freeControlGroupbox.TabIndex = 22;
@@ -457,37 +470,37 @@
             this.controlScriptsCombo.Items.AddRange(new object[] {
             "Snow Dump",
             "Stow Telescope",
-            "Full 360 Clockwise",
-            "Full 360 Counter-Clockwise",
-            "Calibrate Telescope"});
-            this.controlScriptsCombo.Location = new System.Drawing.Point(20, 27);
+            "Calibrate"});
+            this.controlScriptsCombo.Location = new System.Drawing.Point(11, 33);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
             this.controlScriptsCombo.TabIndex = 23;
+            this.controlScriptsCombo.Text = "Radio Telescope Control Scripts";
+            this.controlScriptsCombo.SelectedIndexChanged += new System.EventHandler(this.controlScriptsCombo_SelectedIndexChanged);
             // 
             // groupBox4
             // 
             this.groupBox4.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox4.Controls.Add(this.editControlScripts);
+            this.groupBox4.Controls.Add(this.runControlScriptButton);
             this.groupBox4.Controls.Add(this.controlScriptsCombo);
-            this.groupBox4.Location = new System.Drawing.Point(353, 77);
+            this.groupBox4.Location = new System.Drawing.Point(297, 36);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(404, 69);
+            this.groupBox4.Size = new System.Drawing.Size(460, 99);
             this.groupBox4.TabIndex = 24;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Control Scripts";
             // 
-            // editControlScripts
+            // runControlScriptButton
             // 
-            this.editControlScripts.BackColor = System.Drawing.Color.DarkGray;
-            this.editControlScripts.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.editControlScripts.Location = new System.Drawing.Point(308, 14);
-            this.editControlScripts.Name = "editControlScripts";
-            this.editControlScripts.Size = new System.Drawing.Size(75, 34);
-            this.editControlScripts.TabIndex = 24;
-            this.editControlScripts.Text = "Edit Scripts";
-            this.editControlScripts.UseVisualStyleBackColor = false;
-            this.editControlScripts.Click += new System.EventHandler(this.button1_Click);
+            this.runControlScriptButton.BackColor = System.Drawing.Color.DarkGray;
+            this.runControlScriptButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.runControlScriptButton.Location = new System.Drawing.Point(320, 32);
+            this.runControlScriptButton.Name = "runControlScriptButton";
+            this.runControlScriptButton.Size = new System.Drawing.Size(126, 33);
+            this.runControlScriptButton.TabIndex = 24;
+            this.runControlScriptButton.Text = "Run Script";
+            this.runControlScriptButton.UseVisualStyleBackColor = false;
+            this.runControlScriptButton.Click += new System.EventHandler(this.runControlScript_Click);
             // 
             // manualGroupBox
             // 
@@ -505,9 +518,9 @@
             this.manualGroupBox.Controls.Add(this.plusElaButton);
             this.manualGroupBox.Controls.Add(this.subElaButton);
             this.manualGroupBox.Controls.Add(this.plusJogButton);
-            this.manualGroupBox.Location = new System.Drawing.Point(455, 179);
+            this.manualGroupBox.Location = new System.Drawing.Point(423, 148);
             this.manualGroupBox.Name = "manualGroupBox";
-            this.manualGroupBox.Size = new System.Drawing.Size(302, 235);
+            this.manualGroupBox.Size = new System.Drawing.Size(334, 266);
             this.manualGroupBox.TabIndex = 25;
             this.manualGroupBox.TabStop = false;
             this.manualGroupBox.Text = "Manual Control";
@@ -538,7 +551,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 173);
+            this.label3.Location = new System.Drawing.Point(3, 193);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(38, 13);
             this.label3.TabIndex = 26;
@@ -548,8 +561,8 @@
             // 
             this.manualControlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.manualControlButton.BackColor = System.Drawing.Color.OrangeRed;
-            this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.manualControlButton.Location = new System.Drawing.Point(140, 26);
+            this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.manualControlButton.Location = new System.Drawing.Point(179, 45);
             this.manualControlButton.Name = "manualControlButton";
             this.manualControlButton.Size = new System.Drawing.Size(150, 28);
             this.manualControlButton.TabIndex = 25;
@@ -561,7 +574,7 @@
             // 
             this.immediateRadioButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.immediateRadioButton.AutoSize = true;
-            this.immediateRadioButton.Location = new System.Drawing.Point(6, 146);
+            this.immediateRadioButton.Location = new System.Drawing.Point(9, 167);
             this.immediateRadioButton.Name = "immediateRadioButton";
             this.immediateRadioButton.Size = new System.Drawing.Size(98, 17);
             this.immediateRadioButton.TabIndex = 24;
@@ -573,7 +586,7 @@
             this.ControledButtonRadio.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.ControledButtonRadio.AutoSize = true;
             this.ControledButtonRadio.Checked = true;
-            this.ControledButtonRadio.Location = new System.Drawing.Point(6, 123);
+            this.ControledButtonRadio.Location = new System.Drawing.Point(9, 144);
             this.ControledButtonRadio.Name = "ControledButtonRadio";
             this.ControledButtonRadio.Size = new System.Drawing.Size(97, 17);
             this.ControledButtonRadio.TabIndex = 23;
@@ -587,7 +600,7 @@
             this.speedComboBox.Items.AddRange(new object[] {
             "0.1 RPM",
             "2 RPM"});
-            this.speedComboBox.Location = new System.Drawing.Point(6, 189);
+            this.speedComboBox.Location = new System.Drawing.Point(6, 209);
             this.speedComboBox.Name = "speedComboBox";
             this.speedComboBox.Size = new System.Drawing.Size(121, 21);
             this.speedComboBox.TabIndex = 10;
@@ -617,7 +630,7 @@
             this.subJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.subJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.subJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subJogButton.Location = new System.Drawing.Point(155, 139);
+            this.subJogButton.Location = new System.Drawing.Point(194, 170);
             this.subJogButton.Name = "subJogButton";
             this.subJogButton.Size = new System.Drawing.Size(40, 40);
             this.subJogButton.TabIndex = 6;
@@ -630,7 +643,7 @@
             this.plusElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.plusElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusElaButton.Location = new System.Drawing.Point(196, 88);
+            this.plusElaButton.Location = new System.Drawing.Point(235, 119);
             this.plusElaButton.Name = "plusElaButton";
             this.plusElaButton.Size = new System.Drawing.Size(40, 40);
             this.plusElaButton.TabIndex = 4;
@@ -642,7 +655,7 @@
             this.subElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.subElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.subElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subElaButton.Location = new System.Drawing.Point(196, 185);
+            this.subElaButton.Location = new System.Drawing.Point(235, 216);
             this.subElaButton.Name = "subElaButton";
             this.subElaButton.Size = new System.Drawing.Size(40, 40);
             this.subElaButton.TabIndex = 5;
@@ -654,38 +667,52 @@
             this.plusJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.plusJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusJogButton.Location = new System.Drawing.Point(241, 139);
+            this.plusJogButton.Location = new System.Drawing.Point(280, 170);
             this.plusJogButton.Name = "plusJogButton";
             this.plusJogButton.Size = new System.Drawing.Size(40, 40);
             this.plusJogButton.TabIndex = 7;
             this.plusJogButton.Text = "+ Jog";
             this.plusJogButton.UseVisualStyleBackColor = false;
+            this.plusJogButton.Click += new System.EventHandler(this.plusJogButton_Click);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.Gainsboro;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.button1.Location = new System.Drawing.Point(735, 9);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(22, 23);
+            this.button1.TabIndex = 26;
+            this.button1.Text = "?";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.helpButton_click);
             // 
             // FreeControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(764, 451);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.manualGroupBox);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.freeControlGroupbox);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.overRideGroupbox);
             this.Controls.Add(this.errorLabel);
-            this.Controls.Add(this.Title);
-            this.MinimumSize = new System.Drawing.Size(816, 489);
+            this.MinimumSize = new System.Drawing.Size(600, 480);
             this.Name = "FreeControlForm";
             this.Text = "FreeControlForm";
             this.RAIncGroupbox.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.overRideGroupbox.ResumeLayout(false);
+            this.overRideGroupbox.PerformLayout();
             this.decIncGroupbox.ResumeLayout(false);
             this.freeControlGroupbox.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.manualGroupBox.ResumeLayout(false);
             this.manualGroupBox.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -705,7 +732,6 @@
         private System.Windows.Forms.Label TargetPositionLabel;
         private System.Windows.Forms.TextBox TargetDecTextBox;
         private System.Windows.Forms.TextBox TargetRATextBox;
-        private System.Windows.Forms.Label Title;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.GroupBox RAIncGroupbox;
         private System.Windows.Forms.Button tenButton;
@@ -714,7 +740,7 @@
         private System.Windows.Forms.Button oneForthButton;
         private System.Windows.Forms.Button editButton;
         private System.Windows.Forms.Label errorLabel;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox overRideGroupbox;
         private System.Windows.Forms.GroupBox decIncGroupbox;
         private System.Windows.Forms.Button tenButtonDec;
         private System.Windows.Forms.Button fiveButtonDec;
@@ -737,6 +763,9 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button editControlScripts;
+        private System.Windows.Forms.Button runControlScriptButton;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox statusTextBox;
     }
 }

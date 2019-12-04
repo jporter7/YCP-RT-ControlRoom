@@ -67,9 +67,6 @@ namespace ControlRoomApplication.Controllers
         /// <param name="PLC_port"></param>
         public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC)
         {
-            if (PLC_port == MCU_port)
-                MCU_port++;
-
             MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
             try
@@ -275,7 +272,7 @@ namespace ControlRoomApplication.Controllers
 
 
         public override bool Get_interlock_status() {
-            return Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK]);
+            return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK] );
         }
 
 
@@ -533,7 +530,7 @@ namespace ControlRoomApplication.Controllers
             else
                 return elFinishFlag;
         }
-
+        
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
         /// </summary>
@@ -566,6 +563,28 @@ namespace ControlRoomApplication.Controllers
                 return Move_to_orientation(current, finish);
             }
             return false;
+        }
+
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope to the CW hardware stop
+        /// </summary>
+        public override bool Hit_CW_Hardstop()
+        {
+            Orientation current = read_Position();
+            Orientation hardstop = new Orientation(370, current.Elevation);
+
+            return Move_to_orientation(hardstop, current);
+        }
+
+        /// <summary>
+        /// This is a script that is called when we want to move the telescope to the CCW hardware stop
+        /// </summary>
+        public override bool Hit_CCW_Hardstop()
+        {
+            Orientation current = read_Position();
+            Orientation hardstop = new Orientation(-10, current.Elevation);
+
+            return Move_to_orientation(hardstop, current);
         }
 
         /// <summary>

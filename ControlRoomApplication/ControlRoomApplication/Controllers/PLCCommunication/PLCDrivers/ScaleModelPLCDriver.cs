@@ -361,6 +361,16 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
+        public override bool Hit_CW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Hit_CCW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool Recover_CCW_Hardstop()
         {
             throw new NotImplementedException();

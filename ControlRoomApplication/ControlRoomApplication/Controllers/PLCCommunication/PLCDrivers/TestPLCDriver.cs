@@ -44,7 +44,7 @@ namespace ControlRoomApplication.Controllers
 
 
         public void setSaftyInterlock() {
-            TestMCU.PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , new ushort[] { 12 } );
+            TestMCU.PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 12 } );
         }
 
 
@@ -138,6 +138,16 @@ namespace ControlRoomApplication.Controllers
         public override bool Full_360_CW_Rotation()
         {
             return driver.Full_360_CW_Rotation();
+        }
+
+        public override bool Hit_CW_Hardstop()
+        {
+            return driver.Hit_CW_Hardstop();
+        }
+
+        public override bool Hit_CCW_Hardstop()
+        {
+            return driver.Hit_CCW_Hardstop();
         }
 
         public override bool Recover_CW_Hardstop()
