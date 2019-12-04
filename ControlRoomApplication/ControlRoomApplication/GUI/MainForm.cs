@@ -355,20 +355,20 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info("Building ProductionPLCDriver");
-                    return new ProductionPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text),false);
+                    return new ProductionPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text),false);
 
                 case 1:
                     logger.Info("Building ScaleModelPLCDriver");
-                    return new ScaleModelPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text),false);
+                    return new ScaleModelPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text),false);
 
                 case 3:
                     logger.Info("Building TestPLCDriver");
-                    return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text),false);
+                    return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text),false);
 
                 case 2:
                 default:
                     logger.Info("Building SimulationPLCDriver");
-                    return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtPLCPort.Text), int.Parse(txtPLCPort.Text),false);
+                    return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text),false);
             }
         }
 
