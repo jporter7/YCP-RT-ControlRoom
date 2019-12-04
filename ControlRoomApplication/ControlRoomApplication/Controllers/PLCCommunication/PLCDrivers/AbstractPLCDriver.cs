@@ -102,12 +102,6 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool RecoverFromLimitSwitch();
 
-        public abstract bool FullElevationMove();
-        
-        public abstract bool Full_360_CCW_Rotation();
-
-        public abstract bool Full_360_CW_Rotation();
-
         public abstract bool Hit_CW_Hardstop();
 
         public abstract bool Hit_CCW_Hardstop();
