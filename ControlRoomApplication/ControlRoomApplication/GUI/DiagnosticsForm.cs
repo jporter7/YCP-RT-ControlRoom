@@ -247,9 +247,9 @@ namespace ControlRoomApplication.GUI
                 _elEncoderTicks = (int)(_elEncoderDegrees * 2.8);
 
                 // Azimuth Limit Switch sim logic
-                if (_azEncoderDegrees < -5)
+                if (_azEncoderDegrees < SimulationConstants.LIMIT_CW_AZ_DEGREES)
                     _azLowerLimit = true;
-                else if (_azEncoderDegrees > 365)
+                else if (_azEncoderDegrees > SimulationConstants.LIMIT_CCW_AZ_DEGREES)
                     _azUpperLimit = true;
                 else
                 {
@@ -258,9 +258,9 @@ namespace ControlRoomApplication.GUI
                 }
 
                 // Elevation Limit Switch sim logic
-                if (_elEncoderDegrees < -15)
+                if (_elEncoderDegrees < SimulationConstants.LIMIT_LOW_EL_DEGREES)
                     _elLowerLimit = true;
-                else if (_elEncoderDegrees > 93)
+                else if (_elEncoderDegrees > SimulationConstants.LIMIT_HIGH_EL_DEGREES)
                     _elUpperLimit = true;
                 else
                 {
@@ -269,19 +269,16 @@ namespace ControlRoomApplication.GUI
                 }
 
                 // Azimuth Proximity Sensor Logic
-                if (_azEncoderDegrees < 10)
+                if (_azEncoderDegrees < SimulationConstants.PROX_CW_AZ_DEGREES)
                     _azLowerProx = true;
-                else if (_azEncoderDegrees > 345)
+                else if (_azEncoderDegrees > SimulationConstants.PROX_CCW_AZ_DEGREES)
                 {
                     _azUpperProx = true;
-                    if (_azEncoderDegrees > 355)
-                        _azCloserUpperProx = true;
                 }
                 else
                 {
                     _azLowerProx = false;
                     _azUpperProx = false;
-                    _azCloserUpperProx = false;
                 }
 
                 // Elevation Proximity Logic
@@ -350,7 +347,7 @@ namespace ControlRoomApplication.GUI
 
             lblAzProxStatus1.Text = _azLowerProx.ToString();
             lblAzProxStatus2.Text = _azUpperProx.ToString();
-            lblAzProxStatus3.Text = _azCloserUpperProx.ToString();
+            lblAzProxStatus3.Text = "Not Currently Used";
 
             lblEleProx1.Text = _elLowerProx.ToString();
             lblEleProx2.Text = _elUpperProx.ToString();

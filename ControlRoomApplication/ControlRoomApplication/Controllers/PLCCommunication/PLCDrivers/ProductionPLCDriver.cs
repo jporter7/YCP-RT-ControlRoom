@@ -39,7 +39,7 @@ namespace ControlRoomApplication.Controllers
             0x0004, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
         };
 
-        private static readonly ushort[] MESSAGE_CONTENTS_CLEAR_MOVE = new ushort[] {  
+        private static readonly ushort[] MESSAGE_CONTENTS_CLEAR_MOVE = new ushort[] {
             0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
             0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
         };
@@ -49,14 +49,14 @@ namespace ControlRoomApplication.Controllers
             0x0800, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
         };
 
-        private bool keep_modbus_server_alive=true;
-        private bool is_test= false;
+        private bool keep_modbus_server_alive = true;
+        private bool is_test = false;
         /// <summary>
         /// set this ONLY if using test driver, removes timouts and delays
         /// </summary>
         /// <param name="val"></param>
         /// <returns></returns>
-        public bool set_is_test(bool val) { is_test = val;return is_test; }
+        public bool set_is_test(bool val) { is_test = val; return is_test; }
         /// <summary>
         /// starts a modbus server to comunicate with the PLC on PLC_port and local_ip
         /// then sets up a modbus client to comunicate with the MCU located at MCU_ip, MCU_port (192.168.0.50 , 502) for actual hardware
@@ -65,7 +65,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public ProductionPLCDriver(string local_ip,  string MCU_ip, int MCU_port, int PLC_port, bool startPLC) : base(local_ip,  MCU_ip, MCU_port, PLC_port, startPLC )
+        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC)
         {
             MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
@@ -73,7 +73,7 @@ namespace ControlRoomApplication.Controllers
             {
                 PLCTCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(local_ip), PLC_port));
                 ClientManagmentThread = new Thread(new ThreadStart(HandleClientManagementThread));
-                MCU_Monitor_Thread = new Thread( new ThreadStart( MonitorMCU ) );
+                MCU_Monitor_Thread = new Thread(new ThreadStart(MonitorMCU));
             }
             catch (Exception e)
             {
@@ -99,7 +99,7 @@ namespace ControlRoomApplication.Controllers
 
         }
 
-       
+
 
         /// <summary>
         /// runs the modbus server to interface with the plc
@@ -107,21 +107,21 @@ namespace ControlRoomApplication.Controllers
         protected override void HandleClientManagementThread() {
             byte slaveId = 1;
             // create and start the TCP slave
-            PLC_Modbusserver = ModbusTcpSlave.CreateTcp( slaveId , PLCTCPListener );
+            PLC_Modbusserver = ModbusTcpSlave.CreateTcp(slaveId, PLCTCPListener);
             //coils, inputs, holdingRegisters, inputRegisters
-            PLC_Modbusserver.DataStore = DataStoreFactory.CreateDefaultDataStore( 0 , 0 , 256 , 0 );
+            PLC_Modbusserver.DataStore = DataStoreFactory.CreateDefaultDataStore(0, 0, 256, 0);
             // PLC_Modbusserver.DataStore.SyncRoot.ToString();
 
-            PLC_Modbusserver.ModbusSlaveRequestReceived += new EventHandler<ModbusSlaveRequestEventArgs>( Server_Read_handler );
-            PLC_Modbusserver.DataStore.DataStoreWrittenTo += new EventHandler<DataStoreEventArgs>( Server_Written_to_handler );
+            PLC_Modbusserver.ModbusSlaveRequestReceived += new EventHandler<ModbusSlaveRequestEventArgs>(Server_Read_handler);
+            PLC_Modbusserver.DataStore.DataStoreWrittenTo += new EventHandler<DataStoreEventArgs>(Server_Written_to_handler);
 
             PLC_Modbusserver.Listen();
 
             //PLC_Modbusserver.ListenAsync().GetAwaiter().GetResult();
 
             // prevent the main thread from exiting
-            while(keep_modbus_server_alive) {
-                Thread.Sleep( 100 );
+            while (keep_modbus_server_alive) {
+                Thread.Sleep(100);
             }
         }
 
@@ -130,9 +130,9 @@ namespace ControlRoomApplication.Controllers
             try {
                 MCU_Monitor_Thread.Start();
                 ClientManagmentThread.Start();
-            } catch(Exception e) {
-                if((e is ThreadStateException) || (e is OutOfMemoryException)) {
-                    Console.WriteLine( "failed to start prodi=uction plc and mcu threads err:____    {0}" ,e);
+            } catch (Exception e) {
+                if ((e is ThreadStateException) || (e is OutOfMemoryException)) {
+                    Console.WriteLine("failed to start prodi=uction plc and mcu threads err:____    {0}", e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -147,9 +147,9 @@ namespace ControlRoomApplication.Controllers
                 PLC_Modbusserver.Dispose();
                 ClientManagmentThread.Join();
                 MCU_Monitor_Thread.Join();
-            } catch(Exception e) {
-                if((e is ThreadStateException) || (e is ThreadStartException)) {
-                    Console.WriteLine( e );
+            } catch (Exception e) {
+                if ((e is ThreadStateException) || (e is ThreadStartException)) {
+                    Console.WriteLine(e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -166,9 +166,9 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Server_Read_handler( object sender , ModbusSlaveRequestEventArgs e ) {
-            if(is_test) {
-                Console.WriteLine( "PLC Red data from the the control room" );
+        private void Server_Read_handler(object sender, ModbusSlaveRequestEventArgs e) {
+            if (is_test) {
+                Console.WriteLine("PLC Red data from the the control room");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             // Console.WriteLine(e.Message);
@@ -190,19 +190,19 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Server_Written_to_handler( object sender , DataStoreEventArgs e ) {
+        private void Server_Written_to_handler(object sender, DataStoreEventArgs e) {
             //e.Data.B //array representing data   
-            if(is_test) {
-                Console.WriteLine( "recived message from PLC" );
+            if (is_test) {
+                Console.WriteLine("recived message from PLC");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            switch(e.StartAddress) {
+            switch (e.StartAddress) {
                 case (ushort)PLC_modbus_server_register_mapping.CMD_ACK: {
                         // Console.WriteLine(" data {0} written to 22",PLC_Modbusserver.DataStore.HoldingRegisters[e.StartAddress]);
                         try {
                             //comand_acknoledged.Release();
-                        } catch(Exception err) {
-                            Console.WriteLine( err );
+                        } catch (Exception err) {
+                            Console.WriteLine(err);
                         }
                         break;
 
@@ -242,11 +242,11 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-        private void set_Local_registers( ushort[] data , ushort starting_adress ) {
-            Console.WriteLine( "{0}   dsv  {1} " , data.Length , starting_adress );
-            for(int i = 1; i < (data.Length - 1); i++) {
+        private void set_Local_registers(ushort[] data, ushort starting_adress) {
+            Console.WriteLine("{0}   dsv  {1} ", data.Length, starting_adress);
+            for (int i = 1; i < (data.Length - 1); i++) {
                 PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] = data[i];
-                Console.Write( " {0}," , PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] );
+                Console.Write(" {0},", PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress]);
             }
         }
 
@@ -255,7 +255,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="adr"></param>
         /// <param name="value"></param>
-        public void setregvalue( ushort adr , ushort value ) {
+        public void setregvalue(ushort adr, ushort value) {
             PLC_Modbusserver.DataStore.HoldingRegisters[adr] = value;
         }
 
@@ -265,7 +265,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="adr"></param>
         /// <returns></returns>
-        public ushort readregval( ushort adr ) {
+        public ushort readregval(ushort adr) {
             return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
         }
 
@@ -291,9 +291,9 @@ namespace ControlRoomApplication.Controllers
         }
 
 
-        private bool Int_to_bool( int val ) {
-            Console.WriteLine( val );
-            if(val == 0) {
+        private bool Int_to_bool(int val) {
+            Console.WriteLine(val);
+            if (val == 0) {
                 return false;
             } else { return true; }
         }
@@ -313,19 +313,19 @@ namespace ControlRoomApplication.Controllers
 
         private void MonitorMCU() {
             int lastMCUHeartbeatBit = 0;
-            while(keep_modbus_server_alive) {
-                ushort network_status = MCUModbusMaster.ReadHoldingRegisters( 9 , 1 )[0];
-                int CurrentHeartBeat = (network_status >> 14)&1;//this bit changes every 500ms
+            while (keep_modbus_server_alive) {
+                ushort network_status = MCUModbusMaster.ReadHoldingRegisters(9, 1)[0];
+                int CurrentHeartBeat = (network_status >> 14) & 1;//this bit changes every 500ms
                 if (CurrentHeartBeat != lastMCUHeartbeatBit) {
                     MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 }
                 lastMCUHeartbeatBit = CurrentHeartBeat;
-                if(((network_status >> 13) & 1) == 1) {
-                    logger.Warn( "MCU network disconected, reseting errors" );
-                    MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_RESET_ERRORS );
+                if (((network_status >> 13) & 1) == 1) {
+                    logger.Warn("MCU network disconected, reseting errors");
+                    MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_RESET_ERRORS);
 
                 }
-                Thread.Sleep( 250 );
+                Thread.Sleep(250);
             }
         }
 
@@ -382,7 +382,7 @@ namespace ControlRoomApplication.Controllers
             Orientation current = read_Position();
 
             // move to dump snow
-            if(Move_to_orientation(dump, current))
+            if (Move_to_orientation(dump, current))
             {
                 // move back to initial orientation
                 return Move_to_orientation(current, read_Position());
@@ -530,7 +530,7 @@ namespace ControlRoomApplication.Controllers
             else
                 return elFinishFlag;
         }
-                
+        
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
         /// </summary>
@@ -540,7 +540,7 @@ namespace ControlRoomApplication.Controllers
             Orientation start = new Orientation(360, 0);
             Orientation finish = new Orientation(0, 0);
 
-            if(Move_to_orientation(start, current) && Move_to_orientation(finish, start))
+            if (Move_to_orientation(start, current) && Move_to_orientation(finish, start))
             {
                 return Move_to_orientation(current, finish);
             }
@@ -613,6 +613,27 @@ namespace ControlRoomApplication.Controllers
             Orientation recover = new Orientation(0, current.Elevation);
 
             return Move_to_orientation(recover, current);
+        }
+
+        /// <summary>
+        /// This script hits the two azimuth hardstops, first the clockwise one
+        /// WARNING: DO NOT CALL THIS SCRIPT UNLESS YOU ARE ABSOLUTELY SURE
+        /// </summary>
+        public override bool Hit_Hardstops()
+        {
+            // This will be one of the only functions that will always override the limit switch
+            // However, it will stop need an override for the rest of the sensors
+            Orientation current = read_Position();
+            Orientation hitClockwiseHardstop = new Orientation(375, current.Elevation);
+
+            bool clockwiseMove = Move_to_orientation(hitClockwiseHardstop, current);
+
+            current = read_Position();
+            Orientation hitCounterHardstop = new Orientation(-15, current.Elevation);
+
+            bool counterMove = Move_to_orientation(hitCounterHardstop, current);
+
+            return clockwiseMove && counterMove;
         }
 
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
