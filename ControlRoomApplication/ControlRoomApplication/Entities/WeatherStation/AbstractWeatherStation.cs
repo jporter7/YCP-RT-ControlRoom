@@ -27,6 +27,45 @@ namespace ControlRoomApplication.Entities
             }
         }
 
+
+        public struct Weather_Data
+        {
+            public float windSpeed;
+            public String windDirection;
+            public float windDirectionDegrees;
+            public float dailyRain;
+            public float rainRate;
+            public float outsideTemp;
+            public float insideTemp;
+            public float baromPressure;
+            public float dewPoint;
+            public float windChill;
+            public float outsideHumidity;
+            public float totalRain;
+            public float monthlyRain;
+            public float heatIndex;
+
+            public Weather_Data(float windSpeedIN, String windDirectionIN, float windDirectionDegreesIN, float dailyRainIN, float rainRateIN,
+                                    float outsideTempIN, float insideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
+                                    float outsideHumidityIN, float totalRainIN, float monthlyRainIN, float heatIndexIN)
+            {
+                windSpeed = windSpeedIN;
+                windDirection = windDirectionIN;
+                windDirectionDegrees = windDirectionDegreesIN;
+                dailyRain = dailyRainIN;
+                rainRate = rainRateIN;
+                outsideTemp = outsideTempIN;
+                insideTemp = insideTempIN;
+                baromPressure = baromPressureIN;
+                dewPoint = dewPointIN;
+                windChill = windChillIN;
+                outsideHumidity = outsideHumidityIN;
+                totalRain = totalRainIN;
+                monthlyRain = monthlyRainIN;
+                heatIndex = heatIndexIN;
+            }
+        };
+
         public int CurrentWindSpeedScanDelayMS { get; }
 
         public bool CurrentWindSpeedIsAllowable

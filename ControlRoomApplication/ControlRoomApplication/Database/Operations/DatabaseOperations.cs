@@ -52,7 +52,7 @@ namespace ControlRoomApplication.Database
             }
             else
             {
-                RTDbContext LocalContext = new RTDbContext();
+                RTDbContext LocalContext = new RTDbContext(AWSConstants.LOCAL_DATABASE_STRING);
                 LocalContext.Database.CreateIfNotExists();
                 SaveContext(LocalContext);
                 return LocalContext;
@@ -412,6 +412,23 @@ namespace ControlRoomApplication.Database
                     return Context.Temperatures.Where( x => x.location_ID == (int)loc ).OrderByDescending( x => x.TimeCapturedUTC ).First();
                 } catch {
                     return new Temperature();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds the weather data
+        /// </summary>
+        public static void AddWeatherData(WeatherData weather)
+        {
+            if (!USING_REMOTE_DATABASE)
+            {
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    Context.Weather.Add(weather);
+                    SaveContext(Context);
+
+                    logger.Info("Added weather data to database");
                 }
             }
         }

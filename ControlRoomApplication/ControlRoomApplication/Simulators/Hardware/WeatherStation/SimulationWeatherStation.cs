@@ -1,5 +1,6 @@
 ﻿using System;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
@@ -13,42 +14,6 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
         private String[] windDirections = { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
                                                 "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"};
 
-        private struct Weather_Data
-        {
-            public float windSpeed;
-            public String windDirection;
-            public float dailyRain;
-            public float rainRate;
-            public float outsideTemp;
-            public float insideTemp;
-            public float baromPressure;
-            public float dewPoint;
-            public float windChill;
-            public float outsideHumidity;
-            public float totalRain;
-            public float monthlyRain;
-            public float heatIndex;
-
-            public Weather_Data(float windSpeedIN, String windDirectionIN, float dailyRainIN, float rainRateIN,
-                                    float outsideTempIN, float insideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
-                                    float outsideHumidityIN, float totalRainIN, float monthlyRainIN, float heatIndexIN)
-            {
-                windSpeed = windSpeedIN;
-                windDirection = windDirectionIN;
-                dailyRain = dailyRainIN;
-                rainRate = rainRateIN;
-                outsideTemp = outsideTempIN;
-                insideTemp = insideTempIN;
-                baromPressure = baromPressureIN;
-                dewPoint = dewPointIN;
-                windChill = windChillIN;
-                outsideHumidity = outsideHumidityIN;
-                totalRain = totalRainIN;
-                monthlyRain = monthlyRainIN;
-                heatIndex = heatIndexIN;
-            }
-        };
-
         Weather_Data data;
 
         public SimulationWeatherStation(int currentWindSpeedScanDelayMS)
@@ -57,7 +22,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             Rand = new Random();
             lastRefreshTime = (DateTime.Now).AddSeconds(-70);
             windDirectionCounter = 0;
-            data = new Weather_Data(0, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            data = new Weather_Data(0, " ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
 
             ReloadWeatherDataThread = null;
@@ -89,6 +54,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
                     windDirectionCounter = 0;
                 }
 
+                DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
 
                 // change the successfull date and time
                 lastRefreshTime = DateTime.Now;
