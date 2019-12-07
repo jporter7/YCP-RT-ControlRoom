@@ -454,7 +454,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// 
         /// </summary>
-        protected override void HandleClientManagementThread()
+        public override void HandleClientManagementThread()
         {
             //return;
             TcpClient AcceptedClient = null;

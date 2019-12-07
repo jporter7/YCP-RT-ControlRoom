@@ -193,7 +193,7 @@ namespace ControlRoomApplication.Controllers {
 
 
 
-        protected override void HandleClientManagementThread() {}
+        public override void HandleClientManagementThread() {}
 
 
         public override bool StartAsyncAcceptingClients() {

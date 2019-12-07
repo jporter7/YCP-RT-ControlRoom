@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using ControlRoomApplication.Simulators.Hardware;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -18,6 +19,7 @@ namespace ControlRoomApplication.Controllers
 
         protected RadioTelescope Parent;
 
+        public Simulators.Hardware.LimitSwitchData limitSwitchData;
 
         /// <summary>
         /// 
@@ -41,7 +43,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// modbuss server implamentation specific to each device
         /// </summary>
-        protected abstract void HandleClientManagementThread();
+        public abstract void HandleClientManagementThread();
 
 
         /// <summary>
