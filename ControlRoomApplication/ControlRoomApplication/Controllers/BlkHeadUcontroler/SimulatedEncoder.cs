@@ -75,7 +75,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                     AZ = az ,
                     EL = el
                 };
-                //Console.WriteLine(az +" "+el);
                 string json = JsonConvert.SerializeObject( obj );
                 sw.WriteLine( json );
                 sw.Flush();
@@ -83,7 +82,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 string data;
                 try {
                     while((data = sr.ReadLine()) != "exit") {
-                        Console.WriteLine( data );
                         sw.WriteLine( data );
                         sw.Flush();
                     }
