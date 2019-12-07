@@ -19,7 +19,8 @@ namespace ControlRoomApplication.Controllers
 
         protected RadioTelescope Parent;
 
-        public Simulators.Hardware.LimitSwitchData limitSwitchData;
+        public LimitSwitchData limitSwitchData;
+        public ProximitySensorData proximitySensorData;
 
         /// <summary>
         /// 

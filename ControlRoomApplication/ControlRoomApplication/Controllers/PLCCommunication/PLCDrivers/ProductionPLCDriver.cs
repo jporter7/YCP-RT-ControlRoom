@@ -71,6 +71,7 @@ namespace ControlRoomApplication.Controllers
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
 
             limitSwitchData = new Simulators.Hardware.LimitSwitchData();
+            proximitySensorData = new Simulators.Hardware.ProximitySensorData();
 
             try
             {
@@ -220,11 +221,21 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING: {
-
+                        logger.Info("Azimuth CCW Proximity Sensor Changed");
+                        proximitySensorData.Azimuth_CCW_Prox_Sensor = !proximitySensorData.Azimuth_CCW_Prox_Sensor;
+                        if (proximitySensorData.Azimuth_CCW_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING: {
-
+                        logger.Info("Azimuth CW Proximity Sensor Changed");
+                        proximitySensorData.Azimuth_CW_Prox_Sensor = !proximitySensorData.Azimuth_CW_Prox_Sensor;
+                        if (proximitySensorData.Azimuth_CW_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT: {
@@ -246,11 +257,21 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING: {
-
+                        logger.Info("Elevation Lower Proximity Sensor Changed");
+                        proximitySensorData.Elevation_Lower_Prox_Sensor = !proximitySensorData.Elevation_Lower_Prox_Sensor;
+                        if (proximitySensorData.Elevation_Lower_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING: {
-
+                        logger.Info("Elevation Upper Proximity Sensor Changed");
+                        proximitySensorData.Elevation_Upper_Prox_Sensor = !proximitySensorData.Elevation_Upper_Prox_Sensor;
+                        if (proximitySensorData.Elevation_Upper_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT: {
