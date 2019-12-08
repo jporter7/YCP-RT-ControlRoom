@@ -38,8 +38,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>ControlRoomApplication.Main.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AASharp, Version=1.93.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -189,6 +188,7 @@
     <Compile Include="Controllers\Sensors\LimitSwitcheData.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
     <Compile Include="Controllers\Sensors\ProximitySensorData.cs" />
+    <Compile Include="Controllers\TCPCommunication\RemoteListener.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
