@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -109,11 +109,15 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox14 = new System.Windows.Forms.GroupBox();
+            this.farTempConvert = new System.Windows.Forms.Button();
+            this.celTempConvert = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
             this.lblCurrentElOrientation = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.insideTempLabel = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
@@ -130,12 +134,12 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
-            this.button12 = new System.Windows.Forms.Button();
+            this.ElMotTempSensOverride = new System.Windows.Forms.Button();
             this.label29 = new System.Windows.Forms.Label();
-            this.button10 = new System.Windows.Forms.Button();
+            this.AzMotTempSensOverride = new System.Windows.Forms.Button();
             this.label28 = new System.Windows.Forms.Label();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
-            this.button9 = new System.Windows.Forms.Button();
+            this.MGOverride = new System.Windows.Forms.Button();
             this.label27 = new System.Windows.Forms.Label();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.ElevationProximityOveride2 = new System.Windows.Forms.Button();
@@ -147,12 +151,8 @@
             this.label21 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
-            this.button8 = new System.Windows.Forms.Button();
+            this.WSOverride = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.groupBox14 = new System.Windows.Forms.GroupBox();
-            this.button11 = new System.Windows.Forms.Button();
-            this.button13 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -166,7 +166,12 @@
             this.splitContainer2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox14.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -174,11 +179,6 @@
             this.groupBox12.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox11.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
-            this.groupBox14.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -187,14 +187,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle6;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.Location = new System.Drawing.Point(4, 8);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -207,7 +207,7 @@
             // 
             this.windSpeedLabel.AutoSize = true;
             this.windSpeedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.windSpeedLabel.Location = new System.Drawing.Point(258, 15);
+            this.windSpeedLabel.Location = new System.Drawing.Point(232, 20);
             this.windSpeedLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.windSpeedLabel.Name = "windSpeedLabel";
             this.windSpeedLabel.Size = new System.Drawing.Size(23, 20);
@@ -219,7 +219,7 @@
             // 
             this.windDirLabel.AutoSize = true;
             this.windDirLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.windDirLabel.Location = new System.Drawing.Point(257, 46);
+            this.windDirLabel.Location = new System.Drawing.Point(231, 46);
             this.windDirLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.windDirLabel.Name = "windDirLabel";
             this.windDirLabel.Size = new System.Drawing.Size(23, 20);
@@ -315,7 +315,7 @@
             // 
             this.fldAzTemp.AutoSize = true;
             this.fldAzTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldAzTemp.Location = new System.Drawing.Point(216, 5);
+            this.fldAzTemp.Location = new System.Drawing.Point(237, 5);
             this.fldAzTemp.Name = "fldAzTemp";
             this.fldAzTemp.Size = new System.Drawing.Size(27, 20);
             this.fldAzTemp.TabIndex = 18;
@@ -326,7 +326,7 @@
             // 
             this.fldElTemp.AutoSize = true;
             this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldElTemp.Location = new System.Drawing.Point(216, 33);
+            this.fldElTemp.Location = new System.Drawing.Point(237, 33);
             this.fldElTemp.Name = "fldElTemp";
             this.fldElTemp.Size = new System.Drawing.Size(27, 20);
             this.fldElTemp.TabIndex = 19;
@@ -1068,6 +1068,43 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Sensor Data";
             // 
+            // groupBox14
+            // 
+            this.groupBox14.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox14.Controls.Add(this.farTempConvert);
+            this.groupBox14.Controls.Add(this.celTempConvert);
+            this.groupBox14.Location = new System.Drawing.Point(314, 19);
+            this.groupBox14.Name = "groupBox14";
+            this.groupBox14.Size = new System.Drawing.Size(324, 54);
+            this.groupBox14.TabIndex = 39;
+            this.groupBox14.TabStop = false;
+            this.groupBox14.Text = "Temperature Conversion";
+            // 
+            // farTempConvert
+            // 
+            this.farTempConvert.BackColor = System.Drawing.Color.Silver;
+            this.farTempConvert.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.farTempConvert.Location = new System.Drawing.Point(183, 19);
+            this.farTempConvert.Name = "farTempConvert";
+            this.farTempConvert.Size = new System.Drawing.Size(130, 23);
+            this.farTempConvert.TabIndex = 1;
+            this.farTempConvert.Text = "Farenheit";
+            this.farTempConvert.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.farTempConvert.UseVisualStyleBackColor = false;
+            this.farTempConvert.Click += new System.EventHandler(this.farTempConvert_Click);
+            // 
+            // celTempConvert
+            // 
+            this.celTempConvert.BackColor = System.Drawing.Color.Silver;
+            this.celTempConvert.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.celTempConvert.Location = new System.Drawing.Point(9, 19);
+            this.celTempConvert.Name = "celTempConvert";
+            this.celTempConvert.Size = new System.Drawing.Size(130, 23);
+            this.celTempConvert.TabIndex = 0;
+            this.celTempConvert.Text = "Celsius";
+            this.celTempConvert.UseVisualStyleBackColor = false;
+            this.celTempConvert.Click += new System.EventHandler(this.celTempConvert_Click);
+            // 
             // groupBox6
             // 
             this.groupBox6.BackColor = System.Drawing.Color.Gainsboro;
@@ -1082,28 +1119,30 @@
             this.groupBox6.Text = "Motor Sensor Data";
             this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
             // 
-            // label25
+            // splitContainer1
             // 
-            this.label25.AutoSize = true;
-            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(216, 30);
-            this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(31, 20);
-            this.label25.TabIndex = 10;
-            this.label25.Text = "0.0";
-            this.label25.Click += new System.EventHandler(this.label25_Click);
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.splitContainer1.Location = new System.Drawing.Point(-7, 18);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // label26
+            // splitContainer1.Panel1
             // 
-            this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(216, 6);
-            this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(31, 20);
-            this.label26.TabIndex = 9;
-            this.label26.Text = "0.0";
+            this.splitContainer1.Panel1.Controls.Add(this.lblCurrentAzOrientation);
+            this.splitContainer1.Panel1.Controls.Add(this.lblCurrentElOrientation);
+            this.splitContainer1.Panel1.Controls.Add(this.label25);
+            this.splitContainer1.Panel1.Controls.Add(this.label26);
+            this.splitContainer1.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer1_Panel1_Paint_1);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.lblAzimuthTemp);
+            this.splitContainer1.Panel2.Controls.Add(this.fldElTemp);
+            this.splitContainer1.Panel2.Controls.Add(this.fldAzTemp);
+            this.splitContainer1.Panel2.Controls.Add(this.lblElevationTemp);
+            this.splitContainer1.Size = new System.Drawing.Size(333, 123);
+            this.splitContainer1.SplitterDistance = 55;
+            this.splitContainer1.TabIndex = 20;
             // 
             // lblCurrentAzOrientation
             // 
@@ -1126,6 +1165,29 @@
             this.lblCurrentElOrientation.Size = new System.Drawing.Size(134, 16);
             this.lblCurrentElOrientation.TabIndex = 8;
             this.lblCurrentElOrientation.Text = "Current Elevation: ";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label25.Location = new System.Drawing.Point(237, 28);
+            this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(31, 20);
+            this.label25.TabIndex = 10;
+            this.label25.Text = "0.0";
+            this.label25.Click += new System.EventHandler(this.label25_Click);
+            // 
+            // label26
+            // 
+            this.label26.AutoSize = true;
+            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label26.Location = new System.Drawing.Point(237, 4);
+            this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(31, 20);
+            this.label26.TabIndex = 9;
+            this.label26.Text = "0.0";
             // 
             // groupBox5
             // 
@@ -1157,7 +1219,7 @@
             // 
             this.insideTempLabel.AutoSize = true;
             this.insideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.insideTempLabel.Location = new System.Drawing.Point(257, 115);
+            this.insideTempLabel.Location = new System.Drawing.Point(231, 115);
             this.insideTempLabel.Name = "insideTempLabel";
             this.insideTempLabel.Size = new System.Drawing.Size(23, 20);
             this.insideTempLabel.TabIndex = 23;
@@ -1177,7 +1239,7 @@
             // 
             this.rainRateLabel.AutoSize = true;
             this.rainRateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rainRateLabel.Location = new System.Drawing.Point(258, 91);
+            this.rainRateLabel.Location = new System.Drawing.Point(232, 91);
             this.rainRateLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.rainRateLabel.Name = "rainRateLabel";
             this.rainRateLabel.Size = new System.Drawing.Size(23, 20);
@@ -1188,7 +1250,7 @@
             // 
             this.barometricPressureLabel.AutoSize = true;
             this.barometricPressureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.barometricPressureLabel.Location = new System.Drawing.Point(258, 159);
+            this.barometricPressureLabel.Location = new System.Drawing.Point(232, 159);
             this.barometricPressureLabel.Name = "barometricPressureLabel";
             this.barometricPressureLabel.Size = new System.Drawing.Size(23, 20);
             this.barometricPressureLabel.TabIndex = 21;
@@ -1199,7 +1261,7 @@
             // 
             this.dailyRainfallLabel.AutoSize = true;
             this.dailyRainfallLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dailyRainfallLabel.Location = new System.Drawing.Point(258, 68);
+            this.dailyRainfallLabel.Location = new System.Drawing.Point(232, 68);
             this.dailyRainfallLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.dailyRainfallLabel.Name = "dailyRainfallLabel";
             this.dailyRainfallLabel.Size = new System.Drawing.Size(23, 20);
@@ -1210,7 +1272,7 @@
             // 
             this.outsideTempLabel.AutoSize = true;
             this.outsideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outsideTempLabel.Location = new System.Drawing.Point(257, 139);
+            this.outsideTempLabel.Location = new System.Drawing.Point(231, 139);
             this.outsideTempLabel.Name = "outsideTempLabel";
             this.outsideTempLabel.Size = new System.Drawing.Size(23, 20);
             this.outsideTempLabel.TabIndex = 20;
@@ -1323,9 +1385,9 @@
             // groupBox13
             // 
             this.groupBox13.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox13.Controls.Add(this.button12);
+            this.groupBox13.Controls.Add(this.ElMotTempSensOverride);
             this.groupBox13.Controls.Add(this.label29);
-            this.groupBox13.Controls.Add(this.button10);
+            this.groupBox13.Controls.Add(this.AzMotTempSensOverride);
             this.groupBox13.Controls.Add(this.label28);
             this.groupBox13.Location = new System.Drawing.Point(3, 233);
             this.groupBox13.Name = "groupBox13";
@@ -1334,16 +1396,16 @@
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Motor Temperature Sensors";
             // 
-            // button12
+            // ElMotTempSensOverride
             // 
-            this.button12.BackColor = System.Drawing.Color.Red;
-            this.button12.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button12.Location = new System.Drawing.Point(236, 96);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(91, 23);
-            this.button12.TabIndex = 15;
-            this.button12.Text = "OVER RIDE";
-            this.button12.UseVisualStyleBackColor = false;
+            this.ElMotTempSensOverride.BackColor = System.Drawing.Color.Red;
+            this.ElMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ElMotTempSensOverride.Location = new System.Drawing.Point(236, 96);
+            this.ElMotTempSensOverride.Name = "ElMotTempSensOverride";
+            this.ElMotTempSensOverride.Size = new System.Drawing.Size(91, 23);
+            this.ElMotTempSensOverride.TabIndex = 15;
+            this.ElMotTempSensOverride.Text = "OVER RIDE";
+            this.ElMotTempSensOverride.UseVisualStyleBackColor = false;
             // 
             // label29
             // 
@@ -1355,16 +1417,16 @@
             this.label29.TabIndex = 14;
             this.label29.Text = "Elevation Motor Temperature Sensor";
             // 
-            // button10
+            // AzMotTempSensOverride
             // 
-            this.button10.BackColor = System.Drawing.Color.Red;
-            this.button10.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button10.Location = new System.Drawing.Point(238, 33);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(89, 23);
-            this.button10.TabIndex = 13;
-            this.button10.Text = "OVER RIDE";
-            this.button10.UseVisualStyleBackColor = false;
+            this.AzMotTempSensOverride.BackColor = System.Drawing.Color.Red;
+            this.AzMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.AzMotTempSensOverride.Location = new System.Drawing.Point(238, 33);
+            this.AzMotTempSensOverride.Name = "AzMotTempSensOverride";
+            this.AzMotTempSensOverride.Size = new System.Drawing.Size(89, 23);
+            this.AzMotTempSensOverride.TabIndex = 13;
+            this.AzMotTempSensOverride.Text = "OVER RIDE";
+            this.AzMotTempSensOverride.UseVisualStyleBackColor = false;
             // 
             // label28
             // 
@@ -1379,7 +1441,7 @@
             // groupBox12
             // 
             this.groupBox12.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox12.Controls.Add(this.button9);
+            this.groupBox12.Controls.Add(this.MGOverride);
             this.groupBox12.Controls.Add(this.label27);
             this.groupBox12.Location = new System.Drawing.Point(3, 135);
             this.groupBox12.Name = "groupBox12";
@@ -1388,16 +1450,17 @@
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Gate Sensor";
             // 
-            // button9
+            // MGOverride
             // 
-            this.button9.BackColor = System.Drawing.Color.Red;
-            this.button9.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button9.Location = new System.Drawing.Point(241, 38);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(89, 23);
-            this.button9.TabIndex = 13;
-            this.button9.Text = "OVER RIDE";
-            this.button9.UseVisualStyleBackColor = false;
+            this.MGOverride.BackColor = System.Drawing.Color.Red;
+            this.MGOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.MGOverride.Location = new System.Drawing.Point(241, 38);
+            this.MGOverride.Name = "MGOverride";
+            this.MGOverride.Size = new System.Drawing.Size(89, 23);
+            this.MGOverride.TabIndex = 13;
+            this.MGOverride.Text = "OVER RIDE";
+            this.MGOverride.UseVisualStyleBackColor = false;
+            this.MGOverride.Click += new System.EventHandler(this.MGOverride_Click);
             // 
             // label27
             // 
@@ -1518,7 +1581,7 @@
             // groupBox11
             // 
             this.groupBox11.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox11.Controls.Add(this.button8);
+            this.groupBox11.Controls.Add(this.WSOverride);
             this.groupBox11.Controls.Add(this.label24);
             this.groupBox11.Location = new System.Drawing.Point(5, 30);
             this.groupBox11.Name = "groupBox11";
@@ -1527,16 +1590,17 @@
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Weather Station";
             // 
-            // button8
+            // WSOverride
             // 
-            this.button8.BackColor = System.Drawing.Color.Red;
-            this.button8.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button8.Location = new System.Drawing.Point(239, 39);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(89, 23);
-            this.button8.TabIndex = 13;
-            this.button8.Text = "OVER RIDE";
-            this.button8.UseVisualStyleBackColor = false;
+            this.WSOverride.BackColor = System.Drawing.Color.Red;
+            this.WSOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.WSOverride.Location = new System.Drawing.Point(239, 39);
+            this.WSOverride.Name = "WSOverride";
+            this.WSOverride.Size = new System.Drawing.Size(89, 23);
+            this.WSOverride.TabIndex = 13;
+            this.WSOverride.Text = "OVER RIDE";
+            this.WSOverride.UseVisualStyleBackColor = false;
+            this.WSOverride.Click += new System.EventHandler(this.WSOverride_Click);
             // 
             // label24
             // 
@@ -1547,65 +1611,6 @@
             this.label24.Size = new System.Drawing.Size(99, 13);
             this.label24.TabIndex = 12;
             this.label24.Text = "Weather Station";
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.splitContainer1.Location = new System.Drawing.Point(-7, 18);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.lblCurrentAzOrientation);
-            this.splitContainer1.Panel1.Controls.Add(this.lblCurrentElOrientation);
-            this.splitContainer1.Panel1.Controls.Add(this.label25);
-            this.splitContainer1.Panel1.Controls.Add(this.label26);
-            this.splitContainer1.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer1_Panel1_Paint_1);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.lblAzimuthTemp);
-            this.splitContainer1.Panel2.Controls.Add(this.fldElTemp);
-            this.splitContainer1.Panel2.Controls.Add(this.fldAzTemp);
-            this.splitContainer1.Panel2.Controls.Add(this.lblElevationTemp);
-            this.splitContainer1.Size = new System.Drawing.Size(333, 123);
-            this.splitContainer1.SplitterDistance = 55;
-            this.splitContainer1.TabIndex = 20;
-            // 
-            // groupBox14
-            // 
-            this.groupBox14.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox14.Controls.Add(this.button13);
-            this.groupBox14.Controls.Add(this.button11);
-            this.groupBox14.Location = new System.Drawing.Point(314, 19);
-            this.groupBox14.Name = "groupBox14";
-            this.groupBox14.Size = new System.Drawing.Size(324, 54);
-            this.groupBox14.TabIndex = 39;
-            this.groupBox14.TabStop = false;
-            this.groupBox14.Text = "Temperature Conversion";
-            // 
-            // button11
-            // 
-            this.button11.BackColor = System.Drawing.Color.Silver;
-            this.button11.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button11.Location = new System.Drawing.Point(9, 19);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(130, 23);
-            this.button11.TabIndex = 0;
-            this.button11.Text = "Celsius";
-            this.button11.UseVisualStyleBackColor = false;
-            // 
-            // button13
-            // 
-            this.button13.BackColor = System.Drawing.Color.Silver;
-            this.button13.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button13.Location = new System.Drawing.Point(183, 19);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(130, 23);
-            this.button13.TabIndex = 1;
-            this.button13.Text = "Farenheit";
-            this.button13.UseVisualStyleBackColor = false;
             // 
             // DiagnosticsForm
             // 
@@ -1637,7 +1642,14 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox14.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -1651,13 +1663,6 @@
             this.groupBox10.PerformLayout();
             this.groupBox11.ResumeLayout(false);
             this.groupBox11.PerformLayout();
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel1.PerformLayout();
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
-            this.groupBox14.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1775,18 +1780,18 @@
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.GroupBox groupBox13;
-        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button ElMotTempSensOverride;
         private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Button AzMotTempSensOverride;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.GroupBox groupBox12;
-        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button MGOverride;
         private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.Button WSOverride;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox groupBox14;
-        private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.Button farTempConvert;
+        private System.Windows.Forms.Button celTempConvert;
     }
 }

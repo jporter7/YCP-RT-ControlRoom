@@ -59,9 +59,8 @@ namespace ControlRoomApplication.GUI
         bool _azCloserUpperProx = false;
         bool _elLowerProx = false;
         bool _elUpperProx = false;
-
-        bool warningSent = false;
-        bool shutdownSent = false;
+        bool farenheit = true;
+        
 
         private int rtId;
         private string[] statuses = { "Offline", "Offline", "Offline", "Offline" };
@@ -115,8 +114,8 @@ namespace ControlRoomApplication.GUI
             windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection();
             dailyRainfallLabel.Text = Math.Round(controlRoom.WeatherStation.GetDailyRain(), 2).ToString();
             rainRateLabel.Text = Math.Round(controlRoom.WeatherStation.GetRainRate(), 2).ToString();
-            outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
-            insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
+            //outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
+            //insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
             barometricPressureLabel.Text = Math.Round(controlRoom.WeatherStation.GetBarometricPressure(), 2).ToString();
         }
 
@@ -200,13 +199,7 @@ namespace ControlRoomApplication.GUI
             _azEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Azimuth;//.GetCurrentOrientation().Azimuth;
             _elEncoderDegrees = controlRoom.RadioTelescopeControllers[rtId].GetAbsoluteOrientation().Elevation; //GetCurrentOrientation().Elevation;
 
-            //-----------------------------Weather Station----------------------------------------------------
-            //windSpeedLabel.Text = controlRoom.WeatherStation.GetWindSpeed().ToString();
-            //windDirLabel.Text = controlRoom.WeatherStation.GetWindDirection().ToString();
-            //dailyRainfallLabel.Text = controlRoom.WeatherStation.GetDailyRain().ToString();
-            //rainRateLabel.Text = controlRoom.WeatherStation.GetRainRate().ToString();
-            //outsideTempLabel.Text = controlRoom.WeatherStation.GetOutsideTemp().ToString();
-            //barometricPressureLabel.Text = controlRoom.WeatherStation.GetBarometricPressure().ToString();
+            
 
             //------------------------------Azimuth and elevation motor temp sensors--------------------------
             //elevationTemperature = simMicroController.myData.elevationTemp;
@@ -320,19 +313,49 @@ namespace ControlRoomApplication.GUI
 
             }
 
-            /** Conversion from fahrenheit to celsius (Currently not being used) 
+            
+            double ElMotTemp = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.elevationTemp;
+            double AzMotTemp = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp;
+            float insideTemp = controlRoom.WeatherStation.GetInsideTemp();
+            float outsideTemp = controlRoom.WeatherStation.GetOutsideTemp();
+            /** Conversion from fahrenheit to celsius 
             if(celOrFar)
             {
-                elevationTemperature = (elevationTemperature - 32) * (5.0 / 9);
-                azimuthTemperature = (azimuthTemperature - 32) * (5.0 / 9);
+               
             }**/
+            //double ElMotTempFar = (ElMotTemp) * (9 / 5) + 32;
+            //double AzMotTempFar = (AzMotTemp) * (9 / 5) + 32;
+            //float insideTempFar = (insideTemp) * (9 / 5) + 32;
+            //float outsideTempFar = (outsideTemp) * (9 / 5) + 32;
+            /** Conversion from celsius to farenheit
+             
+           }**/
+            double ElMotTempCel = (ElMotTemp - 32) * (5.0 / 9);
+            double AzMotTempCel = (AzMotTemp - 32) * (5.0 / 9);
+            double insideTempCel = (insideTemp - 32) * (5.0 / 9);
+            double outsideTempCel = (outsideTemp - 32) * (5.0 / 9);
+
+            if (farenheit == false)
+            {
+                outsideTempLabel.Text = Math.Round(insideTempCel, 2).ToString();
+                insideTempLabel.Text = Math.Round(outsideTempCel, 2).ToString();
+                fldElTemp.Text = Math.Round(ElMotTempCel, 2).ToString();
+                fldAzTemp.Text = Math.Round(AzMotTempCel, 2).ToString();
+            }
+            else if (farenheit == true)
+            {
+                outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
+                insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
+                fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
+                fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
+            }
 
             /** Temperature of motors **/
             Console.WriteLine("Azimuth temp: " + controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString());
             Console.WriteLine("Elevation temp: " + controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString());
 
-            fldElTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.elevationTemp.ToString();
-            fldAzTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString();
+            //fldElTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.elevationTemp.ToString();
+            //fldAzTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString();
 
             /** Encoder Position in both degrees and motor ticks **/
             lblAzEncoderDegrees.Text = _azEncoderDegrees.ToString();
@@ -887,6 +910,75 @@ namespace ControlRoomApplication.GUI
         private void selectDemo_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+        /** Conversion from fahrenheit to celsius (Currently not being used) 
+            if(celOrFar)
+            {
+                elevationTemperature = (elevationTemperature - 32) * (5.0 / 9);
+                azimuthTemperature = (azimuthTemperature - 32) * (5.0 / 9);
+            }**/
+        private void celTempConvert_Click(object sender, EventArgs e)
+        {
+
+            
+
+            if (farenheit == true)
+            {
+                farenheit = false;
+                celTempConvert.BackColor = System.Drawing.Color.LimeGreen;
+                farTempConvert.BackColor = System.Drawing.Color.DarkGray;
+                
+            }
+        }
+
+        private void farTempConvert_Click(object sender, EventArgs e)
+        {
+          
+            
+
+            if (farenheit == false)
+            {
+                farenheit = true;
+                celTempConvert.BackColor = System.Drawing.Color.DarkGray;
+                farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
+            
+            }
+        }
+
+        private void WSOverride_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride Weather Station clicked");
+            bool overRideWS = (WSOverride.Text == "Over Ridden");
+            if (!overRideWS)
+            {
+                WSOverride.Text = "Over Ridden";
+                WSOverride.BackColor = System.Drawing.Color.LimeGreen;
+
+            }
+            else if (overRideWS)
+            {
+                WSOverride.Text = "Over Ride";
+                WSOverride.BackColor = System.Drawing.Color.Red;
+
+            }
+        }
+
+        private void MGOverride_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride azimuth sensor 1 clicked");
+            bool overRideWS = (WSOverride.Text == "Over Ridden");
+            if (!overRideWS)
+            {
+                WSOverride.Text = "Over Ridden";
+                WSOverride.BackColor = System.Drawing.Color.LimeGreen;
+
+            }
+            else if (overRideWS)
+            {
+                WSOverride.Text = "Over Ride";
+                WSOverride.BackColor = System.Drawing.Color.Red;
+
+            }
         }
     }
 }

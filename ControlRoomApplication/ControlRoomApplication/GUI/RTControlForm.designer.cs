@@ -547,6 +547,7 @@
             this.label5.Size = new System.Drawing.Size(22, 13);
             this.label5.TabIndex = 27;
             this.label5.Text = "0.0";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label3
             // 
@@ -649,6 +650,7 @@
             this.plusElaButton.TabIndex = 4;
             this.plusElaButton.Text = "+ Ela";
             this.plusElaButton.UseVisualStyleBackColor = false;
+            this.plusElaButton.Click += new System.EventHandler(this.plusElaButton_Click);
             // 
             // subElaButton
             // 
