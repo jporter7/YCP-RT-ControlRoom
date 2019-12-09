@@ -16,6 +16,8 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     public class EncoderReader : AbstractEncoderReader {
         static string message = "moshi moshi controlroom desu";
 
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         TcpClient client;
         int port;
         string ip;
@@ -53,18 +55,15 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
 
                 Int32 bytes = stream.Read( data , 0 , data.Length );
                 responseData = System.Text.Encoding.ASCII.GetString( data , 0 , bytes );
-                //Console.WriteLine("Received: {0}", responseData);
                 dynamic respobj = null;
                 try {
 
                     respobj = JsonConvert.DeserializeObject( responseData );
-                    //Console.WriteLine(respobj.AZ+" "+ respobj.EL);
                     double AZ = respobj.AZ / (2048.0) * 180;
                     double EL = respobj.EL / (2048.0);
                     return new Orientation( AZ , EL );
-                    //return new Orientation(0, (double)0);
                 } catch(Exception e) {
-                    Console.WriteLine( "parsing exception: {0}" , e );
+                    logger.Info("parsing exception: {0}", e);
                     return null;
                 } finally {
                     stream.Close();
@@ -72,11 +71,11 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 }
                 // Close everything.
             } catch(ArgumentNullException e) {
-                Console.WriteLine( "ArgumentNullException: {0}" , e );
+                logger.Info("ArgumentNullException: {0}", e);
                 return null;
             } catch(SocketException e) {
                 //conection refused
-                Console.WriteLine("SocketException: {0}", e);
+                logger.Info("SocketException: {0}", e);
                 return null;
             }
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
     public  abstract class AbstractEncoderReader {
 
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public AbstractEncoderReader(string micro_ctrl_IP, int port) { }
         /// <summary>

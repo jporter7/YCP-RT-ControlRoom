@@ -13,5 +13,7 @@ namespace ControlRoomApplication.Constants
         public const double NEGLIGIBLE_POSITION_CHANGE_DEGREES = 0.1;
 
         public static readonly Orientation THERMAL_CALIBRATION_ORIENTATION = new Orientation(200, 20);
+
+        public static readonly double THERMAL_CALIBRATION_OFFSET = 0.01;
     }
 }

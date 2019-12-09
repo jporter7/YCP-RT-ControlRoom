@@ -454,7 +454,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// 
         /// </summary>
-        protected override void HandleClientManagementThread()
+        public override void HandleClientManagementThread()
         {
             //return;
             TcpClient AcceptedClient = null;
@@ -632,6 +632,11 @@ namespace ControlRoomApplication.Controllers
         }
 
         public override bool Recover_CCW_Hardstop()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Hit_Hardstops()
         {
             throw new NotImplementedException();
         }
