@@ -358,10 +358,11 @@ namespace ControlRoomApplication.GUI
             //fldAzTemp.Text = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp.ToString();
 
             /** Encoder Position in both degrees and motor ticks **/
-            lblAzEncoderDegrees.Text = _azEncoderDegrees.ToString();
+            lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 3).ToString();
             lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
 
-            lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
+            // lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
+            lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 3).ToString();
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
             /** Proximity and Limit Switches based on encoder pos **/
@@ -628,14 +629,35 @@ namespace ControlRoomApplication.GUI
             switch (caseSwitch)
             {
                 case 0:
-
-                    //360 Script selected (index 0 of control script combo)
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.HitAzimuthLeftLimitSwitch();//Change left to CCW
+                    //Hit Azimuth Counter-Clockwise Limit Switch (index 0 of control script combo)
                     break;
                 case 1:
-
-                    //360 counter clock Script selected (index 0 of control script combo)
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.HitAzimuthRightLimitSwitch();
+                    //Hit Azimuth Clockwise Limit Switch (index 1 of control script combo)
                     break;
-             
+                case 2:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.HitElevationLowerLimitSwitch();
+                    //Elevation Lower Limit Switch (index 2 of control script combo)
+                    break;
+                case 3:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.HitElevationUpperLimitSwitch();
+                    //Elevation Upper Limit Switch (index 3 of control script combo)
+                    break;
+                case 4:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Hit_CW_Hardstop();
+                    //Hit Clockwise Hardstop (index 4 of control script combo)
+                    break;
+                case 5:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Hit_CCW_Hardstop();
+                    //Hit Counter-Clockwise Hardstop (index 4 of control script combo)
+                    break;
                 default:
 
                     //Script cannot be run
@@ -979,6 +1001,11 @@ namespace ControlRoomApplication.GUI
                 WSOverride.BackColor = System.Drawing.Color.Red;
 
             }
+        }
+
+        private void lblElEncoderDegrees_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

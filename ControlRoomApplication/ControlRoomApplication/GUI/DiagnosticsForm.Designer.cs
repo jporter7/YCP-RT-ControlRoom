@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -187,14 +187,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(4, 8);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -798,6 +798,7 @@
             this.lblElEncoderDegrees.Size = new System.Drawing.Size(13, 13);
             this.lblElEncoderDegrees.TabIndex = 59;
             this.lblElEncoderDegrees.Text = "0";
+            this.lblElEncoderDegrees.Click += new System.EventHandler(this.lblElEncoderDegrees_Click);
             // 
             // label16
             // 
@@ -959,8 +960,12 @@
             this.diagnosticScriptCombo.BackColor = System.Drawing.Color.DarkGray;
             this.diagnosticScriptCombo.FormattingEnabled = true;
             this.diagnosticScriptCombo.Items.AddRange(new object[] {
-            "Full 360 Clockwise",
-            "Full 360 Counter-Clockwise"});
+            "Hit Azimuth Counter Clockwise Limit Switch",
+            "Hit Azimuth Clockwise Limit Switch",
+            "Hit Elevation Lower Limit Switch",
+            "Hit Elevation Upper Limit Switch",
+            "Hit Clockwise",
+            "Hit Counter Clockwise Hardstop"});
             this.diagnosticScriptCombo.Location = new System.Drawing.Point(6, 22);
             this.diagnosticScriptCombo.Name = "diagnosticScriptCombo";
             this.diagnosticScriptCombo.Size = new System.Drawing.Size(180, 21);
