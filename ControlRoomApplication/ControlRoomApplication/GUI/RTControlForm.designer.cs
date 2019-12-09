@@ -468,9 +468,15 @@
             this.controlScriptsCombo.BackColor = System.Drawing.Color.DarkGray;
             this.controlScriptsCombo.FormattingEnabled = true;
             this.controlScriptsCombo.Items.AddRange(new object[] {
-            "Snow Dump",
             "Stow Telescope",
-            "Calibrate"});
+            "Full Elevation",
+            "Full 360 Clockwise Rotation",
+            "Full 360 Counter-Clockwise Rotation",
+            "Thermal Calibration",
+            "Snow Dump",
+            "Recover From Limit Switch",
+            "Recover From Clockwise Hardstop",
+            "Recover From Counter-Clockwise Hardstop"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(11, 33);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
@@ -547,6 +553,7 @@
             this.label5.Size = new System.Drawing.Size(22, 13);
             this.label5.TabIndex = 27;
             this.label5.Text = "0.0";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label3
             // 
@@ -649,6 +656,7 @@
             this.plusElaButton.TabIndex = 4;
             this.plusElaButton.Text = "+ Ela";
             this.plusElaButton.UseVisualStyleBackColor = false;
+            this.plusElaButton.Click += new System.EventHandler(this.plusElaButton_Click);
             // 
             // subElaButton
             // 

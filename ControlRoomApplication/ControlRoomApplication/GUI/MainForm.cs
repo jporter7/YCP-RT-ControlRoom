@@ -98,8 +98,8 @@ namespace ControlRoomApplication.Main
             startButton.Enabled = false;
             shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
             shutdownButton.Enabled = false;
-            loopBackBox.Enabled = false;
-            checkBox1.Enabled = false;
+            loopBackBox.Enabled = true;
+            checkBox1.Enabled = true;
 
 
             logger.Info("MainForm Initalized");
@@ -567,8 +567,8 @@ namespace ControlRoomApplication.Main
                 startButton.Enabled = true;
             }
             startRTGroupbox.BackColor = System.Drawing.Color.Gray;
-            loopBackBox.Enabled = true;
-            checkBox1.Enabled = true;
+            loopBackBox.Enabled = false;
+            checkBox1.Enabled = false;
 
             simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
             comboMicrocontrollerBox.Enabled = false;

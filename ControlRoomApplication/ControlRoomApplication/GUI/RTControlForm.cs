@@ -16,9 +16,11 @@ namespace ControlRoomApplication.Main
         public double Increment { get; set; }
         public CoordinateCalculationController CoordCalc { set; get; }
         public ControlRoom controlRoom { get; set; }
-       // private ControlRoomController MainControlRoomController { get; set; }
+        public RadioTelescopeController rt_controller { get; set; }
+        // private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         public int rtId { get; set; }
+
         
         private static int current_rt_id;
         private static readonly log4net.ILog logger =
@@ -449,15 +451,49 @@ namespace ControlRoomApplication.Main
             switch (caseSwitch)
             {
                 case 0:
-
-                    //Snow Dump Script selected (index 0 of control script combo)
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Stow();
+                    //Stow Script selected (index 0 of control script combo)
                     break;
                 case 1:
-                    //Stow Script selected (index 1 of control script combo)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Stow();
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.FullElevationMove();
+                    //Full Elevation selected (index 1 of control script combo)
                     break;
                 case 2:
-                    //Calibrate Script selected (index 2 of control script combo)
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Full_360_CW_Rotation();
+                    //Full 360 CW selected (index 2 of control script combo)
+                    break;
+                case 3:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Full_360_CCW_Rotation();
+                    //Full 360 CCW  selected (index 3 of control script combo)
+                    break;
+                case 4:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Thermal_Calibrate();
+                    //Thermal Calibration selected (index 4 of control script combo)
+                    break;
+                case 5:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.SnowDump();
+                    //Snow Dump selected (index 5 of control script combo)
+                    break;
+                case 6:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.RecoverFromLimitSwitch();
+                    //Recover from Limit Switch (index 6 of control script combo)
+                    break;
+                case 7:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Recover_CW_Hardstop();
+                    //Recover from Clockwise Hardstop (index 7 of control script combo)
+                    break;
+                case 8:
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Recover_CCW_Hardstop();
+                    //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
                     break;
                 default:
 
@@ -480,43 +516,45 @@ namespace ControlRoomApplication.Main
         private void subJogButton_Click(object sender, EventArgs e)
         {
             //-----------------------If Mouse CLicked = True ----------------------------------
-            // {
-            //      logger.Info("Jog PosButton MouseDown");
-            //     // UpdateText("Moving at " + comboBox1.Text);
+            {
+                int speed = Convert.ToInt32(speedComboBox.Text);
+                logger.Info("Jog PosButton MouseDown");
+                // UpdateText("Moving at " + comboBox1.Text);
 
-            //      // Start CW Jog
-            //      rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
-            // // }
+                // Start CW Jog
+                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+              }
             //}
             //-----------------------If Mouse CLicked != True ----------------------------------
-            //{
-            //  logger.Info("Jog PosButton MouseUp");
-            //  UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+            {
+                logger.Info("Jog PosButton MouseUp");
+               // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
-            // Stop Move
-            //ExecuteCorrectStop();
-            //   }
+                //Stop Move
+                ExecuteCorrectStop();
+            }
         }
 
-        private void plusJogButton_Click(object sender, EventArgs e)
+            private void plusJogButton_Click(object sender, EventArgs e)
         {
-            //-----------------------If Mouse CLicked = True ----------------------------------
-            // {
-            //      logger.Info("Jog PosButton MouseDown");
-            //     // UpdateText("Moving at " + comboBox1.Text);
+          //  -----------------------If Mouse CLicked = True----------------------------------
+             {
+                int speed = Convert.ToInt32(speedComboBox.Text);
+                logger.Info("Jog PosButton MouseDown");
+                // UpdateText("Moving at " + comboBox1.Text);
 
-            //      // Start CW Jog
-            //      rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
-            // // }
-            //}
-            //-----------------------If Mouse CLicked != True ----------------------------------
-            //{
-            //  logger.Info("Jog PosButton MouseUp");
-            //  UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+                // Start CW Jog
+                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+              
+            }
+           // -----------------------If Mouse CLicked != True----------------------------------
+            {
+                logger.Info("Jog PosButton MouseUp");
+               // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
-            // Stop Move
-            //ExecuteCorrectStop();
-            //   }
+              //  Stop Move
+            ExecuteCorrectStop();
+            }
         }
 
         private void ExecuteCorrectStop()
@@ -524,12 +562,12 @@ namespace ControlRoomApplication.Main
             if (ControledButtonRadio.Checked)
             {
                 logger.Info("Executed Controlled Stop");
-              //  rt_controller.ExecuteRadioTelescopeControlledStop();
+                rt_controller.ExecuteRadioTelescopeControlledStop();
             }
             else if (immediateRadioButton.Checked)
             {
                 logger.Info("Executed Immediate Stop");
-             //  rt_controller.ExecuteRadioTelescopeImmediateStop();
+               rt_controller.ExecuteRadioTelescopeImmediateStop();
             }
             else
             {
@@ -575,7 +613,15 @@ namespace ControlRoomApplication.Main
 
         }
 
+        private void label5_Click(object sender, EventArgs e)
+        {
 
+        }
+
+        private void plusElaButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 

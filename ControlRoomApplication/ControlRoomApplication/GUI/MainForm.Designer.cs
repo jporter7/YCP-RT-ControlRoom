@@ -68,7 +68,7 @@
             this.startButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.startButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
             this.startButton.ForeColor = System.Drawing.Color.Black;
-            this.startButton.Location = new System.Drawing.Point(197, 105);
+            this.startButton.Location = new System.Drawing.Point(197, 68);
             this.startButton.Margin = new System.Windows.Forms.Padding(2);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(170, 40);
@@ -101,7 +101,7 @@
             this.shutdownButton.BackColor = System.Drawing.Color.Red;
             this.shutdownButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.shutdownButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.shutdownButton.Location = new System.Drawing.Point(13, 105);
+            this.shutdownButton.Location = new System.Drawing.Point(13, 68);
             this.shutdownButton.Margin = new System.Windows.Forms.Padding(2);
             this.shutdownButton.Name = "shutdownButton";
             this.shutdownButton.Size = new System.Drawing.Size(170, 40);
@@ -174,7 +174,7 @@
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBox1.AutoSize = true;
             this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.Location = new System.Drawing.Point(13, 74);
+            this.checkBox1.Location = new System.Drawing.Point(555, 221);
             this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(140, 17);
@@ -207,7 +207,7 @@
             this.FreeControl.Enabled = false;
             this.FreeControl.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.FreeControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F);
-            this.FreeControl.Location = new System.Drawing.Point(13, 13);
+            this.FreeControl.Location = new System.Drawing.Point(13, 15);
             this.FreeControl.Margin = new System.Windows.Forms.Padding(2);
             this.FreeControl.Name = "FreeControl";
             this.FreeControl.Size = new System.Drawing.Size(354, 44);
@@ -250,7 +250,7 @@
             // loopBackBox
             // 
             this.loopBackBox.AutoSize = true;
-            this.loopBackBox.Location = new System.Drawing.Point(260, 61);
+            this.loopBackBox.Location = new System.Drawing.Point(770, 208);
             this.loopBackBox.Margin = new System.Windows.Forms.Padding(2);
             this.loopBackBox.Name = "loopBackBox";
             this.loopBackBox.Size = new System.Drawing.Size(93, 43);
@@ -391,7 +391,7 @@
             this.createWSButton.Enabled = false;
             this.createWSButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.createWSButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.createWSButton.Location = new System.Drawing.Point(721, 214);
+            this.createWSButton.Location = new System.Drawing.Point(723, 251);
             this.createWSButton.Margin = new System.Windows.Forms.Padding(2);
             this.createWSButton.Name = "createWSButton";
             this.createWSButton.Size = new System.Drawing.Size(170, 51);
@@ -407,7 +407,7 @@
             this.acceptSettings.Enabled = false;
             this.acceptSettings.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.acceptSettings.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.acceptSettings.Location = new System.Drawing.Point(537, 214);
+            this.acceptSettings.Location = new System.Drawing.Point(539, 251);
             this.acceptSettings.Margin = new System.Windows.Forms.Padding(2);
             this.acceptSettings.Name = "acceptSettings";
             this.acceptSettings.Size = new System.Drawing.Size(170, 51);
@@ -419,13 +419,11 @@
             // startRTGroupbox
             // 
             this.startRTGroupbox.Controls.Add(this.FreeControl);
-            this.startRTGroupbox.Controls.Add(this.checkBox1);
-            this.startRTGroupbox.Controls.Add(this.loopBackBox);
             this.startRTGroupbox.Controls.Add(this.shutdownButton);
             this.startRTGroupbox.Controls.Add(this.startButton);
-            this.startRTGroupbox.Location = new System.Drawing.Point(526, 270);
+            this.startRTGroupbox.Location = new System.Drawing.Point(526, 307);
             this.startRTGroupbox.Name = "startRTGroupbox";
-            this.startRTGroupbox.Size = new System.Drawing.Size(381, 150);
+            this.startRTGroupbox.Size = new System.Drawing.Size(381, 113);
             this.startRTGroupbox.TabIndex = 24;
             this.startRTGroupbox.TabStop = false;
             this.startRTGroupbox.Enter += new System.EventHandler(this.groupBox3_Enter);
@@ -451,7 +449,9 @@
             this.BackColor = System.Drawing.Color.Gray;
             this.ClientSize = new System.Drawing.Size(911, 432);
             this.Controls.Add(this.helpButton);
+            this.Controls.Add(this.loopBackBox);
             this.Controls.Add(this.startRTGroupbox);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.acceptSettings);
             this.Controls.Add(this.createWSButton);
             this.Controls.Add(this.portGroupbox);
@@ -468,7 +468,6 @@
             this.portGroupbox.ResumeLayout(false);
             this.portGroupbox.PerformLayout();
             this.startRTGroupbox.ResumeLayout(false);
-            this.startRTGroupbox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
