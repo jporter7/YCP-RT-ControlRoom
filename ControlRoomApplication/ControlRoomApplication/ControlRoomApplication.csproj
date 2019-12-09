@@ -185,9 +185,9 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />
-    <Compile Include="Controllers\Sensors\FakeLimitSwitches.cs" />
+    <Compile Include="Controllers\Sensors\LimitSwitcheData.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
-    <Compile Include="Controllers\Sensors\FakeProximitySensors.cs" />
+    <Compile Include="Controllers\Sensors\ProximitySensorData.cs" />
     <Compile Include="Controllers\TCPCommunication\RemoteListener.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
@@ -301,6 +301,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include=".travis.yml" />
+    <None Include="UIDoc.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

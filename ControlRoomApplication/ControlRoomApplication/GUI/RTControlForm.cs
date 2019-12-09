@@ -453,12 +453,11 @@ namespace ControlRoomApplication.Main
                     //Snow Dump Script selected (index 0 of control script combo)
                     break;
                 case 1:
-
-                    //Stow Script selected (index 0 of control script combo)
+                    //Stow Script selected (index 1 of control script combo)
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.Stow();
                     break;
                 case 2:
-
-                    //Calibrate Script selected (index 0 of control script combo)
+                    //Calibrate Script selected (index 2 of control script combo)
                     break;
                 default:
 

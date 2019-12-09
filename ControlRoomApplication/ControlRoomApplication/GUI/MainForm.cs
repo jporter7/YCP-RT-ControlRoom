@@ -588,8 +588,8 @@ namespace ControlRoomApplication.Main
         //Help button clicked ( user interface documentation PDF)
         private void helpButton_click(object sender, EventArgs e)
         {
-            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
-                System.Diagnostics.Process.Start(filename);
+            string filename = "UIDoc.pdf";
+            System.Diagnostics.Process.Start(filename);
         }
 
         private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)

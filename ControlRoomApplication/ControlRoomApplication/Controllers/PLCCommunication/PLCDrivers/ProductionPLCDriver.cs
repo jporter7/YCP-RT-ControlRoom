@@ -69,6 +69,10 @@ namespace ControlRoomApplication.Controllers
         {
             MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
+
+            limitSwitchData = new Simulators.Hardware.LimitSwitchData();
+            proximitySensorData = new Simulators.Hardware.ProximitySensorData();
+
             try
             {
                 PLCTCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(local_ip), PLC_port));
@@ -104,7 +108,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// runs the modbus server to interface with the plc
         /// </summary>
-        protected override void HandleClientManagementThread() {
+        public override void HandleClientManagementThread() {
             byte slaveId = 1;
             // create and start the TCP slave
             PLC_Modbusserver = ModbusTcpSlave.CreateTcp(slaveId, PLCTCPListener);
@@ -208,35 +212,75 @@ namespace ControlRoomApplication.Controllers
 
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT: {
-
+                        logger.Info("Azimuth CCW Limit Changed");
+                        limitSwitchData.Azimuth_CCW_Limit = !limitSwitchData.Azimuth_CCW_Limit;
+                        if (limitSwitchData.Azimuth_CCW_Limit)
+                            logger.Info("Limit Switch Hit");
+                        else
+                            logger.Info("Limit Switch Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING: {
-
+                        logger.Info("Azimuth CCW Proximity Sensor Changed");
+                        proximitySensorData.Azimuth_CCW_Prox_Sensor = !proximitySensorData.Azimuth_CCW_Prox_Sensor;
+                        if (proximitySensorData.Azimuth_CCW_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING: {
-
+                        logger.Info("Azimuth CW Proximity Sensor Changed");
+                        proximitySensorData.Azimuth_CW_Prox_Sensor = !proximitySensorData.Azimuth_CW_Prox_Sensor;
+                        if (proximitySensorData.Azimuth_CW_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT: {
-
+                        logger.Info("Azimuth CW Limit Changed");
+                        limitSwitchData.Azimuth_CW_Limit = !limitSwitchData.Azimuth_CW_Limit;
+                        if (limitSwitchData.Azimuth_CW_Limit)
+                            logger.Info("Limit Switch Hit");
+                        else
+                            logger.Info("Limit Switch Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT: {
-
+                        logger.Info("Elevation Lower Limit Changed");
+                        limitSwitchData.Elevation_Lower_Limit = !limitSwitchData.Elevation_Lower_Limit;
+                        if (limitSwitchData.Elevation_Lower_Limit)
+                            logger.Info("Limit Switch Hit");
+                        else
+                            logger.Info("Limit Switch Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING: {
-
+                        logger.Info("Elevation Lower Proximity Sensor Changed");
+                        proximitySensorData.Elevation_Lower_Prox_Sensor = !proximitySensorData.Elevation_Lower_Prox_Sensor;
+                        if (proximitySensorData.Elevation_Lower_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING: {
-
+                        logger.Info("Elevation Upper Proximity Sensor Changed");
+                        proximitySensorData.Elevation_Upper_Prox_Sensor = !proximitySensorData.Elevation_Upper_Prox_Sensor;
+                        if (proximitySensorData.Elevation_Upper_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT: {
-
+                        logger.Info("Elevation Upper Limit Changed");
+                        limitSwitchData.Elevation_Upper_Limit = !limitSwitchData.Elevation_Upper_Limit;
+                        if (limitSwitchData.Elevation_Upper_Limit)
+                            logger.Info("Limit Switch Hit");
+                        else
+                            logger.Info("Limit Switch Not Hit");
                         break;
                     }
             }

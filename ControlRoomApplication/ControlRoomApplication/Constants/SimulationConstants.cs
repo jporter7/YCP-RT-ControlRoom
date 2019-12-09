@@ -11,8 +11,8 @@
         public const double ELEVATION_UPDATE_RATE = 0.5;
         public const double MAX_AZIMUTH_ANGLE = 369; //Measured in degrees
         public const double MIN_AZIMUTH_ANGLE = -9;
-        public const double MAX_ELEVATION_ANGLE = 92;
-        public const double MIN_ELEVATION_ANGLE = -14;
+        public const double MAX_ELEVATION_ANGLE = 94;
+        public const double MIN_ELEVATION_ANGLE = -15;
 
         public const double LIMIT_CW_AZ_DEGREES = -5;
         public const double LIMIT_CCW_AZ_DEGREES = 365;
