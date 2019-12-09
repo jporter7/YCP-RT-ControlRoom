@@ -89,7 +89,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
                 data.windSpeed = data.windSpeed + 10;
                 if(data.windSpeed > 60)
                 {
-                    data.windSpeed = data.windSpeed - 20cm;
+                    data.windSpeed = data.windSpeed - 20;
                 }
 
 
