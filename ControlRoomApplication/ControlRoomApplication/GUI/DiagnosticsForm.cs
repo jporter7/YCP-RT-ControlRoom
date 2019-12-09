@@ -69,8 +69,8 @@ namespace ControlRoomApplication.GUI
         bool _elUpperProxChange = false;
 
         // Alert Flags
-        bool warningSent = false;
-        bool shutdownSent = false;
+        bool farenheit = true;
+        
 
         private int rtId;
         private string[] statuses = { "Offline", "Offline", "Offline", "Offline" };

@@ -19,6 +19,9 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         public Sensors.TempSensorData tempData;
         private bool _stableOrTesting;
 
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public AbstractMicrocontroller()
         {
         }
