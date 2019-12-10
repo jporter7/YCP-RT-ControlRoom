@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    [Table("WeatherData")]
+    [Table("Weather_Data")]
     public class WeatherData
     {
         public WeatherData()
@@ -23,59 +23,59 @@ namespace ControlRoomApplication.Entities
 
         [Required]
         [Column("wind_speed")]
-        public double ws { get; set; }
+        public Single ws { get; set; }
 
         [Required]
         [Column("wind_direction_deg")]
-        public double wd_deg { get; set; }
+        public Single wd_deg { get; set; }
 
         [Required]
         [Column("wind_direction_str")]
-        public string wd_str { get; set; }
+        public String wd_str { get; set; }
 
         [Required]
         [Column("outside_temperature_degF")]
-        public double ot { get; set; }
+        public Single ot { get; set; }
 
         [Required]
         [Column("inside_temperature_degF")]
-        public double it { get; set; }
+        public Single it { get; set; }
 
         [Required]
         [Column("rain_rate")]
-        public double rr { get; set; }
+        public Single rr { get; set; }
 
         [Required]
         [Column("rain_total")]
-        public double rt { get; set; }
+        public Single rt { get; set; }
 
         [Required]
         [Column("rain_day")]
-        public double rd { get; set; }
+        public Single rd { get; set; }
 
         [Required]
         [Column("rain_month")]
-        public double rm { get; set; }
+        public Single rm { get; set; }
 
         [Required]
         [Column("barometric_pressure")]
-        public double bp { get; set; }
+        public Single bp { get; set; }
 
         [Required]
         [Column("dew_point")]
-        public double dp { get; set; }
+        public Single dp { get; set; }
 
         [Required]
         [Column("wind_chill")]
-        public double wc { get; set; }
+        public Single wc { get; set; }
 
         [Required]
         [Column("humidity")]
-        public double hum { get; set; }
+        public Single hum { get; set; }
 
         [Required]
         [Column("heat_index")]
-        public double heat { get; set; }
+        public Single heat { get; set; }
 
 
 

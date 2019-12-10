@@ -34,7 +34,10 @@ namespace ControlRoomApplication.Database
                     if (ex.Entries.ToList().Count > 0)
                     {
                         saveFailed = true;
-                        ex.Entries.Single().Reload();
+                        foreach (var entity in ex.Entries)
+                        {
+                            entity.Reload();
+                        }
                     }
                 }
 
@@ -184,8 +187,9 @@ namespace ControlRoomApplication.Database
             return Context.Appointments.Include("Coordinates")
                                         .Include("CelestialBody.Coordinate")
                                         .Include("Orientation")
-                                        .Include("RFDatas")
-                                        .Include("SpectraCyberConfig");
+                                        .Include("RFDatas");
+                            // commenting for now because database does not have time to implement this feature this semester
+                                    //    .Include("SpectraCyberConfig");
         }
 
             /// <summary>

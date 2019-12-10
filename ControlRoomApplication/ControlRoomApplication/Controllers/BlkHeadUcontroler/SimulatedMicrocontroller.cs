@@ -57,8 +57,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
 
             if (getStableOrTesting())
             {
-                Console.WriteLine("Stable");
-                Console.WriteLine("Count is at: " + count);
                 temperatureList[0] = new {val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 0 };
                 temperatureList[1] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 1 };
 

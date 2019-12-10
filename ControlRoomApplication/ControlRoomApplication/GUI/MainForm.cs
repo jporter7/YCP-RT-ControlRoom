@@ -73,8 +73,7 @@ namespace ControlRoomApplication.Main
             System.Array.Copy(ipHostInfo.AddressList, ipHostInfo.AddressList.Length / 2, v4_list, 0, ipHostInfo.AddressList.Length / 2);
             this.LocalIPCombo.Items.AddRange(v4_list);
 
-
-            DatabaseOperations.DeleteLocalDatabase();
+            
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 5;
             dataGridView1.Columns[0].HeaderText = "ID";
