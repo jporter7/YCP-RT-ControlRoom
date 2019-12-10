@@ -26,6 +26,7 @@ namespace ControlRoomApplication.Main
         public DbSet<Acceleration> Accelerations { get; set; }
         
         public DbSet<WeatherData> Weather { get; set; }
+        public DbSet<SensorStatus> SensorStatus { get; set; }
 
     }
 }

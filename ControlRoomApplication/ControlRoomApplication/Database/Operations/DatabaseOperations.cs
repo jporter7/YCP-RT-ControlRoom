@@ -436,5 +436,22 @@ namespace ControlRoomApplication.Database
                 }
             }
         }
+
+        /// <summary>
+        /// Adds the sensor status data
+        /// </summary>
+        public static void AddSensorStatusData(SensorStatus sensors)
+        {
+            if (!USING_REMOTE_DATABASE)
+            {
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    Context.SensorStatus.Add(sensors);
+                    SaveContext(Context);
+
+                    logger.Info("Added sensor status data to database");
+                }
+            }
+        }
     }
 }
