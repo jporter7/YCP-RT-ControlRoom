@@ -756,7 +756,7 @@ namespace ControlRoomApplication.GUI
         private void buttonWS_Click(object sender, EventArgs e)
         {
             // create a override by the control room computer
-            controlRoom.RTControllerManagementThreads[0].ActiveOverrides.Add(new Override(SensorItemEnum.HIGH_WIND_SPEED, "Control Room Computer"));
+            controlRoom.RTControllerManagementThreads[0].ActiveOverrides.Add(new Override(SensorItemEnum.WIND_SPEED, "Control Room Computer"));
             controlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
         }
     }

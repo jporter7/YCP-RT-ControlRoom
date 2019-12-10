@@ -86,6 +86,8 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
+                Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatus.NORMAL));
+
                 ManagementThread.Start();
             }
             catch (Exception e)

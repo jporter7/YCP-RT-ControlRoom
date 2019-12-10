@@ -11,6 +11,7 @@ namespace ControlRoomApplication.Entities
         GATE,
         AZIMUTH_MOTOR_TEMPERATURE,
         ELEVATION_MOTOR_TEMPERATURE,
-        HIGH_WIND_SPEED
+        WIND_SPEED,
+        RAIN_AMOUNT
     }
 }
