@@ -185,7 +185,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />
-    <Compile Include="Controllers\Sensors\LimitSwitcheData.cs" />
+    <Compile Include="Controllers\Sensors\LimitSwitchData.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
     <Compile Include="Controllers\Sensors\ProximitySensorData.cs" />
     <Compile Include="Controllers\TCPCommunication\RemoteListener.cs" />

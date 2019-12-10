@@ -136,7 +136,7 @@ namespace ControlRoomApplication.Controllers
                 ClientManagmentThread.Start();
             } catch (Exception e) {
                 if ((e is ThreadStateException) || (e is OutOfMemoryException)) {
-                    Console.WriteLine("failed to start prodi=uction plc and mcu threads err:____    {0}", e);
+                    logger.Error("failed to start prodi=uction plc and mcu threads err:____    {0}", e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -153,7 +153,7 @@ namespace ControlRoomApplication.Controllers
                 MCU_Monitor_Thread.Join();
             } catch (Exception e) {
                 if ((e is ThreadStateException) || (e is ThreadStartException)) {
-                    Console.WriteLine(e);
+                    logger.Error(e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -172,7 +172,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="e"></param>
         private void Server_Read_handler(object sender, ModbusSlaveRequestEventArgs e) {
             if (is_test) {
-                Console.WriteLine("PLC Red data from the the control room");
+                logger.Info("PLC Red data from the the control room");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             // Console.WriteLine(e.Message);
@@ -197,7 +197,7 @@ namespace ControlRoomApplication.Controllers
         private void Server_Written_to_handler(object sender, DataStoreEventArgs e) {
             //e.Data.B //array representing data   
             if (is_test) {
-                Console.WriteLine("recived message from PLC");
+                logger.Info("recived message from PLC");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             switch (e.StartAddress) {
@@ -206,7 +206,7 @@ namespace ControlRoomApplication.Controllers
                         try {
                             //comand_acknoledged.Release();
                         } catch (Exception err) {
-                            Console.WriteLine(err);
+                            logger.Error(err);
                         }
                         break;
 
@@ -287,10 +287,10 @@ namespace ControlRoomApplication.Controllers
         }
 
         private void set_Local_registers(ushort[] data, ushort starting_adress) {
-            Console.WriteLine("{0}   dsv  {1} ", data.Length, starting_adress);
+            logger.Info(data.Length + " dsv " + starting_adress);
             for (int i = 1; i < (data.Length - 1); i++) {
                 PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] = data[i];
-                Console.Write(" {0},", PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress]);
+                logger.Info( " " + PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] + ",");
             }
         }
 
@@ -336,7 +336,7 @@ namespace ControlRoomApplication.Controllers
 
 
         private bool Int_to_bool(int val) {
-            Console.WriteLine(val);
+            logger.Info(val);
             if (val == 0) {
                 return false;
             } else { return true; }
@@ -791,9 +791,8 @@ namespace ControlRoomApplication.Controllers
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
-            Console.WriteLine("degrees target az "+target_orientation.Azimuth + " el " + target_orientation.Elevation);
-            Console.WriteLine("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
-
+            logger.Info("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
+            logger.Info("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
             return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
