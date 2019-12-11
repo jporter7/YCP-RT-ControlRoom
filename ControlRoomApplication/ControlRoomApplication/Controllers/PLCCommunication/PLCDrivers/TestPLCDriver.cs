@@ -413,7 +413,7 @@ namespace ControlRoomApplication.Controllers
             return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
         }
 
-        protected override void HandleClientManagementThread()
+        public override void HandleClientManagementThread()
         {
             TcpClient AcceptedClient = null;
             byte[] StreamBuffer = new byte[256];

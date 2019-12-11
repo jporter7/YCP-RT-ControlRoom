@@ -9,6 +9,8 @@ using System.Threading;
 
 namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
     class Simulation_control_pannel {
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private TcpListener MCU_TCPListener;
         private ModbusSlave MCU_Modbusserver;
 
@@ -38,7 +40,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 MCU_emulator_thread = new Thread( new ThreadStart( Run_MCU_server_thread ) );
             } catch(Exception e) {
                 if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
-                    Console.WriteLine( e );
+                    logger.Error(e);
                     return;
                 } else { throw e; }// Unexpected exception
             }
@@ -46,7 +48,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 MCU_TCPListener.Start( 1 );
             } catch(Exception e) {
                 if((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException)) {
-                    Console.WriteLine( e );
+                    logger.Error(e);
                     return;
                 }
             }
@@ -60,7 +62,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 PLC_emulator_thread.Start();
             } catch(Exception e) {
                 if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
-                    Console.WriteLine( e );
+                    logger.Error(e);
                     return;
                 }
 
@@ -82,11 +84,11 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                     PLCTCPClient = new TcpClient( this.PLC_ip , this.PLC_port );
                     PLCModbusMaster = ModbusIpMaster.CreateIp( PLCTCPClient );
                 } catch {//no server setup on control room yet 
-                    Console.WriteLine( "________________PLC sim awaiting control room" );
+                    logger.Info("________________PLC sim awaiting control room");
 
                     //Thread.Sleep(1000);
                 }
-                Console.WriteLine( "________________PLC sim running" );
+                logger.Info("________________PLC sim running");
                 PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 1 } );
                 while(runsimulator) {
                     if(isTest) {
@@ -178,7 +180,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             for(int v = 0; v < data.Length; v++) {
                 outstr += Convert.ToString( data[v] , 16 ).PadLeft( 5 ) + ",";
             }
-            Console.WriteLine( outstr );
+            logger.Info(outstr);
             jogging = false;
             if(data[0] == 0x8400) {//if not configured dont move
 

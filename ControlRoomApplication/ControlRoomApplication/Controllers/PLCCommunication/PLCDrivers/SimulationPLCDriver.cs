@@ -17,10 +17,6 @@ namespace ControlRoomApplication.Controllers
 
         public SimulationPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC ) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC )
         {
-            if (MCU_port== PLC_port)//cant have 2 servers on the same port and ip 
-            {
-                MCU_port++;
-            }
             SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, false);
             Thread.Sleep(1000);//wait for server in simMcu to come up
             driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port,false);
@@ -42,9 +38,9 @@ namespace ControlRoomApplication.Controllers
             return driver.StartAsyncAcceptingClients();
         }
 
-        protected override void HandleClientManagementThread()
+        public override void HandleClientManagementThread()
         {
-            throw new NotImplementedException();
+            driver.HandleClientManagementThread();
         }
 
         public override void Bring_down()

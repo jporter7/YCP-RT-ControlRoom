@@ -69,6 +69,10 @@ namespace ControlRoomApplication.Controllers
         {
             MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
+
+            limitSwitchData = new Simulators.Hardware.LimitSwitchData();
+            proximitySensorData = new Simulators.Hardware.ProximitySensorData();
+
             try
             {
                 PLCTCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(local_ip), PLC_port));
@@ -104,7 +108,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// runs the modbus server to interface with the plc
         /// </summary>
-        protected override void HandleClientManagementThread() {
+        public override void HandleClientManagementThread() {
             byte slaveId = 1;
             // create and start the TCP slave
             PLC_Modbusserver = ModbusTcpSlave.CreateTcp(slaveId, PLCTCPListener);
@@ -132,7 +136,7 @@ namespace ControlRoomApplication.Controllers
                 ClientManagmentThread.Start();
             } catch (Exception e) {
                 if ((e is ThreadStateException) || (e is OutOfMemoryException)) {
-                    Console.WriteLine("failed to start prodi=uction plc and mcu threads err:____    {0}", e);
+                    logger.Error("failed to start prodi=uction plc and mcu threads err:____    {0}", e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -149,7 +153,7 @@ namespace ControlRoomApplication.Controllers
                 MCU_Monitor_Thread.Join();
             } catch (Exception e) {
                 if ((e is ThreadStateException) || (e is ThreadStartException)) {
-                    Console.WriteLine(e);
+                    logger.Error(e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -168,7 +172,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="e"></param>
         private void Server_Read_handler(object sender, ModbusSlaveRequestEventArgs e) {
             if (is_test) {
-                Console.WriteLine("PLC Red data from the the control room");
+                logger.Info("PLC Red data from the the control room");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             // Console.WriteLine(e.Message);
@@ -193,7 +197,7 @@ namespace ControlRoomApplication.Controllers
         private void Server_Written_to_handler(object sender, DataStoreEventArgs e) {
             //e.Data.B //array representing data   
             if (is_test) {
-                Console.WriteLine("recived message from PLC");
+                logger.Info("recived message from PLC");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             switch (e.StartAddress) {
@@ -202,51 +206,91 @@ namespace ControlRoomApplication.Controllers
                         try {
                             //comand_acknoledged.Release();
                         } catch (Exception err) {
-                            Console.WriteLine(err);
+                            logger.Error(err);
                         }
                         break;
 
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT: {
-
+                        logger.Info("Azimuth CCW Limit Changed");
+                        limitSwitchData.Azimuth_CCW_Limit = !limitSwitchData.Azimuth_CCW_Limit;
+                        if (limitSwitchData.Azimuth_CCW_Limit)
+                            logger.Info("Limit Switch Hit");
+                        else
+                            logger.Info("Limit Switch Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING: {
-
+                        logger.Info("Azimuth CCW Proximity Sensor Changed");
+                        proximitySensorData.Azimuth_CCW_Prox_Sensor = !proximitySensorData.Azimuth_CCW_Prox_Sensor;
+                        if (proximitySensorData.Azimuth_CCW_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING: {
-
+                        logger.Info("Azimuth CW Proximity Sensor Changed");
+                        proximitySensorData.Azimuth_CW_Prox_Sensor = !proximitySensorData.Azimuth_CW_Prox_Sensor;
+                        if (proximitySensorData.Azimuth_CW_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT: {
-
+                        logger.Info("Azimuth CW Limit Changed");
+                        limitSwitchData.Azimuth_CW_Limit = !limitSwitchData.Azimuth_CW_Limit;
+                        if (limitSwitchData.Azimuth_CW_Limit)
+                            logger.Info("Limit Switch Hit");
+                        else
+                            logger.Info("Limit Switch Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT: {
-
+                        logger.Info("Elevation Lower Limit Changed");
+                        limitSwitchData.Elevation_Lower_Limit = !limitSwitchData.Elevation_Lower_Limit;
+                        if (limitSwitchData.Elevation_Lower_Limit)
+                            logger.Info("Limit Switch Hit");
+                        else
+                            logger.Info("Limit Switch Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING: {
-
+                        logger.Info("Elevation Lower Proximity Sensor Changed");
+                        proximitySensorData.Elevation_Lower_Prox_Sensor = !proximitySensorData.Elevation_Lower_Prox_Sensor;
+                        if (proximitySensorData.Elevation_Lower_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING: {
-
+                        logger.Info("Elevation Upper Proximity Sensor Changed");
+                        proximitySensorData.Elevation_Upper_Prox_Sensor = !proximitySensorData.Elevation_Upper_Prox_Sensor;
+                        if (proximitySensorData.Elevation_Upper_Prox_Sensor)
+                            logger.Info("Proximity Sensor Hit");
+                        else
+                            logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT: {
-
+                        logger.Info("Elevation Upper Limit Changed");
+                        limitSwitchData.Elevation_Upper_Limit = !limitSwitchData.Elevation_Upper_Limit;
+                        if (limitSwitchData.Elevation_Upper_Limit)
+                            logger.Info("Limit Switch Hit");
+                        else
+                            logger.Info("Limit Switch Not Hit");
                         break;
                     }
             }
         }
 
         private void set_Local_registers(ushort[] data, ushort starting_adress) {
-            Console.WriteLine("{0}   dsv  {1} ", data.Length, starting_adress);
+            logger.Info(data.Length + " dsv " + starting_adress);
             for (int i = 1; i < (data.Length - 1); i++) {
                 PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] = data[i];
-                Console.Write(" {0},", PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress]);
+                logger.Info( " " + PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] + ",");
             }
         }
 
@@ -292,7 +336,7 @@ namespace ControlRoomApplication.Controllers
 
 
         private bool Int_to_bool(int val) {
-            Console.WriteLine(val);
+            logger.Info(val);
             if (val == 0) {
                 return false;
             } else { return true; }
@@ -369,7 +413,7 @@ namespace ControlRoomApplication.Controllers
             double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
 
             // return true if working correctly, false if not
-            return Math.Abs(weatherStationTemp - temperature) < 0.001;
+            return Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET;
         }
 
         /// <summary>
@@ -747,9 +791,8 @@ namespace ControlRoomApplication.Controllers
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
-            Console.WriteLine("degrees target az "+target_orientation.Azimuth + " el " + target_orientation.Elevation);
-            Console.WriteLine("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
-
+            logger.Info("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
+            logger.Info("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
             return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();

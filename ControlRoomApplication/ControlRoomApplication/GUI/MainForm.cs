@@ -97,8 +97,8 @@ namespace ControlRoomApplication.Main
             startButton.Enabled = false;
             shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
             shutdownButton.Enabled = false;
-            loopBackBox.Enabled = false;
-            checkBox1.Enabled = false;
+            loopBackBox.Enabled = true;
+            checkBox1.Enabled = true;
 
 
             logger.Info("MainForm Initalized");
@@ -566,8 +566,8 @@ namespace ControlRoomApplication.Main
                 startButton.Enabled = true;
             }
             startRTGroupbox.BackColor = System.Drawing.Color.Gray;
-            loopBackBox.Enabled = true;
-            checkBox1.Enabled = true;
+            loopBackBox.Enabled = false;
+            checkBox1.Enabled = false;
 
             simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
             comboMicrocontrollerBox.Enabled = false;
@@ -587,8 +587,8 @@ namespace ControlRoomApplication.Main
         //Help button clicked ( user interface documentation PDF)
         private void helpButton_click(object sender, EventArgs e)
         {
-            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
-                System.Diagnostics.Process.Start(filename);
+            string filename = "UIDoc.pdf";
+            System.Diagnostics.Process.Start(filename);
         }
 
         private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)
