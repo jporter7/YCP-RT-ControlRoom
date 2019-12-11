@@ -83,7 +83,7 @@ namespace ControlRoomApplication.Controllers
                 if (windSpeedStatus == 2)
                 {
                     logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
-                    currentSensor.Status = SensorStatus.ALARM;
+                    currentSensor.Status = SensorStatusEnum.ALARM;
                     //ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
 
                     /*
@@ -101,12 +101,12 @@ namespace ControlRoomApplication.Controllers
                 else if(windSpeedStatus == 1)
                 {
                     logger.Info("[ControlRoomController] Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
-                    currentSensor.Status = SensorStatus.WARNING;
+                    currentSensor.Status = SensorStatusEnum.WARNING;
                 }
                 else if (windSpeedStatus == 0)
                 {
                     logger.Info("[ControlRoomController] Wind speeds are in a Safe State: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
-                    currentSensor.Status = SensorStatus.NORMAL;
+                    currentSensor.Status = SensorStatusEnum.NORMAL;
                 }
 
                 /*

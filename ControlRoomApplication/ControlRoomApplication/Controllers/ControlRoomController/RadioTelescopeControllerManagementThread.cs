@@ -3,6 +3,8 @@ using System.Threading;
 using System.Collections.Generic;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Database;
+using System.Net;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -18,6 +20,8 @@ namespace ControlRoomApplication.Controllers
         private volatile bool KeepThreadAlive;
         private volatile bool InterruptAppointmentFlag;
         private Orientation _NextObjectiveOrientation;
+
+        public RemoteListener TCPListener { get; }
 
         public List<Override> ActiveOverrides;
         public List<Sensor> Sensors;
@@ -78,6 +82,9 @@ namespace ControlRoomApplication.Controllers
             ActiveOverrides = new List<Override>();
             Sensors = new List<Sensor>();
             OverallSensorStatus = true;
+
+            // currently just gets the 0th index management thread because multiple telescopes is not implemented yet!
+            TCPListener = new RemoteListener(8090, IPAddress.Parse("10.127.7.112"), controller);
         }
 
         public bool Start()
@@ -86,7 +93,7 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
-                Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatus.NORMAL));
+                Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
 
                 ManagementThread.Start();
             }
@@ -284,15 +291,18 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
-                    // Move to orientation
-                    if (NextObjectiveOrientation != null)
+                // Move to orientation
+                if (NextObjectiveOrientation != null)
+                {
+                    // Kate - removed the check for azumith < 0 in the below if statement due to Todd's request
+                    // Reason being, we should not have an azimuth below 0 be given to us. That check is in the
+                    // method calling this!
+                    if (NextObjectiveOrientation.Elevation < 0)
                     {
-                        if (NextObjectiveOrientation.Azimuth < 0 || NextObjectiveOrientation.Elevation < 0)
-                        {
-                            logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                            InterruptAppointmentFlag = true;
-                            break;
-                        }
+                        logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                        InterruptAppointmentFlag = true;
+                        break;
+                    }
 
                         logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                         RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
@@ -395,7 +405,7 @@ namespace ControlRoomApplication.Controllers
             foreach (Sensor curSensor in Sensors)
             {
                 // if the sensor is in the ALARM state
-                if (curSensor.Status == SensorStatus.ALARM)
+                if (curSensor.Status == SensorStatusEnum.ALARM)
                 {
                     // check to see if there is an override for that sensor
                     if (ActiveOverrides.Find(i => i.Item == curSensor.Item) == null)

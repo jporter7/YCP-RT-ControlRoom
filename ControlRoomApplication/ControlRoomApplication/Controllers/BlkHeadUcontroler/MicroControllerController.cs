@@ -15,6 +15,8 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
     /// </summary>
     public class MicroControlerControler : AbstractMicrocontroller
     {
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private string local_adress;
         private int port;
         /// <summary>
@@ -55,7 +57,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
             IPAddress ipAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length-1];
             ipAddress= IPAddress.Parse( local_adress );
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
-            Console.WriteLine("this ip "+ localEndPoint);
+            logger.Info("this ip " + localEndPoint);
             // Create a TCP/IP socket.  
             Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
@@ -69,7 +71,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                     // Set the event to nonsignaled state.  
                     allDone.Reset();
                     // Start an asynchronous socket to listen for connections.  
-                    //Console.WriteLine("Waiting for a connection...");
                     listener.BeginAccept(new AsyncCallback(AcceptCallback),listener);
                     // Wait until a connection is made before continuing.  
                     allDone.WaitOne();
@@ -77,9 +78,8 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                logger.Info(e.ToString());
             }
-           // Console.WriteLine("\nPress ENTER to continue...");
             return true;
         }
         /// <summary>
@@ -138,7 +138,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                     try
                     {
                         dynamic respobj = JsonConvert.DeserializeObject(content);
-                        //Console.WriteLine(respobj);
                     //     interpretData(respobj);
                             
                         Send(handler, "200-"+ respobj.uuid);
@@ -159,7 +158,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                         else
                         {
                             Send(handler, "400");//could not parse JSON
-                            Console.WriteLine(e+" line  165");
+                            logger.Info(e + " line  165");
                         }
                         return;
                     }
@@ -189,14 +188,13 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 Socket handler = (Socket)ar.AsyncState;
                 // Complete sending the data to the remote device.  
                 int bytesSent = handler.EndSend(ar);
-                //Console.WriteLine("Sent {0} bytes to client.", bytesSent);
                 //handler.Shutdown(SocketShutdown.Both);
                 //handler.Close();
             }
             catch (Exception e)
             {
                 if (!(e is System.ObjectDisposedException)){
-                    Console.WriteLine(e.ToString()+"   line 195");
+                    logger.Info(e.ToString() + "   line 195");
                 }
                     
             }

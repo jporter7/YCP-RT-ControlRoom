@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using ControlRoomApplication.Simulators.Hardware;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -18,6 +19,8 @@ namespace ControlRoomApplication.Controllers
 
         protected RadioTelescope Parent;
 
+        public LimitSwitchData limitSwitchData;
+        public ProximitySensorData proximitySensorData;
 
         /// <summary>
         /// 
@@ -41,7 +44,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// modbuss server implamentation specific to each device
         /// </summary>
-        protected abstract void HandleClientManagementThread();
+        public abstract void HandleClientManagementThread();
 
 
         /// <summary>
@@ -75,11 +78,22 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Shutdown_PLC_MCU();
 
+        // All of the "scripts" are here all the way to....
+        // Control Scripts
+
         public abstract bool Thermal_Calibrate();
+
+        public abstract bool FullElevationMove();
+
+        public abstract bool Full_360_CCW_Rotation();
+
+        public abstract bool Full_360_CW_Rotation();
+
+        public abstract bool Stow();
 
         public abstract bool SnowDump();
 
-        public abstract bool Stow();
+        // Diagnostics Scripts
 
         public abstract bool HitAzimuthLeftLimitSwitch();
 
@@ -91,20 +105,16 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool RecoverFromLimitSwitch();
 
-        public abstract bool FullElevationMove();
-        
-        public abstract bool Full_360_CCW_Rotation();
-
-        public abstract bool Full_360_CW_Rotation();
-
         public abstract bool Hit_CW_Hardstop();
 
         public abstract bool Hit_CCW_Hardstop();
-
         public abstract bool Recover_CW_Hardstop();
 
         public abstract bool Recover_CCW_Hardstop();
 
+        public abstract bool Hit_Hardstops();
+
+        // ... to here
 
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 

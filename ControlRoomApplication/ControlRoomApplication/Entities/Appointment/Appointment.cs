@@ -53,7 +53,9 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the celestial body asscociated with this Appointment.
         /// </summary>
-        [Column("celestial_body")]
+        [Column("celestial_body_id")]
+        public int celestialBodyId { get; set; }
+        [ForeignKey("celestialBodyId")]
         public CelestialBody CelestialBody { get; set; }
 
         /// <summary>
@@ -100,8 +102,10 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the SpectraCyberConfig type.
         /// </summary>
-        [Required]
-        [Column("spectracyber_config")]
+ //       [Required]
+ //       [Column("spectracyber_config")]
+ // changing for now because database team does not have time for this change this semester
+        [NotMapped]
         public SpectraCyberConfig SpectraCyberConfig { get; set; }
 
         /// <summary>

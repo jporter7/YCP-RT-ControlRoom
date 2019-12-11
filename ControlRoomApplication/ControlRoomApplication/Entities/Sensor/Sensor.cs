@@ -10,9 +10,9 @@ namespace ControlRoomApplication.Entities
     {
         public SensorItemEnum Item { get; set; }
         public DateTime Time_Created { get; set; }
-        public SensorStatus Status { get; set; }
+        public SensorStatusEnum Status { get; set; }
 
-        public Sensor(SensorItemEnum INItem, SensorStatus status)
+        public Sensor(SensorItemEnum INItem, SensorStatusEnum status)
         {
             Time_Created = DateTime.Now;
             Item = INItem;

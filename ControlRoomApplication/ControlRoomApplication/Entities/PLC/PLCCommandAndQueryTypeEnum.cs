@@ -71,7 +71,7 @@ namespace ControlRoomApplication.Entities
         EL_TOP_WARNING = 14 + 1,
         EL_TOP_LIMIT = 15 + 1,
 
-        Safty_INTERLOCK = 18 + 1,
+        Safety_INTERLOCK = 18 + 1,
 
         AZ_MOTOR_CURRENT = 40 + 1,
         EL_MOTOR_CURRENT = 42 + 1

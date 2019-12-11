@@ -44,7 +44,7 @@ namespace ControlRoomApplication.Controllers
 
 
         public void setSaftyInterlock() {
-            TestMCU.PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK - 1 , new ushort[] { 12 } );
+            TestMCU.PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 12 } );
         }
 
 
@@ -158,6 +158,11 @@ namespace ControlRoomApplication.Controllers
         public override bool Recover_CCW_Hardstop()
         {
             return driver.Recover_CCW_Hardstop();
+        }
+
+        public override bool Hit_Hardstops()
+        {
+            return driver.Hit_Hardstops();
         }
 
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
@@ -408,7 +413,7 @@ namespace ControlRoomApplication.Controllers
             return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
         }
 
-        protected override void HandleClientManagementThread()
+        public override void HandleClientManagementThread()
         {
             TcpClient AcceptedClient = null;
             byte[] StreamBuffer = new byte[256];

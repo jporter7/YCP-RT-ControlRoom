@@ -13,11 +13,14 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
     /// <summary>
     /// Abstract Class for the Microcontroller
     /// </summary>
-    /// 
+    ///
     public abstract class AbstractMicrocontroller {
 
         public Sensors.TempSensorData tempData;
         private bool _stableOrTesting;
+
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public AbstractMicrocontroller()
         {
@@ -53,12 +56,10 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                         accs.Add( Acceleration.Generate( element.time , element.val , element.x , element.y , element.z , SensorLocationEnumTypeConversionHelper.FromInt( element.loc ) ) );
                         threshold = 1.65;
                     } else {
-                        Console.WriteLine( "Datatype not found" );
+                        logger.Info("Datatype not found");
                         return;
                     }
                     if(element.val > threshold) {
-                       // Console.WriteLine( element.val );
-                      //  Console.WriteLine( element.time - DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() );
                     }
 
                 }
@@ -66,7 +67,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 DatabaseOperations.AddSensorData( temps );
                 DatabaseOperations.AddSensorData( accs );
             } catch(Exception e) {
-                Console.WriteLine( e + "line 229" );
+                logger.Info(e + "line 229");
             }
         }
 
