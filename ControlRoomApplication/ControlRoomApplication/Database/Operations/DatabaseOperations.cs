@@ -52,7 +52,7 @@ namespace ControlRoomApplication.Database
             }
             else
             {
-                RTDbContext LocalContext = new RTDbContext();
+                RTDbContext LocalContext = new RTDbContext(AWSConstants.LOCAL_DATABASE_STRING);
                 LocalContext.Database.CreateIfNotExists();
                 SaveContext(LocalContext);
                 return LocalContext;
@@ -184,8 +184,9 @@ namespace ControlRoomApplication.Database
             return Context.Appointments.Include("Coordinates")
                                         .Include("CelestialBody.Coordinate")
                                         .Include("Orientation")
-                                        .Include("RFDatas")
-                                        .Include("SpectraCyberConfig");
+                                        .Include("RFDatas");
+                            // commenting for now because database does not have time to implement this feature this semester
+                                    //    .Include("SpectraCyberConfig");
         }
 
             /// <summary>
@@ -412,6 +413,40 @@ namespace ControlRoomApplication.Database
                     return Context.Temperatures.Where( x => x.location_ID == (int)loc ).OrderByDescending( x => x.TimeCapturedUTC ).First();
                 } catch {
                     return new Temperature();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds the weather data
+        /// </summary>
+        public static void AddWeatherData(WeatherData weather)
+        {
+            if (!USING_REMOTE_DATABASE)
+            {
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    Context.Weather.Add(weather);
+                    SaveContext(Context);
+
+                    logger.Info("Added weather data to database");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds the sensor status data
+        /// </summary>
+        public static void AddSensorStatusData(SensorStatus sensors)
+        {
+            if (!USING_REMOTE_DATABASE)
+            {
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                    Context.SensorStatus.Add(sensors);
+                    SaveContext(Context);
+
+                    logger.Info("Added sensor status data to database");
                 }
             }
         }

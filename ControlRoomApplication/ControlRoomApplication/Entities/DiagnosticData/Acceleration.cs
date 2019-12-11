@@ -19,19 +19,19 @@ namespace ControlRoomApplication.Entities {
         public long TimeCaptured { get; set; }
 
         [Required]
-        [Column( "value" )]
+        [Column( "acceleration_magnitude" )]
         public double acc { get; set; }
 
         [Required]
-        [Column( "x" )]
+        [Column( "acceleration_x" )]
         public double x { get; set; }
 
         [Required]
-        [Column( "y" )]
+        [Column("acceleration_y")]
         public double y { get; set; }
 
         [Required]
-        [Column( "z" )]
+        [Column("acceleration_z")]
         public double z { get; set; }
 
         [Required]

@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Entities {
         public long TimeCapturedUTC { get; set; }
 
         [Required]
-        [Column( "value" )]
+        [Column( "temperature" )]
         public double temp { get; set; }
 
         [Required]

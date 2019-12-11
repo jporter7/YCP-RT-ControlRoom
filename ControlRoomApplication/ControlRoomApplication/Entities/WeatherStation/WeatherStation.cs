@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Runtime.InteropServices;
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplication.Entities.WeatherStation
 {
@@ -20,43 +21,6 @@ namespace ControlRoomApplication.Entities.WeatherStation
             public char BaromUnit;
             public char WindUnit;
             public char elevUnit;
-        };
-
-        private struct Weather_Data
-        {
-            public float windSpeed;
-            public String windDirection;
-            public float windDirectionDegrees;
-            public float dailyRain;
-            public float rainRate;
-            public float outsideTemp;
-            public float insideTemp;
-            public float baromPressure;
-            public float dewPoint;
-            public float windChill;
-            public float outsideHumidity;
-            public float totalRain;
-            public float monthlyRain;
-            public float heatIndex;
-
-            public Weather_Data (float windSpeedIN, String windDirectionIN, float windDirectionDegreesIN, float dailyRainIN, float rainRateIN,
-                                    float outsideTempIN, float insideTempIN, float baromPressureIN, float dewPointIN, float windChillIN,
-                                    float outsideHumidityIN, float totalRainIN, float monthlyRainIN, float heatIndexIN) {
-                windSpeed = windSpeedIN;
-                windDirection = windDirectionIN;
-                windDirectionDegrees = windDirectionDegreesIN;
-                dailyRain = dailyRainIN;
-                rainRate = rainRateIN;
-                outsideTemp = outsideTempIN;
-                insideTemp = insideTempIN;
-                baromPressure = baromPressureIN;
-                dewPoint = dewPointIN;
-                windChill = windChillIN;
-                outsideHumidity = outsideHumidityIN;
-                totalRain = totalRainIN;
-                monthlyRain = monthlyRainIN;
-                heatIndex = heatIndexIN;
-            }
         };
 
         private String[] windDirections = { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
@@ -174,6 +138,8 @@ namespace ControlRoomApplication.Entities.WeatherStation
                     data.heatIndex = GetHeatIndex_V();
 
                     logger.Info("Weather Data update successful");
+
+                    DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
                 }
                 else
                 {
