@@ -83,6 +83,8 @@ namespace ControlRoomApplication.Controllers
             Sensors = new List<Sensor>();
             OverallSensorStatus = true;
 
+            Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
+
             // currently just gets the 0th index management thread because multiple telescopes is not implemented yet!
             TCPListener = new RemoteListener(8090, IPAddress.Parse("10.127.7.112"), controller);
         }
@@ -93,7 +95,7 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
-                Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
+               // Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
 
                 ManagementThread.Start();
             }
