@@ -558,37 +558,34 @@ namespace ControlRoomApplication.Controllers
             Orientation elStart = new Orientation(currentPos.Azimuth, 0); ;
             Orientation elFinish = new Orientation(currentPos.Azimuth, 90);
 
-            // Moves elevation to start position if not already there
-            if (currentPos.Elevation == 0)
-                elStartFlag = true;
-            else
-                elStartFlag = Move_to_orientation(elStart, currentPos);
+            elStartFlag = Move_to_orientation(elStart, currentPos);
 
-            // Moves elevation to the finish position
-            if (elStartFlag)
-                elFinishFlag = Move_to_orientation(elFinish, elStart);
+            elFinishFlag = Move_to_orientation(elFinish, elStart);
 
-            // Moves elevation to the original position
-            if (elFinishFlag)
-                return Move_to_orientation(currentPos, elFinish);
-            else
-                return elFinishFlag;
+            Move_to_orientation(currentPos, elFinish);
+
+            return elStartFlag && elFinishFlag;
         }
         
+        /// <summary>
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
         /// </summary>
         public override bool Full_360_CCW_Rotation()
         {
             Orientation current = read_Position();
-            Orientation start = new Orientation(360, 0);
-            Orientation finish = new Orientation(0, 0);
+            Orientation finish;
 
-            if (Move_to_orientation(start, current) && Move_to_orientation(finish, start))
+            if (current.Azimuth == 359)
             {
-                return Move_to_orientation(current, finish);
+                finish = new Orientation(0, current.Elevation);
+                return Move_to_orientation(finish, current);
             }
-            return false;
+            else
+            {
+                finish = new Orientation(current.Azimuth + 1, current.Elevation);
+                return Move_to_orientation(finish, current);
+            }
 
         }
 

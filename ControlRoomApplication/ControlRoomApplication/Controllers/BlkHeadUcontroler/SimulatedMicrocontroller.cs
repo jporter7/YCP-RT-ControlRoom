@@ -70,6 +70,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             }
             else
             {
+
                 if (count < 10)
                 {
                     temperatureList[0] = new { val = SimulationConstants.STABLE_MOTOR_TEMP, time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), loc = 0 };

@@ -23,6 +23,10 @@ namespace ControlRoomApplication.Controllers
 
         public RemoteListener TCPListener { get; }
 
+        public List<Override> ActiveOverrides;
+        public List<Sensor> Sensors;
+        private bool OverallSensorStatus;
+
         public Orientation NextObjectiveOrientation
         {
             get
@@ -75,6 +79,12 @@ namespace ControlRoomApplication.Controllers
             _NextObjectiveOrientation = null;
             InterruptAppointmentFlag = false;
 
+            ActiveOverrides = new List<Override>();
+            Sensors = new List<Sensor>();
+            OverallSensorStatus = true;
+
+            Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
+
             // currently just gets the 0th index management thread because multiple telescopes is not implemented yet!
             TCPListener = new RemoteListener(8090, IPAddress.Parse("10.127.7.112"), controller);
         }
@@ -85,6 +95,8 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
+               // Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
+
                 ManagementThread.Start();
             }
             catch (Exception e)
@@ -255,27 +267,31 @@ namespace ControlRoomApplication.Controllers
             double duration = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? length.TotalSeconds : length.TotalMinutes;
             for (int i = 0; i <= (int) duration; i++)
             {
-                // Get orientation for current datetime
-                DateTime datetime = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? NextAppointment.StartTime.AddSeconds(i) : NextAppointment.StartTime.AddMinutes(i); 
-                NextObjectiveOrientation = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
-
-                // Wait for datetime
-                while (DateTime.UtcNow < datetime)
+                // before we move, check to see if it is safe
+                if (checkCurrentSensorAndOverrideStatus())
                 {
-                    if (InterruptAppointmentFlag)
+
+                    // Get orientation for current datetime
+                    DateTime datetime = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? NextAppointment.StartTime.AddSeconds(i) : NextAppointment.StartTime.AddMinutes(i);
+                    NextObjectiveOrientation = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
+
+                    // Wait for datetime
+                    while (DateTime.UtcNow < datetime)
                     {
-                        logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
-                        break;
+                        if (InterruptAppointmentFlag)
+                        {
+                            logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
+                            break;
+                        }
+
+                        //logger.Debug(datetime.ToString() + " vs. " + DateTime.UtcNow.ToString());
+                        Thread.Sleep(1000);
                     }
 
-                    //logger.Debug(datetime.ToString() + " vs. " + DateTime.UtcNow.ToString());
-                    Thread.Sleep(1000);
-                }
-
-                if (InterruptAppointmentFlag)
-                {
-                    break;
-                }
+                    if (InterruptAppointmentFlag)
+                    {
+                        break;
+                    }
 
                 // Move to orientation
                 if (NextObjectiveOrientation != null)
@@ -290,24 +306,29 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
 
-                    logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                    RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
+                        logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                        RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
 
-                    // Wait until MCU issues finished move status
-                    do
-                    {
-                        if (InterruptAppointmentFlag)
+                        // Wait until MCU issues finished move status
+                        do
                         {
-                            break;
+                            if (InterruptAppointmentFlag)
+                            {
+                                break;
+                            }
+
+                            //currentOrientation = RTController.GetCurrentOrientation();
+                            //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                            Thread.Sleep(100);
                         }
+                        while (!RTController.finished_exicuting_move(RadioTelescopeAxisEnum.BOTH));
 
-                        //currentOrientation = RTController.GetCurrentOrientation();
-                        //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
-                        Thread.Sleep(100);
+                        NextObjectiveOrientation = null;
                     }
-                    while (!RTController.finished_exicuting_move( RadioTelescopeAxisEnum.BOTH));
-
-                    NextObjectiveOrientation = null;
+                } else
+                {
+                    logger.Info("Telescope stopped movement.");
+                    i--;
                 }
             }
 
@@ -373,5 +394,38 @@ namespace ControlRoomApplication.Controllers
 
             return -1;
         }
+
+        /// <summary>
+        /// Checks to see if there are any sensors that are not overriden
+        /// calls the stop telescope function if it is not safe
+        /// Returns true if the telescope is safe to operate
+        /// Returns false if the telescope is not safe to operate
+        /// </summary>
+        public bool checkCurrentSensorAndOverrideStatus()
+        {
+            // loop through all the current sensors
+            foreach (Sensor curSensor in Sensors)
+            {
+                // if the sensor is in the ALARM state
+                if (curSensor.Status == SensorStatusEnum.ALARM)
+                {
+                    // check to see if there is an override for that sensor
+                    if (ActiveOverrides.Find(i => i.Item == curSensor.Item) == null)
+                    {
+                        // if not, return false
+                        // we should not be operating the telescope
+                        logger.Fatal("Telescope in DANGER due to fatal sensors");
+                        RTController.ExecuteRadioTelescopeImmediateStop();
+                        OverallSensorStatus = false;
+                        return false;
+                    }                    
+                }
+            }
+
+            OverallSensorStatus = true;
+            logger.Info("Telescope in safe state.");
+            return true;
+        }
+
     }
 }
