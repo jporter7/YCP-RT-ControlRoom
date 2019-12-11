@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    [Table("Weather_Data")]
+    [Table("weather_data")]
     public class WeatherData
     {
         public WeatherData()

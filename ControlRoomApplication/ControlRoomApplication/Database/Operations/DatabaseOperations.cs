@@ -34,10 +34,7 @@ namespace ControlRoomApplication.Database
                     if (ex.Entries.ToList().Count > 0)
                     {
                         saveFailed = true;
-                        foreach (var entity in ex.Entries)
-                        {
-                            entity.Reload();
-                        }
+                        ex.Entries.Single().Reload();
                     }
                 }
 
