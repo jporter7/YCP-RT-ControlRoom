@@ -487,13 +487,7 @@ namespace ControlRoomApplication.Main
 
         private void loopBackBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (comboBox2.Text != "Production Weather Station")
-            {
-                startButton.BackColor = System.Drawing.Color.LimeGreen;
-                startButton.Enabled = true;
-            }
-            
-
+           
             if (loopBackBox.Checked)
             {
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
@@ -566,7 +560,7 @@ namespace ControlRoomApplication.Main
         private void acceptSettings_Click(object sender, EventArgs e)
         {
             finalSettings = !finalSettings;
-            if (finalSettings == true)
+            if (finalSettings == false)
             {
                 if (comboBox2.Text != "Production Weather Station")
                 {
@@ -591,7 +585,7 @@ namespace ControlRoomApplication.Main
                 txtWSCOMPort.Enabled = false;
                 txtPLCPort.Enabled = false;
             }
-            else if (finalSettings == false)
+            else if (finalSettings == true)
             {
                 startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
                 loopBackBox.Enabled = true;
