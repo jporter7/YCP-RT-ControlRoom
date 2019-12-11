@@ -40,6 +40,9 @@
   <PropertyGroup>
     <StartupObject>ControlRoomApplication.Main.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>circle-cropped.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AASharp, Version=1.93.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\AASharp.1.93.3\lib\net45\AASharp.dll</HintPath>
@@ -310,6 +313,7 @@
     <None Include="Simulators\CSV\Spectra_Cyber_Sim_CSV.csv" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="circle-cropped.ico" />
     <Content Include="Migrations\README.txt" />
     <Content Include="VantageProDll242\CP210xManufacturing.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
