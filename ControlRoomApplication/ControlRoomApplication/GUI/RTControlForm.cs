@@ -620,7 +620,46 @@ namespace ControlRoomApplication.Main
 
         private void plusElaButton_Click(object sender, EventArgs e)
         {
+            //  -----------------------If Mouse CLicked = True----------------------------------
+            {
+                int speed = Convert.ToInt32(speedComboBox.Text);
+                logger.Info("Jog PosButton MouseDown");
+                // UpdateText("Moving at " + comboBox1.Text);
 
+                // Start CW Jog
+                rt_controller.StartRadioTelescopeElevationJog(speed, true);
+
+            }
+            // -----------------------If Mouse CLicked != True----------------------------------
+            {
+                logger.Info("Jog PosButton MouseUp");
+                // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+                //  Stop Move
+                ExecuteCorrectStop();
+            }
+        }
+
+        private void subElaButton_Click(object sender, EventArgs e)
+        {
+            //  -----------------------If Mouse CLicked = True----------------------------------
+            {
+                int speed = Convert.ToInt32(speedComboBox.Text);
+                logger.Info("Jog PosButton MouseDown");
+                //UpdateText("Moving at " + speedComboBox.Text);
+
+                // Start CW Jog
+                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+
+            }
+            // -----------------------If Mouse CLicked != True----------------------------------
+            {
+                logger.Info("Jog PosButton MouseUp");
+                // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+                //  Stop Move
+                ExecuteCorrectStop();
+            }
         }
     }
 }
