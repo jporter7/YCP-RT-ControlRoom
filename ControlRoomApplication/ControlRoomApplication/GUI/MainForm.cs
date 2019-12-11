@@ -30,6 +30,8 @@ namespace ControlRoomApplication.Main
 
         public AbstractWeatherStation lastCreatedProductionWeatherStation = null;
 
+        public bool finalSettings = true;
+
         enum TempSensorType
         {
             Production,
@@ -100,6 +102,8 @@ namespace ControlRoomApplication.Main
             loopBackBox.Enabled = true;
             checkBox1.Enabled = true;
 
+      
+            
 
             logger.Info("MainForm Initalized");
         }
@@ -560,28 +564,52 @@ namespace ControlRoomApplication.Main
 
         private void acceptSettings_Click(object sender, EventArgs e)
         {
-            if (comboBox2.Text != "Production Weather Station")
+            finalSettings = !finalSettings;
+            if (finalSettings == true)
             {
-                startButton.BackColor = System.Drawing.Color.LimeGreen;
-                startButton.Enabled = true;
+                if (comboBox2.Text != "Production Weather Station")
+                {
+                    startButton.BackColor = System.Drawing.Color.LimeGreen;
+                    startButton.Enabled = true;
+                }
+                startRTGroupbox.BackColor = System.Drawing.Color.Gray;
+                loopBackBox.Enabled = false;
+                checkBox1.Enabled = false;
+
+                simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                comboMicrocontrollerBox.Enabled = false;
+                comboBox2.Enabled = false;
+                comboBox1.Enabled = false;
+                comboEncoderType.Enabled = false;
+                comboPLCType.Enabled = false;
+                LocalIPCombo.Enabled = false;
+
+                portGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                txtPLCIP.Enabled = false;
+                txtMcuCOMPort.Enabled = false;
+                txtWSCOMPort.Enabled = false;
+                txtPLCPort.Enabled = false;
             }
-            startRTGroupbox.BackColor = System.Drawing.Color.Gray;
-            loopBackBox.Enabled = false;
-            checkBox1.Enabled = false;
+            else if (finalSettings == false)
+            {
+                startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                loopBackBox.Enabled = true;
+                checkBox1.Enabled = true;
 
-            simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
-            comboMicrocontrollerBox.Enabled = false;
-            comboBox2.Enabled = false;
-            comboBox1.Enabled = false;
-            comboEncoderType.Enabled = false;
-            comboPLCType.Enabled = false;
-            LocalIPCombo.Enabled = false;
+                simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
+                comboMicrocontrollerBox.Enabled = true;
+                comboBox2.Enabled = true;
+                comboBox1.Enabled = true;
+                comboEncoderType.Enabled = true;
+                comboPLCType.Enabled = true;
+                LocalIPCombo.Enabled = true;
 
-            portGroupbox.BackColor = System.Drawing.Color.DarkGray;
-            txtPLCIP.Enabled = false;
-            txtMcuCOMPort.Enabled = false;
-            txtWSCOMPort.Enabled = false;
-            txtPLCPort.Enabled = false;
+                portGroupbox.BackColor = System.Drawing.Color.Gray;
+                txtPLCIP.Enabled = false;
+                txtMcuCOMPort.Enabled = false;
+                txtWSCOMPort.Enabled = false;
+                txtPLCPort.Enabled = false;
+            }
         }
 
         //Help button clicked ( user interface documentation PDF)
@@ -592,6 +620,11 @@ namespace ControlRoomApplication.Main
         }
 
         private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void portGroupbox_Enter(object sender, EventArgs e)
         {
 
         }
