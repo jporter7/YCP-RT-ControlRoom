@@ -265,6 +265,8 @@
             this.LocalIPCombo.BackColor = System.Drawing.Color.WhiteSmoke;
             this.LocalIPCombo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LocalIPCombo.FormattingEnabled = true;
+            this.LocalIPCombo.Items.AddRange(new object[] {
+            "127.0.0.1"});
             this.LocalIPCombo.Location = new System.Drawing.Point(260, 123);
             this.LocalIPCombo.Margin = new System.Windows.Forms.Padding(2);
             this.LocalIPCombo.Name = "LocalIPCombo";
@@ -321,7 +323,7 @@
             this.txtWSCOMPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtWSCOMPort.Name = "txtWSCOMPort";
             this.txtWSCOMPort.Size = new System.Drawing.Size(107, 29);
-            this.txtWSCOMPort.TabIndex = 18;
+            this.txtWSCOMPort.TabIndex = 22;
             this.txtWSCOMPort.TextChanged += new System.EventHandler(this.txtWSCOMPort_TextChanged);
             // 
             // label3
@@ -362,6 +364,7 @@
             this.portGroupbox.TabIndex = 21;
             this.portGroupbox.TabStop = false;
             this.portGroupbox.Text = "System IP Address and Port Numbers";
+            this.portGroupbox.Enter += new System.EventHandler(this.portGroupbox_Enter);
             // 
             // txtMcuCOMPort
             // 
@@ -372,7 +375,7 @@
             this.txtMcuCOMPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtMcuCOMPort.Name = "txtMcuCOMPort";
             this.txtMcuCOMPort.Size = new System.Drawing.Size(107, 29);
-            this.txtMcuCOMPort.TabIndex = 22;
+            this.txtMcuCOMPort.TabIndex = 18;
             // 
             // label5
             // 
