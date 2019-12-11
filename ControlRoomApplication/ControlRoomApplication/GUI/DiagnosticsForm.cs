@@ -434,6 +434,10 @@ namespace ControlRoomApplication.GUI
 
             if (farenheit == false)
             {
+                InsideTempUnits.Text = "Celsius";
+                outTempUnits.Text = "Celsius";
+                AZTempUnitLabel.Text = "Celsius";
+                ElTempUnitLabel.Text = "Celsius";
                 outsideTempLabel.Text = Math.Round(insideTempCel, 2).ToString();
                 insideTempLabel.Text = Math.Round(outsideTempCel, 2).ToString();
                 fldElTemp.Text = Math.Round(ElMotTempCel, 2).ToString();
@@ -441,6 +445,10 @@ namespace ControlRoomApplication.GUI
             }
             else if (farenheit == true)
             {
+                InsideTempUnits.Text = "Farenheit";
+                outTempUnits.Text = "Farenheit";
+                AZTempUnitLabel.Text = "Farenheit";
+                ElTempUnitLabel.Text = "Farenheit";
                 outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
                 insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
                 fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
@@ -1033,6 +1041,7 @@ namespace ControlRoomApplication.GUI
                 elevationTemperature = (elevationTemperature - 32) * (5.0 / 9);
                 azimuthTemperature = (azimuthTemperature - 32) * (5.0 / 9);
             }**/
+
         private void celTempConvert_Click(object sender, EventArgs e)
         {
 
@@ -1063,7 +1072,7 @@ namespace ControlRoomApplication.GUI
 
         private void WSOverride_Click(object sender, EventArgs e)
         {
-            logger.Info("Over Ride Weather Station clicked");
+            logger.Info("Over Ride azimuth sensor 1 clicked");
             bool overRideWS = (WSOverride.Text == "Over Ridden");
             if (!overRideWS)
             {
@@ -1082,17 +1091,17 @@ namespace ControlRoomApplication.GUI
         private void MGOverride_Click(object sender, EventArgs e)
         {
             logger.Info("Over Ride azimuth sensor 1 clicked");
-            bool overRideWS = (WSOverride.Text == "Over Ridden");
-            if (!overRideWS)
+            bool overRideMG = (MGOverride.Text == "Over Ridden");
+            if (!overRideMG)
             {
-                WSOverride.Text = "Over Ridden";
-                WSOverride.BackColor = System.Drawing.Color.LimeGreen;
+                MGOverride.Text = "Over Ridden";
+                MGOverride.BackColor = System.Drawing.Color.LimeGreen;
 
             }
-            else if (overRideWS)
+            else if (overRideMG)
             {
-                WSOverride.Text = "Over Ride";
-                WSOverride.BackColor = System.Drawing.Color.Red;
+                MGOverride.Text = "Over Ride";
+                MGOverride.BackColor = System.Drawing.Color.Red;
 
             }
         }
@@ -1100,6 +1109,47 @@ namespace ControlRoomApplication.GUI
         private void lblElEncoderDegrees_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void label19_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AzMotTempSensOverride_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride azimuth motor sensor clicked");
+            bool overRideAZMot = (AzMotTempSensOverride.Text == "Over Ridden");
+            if (!overRideAZMot)
+            {
+                AzMotTempSensOverride.Text = "Over Ridden";
+                AzMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
+
+            }
+            else if (overRideAZMot)
+            {
+                AzMotTempSensOverride.Text = "Over Ride";
+                AzMotTempSensOverride.BackColor = System.Drawing.Color.Red;
+
+            }
+        }
+
+        private void ElMotTempSensOverride_Click(object sender, EventArgs e)
+        {
+            logger.Info("Over Ride azimuth motor sensor clicked");
+            bool overRideELMot = (ElMotTempSensOverride.Text == "Over Ridden");
+            if (!overRideELMot)
+            {
+                ElMotTempSensOverride.Text = "Over Ridden";
+                ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
+
+            }
+            else if (overRideELMot)
+            {
+                ElMotTempSensOverride.Text = "Over Ride";
+                ElMotTempSensOverride.BackColor = System.Drawing.Color.Red;
+
+            }
         }
     }
 }

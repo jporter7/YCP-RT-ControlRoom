@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -114,11 +114,22 @@
             this.celTempConvert = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label32 = new System.Windows.Forms.Label();
+            this.label34 = new System.Windows.Forms.Label();
             this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
             this.lblCurrentElOrientation = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
             this.label26 = new System.Windows.Forms.Label();
+            this.AZTempUnitLabel = new System.Windows.Forms.Label();
+            this.ElTempUnitLabel = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.InsideTempUnits = new System.Windows.Forms.Label();
+            this.rainRateUnits = new System.Windows.Forms.Label();
+            this.pressUnits = new System.Windows.Forms.Label();
+            this.dailyRainfallUnits = new System.Windows.Forms.Label();
+            this.outTempUnits = new System.Windows.Forms.Label();
+            this.label35 = new System.Windows.Forms.Label();
+            this.windSpeedUnits = new System.Windows.Forms.Label();
             this.insideTempLabel = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.rainRateLabel = new System.Windows.Forms.Label();
@@ -187,14 +198,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridView1.Location = new System.Drawing.Point(4, 8);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -206,11 +217,11 @@
             // windSpeedLabel
             // 
             this.windSpeedLabel.AutoSize = true;
-            this.windSpeedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.windSpeedLabel.Location = new System.Drawing.Point(232, 20);
+            this.windSpeedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.windSpeedLabel.Location = new System.Drawing.Point(203, 46);
             this.windSpeedLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.windSpeedLabel.Name = "windSpeedLabel";
-            this.windSpeedLabel.Size = new System.Drawing.Size(23, 20);
+            this.windSpeedLabel.Size = new System.Drawing.Size(22, 18);
             this.windSpeedLabel.TabIndex = 3;
             this.windSpeedLabel.Text = " --";
             this.windSpeedLabel.Click += new System.EventHandler(this.windSpeedLabel_Click);
@@ -219,7 +230,7 @@
             // 
             this.windDirLabel.AutoSize = true;
             this.windDirLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.windDirLabel.Location = new System.Drawing.Point(231, 46);
+            this.windDirLabel.Location = new System.Drawing.Point(202, 22);
             this.windDirLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.windDirLabel.Name = "windDirLabel";
             this.windDirLabel.Size = new System.Drawing.Size(23, 20);
@@ -314,10 +325,10 @@
             // fldAzTemp
             // 
             this.fldAzTemp.AutoSize = true;
-            this.fldAzTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldAzTemp.Location = new System.Drawing.Point(237, 5);
+            this.fldAzTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fldAzTemp.Location = new System.Drawing.Point(212, 7);
             this.fldAzTemp.Name = "fldAzTemp";
-            this.fldAzTemp.Size = new System.Drawing.Size(27, 20);
+            this.fldAzTemp.Size = new System.Drawing.Size(24, 18);
             this.fldAzTemp.TabIndex = 18;
             this.fldAzTemp.Text = "50";
             this.fldAzTemp.Click += new System.EventHandler(this.fldAzTemp_Click);
@@ -325,10 +336,10 @@
             // fldElTemp
             // 
             this.fldElTemp.AutoSize = true;
-            this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldElTemp.Location = new System.Drawing.Point(237, 33);
+            this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fldElTemp.Location = new System.Drawing.Point(212, 34);
             this.fldElTemp.Name = "fldElTemp";
-            this.fldElTemp.Size = new System.Drawing.Size(27, 20);
+            this.fldElTemp.Size = new System.Drawing.Size(24, 18);
             this.fldElTemp.TabIndex = 19;
             this.fldElTemp.Text = "50";
             this.fldElTemp.Click += new System.EventHandler(this.fldElTemp_Click);
@@ -1133,6 +1144,8 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.label32);
+            this.splitContainer1.Panel1.Controls.Add(this.label34);
             this.splitContainer1.Panel1.Controls.Add(this.lblCurrentAzOrientation);
             this.splitContainer1.Panel1.Controls.Add(this.lblCurrentElOrientation);
             this.splitContainer1.Panel1.Controls.Add(this.label25);
@@ -1141,6 +1154,8 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.AZTempUnitLabel);
+            this.splitContainer1.Panel2.Controls.Add(this.ElTempUnitLabel);
             this.splitContainer1.Panel2.Controls.Add(this.lblAzimuthTemp);
             this.splitContainer1.Panel2.Controls.Add(this.fldElTemp);
             this.splitContainer1.Panel2.Controls.Add(this.fldAzTemp);
@@ -1148,6 +1163,28 @@
             this.splitContainer1.Size = new System.Drawing.Size(333, 123);
             this.splitContainer1.SplitterDistance = 55;
             this.splitContainer1.TabIndex = 20;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label32.Location = new System.Drawing.Point(262, 32);
+            this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(47, 13);
+            this.label32.TabIndex = 27;
+            this.label32.Text = "Degrees";
+            // 
+            // label34
+            // 
+            this.label34.AutoSize = true;
+            this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label34.Location = new System.Drawing.Point(262, 10);
+            this.label34.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label34.Name = "label34";
+            this.label34.Size = new System.Drawing.Size(47, 13);
+            this.label34.TabIndex = 26;
+            this.label34.Text = "Degrees";
             // 
             // lblCurrentAzOrientation
             // 
@@ -1174,11 +1211,11 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(237, 28);
+            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label25.Location = new System.Drawing.Point(208, 32);
             this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(31, 20);
+            this.label25.Size = new System.Drawing.Size(28, 18);
             this.label25.TabIndex = 10;
             this.label25.Text = "0.0";
             this.label25.Click += new System.EventHandler(this.label25_Click);
@@ -1186,17 +1223,44 @@
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(237, 4);
+            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label26.Location = new System.Drawing.Point(208, 6);
             this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(31, 20);
+            this.label26.Size = new System.Drawing.Size(28, 18);
             this.label26.TabIndex = 9;
             this.label26.Text = "0.0";
+            // 
+            // AZTempUnitLabel
+            // 
+            this.AZTempUnitLabel.AutoSize = true;
+            this.AZTempUnitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AZTempUnitLabel.Location = new System.Drawing.Point(262, 12);
+            this.AZTempUnitLabel.Name = "AZTempUnitLabel";
+            this.AZTempUnitLabel.Size = new System.Drawing.Size(51, 13);
+            this.AZTempUnitLabel.TabIndex = 32;
+            this.AZTempUnitLabel.Text = "Farenheit";
+            // 
+            // ElTempUnitLabel
+            // 
+            this.ElTempUnitLabel.AutoSize = true;
+            this.ElTempUnitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ElTempUnitLabel.Location = new System.Drawing.Point(262, 34);
+            this.ElTempUnitLabel.Name = "ElTempUnitLabel";
+            this.ElTempUnitLabel.Size = new System.Drawing.Size(51, 13);
+            this.ElTempUnitLabel.TabIndex = 31;
+            this.ElTempUnitLabel.Text = "Farenheit";
             // 
             // groupBox5
             // 
             this.groupBox5.BackColor = System.Drawing.Color.Gainsboro;
+            this.groupBox5.Controls.Add(this.InsideTempUnits);
+            this.groupBox5.Controls.Add(this.rainRateUnits);
+            this.groupBox5.Controls.Add(this.pressUnits);
+            this.groupBox5.Controls.Add(this.dailyRainfallUnits);
+            this.groupBox5.Controls.Add(this.outTempUnits);
+            this.groupBox5.Controls.Add(this.label35);
+            this.groupBox5.Controls.Add(this.windSpeedUnits);
             this.groupBox5.Controls.Add(this.insideTempLabel);
             this.groupBox5.Controls.Add(this.label23);
             this.groupBox5.Controls.Add(this.rainRateLabel);
@@ -1220,13 +1284,87 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Weather Sensor Data";
             // 
+            // InsideTempUnits
+            // 
+            this.InsideTempUnits.AutoSize = true;
+            this.InsideTempUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InsideTempUnits.Location = new System.Drawing.Point(257, 117);
+            this.InsideTempUnits.Name = "InsideTempUnits";
+            this.InsideTempUnits.Size = new System.Drawing.Size(51, 13);
+            this.InsideTempUnits.TabIndex = 30;
+            this.InsideTempUnits.Text = "Farenheit";
+            // 
+            // rainRateUnits
+            // 
+            this.rainRateUnits.AutoSize = true;
+            this.rainRateUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rainRateUnits.Location = new System.Drawing.Point(257, 91);
+            this.rainRateUnits.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.rainRateUnits.Name = "rainRateUnits";
+            this.rainRateUnits.Size = new System.Drawing.Size(39, 13);
+            this.rainRateUnits.TabIndex = 27;
+            this.rainRateUnits.Text = "Inches";
+            // 
+            // pressUnits
+            // 
+            this.pressUnits.AutoSize = true;
+            this.pressUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pressUnits.Location = new System.Drawing.Point(257, 164);
+            this.pressUnits.Name = "pressUnits";
+            this.pressUnits.Size = new System.Drawing.Size(58, 13);
+            this.pressUnits.TabIndex = 29;
+            this.pressUnits.Text = "Inches/Hg";
+            // 
+            // dailyRainfallUnits
+            // 
+            this.dailyRainfallUnits.AutoSize = true;
+            this.dailyRainfallUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dailyRainfallUnits.Location = new System.Drawing.Point(257, 70);
+            this.dailyRainfallUnits.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.dailyRainfallUnits.Name = "dailyRainfallUnits";
+            this.dailyRainfallUnits.Size = new System.Drawing.Size(63, 13);
+            this.dailyRainfallUnits.TabIndex = 26;
+            this.dailyRainfallUnits.Text = "Inches/Day";
+            // 
+            // outTempUnits
+            // 
+            this.outTempUnits.AutoSize = true;
+            this.outTempUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outTempUnits.Location = new System.Drawing.Point(257, 139);
+            this.outTempUnits.Name = "outTempUnits";
+            this.outTempUnits.Size = new System.Drawing.Size(51, 13);
+            this.outTempUnits.TabIndex = 28;
+            this.outTempUnits.Text = "Farenheit";
+            // 
+            // label35
+            // 
+            this.label35.AutoSize = true;
+            this.label35.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label35.Location = new System.Drawing.Point(256, 20);
+            this.label35.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label35.Name = "label35";
+            this.label35.Size = new System.Drawing.Size(23, 20);
+            this.label35.TabIndex = 25;
+            this.label35.Text = " --";
+            // 
+            // windSpeedUnits
+            // 
+            this.windSpeedUnits.AutoSize = true;
+            this.windSpeedUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.windSpeedUnits.Location = new System.Drawing.Point(257, 48);
+            this.windSpeedUnits.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.windSpeedUnits.Name = "windSpeedUnits";
+            this.windSpeedUnits.Size = new System.Drawing.Size(31, 13);
+            this.windSpeedUnits.TabIndex = 24;
+            this.windSpeedUnits.Text = "MPH";
+            // 
             // insideTempLabel
             // 
             this.insideTempLabel.AutoSize = true;
-            this.insideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.insideTempLabel.Location = new System.Drawing.Point(231, 115);
+            this.insideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.insideTempLabel.Location = new System.Drawing.Point(202, 115);
             this.insideTempLabel.Name = "insideTempLabel";
-            this.insideTempLabel.Size = new System.Drawing.Size(23, 20);
+            this.insideTempLabel.Size = new System.Drawing.Size(22, 18);
             this.insideTempLabel.TabIndex = 23;
             this.insideTempLabel.Text = " --";
             // 
@@ -1236,28 +1374,28 @@
             this.label23.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label23.Location = new System.Drawing.Point(6, 115);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(154, 15);
+            this.label23.Size = new System.Drawing.Size(136, 15);
             this.label23.TabIndex = 22;
-            this.label23.Text = "Inside Temperature (F)";
+            this.label23.Text = "Inside Temperature ";
             // 
             // rainRateLabel
             // 
             this.rainRateLabel.AutoSize = true;
-            this.rainRateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rainRateLabel.Location = new System.Drawing.Point(232, 91);
+            this.rainRateLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rainRateLabel.Location = new System.Drawing.Point(203, 91);
             this.rainRateLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.rainRateLabel.Name = "rainRateLabel";
-            this.rainRateLabel.Size = new System.Drawing.Size(23, 20);
+            this.rainRateLabel.Size = new System.Drawing.Size(22, 18);
             this.rainRateLabel.TabIndex = 19;
             this.rainRateLabel.Text = " --";
             // 
             // barometricPressureLabel
             // 
             this.barometricPressureLabel.AutoSize = true;
-            this.barometricPressureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.barometricPressureLabel.Location = new System.Drawing.Point(232, 159);
+            this.barometricPressureLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.barometricPressureLabel.Location = new System.Drawing.Point(203, 159);
             this.barometricPressureLabel.Name = "barometricPressureLabel";
-            this.barometricPressureLabel.Size = new System.Drawing.Size(23, 20);
+            this.barometricPressureLabel.Size = new System.Drawing.Size(22, 18);
             this.barometricPressureLabel.TabIndex = 21;
             this.barometricPressureLabel.Text = " --";
             this.barometricPressureLabel.Click += new System.EventHandler(this.barometricPressureLabel_Click);
@@ -1265,21 +1403,21 @@
             // dailyRainfallLabel
             // 
             this.dailyRainfallLabel.AutoSize = true;
-            this.dailyRainfallLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dailyRainfallLabel.Location = new System.Drawing.Point(232, 68);
+            this.dailyRainfallLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dailyRainfallLabel.Location = new System.Drawing.Point(203, 68);
             this.dailyRainfallLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.dailyRainfallLabel.Name = "dailyRainfallLabel";
-            this.dailyRainfallLabel.Size = new System.Drawing.Size(23, 20);
+            this.dailyRainfallLabel.Size = new System.Drawing.Size(22, 18);
             this.dailyRainfallLabel.TabIndex = 18;
             this.dailyRainfallLabel.Text = " --";
             // 
             // outsideTempLabel
             // 
             this.outsideTempLabel.AutoSize = true;
-            this.outsideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.outsideTempLabel.Location = new System.Drawing.Point(231, 139);
+            this.outsideTempLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.outsideTempLabel.Location = new System.Drawing.Point(202, 139);
             this.outsideTempLabel.Name = "outsideTempLabel";
-            this.outsideTempLabel.Size = new System.Drawing.Size(23, 20);
+            this.outsideTempLabel.Size = new System.Drawing.Size(22, 18);
             this.outsideTempLabel.TabIndex = 20;
             this.outsideTempLabel.Text = " --";
             // 
@@ -1289,9 +1427,10 @@
             this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label19.Location = new System.Drawing.Point(5, 164);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(216, 15);
+            this.label19.Size = new System.Drawing.Size(142, 15);
             this.label19.TabIndex = 19;
-            this.label19.Text = "Barometric Pressure (Inches/Hg)";
+            this.label19.Text = "Barometric Pressure ";
+            this.label19.Click += new System.EventHandler(this.label19_Click);
             // 
             // label20
             // 
@@ -1299,9 +1438,9 @@
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label20.Location = new System.Drawing.Point(6, 142);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(164, 15);
+            this.label20.Size = new System.Drawing.Size(146, 15);
             this.label20.TabIndex = 18;
-            this.label20.Text = "Outside Temperature (F)";
+            this.label20.Text = "Outside Temperature ";
             // 
             // label1
             // 
@@ -1309,9 +1448,9 @@
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(6, 91);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(127, 15);
+            this.label1.Size = new System.Drawing.Size(75, 15);
             this.label1.TabIndex = 17;
-            this.label1.Text = "Rain Rate (Inches)";
+            this.label1.Text = "Rain Rate ";
             // 
             // label2
             // 
@@ -1319,25 +1458,25 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(5, 68);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(149, 15);
+            this.label2.Size = new System.Drawing.Size(97, 15);
             this.label2.TabIndex = 16;
-            this.label2.Text = "Daily Rainfall (inches)";
+            this.label2.Text = "Daily Rainfall ";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(5, 23);
+            this.label5.Location = new System.Drawing.Point(4, 46);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(125, 15);
+            this.label5.Size = new System.Drawing.Size(84, 15);
             this.label5.TabIndex = 14;
-            this.label5.Text = "Wind Speed(MPH)";
+            this.label5.Text = "Wind Speed";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(6, 46);
+            this.label11.Location = new System.Drawing.Point(4, 25);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(105, 15);
             this.label11.TabIndex = 15;
@@ -1411,6 +1550,7 @@
             this.ElMotTempSensOverride.TabIndex = 15;
             this.ElMotTempSensOverride.Text = "OVER RIDE";
             this.ElMotTempSensOverride.UseVisualStyleBackColor = false;
+            this.ElMotTempSensOverride.Click += new System.EventHandler(this.ElMotTempSensOverride_Click);
             // 
             // label29
             // 
@@ -1432,6 +1572,7 @@
             this.AzMotTempSensOverride.TabIndex = 13;
             this.AzMotTempSensOverride.Text = "OVER RIDE";
             this.AzMotTempSensOverride.UseVisualStyleBackColor = false;
+            this.AzMotTempSensOverride.Click += new System.EventHandler(this.AzMotTempSensOverride_Click);
             // 
             // label28
             // 
@@ -1798,5 +1939,16 @@
         private System.Windows.Forms.GroupBox groupBox14;
         private System.Windows.Forms.Button farTempConvert;
         private System.Windows.Forms.Button celTempConvert;
+        private System.Windows.Forms.Label InsideTempUnits;
+        private System.Windows.Forms.Label rainRateUnits;
+        private System.Windows.Forms.Label pressUnits;
+        private System.Windows.Forms.Label dailyRainfallUnits;
+        private System.Windows.Forms.Label outTempUnits;
+        private System.Windows.Forms.Label label35;
+        private System.Windows.Forms.Label windSpeedUnits;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.Label AZTempUnitLabel;
+        private System.Windows.Forms.Label ElTempUnitLabel;
     }
 }
