@@ -307,13 +307,11 @@
       <SubType>Designer</SubType>
     </None>
     <None Include=".travis.yml" />
-    <None Include="UIDoc.pdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="Simulators\CSV\Spectra_Cyber_Sim_CSV.csv" />
+    <None Include="UIDoc.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="circle-cropped.ico" />
