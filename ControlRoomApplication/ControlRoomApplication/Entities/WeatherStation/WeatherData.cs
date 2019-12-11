@@ -83,7 +83,7 @@ namespace ControlRoomApplication.Entities
         {
             WeatherData dbData = new WeatherData();
 
-            dbData.TimeCaptured = DateTime.UtcNow.Ticks;
+            dbData.TimeCaptured = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             dbData.ws = data.windSpeed;
             dbData.wd_str = data.windDirection;
             dbData.wd_deg = data.windDirectionDegrees;
