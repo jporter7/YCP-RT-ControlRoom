@@ -517,15 +517,9 @@ namespace ControlRoomApplication.Controllers
             Orientation elStart = new Orientation(currentPos.Azimuth, 0); ;
             Orientation elFinish = new Orientation(currentPos.Azimuth, 90);
 
-            // Moves elevation to start position if not already there
-            if (currentPos.Elevation == 0)
-                elStartFlag = true;
-            else
-                elStartFlag = Move_to_orientation(elStart, currentPos);
+            Move_to_orientation(elStart, currentPos);
 
-            // Moves elevation to the finish position
-            if (elStartFlag)
-                elFinishFlag = Move_to_orientation(elFinish, elStart);
+            Move_to_orientation(elFinish, elStart);
 
             // Moves elevation to the original position
             if (elFinishFlag)
