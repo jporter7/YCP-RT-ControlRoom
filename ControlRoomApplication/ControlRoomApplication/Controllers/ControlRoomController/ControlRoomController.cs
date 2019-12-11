@@ -84,6 +84,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
                     currentSensor.Status = SensorStatus.ALARM;
+                    //ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
 
                     /*
                     //shut down telescopes
@@ -107,8 +108,6 @@ namespace ControlRoomApplication.Controllers
                     logger.Info("[ControlRoomController] Wind speeds are in a Safe State: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
                     currentSensor.Status = SensorStatus.NORMAL;
                 }
-
-                ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
 
                 /*
                 else if(currentSensor != null && currentSensor.Status == SensorStatus.ALARM) {
