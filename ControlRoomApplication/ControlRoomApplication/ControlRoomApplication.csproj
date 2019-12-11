@@ -198,9 +198,12 @@
     <Compile Include="Entities\DiagnosticData\Temperature.cs" />
     <Compile Include="Entities\Location\SensorLocationEnum.cs" />
     <Compile Include="Entities\Log\Log.cs" />
+    <Compile Include="Entities\Override\Override.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
-    <Compile Include="Entities\Sensors\SensorStatus.cs" />
-    <Compile Include="Entities\Sensors\SensorStatusEnum.cs" />
+    <Compile Include="Entities\Sensor\Sensor.cs" />
+    <Compile Include="Entities\Sensor\SensorItemEnum.cs" />
+    <Compile Include="Entities\Sensor\SensorStatus.cs" />
+    <Compile Include="Entities\Sensor\SensorStatusEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberBandwidthEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />

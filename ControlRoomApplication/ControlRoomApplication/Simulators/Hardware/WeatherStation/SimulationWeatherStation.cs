@@ -44,7 +44,19 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
                 data.monthlyRain = (float)GetRandomValue(3.5, (4.5 - 3.5) / 6);
                 data.rainRate = (float)GetRandomValue(0.2, (1 - 0.2) / 6);
                 data.heatIndex = (int)GetRandomValue(74.6, (84.6 - 74.6) / 6);
-                data.windSpeed = (float)GetRandomValue(MiscellaneousHardwareConstants.SIMULATION_WEATHER_STATION_AVERAGE_WIND_SPEED_MPH, MiscellaneousHardwareConstants.SIMULATION_WEATHER_STATION_MAXIMUM_ALLOWABLE_WIND_SPEED_MPH_STD_DEV);
+                //data.windSpeed = (float)GetRandomValue(MiscellaneousHardwareConstants.SIMULATION_WEATHER_STATION_AVERAGE_WIND_SPEED_MPH, MiscellaneousHardwareConstants.SIMULATION_WEATHER_STATION_MAXIMUM_ALLOWABLE_WIND_SPEED_MPH_STD_DEV);
+
+
+
+                data.windSpeed = data.windSpeed + 10;
+                if(data.windSpeed > 60)
+                {
+                    data.windSpeed = data.windSpeed - 20;
+                }
+
+
+
+
                 data.baromPressure = (float)GetRandomValue(30, (40 - 30) / 6);
                 data.windChill = (float)GetRandomValue(30, (40 - 30) / 6);
 

@@ -669,6 +669,7 @@
             this.subElaButton.TabIndex = 5;
             this.subElaButton.Text = "- Ela";
             this.subElaButton.UseVisualStyleBackColor = false;
+            this.subElaButton.Click += new System.EventHandler(this.subElaButton_Click);
             // 
             // plusJogButton
             // 
@@ -711,7 +712,7 @@
             this.Controls.Add(this.errorLabel);
             this.MinimumSize = new System.Drawing.Size(600, 480);
             this.Name = "FreeControlForm";
-            this.Text = "FreeControlForm";
+            this.Text = "Control Form";
             this.RAIncGroupbox.ResumeLayout(false);
             this.overRideGroupbox.ResumeLayout(false);
             this.overRideGroupbox.PerformLayout();

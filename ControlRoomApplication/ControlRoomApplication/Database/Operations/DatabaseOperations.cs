@@ -422,16 +422,13 @@ namespace ControlRoomApplication.Database
         /// </summary>
         public static void AddWeatherData(WeatherData weather)
         {
-            if (!USING_REMOTE_DATABASE)
-            {
-                using (RTDbContext Context = InitializeDatabaseContext())
-                {
-                    Context.Weather.Add(weather);
-                    SaveContext(Context);
+           using (RTDbContext Context = InitializeDatabaseContext())
+           {
+               Context.Weather.Add(weather);
+               SaveContext(Context);
 
-                    logger.Info("Added weather data to database");
-                }
-            }
+               logger.Info("Added weather data to database");
+           }
         }
 
         /// <summary>
@@ -439,16 +436,13 @@ namespace ControlRoomApplication.Database
         /// </summary>
         public static void AddSensorStatusData(SensorStatus sensors)
         {
-            if (!USING_REMOTE_DATABASE)
-            {
-                using (RTDbContext Context = InitializeDatabaseContext())
-                {
-                    Context.SensorStatus.Add(sensors);
-                    SaveContext(Context);
+           using (RTDbContext Context = InitializeDatabaseContext())
+           {
+               Context.SensorStatus.Add(sensors);
+               SaveContext(Context);
 
-                    logger.Info("Added sensor status data to database");
-                }
-            }
+               logger.Info("Added sensor status data to database");
+           }
         }
     }
 }
