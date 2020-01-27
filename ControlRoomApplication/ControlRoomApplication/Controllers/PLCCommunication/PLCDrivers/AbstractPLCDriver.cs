@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Simulators.Hardware;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -132,9 +133,9 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool[] Get_Limit_switches();
         /// <summary>
-        ///  get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation, 
-        /// also see MCUConstants.MCUStutusBits
+        /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
+        /// see <see cref="MCUConstants.MCUStutusBits"/> for description of each bit
         /// </summary>
         /// <param name="axis"></param>
         /// <returns></returns>

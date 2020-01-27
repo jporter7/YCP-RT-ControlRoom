@@ -52,8 +52,11 @@ namespace ControlRoomApplication.Entities
     /// the cctrlroom has a modbus server running on it that is maped to input and output regs on the plc 
     /// 0-20 arr comand bytes that go through the plc to the mcu
     /// warnings, limits and other boolean values are sent as ints with 0 for false and 1 for true
-    /// 
     /// </summary>
+    /// <remarks>
+    /// the registers in the PLC start at 0 however the registers in the controll room start at one 
+    /// so an offset between the register number in the PLC and the number in the controll room is required
+    /// </remarks>
     public enum PLC_modbus_server_register_mapping : ushort
     {
         /// <summary>
@@ -61,16 +64,56 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         CMD_ACK = 0+1,
 
-        AZ_LEFT_LIMIT  = 8 + 1,
-        AZ_LEFT_WARNING = 9 + 1,
-        AZ_RIGHT_WARNING = 10 + 1,
-        AZ_RIGHT_LIMIT = 11 + 1,
+        /// <summary>
+        /// limit at -10
+        /// </summary>
+        AZ_0_LIMIT  = 8 + 1,
+        /// <summary>
+        /// limit at 375 degrees
+        /// </summary>
+        AZ_375_LIMIT = 9 + 1,
 
-        EL_BOTTOM_LIMIT = 12 + 1,
-        EL_BOTTOM_WARNING = 13 + 1,
-        EL_TOP_WARNING = 14 + 1,
-        EL_TOP_LIMIT = 15 + 1,
 
+        
+        /// <summary>
+        /// home sensor at 0 degrees,
+        /// will be active between 180 and 360
+        /// </summary>
+        AZ_0_HOME = 10 + 1,
+        /// <summary>
+        /// home sensor at 180 degrees,
+        /// will be active between 11 and 180
+        /// </summary>
+        AZ_180_HOME = 11 + 1,
+        /// <summary>
+        /// home sensor at 270 degrees,
+        /// active between 0 to 90 and 270 to 360
+        /// </summary>
+        AZ_270_HOME = 12 + 1,
+
+        /// <summary>
+        /// limit switch at -10
+        /// </summary>
+        /// <remarks>
+        /// im not 100% certian that the telesope will actually have this switch
+        /// </remarks>
+        EL_10_LIMIT = 13 + 1,
+        /// <summary>
+        /// active between 0 and -15 degrees
+        /// </summary>
+        EL_0_HOME = 14 + 1,
+        /// <summary>
+        /// limit at 90 degrees
+        /// </summary>
+        EL_90_LIMIT = 15 + 1,
+
+        /// <summary>
+        /// emergency stop the plc will handle disabling the motors and MCU, the controll should re-configure (and posibly re-home) the MCU after this is ended
+        /// </summary>
+        E_STOP = 17 + 1,
+        /// <summary>
+        /// high when gate is open
+        /// </summary>
         Safety_INTERLOCK = 18 + 1,
 
         AZ_MOTOR_CURRENT = 40 + 1,

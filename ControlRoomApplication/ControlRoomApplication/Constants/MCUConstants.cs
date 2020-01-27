@@ -18,42 +18,145 @@
         public const ushort ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING = 50;
 
 
-
+        /// <summary>
+        /// desciptions taken from anf1-anf2-motion-controller-user-manual.pdf  page 76 - 78
+        /// </summary>
         public enum MCUStutusBits : int {
+            /// <summary>
+            /// Set when the ANF1/2 axis is outputting pulses for clockwise motion
+            /// </summary>
             CW_Motion = 0,
+            /// <summary>
+            /// Set when the ANF1/2 axis is outputting pulses for counter-clockwise motion
+            /// </summary>
             CCW_Motion = 1,
+            /// <summary>
+            /// Set when the ANF1/2 axis has stopped motion as a result of a Hold Move Command
+            /// </summary>
             Hold_State = 2,
+            /// <summary>
+            /// Set when the ANF1/2 axis is not in motion for any reason
+            /// </summary>
             Axis_Stopped = 3,
+            /// <summary>
+            /// This bit is only set after the successful completion of a homing command
+            /// </summary>
             At_Home = 4,
+            /// <summary>
+            /// Set when the ANF1/2 axis is accelerating during any move
+            /// </summary>
             Move_Accelerating = 5,
-            Move_Decelerating = 7,
-            Move_Complete = 8,
-            Home_Invalid_Error = 9,
-            Profile_Invalid = 10,
+            /// <summary>
+            /// Set when the ANF1/2 axis is decelerating during any move
+            /// </summary>
+            Move_Decelerating = 6,
+            /// <summary>
+            /// Set when the ANF1/2 axis has successfully completed an Absolute, Relative,
+            /// Blend, or Interpolated Move
+            /// </summary>
+            Move_Complete = 7,
+            /// <summary>
+            /// Set when the ANF1/2 could not home the axis because of an error durring homeing see MCU documaentation for list of potential eroorrs
+            /// </summary>
+            Home_Invalid_Error = 8,
+            /// <summary>
+            /// Set when there was an error in the last Program Blend Profile data block //we don't use blend move so this shouldnt come up
+            /// </summary>
+            Profile_Invalid = 9,
+            /// <summary>
+            /// this bit is set when the position stored in the MCU could be incorrect.
+            /// set under the fowling conditions, Axis switched to Command Mode | An Immediate Stop command was issued | An Emergency Stop input was activated | CW or CCW Limit reached
+            /// </summary>
+            Position_Invalid = 10,
+            /// <summary>
+            /// see MCU documaentation for list of potential eroorrs
+            /// </summary>
             Input_Error = 11,
+            /// <summary>
+            /// Set when the last command issued to the ANF1/2 axis forced an error
+            /// </summary>
             Command_Error = 12,
+            /// <summary>
+            /// set when the axis has a configuration error
+            /// </summary>
             Configuration_Error = 13,
+            /// <summary>
+            /// Set when the axis is enabled. Axis 2 of an ANF2 is disabled by default. An
+            /// axis is automatically enabled when valid configuration data is written to it
+            /// </summary>
             Axis_Enabled = 14,
+            /// <summary>
+            /// Set to “1” when the axis is in Configuration Mode. Reset to “0” when the axis is in Command Mode
+            /// </summary>
             Axis_Configuration_Mode = 15,
 
+            //beging deffinitons for the second word of data
+
+            /// <summary>
+            /// Set when the Capture Input is active
+            /// </summary>
             Capture_Input_Active = 16,
+            /// <summary>
+            /// Set when the External Input is active
+            /// </summary>
             External_Input = 17,
+            /// <summary>
+            /// Set when the Home Input is active
+            /// </summary>
             Home_Input = 18,
+            /// <summary>
+            /// Set when the CW Input/E-Stop Input is active
+            /// </summary>
             CW_Limit = 19,
+            /// <summary>
+            /// Set when the CCW Input/E-Stop Input is active
+            /// </summary>
             CCW_Limit = 20,
+            /// <summary>
+            /// see MCU documaentation
+            /// </summary>
             No_Fault_Output_State = 21,
+            /// <summary>
+            /// see MCU documaentation (unused)
+            /// </summary>
             On_Line_Output_State = 22,
+            /// <summary>
+            /// see MCU documaentation (unused)
+            /// </summary>
             Move_Complete_Output_State = 23,
+            /// <summary>
+            /// Set when the axis is presently running a Blend Move Profile (unused)
+            /// </summary>
             Running_Blend_Move = 24,
+            /// <summary>
+            /// Set when ANF1/2 has accepted a Blend Move Profile programming block (unused)
+            /// </summary>
             Blend_Move_Acknowledge = 25,
+            /// <summary>
+            /// Set when the Minimum Registration Move Distance
+            /// parameter is programmed to a non-zero value (unused)
+            /// </summary>
             NonZero_Registration_Distance = 26,
             /// <summary>
-            /// only valid for axis one
+            ///  Set when the ANF1/2 is running an Interpolated Move. only valid for axis one
             /// </summary>
             Running_Interpolated_Move = 27,
+            /// <summary>
+            /// This bit always equals the state of the Backplane Home
+            /// Proximity bit, which is bit 6 in the Command Bits LSW for the axis
+            /// </summary>
             Backplane_Home_Proximity = 28,
+            /// <summary>
+            /// Set when the axis is in Encoder Follower Mode
+            /// </summary>
             Encoder_Follower_Mode = 29,
+            /// <summary>
+            /// These bits will always equal zero
+            /// </summary>
             Reserved1 = 30,
+            /// <summary>
+            /// These bits will always equal zero
+            /// </summary>
             reserved2 = 31,
         }
     }
