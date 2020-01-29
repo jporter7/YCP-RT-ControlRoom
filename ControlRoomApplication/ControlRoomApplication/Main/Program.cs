@@ -4,6 +4,7 @@ using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -20,7 +21,7 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            Application.Run(new MainForm());
+            //Application.Run(new MainForm());
 
             //DatabaseOperations.DeleteLocalDatabase();
             /*
@@ -69,34 +70,72 @@ namespace ControlRoomApplication.Main
                 Console.WriteLine( "{0} milliseconds passed" , end - start );
             };
             //*/
+            ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver( "192.168.0.20" , "192.168.0.50" , 502 , 502 , true );
+            ushort zero = 0, readadr = 1024;//7500
 
 
-
-
-
-            // MCU_TCPListener.Start(1);
-
-            //TcpClient MCUTCPClient = new TcpClient("127.0.0.1", 8080);
             /*
-            new Thread(new ThreadStart(() => {
-                while (true)
-                {
-                    //Console.WriteLine("---------------------------------");
-                    ControlRoomApplication.Entities.Orientation one = Controllers.BlkHeadUcontroler.EncoderReader.GetCurentOrientation();
-                    if (one != null)
-                    {
-                        Console.WriteLine(one.Azimuth + " " + one.Elevation);
-                    }
-                    Thread.Sleep(100);
+            ushort[] exsistingin = plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 );
+            ushort[] exsistingout = plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 );
+            int ch = 0;
+
+            while(true) {
+                Task<ushort[]> newin = plc.MCUModbusMaster.ReadHoldingRegistersAsync( zero , (ushort)20 );
+                ushort[] newout = plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 );
+                bool x = newout.SequenceEqual( exsistingout );
+                if(!x) {
+                    exsistingout = newout;
+                    ch++;
+                    printRegs( newin.Result , newout );
                 }
-            })).Start();
-            //ControlRoomApplication.Controllers.BlkHeadUcontroler.MicroControlerControler.BringUp();
-//*/
+                if(ch>4) {
+                    break;
+                }
+            }//*/
+
+            double gearedSpeedAZ = .1, gearedSpeedEL = .1;
+            ushort homeTimeoutSecondsElevation = 50, homeTimeoutSecondsAzimuth = 50;
+
+
+            printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
+
+            plc.Configure_MCU( gearedSpeedAZ , gearedSpeedEL , homeTimeoutSecondsAzimuth , homeTimeoutSecondsElevation );
+
+            printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
+
+            // Task.Delay( 5000 ).Wait();
+            //bool home =plc.HomeBothAxyes().GetAwaiter().GetResult();
+            //Console.WriteLine( home.ToString() );
+            // plc.Move_to_orientation(new Entities.Orientation(3,2),new Entities.Orientation(0,0));
+            //plc.Start_jog(RadioTelescopeAxisEnum.AZIMUTH,1000,true);
+              printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
+
+
+            Task.Delay( 2000 );
+
+            //*/
+
+            void printRegs(ushort[] inreg2 , ushort[] outreg2 ) {
+                string outstr = " inreg";
+                for(int v = 0; v < inreg2.Length; v++) {
+                    //outstr += Convert.ToString(inreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                    outstr += Convert.ToString( inreg2[v] , 2 ).PadLeft( 17 ) + ",";
+                }
+                outstr += "\noutreg";
+                for(int v = 0; v < outreg2.Length; v++) {
+                    //outstr += Convert.ToString(outreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                    outstr += Convert.ToString( outreg2[v] , 2 ).PadLeft( 17 ) + ",";
+                }
+                Console.WriteLine( outstr );
+            }
+
+
+            //*/
             /*
             runer();
             async void runer()
             {
-                Controllers.ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver(("192.168.0.02"), 502);
+                ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver("192.168.0.20", "192.168.0.50",502, 502,true);
                 new Thread(plc.HandleClientManagementThread).Start();
 
                 Task task = Task.Delay(15000);
@@ -104,7 +143,6 @@ namespace ControlRoomApplication.Main
                 int gearedSpeedAZ = 500, gearedSpeedEL = 50;
                 ushort homeTimeoutSecondsElevation = 0, homeTimeoutSecondsAzimuth = 0;
 
-                Controllers.ProductionMCUDriver MCUDriver = new ControlRoomApplication.Controllers.ProductionMCUDriver("192.168.0.50", 502);
                // MCUDriver.configure_axies(gearedSpeedAZ, gearedSpeedEL, homeTimeoutSecondsAzimuth, homeTimeoutSecondsElevation);
                 task = Task.Delay(3000);
                 await task;
@@ -115,7 +153,7 @@ namespace ControlRoomApplication.Main
                     Console.WriteLine("---------------------------------");
                     Thread.Sleep(1000);
                     ushort i = 0, j = 1024;//7500
-                    plc.configure_muc(gearedSpeedAZ, gearedSpeedEL, homeTimeoutSecondsAzimuth, homeTimeoutSecondsElevation);
+                    plc.Configure_MCU( gearedSpeedAZ, gearedSpeedEL, homeTimeoutSecondsAzimuth, homeTimeoutSecondsElevation);
                     task = Task.Delay(10000);
                     await task;
                     //Thread.Sleep(10000);
@@ -130,16 +168,16 @@ namespace ControlRoomApplication.Main
                         //Console.WriteLine(datax.Length);
                         ushort[] inreg, outreg;
 
-                        inreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
-                        outreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
+                        inreg = plc.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
+                        outreg = plc.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
                         try
                         {
                             ushort positionTranslationELInt = 1000, positionTranslationELMSW = 0;
                             ushort positionTranslationAZInt = 1000, positionTranslationAZMSW = 0;
                             ushort aCCELERATION = 5, programmedPeakSpeedAZInt = 1200;
 
-                            inreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
-                            outreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
+                            inreg = plc.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
+                            outreg = plc.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
                             //Thread.Sleep(1000);
                             ushort[] data = {              0,                                            // Reserved 
                                                         0x0403,                                        // Denotes a relative linear interpolated move and a Trapezoidal S-Curve profile
@@ -163,7 +201,7 @@ namespace ControlRoomApplication.Main
                                                         0                                             // Reserved 
                          };
 
-                           await plc.sendmovecomand(programmedPeakSpeedAZInt, aCCELERATION, positionTranslationAZInt, positionTranslationELInt);
+                          // await plc.sendmovecomand(programmedPeakSpeedAZInt, aCCELERATION, positionTranslationAZInt, positionTranslationELInt);
 
                             // MCUDriver.MCUModbusMaster.WriteMultipleRegisters(j, data);
                             // Thread.Sleep(10);
@@ -177,8 +215,8 @@ namespace ControlRoomApplication.Main
                             //MCUDriver.configureSingleaxys(gearedSpeedAZ, homeTimeoutSecondsAzimuth, 0);
                             //System.Threading.Thread.Sleep(50);
                             //MCUDriver.configureSingleaxys(gearedSpeedEL, homeTimeoutSecondsElevation, 1);
-                            inreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
-                            outreg = MCUDriver.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
+                            inreg = plc.MCUModbusMaster.ReadHoldingRegisters(i, (ushort)20);
+                            outreg = plc.MCUModbusMaster.ReadHoldingRegisters(j, (ushort)20);
                         }
                         catch (Exception e)
                         {

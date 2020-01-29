@@ -23,7 +23,7 @@ namespace ControlRoomApplication.Controllers
         private TcpListener PLCTCPListener;
         private TcpClient MCUTCPClient;
         private ModbusSlave PLC_Modbusserver;
-        private ModbusIpMaster MCUModbusMaster;
+        public ModbusIpMaster MCUModbusMaster;
         private SemaphoreSlim comand_acknoledged = new SemaphoreSlim(0, 1);
         private long PLC_last_contact;
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -671,19 +671,39 @@ namespace ControlRoomApplication.Controllers
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
             int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );
-            //gearedSpeedAZ = startSpeedDPSAzimuth;
-            //gearedSpeedEL = startSpeedDPSElevation;
-            if((gearedSpeedAZ < 1) || (gearedSpeedEL < 1) || (homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsElevation < 0)
-             || (gearedSpeedAZ > 1000000) || (gearedSpeedEL > 1000000) || (homeTimeoutSecondsAzimuth > 300) || (homeTimeoutSecondsElevation > 300)) {
-                return false;
+            if((gearedSpeedEL < 1) || (gearedSpeedEL > 1000000)) {
+                throw new ArgumentOutOfRangeException( "startSpeedDPSElevation" , startSpeedDPSElevation , 
+                    String.Format( "startSpeedDPSElevation should be between {0} and {1}" , 
+                    ConversionHelper.SPSToDPS(1, MotorConstants.GEARING_RATIO_ELEVATION ) ,
+                    ConversionHelper.SPSToDPS( 1000000 , MotorConstants.GEARING_RATIO_ELEVATION ) ) );
             }
-            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), (ushort)homeTimeoutSecondsAzimuth,   0x0,    0x0,    0x0,                                 0x0,                            0x0,
-                                0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), (ushort)homeTimeoutSecondsElevation, 0x0,    0x0,    0x0,                                0x0,                             0x0
+            if((gearedSpeedAZ < 1) || (gearedSpeedAZ > 1000000)) {
+                throw new ArgumentOutOfRangeException( "startSpeedDPSAzimuth" , startSpeedDPSAzimuth ,
+                    String.Format( "startSpeedDPSAzimuth should be between {0} and {1}" ,
+                    ConversionHelper.SPSToDPS( 1 , MotorConstants.GEARING_RATIO_AZIMUTH ) ,
+                    ConversionHelper.SPSToDPS( 1000000 , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
+            }
+            if((homeTimeoutSecondsElevation < 0)|| (homeTimeoutSecondsElevation > 300)) {
+                throw new ArgumentOutOfRangeException( "homeTimeoutSecondsElevation" , homeTimeoutSecondsElevation ,
+                    String.Format( "homeTimeoutSecondsElevation should be between {0} and {1}" , 0,300 ) );
+            }
+            if((homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsAzimuth > 300) ) {
+                throw new ArgumentOutOfRangeException( "homeTimeoutSecondsAzimuth" , homeTimeoutSecondsAzimuth ,
+                    String.Format( "homeTimeoutSecondsAzimuth should be between {0} and {1}" , 0 , 300 ) );
+            }
+            ushort[] data = {   0x842C, 0x0004, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
+                                //0x0, 0x0, 0x0, 0x0, 0x0,0x0,0x0,0x0,0x0,0x0,
+                                0x842C, 0x001C, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0
+                                //      0x001C  //limit active high
+                                //      0x0004  //limit active low
+                                //anf1-anf2-motion-controller-user-manual.pdf page 50
                                 };
             //set_multiple_registers( data,  1);
+            Console.WriteLine( "start" );
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
             Thread.Sleep( 100 );
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
+            Console.WriteLine( "stop" );
             return true;
         }
         /// <summary>
@@ -793,7 +813,9 @@ namespace ControlRoomApplication.Controllers
                 dir = 0x0080;
             } else dir = 0x0100;
             //                                         reserved       msb speed                 lsb speed                acc                                                       dcc                                                    reserved
-            ushort[] data = new ushort[] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(speed >> 16) , (ushort)(speed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 };
+            ushort[] data = new ushort[] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(speed >> 16) , (ushort)(speed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0,
+                                           0x0,0x0      ,0x0    ,0x0,0x0                    ,0x0                        ,0x0                                                    ,0x0                                                     , 0x0 , 0x0
+            };
             // this is a jog comand for a single axis
             // RadioTelescopeAxisEnum jogging_axies = Is_jogging();
             switch(axis) {
@@ -815,7 +837,7 @@ namespace ControlRoomApplication.Controllers
                         throw new ArgumentException( "Invalid RadioTelescopeAxisEnum value can be AZIMUTH, ELEVATION or BOTH got: " + axis );
                     }
             }
-            MCUModbusMaster.WriteMultipleRegisters( adress , data );
+            MCUModbusMaster.WriteMultipleRegistersAsync( adress , data );
             return true;
             //throw new NotImplementedException();
         }
@@ -877,18 +899,21 @@ namespace ControlRoomApplication.Controllers
         public async Task<bool> HomeBothAxyes() {
             //place holder function until MCU homing functionality can be tested
             //this method will also likley undego signifigant change once the hardeware configuration is locked down
-            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
-            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_AZIMUTH);
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.25), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.25), MotorConstants.GEARING_RATIO_AZIMUTH);
             ushort ACCELERATION = 50;
-
-            bool zero = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);
-            bool one80 = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_180_HOME]);
-            bool ZeroTwo70 = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_270_HOME]);
 
             ushort CWHome = 0x0020;
             ushort CcWHome = 0x0040;
             ushort azHomeDir = CWHome;
-            ushort elHomeDir = CWHome, elHomeSpeed = 0x0000;
+            ushort elHomeDir = CcWHome, elHomeSpeed = 0x0000;
+
+            /*
+            bool zero = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);
+            bool one80 = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_180_HOME]);
+            bool ZeroTwo70 = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_270_HOME]);
+
+
             if ( (!zero & one80) || (!zero & !ZeroTwo70 & !one80) ) {//default behavior 11 to 191 degrees change nothing
                 
             } else if (!zero & ZeroTwo70 & !one80) {//0 to 11 degrees and 360 to 370 
@@ -925,12 +950,19 @@ namespace ControlRoomApplication.Controllers
                 elHomeDir = CcWHome;
                 elHomeSpeed = 0x0040;
             }
-
+            */
             //set config word to 0x0040 to have the RT home at the minimumum speed
             ushort[] data = {
                 azHomeDir , 0x0000      , 0x0000, 0x0000,(ushort)((AZ_Speed & 0xFFFF0000)>>16),(ushort)(AZ_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000,
+                //0x0000     ,0x0000      , 0x0000, 0x0000,0x0000                                ,0x0000                    , 0x0000       ,0x0000        ,0x0000 ,0x0000   
                 elHomeDir , elHomeSpeed , 0x0000, 0x0000,(ushort)((EL_Speed & 0xFFFF0000)>>16),(ushort)(EL_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000
             };
+            await MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
+            if(!is_test) {
+                Task task = Task.Delay( 100 );//wait to ensure it is porcessed
+                await task;
+            }
+
             await MCUModbusMaster.WriteMultipleRegistersAsync(1024, data);
 
             return true;
