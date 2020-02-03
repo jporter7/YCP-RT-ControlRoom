@@ -14,16 +14,25 @@ namespace ControlRoomApplication.Controllers
 
         private Simulation_control_pannel SimMCU;
         private ProductionPLCDriver driver; 
-
-        public SimulationPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC ) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC )
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="local_ip"></param>
+        /// <param name="MCU_ip"></param>
+        /// <param name="MCU_port"></param>
+        /// <param name="PLC_port"></param>
+        /// <param name="startPLC"></param>
+        /// <param name="is_Test">if this is true the sim telescope will teleport to its final position</param>
+        public SimulationPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC,bool is_Test ) : base(local_ip, MCU_ip, MCU_port, PLC_port )
         {
             SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, false);
             Thread.Sleep(1000);//wait for server in simMcu to come up
-            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port,false);
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
             if(startPLC) {
                 driver.StartAsyncAcceptingClients();
             }
             SimMCU.startPLC();
+            driver.set_is_test( is_Test );
         }
 
 

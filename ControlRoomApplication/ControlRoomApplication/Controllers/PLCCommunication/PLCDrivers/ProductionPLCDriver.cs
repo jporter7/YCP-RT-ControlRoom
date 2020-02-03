@@ -65,7 +65,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC)
+        /// <param name="startPLC"></param>
+        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
             MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
@@ -903,30 +904,10 @@ namespace ControlRoomApplication.Controllers
             ushort azHomeDir = CWHome;
             ushort elHomeDir = CcWHome, elHomeSpeed = 0x0000;
 
-            /*
-            bool zero = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);
-            bool one80 = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_180_HOME]);
-            bool ZeroTwo70 = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_270_HOME]);
+            
 
-
-            if ( (!zero & one80) || (!zero & !ZeroTwo70 & !one80) ) {//default behavior 11 to 191 degrees change nothing
-                
-            } else if (!zero & ZeroTwo70 & !one80) {//0 to 11 degrees and 360 to 370 
-                // move 15 degrees ccw slowly to ensure that we arent near a limit switch
-                //if we hit the limit swith at 10 degrees then we need to jog off the limmit swithc then move 270 degres cw then issu a cw home command to the MCU
-                
-            } else if (zero & ZeroTwo70 & !one80) {//259 to 360 degrees and -10 to 0
-                //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
-                //if we hit the limit swith at -10 degrees then we need to jog off the limmit swithc then move 30 degres ccw then issu a cw home command to the MCU
-                //esle jog cw until we are off the zero home sensor then Cw home
-            } else if (zero & !ZeroTwo70 & !one80) {//191 to 259 degrees
-                // jog cw until we are off the zero home sensor then Cw home
-            }
-
-
-            //alternative hardware layout
             bool ZeroOne = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
-            bool ZeroTwo = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_270_HOME]);//active between -1 to 10   and 359 to 370
+            bool ZeroTwo = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );//active between -1 to 10   and 359 to 370
 
             if (ZeroOne & ZeroTwo) {//very close to 0 degrees 
                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
@@ -945,7 +926,7 @@ namespace ControlRoomApplication.Controllers
                 elHomeDir = CcWHome;
                 elHomeSpeed = 0x0040;
             }
-            */
+            
             //set config word to 0x0040 to have the RT home at the minimumum speed
             ushort[] data = {
                 azHomeDir , 0x0000      , 0x0000, 0x0000,(ushort)((AZ_Speed & 0xFFFF0000)>>16),(ushort)(AZ_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000,

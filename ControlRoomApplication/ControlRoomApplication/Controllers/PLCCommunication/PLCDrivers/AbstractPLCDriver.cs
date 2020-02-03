@@ -24,13 +24,14 @@ namespace ControlRoomApplication.Controllers
         public ProximitySensorData proximitySensorData;
 
         /// <summary>
-        /// 
+        /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup
         /// </summary>
-        /// <param name="local_ip"></param>
-        /// <param name="MCU_ip"></param>
-        /// <param name="MCU_port"></param>
-        /// <param name="PLC_port"></param>
-        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool autoStartPLCThread) { }
+        /// <param name="local_ip">IP adress to start the local modbus server on</param>
+        /// <param name="MCU_ip">IP adress of the MCU</param>
+        /// <param name="MCU_port">port the MCU is using</param>
+        /// <param name="PLC_port">port to start the local modbus server on</param>
+        /// <param name="autoStartPLCThread"> if true will automaticly start the modbus server</param>
+        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) { }
 
 
         protected override bool KillHeartbeatComponent() {
