@@ -201,16 +201,6 @@ namespace ControlRoomApplication.Controllers
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             switch (e.StartAddress) {
-                case (ushort)PLC_modbus_server_register_mapping.CMD_ACK: {
-                        // Console.WriteLine(" data {0} written to 22",PLC_Modbusserver.DataStore.HoldingRegisters[e.StartAddress]);
-                        try {
-                            //comand_acknoledged.Release();
-                        } catch (Exception err) {
-                            logger.Error(err);
-                        }
-                        break;
-
-                    }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
                         logger.Info("Azimuth CCW Limit Changed");
                         limitSwitchData.Azimuth_CCW_Limit = !limitSwitchData.Azimuth_CCW_Limit;
@@ -229,7 +219,7 @@ namespace ControlRoomApplication.Controllers
                             logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_180_HOME: {
+                case (ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY: {
                         logger.Info("Azimuth CW Proximity Sensor Changed");
                         proximitySensorData.Azimuth_CW_Prox_Sensor = !proximitySensorData.Azimuth_CW_Prox_Sensor;
                         if (proximitySensorData.Azimuth_CW_Prox_Sensor)
@@ -315,7 +305,7 @@ namespace ControlRoomApplication.Controllers
             return new bool[] {
                 Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT]),
                 Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_180_HOME]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY]),
                 Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT]),
 
 
@@ -889,6 +879,11 @@ namespace ControlRoomApplication.Controllers
             };
             MCUModbusMaster.WriteMultipleRegisters( 1024 , data );
             return Sucess;
+        }
+
+
+        public override Task<bool> Home() {
+            return HomeBothAxyes();
         }
 
         /// <summary>

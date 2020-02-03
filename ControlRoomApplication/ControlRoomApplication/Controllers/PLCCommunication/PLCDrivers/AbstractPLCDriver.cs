@@ -132,6 +132,13 @@ namespace ControlRoomApplication.Controllers
         public abstract bool Get_interlock_status();
 
         public abstract bool[] Get_Limit_switches();
+
+        /// <summary>
+        /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 
+        /// after calling this method we should zero out the apsolute encoders
+        /// </summary>
+        /// <returns>sucsess bool</returns>
+        public abstract Task<bool> Home();
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
@@ -140,20 +147,5 @@ namespace ControlRoomApplication.Controllers
         /// <param name="axis"></param>
         /// <returns></returns>
         public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
-
-
-
-        /// <summary>
-        /// processes requests from the clientmanagementthread
-        /// !not used in the production PLC driver
-        ///is used in simulation although it may not be later
-        /// </summary>
-        /// <param name="ActiveClientStream"></param>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        //protected abstract bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query);
-
-
-
     }
 }

@@ -503,6 +503,8 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-
+        public override Task<bool> Home() {
+            return driver.Home();
+        }
     }
 }

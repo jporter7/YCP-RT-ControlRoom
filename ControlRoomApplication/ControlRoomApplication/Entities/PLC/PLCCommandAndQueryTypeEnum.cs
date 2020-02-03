@@ -60,11 +60,6 @@ namespace ControlRoomApplication.Entities
     public enum PLC_modbus_server_register_mapping : ushort
     {
         /// <summary>
-        /// plc will write to this register to acknoldge that a comand has been routed through the plc to the mcu
-        /// </summary>
-        CMD_ACK = 0+1,
-
-        /// <summary>
         /// limit at -10
         /// </summary>
         AZ_0_LIMIT  = 8 + 1,
@@ -77,19 +72,15 @@ namespace ControlRoomApplication.Entities
         
         /// <summary>
         /// home sensor at 0 degrees,
-        /// will be active between 180 and 360
+        /// will be active between -15 and 0
         /// </summary>
         AZ_0_HOME = 10 + 1,
         /// <summary>
-        /// home sensor at 180 degrees,
-        /// will be active between 11 and 180
+        /// SECONDARY home sensor at 0 degrees,
+        /// will be active between -1 and 15
         /// </summary>
-        AZ_180_HOME = 11 + 1,
-        /// <summary>
-        /// home sensor at 270 degrees,
-        /// active between 0 to 90 and 270 to 360
-        /// </summary>
-        AZ_270_HOME = 12 + 1,
+        AZ_0_SECONDARY = 11 + 1,
+
 
         /// <summary>
         /// limit switch at -10
@@ -97,24 +88,41 @@ namespace ControlRoomApplication.Entities
         /// <remarks>
         /// im not 100% certian that the telesope will actually have this switch
         /// </remarks>
-        EL_10_LIMIT = 13 + 1,
+        EL_10_LIMIT = 12 + 1,
         /// <summary>
         /// active between 0 and -15 degrees
         /// </summary>
-        EL_0_HOME = 14 + 1,
+        EL_0_HOME = 13 + 1,
         /// <summary>
         /// limit at 90 degrees
         /// </summary>
-        EL_90_LIMIT = 15 + 1,
+        EL_90_LIMIT = 14 + 1,
 
         /// <summary>
         /// emergency stop the plc will handle disabling the motors and MCU, the controll should re-configure (and posibly re-home) the MCU after this is ended
         /// </summary>
-        E_STOP = 17 + 1,
+        E_STOP = 15 + 1,
         /// <summary>
         /// high when gate is open
         /// </summary>
-        Safety_INTERLOCK = 18 + 1,
+        Safety_INTERLOCK = 16 + 1,
+
+        /// <summary>
+        /// high when the MCU has a fault on the AZ axsis
+        /// </summary>
+        AZ_MCU_FAULT =17+1,
+        /// <summary>
+        /// high when the MCU has a fault on the AZ axsis
+        /// </summary>
+        EL_MCU_FAULT = 18+1,
+        /// <summary>
+        /// high when the azimuth motor has a fault
+        /// </summary>
+        AZ_MTR_DRIVER_FAULT = 17 + 1,
+        /// <summary>
+        /// high when the ELEVATION motor has a fault
+        /// </summary>
+        EL_MTR_DRIVER_FAULT = 18 + 1,
 
         AZ_MOTOR_CURRENT = 40 + 1,
         EL_MOTOR_CURRENT = 42 + 1

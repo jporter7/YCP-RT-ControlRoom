@@ -408,5 +408,8 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
+        public override Task<bool> Home() {
+            throw new NotImplementedException();
+        }
     }
 }

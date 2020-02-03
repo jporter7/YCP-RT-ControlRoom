@@ -198,5 +198,8 @@ namespace ControlRoomApplication.Controllers
             return driver.workaroundAlive();
         }
 
+        public override Task<bool> Home() {
+            return driver.Home();
+        }
     }
 }

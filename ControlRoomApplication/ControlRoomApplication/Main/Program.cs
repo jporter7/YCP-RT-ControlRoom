@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            //Application.Run(new MainForm());
+            Application.Run(new MainForm());
 
             //DatabaseOperations.DeleteLocalDatabase();
             /*
@@ -69,7 +69,7 @@ namespace ControlRoomApplication.Main
                 end = sw.ElapsedMilliseconds;
                 Console.WriteLine( "{0} milliseconds passed" , end - start );
             };
-            //*/
+            ///
             ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver( "192.168.0.20" , "192.168.0.50" , 502 , 502 , true );
             ushort zero = 0, readadr = 1024;//7500
 
@@ -91,7 +91,7 @@ namespace ControlRoomApplication.Main
                 if(ch>4) {
                     break;
                 }
-            }//*/
+            }///
 
             double gearedSpeedAZ = .1, gearedSpeedEL = .1;
             ushort homeTimeoutSecondsElevation = 50, homeTimeoutSecondsAzimuth = 50;
@@ -113,7 +113,7 @@ namespace ControlRoomApplication.Main
 
             Task.Delay( 2000 );
 
-            //*/
+            ///
 
             void printRegs(ushort[] inreg2 , ushort[] outreg2 ) {
                 string outstr = " inreg";
