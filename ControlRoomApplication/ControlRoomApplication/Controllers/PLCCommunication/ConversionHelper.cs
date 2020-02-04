@@ -36,6 +36,10 @@ namespace ControlRoomApplication.Controllers
             return (int)(dpss * MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio / 360);
         }
 
+        public static double SPSToDPS(  int sps, int gearingRatio ) {
+            return (sps / (double)(MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio / 360.0));
+        }
+
         public static int RPMToSPS(double rpms, int gearingRatio)
         {
             return DPSToSPS(RPMToDPS(rpms), gearingRatio);

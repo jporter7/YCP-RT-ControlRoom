@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 
 namespace ControlRoomApplication.Controllers
@@ -270,8 +271,8 @@ namespace ControlRoomApplication.Controllers
             var Tel = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.ELEVATION );
 
             Taz.Wait();
-            bool azFin = Taz.Result[7];
-            bool elFin = Tel.GetAwaiter().GetResult()[7];
+            bool azFin = Taz.Result[(int)MCUConstants.MCUStutusBits.Move_Complete];
+            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStutusBits.Move_Complete];
             if(axis == RadioTelescopeAxisEnum.BOTH) {
                 return elFin && azFin;
             } else if(axis == RadioTelescopeAxisEnum.AZIMUTH) {

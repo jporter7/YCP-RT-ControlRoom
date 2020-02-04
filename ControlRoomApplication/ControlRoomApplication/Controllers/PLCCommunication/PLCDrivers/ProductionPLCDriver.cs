@@ -23,7 +23,7 @@ namespace ControlRoomApplication.Controllers
         private TcpListener PLCTCPListener;
         private TcpClient MCUTCPClient;
         private ModbusSlave PLC_Modbusserver;
-        private ModbusIpMaster MCUModbusMaster;
+        public ModbusIpMaster MCUModbusMaster;
         private SemaphoreSlim comand_acknoledged = new SemaphoreSlim(0, 1);
         private long PLC_last_contact;
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -65,7 +65,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC) : base(local_ip, MCU_ip, MCU_port, PLC_port, startPLC)
+        /// <param name="startPLC"></param>
+        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
             MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
             MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
@@ -201,17 +202,7 @@ namespace ControlRoomApplication.Controllers
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             switch (e.StartAddress) {
-                case (ushort)PLC_modbus_server_register_mapping.CMD_ACK: {
-                        // Console.WriteLine(" data {0} written to 22",PLC_Modbusserver.DataStore.HoldingRegisters[e.StartAddress]);
-                        try {
-                            //comand_acknoledged.Release();
-                        } catch (Exception err) {
-                            logger.Error(err);
-                        }
-                        break;
-
-                    }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT: {
+                case (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
                         logger.Info("Azimuth CCW Limit Changed");
                         limitSwitchData.Azimuth_CCW_Limit = !limitSwitchData.Azimuth_CCW_Limit;
                         if (limitSwitchData.Azimuth_CCW_Limit)
@@ -220,7 +211,7 @@ namespace ControlRoomApplication.Controllers
                             logger.Info("Limit Switch Not Hit");
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING: {
+                case (ushort)PLC_modbus_server_register_mapping.AZ_0_HOME: {
                         logger.Info("Azimuth CCW Proximity Sensor Changed");
                         proximitySensorData.Azimuth_CCW_Prox_Sensor = !proximitySensorData.Azimuth_CCW_Prox_Sensor;
                         if (proximitySensorData.Azimuth_CCW_Prox_Sensor)
@@ -229,7 +220,7 @@ namespace ControlRoomApplication.Controllers
                             logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING: {
+                case (ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY: {
                         logger.Info("Azimuth CW Proximity Sensor Changed");
                         proximitySensorData.Azimuth_CW_Prox_Sensor = !proximitySensorData.Azimuth_CW_Prox_Sensor;
                         if (proximitySensorData.Azimuth_CW_Prox_Sensor)
@@ -238,7 +229,7 @@ namespace ControlRoomApplication.Controllers
                             logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT: {
+                case (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
                         logger.Info("Azimuth CW Limit Changed");
                         limitSwitchData.Azimuth_CW_Limit = !limitSwitchData.Azimuth_CW_Limit;
                         if (limitSwitchData.Azimuth_CW_Limit)
@@ -247,7 +238,7 @@ namespace ControlRoomApplication.Controllers
                             logger.Info("Limit Switch Not Hit");
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT: {
+                case (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT: {
                         logger.Info("Elevation Lower Limit Changed");
                         limitSwitchData.Elevation_Lower_Limit = !limitSwitchData.Elevation_Lower_Limit;
                         if (limitSwitchData.Elevation_Lower_Limit)
@@ -256,7 +247,7 @@ namespace ControlRoomApplication.Controllers
                             logger.Info("Limit Switch Not Hit");
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING: {
+                case (ushort)PLC_modbus_server_register_mapping.EL_0_HOME: {
                         logger.Info("Elevation Lower Proximity Sensor Changed");
                         proximitySensorData.Elevation_Lower_Prox_Sensor = !proximitySensorData.Elevation_Lower_Prox_Sensor;
                         if (proximitySensorData.Elevation_Lower_Prox_Sensor)
@@ -265,16 +256,7 @@ namespace ControlRoomApplication.Controllers
                             logger.Info("Proximity Sensor Not Hit");
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING: {
-                        logger.Info("Elevation Upper Proximity Sensor Changed");
-                        proximitySensorData.Elevation_Upper_Prox_Sensor = !proximitySensorData.Elevation_Upper_Prox_Sensor;
-                        if (proximitySensorData.Elevation_Upper_Prox_Sensor)
-                            logger.Info("Proximity Sensor Hit");
-                        else
-                            logger.Info("Proximity Sensor Not Hit");
-                        break;
-                    }
-                case (ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT: {
+                case (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT: {
                         logger.Info("Elevation Upper Limit Changed");
                         limitSwitchData.Elevation_Upper_Limit = !limitSwitchData.Elevation_Upper_Limit;
                         if (limitSwitchData.Elevation_Upper_Limit)
@@ -322,15 +304,15 @@ namespace ControlRoomApplication.Controllers
 
         public override bool[] Get_Limit_switches() {
             return new bool[] {
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT]),
 
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT])
+
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME]),
+                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT])
             };
         }
 
@@ -680,19 +662,39 @@ namespace ControlRoomApplication.Controllers
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
             int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );
-            //gearedSpeedAZ = startSpeedDPSAzimuth;
-            //gearedSpeedEL = startSpeedDPSElevation;
-            if((gearedSpeedAZ < 1) || (gearedSpeedEL < 1) || (homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsElevation < 0)
-             || (gearedSpeedAZ > 1000000) || (gearedSpeedEL > 1000000) || (homeTimeoutSecondsAzimuth > 300) || (homeTimeoutSecondsElevation > 300)) {
-                return false;
+            if((gearedSpeedEL < 1) || (gearedSpeedEL > 1000000)) {
+                throw new ArgumentOutOfRangeException( "startSpeedDPSElevation" , startSpeedDPSElevation , 
+                    String.Format( "startSpeedDPSElevation should be between {0} and {1}" , 
+                    ConversionHelper.SPSToDPS(1, MotorConstants.GEARING_RATIO_ELEVATION ) ,
+                    ConversionHelper.SPSToDPS( 1000000 , MotorConstants.GEARING_RATIO_ELEVATION ) ) );
             }
-            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), (ushort)homeTimeoutSecondsAzimuth,   0x0,    0x0,    0x0,                                 0x0,                            0x0,
-                                0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), (ushort)homeTimeoutSecondsElevation, 0x0,    0x0,    0x0,                                0x0,                             0x0
+            if((gearedSpeedAZ < 1) || (gearedSpeedAZ > 1000000)) {
+                throw new ArgumentOutOfRangeException( "startSpeedDPSAzimuth" , startSpeedDPSAzimuth ,
+                    String.Format( "startSpeedDPSAzimuth should be between {0} and {1}" ,
+                    ConversionHelper.SPSToDPS( 1 , MotorConstants.GEARING_RATIO_AZIMUTH ) ,
+                    ConversionHelper.SPSToDPS( 1000000 , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
+            }
+            if((homeTimeoutSecondsElevation < 0)|| (homeTimeoutSecondsElevation > 300)) {
+                throw new ArgumentOutOfRangeException( "homeTimeoutSecondsElevation" , homeTimeoutSecondsElevation ,
+                    String.Format( "homeTimeoutSecondsElevation should be between {0} and {1}" , 0,300 ) );
+            }
+            if((homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsAzimuth > 300) ) {
+                throw new ArgumentOutOfRangeException( "homeTimeoutSecondsAzimuth" , homeTimeoutSecondsAzimuth ,
+                    String.Format( "homeTimeoutSecondsAzimuth should be between {0} and {1}" , 0 , 300 ) );
+            }
+            ushort[] data = {   0x842C, 0x0004, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
+                                //0x0, 0x0, 0x0, 0x0, 0x0,0x0,0x0,0x0,0x0,0x0,
+                                0x842C, 0x001C, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0
+                                //      0x001C  //limit active high
+                                //      0x0004  //limit active low
+                                //anf1-anf2-motion-controller-user-manual.pdf page 50
                                 };
             //set_multiple_registers( data,  1);
+            Console.WriteLine( "start" );
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
             Thread.Sleep( 100 );
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
+            Console.WriteLine( "stop" );
             return true;
         }
         /// <summary>
@@ -711,6 +713,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
+        /// see <see cref="MCUConstants.MCUStutusBits"/> for description of each bit
         /// </summary>
         public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
             ushort start = 0;
@@ -801,7 +804,9 @@ namespace ControlRoomApplication.Controllers
                 dir = 0x0080;
             } else dir = 0x0100;
             //                                         reserved       msb speed                 lsb speed                acc                                                       dcc                                                    reserved
-            ushort[] data = new ushort[] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(speed >> 16) , (ushort)(speed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 };
+            ushort[] data = new ushort[] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(speed >> 16) , (ushort)(speed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0,
+                                           0x0,0x0      ,0x0    ,0x0,0x0                    ,0x0                        ,0x0                                                    ,0x0                                                     , 0x0 , 0x0
+            };
             // this is a jog comand for a single axis
             // RadioTelescopeAxisEnum jogging_axies = Is_jogging();
             switch(axis) {
@@ -823,7 +828,7 @@ namespace ControlRoomApplication.Controllers
                         throw new ArgumentException( "Invalid RadioTelescopeAxisEnum value can be AZIMUTH, ELEVATION or BOTH got: " + axis );
                     }
             }
-            MCUModbusMaster.WriteMultipleRegisters( adress , data );
+            MCUModbusMaster.WriteMultipleRegistersAsync( adress , data );
             return true;
             //throw new NotImplementedException();
         }
@@ -875,6 +880,68 @@ namespace ControlRoomApplication.Controllers
             };
             MCUModbusMaster.WriteMultipleRegisters( 1024 , data );
             return Sucess;
+        }
+
+
+        public override Task<bool> Home() {
+            return HomeBothAxyes();
+        }
+
+        /// <summary>
+        /// home a singel axsis of the RT
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <returns></returns>
+        public async Task<bool> HomeBothAxyes() {
+            //place holder function until MCU homing functionality can be tested
+            //this method will also likley undego signifigant change once the hardeware configuration is locked down
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.25), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.25), MotorConstants.GEARING_RATIO_AZIMUTH);
+            ushort ACCELERATION = 50;
+
+            ushort CWHome = 0x0020;
+            ushort CcWHome = 0x0040;
+            ushort azHomeDir = CWHome;
+            ushort elHomeDir = CcWHome, elHomeSpeed = 0x0000;
+
+            
+
+            bool ZeroOne = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
+            bool ZeroTwo = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );//active between -1 to 10   and 359 to 370
+
+            if (ZeroOne & ZeroTwo) {//very close to 0 degrees 
+                //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
+            } else if(ZeroOne & !ZeroTwo) {//350 to 360 or -10 to 0
+                //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
+            } else if(!ZeroOne & ZeroTwo) {//0 to 10   or 360 to 370
+                //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
+            } else {
+                //we know our position is valid and can imedeatly perform a cw home
+            }
+
+
+            bool ELHome = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME]);
+
+            if (ELHome) {//if the MCU dosnt expect the home sensor to be high when a home is initiated this will need to be changed
+                elHomeDir = CcWHome;
+                elHomeSpeed = 0x0040;
+            }
+            
+            //set config word to 0x0040 to have the RT home at the minimumum speed
+            ushort[] data = {
+                azHomeDir , 0x0000      , 0x0000, 0x0000,(ushort)((AZ_Speed & 0xFFFF0000)>>16),(ushort)(AZ_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000,
+                //0x0000     ,0x0000      , 0x0000, 0x0000,0x0000                                ,0x0000                    , 0x0000       ,0x0000        ,0x0000 ,0x0000   
+                elHomeDir , elHomeSpeed , 0x0000, 0x0000,(ushort)((EL_Speed & 0xFFFF0000)>>16),(ushort)(EL_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000
+            };
+            await MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
+            if(!is_test) {
+                Task task = Task.Delay( 100 );//wait to ensure it is porcessed
+                await task;
+            }
+
+            await MCUModbusMaster.WriteMultipleRegistersAsync(1024, data);
+
+            return true;
         }
 
         public RadioTelescopeAxisEnum Is_jogging()//////////

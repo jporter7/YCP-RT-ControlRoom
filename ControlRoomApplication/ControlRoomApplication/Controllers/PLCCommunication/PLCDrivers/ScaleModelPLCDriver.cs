@@ -186,7 +186,7 @@ namespace ControlRoomApplication.Controllers {
         public PLCConnector PlcConnector { get; set; }
 
 
-        public ScaleModelPLCDriver( string local_ip , string MCU_ip , int MCU_port , int PLC_port , bool startPLC ) :base( local_ip , MCU_ip, MCU_port, PLC_port, startPLC ) {
+        public ScaleModelPLCDriver( string local_ip , string MCU_ip , int MCU_port , int PLC_port ) :base( local_ip , MCU_ip, MCU_port, PLC_port ) {
             Console.WriteLine( MCU_ip );
         }
 
@@ -408,5 +408,8 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
+        public override Task<bool> Home() {
+            throw new NotImplementedException();
+        }
     }
 }

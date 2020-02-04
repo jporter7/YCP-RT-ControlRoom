@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Simulators.Hardware;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -23,13 +24,14 @@ namespace ControlRoomApplication.Controllers
         public ProximitySensorData proximitySensorData;
 
         /// <summary>
-        /// 
+        /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup
         /// </summary>
-        /// <param name="local_ip"></param>
-        /// <param name="MCU_ip"></param>
-        /// <param name="MCU_port"></param>
-        /// <param name="PLC_port"></param>
-        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool autoStartPLCThread) { }
+        /// <param name="local_ip">IP adress to start the local modbus server on</param>
+        /// <param name="MCU_ip">IP adress of the MCU</param>
+        /// <param name="MCU_port">port the MCU is using</param>
+        /// <param name="PLC_port">port to start the local modbus server on</param>
+        /// <param name="autoStartPLCThread"> if true will automaticly start the modbus server</param>
+        public AbstractPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) { }
 
 
         protected override bool KillHeartbeatComponent() {
@@ -131,28 +133,20 @@ namespace ControlRoomApplication.Controllers
         public abstract bool Get_interlock_status();
 
         public abstract bool[] Get_Limit_switches();
+
         /// <summary>
-        ///  get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation, 
-        /// also see MCUConstants.MCUStutusBits
+        /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 
+        /// after calling this method we should zero out the apsolute encoders
+        /// </summary>
+        /// <returns>sucsess bool</returns>
+        public abstract Task<bool> Home();
+        /// <summary>
+        /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
+        /// see <see cref="MCUConstants.MCUStutusBits"/> for description of each bit
         /// </summary>
         /// <param name="axis"></param>
         /// <returns></returns>
         public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
-
-
-
-        /// <summary>
-        /// processes requests from the clientmanagementthread
-        /// !not used in the production PLC driver
-        ///is used in simulation although it may not be later
-        /// </summary>
-        /// <param name="ActiveClientStream"></param>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        //protected abstract bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query);
-
-
-
     }
 }
