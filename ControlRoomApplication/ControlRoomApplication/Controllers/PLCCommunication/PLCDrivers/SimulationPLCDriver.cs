@@ -183,7 +183,7 @@ namespace ControlRoomApplication.Controllers
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }
 
-        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        public override bool Start_jog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
         {
             return driver.Start_jog(axis, speed, clockwise);
         }

@@ -19,9 +19,90 @@
 
 
         /// <summary>
+        /// this enum represents the data that comes out of the MCU starting in position <see cref="ACTUAL_MCU_READ_INPUT_REGISTER_START_ADDRESS"/> = 0  of its registers
+        /// </summary>
+        public enum MCUOutputRegs : ushort {
+            /// <summary>
+            /// most signifigant word (16 bits) of the az axsys status <see cref="MCUStutusBitsMSW"/> for description of eacs bit
+            /// </summary>
+            AZ_Status_Bist_MSW = 0,
+            /// <summary>
+            /// least signifigant word (16 bits) of the az axsys status <see cref="MCUStutusBitsLSW"/> for description of eacs bit
+            /// </summary>
+            AZ_Status_Bist_LSW = 1,
+            /// <summary>
+            /// this is the position of the axsys in terms of motor step count (most signifigant word)
+            /// </summary>
+            AZ_Current_Position_MSW = 2,
+            /// <summary>
+            /// this is the position of the axsys in terms of motor step count (least signifigant word)
+            /// </summary>
+            AZ_Current_Position_LSW = 3,
+            /// <summary>
+            /// if we were using encoders on the motors this is where the data from those encoders would be
+            /// </summary>
+            AZ_MTR_Encoder_Pos_MSW=4,
+            /// <summary>
+            /// if we were using encoders on the motors this is where the data from those encoders would be
+            /// </summary>
+            AZ_MTR_Encoder_Pos_LSW = 5,
+            /// <summary>
+            /// if the MCU is told to capture the current position this is where that data will be stored
+            /// </summary>
+            AZ_Capture_Data_MSW=6,
+            /// <summary>
+            /// if the MCU is told to capture the current position this is where that data will be stored
+            /// </summary>
+            AZ_Capture_Data_LSW = 7,
+            RESERVED1 =8,
+            /// <summary>
+            /// used to track network conectivity bit 14 of this register will flip every .5 seconds,
+            /// bit 13 is set when the MCU looses or has previously lost ethernet conectivity
+            /// </summary>
+            Network_Conectivity = 9,
+            /// <summary>
+            /// most signifigant word (16 bits) of the EL axsys status <see cref="MCUStutusBitsMSW"/> for description of eacs bit
+            /// </summary>
+            EL_Status_Bist_MSW = 10,
+            /// <summary>
+            /// least signifigant word (16 bits) of the EL axsys status <see cref="MCUStutusBitsLSW"/> for description of eacs bit
+            /// </summary>
+            EL_Status_Bist_LSW = 11,
+            /// <summary>
+            /// this is the position of the axsys in terms of motor step count (most signifigant word)
+            /// </summary>
+            EL_Current_Position_MSW = 12,
+            /// <summary>
+            /// this is the position of the axsys in terms of motor step count (least signifigant word)
+            /// </summary>
+            EL_Current_Position_LSW = 13,
+            /// <summary>
+            /// if we were using encoders on the motors this is where the data from those encoders would be
+            /// </summary>
+            EL_MTR_Encoder_Pos_MSW = 14,
+            /// <summary>
+            /// if we were using encoders on the motors this is where the data from those encoders would be
+            /// </summary>
+            EL_MTR_Encoder_Pos_LSW = 15,
+            /// <summary>
+            /// if the MCU is told to capture the current position this is where that data will be stored
+            /// </summary>
+            EL_Capture_Data_MSW = 16,
+            /// <summary>
+            /// if the MCU is told to capture the current position this is where that data will be stored
+            /// </summary>
+            EL_Capture_Data_LSW = 17,
+            RESERVED2 = 18,
+            RESERVED3 = 19
+
+        }
+
+
+
+        /// <summary>
         /// desciptions taken from anf1-anf2-motion-controller-user-manual.pdf  page 76 - 78
         /// </summary>
-        public enum MCUStutusBits : int {
+        public enum MCUStutusBitsMSW : int {
             /// <summary>
             /// Set when the ANF1/2 axis is outputting pulses for clockwise motion
             /// </summary>
@@ -89,75 +170,78 @@
             /// Set to “1” when the axis is in Configuration Mode. Reset to “0” when the axis is in Command Mode
             /// </summary>
             Axis_Configuration_Mode = 15,
+        }
 
-            //beging deffinitons for the second word of data
-
+        /// <summary>
+        /// desciptions taken from anf1-anf2-motion-controller-user-manual.pdf  page 76 - 78
+        /// </summary>
+        public enum MCUStutusBitsLSW : int {
             /// <summary>
             /// Set when the Capture Input is active
             /// </summary>
-            Capture_Input_Active = 16,
+            Capture_Input_Active = 0,
             /// <summary>
             /// Set when the External Input is active
             /// </summary>
-            External_Input = 17,
+            External_Input = 1,
             /// <summary>
             /// Set when the Home Input is active
             /// </summary>
-            Home_Input = 18,
+            Home_Input = 2,
             /// <summary>
             /// Set when the CW Input/E-Stop Input is active
             /// </summary>
-            CW_Limit = 19,
+            CW_Limit = 3,
             /// <summary>
             /// Set when the CCW Input/E-Stop Input is active
             /// </summary>
-            CCW_Limit = 20,
+            CCW_Limit = 4,
             /// <summary>
             /// see MCU documaentation
             /// </summary>
-            No_Fault_Output_State = 21,
+            No_Fault_Output_State = 5,
             /// <summary>
             /// see MCU documaentation (unused)
             /// </summary>
-            On_Line_Output_State = 22,
+            On_Line_Output_State = 6,
             /// <summary>
             /// see MCU documaentation (unused)
             /// </summary>
-            Move_Complete_Output_State = 23,
+            Move_Complete_Output_State = 7,
             /// <summary>
             /// Set when the axis is presently running a Blend Move Profile (unused)
             /// </summary>
-            Running_Blend_Move = 24,
+            Running_Blend_Move = 8,
             /// <summary>
             /// Set when ANF1/2 has accepted a Blend Move Profile programming block (unused)
             /// </summary>
-            Blend_Move_Acknowledge = 25,
+            Blend_Move_Acknowledge = 9,
             /// <summary>
             /// Set when the Minimum Registration Move Distance
             /// parameter is programmed to a non-zero value (unused)
             /// </summary>
-            NonZero_Registration_Distance = 26,
+            NonZero_Registration_Distance = 10,
             /// <summary>
             ///  Set when the ANF1/2 is running an Interpolated Move. only valid for axis one
             /// </summary>
-            Running_Interpolated_Move = 27,
+            Running_Interpolated_Move = 11,
             /// <summary>
             /// This bit always equals the state of the Backplane Home
             /// Proximity bit, which is bit 6 in the Command Bits LSW for the axis
             /// </summary>
-            Backplane_Home_Proximity = 28,
+            Backplane_Home_Proximity = 12,
             /// <summary>
             /// Set when the axis is in Encoder Follower Mode
             /// </summary>
-            Encoder_Follower_Mode = 29,
+            Encoder_Follower_Mode = 13,
             /// <summary>
             /// These bits will always equal zero
             /// </summary>
-            Reserved1 = 30,
+            Reserved1 = 14,
             /// <summary>
             /// These bits will always equal zero
             /// </summary>
-            reserved2 = 31,
+            reserved2 = 15,
         }
     }
 }

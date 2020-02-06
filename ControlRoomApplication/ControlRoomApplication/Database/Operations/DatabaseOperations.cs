@@ -198,7 +198,8 @@ namespace ControlRoomApplication.Database
             using (RTDbContext Context = InitializeDatabaseContext())
             {
                 // Use Include method to load related entities from the database
-                appts = QueryAppointments(Context).Where(x => x.TelescopeId == radioTelescopeId).ToList();
+                //appts = QueryAppointments(Context).Where(x => x.TelescopeId == radioTelescopeId).ToList();
+                appts = Context.Appointments.SqlQuery( "Select * from appointment" ).ToList();
             }
             return appts;
         }

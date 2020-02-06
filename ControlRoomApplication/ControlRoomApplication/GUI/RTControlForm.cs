@@ -517,7 +517,7 @@ namespace ControlRoomApplication.Main
         {
             //-----------------------If Mouse CLicked = True ----------------------------------
             {
-                int speed = Convert.ToInt32(speedComboBox.Text);
+                double speed = Convert.ToDouble(speedComboBox.Text);
                 logger.Info("Jog PosButton MouseDown");
                 // UpdateText("Moving at " + comboBox1.Text);
 
@@ -539,7 +539,7 @@ namespace ControlRoomApplication.Main
         {
           //  -----------------------If Mouse CLicked = True----------------------------------
              {
-                int speed = Convert.ToInt32(speedComboBox.Text);
+                double speed = Convert.ToDouble( speedComboBox.Text);
                 logger.Info("Jog PosButton MouseDown");
                 // UpdateText("Moving at " + comboBox1.Text);
 

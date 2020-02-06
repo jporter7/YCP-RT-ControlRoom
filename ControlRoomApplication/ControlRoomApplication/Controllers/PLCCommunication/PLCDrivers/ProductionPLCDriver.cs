@@ -340,7 +340,7 @@ namespace ControlRoomApplication.Controllers
         private void MonitorMCU() {
             int lastMCUHeartbeatBit = 0;
             while (keep_modbus_server_alive) {
-                ushort network_status = MCUModbusMaster.ReadHoldingRegisters(9, 1)[0];
+                ushort network_status = MCUModbusMaster.ReadHoldingRegisters((ushort)MCUConstants.MCUOutputRegs.Network_Conectivity, 1)[0];
                 int CurrentHeartBeat = (network_status >> 14) & 1;//this bit changes every 500ms
                 if (CurrentHeartBeat != lastMCUHeartbeatBit) {
                     MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -351,7 +351,7 @@ namespace ControlRoomApplication.Controllers
                     MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_RESET_ERRORS);
 
                 }
-                Thread.Sleep(250);
+                Task.Delay(250).Wait();
             }
         }
 
@@ -702,18 +702,22 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override Orientation read_Position(){
-            ushort[] data = MCUModbusMaster.ReadHoldingRegisters(2, 12);
+            ushort[] data = MCUModbusMaster.ReadHoldingRegisters(0, 14);
            // Console.WriteLine("AZ_finni2 {0,10} EL_finni2 {1,10}", (65536 * data[0]) + data[1], (65536 * data[10]) + data[11]);
             Orientation current_orientation = new Orientation(
-                ConversionHelper.StepsToDegrees((data[0]<<16) + data[1], MotorConstants.GEARING_RATIO_AZIMUTH), 
-                ConversionHelper.StepsToDegrees((data[10]<<16) + data[11], MotorConstants.GEARING_RATIO_ELEVATION)
+                ConversionHelper.StepsToDegrees(
+                    (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] <<16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW] ,
+                    MotorConstants.GEARING_RATIO_AZIMUTH), 
+                ConversionHelper.StepsToDegrees(
+                    (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] <<16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW] , 
+                    MotorConstants.GEARING_RATIO_ELEVATION)
             );
             return current_orientation;
         }
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
-        /// see <see cref="MCUConstants.MCUStutusBits"/> for description of each bit
+        /// see <see cref="MCUConstants.MCUStutusBitsMSW"/> for description of each bit
         /// </summary>
         public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
             ushort start = 0;
@@ -798,14 +802,15 @@ namespace ControlRoomApplication.Controllers
             return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
         }
 
-        public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {
+        public override bool Start_jog( RadioTelescopeAxisEnum axis , double speed , bool clockwise ) {
             ushort adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, dir;
             if(clockwise) {
                 dir = 0x0080;
             } else dir = 0x0100;
-            //                                         reserved       msb speed                 lsb speed                acc                                                       dcc                                                    reserved
-            ushort[] data = new ushort[] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(speed >> 16) , (ushort)(speed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0,
-                                           0x0,0x0      ,0x0    ,0x0,0x0                    ,0x0                        ,0x0                                                    ,0x0                                                     , 0x0 , 0x0
+            int stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_AZIMUTH );
+            //                                         reserved       msb speed                     lsb speed                   acc                                                       dcc                                                    reserved
+            ushort[] data = new ushort[] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(stepSpeed >> 16) , (ushort)(stepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0,
+                                           0x0,0x0      ,0x0    ,0x0 ,0x0                       ,0x0                           ,0x0                                                    ,0x0                                                     , 0x0 , 0x0
             };
             // this is a jog comand for a single axis
             // RadioTelescopeAxisEnum jogging_axies = Is_jogging();
@@ -815,6 +820,9 @@ namespace ControlRoomApplication.Controllers
                     }
                 case RadioTelescopeAxisEnum.ELEVATION: {
                         adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + 10;
+                        stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_ELEVATION );
+                        data[4] = (ushort)(stepSpeed >> 16);
+                        data[5] = (ushort)(stepSpeed & 0xffff);
                         break;
                     }
                 case RadioTelescopeAxisEnum.BOTH: {
@@ -822,6 +830,9 @@ namespace ControlRoomApplication.Controllers
                         data.CopyTo( data2 , 0 );
                         data.CopyTo( data2 , data.Length );
                         data = data2;
+                        stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_ELEVATION );
+                        data[14] = (ushort)(stepSpeed >> 16);
+                        data[15] = (ushort)(stepSpeed & 0xffff);
                         break;
                     }
                 default: {
