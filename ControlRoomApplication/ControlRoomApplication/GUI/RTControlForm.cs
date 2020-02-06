@@ -43,13 +43,14 @@ namespace ControlRoomApplication.Main
             UpdateIncrementButtons();
             // Add free control appt
             CurrentAppointment = new Appointment();
-            CurrentAppointment.StartTime = DateTime.UtcNow.AddSeconds(5);
-            CurrentAppointment.EndTime = DateTime.UtcNow.AddMinutes(15);
-            CurrentAppointment.Status = AppointmentStatusEnum.REQUESTED;
-            CurrentAppointment.Type = AppointmentTypeEnum.FREE_CONTROL;
+            CurrentAppointment.start_time = DateTime.UtcNow.AddSeconds(5);
+            CurrentAppointment.end_time = DateTime.UtcNow.AddMinutes(15);
+            CurrentAppointment._Status = AppointmentStatusEnum.REQUESTED;
+            CurrentAppointment._Type = AppointmentTypeEnum.FREE_CONTROL;
+            CurrentAppointment._Priority = AppointmentPriorityEnum.MANUAL;
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-            CurrentAppointment.TelescopeId = rtId;
-            CurrentAppointment.UserId = 1;
+            CurrentAppointment.telescope_id = rtId;
+            CurrentAppointment.user_id = 1;
             DatabaseOperations.AddAppointment(CurrentAppointment);
             //Calibrate Move
             CalibrateMove();
