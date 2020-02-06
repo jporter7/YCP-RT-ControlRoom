@@ -662,6 +662,7 @@ namespace ControlRoomApplication.Controllers
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
             int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );
+            Console.WriteLine( gearedSpeedAZ.ToString() +" :AZ           EL:"+ gearedSpeedEL.ToString());
             if((gearedSpeedEL < 1) || (gearedSpeedEL > 1000000)) {
                 throw new ArgumentOutOfRangeException( "startSpeedDPSElevation" , startSpeedDPSElevation , 
                     String.Format( "startSpeedDPSElevation should be between {0} and {1}" , 
@@ -682,15 +683,17 @@ namespace ControlRoomApplication.Controllers
                 throw new ArgumentOutOfRangeException( "homeTimeoutSecondsAzimuth" , homeTimeoutSecondsAzimuth ,
                     String.Format( "homeTimeoutSecondsAzimuth should be between {0} and {1}" , 0 , 300 ) );
             }
-            ushort[] data = {   0x842C, 0x0004, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
+            ushort[] data = {   0x842C,  0x0004 , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 //0x0, 0x0, 0x0, 0x0, 0x0,0x0,0x0,0x0,0x0,0x0,
-                                0x842C, 0x001C, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0
+                                0x842C, 0x0004, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0
                                 //      0x001C  //limit active high
                                 //      0x0004  //limit active low
                                 //anf1-anf2-motion-controller-user-manual.pdf page 50
                                 };
             //set_multiple_registers( data,  1);
             Console.WriteLine( "start" );
+            MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
+            Thread.Sleep( 100 );
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
             Thread.Sleep( 100 );
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
@@ -791,8 +794,8 @@ namespace ControlRoomApplication.Controllers
             positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
 
-            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
-            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(2), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
             logger.Info("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
@@ -809,9 +812,11 @@ namespace ControlRoomApplication.Controllers
             } else dir = 0x0100;
             int stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_AZIMUTH );
             //                                         reserved       msb speed                     lsb speed                   acc                                                       dcc                                                    reserved
-            ushort[] data = new ushort[] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(stepSpeed >> 16) , (ushort)(stepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0,
-                                           0x0,0x0      ,0x0    ,0x0 ,0x0                       ,0x0                           ,0x0                                                    ,0x0                                                     , 0x0 , 0x0
+            ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(stepSpeed >> 16) , (ushort)(stepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0,
+                                          // 0x0,0x0      ,0x0    ,0x0 ,0x0                       ,0x0                           ,0x0                                                    ,0x0                                                     , 0x0 , 0x0
             };
+
+            ushort[] data2 = new ushort[20];
             // this is a jog comand for a single axis
             // RadioTelescopeAxisEnum jogging_axies = Is_jogging();
             switch(axis) {
@@ -819,14 +824,14 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case RadioTelescopeAxisEnum.ELEVATION: {
-                        adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + 10;
+                        adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS ;
                         stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_ELEVATION );
                         data[4] = (ushort)(stepSpeed >> 16);
                         data[5] = (ushort)(stepSpeed & 0xffff);
                         break;
                     }
                 case RadioTelescopeAxisEnum.BOTH: {
-                        ushort[] data2 = new ushort[data.Length * 2];
+                        
                         data.CopyTo( data2 , 0 );
                         data.CopyTo( data2 , data.Length );
                         data = data2;

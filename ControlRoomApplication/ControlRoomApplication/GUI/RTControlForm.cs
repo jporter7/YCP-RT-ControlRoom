@@ -16,7 +16,6 @@ namespace ControlRoomApplication.Main
         public double Increment { get; set; }
         public CoordinateCalculationController CoordCalc { set; get; }
         public ControlRoom controlRoom { get; set; }
-        public RadioTelescopeController rt_controller { get; set; }
         // private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         public int rtId { get; set; }
@@ -166,7 +165,7 @@ namespace ControlRoomApplication.Main
         public void CalibrateMove()
         {
             logger.Info("CalibrateMove ");
-            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
+            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id) ?? new Appointment();
             CurrentAppointment.Orientation = new Entities.Orientation(0, 90);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
             TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
@@ -522,7 +521,7 @@ namespace ControlRoomApplication.Main
                 // UpdateText("Moving at " + comboBox1.Text);
 
                 // Start CW Jog
-                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+                controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeAzimuthJog(speed, true);
               }
             //}
             //-----------------------If Mouse CLicked != True ----------------------------------
@@ -544,7 +543,7 @@ namespace ControlRoomApplication.Main
                 // UpdateText("Moving at " + comboBox1.Text);
 
                 // Start CW Jog
-                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+                controlRoom.RadioTelescopeControllers[rtId-1].StartRadioTelescopeAzimuthJog(speed, true);
               
             }
            // -----------------------If Mouse CLicked != True----------------------------------
@@ -562,12 +561,12 @@ namespace ControlRoomApplication.Main
             if (ControledButtonRadio.Checked)
             {
                 logger.Info("Executed Controlled Stop");
-                rt_controller.ExecuteRadioTelescopeControlledStop();
+                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
             }
             else if (immediateRadioButton.Checked)
             {
                 logger.Info("Executed Immediate Stop");
-               rt_controller.ExecuteRadioTelescopeImmediateStop();
+                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeImmediateStop();
             }
             else
             {
@@ -627,7 +626,7 @@ namespace ControlRoomApplication.Main
                 // UpdateText("Moving at " + comboBox1.Text);
 
                 // Start CW Jog
-                rt_controller.StartRadioTelescopeElevationJog(speed, true);
+                controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeElevationJog(speed, true);
 
             }
             // -----------------------If Mouse CLicked != True----------------------------------
@@ -649,7 +648,7 @@ namespace ControlRoomApplication.Main
                 //UpdateText("Moving at " + speedComboBox.Text);
 
                 // Start CW Jog
-                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+                controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeAzimuthJog(speed, true);
 
             }
             // -----------------------If Mouse CLicked != True----------------------------------
