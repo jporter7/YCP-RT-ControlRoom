@@ -821,13 +821,18 @@ namespace ControlRoomApplication.Controllers
             // RadioTelescopeAxisEnum jogging_axies = Is_jogging();
             switch(axis) {
                 case RadioTelescopeAxisEnum.AZIMUTH: {
+                        for(int j =0;j<data.Length;j++) {
+                            data2[j] = data[j];
+                        }
                         break;
                     }
                 case RadioTelescopeAxisEnum.ELEVATION: {
-                        adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS ;
                         stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_ELEVATION );
                         data[4] = (ushort)(stepSpeed >> 16);
                         data[5] = (ushort)(stepSpeed & 0xffff);
+                        for(int j = 0; j < data.Length; j++) {
+                            data2[j+10] = data[j];
+                        }
                         break;
                     }
                 case RadioTelescopeAxisEnum.BOTH: {
@@ -844,7 +849,7 @@ namespace ControlRoomApplication.Controllers
                         throw new ArgumentException( "Invalid RadioTelescopeAxisEnum value can be AZIMUTH, ELEVATION or BOTH got: " + axis );
                     }
             }
-            MCUModbusMaster.WriteMultipleRegistersAsync( adress , data );
+            MCUModbusMaster.WriteMultipleRegistersAsync( adress , data2 );
             return true;
             //throw new NotImplementedException();
         }

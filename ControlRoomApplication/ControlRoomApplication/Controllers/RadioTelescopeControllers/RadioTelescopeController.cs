@@ -207,7 +207,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeElevationJog(int speed, bool clockwise)
+        public bool StartRadioTelescopeElevationJog(double speed, bool clockwise)
         {
             return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise);
         }
