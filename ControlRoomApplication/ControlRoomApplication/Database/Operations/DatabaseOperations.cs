@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity;
 using System.Linq;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
+using System.Reflection;
 
 namespace ControlRoomApplication.Database
 {
@@ -53,7 +55,6 @@ namespace ControlRoomApplication.Database
             else
             {
                 RTDbContext LocalContext = new RTDbContext(AWSConstants.LOCAL_DATABASE_STRING);
-                LocalContext.Database.CreateIfNotExists();
                 SaveContext(LocalContext);
                 return LocalContext;
             }
@@ -97,45 +98,45 @@ namespace ControlRoomApplication.Database
                     coordinate3.Declination = 85.12;
 
                     // Add drift scan appointment
-                    appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
-                    appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt0.Status = AppointmentStatusEnum.REQUESTED;
-                    appt0.Type = AppointmentTypeEnum.DRIFT_SCAN;
+                    appt0.start_time = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
+                    appt0.end_time = appt0.start_time.AddSeconds(10 + rand.Next(90));
+                    appt0._Status = AppointmentStatusEnum.REQUESTED;
+                    appt0._Type = AppointmentTypeEnum.DRIFT_SCAN;
                     appt0.Orientation = new Orientation(30, 30);
                     appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt0.TelescopeId = RT_id;
-                    appt0.UserId = 1;
+                    appt0.telescope_id = RT_id;
+                    appt0.user_id = 1;
 
                     // Add celesital body appointment
-                    appt1.StartTime = appt0.EndTime.AddSeconds(20 + rand.Next(30));
-                    appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt1.Status = AppointmentStatusEnum.REQUESTED;
-                    appt1.Type = AppointmentTypeEnum.CELESTIAL_BODY;
+                    appt1.start_time = appt0.end_time.AddSeconds(20 + rand.Next(30));
+                    appt1.end_time = appt1.start_time.AddSeconds(10 + rand.Next(90));
+                    appt1._Status = AppointmentStatusEnum.REQUESTED;
+                    appt1._Type = AppointmentTypeEnum.CELESTIAL_BODY;
                     appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
                     appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
-                    appt1.TelescopeId = RT_id;
-                    appt1.UserId = 1;
+                    appt1.telescope_id = RT_id;
+                    appt1.user_id = 1;
 
                     // Add point appointment
-                    appt2.StartTime = appt1.EndTime.AddSeconds(20 + rand.Next(30));
-                    appt2.EndTime = appt2.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt2.Status = AppointmentStatusEnum.REQUESTED;
-                    appt2.Type = AppointmentTypeEnum.POINT;
+                    appt2.start_time = appt1.end_time.AddSeconds(20 + rand.Next(30));
+                    appt2.end_time = appt2.start_time.AddSeconds(10 + rand.Next(90));
+                    appt2._Status = AppointmentStatusEnum.REQUESTED;
+                    appt2._Type = AppointmentTypeEnum.POINT;
                     appt2.Coordinates.Add(coordinate2);
                     appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt2.TelescopeId = RT_id;
-                    appt2.UserId = 1;
+                    appt2.telescope_id = RT_id;
+                    appt2.user_id = 1;
 
                     // Add raster appointment
-                    appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
-                    appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
-                    appt3.Status = AppointmentStatusEnum.REQUESTED;
-                    appt3.Type = AppointmentTypeEnum.RASTER;
+                    appt3.start_time = appt2.end_time.AddSeconds(20 + rand.Next(30));
+                    appt3.end_time = appt3.start_time.AddMinutes(10 + rand.Next(90));
+                    appt3._Status = AppointmentStatusEnum.REQUESTED;
+                    appt3._Type = AppointmentTypeEnum.RASTER;
                     appt3.Coordinates.Add(coordinate0);
                     appt3.Coordinates.Add(coordinate1);
                     appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt3.TelescopeId = RT_id;
-                    appt3.UserId = 1;
+                    appt3.telescope_id = RT_id;
+                    appt3.user_id = 1;
 
                     appts.AddRange(new Appointment[] { appt0, appt1, appt2, appt3 });
 
@@ -176,30 +177,17 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// Returns the list of Appointments from the given context.
+        /// Returns the list of Appointments from the database.
         /// </summary>
-        private static DbQuery<Appointment> QueryAppointments(RTDbContext Context)
-        {
-            // Use Include method to load related entities from the database
-            return Context.Appointments.Include("Coordinates")
-                                        .Include("CelestialBody.Coordinate")
-                                        .Include("Orientation")
-                                        .Include("RFDatas");
-                            // commenting for now because database does not have time to implement this feature this semester
-                                    //    .Include("SpectraCyberConfig");
-        }
-
-            /// <summary>
-            /// Returns the list of Appointments from the database.
-            /// </summary>
-            public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
+        public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
         {
             List<Appointment> appts = new List<Appointment>();
             using (RTDbContext Context = InitializeDatabaseContext())
-            {
+            { 
                 // Use Include method to load related entities from the database
-                appts = QueryAppointments(Context).Where(x => x.TelescopeId == radioTelescopeId).ToList();
+                List<Appointment> appoints = Context.Appointments.SqlQuery("Select * from appointment").ToList<Appointment>();
 
+                appts = appoints.Where(x => x.telescope_id == radioTelescopeId).ToList();
             }
             return appts;
         }
@@ -212,9 +200,8 @@ namespace ControlRoomApplication.Database
             Appointment appt;
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                List<Appointment> appts = new List<Appointment>();
-                // Use Include method to load related entities from the database
-                appts = QueryAppointments(Context).ToList();
+                List<Appointment> appts = Context.Appointments.SqlQuery("Select * from appointment").ToList<Appointment>();
+
                 appt = appts.Find(x => x.Id == appt_id);
             }
             return appt;
@@ -265,20 +252,20 @@ namespace ControlRoomApplication.Database
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     // Update database appt with new status
-                    var db_appt = QueryAppointments(Context).ToList().Find(x => x.Id == appt.Id);
+                    var db_appt = Context.Appointments.SqlQuery("Select * from appointment").ToList<Appointment>().ToList().Find(x => x.Id == appt.Id);
                     if (db_appt != null)
                     {
                         db_appt.CelestialBody = appt.CelestialBody;
                         db_appt.Coordinates = appt.Coordinates;
-                        db_appt.EndTime = appt.EndTime;
+                        db_appt.end_time = appt.end_time;
                         db_appt.Orientation = appt.Orientation;
                         db_appt.RFDatas = appt.RFDatas;
                         db_appt.SpectraCyberConfig = appt.SpectraCyberConfig;
-                        db_appt.StartTime = appt.StartTime;
-                        db_appt.Status = appt.Status;
-                        db_appt.TelescopeId = appt.TelescopeId;
-                        db_appt.Type = appt.Type;
-                        db_appt.UserId = appt.UserId;
+                        db_appt.start_time = appt.start_time;
+                        db_appt._Status = appt._Status;
+                        db_appt.telescope_id = appt.telescope_id;
+                        db_appt._Type = appt._Type;
+                        db_appt.user_id = appt.user_id;
                         SaveContext(Context);
                     }
                 }
@@ -299,7 +286,7 @@ namespace ControlRoomApplication.Database
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x.StartTime < DateTime.UtcNow || x.Status == AppointmentStatusEnum.COMPLETED);
+                    appointments.RemoveAll(x => x.start_time < DateTime.UtcNow || x._Status == AppointmentStatusEnum.COMPLETED);
                     appointments.Sort();
                     logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;
@@ -343,11 +330,11 @@ namespace ControlRoomApplication.Database
         /// <returns> A boolean indicating whether or not the status is valid.</returns>
         private static bool VerifyAppointmentStatus(Appointment appt)
         {
-            return  appt.Status.Equals(AppointmentStatusEnum.CANCELLED) || 
-                    appt.Status.Equals(AppointmentStatusEnum.COMPLETED) ||
-                    appt.Status.Equals(AppointmentStatusEnum.IN_PROGRESS) ||
-                    appt.Status.Equals(AppointmentStatusEnum.REQUESTED) ||
-                    appt.Status.Equals(AppointmentStatusEnum.SCHEDULED);
+            return  appt._Status.Equals(AppointmentStatusEnum.CANCELLED) || 
+                    appt._Status.Equals(AppointmentStatusEnum.COMPLETED) ||
+                    appt._Status.Equals(AppointmentStatusEnum.IN_PROGRESS) ||
+                    appt._Status.Equals(AppointmentStatusEnum.REQUESTED) ||
+                    appt._Status.Equals(AppointmentStatusEnum.SCHEDULED);
         }
         /// <summary>
         /// add an array of sensor data to the apropriat table
@@ -444,6 +431,20 @@ namespace ControlRoomApplication.Database
 
                logger.Info("Added sensor status data to database");
            }
+        }
+
+        /// <summary>
+        /// Adds the radio telescope
+        /// </summary>
+        public static void AddRadioTelescope(RadioTelescope telescope)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.RadioTelescope.Add(telescope);
+                SaveContext(Context);
+
+                logger.Info("Added radio telescope to database");
+            }
         }
     }
 }

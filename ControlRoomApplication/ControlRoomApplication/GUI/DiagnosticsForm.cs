@@ -552,9 +552,9 @@ namespace ControlRoomApplication.GUI
             /*
             if (controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay != null)
             {
-                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToLocalTime().ToString("hh:mm tt"));
-                SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.EndTime.ToLocalTime().ToString("hh:mm tt"));
-                SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.Status.ToString());
+                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.start_time.ToLocalTime().ToString("hh:mm tt"));
+                SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.end_time.ToLocalTime().ToString("hh:mm tt"));
+                SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay._Status.ToString());
             }
             //*/
             GetHardwareStatuses();
