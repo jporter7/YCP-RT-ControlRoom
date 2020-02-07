@@ -181,9 +181,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
         {
-            return RadioTelescope.PLCDriver.Start_jog(axis, speed, clockwise);
+            return RadioTelescope.PLCDriver.Start_jog(axis, speed , clockwise);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeAzimuthJog(int speed, bool clockwise)
+        public bool StartRadioTelescopeAzimuthJog(double speed, bool clockwise)
         {
             return StartRadioTelescopeJog(RadioTelescopeAxisEnum.AZIMUTH, speed, clockwise);
         }
@@ -207,7 +207,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeElevationJog(int speed, bool clockwise)
+        public bool StartRadioTelescopeElevationJog(double speed, bool clockwise)
         {
             return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise);
         }
@@ -222,7 +222,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeControlledStop()
         {
-            return RadioTelescope.PLCDriver.Controled_stop(RadioTelescopeAxisEnum.UNKNOWN, true);
+            return RadioTelescope.PLCDriver.Controled_stop();
         }
 
         /// <summary>
@@ -238,29 +238,7 @@ namespace ControlRoomApplication.Controllers
             return RadioTelescope.PLCDriver.Immediade_stop();
         }
 
-        /// <summary>
-        /// Method used to move in a relative motion. Meaning, movement in only one direction (Elevation or azimuth).
-        /// Only translates in the specified direction
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, int position)
-        {
-            int positionTranslationAZ=0, positionTranslationEL=0;
-            if (axis == RadioTelescopeAxisEnum.ELEVATION)
-            {
-                positionTranslationEL = position;
-            }
-            else if (axis == RadioTelescopeAxisEnum.AZIMUTH)
-            {
-                positionTranslationAZ = position;
-            }
-            else return false;
 
-            return RadioTelescope.PLCDriver.relative_move(speed, (ushort) 50, positionTranslationAZ, positionTranslationEL);
-        }
         /// <summary>
         /// return true if the RT has finished the previous move comand
         /// </summary>
@@ -271,8 +249,8 @@ namespace ControlRoomApplication.Controllers
             var Tel = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.ELEVATION );
 
             Taz.Wait();
-            bool azFin = Taz.Result[(int)MCUConstants.MCUStutusBits.Move_Complete];
-            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStutusBits.Move_Complete];
+            bool azFin = Taz.Result[(int)MCUConstants.MCUStutusBitsMSW.Move_Complete];
+            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStutusBitsMSW.Move_Complete];
             if(axis == RadioTelescopeAxisEnum.BOTH) {
                 return elFin && azFin;
             } else if(axis == RadioTelescopeAxisEnum.AZIMUTH) {

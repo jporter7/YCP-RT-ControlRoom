@@ -234,7 +234,7 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override bool Controled_stop( RadioTelescopeAxisEnum axis , bool both ) {
+        public override bool Controled_stop() {
             return true;
 
         }
@@ -381,7 +381,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {
+        public override bool Start_jog( RadioTelescopeAxisEnum axis , double speed , bool clockwise ) {
             throw new NotImplementedException();
 
         }
