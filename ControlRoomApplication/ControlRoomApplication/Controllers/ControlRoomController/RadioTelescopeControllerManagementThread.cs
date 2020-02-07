@@ -166,7 +166,7 @@ namespace ControlRoomApplication.Controllers
                     logger.Info("Starting appointment...");
 
                     // Calibrate telescope
-                    if (NextAppointment.Type != AppointmentTypeEnum.FREE_CONTROL)
+                    if (NextAppointment._Type != AppointmentTypeEnum.FREE_CONTROL)
                     {
                         logger.Info("Themal Calibrating RadioTelescope");
                         RTController.ThermalCalibrateRadioTelescope();
@@ -234,7 +234,7 @@ namespace ControlRoomApplication.Controllers
 
             logger.Info("Waiting for the next appointment to be within 10 minutes.");
             TimeSpan diff;
-            while ((diff = NextAppointment.StartTime - DateTime.UtcNow).TotalMinutes > 1)
+            while ((diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
             {
                 if (InterruptAppointmentFlag || (!KeepThreadAlive))
                 {
@@ -257,14 +257,14 @@ namespace ControlRoomApplication.Controllers
         /// <param name="NextAppointment"> The appointment that is currently running. </param>
         private void PerformRadioTelescopeMovement(Appointment NextAppointment)
         {
-            NextAppointment.Status = AppointmentStatusEnum.IN_PROGRESS;
+            NextAppointment._Status = AppointmentStatusEnum.IN_PROGRESS;
             DatabaseOperations.UpdateAppointment(NextAppointment);
 
-            logger.Info("Appointment Type: " + NextAppointment.Type);
+            logger.Info("Appointment _Type: " + NextAppointment._Type);
 
             // Loop through each second or minute of the appointment (depending on appt type)
-            TimeSpan length = NextAppointment.EndTime - NextAppointment.StartTime;
-            double duration = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? length.TotalSeconds : length.TotalMinutes;
+            TimeSpan length = NextAppointment.end_time - NextAppointment.start_time;
+            double duration = NextAppointment._Type == AppointmentTypeEnum.FREE_CONTROL ? length.TotalSeconds : length.TotalMinutes;
             for (int i = 0; i <= (int) duration; i++)
             {
                 // before we move, check to see if it is safe
@@ -272,7 +272,7 @@ namespace ControlRoomApplication.Controllers
                 {
 
                     // Get orientation for current datetime
-                    DateTime datetime = NextAppointment.Type == AppointmentTypeEnum.FREE_CONTROL ? NextAppointment.StartTime.AddSeconds(i) : NextAppointment.StartTime.AddMinutes(i);
+                    DateTime datetime = NextAppointment._Type == AppointmentTypeEnum.FREE_CONTROL ? NextAppointment.start_time.AddSeconds(i) : NextAppointment.start_time.AddMinutes(i);
                     NextObjectiveOrientation = RTController.CoordinateController.CalculateOrientation(NextAppointment, datetime);
 
                     // Wait for datetime
@@ -335,14 +335,14 @@ namespace ControlRoomApplication.Controllers
             if (InterruptAppointmentFlag)
             {
                 logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
-                NextAppointment.Status = AppointmentStatusEnum.CANCELLED;
+                NextAppointment._Status = AppointmentStatusEnum.CANCELLED;
                 DatabaseOperations.UpdateAppointment(NextAppointment);
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
             }
             else
             {
-                NextAppointment.Status = AppointmentStatusEnum.COMPLETED;
+                NextAppointment._Status = AppointmentStatusEnum.COMPLETED;
                 DatabaseOperations.UpdateAppointment(NextAppointment);
             }
 

@@ -80,14 +80,14 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         public void TestAddAppointment()
         {
             var new_appt = new Appointment();
-            new_appt.StartTime = DateTime.UtcNow;
-            new_appt.EndTime = DateTime.UtcNow.AddMinutes(1);
-            new_appt.Status = AppointmentStatusEnum.REQUESTED;
-            new_appt.Type = AppointmentTypeEnum.POINT;
+            new_appt.start_time = DateTime.UtcNow;
+            new_appt.end_time = DateTime.UtcNow.AddMinutes(1);
+            new_appt._Status = AppointmentStatusEnum.REQUESTED;
+            new_appt._Type = AppointmentTypeEnum.POINT;
             new_appt.Coordinates.Add(new Coordinate(0,0));
             new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-            new_appt.TelescopeId = 1;
-            new_appt.UserId = 1;
+            new_appt.telescope_id = 1;
+            new_appt.user_id = 1;
 
             DatabaseOperations.AddAppointment(new_appt);
             var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(1);
@@ -153,13 +153,13 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestUpdateAppointmentStatus()
         {
-            appt.Status = AppointmentStatusEnum.IN_PROGRESS;
+            appt._Status = AppointmentStatusEnum.IN_PROGRESS;
 
             DatabaseOperations.UpdateAppointment(appt);
             
             // update appt
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
-            var testStatus = appt.Status;
+            var testStatus = appt._Status;
 
             Assert.AreEqual(AppointmentStatusEnum.IN_PROGRESS, testStatus);
         }
@@ -186,8 +186,8 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         {
             var appt = DatabaseOperations.GetNextAppointment(NumRTInstances);
             Assert.IsTrue(appt != null);
-            Assert.IsTrue(appt.StartTime > DateTime.UtcNow);
-            Assert.IsTrue(appt.Status != AppointmentStatusEnum.COMPLETED);
+            Assert.IsTrue(appt.start_time > DateTime.UtcNow);
+            Assert.IsTrue(appt._Status != AppointmentStatusEnum.COMPLETED);
         }
     }
 }

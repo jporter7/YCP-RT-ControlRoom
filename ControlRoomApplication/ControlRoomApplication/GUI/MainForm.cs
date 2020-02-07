@@ -145,7 +145,7 @@ namespace ControlRoomApplication.Main
                 {
                     logger.Info("Populating Local Database");
                     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
-                    Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).StartTime.ToString());
+                    Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).start_time.ToString());
                     logger.Info("Disabling ManualControl and FreeControl");
                     //ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
@@ -196,13 +196,17 @@ namespace ControlRoomApplication.Main
                 // Start RT controller's threaded management
                 logger.Info("Starting RT controller's threaded management");
                 RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];
+
+                // add telescope to database
+                DatabaseOperations.AddRadioTelescope(ARadioTelescope);
+
                 int RT_ID = ManagementThread.RadioTelescopeID;
                 List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
 
                 logger.Info("Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
                 foreach (Appointment appt in AllAppointments)
                 {
-                    logger.Info("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
+                    logger.Info("\t[" + appt.Id + "] " + appt.start_time.ToString() + " -> " + appt.end_time.ToString());
                 }
 
                 if (ManagementThread.Start())
