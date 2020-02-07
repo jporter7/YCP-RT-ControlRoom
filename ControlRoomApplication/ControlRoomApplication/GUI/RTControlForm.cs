@@ -640,6 +640,7 @@ namespace ControlRoomApplication.Main
             //  Stop Move
             ExecuteCorrectStop();
         }
+
     }
 }
 

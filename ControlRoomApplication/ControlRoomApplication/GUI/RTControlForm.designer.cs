@@ -92,7 +92,7 @@
             this.PosDecButton.BackColor = System.Drawing.Color.DarkGray;
             this.PosDecButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.PosDecButton.Location = new System.Drawing.Point(396, 69);
-            this.PosDecButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PosDecButton.Margin = new System.Windows.Forms.Padding(4);
             this.PosDecButton.Name = "PosDecButton";
             this.PosDecButton.Size = new System.Drawing.Size(53, 49);
             this.PosDecButton.TabIndex = 0;
@@ -106,7 +106,7 @@
             this.NegDecButton.BackColor = System.Drawing.Color.DarkGray;
             this.NegDecButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.NegDecButton.Location = new System.Drawing.Point(395, 186);
-            this.NegDecButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.NegDecButton.Margin = new System.Windows.Forms.Padding(4);
             this.NegDecButton.Name = "NegDecButton";
             this.NegDecButton.Size = new System.Drawing.Size(53, 49);
             this.NegDecButton.TabIndex = 1;
@@ -120,7 +120,7 @@
             this.NegRAButton.BackColor = System.Drawing.Color.DarkGray;
             this.NegRAButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.NegRAButton.Location = new System.Drawing.Point(333, 129);
-            this.NegRAButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.NegRAButton.Margin = new System.Windows.Forms.Padding(4);
             this.NegRAButton.Name = "NegRAButton";
             this.NegRAButton.Size = new System.Drawing.Size(53, 49);
             this.NegRAButton.TabIndex = 2;
@@ -134,7 +134,7 @@
             this.PosRAButton.BackColor = System.Drawing.Color.DarkGray;
             this.PosRAButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.PosRAButton.Location = new System.Drawing.Point(455, 129);
-            this.PosRAButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PosRAButton.Margin = new System.Windows.Forms.Padding(4);
             this.PosRAButton.Name = "PosRAButton";
             this.PosRAButton.Size = new System.Drawing.Size(53, 49);
             this.PosRAButton.TabIndex = 3;
@@ -146,7 +146,7 @@
             // 
             this.ActualRATextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualRATextBox.Location = new System.Drawing.Point(204, 91);
-            this.ActualRATextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ActualRATextBox.Margin = new System.Windows.Forms.Padding(4);
             this.ActualRATextBox.Name = "ActualRATextBox";
             this.ActualRATextBox.ReadOnly = true;
             this.ActualRATextBox.Size = new System.Drawing.Size(132, 22);
@@ -156,7 +156,7 @@
             // 
             this.ActualDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualDecTextBox.Location = new System.Drawing.Point(205, 148);
-            this.ActualDecTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ActualDecTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.ActualDecTextBox.Name = "ActualDecTextBox";
             this.ActualDecTextBox.ReadOnly = true;
             this.ActualDecTextBox.Size = new System.Drawing.Size(132, 22);
@@ -236,7 +236,7 @@
             // 
             this.TargetDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetDecTextBox.Location = new System.Drawing.Point(27, 148);
-            this.TargetDecTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TargetDecTextBox.Margin = new System.Windows.Forms.Padding(4);
             this.TargetDecTextBox.Name = "TargetDecTextBox";
             this.TargetDecTextBox.ReadOnly = true;
             this.TargetDecTextBox.Size = new System.Drawing.Size(132, 22);
@@ -246,7 +246,7 @@
             // 
             this.TargetRATextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetRATextBox.Location = new System.Drawing.Point(25, 91);
-            this.TargetRATextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TargetRATextBox.Margin = new System.Windows.Forms.Padding(4);
             this.TargetRATextBox.Name = "TargetRATextBox";
             this.TargetRATextBox.ReadOnly = true;
             this.TargetRATextBox.Size = new System.Drawing.Size(132, 22);
@@ -334,7 +334,7 @@
             this.editButton.BackColor = System.Drawing.Color.OrangeRed;
             this.editButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.editButton.Location = new System.Drawing.Point(333, 12);
-            this.editButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.editButton.Margin = new System.Windows.Forms.Padding(4);
             this.editButton.Name = "editButton";
             this.editButton.Size = new System.Drawing.Size(175, 31);
             this.editButton.TabIndex = 17;
@@ -369,9 +369,9 @@
             this.overRideGroupbox.Controls.Add(this.TargetDecTextBox);
             this.overRideGroupbox.Controls.Add(this.TargetPositionLabel);
             this.overRideGroupbox.Location = new System.Drawing.Point(16, 11);
-            this.overRideGroupbox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.overRideGroupbox.Margin = new System.Windows.Forms.Padding(4);
             this.overRideGroupbox.Name = "overRideGroupbox";
-            this.overRideGroupbox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.overRideGroupbox.Padding = new System.Windows.Forms.Padding(4);
             this.overRideGroupbox.Size = new System.Drawing.Size(372, 244);
             this.overRideGroupbox.TabIndex = 19;
             this.overRideGroupbox.TabStop = false;
@@ -472,9 +472,9 @@
             this.freeControlGroupbox.Controls.Add(this.editButton);
             this.freeControlGroupbox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.freeControlGroupbox.Location = new System.Drawing.Point(16, 262);
-            this.freeControlGroupbox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.freeControlGroupbox.Margin = new System.Windows.Forms.Padding(4);
             this.freeControlGroupbox.Name = "freeControlGroupbox";
-            this.freeControlGroupbox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.freeControlGroupbox.Padding = new System.Windows.Forms.Padding(4);
             this.freeControlGroupbox.Size = new System.Drawing.Size(540, 247);
             this.freeControlGroupbox.TabIndex = 22;
             this.freeControlGroupbox.TabStop = false;
@@ -495,7 +495,7 @@
             "Recover From Clockwise Hardstop",
             "Recover From Counter-Clockwise Hardstop"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(15, 41);
-            this.controlScriptsCombo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.controlScriptsCombo.Margin = new System.Windows.Forms.Padding(4);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(345, 24);
             this.controlScriptsCombo.TabIndex = 23;
@@ -508,9 +508,9 @@
             this.groupBox4.Controls.Add(this.runControlScriptButton);
             this.groupBox4.Controls.Add(this.controlScriptsCombo);
             this.groupBox4.Location = new System.Drawing.Point(396, 44);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(4);
             this.groupBox4.Size = new System.Drawing.Size(613, 122);
             this.groupBox4.TabIndex = 24;
             this.groupBox4.TabStop = false;
@@ -521,7 +521,7 @@
             this.runControlScriptButton.BackColor = System.Drawing.Color.DarkGray;
             this.runControlScriptButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.runControlScriptButton.Location = new System.Drawing.Point(427, 39);
-            this.runControlScriptButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.runControlScriptButton.Margin = new System.Windows.Forms.Padding(4);
             this.runControlScriptButton.Name = "runControlScriptButton";
             this.runControlScriptButton.Size = new System.Drawing.Size(168, 41);
             this.runControlScriptButton.TabIndex = 24;
@@ -546,9 +546,9 @@
             this.manualGroupBox.Controls.Add(this.subElaButton);
             this.manualGroupBox.Controls.Add(this.plusJogButton);
             this.manualGroupBox.Location = new System.Drawing.Point(564, 182);
-            this.manualGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.manualGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.manualGroupBox.Name = "manualGroupBox";
-            this.manualGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.manualGroupBox.Padding = new System.Windows.Forms.Padding(4);
             this.manualGroupBox.Size = new System.Drawing.Size(445, 327);
             this.manualGroupBox.TabIndex = 25;
             this.manualGroupBox.TabStop = false;
@@ -592,7 +592,7 @@
             this.manualControlButton.BackColor = System.Drawing.Color.OrangeRed;
             this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.manualControlButton.Location = new System.Drawing.Point(239, 55);
-            this.manualControlButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.manualControlButton.Margin = new System.Windows.Forms.Padding(4);
             this.manualControlButton.Name = "manualControlButton";
             this.manualControlButton.Size = new System.Drawing.Size(200, 34);
             this.manualControlButton.TabIndex = 25;
@@ -605,7 +605,7 @@
             this.immediateRadioButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.immediateRadioButton.AutoSize = true;
             this.immediateRadioButton.Location = new System.Drawing.Point(12, 206);
-            this.immediateRadioButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.immediateRadioButton.Margin = new System.Windows.Forms.Padding(4);
             this.immediateRadioButton.Name = "immediateRadioButton";
             this.immediateRadioButton.Size = new System.Drawing.Size(126, 21);
             this.immediateRadioButton.TabIndex = 24;
@@ -618,7 +618,7 @@
             this.ControledButtonRadio.AutoSize = true;
             this.ControledButtonRadio.Checked = true;
             this.ControledButtonRadio.Location = new System.Drawing.Point(12, 177);
-            this.ControledButtonRadio.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ControledButtonRadio.Margin = new System.Windows.Forms.Padding(4);
             this.ControledButtonRadio.Name = "ControledButtonRadio";
             this.ControledButtonRadio.Size = new System.Drawing.Size(126, 21);
             this.ControledButtonRadio.TabIndex = 23;
@@ -633,7 +633,7 @@
             "0.1 RPM",
             "2 RPM"});
             this.speedComboBox.Location = new System.Drawing.Point(8, 257);
-            this.speedComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.speedComboBox.Margin = new System.Windows.Forms.Padding(4);
             this.speedComboBox.Name = "speedComboBox";
             this.speedComboBox.Size = new System.Drawing.Size(160, 24);
             this.speedComboBox.TabIndex = 10;
@@ -666,7 +666,7 @@
             this.subJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.subJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.subJogButton.Location = new System.Drawing.Point(259, 209);
-            this.subJogButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.subJogButton.Margin = new System.Windows.Forms.Padding(4);
             this.subJogButton.Name = "subJogButton";
             this.subJogButton.Size = new System.Drawing.Size(53, 49);
             this.subJogButton.TabIndex = 6;
@@ -681,7 +681,7 @@
             this.plusElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.plusElaButton.Location = new System.Drawing.Point(313, 146);
-            this.plusElaButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.plusElaButton.Margin = new System.Windows.Forms.Padding(4);
             this.plusElaButton.Name = "plusElaButton";
             this.plusElaButton.Size = new System.Drawing.Size(53, 49);
             this.plusElaButton.TabIndex = 4;
@@ -696,7 +696,7 @@
             this.subElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.subElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.subElaButton.Location = new System.Drawing.Point(313, 266);
-            this.subElaButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.subElaButton.Margin = new System.Windows.Forms.Padding(4);
             this.subElaButton.Name = "subElaButton";
             this.subElaButton.Size = new System.Drawing.Size(53, 49);
             this.subElaButton.TabIndex = 5;
@@ -711,7 +711,7 @@
             this.plusJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.plusJogButton.Location = new System.Drawing.Point(373, 209);
-            this.plusJogButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.plusJogButton.Margin = new System.Windows.Forms.Padding(4);
             this.plusJogButton.Name = "plusJogButton";
             this.plusJogButton.Size = new System.Drawing.Size(53, 49);
             this.plusJogButton.TabIndex = 7;
@@ -727,7 +727,7 @@
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.ForeColor = System.Drawing.SystemColors.ControlText;
             this.button1.Location = new System.Drawing.Point(980, 11);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(29, 28);
             this.button1.TabIndex = 26;
@@ -747,7 +747,7 @@
             this.Controls.Add(this.freeControlGroupbox);
             this.Controls.Add(this.overRideGroupbox);
             this.Controls.Add(this.errorLabel);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MinimumSize = new System.Drawing.Size(794, 580);
             this.Name = "FreeControlForm";
             this.Text = "Control Form";
