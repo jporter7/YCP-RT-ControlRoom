@@ -199,6 +199,7 @@ namespace ControlRoomApplication.Database
             {
                 // Use Include method to load related entities from the database
                 appts = QueryAppointments(Context).Where(x => x.TelescopeId == radioTelescopeId).ToList();
+
             }
             return appts;
         }

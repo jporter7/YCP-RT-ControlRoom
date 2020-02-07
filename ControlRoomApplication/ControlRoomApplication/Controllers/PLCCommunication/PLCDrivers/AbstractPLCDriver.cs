@@ -120,7 +120,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
-        public abstract bool Controled_stop(RadioTelescopeAxisEnum axis, bool both);
+        public abstract bool Controled_stop();
 
         public abstract bool Immediade_stop();
 
@@ -128,7 +128,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 
-        public abstract bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise);
+        public abstract bool Start_jog(RadioTelescopeAxisEnum axis, double speed, bool clockwise);
 
         public abstract bool Get_interlock_status();
 
@@ -143,7 +143,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
-        /// see <see cref="MCUConstants.MCUStutusBits"/> for description of each bit
+        /// see <see cref="MCUConstants.MCUStutusBitsMSW"/> for description of each bit
         /// </summary>
         /// <param name="axis"></param>
         /// <returns></returns>

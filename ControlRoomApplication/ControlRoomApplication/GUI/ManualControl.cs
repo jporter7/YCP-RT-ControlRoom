@@ -11,7 +11,7 @@ namespace ControlRoomApplication.Main
     {
         public RadioTelescopeController rt_controller { get; set; }
         public ControlRoom controlRoom { get; set; }
-        public int speed { get; set; }
+        public double speed { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -30,7 +30,7 @@ namespace ControlRoomApplication.Main
 
             // Set speed
             // comboBox1.Text = "0.1 RPM";
-            speed = 16667;
+            speed = 0.1;
 
             logger.Info("Edit Script Form Initalized");
         }

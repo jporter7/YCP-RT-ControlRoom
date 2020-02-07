@@ -163,9 +163,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
 
-        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
+        public override bool Controled_stop()
         {
-            return driver.Controled_stop(axis , both );
+            return driver.Controled_stop();
         }
 
         public override bool Immediade_stop()
@@ -183,7 +183,7 @@ namespace ControlRoomApplication.Controllers
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }
 
-        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        public override bool Start_jog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
         {
             return driver.Start_jog(axis, speed, clockwise);
         }

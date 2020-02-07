@@ -16,7 +16,6 @@ namespace ControlRoomApplication.Main
         public double Increment { get; set; }
         public CoordinateCalculationController CoordCalc { set; get; }
         public ControlRoom controlRoom { get; set; }
-        public RadioTelescopeController rt_controller { get; set; }
         // private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         public int rtId { get; set; }
@@ -513,48 +512,38 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void subJogButton_Click(object sender, EventArgs e)
-        {
-            //-----------------------If Mouse CLicked = True ----------------------------------
-            {
-                int speed = Convert.ToInt32(speedComboBox.Text);
-                logger.Info("Jog PosButton MouseDown");
-                // UpdateText("Moving at " + comboBox1.Text);
+        private void subJogButton_Down( object sender , MouseEventArgs e ) {
+            double speed = Convert.ToDouble( speedComboBox.Text );
+            logger.Info( "Jog PosButton MouseDown" );
+            // UpdateText("Moving at " + comboBox1.Text);
 
-                // Start CW Jog
-                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
-              }
-            //}
-            //-----------------------If Mouse CLicked != True ----------------------------------
-            {
-                logger.Info("Jog PosButton MouseUp");
-               // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
-                //Stop Move
-                ExecuteCorrectStop();
-            }
+            // Start CW Jog
+            controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeAzimuthJog( speed , false );
         }
 
-            private void plusJogButton_Click(object sender, EventArgs e)
-        {
-          //  -----------------------If Mouse CLicked = True----------------------------------
-             {
-                int speed = Convert.ToInt32(speedComboBox.Text);
-                logger.Info("Jog PosButton MouseDown");
-                // UpdateText("Moving at " + comboBox1.Text);
+        private void subJogButton_Up( object sender , MouseEventArgs e ) {
+            logger.Info( "Jog PosButton MouseUp" );
+            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
-                // Start CW Jog
-                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
-              
-            }
-           // -----------------------If Mouse CLicked != True----------------------------------
-            {
-                logger.Info("Jog PosButton MouseUp");
-               // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
-              //  Stop Move
+            //Stop Move
             ExecuteCorrectStop();
-            }
+        }
+
+        private void plusJogButton_Down( object sender , MouseEventArgs e ) {
+            double speed = Convert.ToDouble( speedComboBox.Text );
+            logger.Info( "Jog PosButton MouseDown" );
+            // UpdateText("Moving at " + comboBox1.Text);
+
+            // Start CW Jog
+            controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeAzimuthJog( speed , true );
+        }
+
+        private void plusJogButton_UP( object sender , MouseEventArgs e ) {
+            logger.Info( "Jog PosButton MouseUp" );
+            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+            //  Stop Move
+            ExecuteCorrectStop();
         }
 
         private void ExecuteCorrectStop()
@@ -562,12 +551,12 @@ namespace ControlRoomApplication.Main
             if (ControledButtonRadio.Checked)
             {
                 logger.Info("Executed Controlled Stop");
-                rt_controller.ExecuteRadioTelescopeControlledStop();
+                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
             }
             else if (immediateRadioButton.Checked)
             {
                 logger.Info("Executed Immediate Stop");
-               rt_controller.ExecuteRadioTelescopeImmediateStop();
+                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeImmediateStop();
             }
             else
             {
@@ -618,48 +607,38 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void plusElaButton_Click(object sender, EventArgs e)
-        {
-            //  -----------------------If Mouse CLicked = True----------------------------------
-            {
-                int speed = Convert.ToInt32(speedComboBox.Text);
-                logger.Info("Jog PosButton MouseDown");
-                // UpdateText("Moving at " + comboBox1.Text);
+        private void plusElaButton_Down(object sender, MouseEventArgs e ){
+            double speed = Convert.ToDouble( speedComboBox.Text);
+            logger.Info("Jog PosButton MouseDown");
+            // UpdateText("Moving at " + comboBox1.Text);
 
-                // Start CW Jog
-                rt_controller.StartRadioTelescopeElevationJog(speed, true);
-
-            }
-            // -----------------------If Mouse CLicked != True----------------------------------
-            {
-                logger.Info("Jog PosButton MouseUp");
-                // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
-                //  Stop Move
-                ExecuteCorrectStop();
-            }
+            // Start CW Jog
+            controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeElevationJog(speed, true);
         }
 
-        private void subElaButton_Click(object sender, EventArgs e)
-        {
-            //  -----------------------If Mouse CLicked = True----------------------------------
-            {
-                int speed = Convert.ToInt32(speedComboBox.Text);
-                logger.Info("Jog PosButton MouseDown");
-                //UpdateText("Moving at " + speedComboBox.Text);
+        private void plusElaButton_Up( object sender , MouseEventArgs e ) {
+            logger.Info( "Jog PosButton MouseUp" );
+            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
-                // Start CW Jog
-                rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
+            //  Stop Move
+            ExecuteCorrectStop();
+        }
 
-            }
-            // -----------------------If Mouse CLicked != True----------------------------------
-            {
-                logger.Info("Jog PosButton MouseUp");
-                // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+        private void subElaButton_Down(object sender, MouseEventArgs e ){
+            double speed = Convert.ToDouble( speedComboBox.Text);
+            logger.Info("Jog PosButton MouseDown");
+            //UpdateText("Moving at " + speedComboBox.Text);
 
-                //  Stop Move
-                ExecuteCorrectStop();
-            }
+            // Start CW Jog
+            controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeElevationJog( speed, false);
+        }
+
+        private void subElaButton_Up( object sender , MouseEventArgs e ) {
+            logger.Info( "Jog PosButton MouseUp" );
+            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
+
+            //  Stop Move
+            ExecuteCorrectStop();
         }
     }
 }

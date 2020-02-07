@@ -181,7 +181,6 @@
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
@@ -210,7 +209,6 @@
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Location\Location.cs" />
     <Compile Include="Entities\Plc\PLCCommandAndQueryTypeEnum.cs" />
-    <Compile Include="Entities\Plc\PLCCommandResponseExpectationEnum.cs" />
     <Compile Include="Entities\Plc\PLCLimitSwitchStatusEnum.cs" />
     <Compile Include="Entities\Plc\PLCRadioTelescopeStatus.cs" />
     <Compile Include="Entities\Plc\PLCSafetyInterlockStatusEnum.cs" />

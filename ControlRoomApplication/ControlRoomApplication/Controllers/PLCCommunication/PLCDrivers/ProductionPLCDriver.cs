@@ -28,6 +28,8 @@ namespace ControlRoomApplication.Controllers
         private long PLC_last_contact;
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         private Thread MCU_Monitor_Thread;
+        private int AZStartSpeed = 0;
+        private int ELStartSpeed = 0;
 
         private static readonly ushort[] MESSAGE_CONTENTS_IMMEDIATE_STOP = new ushort[] {
             0x0010, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -340,7 +342,7 @@ namespace ControlRoomApplication.Controllers
         private void MonitorMCU() {
             int lastMCUHeartbeatBit = 0;
             while (keep_modbus_server_alive) {
-                ushort network_status = MCUModbusMaster.ReadHoldingRegisters(9, 1)[0];
+                ushort network_status = MCUModbusMaster.ReadHoldingRegisters((ushort)MCUConstants.MCUOutputRegs.Network_Conectivity, 1)[0];
                 int CurrentHeartBeat = (network_status >> 14) & 1;//this bit changes every 500ms
                 if (CurrentHeartBeat != lastMCUHeartbeatBit) {
                     MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -351,7 +353,7 @@ namespace ControlRoomApplication.Controllers
                     MCUModbusMaster.WriteMultipleRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_RESET_ERRORS);
 
                 }
-                Thread.Sleep(250);
+                Task.Delay(250).Wait();
             }
         }
 
@@ -662,17 +664,20 @@ namespace ControlRoomApplication.Controllers
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
             int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );
-            if((gearedSpeedEL < 1) || (gearedSpeedEL > 1000000)) {
+            AZStartSpeed = gearedSpeedAZ;
+            ELStartSpeed = gearedSpeedEL;
+            Console.WriteLine( gearedSpeedAZ.ToString() +" :AZ           EL:"+ gearedSpeedEL.ToString());
+            if((gearedSpeedEL < 1) || (gearedSpeedEL > MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY)) {
                 throw new ArgumentOutOfRangeException( "startSpeedDPSElevation" , startSpeedDPSElevation , 
                     String.Format( "startSpeedDPSElevation should be between {0} and {1}" , 
                     ConversionHelper.SPSToDPS(1, MotorConstants.GEARING_RATIO_ELEVATION ) ,
-                    ConversionHelper.SPSToDPS( 1000000 , MotorConstants.GEARING_RATIO_ELEVATION ) ) );
+                    ConversionHelper.SPSToDPS( MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY , MotorConstants.GEARING_RATIO_ELEVATION ) ) );
             }
-            if((gearedSpeedAZ < 1) || (gearedSpeedAZ > 1000000)) {
+            if((gearedSpeedAZ < 1) || (gearedSpeedAZ > MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY)) {
                 throw new ArgumentOutOfRangeException( "startSpeedDPSAzimuth" , startSpeedDPSAzimuth ,
                     String.Format( "startSpeedDPSAzimuth should be between {0} and {1}" ,
                     ConversionHelper.SPSToDPS( 1 , MotorConstants.GEARING_RATIO_AZIMUTH ) ,
-                    ConversionHelper.SPSToDPS( 1000000 , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
+                    ConversionHelper.SPSToDPS( MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
             }
             if((homeTimeoutSecondsElevation < 0)|| (homeTimeoutSecondsElevation > 300)) {
                 throw new ArgumentOutOfRangeException( "homeTimeoutSecondsElevation" , homeTimeoutSecondsElevation ,
@@ -682,15 +687,17 @@ namespace ControlRoomApplication.Controllers
                 throw new ArgumentOutOfRangeException( "homeTimeoutSecondsAzimuth" , homeTimeoutSecondsAzimuth ,
                     String.Format( "homeTimeoutSecondsAzimuth should be between {0} and {1}" , 0 , 300 ) );
             }
-            ushort[] data = {   0x842C, 0x0004, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
+            ushort[] data = {   0x842C,  0x0004 , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 //0x0, 0x0, 0x0, 0x0, 0x0,0x0,0x0,0x0,0x0,0x0,
-                                0x842C, 0x001C, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0
+                                0x842C, 0x0004, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0
                                 //      0x001C  //limit active high
                                 //      0x0004  //limit active low
                                 //anf1-anf2-motion-controller-user-manual.pdf page 50
                                 };
             //set_multiple_registers( data,  1);
             Console.WriteLine( "start" );
+            MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
+            Thread.Sleep( 100 );
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
             Thread.Sleep( 100 );
             MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
@@ -702,18 +709,22 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override Orientation read_Position(){
-            ushort[] data = MCUModbusMaster.ReadHoldingRegisters(2, 12);
+            ushort[] data = MCUModbusMaster.ReadHoldingRegisters(0, 14);
            // Console.WriteLine("AZ_finni2 {0,10} EL_finni2 {1,10}", (65536 * data[0]) + data[1], (65536 * data[10]) + data[11]);
             Orientation current_orientation = new Orientation(
-                ConversionHelper.StepsToDegrees((data[0]<<16) + data[1], MotorConstants.GEARING_RATIO_AZIMUTH), 
-                ConversionHelper.StepsToDegrees((data[10]<<16) + data[11], MotorConstants.GEARING_RATIO_ELEVATION)
+                ConversionHelper.StepsToDegrees(
+                    (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] <<16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW] ,
+                    MotorConstants.GEARING_RATIO_AZIMUTH), 
+                ConversionHelper.StepsToDegrees(
+                    (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] <<16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW] , 
+                    MotorConstants.GEARING_RATIO_ELEVATION)
             );
             return current_orientation;
         }
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
-        /// see <see cref="MCUConstants.MCUStutusBits"/> for description of each bit
+        /// see <see cref="MCUConstants.MCUStutusBitsMSW"/> for description of each bit
         /// </summary>
         public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
             ushort start = 0;
@@ -731,7 +742,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// clears the previos move comand from mthe PLC
+        /// clears the previos move comand from mthe PLC, only works for jog moves
         /// </summary>
         /// <returns></returns>
         public override bool Cancel_move() {
@@ -740,28 +751,9 @@ namespace ControlRoomApplication.Controllers
         }
 
 
-        public override bool Controled_stop( RadioTelescopeAxisEnum axis , bool both ) {
-            ushort[] data = new ushort[] {
-                0x0004 , 0x0003 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0,
-                0x0004 , 0x0003 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0
-            };
-            //MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
-            //return true;
-            return Cancel_move();
-            /*
-            ushort[] data = new ushort[] { 0x4 , 0x3 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 };
-            if(both) {
-                MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_HOLD_MOVE );
-                return true;
-            } else if (axis== RadioTelescopeAxisEnum.AZIMUTH) {
-                MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
-                return true;
-            } else if(axis == RadioTelescopeAxisEnum.ELEVATION) {
-                MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS+10 , data );
-                return true;
-            }
-            return false;
-            //*/
+        public override bool Controled_stop(  ) {
+            MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_HOLD_MOVE );
+            return true;
         }
 
         public override bool Immediade_stop() {
@@ -775,9 +767,16 @@ namespace ControlRoomApplication.Controllers
             return Stow();
         }
 
+        /// <summary>
+        /// move a set number of steps at the specified steps / second *intended for debuging
+        /// </summary>
+        /// <param name="programmedPeakSpeedAZInt"></param>
+        /// <param name="ACCELERATION"></param>
+        /// <param name="positionTranslationAZ"></param>
+        /// <param name="positionTranslationEL"></param>
+        /// <returns></returns>
         public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return send_relative_move_sync( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
-            //return sendmovecomand( programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();   //.ContinueWith(antecedent => { return antecedent.; });
+            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).Result;
         }
 
 
@@ -787,8 +786,8 @@ namespace ControlRoomApplication.Controllers
             positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
 
-            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
-            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(1), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 1 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
             logger.Info("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
@@ -798,89 +797,91 @@ namespace ControlRoomApplication.Controllers
             return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
         }
 
-        public override bool Start_jog( RadioTelescopeAxisEnum axis , int speed , bool clockwise ) {
+        public override bool Start_jog( RadioTelescopeAxisEnum axis , double speed , bool clockwise ) {
             ushort adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, dir;
             if(clockwise) {
                 dir = 0x0080;
             } else dir = 0x0100;
-            //                                         reserved       msb speed                 lsb speed                acc                                                       dcc                                                    reserved
-            ushort[] data = new ushort[] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(speed >> 16) , (ushort)(speed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0,
-                                           0x0,0x0      ,0x0    ,0x0,0x0                    ,0x0                        ,0x0                                                    ,0x0                                                     , 0x0 , 0x0
-            };
+            int stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_AZIMUTH );
+            //                                            reserved       msb speed                     lsb speed                   acc                                                       dcc                                                    reserved
+            ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(stepSpeed >> 16) , (ushort)(stepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0, };
+
+            ushort[] data2 = new ushort[20];
             // this is a jog comand for a single axis
             // RadioTelescopeAxisEnum jogging_axies = Is_jogging();
             switch(axis) {
-                case RadioTelescopeAxisEnum.AZIMUTH: {
+                case RadioTelescopeAxisEnum.AZIMUTH: {//write command in to first 10 registers
+                        if(stepSpeed < AZStartSpeed) {
+                            throw new ArgumentOutOfRangeException( "speed" , speed ,
+                                String.Format( "speed should be grater than {0} which is the stating speed set when configuring the MCU" ,
+                                ConversionHelper.SPSToRPM( AZStartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
+                        }
+                        for(int j =0;j<data.Length;j++) {
+                            data2[j] = data[j];
+                        }
                         break;
                     }
-                case RadioTelescopeAxisEnum.ELEVATION: {
-                        adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + 10;
+                case RadioTelescopeAxisEnum.ELEVATION: {//wright comand to second set of 10 registers
+                        stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_ELEVATION );
+                        if(stepSpeed < ELStartSpeed) {
+                            throw new ArgumentOutOfRangeException( "speed" , speed ,
+                                String.Format( "speed should be grater than {0} which is the stating speed set when configuring the MCU" ,
+                                ConversionHelper.SPSToRPM( ELStartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
+                        }
+                        data[4] = (ushort)(stepSpeed >> 16); 
+                        data[5] = (ushort)(stepSpeed & 0xffff);
+                        for(int j = 0; j < data.Length; j++) {
+                            data2[j+10] = data[j];
+                        }
                         break;
                     }
-                case RadioTelescopeAxisEnum.BOTH: {
-                        ushort[] data2 = new ushort[data.Length * 2];
+               /* case RadioTelescopeAxisEnum.BOTH: {
+                        
                         data.CopyTo( data2 , 0 );
                         data.CopyTo( data2 , data.Length );
                         data = data2;
+                        stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_ELEVATION );
+                        data[14] = (ushort)(stepSpeed >> 16);
+                        data[15] = (ushort)(stepSpeed & 0xffff);
                         break;
-                    }
+                    }*/
                 default: {
-                        throw new ArgumentException( "Invalid RadioTelescopeAxisEnum value can be AZIMUTH, ELEVATION or BOTH got: " + axis );
+                        throw new ArgumentException( "Invalid RadioTelescopeAxisEnum value can be AZIMUTH, ELEVATION ogot: " + axis );
                     }
             }
-            MCUModbusMaster.WriteMultipleRegistersAsync( adress , data );
+            MCUModbusMaster.WriteMultipleRegistersAsync( adress , data2 );
             return true;
-            //throw new NotImplementedException();
         }
 
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
             bool Sucess = true;
+
             await MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
             if(!is_test) {
                 Task task = Task.Delay( 100 );//wait to ensure it is porcessed
                 await task;
             }
-            ushort[] data = {
-                0x0002 , 0x0003, (ushort)((positionTranslationAZ & 0xFFFF0000)>>16),(ushort)(positionTranslationAZ & 0xFFFF),(ushort)((SpeedAZ & 0xFFFF0000)>>16),(ushort)(SpeedAZ & 0xFFFF), ACCELERATION,ACCELERATION ,0,0,
-                0x0002 , 0x0003, (ushort)((positionTranslationEL & 0xFFFF0000)>>16),(ushort)(positionTranslationEL & 0xFFFF),(ushort)((SpeedEL & 0xFFFF0000)>>16),(ushort)(SpeedEL & 0xFFFF), ACCELERATION,ACCELERATION ,0,0
-            };
+            ushort[] data = prepairMCUCommand( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL );
             await MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , data );
             return Sucess;
         }
 
-        public  bool send_relative_move_sync( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            bool Sucess = true;
-            MCUModbusMaster.WriteMultipleRegisters( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
-            if(!is_test) {
-                Task task = Task.Delay( 100 );//wait to ensure it is porcessed
-                task.Wait();
+        private ushort[] prepairMCUCommand( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+            if(SpeedAZ < AZStartSpeed) {
+                throw new ArgumentOutOfRangeException( "SpeedAZ" , SpeedAZ ,
+                    String.Format( "SpeedAZ should be grater than {0} which is the stating speed set when configuring the MCU" , AZStartSpeed ) );
+            }
+            if(SpeedEL < ELStartSpeed) {
+                throw new ArgumentOutOfRangeException( "SpeedEL" , SpeedEL ,
+                    String.Format( "SpeedAZ should be grater than {0} which is the stating speed set when configuring the MCU" , ELStartSpeed ) );
             }
             ushort[] data = {
                 0x0002 , 0x0003, (ushort)((positionTranslationAZ & 0xFFFF0000)>>16),(ushort)(positionTranslationAZ & 0xFFFF),(ushort)((SpeedAZ & 0xFFFF0000)>>16),(ushort)(SpeedAZ & 0xFFFF), ACCELERATION,ACCELERATION ,0,0,
                 0x0002 , 0x0003, (ushort)((positionTranslationEL & 0xFFFF0000)>>16),(ushort)(positionTranslationEL & 0xFFFF),(ushort)((SpeedEL & 0xFFFF0000)>>16),(ushort)(SpeedEL & 0xFFFF), ACCELERATION,ACCELERATION ,0,0
             };
-            MCUModbusMaster.WriteMultipleRegisters( 1024 , data );
-            return Sucess;
+            return data;
         }
 
-        public async Task<bool> sendmovecomand( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            bool Sucess = true;
-            //the mcu registers need to be reset befor a new comand can be set in case the same comand is sent multiple times in a row
-            MCUModbusMaster.WriteMultipleRegisters( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
-            if(!is_test) {
-                Task task = Task.Delay( 100 );//wait to ensure it is porcessed
-                await task;
-            }
-            ushort[] data = {0, 0x0403,
-                            (ushort)(programmedPeakSpeedAZInt >> 0x10), (ushort)(programmedPeakSpeedAZInt & 0xFFFF), ACCELERATION, ACCELERATION,
-                            (ushort)((positionTranslationAZ & 0xFFFF0000)>>16), (ushort)(positionTranslationAZ & 0xFFFF),
-                            0, 0, 0, 0,
-                            (ushort)((positionTranslationEL & 0xFFFF0000)>>16) , (ushort)(positionTranslationEL & 0xFFFF),
-                            0, 0, 0, 0, 0, 0
-            };
-            MCUModbusMaster.WriteMultipleRegisters( 1024 , data );
-            return Sucess;
-        }
 
 
         public override Task<bool> Home() {
@@ -903,7 +904,6 @@ namespace ControlRoomApplication.Controllers
             ushort CcWHome = 0x0040;
             ushort azHomeDir = CWHome;
             ushort elHomeDir = CcWHome, elHomeSpeed = 0x0000;
-
             
 
             bool ZeroOne = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
