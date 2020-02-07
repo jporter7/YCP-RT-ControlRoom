@@ -234,7 +234,7 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override bool Controled_stop( RadioTelescopeAxisEnum axis , bool both ) {
+        public override bool Controled_stop() {
             return true;
 
         }

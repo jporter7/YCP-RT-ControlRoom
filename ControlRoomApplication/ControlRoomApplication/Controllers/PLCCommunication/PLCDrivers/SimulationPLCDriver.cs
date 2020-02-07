@@ -163,9 +163,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
 
-        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
+        public override bool Controled_stop()
         {
-            return driver.Controled_stop(axis , both );
+            return driver.Controled_stop();
         }
 
         public override bool Immediade_stop()
