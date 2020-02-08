@@ -55,7 +55,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             endTime_2 = DateTime.UtcNow.AddDays(1).AddHours(1);
 
             // Initialize fields we are testing against
-            appointment_1.UserId = user_id;
+            appointment_1.user_id = user_id;
             appointment_1.start_time = startTime_1;
             appointment_1.end_time = endTime_1;
             appointment_1.CelestialBody = celestial_body;

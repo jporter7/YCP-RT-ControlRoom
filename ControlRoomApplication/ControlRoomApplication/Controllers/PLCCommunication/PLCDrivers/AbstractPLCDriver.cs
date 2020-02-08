@@ -128,7 +128,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 
-        public abstract bool Start_jog(RadioTelescopeAxisEnum axis, double speed, bool clockwise);
+        public abstract bool Start_jog( double AZspeed , double ELspeed );
 
         public abstract bool Get_interlock_status();
 

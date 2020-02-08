@@ -173,18 +173,6 @@ namespace ControlRoomApplication.Controllers
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow));
         }
 
-        /// <summary>
-        /// Method used to request to start jogging one of the Radio Telescope's axes
-        /// at a speed, in either the clockwise or counter-clockwise direction.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
-        {
-            return RadioTelescope.PLCDriver.Start_jog(axis, speed , clockwise);
-        }
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's azimuth
@@ -196,7 +184,10 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeAzimuthJog(double speed, bool clockwise)
         {
-            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.AZIMUTH, speed, clockwise);
+            if(!clockwise) {
+                speed = -speed;
+            }
+            return RadioTelescope.PLCDriver.Start_jog( speed,0 );
         }
 
         /// <summary>
@@ -209,7 +200,10 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeElevationJog(double speed, bool clockwise)
         {
-            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise);
+            if(!clockwise) {
+                speed = -speed;
+            }
+            return RadioTelescope.PLCDriver.Start_jog( 0,speed );
         }
 
         /// <summary>

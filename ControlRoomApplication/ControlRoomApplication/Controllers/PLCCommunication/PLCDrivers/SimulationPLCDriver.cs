@@ -183,9 +183,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }
 
-        public override bool Start_jog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
+        public override bool Start_jog( double AZspeed , double ELspeed )
         {
-            return driver.Start_jog(axis, speed, clockwise);
+            return driver.Start_jog( AZspeed , ELspeed );
         }
 
         public override bool Get_interlock_status()

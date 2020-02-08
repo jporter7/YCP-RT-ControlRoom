@@ -711,8 +711,15 @@ namespace ControlRoomApplication.Controllers
             return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
         }
 
-        public override bool Start_jog( RadioTelescopeAxisEnum axis , double speed , bool clockwise ) {
-            return MCU.Send_Jog_command( speed ,clockwise,speed,clockwise);
+        public override bool Start_jog( double AZspeed , double ELspeed ) {
+            bool AZCW=true, ELCW = true;
+            if(AZspeed < 0) {
+                AZCW = false;
+            }
+            if(ELspeed < 0) {
+                ELCW = false;
+            }
+            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZCW , Math.Abs( ELspeed ), ELCW );
         }
 
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {

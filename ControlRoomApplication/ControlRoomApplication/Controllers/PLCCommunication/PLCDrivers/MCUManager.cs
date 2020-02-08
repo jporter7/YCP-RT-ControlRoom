@@ -226,48 +226,47 @@ namespace ControlRoomApplication.Controllers {
 
         public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELClockwise ) {
             ushort adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, dir;
-            double speed = AZspeed;
             RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.AZIMUTH;
             if(AZClockwise) {
                 dir = 0x0080;
             } else dir = 0x0100;
-            int stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int stepSpeed = ConversionHelper.RPMToSPS( AZspeed , MotorConstants.GEARING_RATIO_AZIMUTH );
             //                                            reserved       msb speed                     lsb speed                   acc                                                       dcc                                                    reserved
             ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(stepSpeed >> 16) , (ushort)(stepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
 
             ushort[] data2 = new ushort[20];
             // this is a jog comand for a single axis
             // RadioTelescopeAxisEnum jogging_axies = Is_jogging();
-            switch(axis) {
-                case RadioTelescopeAxisEnum.AZIMUTH: {//write command in to first 10 registers
-                        if(stepSpeed < AZStartSpeed) {
-                            throw new ArgumentOutOfRangeException( "speed" , speed ,
-                                String.Format( "speed should be grater than {0} which is the stating speed set when configuring the MCU" ,
-                                ConversionHelper.SPSToRPM( AZStartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
-                        }
-                        for(int j = 0; j < data.Length; j++) {
-                            data2[j] = data[j];
-                        }
-                        break;
-                    }
-                case RadioTelescopeAxisEnum.ELEVATION: {//wright comand to second set of 10 registers
-                        stepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_ELEVATION );
-                        if(stepSpeed < ELStartSpeed) {
-                            throw new ArgumentOutOfRangeException( "speed" , speed ,
-                                String.Format( "speed should be grater than {0} which is the stating speed set when configuring the MCU" ,
-                                ConversionHelper.SPSToRPM( ELStartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
-                        }
-                        data[4] = (ushort)(stepSpeed >> 16);
-                        data[5] = (ushort)(stepSpeed & 0xffff);
-                        for(int j = 0; j < data.Length; j++) {
-                            data2[j + 10] = data[j];
-                        }
-                        break;
-                    }
-                default: {
-                        throw new ArgumentException( "Invalid RadioTelescopeAxisEnum value can be AZIMUTH, ELEVATION ogot: " + axis );
-                    }
+            if(stepSpeed > AZStartSpeed) {
+                //throw new ArgumentOutOfRangeException( "speed" , AZspeed ,
+                //    String.Format( "speed should be grater than {0} which is the stating speed set when configuring the MCU" ,
+                //    ConversionHelper.SPSToRPM( AZStartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
+                for(int j = 0; j < data.Length; j++) {
+                    data2[j] = data[j];
+                }
             }
+
+
+            stepSpeed = ConversionHelper.RPMToSPS( ELspeed , MotorConstants.GEARING_RATIO_ELEVATION );
+            if(stepSpeed > ELStartSpeed) {
+                //throw new ArgumentOutOfRangeException( "speed" , ELspeed ,
+                //    String.Format( "speed should be grater than {0} which is the stating speed set when configuring the MCU" ,
+                //    ConversionHelper.SPSToRPM( ELStartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
+
+
+                for(int j = 0; j < data.Length; j++) {
+                    data2[j + 10] = data[j];
+                }
+                if(ELClockwise) {
+                    dir = 0x0080;
+                } else dir = 0x0100;
+
+                data2[10] = (ushort)(dir);
+                data2[14] = (ushort)(stepSpeed >> 16);
+                data2[15] = (ushort)(stepSpeed & 0xffff);
+            }
+
+
             MCUModbusMaster.WriteMultipleRegistersAsync( adress , data2 ).Wait();
             return true;
         }

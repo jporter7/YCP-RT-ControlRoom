@@ -182,10 +182,11 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             }
             logger.Info(outstr);
             jogging = false;
-            if(data[0] == 0x8400) {//if not configured dont move
+            if(data[0] == 0x842C) {//if not configured dont move
 
                 isconfigured = true;
             } else if(!isconfigured) {
+                logger.Info( "!!!!!!!!!!!!!!!!!!!!COMNFIGURE" );
                 return true;
             }
 
@@ -199,6 +200,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 acc = data[4];
                 distAZ = (data[6] << 16) + data[7];
                 distEL = (data[12] << 16) + data[13];
+                Console.WriteLine( "moving to at ({0} , {1}) at ({2} , {3}) steps per second" , distAZ , distEL , AZ_speed , EL_speed );
                 return true;
             } else if(data[0] == 0x0080 || data[0] == 0x0100 || data[10] == 0x0080 || data[10] == 0x0100) {
                 jogging = true;
@@ -218,8 +220,9 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 } else {
                     EL_speed = 0;
                 }
+                Console.WriteLine( "jogging at {0}   {1}", AZ_speed , EL_speed );
                 return true;
-            } else if(data[0] == 0x0002 || data[0] == 0x0002) {//move cmd
+            } else if(data[0] == 0x0002 || data[10] == 0x0002) {//move cmd
                 mooving = true;
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
@@ -228,7 +231,10 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 acc = data[6];
                 distAZ = (data[2] << 16) + data[3];
                 distEL = (data[12] << 16) + data[13];
+                Console.WriteLine( "also moving to at ({0} , {1}) at ({2} , {3}) steps per second" , distAZ , distEL , AZ_speed , EL_speed );
                 return true;
+            } else {
+                Console.WriteLine( "watau stupid dat aint a comand");
             }
             return false;
         }
