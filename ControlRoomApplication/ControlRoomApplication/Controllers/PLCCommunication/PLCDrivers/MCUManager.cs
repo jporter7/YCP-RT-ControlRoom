@@ -226,7 +226,6 @@ namespace ControlRoomApplication.Controllers {
 
         public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELClockwise ) {
             ushort adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, dir;
-            RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.AZIMUTH;
             if(AZClockwise) {
                 dir = 0x0080;
             } else dir = 0x0100;

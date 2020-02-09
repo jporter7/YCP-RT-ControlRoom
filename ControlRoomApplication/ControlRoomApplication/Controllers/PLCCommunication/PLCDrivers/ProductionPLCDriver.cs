@@ -711,15 +711,8 @@ namespace ControlRoomApplication.Controllers
             return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
         }
 
-        public override bool Start_jog( double AZspeed , double ELspeed ) {
-            bool AZCW=true, ELCW = true;
-            if(AZspeed < 0) {
-                AZCW = false;
-            }
-            if(ELspeed < 0) {
-                ELCW = false;
-            }
-            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZCW , Math.Abs( ELspeed ), ELCW );
+        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
+            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), EL_CW);
         }
 
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
