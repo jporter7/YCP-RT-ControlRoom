@@ -297,78 +297,6 @@ namespace ControlRoomApplication.GUI
                     }
                     controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit = false;
                 }
-
-                // Azimuth Proximity Sensor Logic
-                if (_azEncoderDegrees < SimulationConstants.PROX_CW_AZ_DEGREES)
-                {
-                    if (!_azCWProxChange)
-                    {
-                        _azCWProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor;
-                        _azCWProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor = true;
-                }
-                else if (_azEncoderDegrees > SimulationConstants.PROX_CCW_AZ_DEGREES)
-                {
-                    if (!_azCCWProxChange)
-                    {
-                        _azCCWProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor;
-                        _azCCWProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor = true;
-                }
-                else
-                {
-                    if (!_azCWProxChange)
-                    {
-                        _azCWProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor;
-                        _azCWProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor = false;
-
-                    if (!_azCCWProxChange)
-                    {
-                        _azCCWProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor;
-                        _azCCWProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor = false;
-                }
-
-                // Elevation Proximity Logic
-                if (_elEncoderDegrees < SimulationConstants.LIMIT_LOW_EL_DEGREES)
-                {
-                    if (!_elLowerProxChange)
-                    {
-                        _elLowerProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor;
-                        _elLowerProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor = true;
-                }
-                else if (_elEncoderDegrees > SimulationConstants.LIMIT_HIGH_EL_DEGREES)
-                {
-                    if (!_elUpperProxChange)
-                    {
-                        _elUpperProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor;
-                        _elUpperProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor = true;
-                }
-                else
-                {
-                    if (!_elUpperProxChange)
-                    {
-                        _elUpperProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor;
-                        _elUpperProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor = false;
-
-                    if (!_elLowerProxChange)
-                    {
-                        _elLowerProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor;
-                        _elLowerProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor = false;
-                }
             }
             // AKA Run Demo checkbox has not been selected
             else
@@ -395,19 +323,6 @@ namespace ControlRoomApplication.GUI
 
                 if (_elUpperLimitChange)
                     controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit = _elUpperLimitOld;
-
-                // Proximity Sensor Logic
-                if (_azCWProxChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor = _azCWProxOld;
-
-                if (_azCCWProxChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor = _azCCWProxOld;
-
-                if (_elLowerProxChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor = _elLowerProxOld;
-
-                if (_elUpperProxChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor = _elUpperProxOld;
             }
 
             
@@ -475,12 +390,10 @@ namespace ControlRoomApplication.GUI
             lblElLimStatus1.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Lower_Limit.ToString();
             lblElLimStatus2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit.ToString();
 
-            lblAzProxStatus1.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor.ToString();
-            lblAzProxStatus2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor.ToString();
-            lblAzProxStatus3.Text = "Not Used";
+            lblAzHomeStatus1.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.homeSensorData.Azimuth_Home_One.ToString();
+            lblAzHomeStatus2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.homeSensorData.Azimuth_Home_Two.ToString();
+            lblELHomeStatus.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.homeSensorData.Elevation_Home.ToString();
 
-            lblEleProx1.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor.ToString();
-            lblEleProx2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor.ToString();
 
             ///*** Temperature Logic Start***/
             //if (elevationTemperature <= 79 && azimuthTemperature <= 79)

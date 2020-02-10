@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Controllers
         protected RadioTelescope Parent;
 
         public LimitSwitchData limitSwitchData;
-        public ProximitySensorData proximitySensorData;
+        public HomeSensorData homeSensorData;
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup

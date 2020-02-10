@@ -1,4 +1,6 @@
-﻿using ControlRoomApplication.Entities;
+﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Entities;
 using Modbus.Data;
 using Modbus.Device;
 using System;
@@ -26,6 +28,12 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
         private bool runsimulator = true, mooving = false, jogging = false, isconfigured = false, isTest = false;
 
         private int acc, distAZ, distEL, currentAZ, currentEL, AZ_speed, EL_speed;
+        private int AZ10Lim = -ConversionHelper.DegreesToSteps( 10 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int AZ370Lim = ConversionHelper.DegreesToSteps( 375 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int EL0Lim = -ConversionHelper.DegreesToSteps( 15 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int EL90Lim = ConversionHelper.DegreesToSteps( 93 , MotorConstants.GEARING_RATIO_AZIMUTH );
+
+        bool AZ10LimStatus = false, AZ370LimStatus = false, EL0LimStatus = false, EL90LimStatus = false;
 
         public Simulation_control_pannel( string PLC_ip , string MCU_ip , int MCU_port , int PLC_port , bool istest ) {
             // PLCTCPClient = new TcpClient(PLC_ip, PLC_port);
@@ -95,6 +103,24 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                         PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 1 } );
                         Thread.Sleep( 5 );
                         continue;
+                    } else {
+                        if(AZ10LimStatus != (currentAZ < AZ10Lim)) {
+                            AZ10LimStatus = (currentAZ < AZ10Lim);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT - 1 , new ushort[] { BoolToInt( AZ10LimStatus ) } );
+                        }
+                        if(AZ370LimStatus != (currentAZ > AZ370Lim)) {
+                            AZ370LimStatus = (currentAZ < AZ370Lim);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT - 1 , new ushort[] { BoolToInt( AZ370LimStatus ) } );
+                        }
+
+                        if(EL0LimStatus != (currentEL < EL0Lim)) {
+                            EL0LimStatus = (currentEL < EL0Lim);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT - 1 , new ushort[] { BoolToInt( EL0LimStatus ) } );
+                        }
+                        if(EL90LimStatus != (currentEL > EL90Lim)) {
+                            EL90LimStatus = (currentEL < EL90Lim);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT - 1 , new ushort[] { BoolToInt( EL90LimStatus ) } );
+                        }
                     }
                     Thread.Sleep( 50 );
                 }
@@ -281,7 +307,12 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             }
             return data;
         }
-
+        
+        private ushort BoolToInt(bool i ) {
+            if(!i) {
+                return 0;
+            } else return 1;
+        }
 
     }
 }

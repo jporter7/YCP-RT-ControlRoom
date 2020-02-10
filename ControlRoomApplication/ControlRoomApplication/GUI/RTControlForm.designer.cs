@@ -574,7 +574,6 @@
             this.label5.Size = new System.Drawing.Size(28, 17);
             this.label5.TabIndex = 27;
             this.label5.Text = "0.0";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label3
             // 

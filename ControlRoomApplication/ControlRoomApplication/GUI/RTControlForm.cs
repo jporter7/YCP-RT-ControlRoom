@@ -603,11 +603,6 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void plusElaButton_Down(object sender, MouseEventArgs e ){
             double speed = Convert.ToDouble( speedComboBox.Text);
             logger.Info("Jog PosButton MouseDown");

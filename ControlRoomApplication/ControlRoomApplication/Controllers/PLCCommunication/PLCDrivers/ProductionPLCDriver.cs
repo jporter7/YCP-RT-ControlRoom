@@ -47,7 +47,7 @@ namespace ControlRoomApplication.Controllers
             MCU = new MCUManager(  MCU_ip ,  MCU_port );
 
             limitSwitchData = new Simulators.Hardware.LimitSwitchData();
-            proximitySensorData = new Simulators.Hardware.ProximitySensorData();
+            homeSensorData = new Simulators.Hardware.HomeSensorData();
 
             try
             {
@@ -188,20 +188,20 @@ namespace ControlRoomApplication.Controllers
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_HOME: {
                         logger.Info("Azimuth CCW Proximity Sensor Changed");
-                        proximitySensorData.Azimuth_CCW_Prox_Sensor = !proximitySensorData.Azimuth_CCW_Prox_Sensor;
-                        if (proximitySensorData.Azimuth_CCW_Prox_Sensor)
-                            logger.Info("Proximity Sensor Hit");
+                        homeSensorData.Azimuth_Home_One = !homeSensorData.Azimuth_Home_One;
+                        if (homeSensorData.Azimuth_Home_One)
+                            logger.Info( "Azimuth_Home_One Sensor Hit" );
                         else
-                            logger.Info("Proximity Sensor Not Hit");
+                            logger.Info( "Azimuth_Home_One Sensor Not Hit" );
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY: {
                         logger.Info("Azimuth CW Proximity Sensor Changed");
-                        proximitySensorData.Azimuth_CW_Prox_Sensor = !proximitySensorData.Azimuth_CW_Prox_Sensor;
-                        if (proximitySensorData.Azimuth_CW_Prox_Sensor)
-                            logger.Info("Proximity Sensor Hit");
+                        homeSensorData.Azimuth_Home_Two = !homeSensorData.Azimuth_Home_Two;
+                        if (homeSensorData.Azimuth_Home_Two)
+                            logger.Info( "Azimuth_Home_Two Sensor Hit" );
                         else
-                            logger.Info("Proximity Sensor Not Hit");
+                            logger.Info( "Azimuth_Home_Two Sensor Not Hit" );
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
@@ -224,8 +224,8 @@ namespace ControlRoomApplication.Controllers
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_0_HOME: {
                         logger.Info("Elevation Lower Proximity Sensor Changed");
-                        proximitySensorData.Elevation_Lower_Prox_Sensor = !proximitySensorData.Elevation_Lower_Prox_Sensor;
-                        if (proximitySensorData.Elevation_Lower_Prox_Sensor)
+                        homeSensorData.Elevation_Home = !homeSensorData.Elevation_Home;
+                        if (homeSensorData.Elevation_Home)
                             logger.Info("Proximity Sensor Hit");
                         else
                             logger.Info("Proximity Sensor Not Hit");
