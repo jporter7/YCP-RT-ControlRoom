@@ -490,7 +490,7 @@ namespace ControlRoomApplication.Main
             if (loopBackBox.Checked)
             {
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
-                this.txtMcuCOMPort.Text = "221"; //default MCU Port
+                this.txtMcuCOMPort.Text = "8081"; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
@@ -619,6 +619,11 @@ namespace ControlRoomApplication.Main
         }
 
         private void portGroupbox_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtMcuCOMPort_TextChanged(object sender, EventArgs e)
         {
 
         }
