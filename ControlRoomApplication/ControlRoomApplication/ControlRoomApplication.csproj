@@ -190,6 +190,7 @@
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
     <Compile Include="Controllers\Sensors\ProximitySensorData.cs" />
     <Compile Include="Controllers\TCPCommunication\RemoteListener.cs" />
+    <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="Entities\Log\Log.cs" />
     <Compile Include="Entities\Override\Override.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeDB.cs" />
     <Compile Include="Entities\Sensor\Sensor.cs" />
     <Compile Include="Entities\Sensor\SensorItemEnum.cs" />
     <Compile Include="Entities\Sensor\SensorStatus.cs" />

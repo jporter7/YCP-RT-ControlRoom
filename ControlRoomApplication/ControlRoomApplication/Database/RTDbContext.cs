@@ -27,6 +27,7 @@ namespace ControlRoomApplication.Main
         
         public DbSet<WeatherData> Weather { get; set; }
         public DbSet<SensorStatus> SensorStatus { get; set; }
+        public DbSet<RadioTelescope> RadioTelescope { get; set; }
 
     }
 }

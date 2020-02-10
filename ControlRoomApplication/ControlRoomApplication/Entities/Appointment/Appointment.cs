@@ -21,8 +21,8 @@ namespace ControlRoomApplication.Entities
             Coordinates = new List<Coordinate>();
             RFDatas = new List<RFData>();
             SpectraCyberConfig = new SpectraCyberConfig();
-            Status = AppointmentStatusEnum.UNDEFINED;
-            Type = AppointmentTypeEnum.UNDEFINED;
+            _Status = AppointmentStatusEnum.UNDEFINED;
+            _Type = AppointmentTypeEnum.UNDEFINED;
         }
 
         /// <summary>
@@ -32,79 +32,185 @@ namespace ControlRoomApplication.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
+        /// <summary>
+        /// The getter/setter for the user id associated with this Appointment.
+        /// </summary>
         [Column("user_id")]
-        public int UserId { get; set; }
+        public int user_id { get; set; }
 
         /// <summary>
         /// The getter/setter for the start time associated with this Appointment.
         /// </summary>
         [Required]
         [Column("start_time")]
-        public DateTime StartTime { get; set; }
+        public DateTime start_time { get; set; }
 
         /// <summary>
         /// The getter/setter for the end time associated with this Appointment.
         /// </summary>
         [Required]
         [Column("end_time")]
-        public DateTime EndTime { get; set; }
+        public DateTime end_time { get; set; }
 
         /// <summary>
         /// The getter/setter for the celestial body asscociated with this Appointment.
         /// </summary>
         [Column("celestial_body_id")]
-        public int celestialBodyId { get; set; }
-        [ForeignKey("celestialBodyId")]
+        public int celestial_body_id { get; set; }
+      //  [ForeignKey("celestial_body_id")]
+        [NotMapped]
         public CelestialBody CelestialBody { get; set; }
 
         /// <summary>
         /// The getter/setter for the Orientation asscociated with this Appointment.
         /// </summary>
-        [Column("orientation")]
+        [Column("orientation_id")]
+        public int orientation_id { get; set; }
+      //  [ForeignKey("orientation_id")]
+        [NotMapped]
         public Orientation Orientation { get; set; }
 
         /// <summary>
         /// The getter/setter for the coordinates asscociated with this Appointment.
         /// </summary>
-        [Required]
-        [Column("coordinates")]
-        public virtual ICollection<Coordinate> Coordinates { get; set; }
+        // [Required]
+        // [Column("coordinates")]
+        public virtual ICollection<Coordinate> Coordinates { get; set; } = new List<Coordinate>();
 
         /// <summary>
         /// The getter/setter for the RFData asscociated with this Appointment.
         /// </summary>
-        [Required]
-        [Column("rf_datas")]
-        public virtual ICollection<RFData> RFDatas { get; set; }
+        //[Required]
+        //[Column("rf_datas")]
+        public virtual ICollection<RFData> RFDatas { get; set; } = new List<RFData>();
+
+        [Column("public")]
+        public int Public { get; set; }
 
         /// <summary>
         /// The getter/setter for the telescope asscociated with this Appointment.
         /// </summary>
         [Required]
         [Column("telescope_id")]
-        public int TelescopeId { get; set; }
+        public int telescope_id { get; set; }
 
         /// <summary>
         /// The getter/setter for the status asscociated with this Appointment.
+        /// This is the 
         /// </summary>
+        [NotMapped]
+        public AppointmentStatusEnum _Status
+        {
+            get
+            {
+                return (AppointmentStatusEnum)Enum.Parse(typeof(AppointmentStatusEnum), status);
+            }
+            set
+            {
+                this.status = value.ToString();
+            }
+        }
+
+        private string backingStatus { get; set; }
+
         [Required]
         [Column("status")]
-        public AppointmentStatusEnum Status { get; set; }
+        public string status {
+            get
+            {
+                return this.backingStatus;
+            }
+            set
+            {
+                if (value == null || Enum.IsDefined(typeof(AppointmentStatusEnum), value))
+                {
+                    this.backingStatus = value;
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
+            }
+        }
 
         /// <summary>
         /// The getter/setter for the Appointment type.
         /// </summary>
+        [NotMapped]
+        public AppointmentTypeEnum _Type {
+            get
+            {
+                return (AppointmentTypeEnum)Enum.Parse(typeof(AppointmentTypeEnum), type);
+            }
+            set
+            {
+                this.type = value.ToString();
+            }
+        }
+
+        private string backingType { get; set; }
+
         [Required]
         [Column("type")]
-        public AppointmentTypeEnum Type { get; set; }
+        public string type {
+            get
+            {
+                return this.backingType;
+            }
+            set
+            {
+                if (value == null || Enum.IsDefined(typeof(AppointmentTypeEnum), value))
+                {
+                    this.backingType = value;
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
+            }
+        }
+
+        /// <summary>
+        /// The getter/setter for the Appointment priority type.
+        /// </summary>
+        [NotMapped]
+        public AppointmentPriorityEnum _Priority {
+            get {
+                return (AppointmentPriorityEnum)Enum.Parse(typeof(AppointmentPriorityEnum), priority);
+            }
+            set
+            {
+                this.priority = value.ToString();
+            }
+        }
+
+        private string backingPriority {get; set;}
+
+        [Required]
+        [Column("priority")]
+        public string priority {
+            get
+            {
+                return this.backingPriority;
+            }
+            set
+            {
+                if (value == null || Enum.IsDefined(typeof(AppointmentPriorityEnum), value))
+                {
+                    this.backingPriority = value;
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
+            }
+        }
 
         /// <summary>
         /// The getter/setter for the SpectraCyberConfig type.
         /// </summary>
- //       [Required]
- //       [Column("spectracyber_config")]
- // changing for now because database team does not have time for this change this semester
+        //       [Required]
+        //    [Column("spectracyber_config")]
         [NotMapped]
         public SpectraCyberConfig SpectraCyberConfig { get; set; }
 
@@ -139,7 +245,7 @@ namespace ControlRoomApplication.Entities
                 return 1;
             }
             // Use the DateTime Compare method to compare StartTimes
-            return DateTime.Compare(StartTime, other.StartTime);
+            return DateTime.Compare(start_time, other.start_time);
         }
 
         /// <summary>
@@ -177,12 +283,12 @@ namespace ControlRoomApplication.Entities
         }
 
         /// <summary>
-        /// Returns the HashCode of the Appointment's StartTime  
+        /// Returns the HashCode of the Appointment's start_time  
         /// (Implemention of the IComparable Interface)
         /// </summary>
         public override int GetHashCode()
         {
-            return StartTime.GetHashCode();
+            return start_time.GetHashCode();
         }
 
         /// <summary>
