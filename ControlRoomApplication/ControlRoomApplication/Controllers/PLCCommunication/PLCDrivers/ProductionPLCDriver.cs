@@ -619,24 +619,14 @@ namespace ControlRoomApplication.Controllers
         }
 
         public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
-            return MCU.Configure_MCU(  startSpeedDPSAzimuth ,  startSpeedDPSElevation ,  homeTimeoutSecondsAzimuth ,  homeTimeoutSecondsElevation ).Result;
+            return MCU.Configure_MCU(  startSpeedDPSAzimuth ,  startSpeedDPSElevation ,  homeTimeoutSecondsAzimuth ,  homeTimeoutSecondsElevation ).GetAwaiter().GetResult();
         }
         /// <summary>
         /// this gets the position stored in the MCU which is based of the number of steps the MCU has taken since it was last 0ed out
         /// </summary>
         /// <returns></returns>
         public override Orientation read_Position(){
-            ushort[] data = MCU.readModbusReregs( 0, 14);
-           // Console.WriteLine("AZ_finni2 {0,10} EL_finni2 {1,10}", (65536 * data[0]) + data[1], (65536 * data[10]) + data[11]);
-            Orientation current_orientation = new Orientation(
-                ConversionHelper.StepsToDegrees(
-                    (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] <<16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW] ,
-                    MotorConstants.GEARING_RATIO_AZIMUTH), 
-                ConversionHelper.StepsToDegrees(
-                    (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] <<16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW] , 
-                    MotorConstants.GEARING_RATIO_ELEVATION)
-            );
-            return current_orientation;
+            return MCU.read_Position();
         }
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
@@ -690,7 +680,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
         public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).Result;
+            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
         }
 
 
@@ -716,7 +706,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return MCU.send_relative_move_comand( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL ).Result;
+            return MCU.send_relative_move_comand( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
         }
 
         public override Task<bool> Home() {
