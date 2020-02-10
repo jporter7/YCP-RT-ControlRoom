@@ -184,10 +184,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeAzimuthJog(double speed, bool clockwise)
         {
-            if(!clockwise) {
-                speed = -speed;
-            }
-            return RadioTelescope.PLCDriver.Start_jog( speed,0 );
+            return RadioTelescope.PLCDriver.Start_jog( speed, clockwise, 0,false );
         }
 
         /// <summary>
@@ -200,10 +197,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeElevationJog(double speed, bool clockwise)
         {
-            if(!clockwise) {
-                speed = -speed;
-            }
-            return RadioTelescope.PLCDriver.Start_jog( 0,speed );
+            return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, clockwise);
         }
 
         /// <summary>

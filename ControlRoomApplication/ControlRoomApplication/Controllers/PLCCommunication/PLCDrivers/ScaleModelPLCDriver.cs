@@ -381,7 +381,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override bool Start_jog( double AZspeed , double ELspeed ) {
+        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
             throw new NotImplementedException();
 
         }

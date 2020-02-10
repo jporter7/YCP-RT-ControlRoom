@@ -183,9 +183,8 @@ namespace ControlRoomApplication.Controllers
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }
 
-        public override bool Start_jog( double AZspeed , double ELspeed )
-        {
-            return driver.Start_jog( AZspeed , ELspeed );
+        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
+            return driver.Start_jog( AZspeed, AZ_CW, ELspeed, EL_CW);
         }
 
         public override bool Get_interlock_status()

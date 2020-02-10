@@ -194,6 +194,7 @@
     <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
+    <Compile Include="Entities\Configuration\MCUConfiguration.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
     <Compile Include="Entities\DiagnosticData\Temperature.cs" />
     <Compile Include="Entities\Location\SensorLocationEnum.cs" />
