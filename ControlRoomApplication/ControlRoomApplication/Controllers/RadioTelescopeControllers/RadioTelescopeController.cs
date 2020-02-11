@@ -138,10 +138,13 @@ namespace ControlRoomApplication.Controllers
 
         /// <summary>
         /// Method used to request to set configuration of elements of the RT.
-        /// 
-        /// takes the starting speed of the motor in degrees per second (speed of tellescope after gearing)
-        /// and home timeout which is currently unused
+        /// takes the starting speed of the motor in RPM (speed of tellescope after gearing)
         /// </summary>
+        /// <param name="startSpeedAzimuth">RPM</param>
+        /// <param name="startSpeedElevation">RPM</param>
+        /// <param name="homeTimeoutAzimuth">SEC</param>
+        /// <param name="homeTimeoutElevation">SEC</param>
+        /// <returns></returns>
         public bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return RadioTelescope.PLCDriver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
@@ -200,9 +203,17 @@ namespace ControlRoomApplication.Controllers
             return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, clockwise);
         }
 
+
+        /// <summary>
+        /// send a clear move to the MCU to stop a jog
+        /// </summary>
+        public bool ExecuteRadioTelescopeStopJog() {
+            return RadioTelescope.PLCDriver.Stop_Jog();
+        }
+
         /// <summary>
         /// Method used to request that all of the Radio Telescope's movement comes
-        /// to a controlled stop.
+        /// to a controlled stop. this will not work for jog moves use 
         /// 
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived

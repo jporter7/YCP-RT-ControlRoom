@@ -386,6 +386,10 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
+        public override bool Stop_Jog() {
+            throw new NotImplementedException();
+        }
+
         public override bool Get_interlock_status() {
             return true;
 

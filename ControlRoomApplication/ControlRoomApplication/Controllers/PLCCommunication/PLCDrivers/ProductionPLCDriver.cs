@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
-
+using ControlRoomApplication.Entities.Configuration;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -638,9 +638,21 @@ namespace ControlRoomApplication.Controllers
             return clockwiseMove && counterMove;
         }
 
-        public override bool Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
-            return MCU.Configure_MCU(  startSpeedDPSAzimuth ,  startSpeedDPSElevation ,  homeTimeoutSecondsAzimuth ,  homeTimeoutSecondsElevation ).GetAwaiter().GetResult();
+        /// <summary>
+        /// send basic configuration to MCU
+        /// </summary>
+        /// <param name="startSpeedRPMAzimuth"></param>
+        /// <param name="startSpeedRPMElevation"></param>
+        /// <param name="homeTimeoutSecondsAzimuth"></param>
+        /// <param name="homeTimeoutSecondsElevation"></param>
+        /// <returns></returns>
+        public override bool Configure_MCU(double startSpeedRPMAzimuth, double startSpeedRPMElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation) {
+            return MCU.Configure_MCU(
+                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMAzimuth, HomeTimeoutSec = homeTimeoutSecondsAzimuth },
+                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation }
+                ).GetAwaiter().GetResult();
         }
+
         /// <summary>
         /// this gets the position stored in the MCU which is based of the number of steps the MCU has taken since it was last 0ed out
         /// </summary>
@@ -723,6 +735,10 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
             return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), EL_CW);
+        }
+
+        public override bool Stop_Jog() {
+            return MCU.Cancel_move();
         }
 
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {

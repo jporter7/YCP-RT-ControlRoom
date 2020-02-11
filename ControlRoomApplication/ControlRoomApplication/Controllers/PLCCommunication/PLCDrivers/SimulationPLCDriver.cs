@@ -209,5 +209,9 @@ namespace ControlRoomApplication.Controllers
         public override Task<bool> Home() {
             return driver.Home();
         }
+
+        public override bool Stop_Jog() {
+            return driver.Stop_Jog();
+        }
     }
 }

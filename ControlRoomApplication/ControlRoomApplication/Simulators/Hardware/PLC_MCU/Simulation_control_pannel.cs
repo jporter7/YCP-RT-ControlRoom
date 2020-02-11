@@ -208,7 +208,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             }
             logger.Info(outstr);
             jogging = false;
-            if(data[0] == 0x842C) {//if not configured dont move
+            if((data[0] |0xff00) == 0x8400) {//if not configured dont move
 
                 isconfigured = true;
             } else if(!isconfigured) {

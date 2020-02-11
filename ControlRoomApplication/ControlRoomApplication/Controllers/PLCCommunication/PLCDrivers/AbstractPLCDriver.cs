@@ -130,6 +130,8 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Start_jog( double AZspeed ,bool AZ_CW, double ELspeed ,bool EL_CW);
 
+        public abstract bool Stop_Jog();
+
         public abstract bool Get_interlock_status();
 
         public abstract bool[] Get_Limit_switches();

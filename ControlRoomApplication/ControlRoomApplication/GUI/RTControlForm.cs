@@ -590,7 +590,7 @@ namespace ControlRoomApplication.Main
             if (ControledButtonRadio.Checked)
             {
                 logger.Info("Executed Controlled Stop");
-                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeStopJog();
             }
             else if (immediateRadioButton.Checked)
             {

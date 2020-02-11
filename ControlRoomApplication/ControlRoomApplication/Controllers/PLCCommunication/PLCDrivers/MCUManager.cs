@@ -1,5 +1,6 @@
 ﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.Configuration;
 using Modbus.Device;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,8 @@ namespace ControlRoomApplication.Controllers {
         public ModbusIpMaster MCUModbusMaster;
         private TcpClient MCUTCPClient;
         public MCUpositonRegs mCUpositon;
+        private MCUConfigurationAxys Current_AZConfiguration;
+        private MCUConfigurationAxys Current_ELConfiguration;
         private int consecutiveErrors = 0;
         private int consecutiveSucsefullMoves = 0;
 
@@ -159,7 +162,10 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-
+        /// <summary>
+        /// TODO: once i am trackin what the active move is this should check what is currently running a jog perform a clear instead of hold
+        /// </summary>
+        /// <returns></returns>
         public bool Controled_stop() {
             MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_HOLD_MOVE ).Wait();
             return true;
@@ -170,48 +176,93 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-
-        public async Task<bool> Configure_MCU( double startSpeedDPSAzimuth , double startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
-            int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
-            int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );
+        public async Task<bool> Configure_MCU(MCUConfigurationAxys AZconfig, MCUConfigurationAxys ELconfig) {
+            Current_AZConfiguration = AZconfig;
+            Current_ELConfiguration = ELconfig;
+            int gearedSpeedAZ = ConversionHelper.RPMToSPS(AZconfig.StartSpeed, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int gearedSpeedEL = ConversionHelper.RPMToSPS(ELconfig.StartSpeed, MotorConstants.GEARING_RATIO_ELEVATION);
             AZStartSpeed = gearedSpeedAZ;
             ELStartSpeed = gearedSpeedEL;
-            Console.WriteLine( gearedSpeedAZ.ToString() + " :AZ           EL:" + gearedSpeedEL.ToString() );
-            if((gearedSpeedEL < 1) || (gearedSpeedEL > MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY)) {
-                throw new ArgumentOutOfRangeException( "startSpeedDPSElevation" , startSpeedDPSElevation ,
-                    String.Format( "startSpeedDPSElevation should be between {0} and {1}" ,
-                    ConversionHelper.SPSToDPS( 1 , MotorConstants.GEARING_RATIO_ELEVATION ) ,
-                    ConversionHelper.SPSToDPS( MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY , MotorConstants.GEARING_RATIO_ELEVATION ) ) );
-            }
-            if((gearedSpeedAZ < 1) || (gearedSpeedAZ > MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY)) {
-                throw new ArgumentOutOfRangeException( "startSpeedDPSAzimuth" , startSpeedDPSAzimuth ,
-                    String.Format( "startSpeedDPSAzimuth should be between {0} and {1}" ,
-                    ConversionHelper.SPSToDPS( 1 , MotorConstants.GEARING_RATIO_AZIMUTH ) ,
-                    ConversionHelper.SPSToDPS( MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
-            }
-            if((homeTimeoutSecondsElevation < 0) || (homeTimeoutSecondsElevation > 300)) {
-                throw new ArgumentOutOfRangeException( "homeTimeoutSecondsElevation" , homeTimeoutSecondsElevation ,
-                    String.Format( "homeTimeoutSecondsElevation should be between {0} and {1}" , 0 , 300 ) );
-            }
-            if((homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsAzimuth > 300)) {
-                throw new ArgumentOutOfRangeException( "homeTimeoutSecondsAzimuth" , homeTimeoutSecondsAzimuth ,
-                    String.Format( "homeTimeoutSecondsAzimuth should be between {0} and {1}" , 0 , 300 ) );
-            }
-            ushort[] data = {   0x842C,  0x0004 , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
-                                //0x0, 0x0, 0x0, 0x0, 0x0,0x0,0x0,0x0,0x0,0x0,
-                                0x842C, 0x0004, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0
-                                //      0x001C  //limit active high
-                                //      0x0004  //limit active low
-                                //anf1-anf2-motion-controller-user-manual.pdf page 50
-                                };
-            Console.WriteLine( "start" );
-            MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE ).Wait();
-            Task.Delay( 100 ).Wait();
-            MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data ).Wait();
-            Task.Delay( 100 ).Wait();
-            MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE ).Wait();
-            Console.WriteLine( "stop" );
+            TestDefaultParams(AZconfig.StartSpeed, ELconfig.StartSpeed, AZconfig.HomeTimeoutSec, ELconfig.HomeTimeoutSec);
+            ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
+                                MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
+            Console.WriteLine("start");
+            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_IMMEDIATE_STOP).Wait();
+            Task.Delay(100).Wait();
+            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_CLEAR_MOVE).Wait();
+            Task.Delay(100).Wait();
+            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_RESET_ERRORS).Wait();
+            Task.Delay(100).Wait();
+            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, data).Wait();
+            Task.Delay(100).Wait();
+            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_CLEAR_MOVE).Wait();
+            Console.WriteLine("stop");
             return true;
+        }
+
+        private ushort MakeMcuConfMSW(MCUConfigurationAxys AxysConf) {
+            ushort conf = 0x8400;//first byte should be 84 for current hardware setup
+            switch (AxysConf.CWinput) {
+                case CW_CCW_input_use.LimitSwitch:
+                    conf = (ushort)(conf | 0b000_1000);
+                    break;
+                case CW_CCW_input_use.EStop:
+                    conf = (ushort)(conf | 0b001_0000);
+                    break;
+            }
+            switch (AxysConf.CCWinput) {
+                case CW_CCW_input_use.LimitSwitch:
+                    conf = (ushort)(conf | 0b0010_0000);
+                    break;
+                case CW_CCW_input_use.EStop:
+                    conf = (ushort)(conf | 0b0100_0000);
+                    break;
+            }
+            if (AxysConf.UseHomesensors) {
+                conf = (ushort)(conf | 0b0100);
+            }
+
+            return conf;
+        }
+
+        private ushort MakeMcuConfLSW(MCUConfigurationAxys AxysConf) {
+            ushort conf = 0x0000;
+            if (AxysConf.HomeActive_High) {
+                conf = (ushort)(conf | 0b0_0100);
+            }
+            if (AxysConf.CWactive_High) {
+                conf = (ushort)(conf | 0b0_1000);
+            }
+            if (AxysConf.CCWactive_High) {
+                conf = (ushort)(conf | 0b1_0000);
+            }
+            return conf;
+        }
+
+        private void TestDefaultParams(double startSpeedDPSAzimuth, double startSpeedDPSElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation) {
+            int gearedSpeedAZ = ConversionHelper.DPSToSPS(startSpeedDPSAzimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int gearedSpeedEL = ConversionHelper.DPSToSPS(startSpeedDPSElevation, MotorConstants.GEARING_RATIO_ELEVATION);
+            Console.WriteLine(gearedSpeedAZ.ToString() + " :AZ           EL:" + gearedSpeedEL.ToString());
+            if ((gearedSpeedEL < 1) || (gearedSpeedEL > MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY)) {
+                throw new ArgumentOutOfRangeException("startSpeedDPSElevation", startSpeedDPSElevation,
+                    String.Format("startSpeedDPSElevation should be between {0} and {1}",
+                    ConversionHelper.SPSToDPS(1, MotorConstants.GEARING_RATIO_ELEVATION),
+                    ConversionHelper.SPSToDPS(MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY, MotorConstants.GEARING_RATIO_ELEVATION)));
+            }
+            if ((gearedSpeedAZ < 1) || (gearedSpeedAZ > MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY)) {
+                throw new ArgumentOutOfRangeException("startSpeedDPSAzimuth", startSpeedDPSAzimuth,
+                    String.Format("startSpeedDPSAzimuth should be between {0} and {1}",
+                    ConversionHelper.SPSToDPS(1, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.SPSToDPS(MCUConstants.ACTUAL_MCU_DEFAULT_PEAK_VELOCITY, MotorConstants.GEARING_RATIO_AZIMUTH)));
+            }
+            if ((homeTimeoutSecondsElevation < 0) || (homeTimeoutSecondsElevation > 300)) {
+                throw new ArgumentOutOfRangeException("homeTimeoutSecondsElevation", homeTimeoutSecondsElevation,
+                    String.Format("homeTimeoutSecondsElevation should be between {0} and {1}", 0, 300));
+            }
+            if ((homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsAzimuth > 300)) {
+                throw new ArgumentOutOfRangeException("homeTimeoutSecondsAzimuth", homeTimeoutSecondsAzimuth,
+                    String.Format("homeTimeoutSecondsAzimuth should be between {0} and {1}", 0, 300));
+            }
         }
 
 
