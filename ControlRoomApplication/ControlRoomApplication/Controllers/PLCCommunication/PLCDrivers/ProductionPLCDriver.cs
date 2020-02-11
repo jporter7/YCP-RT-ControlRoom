@@ -190,9 +190,9 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_HOME: {
-                        bool previous = limitSwitchData.Azimuth_CCW_Limit;
+                        bool previous = homeSensorData.Azimuth_Home_One;
                         homeSensorData.Azimuth_Home_One = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_HOME] );
-                        if(previous != limitSwitchData.Azimuth_CCW_Limit) {
+                        if(previous != homeSensorData.Azimuth_Home_One) {
                             logger.Info("Azimuth CCW Proximity Sensor Changed");
                             if (homeSensorData.Azimuth_Home_One)
                                 logger.Info( "Azimuth_Home_One Sensor Hit" );
@@ -202,9 +202,9 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY: {
-                        bool previous = limitSwitchData.Azimuth_CCW_Limit;
+                        bool previous = homeSensorData.Azimuth_Home_Two;
                         homeSensorData.Azimuth_Home_Two = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );
-                        if(previous != limitSwitchData.Azimuth_CCW_Limit) {
+                        if(previous != homeSensorData.Azimuth_Home_Two) {
                             logger.Info("Azimuth CW Proximity Sensor Changed");
                             if (homeSensorData.Azimuth_Home_Two)
                                 logger.Info( "Azimuth_Home_Two Sensor Hit" );
@@ -214,9 +214,9 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                        bool previous = limitSwitchData.Azimuth_CCW_Limit;
+                        bool previous = limitSwitchData.Azimuth_CW_Limit;
                         limitSwitchData.Azimuth_CW_Limit = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_375_LIMIT] );
-                        if(previous != limitSwitchData.Azimuth_CCW_Limit) {
+                        if(previous != limitSwitchData.Azimuth_CW_Limit) {
                             logger.Info("Azimuth CW Limit Changed");
                             if (limitSwitchData.Azimuth_CW_Limit)
                                 logger.Info("Limit Switch Hit");
@@ -226,9 +226,9 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                        bool previous = limitSwitchData.Azimuth_CCW_Limit;
+                        bool previous = limitSwitchData.Elevation_Lower_Limit;
                         limitSwitchData.Elevation_Lower_Limit = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_10_LIMIT]);
-                        if(previous != limitSwitchData.Azimuth_CCW_Limit) {
+                        if(previous != limitSwitchData.Elevation_Lower_Limit) {
                             logger.Info("Elevation Lower Limit Changed");
                             if (limitSwitchData.Elevation_Lower_Limit)
                                 logger.Info("Limit Switch Hit");
@@ -238,9 +238,9 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_0_HOME: {
-                        bool previous = limitSwitchData.Azimuth_CCW_Limit;
+                        bool previous = homeSensorData.Elevation_Home;
                         homeSensorData.Elevation_Home = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_0_HOME] );
-                        if(previous != limitSwitchData.Azimuth_CCW_Limit) {
+                        if(previous != homeSensorData.Elevation_Home) {
                             logger.Info("Elevation Lower Proximity Sensor Changed");
                             if (homeSensorData.Elevation_Home)
                                 logger.Info("Proximity Sensor Hit");
@@ -250,14 +250,38 @@ namespace ControlRoomApplication.Controllers
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                        bool previous = limitSwitchData.Azimuth_CCW_Limit;
+                        bool previous = limitSwitchData.Elevation_Upper_Limit;
                         limitSwitchData.Elevation_Upper_Limit = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_90_LIMIT] );
-                        if(previous != limitSwitchData.Azimuth_CCW_Limit) {
+                        if(previous != limitSwitchData.Elevation_Upper_Limit) {
                             logger.Info("Elevation Upper Limit Changed");
                             if (limitSwitchData.Elevation_Upper_Limit)
                                 logger.Info("Limit Switch Hit");
                             else
                                 logger.Info("Limit Switch Not Hit");
+                        }
+                        break;
+                    }
+                case (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK: {
+                        bool previous = plcInput.Gate_Sensor;
+                        plcInput.Gate_Sensor = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
+                        if(previous != plcInput.Gate_Sensor) {
+                            logger.Info( "Elevation Upper Limit Changed" );
+                            if(plcInput.Gate_Sensor)
+                                logger.Info( "Limit Switch Hit" );
+                            else
+                                logger.Info( "Limit Switch Not Hit" );
+                        }
+                        break;
+                    }
+                case (ushort)PLC_modbus_server_register_mapping.E_STOP: {
+                        bool previous = plcInput.Estop;
+                        plcInput.Estop = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.E_STOP] );
+                        if(previous != plcInput.Estop) {
+                            logger.Info( "Elevation Upper Limit Changed" );
+                            if(plcInput.Estop)
+                                logger.Info( "Limit Switch Hit" );
+                            else
+                                logger.Info( "Limit Switch Not Hit" );
                         }
                         break;
                     }
@@ -294,7 +318,7 @@ namespace ControlRoomApplication.Controllers
 
 
         public override bool Get_interlock_status() {
-            return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK] );
+            return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
         }
 
 

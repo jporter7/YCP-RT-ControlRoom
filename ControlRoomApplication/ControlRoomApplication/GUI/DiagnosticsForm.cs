@@ -25,9 +25,6 @@ namespace ControlRoomApplication.GUI
 
         FakeEncoderSensor myEncoder = new FakeEncoderSensor();
         /***********DEMO MODE VARIABLES**************/
-        private double[] azEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
-        private double[] elEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //10 bits of precision, 2.8 
-
         DateTime currentEncodDate = DateTime.Now;
 
         /***********DEMO MODE VARIABLES END*********/
@@ -480,10 +477,6 @@ namespace ControlRoomApplication.GUI
 
         }
 
-        private void lblAzLimStatus2_Click(object sender, System.EventArgs e)
-        {
-
-        }
 
         private void button4_Click(object sender, System.EventArgs e)
         {
@@ -582,172 +575,6 @@ namespace ControlRoomApplication.GUI
 
         }
 
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox4_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox6_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tabPage3_Click(object sender, EventArgs e)
-        {
-
-
-        }
-
-        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void windSpeedLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void windDirLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void fldAzTemp_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label25_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void fldElTemp_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void barometricPressureLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void MCU_Statui_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblElevationTemp_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblElProx1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEleProx1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblAzProx2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblAzProxStatus2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblElLimit1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblElLimStatus1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblAzLimit2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void fanLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label24_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtTemperature_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void startTimeTextBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void button7_Click(object sender, EventArgs e)
         {
             string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
@@ -826,11 +653,6 @@ namespace ControlRoomApplication.GUI
             }
         }
 
-        private void splitContainer1_Panel1_Paint_1(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void diagnosticScriptCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (diagnosticScriptCombo.SelectedIndex >= 0)
@@ -845,10 +667,6 @@ namespace ControlRoomApplication.GUI
 
         }
 
-        private void selectDemo_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
         /** Conversion from fahrenheit to celsius (Currently not being used) 
             if(celOrFar)
             {

@@ -86,7 +86,7 @@ namespace ControlRoomApplication.Entities
         /// <item><description><para><em>IN</em></para></description></item>
         /// high when gate is open
         /// </summary>
-        Safety_INTERLOCK = 16 + 1,
+        Gate_Safety_INTERLOCK = 16 + 1,
 
         /// <summary>
         /// <item><description><para><em>IN</em></para></description></item>

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Simulators.Hardware;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.Sensors;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -22,6 +23,8 @@ namespace ControlRoomApplication.Controllers
 
         public LimitSwitchData limitSwitchData;
         public HomeSensorData homeSensorData;
+        public MiscPlcInput plcInput;
+
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup

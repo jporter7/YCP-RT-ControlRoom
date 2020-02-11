@@ -186,6 +186,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
+    <Compile Include="Controllers\Sensors\MiscPlcInput.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />
     <Compile Include="Controllers\Sensors\LimitSwitchData.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
