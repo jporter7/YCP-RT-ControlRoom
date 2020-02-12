@@ -294,6 +294,8 @@ namespace ControlRoomApplication.GUI
             lblAzHomeStatus2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.homeSensorData.Azimuth_Home_Two.ToString();
             lblELHomeStatus.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.homeSensorData.Elevation_Home.ToString();
 
+            lbEstopStat.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.plcInput.Estop.ToString();
+            lbGateStat.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.plcInput.Gate_Sensor.ToString();
 
             ///*** Temperature Logic Start***/
             //if (elevationTemperature <= 79 && azimuthTemperature <= 79)
