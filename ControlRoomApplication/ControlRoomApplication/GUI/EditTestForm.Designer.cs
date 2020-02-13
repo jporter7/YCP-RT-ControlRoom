@@ -156,6 +156,7 @@
             this.ClientSize = new System.Drawing.Size(356, 245);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.splitContainer1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "editTestForm";
             this.Text = "Edit Scripts";
             this.Load += new System.EventHandler(this.Form1_Load);

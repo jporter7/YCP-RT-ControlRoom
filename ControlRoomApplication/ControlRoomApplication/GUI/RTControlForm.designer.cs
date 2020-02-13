@@ -253,9 +253,9 @@
             this.RAIncGroupbox.Controls.Add(this.oneButton);
             this.RAIncGroupbox.Controls.Add(this.oneForthButton);
             this.RAIncGroupbox.Location = new System.Drawing.Point(6, 54);
-            this.RAIncGroupbox.Margin = new System.Windows.Forms.Padding(2);
+            this.RAIncGroupbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.RAIncGroupbox.Name = "RAIncGroupbox";
-            this.RAIncGroupbox.Padding = new System.Windows.Forms.Padding(2);
+            this.RAIncGroupbox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.RAIncGroupbox.Size = new System.Drawing.Size(230, 55);
             this.RAIncGroupbox.TabIndex = 16;
             this.RAIncGroupbox.TabStop = false;
@@ -267,7 +267,7 @@
             this.tenButton.BackColor = System.Drawing.Color.DarkGray;
             this.tenButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.tenButton.Location = new System.Drawing.Point(182, 18);
-            this.tenButton.Margin = new System.Windows.Forms.Padding(2);
+            this.tenButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tenButton.Name = "tenButton";
             this.tenButton.Size = new System.Drawing.Size(40, 30);
             this.tenButton.TabIndex = 3;
@@ -280,7 +280,7 @@
             this.fiveButton.BackColor = System.Drawing.Color.DarkGray;
             this.fiveButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.fiveButton.Location = new System.Drawing.Point(124, 18);
-            this.fiveButton.Margin = new System.Windows.Forms.Padding(2);
+            this.fiveButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.fiveButton.Name = "fiveButton";
             this.fiveButton.Size = new System.Drawing.Size(40, 30);
             this.fiveButton.TabIndex = 2;
@@ -293,7 +293,7 @@
             this.oneButton.BackColor = System.Drawing.Color.DarkGray;
             this.oneButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.oneButton.Location = new System.Drawing.Point(65, 18);
-            this.oneButton.Margin = new System.Windows.Forms.Padding(2);
+            this.oneButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.oneButton.Name = "oneButton";
             this.oneButton.Size = new System.Drawing.Size(40, 30);
             this.oneButton.TabIndex = 1;
@@ -306,7 +306,7 @@
             this.oneForthButton.BackColor = System.Drawing.Color.DarkGray;
             this.oneForthButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.oneForthButton.Location = new System.Drawing.Point(7, 18);
-            this.oneForthButton.Margin = new System.Windows.Forms.Padding(2);
+            this.oneForthButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.oneForthButton.Name = "oneForthButton";
             this.oneForthButton.Size = new System.Drawing.Size(40, 30);
             this.oneForthButton.TabIndex = 0;
@@ -375,7 +375,7 @@
             // statusTextBox
             // 
             this.statusTextBox.Location = new System.Drawing.Point(152, 164);
-            this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.statusTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.statusTextBox.Name = "statusTextBox";
             this.statusTextBox.Size = new System.Drawing.Size(102, 20);
             this.statusTextBox.TabIndex = 15;
@@ -389,9 +389,9 @@
             this.decIncGroupbox.Controls.Add(this.oneButtonDec);
             this.decIncGroupbox.Controls.Add(this.oneForthButtonDec);
             this.decIncGroupbox.Location = new System.Drawing.Point(6, 128);
-            this.decIncGroupbox.Margin = new System.Windows.Forms.Padding(2);
+            this.decIncGroupbox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.decIncGroupbox.Name = "decIncGroupbox";
-            this.decIncGroupbox.Padding = new System.Windows.Forms.Padding(2);
+            this.decIncGroupbox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.decIncGroupbox.Size = new System.Drawing.Size(230, 55);
             this.decIncGroupbox.TabIndex = 20;
             this.decIncGroupbox.TabStop = false;
@@ -402,7 +402,7 @@
             this.tenButtonDec.BackColor = System.Drawing.Color.DarkGray;
             this.tenButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.tenButtonDec.Location = new System.Drawing.Point(182, 18);
-            this.tenButtonDec.Margin = new System.Windows.Forms.Padding(2);
+            this.tenButtonDec.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tenButtonDec.Name = "tenButtonDec";
             this.tenButtonDec.Size = new System.Drawing.Size(40, 30);
             this.tenButtonDec.TabIndex = 3;
@@ -414,7 +414,7 @@
             this.fiveButtonDec.BackColor = System.Drawing.Color.DarkGray;
             this.fiveButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.fiveButtonDec.Location = new System.Drawing.Point(124, 18);
-            this.fiveButtonDec.Margin = new System.Windows.Forms.Padding(2);
+            this.fiveButtonDec.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.fiveButtonDec.Name = "fiveButtonDec";
             this.fiveButtonDec.Size = new System.Drawing.Size(40, 30);
             this.fiveButtonDec.TabIndex = 2;
@@ -426,7 +426,7 @@
             this.oneButtonDec.BackColor = System.Drawing.Color.DarkGray;
             this.oneButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.oneButtonDec.Location = new System.Drawing.Point(65, 18);
-            this.oneButtonDec.Margin = new System.Windows.Forms.Padding(2);
+            this.oneButtonDec.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.oneButtonDec.Name = "oneButtonDec";
             this.oneButtonDec.Size = new System.Drawing.Size(40, 30);
             this.oneButtonDec.TabIndex = 1;
@@ -438,7 +438,7 @@
             this.oneForthButtonDec.BackColor = System.Drawing.Color.DarkGray;
             this.oneForthButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.oneForthButtonDec.Location = new System.Drawing.Point(7, 18);
-            this.oneForthButtonDec.Margin = new System.Windows.Forms.Padding(2);
+            this.oneForthButtonDec.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.oneForthButtonDec.Name = "oneForthButtonDec";
             this.oneForthButtonDec.Size = new System.Drawing.Size(40, 30);
             this.oneForthButtonDec.TabIndex = 0;
@@ -712,6 +712,7 @@
             this.Controls.Add(this.freeControlGroupbox);
             this.Controls.Add(this.overRideGroupbox);
             this.Controls.Add(this.errorLabel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MinimumSize = new System.Drawing.Size(600, 479);
             this.Name = "FreeControlForm";
             this.Text = "Control Form";

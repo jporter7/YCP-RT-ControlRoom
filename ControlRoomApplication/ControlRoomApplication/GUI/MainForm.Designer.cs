@@ -330,7 +330,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(6, 58);
+            this.label3.Location = new System.Drawing.Point(2, 58);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(85, 18);
             this.label3.TabIndex = 19;
@@ -343,9 +343,9 @@
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(6, 25);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(136, 18);
+            this.label4.Size = new System.Drawing.Size(137, 18);
             this.label4.TabIndex = 20;
-            this.label4.Text = " PLC IP Address:";
+            this.label4.Text = "MCU IP Address:";
             this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // portGroupbox
@@ -376,12 +376,13 @@
             this.txtMcuCOMPort.Name = "txtMcuCOMPort";
             this.txtMcuCOMPort.Size = new System.Drawing.Size(107, 29);
             this.txtMcuCOMPort.TabIndex = 18;
+            this.txtMcuCOMPort.TextChanged += new System.EventHandler(this.txtMcuCOMPort_TextChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(7, 98);
+            this.label5.Location = new System.Drawing.Point(7, 96);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(93, 18);
             this.label5.TabIndex = 21;
@@ -461,6 +462,7 @@
             this.Controls.Add(this.simulationSettingsGroupbox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dataGridView1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.MinimumSize = new System.Drawing.Size(921, 366);
             this.Name = "MainForm";
