@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            Application.Run(new MainForm());
+            //Application.Run(new MainForm());
 
             //DatabaseOperations.DeleteLocalDatabase();
             /*
@@ -69,11 +69,13 @@ namespace ControlRoomApplication.Main
                 end = sw.ElapsedMilliseconds;
                 Console.WriteLine( "{0} milliseconds passed" , end - start );
             };
-            ///
-            ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver( "192.168.0.20" , "192.168.0.50" , 502 , 502 , true );
+            //*/
+            ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver( "192.168.0.70" , "192.168.0.50" , 502 , 502  );
             ushort zero = 0, readadr = 1024;//7500
-
-
+            Console.WriteLine("waiting...");
+            plc.StartAsyncAcceptingClients();
+            plc.WaitForPLCConnection( 30 ).GetAwaiter().GetResult();
+            Console.WriteLine( "PLC connected" );
             /*
             ushort[] exsistingin = plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 );
             ushort[] exsistingout = plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 );
@@ -91,30 +93,45 @@ namespace ControlRoomApplication.Main
                 if(ch>4) {
                     break;
                 }
-            }///
+            }//*/
 
-            double gearedSpeedAZ = .1, gearedSpeedEL = .1;
+            double gearedSpeedAZ = .06, gearedSpeedEL = .1;
             ushort homeTimeoutSecondsElevation = 50, homeTimeoutSecondsAzimuth = 50;
 
 
-            printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
+            printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
 
             plc.Configure_MCU( gearedSpeedAZ , gearedSpeedEL , homeTimeoutSecondsAzimuth , homeTimeoutSecondsElevation );
 
-            printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
+            //printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
 
             // Task.Delay( 5000 ).Wait();
             //bool home =plc.HomeBothAxyes().GetAwaiter().GetResult();
             //Console.WriteLine( home.ToString() );
             // plc.Move_to_orientation(new Entities.Orientation(3,2),new Entities.Orientation(0,0));
             //plc.Start_jog(RadioTelescopeAxisEnum.AZIMUTH,1000,true);
-              printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
+            //printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+            Task.Delay( 500 ).Wait();
+            plc.HomeBothAxyes().Wait();
 
+            Task.Delay( 4000 ).Wait();
+            /*
+           // plc.Move_to_orientation(new Entities.Orientation(0,60),new Entities.Orientation(0,0));
+            Task.Delay( 500 ).Wait();
+            printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+            plc.Cancel_move();
 
-            Task.Delay( 2000 );
+            Task.Delay( 4000 ).Wait();
+            printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+            plc.Controled_stop();
 
-            ///
+            Task.Delay( 4000 ).Wait();
+            printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+            plc.Immediade_stop();
+            // plc.HomeBothAxyes().Wait();
 
+            //*/
+//Environment.Exit(0);
             void printRegs(ushort[] inreg2 , ushort[] outreg2 ) {
                 string outstr = " inreg";
                 for(int v = 0; v < inreg2.Length; v++) {
@@ -129,7 +146,7 @@ namespace ControlRoomApplication.Main
                 Console.WriteLine( outstr );
             }
 
-
+            
             //*/
             /*
             runer();

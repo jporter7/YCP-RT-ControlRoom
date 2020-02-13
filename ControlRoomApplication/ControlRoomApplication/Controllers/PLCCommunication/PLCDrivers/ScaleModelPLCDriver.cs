@@ -381,9 +381,13 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override bool Start_jog( RadioTelescopeAxisEnum axis , double speed , bool clockwise ) {
+        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
             throw new NotImplementedException();
 
+        }
+
+        public override bool Stop_Jog() {
+            throw new NotImplementedException();
         }
 
         public override bool Get_interlock_status() {

@@ -213,7 +213,7 @@ namespace ControlRoomApplication.Main
                 {
                     logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
 
-                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(.1, .1, 0, 0);
+                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(.06, .06, 300, 300);
                 }
                 else
                 {

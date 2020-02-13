@@ -553,7 +553,6 @@
             this.label5.Size = new System.Drawing.Size(22, 13);
             this.label5.TabIndex = 27;
             this.label5.Text = "0.0";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label3
             // 
@@ -630,7 +629,6 @@
             this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 8;
             this.label1.Text = "Current Elavation: ";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // subJogButton
             // 

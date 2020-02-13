@@ -1,4 +1,6 @@
-﻿using ControlRoomApplication.Entities;
+﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Entities;
 using Modbus.Data;
 using Modbus.Device;
 using System;
@@ -26,6 +28,12 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
         private bool runsimulator = true, mooving = false, jogging = false, isconfigured = false, isTest = false;
 
         private int acc, distAZ, distEL, currentAZ, currentEL, AZ_speed, EL_speed;
+        private int AZ10Lim = -ConversionHelper.DegreesToSteps( 10 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int AZ370Lim = ConversionHelper.DegreesToSteps( 375 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int EL0Lim = -ConversionHelper.DegreesToSteps( 15 , MotorConstants.GEARING_RATIO_ELEVATION );
+        private int EL90Lim = ConversionHelper.DegreesToSteps( 93 , MotorConstants.GEARING_RATIO_ELEVATION );
+
+        bool AZ10LimStatus = false, AZ370LimStatus = false, EL0LimStatus = false, EL90LimStatus = false;
 
         public Simulation_control_pannel( string PLC_ip , string MCU_ip , int MCU_port , int PLC_port , bool istest ) {
             // PLCTCPClient = new TcpClient(PLC_ip, PLC_port);
@@ -89,12 +97,30 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                     //Thread.Sleep(1000);
                 }
                 logger.Info("________________PLC sim running");
-                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 1 } );
+                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK , new ushort[] { 1 } );
                 while(runsimulator) {
                     if(isTest) {
-                        PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Safety_INTERLOCK - 1 , new ushort[] { 1 } );
+                        PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK , new ushort[] { 1 } );
                         Thread.Sleep( 5 );
                         continue;
+                    } else {
+                        if(AZ10LimStatus != (currentAZ < AZ10Lim)) {
+                            AZ10LimStatus = (currentAZ < AZ10Lim);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT , new ushort[] { BoolToInt( AZ10LimStatus ) } );
+                        }
+                        if(AZ370LimStatus != (currentAZ > AZ370Lim)) {
+                            AZ370LimStatus = (currentAZ > AZ370Lim);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT , new ushort[] { BoolToInt( AZ370LimStatus ) } );
+                        }
+
+                        if(EL0LimStatus != (currentEL < EL0Lim)) {
+                            EL0LimStatus = (currentEL < EL0Lim);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, new ushort[] { BoolToInt( EL0LimStatus ) } );
+                        }
+                        if(EL90LimStatus != (currentEL > EL90Lim)) {
+                            EL90LimStatus = (currentEL > EL90Lim);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT , new ushort[] { BoolToInt( EL90LimStatus ) } );
+                        }
                     }
                     Thread.Sleep( 50 );
                 }
@@ -182,10 +208,11 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             }
             logger.Info(outstr);
             jogging = false;
-            if(data[0] == 0x8400) {//if not configured dont move
+            if((data[0] |0xff00) == 0x8400) {//if not configured dont move
 
                 isconfigured = true;
             } else if(!isconfigured) {
+                logger.Info( "!!!!!!!!!!!!!!!!!!!!COMNFIGURE" );
                 return true;
             }
 
@@ -199,6 +226,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 acc = data[4];
                 distAZ = (data[6] << 16) + data[7];
                 distEL = (data[12] << 16) + data[13];
+                Console.WriteLine( "moving to at ({0} , {1}) at ({2} , {3}) steps per second" , distAZ , distEL , AZ_speed , EL_speed );
                 return true;
             } else if(data[0] == 0x0080 || data[0] == 0x0100 || data[10] == 0x0080 || data[10] == 0x0100) {
                 jogging = true;
@@ -218,8 +246,9 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 } else {
                     EL_speed = 0;
                 }
+                Console.WriteLine( "jogging at {0}   {1}", AZ_speed , EL_speed );
                 return true;
-            } else if(data[0] == 0x0002 || data[0] == 0x0002) {//move cmd
+            } else if(data[0] == 0x0002 || data[10] == 0x0002) {//move cmd
                 mooving = true;
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
@@ -228,7 +257,10 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 acc = data[6];
                 distAZ = (data[2] << 16) + data[3];
                 distEL = (data[12] << 16) + data[13];
+                Console.WriteLine( "also moving to at ({0} , {1}) at ({2} , {3}) steps per second" , distAZ , distEL , AZ_speed , EL_speed );
                 return true;
+            } else {
+                Console.WriteLine( "watau stupid dat aint a comand");
             }
             return false;
         }
@@ -275,7 +307,12 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             }
             return data;
         }
-
+        
+        private ushort BoolToInt(bool i ) {
+            if(!i) {
+                return 0;
+            } else return 1;
+        }
 
     }
 }

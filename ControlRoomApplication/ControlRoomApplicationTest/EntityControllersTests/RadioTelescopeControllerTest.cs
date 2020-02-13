@@ -197,6 +197,31 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
                 testel = ConversionHelper.StepsToDegrees( el , MotorConstants.GEARING_RATIO_ELEVATION );
                 Assert.AreEqual( val , testel , 0.001 );
             }
+
+            double RPM = .5;
+            int STEPSperSECOND = 83_333;
+
+            int xpx =ConversionHelper.RPMToSPS( RPM , MotorConstants.GEARING_RATIO_AZIMUTH );
+            Assert.AreEqual( STEPSperSECOND , xpx );
+
+            double RPMOUT = ConversionHelper.SPSToRPM( xpx , MotorConstants.GEARING_RATIO_AZIMUTH );
+            Assert.AreEqual( RPM , RPMOUT ,0.01);
+
+            double dps = 3;
+            xpx = ConversionHelper.DPSToSPS( dps , MotorConstants.GEARING_RATIO_AZIMUTH );
+            Assert.AreEqual( STEPSperSECOND , xpx );
+
+            double dpsOUT = ConversionHelper.SPSToDPS( xpx , MotorConstants.GEARING_RATIO_AZIMUTH );
+            Assert.AreEqual( dps , dpsOUT , 0.01 );
+
+
+        }
+
+        [TestMethod]
+        public void test_MCU_Time_Estimate() {
+            int vel = 170_000, acc = 50, dist = 10_000_000;
+            int time = MCUManager.estimateTime(vel, acc, dist);
+            Assert.AreEqual(61800, time);
         }
 
         [TestMethod]
