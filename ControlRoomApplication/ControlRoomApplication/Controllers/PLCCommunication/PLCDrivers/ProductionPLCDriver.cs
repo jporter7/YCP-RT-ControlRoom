@@ -23,7 +23,7 @@ namespace ControlRoomApplication.Controllers
 
         private TcpListener PLCTCPListener;
         private ModbusSlave PLC_Modbusserver;
-        private long PLC_last_contact;
+        private long PLC_last_contact = 0;
         private bool keep_modbus_server_alive = true;
         private bool is_test = false;
         private MCUManager MCU;
@@ -118,7 +118,21 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-
+        public async Task WaitForPLCConnection(int timeoutS) {
+            var timout = new CancellationTokenSource( timeoutS*1000 );
+            bool PLC_alive = false;
+            while(!timout.Token.IsCancellationRequested && !PLC_alive) {
+                PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
+                await Task.Delay( 50 );
+                if(PLC_alive) {
+                    timout.Dispose();
+                    Console.WriteLine("Sucsefully connected to PLC");
+                    return;
+                }
+            }
+            timout.Dispose();
+            return;
+        }
 
         public override bool RequestStopAsyncAcceptingClientsAndJoin() {
             MCU.RequestStopAsyncAcceptingClientsAndJoin();
@@ -179,13 +193,12 @@ namespace ControlRoomApplication.Controllers
             switch (e.StartAddress) {
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
                         bool previous = limitSwitchData.Azimuth_CCW_Limit;
-                        limitSwitchData.Azimuth_CCW_Limit = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_LIMIT] );
+                        limitSwitchData.Azimuth_CCW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CCW_Limit) {
-                            logger.Info( "Azimuth CCW Limit Changed" );
                             if(limitSwitchData.Azimuth_CCW_Limit)
-                                logger.Info("Limit Switch Hit");
+                                logger.Info( "Azimuth CCW Limit Switch Hit" );
                             else
-                                logger.Info("Limit Switch Not Hit");
+                                logger.Info( "Azimuth CCW Limit Switch Not Hit" );
                         }
                         break;
                     }
@@ -193,7 +206,6 @@ namespace ControlRoomApplication.Controllers
                         bool previous = homeSensorData.Azimuth_Home_One;
                         homeSensorData.Azimuth_Home_One = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_HOME] );
                         if(previous != homeSensorData.Azimuth_Home_One) {
-                            logger.Info("Azimuth CCW Proximity Sensor Changed");
                             if (homeSensorData.Azimuth_Home_One)
                                 logger.Info( "Azimuth_Home_One Sensor Hit" );
                             else
@@ -205,7 +217,6 @@ namespace ControlRoomApplication.Controllers
                         bool previous = homeSensorData.Azimuth_Home_Two;
                         homeSensorData.Azimuth_Home_Two = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );
                         if(previous != homeSensorData.Azimuth_Home_Two) {
-                            logger.Info("Azimuth CW Proximity Sensor Changed");
                             if (homeSensorData.Azimuth_Home_Two)
                                 logger.Info( "Azimuth_Home_Two Sensor Hit" );
                             else
@@ -215,25 +226,23 @@ namespace ControlRoomApplication.Controllers
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
                         bool previous = limitSwitchData.Azimuth_CW_Limit;
-                        limitSwitchData.Azimuth_CW_Limit = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_375_LIMIT] );
+                        limitSwitchData.Azimuth_CW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_375_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CW_Limit) {
-                            logger.Info("Azimuth CW Limit Changed");
                             if (limitSwitchData.Azimuth_CW_Limit)
-                                logger.Info("Limit Switch Hit");
+                                logger.Info( "Azimuth CW Limit Switch Hit" );
                             else
-                                logger.Info("Limit Switch Not Hit");
+                                logger.Info( "Azimuth CW Limit Switch Not Hit" );
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT: {
                         bool previous = limitSwitchData.Elevation_Lower_Limit;
-                        limitSwitchData.Elevation_Lower_Limit = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_10_LIMIT]);
+                        limitSwitchData.Elevation_Lower_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_10_LIMIT]);
                         if(previous != limitSwitchData.Elevation_Lower_Limit) {
-                            logger.Info("Elevation Lower Limit Changed");
                             if (limitSwitchData.Elevation_Lower_Limit)
-                                logger.Info("Limit Switch Hit");
+                                logger.Info( "Elevation Lower Limit Switch Hit" );
                             else
-                                logger.Info("Limit Switch Not Hit");
+                                logger.Info( "Elevation Lower Limit Switch Not Hit" );
                         }
                         break;
                     }
@@ -241,48 +250,49 @@ namespace ControlRoomApplication.Controllers
                         bool previous = homeSensorData.Elevation_Home;
                         homeSensorData.Elevation_Home = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_0_HOME] );
                         if(previous != homeSensorData.Elevation_Home) {
-                            logger.Info("Elevation Lower Proximity Sensor Changed");
                             if (homeSensorData.Elevation_Home)
-                                logger.Info("Proximity Sensor Hit");
+                                logger.Info( "Elevation Home Sensor Hit" );
                             else
-                                logger.Info("Proximity Sensor Not Hit");
+                                logger.Info( "Elevation Home Sensor Not Hit" );
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT: {
                         bool previous = limitSwitchData.Elevation_Upper_Limit;
-                        limitSwitchData.Elevation_Upper_Limit = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_90_LIMIT] );
+                        limitSwitchData.Elevation_Upper_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_90_LIMIT] );
                         if(previous != limitSwitchData.Elevation_Upper_Limit) {
-                            logger.Info("Elevation Upper Limit Changed");
                             if (limitSwitchData.Elevation_Upper_Limit)
-                                logger.Info("Limit Switch Hit");
+                                logger.Info( "Elevation Upper Limit Switch Hit" );
                             else
-                                logger.Info("Limit Switch Not Hit");
+                                logger.Info( "Elevation Upper Limit Switch Not Hit" );
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK: {
                         bool previous = plcInput.Gate_Sensor;
-                        plcInput.Gate_Sensor = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
+                        plcInput.Gate_Sensor = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
                         if(previous != plcInput.Gate_Sensor) {
-                            logger.Info( "Elevation Upper Limit Changed" );
                             if(plcInput.Gate_Sensor)
-                                logger.Info( "Limit Switch Hit" );
+                                logger.Info( "gate oppened" );
                             else
-                                logger.Info( "Limit Switch Not Hit" );
+                                logger.Info( "gate closed" );
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.E_STOP: {
                         bool previous = plcInput.Estop;
-                        plcInput.Estop = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.E_STOP] );
+                        plcInput.Estop = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.E_STOP] );
                         if(previous != plcInput.Estop) {
-                            logger.Info( "Elevation Upper Limit Changed" );
                             if(plcInput.Estop)
-                                logger.Info( "Limit Switch Hit" );
+                                logger.Info( "Estop Hit" );
                             else
-                                logger.Info( "Limit Switch Not Hit" );
+                                logger.Info( "Estop released" );
                         }
+                        break;
+                    }
+                case (ushort)PLC_modbus_server_register_mapping.EL_SLIP_CAPTURE: {
+                        bool previous = plcInput.EL_Slip_CAPTURE;
+                        plcInput.EL_Slip_CAPTURE = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_SLIP_CAPTURE] );
                         break;
                     }
             }
@@ -673,7 +683,7 @@ namespace ControlRoomApplication.Controllers
         public override bool Configure_MCU(double startSpeedRPMAzimuth, double startSpeedRPMElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation) {
             return MCU.Configure_MCU(
                     new MCUConfigurationAxys() { StartSpeed = startSpeedRPMAzimuth, HomeTimeoutSec = homeTimeoutSecondsAzimuth },
-                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation }
+                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true }
                 ).GetAwaiter().GetResult();
         }
 
@@ -684,6 +694,11 @@ namespace ControlRoomApplication.Controllers
         public override Orientation read_Position(){
             return MCU.read_Position();
         }
+
+        public ushort[] readModbusReregs(ushort start, ushort length) {
+            return MCU.readModbusReregs( start , length );
+        }
+
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
@@ -712,7 +727,10 @@ namespace ControlRoomApplication.Controllers
             return MCU.Cancel_move();
         }
 
-
+        /// <summary>
+        /// send a hold move command to the MCu
+        /// </summary>
+        /// <returns></returns>
         public override bool Controled_stop(  ) {
             return MCU.Controled_stop();
         }
@@ -766,7 +784,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return MCU.send_relative_move_comand( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
         }
 
         public override Task<bool> Home() {
@@ -781,33 +799,29 @@ namespace ControlRoomApplication.Controllers
         public async Task<bool> HomeBothAxyes() {
             //place holder function until MCU homing functionality can be tested
             //this method will also likley undego signifigant change once the hardeware configuration is locked down
-            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.25), MotorConstants.GEARING_RATIO_ELEVATION);
-            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.25), MotorConstants.GEARING_RATIO_AZIMUTH);
-            
+            int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.1 ) , MotorConstants.GEARING_RATIO_ELEVATION );
+            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.1 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
 
+            bool ZeroOne = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME] );  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
+            bool ZeroTwo = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );//active between -1 to 10   and 359 to 370
 
-            
-            
-
-            bool ZeroOne = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
-            bool ZeroTwo = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );//active between -1 to 10   and 359 to 370
-
-            if (ZeroOne & ZeroTwo) {//very close to 0 degrees 
+            if(ZeroOne & ZeroTwo) {//very close to 0 degrees 
+                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 15 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 ).GetAwaiter().GetResult();
                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
             } else if(ZeroOne & !ZeroTwo) {//350 to 360 or -10 to 0
+                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( -15 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 ).GetAwaiter().GetResult();
                 //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
             } else if(!ZeroOne & ZeroTwo) {//0 to 10   or 360 to 370
+                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 15 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 ).GetAwaiter().GetResult();
                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
             } else {
                 //we know our position is valid and can imedeatly perform a cw home
             }
 
 
-            bool ELHome = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME]);
-
+            bool ELHome = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME] );
 
             await MCU.HomeBothAxyes( true , ELHome , 0.25 );
-
 
             return true;
         }
@@ -817,15 +831,18 @@ namespace ControlRoomApplication.Controllers
         protected override bool TestIfComponentIsAlive() {
 
             bool PLC_alive, MCU_alive;
-            long MCU_last_contact = MCU.getLastContact();
-            PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
-            MCU_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) < 3000;
-            if(is_test) {
-                //return true;
-                Console.WriteLine( "{0}   {1} ",(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) , (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) );
-            }
-            return PLC_alive && MCU_alive;
+            try {
+                long MCU_last_contact = MCU.getLastContact();
+                PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
+                MCU_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) < 3000;
+                if(is_test) {
+                    //return true;
+                    Console.WriteLine( "{0}   {1} " , (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) , (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) );
+                }
+                return PLC_alive && MCU_alive;
+            } catch { return false; }
         }
+
         /// <summary>
         /// public version of TestIfComponentIsAlive
         /// </summary>

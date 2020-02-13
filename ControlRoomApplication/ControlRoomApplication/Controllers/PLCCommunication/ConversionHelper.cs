@@ -26,6 +26,14 @@ namespace ControlRoomApplication.Controllers
             return steps * 360.0 / (MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
         }
 
+        public static int DegreesToSteps_Encoder( double degrees , int gearingRatio ) {
+            return (int)(degrees * MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio / 360.0);
+        }
+
+        public static double StepsToDegrees_Encoder( int steps , int gearingRatio ) {
+            return steps * 360.0 / (MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
+        }
+
         public static double RPMToDPS(double rpms)
         {
             return rpms * 6;

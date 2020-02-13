@@ -143,7 +143,7 @@ namespace ControlRoomApplication.Entities
             catch (Exception e)
             {
                 if ((e is ObjectDisposedException) || (e is AbandonedMutexException) || (e is InvalidOperationException)
-                    || (e is ApplicationException) || (e is ThreadStateException) | (e is ThreadInterruptedException))
+                    || (e is ApplicationException) || (e is ThreadStateException) || (e is ThreadInterruptedException))
                 {
                     return false;
                 }

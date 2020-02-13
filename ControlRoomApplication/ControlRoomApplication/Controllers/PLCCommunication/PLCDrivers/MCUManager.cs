@@ -30,11 +30,16 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// true when comand has completed, used to determine when the next move can be sent
         /// </summary>
-        public bool completed;
+        public bool completed = false;
         /// <summary>
         /// this will be set when returnd to the calling function if the move could not be run for some reason
         /// </summary>
         public Exception ComandError;
+        /// <summary>
+        /// these variables set so that different parts of the MCUManager can calculate how parts of the operation will take
+        /// </summary>
+        public int AZ_Programed_Speed,EL_Programed_Speed,AZ_ACC,EL_ACC;
+
         /// <summary>
         /// create a MCU command and record the current time
         /// </summary>
@@ -57,6 +62,45 @@ namespace ControlRoomApplication.Controllers {
         RESET_ERRORS,
         HOME
     }
+
+    public class MCUpositonRegs : MCUpositonStore {
+        private ModbusIpMaster MCUModbusMaster;
+        public MCUpositonRegs( ModbusIpMaster _MCUModbusMaster ):base() {
+            MCUModbusMaster = _MCUModbusMaster;
+        }
+        public async Task update() {
+            ushort[] data = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 20 ).GetAwaiter().GetResult();
+            AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
+            EL_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW];
+            AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
+            EL_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW];
+            return;
+        }
+        public async Task<MCUpositonStore> updateAndReturnDif( MCUpositonStore previous ) {
+            ushort[] data = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 20 ).GetAwaiter().GetResult();
+            AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
+            EL_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW];
+            AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
+            EL_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW];
+            MCUpositonStore dif = new MCUpositonStore( (this as MCUpositonStore) , previous);
+            return dif;
+        }
+    }
+    public class MCUpositonStore {
+        public int AZ_Steps, EL_Steps;
+        public int AZ_Encoder, EL_Encoder;
+        public MCUpositonStore( ) {
+
+        }
+        public MCUpositonStore( MCUpositonStore current , MCUpositonStore previous ) {
+            AZ_Steps = previous.AZ_Steps - current.AZ_Steps;
+            EL_Steps = previous.EL_Steps - current.EL_Steps;
+            AZ_Encoder = previous.AZ_Encoder - current.AZ_Encoder;
+            EL_Encoder = previous.EL_Encoder - current.EL_Encoder;
+        }
+
+    }
+
     public class MCUManager {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
         /// <summary>
@@ -92,7 +136,7 @@ namespace ControlRoomApplication.Controllers {
         public MCUpositonRegs mCUpositon;
         private MCUConfigurationAxys Current_AZConfiguration;
         private MCUConfigurationAxys Current_ELConfiguration;
-        private MCUcomand RunningCommand;
+        private MCUcomand RunningCommand= new MCUcomand(new ushort[20],MCUcomandType.CLEAR_LAST_MOVE);
         private int consecutiveErrors = 0;
         private int consecutiveSucsefullMoves = 0;
 
@@ -163,52 +207,20 @@ namespace ControlRoomApplication.Controllers {
         public Orientation read_Position() {
             mCUpositon.update().Wait();
             return new Orientation(
-                ConversionHelper.StepsToDegrees(mCUpositon.AZ, MotorConstants.GEARING_RATIO_AZIMUTH),
-                ConversionHelper.StepsToDegrees(mCUpositon.EL, MotorConstants.GEARING_RATIO_ELEVATION)
+                ConversionHelper.StepsToDegrees(mCUpositon.AZ_Steps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                ConversionHelper.StepsToDegrees(mCUpositon.EL_Steps, MotorConstants.GEARING_RATIO_ELEVATION)
             );
         }
 
 
-        public class MCUpositonRegs {
-            public int AZ;
-            public int EL;
-            private ModbusIpMaster MCUModbusMaster;
-            public MCUpositonRegs(ModbusIpMaster _MCUModbusMaster) {
-                MCUModbusMaster = _MCUModbusMaster;
-            }
-            public async Task update() {
-                ushort[] data = MCUModbusMaster.ReadHoldingRegistersAsync(0, 14).GetAwaiter().GetResult();
-                AZ = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
-                EL = (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW];
-                return;
-            }
-            public async Task<MCUpositonStore> updateAndReturnDif(MCUpositonStore previous) {
-                ushort[] data = MCUModbusMaster.ReadHoldingRegistersAsync(0, 14).GetAwaiter().GetResult();
-                AZ = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
-                EL = (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW];
-                MCUpositonStore dif = new MCUpositonStore(previous.AZ - AZ, previous.EL - EL);
-                return dif;
-            }
-        }
-        public class MCUpositonStore {
-            public int AZ;
-            public int EL;
-            public MCUpositonStore(MCUpositonRegs origional) {
-                AZ = origional.AZ;
-                EL = origional.EL;
-            }
-            public MCUpositonStore(int _AZ, int _EL) {
-                AZ = _AZ;
-                EL = _EL;
-            }
-        }
+
 
         /// <summary>
         /// clears the previos move comand from mthe PLC, only works for jog moves
         /// </summary>
         /// <returns></returns>
         public bool Cancel_move() {
-            MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE ).Wait();
+            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_CLEAR_MOVE , MCUcomandType.CLEAR_LAST_MOVE ) ).GetAwaiter().GetResult();
             return true;
         }
 
@@ -217,14 +229,72 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns></returns>
         public bool Controled_stop() {
-            MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_HOLD_MOVE ).Wait();
+            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_HOLD_MOVE , MCUcomandType.HOLD_MOVE ) ).GetAwaiter().GetResult();
             return true;
         }
 
         public bool Immediade_stop() {
-            MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_IMMEDIATE_STOP ).Wait();
+            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_IMMEDIATE_STOP , MCUcomandType.IMIDEAT_STOP ) ).GetAwaiter().GetResult();
             return true;
         }
+
+
+        private async Task<bool> Override_And_Stop_Motion() {
+            var data = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 ).GetAwaiter().GetResult();
+            if(Is_Moing( data )) {
+                if(RunningCommand.ComandType == MCUcomandType.JOG) {
+                    Cancel_move();
+                    await WatTillStopped();
+                }else if(RunningCommand.ComandType == MCUcomandType.RELETIVE_MOVE) {
+                    Cancel_move();
+                    Task.Delay( 100 ).Wait();
+                    Controled_stop();
+                    await WatTillStopped();
+                } else {
+                    Immediade_stop();
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// this function assums that you have alread told both Axisi to stop moving otherwise it will timeout
+        /// </summary>
+        /// <returns>false if the telescope was still running at the end of the timeout</returns>
+        private async Task<bool> WatTillStopped() {
+            int mS_To_DecelerateAZ = (int)1.25 * (RunningCommand.AZ_Programed_Speed - AZStartSpeed) / RunningCommand.AZ_ACC;
+            int mS_To_DecelerateEL = (int)1.25 * (RunningCommand.EL_Programed_Speed - AZStartSpeed) / RunningCommand.EL_ACC;
+            int mS_To_Decelerate;
+            if(mS_To_DecelerateAZ > mS_To_DecelerateEL) {
+                mS_To_Decelerate = mS_To_DecelerateAZ;
+            } else {
+                mS_To_Decelerate = mS_To_DecelerateEL;
+            }
+            var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
+            while(!timout.IsCancellationRequested) {
+                var datatask = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 );
+                await Task.Delay( 33 );
+                var data = datatask.GetAwaiter().GetResult();
+                bool isMoving = Is_Moing( data );
+                if(!Is_Moing( data )) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool Is_Moing(ushort[] data) {
+            try {
+                bool azMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CCW_Motion) & 0b1) == 1) ||
+                                (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CW_Motion) & 0b1) == 1);
+                bool elMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CCW_Motion) & 0b1) == 1) ||
+                                (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CW_Motion) & 0b1) == 1);
+                return azMoving || elMoving;
+            } catch {
+                return false;
+            }
+        }
+
 
         public async Task<bool> Configure_MCU(MCUConfigurationAxys AZconfig, MCUConfigurationAxys ELconfig) {
             Current_AZConfiguration = AZconfig;
@@ -237,15 +307,15 @@ namespace ControlRoomApplication.Controllers {
             ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
             Console.WriteLine("start");
-            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_IMMEDIATE_STOP).Wait();
+            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_IMMEDIATE_STOP , MCUcomandType.IMIDEAT_STOP ) ).GetAwaiter().GetResult();
             Task.Delay(100).Wait();
-            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_CLEAR_MOVE).Wait();
+            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_CLEAR_MOVE , MCUcomandType.CLEAR_LAST_MOVE ) ).GetAwaiter().GetResult();
             Task.Delay(100).Wait();
-            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_RESET_ERRORS).Wait();
+            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS ) ).GetAwaiter().GetResult();
             Task.Delay(100).Wait();
-            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, data).Wait();
+            Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.CONFIGURE ) ).GetAwaiter().GetResult();
             Task.Delay(100).Wait();
-            MCUModbusMaster.WriteMultipleRegistersAsync(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, MESSAGE_CONTENTS_CLEAR_MOVE).Wait();
+            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_CLEAR_MOVE , MCUcomandType.CLEAR_LAST_MOVE ) ).GetAwaiter().GetResult();
             Console.WriteLine("stop");
             return true;
         }
@@ -268,15 +338,29 @@ namespace ControlRoomApplication.Controllers {
                     conf = (ushort)(conf | 0b0100_0000);
                     break;
             }
+            switch(AxysConf.EncoderType) {
+                case EncoderTyprEnum.Quadrature_Encoder:
+                    conf = (ushort)(conf | 0b1_0000_0000);
+                    break;
+                case EncoderTyprEnum.Diagnostic_Feedback:
+                    conf = (ushort)(conf | 0b10_0000_0000);
+                    break;
+            }
             if (AxysConf.UseHomesensors) {
                 conf = (ushort)(conf | 0b0100);
             }
-
+            if(AxysConf.UseCapture) {
+                conf = (ushort)(conf | 0b0001);
+            }
+            //conf = (ushort)(conf | 0b1000_0000);
             return conf;
         }
 
         private ushort MakeMcuConfLSW(MCUConfigurationAxys AxysConf) {
             ushort conf = 0x0000;
+            if(AxysConf.CaptureActive_High) {
+                conf = (ushort)(conf | 0b0001);
+            }
             if (AxysConf.HomeActive_High) {
                 conf = (ushort)(conf | 0b0_0100);
             }
@@ -286,6 +370,7 @@ namespace ControlRoomApplication.Controllers {
             if (AxysConf.CCWactive_High) {
                 conf = (ushort)(conf | 0b1_0000);
             }
+
             return conf;
         }
 
@@ -317,23 +402,25 @@ namespace ControlRoomApplication.Controllers {
 
 
         /// <summary>
-        /// home a singel axsis of the RT
+        /// 
         /// </summary>
-        /// <param name="axis"></param>
+        /// <param name="AZHomeCW"></param>
+        /// <param name="ELHomeCW"></param>
+        /// <param name="RPM"></param>
         /// <returns></returns>
-        public async Task<bool> HomeBothAxyes(bool AZHomeCW, bool ELHomeCW,double RPM ) {
+        public async Task<bool> HomeBothAxyes( bool AZHomeCW , bool ELHomeCW , double RPM ) {
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_AZIMUTH );
             ushort ACCELERATION = 50;
             ushort CWHome = 0x0020;
             ushort CcWHome = 0x0040;
 
-            ushort azHomeDir = CWHome;
-            ushort elHomeDir = CWHome;
+            ushort azHomeDir = CcWHome;
+            ushort elHomeDir = CcWHome;
 
             ushort elHomeSpeed = 0x0000;//this is the default value
             if(!ELHomeCW) {//if the MCU dosnt expect the home sensor to be high when a home is initiated this will need to be changed
-                elHomeDir = CcWHome;
+                elHomeDir = CWHome;
                 elHomeSpeed = 0x0040;//if this bit is set the MCU will home at its configured minimum speed
             }
 
@@ -343,17 +430,13 @@ namespace ControlRoomApplication.Controllers {
                 //0x0000     ,0x0000      , 0x0000, 0x0000,0x0000                                ,0x0000                    , 0x0000       ,0x0000        ,0x0000 ,0x0000   
                 elHomeDir , elHomeSpeed , 0x0000, 0x0000,(ushort)((EL_Speed & 0xFFFF0000)>>16),(ushort)(EL_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000
             };
-            MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE ).Wait();//write a no-op to the mcu
+
+            Cancel_move();
+            Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
+            Controled_stop();
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
             MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , data ).Wait();
             return true;
-        }
-
-        public async Task<MCUcomand> send_relative_move_comand(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
-            MCUModbusMaster.WriteMultipleRegistersAsync(1024, MESSAGE_CONTENTS_CLEAR_MOVE).Wait();//write a no-op to the mcu
-            Task.Delay(100).Wait();//wait to ensure it is porcessed
-            ushort[] data = prepairRelativeMoveData(SpeedAZ, SpeedEL, ACCELERATION, positionTranslationAZ, positionTranslationEL);
-            return Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.JOG ) ).GetAwaiter().GetResult();
         }
 
         private ushort[] prepairRelativeMoveData(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
@@ -372,46 +455,58 @@ namespace ControlRoomApplication.Controllers {
             return data;
         }
 
-        public async Task<bool> MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
+        public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
             mCUpositon.update().Wait();
-            var startPos = new MCUpositonStore(mCUpositon);
-            var ThisMove = send_relative_move_comand(SpeedAZ, SpeedEL, ACCELERATION, positionTranslationAZ, positionTranslationEL).Result;
-            await Task.Delay(50);//wait for comand to be read
-            int AZTime = estimateTime(SpeedAZ, ACCELERATION, positionTranslationAZ), ELTime= estimateTime(SpeedEL, ACCELERATION, positionTranslationEL);
+            var startPos =  mCUpositon as MCUpositonStore;
+            Cancel_move();
+            Task.Delay( 50 ).Wait();//wait to ensure it is porcessed
+            ushort[] CMDdata = prepairRelativeMoveData( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL );
+            var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( CMDdata , MCUcomandType.RELETIVE_MOVE ) { AZ_Programed_Speed = SpeedAZ , EL_Programed_Speed = SpeedEL , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION } ).GetAwaiter().GetResult();
+            await Task.Delay( 50 );//wait for comand to be read
+
+            int AZTime = estimateTime( SpeedAZ , ACCELERATION , positionTranslationAZ ), ELTime = estimateTime( SpeedEL , ACCELERATION , positionTranslationEL );
             int TimeToMove;
-            if(AZTime> ELTime) {
+            if(AZTime > ELTime) {
                 TimeToMove = AZTime;
             } else { TimeToMove = ELTime; }
-            var timout = new CancellationTokenSource((int)(TimeToMove*0.1)).Token;
-            while (!timout.IsCancellationRequested) {
-                var datatask = MCUModbusMaster.ReadHoldingRegistersAsync(0, 12);
-                await Task.Delay(100);
+            var timout = new CancellationTokenSource( (int)(TimeToMove * 1.2) );
+            while(!timout.IsCancellationRequested) {
+                var datatask = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 );
+                await Task.Delay( 50 );
                 var data = datatask.GetAwaiter().GetResult();
-                bool azErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) | 0b1) == 1;
-                bool elErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) | 0b1) == 1;
+                bool azErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
+                bool elErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
                 if(elErr || azErr) {//TODO:add more checks to this 
                     ThisMove.completed = true;
                     ThisMove.ComandError = new Exception( "MCU command error bit was set" );
                     consecutiveSucsefullMoves = 0;
                     consecutiveErrors++;
                     Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS ) ).Wait();
+                    timout.Dispose();
                     return false;
                 }
-                bool azFin = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Move_Complete) | 0b1) == 1;
-                bool elFin = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Move_Complete) | 0b1) == 1;
-                bool azMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CCW_Motion) | 0b1) == 1 ) ||
-                    ;
-                bool elMoving = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Move_Complete) | 0b1) == 1;
-                if(azFin && elFin) {
+                bool azFin = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Move_Complete) & 0b1) == 1;
+                bool elFin = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Move_Complete) & 0b1) == 1;
+                bool isMoving = Is_Moing( data );
+                if(azFin && elFin && !isMoving) {
                     //TODO:check that position is correct and there arent any errors
 
                     consecutiveSucsefullMoves++;
                     consecutiveErrors = 0;
                     ThisMove.completed = true;
+                    timout.Dispose();
                     return true;
                 }
 
             }
+            var data2  = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 ).GetAwaiter().GetResult();
+            if(Is_Moing( data2 )) {
+                ThisMove.completed = true;
+                ThisMove.ComandError = new Exception( "Move did not complete in the expected time" );
+                consecutiveSucsefullMoves = 0;
+                consecutiveErrors++;
+            }
+            timout.Dispose();
             return true;
         }
 
@@ -436,30 +531,26 @@ namespace ControlRoomApplication.Controllers {
             if(AZClockwise) {
                 dir = 0x0080;
             } else dir = 0x0100;
-            int stepSpeed = ConversionHelper.RPMToSPS( AZspeed , MotorConstants.GEARING_RATIO_AZIMUTH );
-            //                                            reserved       msb speed                     lsb speed                   acc                                                       dcc                                                    reserved
-            ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(stepSpeed >> 16) , (ushort)(stepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
-
+            int AZstepSpeed = ConversionHelper.RPMToSPS( AZspeed , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int ELstepSpeed = ConversionHelper.RPMToSPS( ELspeed , MotorConstants.GEARING_RATIO_ELEVATION );
+            ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(AZstepSpeed >> 16) , (ushort)(AZstepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
             ushort[] data2 = new ushort[20];
-            // this is a jog comand for a single axis
-            // RadioTelescopeAxisEnum jogging_axies = Is_jogging();
-            if(stepSpeed > AZStartSpeed) {
+
+            if(AZstepSpeed > AZStartSpeed) {
                 //throw new ArgumentOutOfRangeException( "speed" , AZspeed ,
                 //    String.Format( "speed should be grater than {0} which is the stating speed set when configuring the MCU" ,
                 //    ConversionHelper.SPSToRPM( AZStartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
                 for(int j = 0; j < data.Length; j++) {
                     data2[j] = data[j];
                 }
+            } else {
+                AZstepSpeed = 0;
             }
 
-
-            stepSpeed = ConversionHelper.RPMToSPS( ELspeed , MotorConstants.GEARING_RATIO_ELEVATION );
-            if(stepSpeed > ELStartSpeed) {
+            if(ELstepSpeed > ELStartSpeed) {
                 //throw new ArgumentOutOfRangeException( "speed" , ELspeed ,
                 //    String.Format( "speed should be grater than {0} which is the stating speed set when configuring the MCU" ,
                 //    ConversionHelper.SPSToRPM( ELStartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH ) ) );
-
-
                 for(int j = 0; j < data.Length; j++) {
                     data2[j + 10] = data[j];
                 }
@@ -468,21 +559,36 @@ namespace ControlRoomApplication.Controllers {
                 } else dir = 0x0100;
 
                 data2[10] = (ushort)(dir);
-                data2[14] = (ushort)(stepSpeed >> 16);
-                data2[15] = (ushort)(stepSpeed & 0xffff);
+                data2[14] = (ushort)(ELstepSpeed >> 16);
+                data2[15] = (ushort)(ELstepSpeed & 0xffff);
+            } else {
+                ELstepSpeed = 0;
             }
-            _ = Send_Generic_Command_And_Track( new MCUcomand(data2,MCUcomandType.JOG) ).GetAwaiter().GetResult();
+            _ = Send_Generic_Command_And_Track( new MCUcomand( data2 , MCUcomandType.JOG ) {
+                AZ_Programed_Speed = AZstepSpeed ,
+                EL_Programed_Speed = ELstepSpeed ,
+                EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
+                AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING
+            } ).GetAwaiter().GetResult();
             return true;
         }
 
-        private async Task<MCUcomand> Send_Generic_Command_And_Track( MCUcomand incoming) {
-            if((RunningCommand.ComandType== MCUcomandType.HOME && !RunningCommand.completed )|| RunningCommand.ComandType == MCUcomandType.JOG) {
-                if(incoming.ComandType == MCUcomandType.CLEAR_LAST_MOVE || incoming.ComandType == MCUcomandType.IMIDEAT_STOP) {
+        private async Task<MCUcomand> Send_Generic_Command_And_Track( MCUcomand incoming ) {
+            if(RunningCommand.ComandType == MCUcomandType.JOG) {
+                if(incoming.ComandType == MCUcomandType.CLEAR_LAST_MOVE || incoming.ComandType == MCUcomandType.IMIDEAT_STOP || incoming.ComandType == MCUcomandType.JOG) {
                     RunningCommand = incoming;
                     MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.comandData ).Wait();
                     return incoming;
                 }
-                incoming.ComandError = new Exception("MCU was running a home || JOG move which could not be overriden");
+                incoming.ComandError = new Exception( "MCU was running a JOG move which could not be overriden" );
+                return incoming;
+            } else if((RunningCommand.ComandType == MCUcomandType.HOME && !RunningCommand.completed)) {
+                if( incoming.ComandType == MCUcomandType.IMIDEAT_STOP) {
+                    RunningCommand = incoming;
+                    MCUModbusMaster.WriteMultipleRegistersAsync( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.comandData ).Wait();
+                    return incoming;
+                }
+                incoming.ComandError = new Exception( "MCU was running a home move which could not be overriden" );
                 return incoming;
             }
 
