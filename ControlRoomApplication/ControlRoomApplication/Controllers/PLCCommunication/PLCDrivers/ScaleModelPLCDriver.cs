@@ -190,6 +190,10 @@ namespace ControlRoomApplication.Controllers {
             Console.WriteLine( MCU_ip );
         }
 
+        public override void setregvalue(ushort adr, ushort value)
+        {
+            throw new NotImplementedException();
+        }
 
 
 

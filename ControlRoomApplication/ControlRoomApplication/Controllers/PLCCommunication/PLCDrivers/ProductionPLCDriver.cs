@@ -281,7 +281,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="adr"></param>
         /// <param name="value"></param>
-        public void setregvalue(ushort adr, ushort value) {
+        public override void setregvalue(ushort adr, ushort value) {
             PLC_Modbusserver.DataStore.HoldingRegisters[adr] = value;
         }
 

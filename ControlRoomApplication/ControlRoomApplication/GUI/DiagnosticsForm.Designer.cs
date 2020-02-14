@@ -1523,7 +1523,7 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
             this.tabPage3.Size = new System.Drawing.Size(645, 411);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Sensor Over Rides";
+            this.tabPage3.Text = "Sensor Overrides";
             this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
             // 
             // groupBox13
@@ -1542,13 +1542,13 @@
             // 
             // ElMotTempSensOverride
             // 
-            this.ElMotTempSensOverride.BackColor = System.Drawing.Color.Red;
+            this.ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
             this.ElMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElMotTempSensOverride.Location = new System.Drawing.Point(236, 96);
+            this.ElMotTempSensOverride.Location = new System.Drawing.Point(240, 96);
             this.ElMotTempSensOverride.Name = "ElMotTempSensOverride";
             this.ElMotTempSensOverride.Size = new System.Drawing.Size(91, 23);
             this.ElMotTempSensOverride.TabIndex = 15;
-            this.ElMotTempSensOverride.Text = "OVER RIDE";
+            this.ElMotTempSensOverride.Text = "ENABLED";
             this.ElMotTempSensOverride.UseVisualStyleBackColor = false;
             this.ElMotTempSensOverride.Click += new System.EventHandler(this.ElMotTempSensOverride_Click);
             // 
@@ -1556,7 +1556,7 @@
             // 
             this.label29.AutoSize = true;
             this.label29.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label29.Location = new System.Drawing.Point(6, 96);
+            this.label29.Location = new System.Drawing.Point(12, 96);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(214, 13);
             this.label29.TabIndex = 14;
@@ -1564,13 +1564,13 @@
             // 
             // AzMotTempSensOverride
             // 
-            this.AzMotTempSensOverride.BackColor = System.Drawing.Color.Red;
+            this.AzMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
             this.AzMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.AzMotTempSensOverride.Location = new System.Drawing.Point(238, 33);
+            this.AzMotTempSensOverride.Location = new System.Drawing.Point(240, 33);
             this.AzMotTempSensOverride.Name = "AzMotTempSensOverride";
             this.AzMotTempSensOverride.Size = new System.Drawing.Size(89, 23);
             this.AzMotTempSensOverride.TabIndex = 13;
-            this.AzMotTempSensOverride.Text = "OVER RIDE";
+            this.AzMotTempSensOverride.Text = "ENABLED";
             this.AzMotTempSensOverride.UseVisualStyleBackColor = false;
             this.AzMotTempSensOverride.Click += new System.EventHandler(this.AzMotTempSensOverride_Click);
             // 
@@ -1578,7 +1578,7 @@
             // 
             this.label28.AutoSize = true;
             this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.Location = new System.Drawing.Point(3, 38);
+            this.label28.Location = new System.Drawing.Point(12, 38);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(205, 13);
             this.label28.TabIndex = 12;
@@ -1598,13 +1598,13 @@
             // 
             // MGOverride
             // 
-            this.MGOverride.BackColor = System.Drawing.Color.Red;
+            this.MGOverride.BackColor = System.Drawing.Color.LimeGreen;
             this.MGOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.MGOverride.Location = new System.Drawing.Point(241, 38);
+            this.MGOverride.Location = new System.Drawing.Point(240, 38);
             this.MGOverride.Name = "MGOverride";
             this.MGOverride.Size = new System.Drawing.Size(89, 23);
             this.MGOverride.TabIndex = 13;
-            this.MGOverride.Text = "OVER RIDE";
+            this.MGOverride.Text = "ENABLED";
             this.MGOverride.UseVisualStyleBackColor = false;
             this.MGOverride.Click += new System.EventHandler(this.MGOverride_Click);
             // 
@@ -1612,7 +1612,7 @@
             // 
             this.label27.AutoSize = true;
             this.label27.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label27.Location = new System.Drawing.Point(6, 38);
+            this.label27.Location = new System.Drawing.Point(12, 38);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(108, 13);
             this.label27.TabIndex = 12;
@@ -1631,56 +1631,56 @@
             this.groupBox10.Controls.Add(this.label22);
             this.groupBox10.Location = new System.Drawing.Point(347, 30);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(287, 360);
+            this.groupBox10.Size = new System.Drawing.Size(295, 360);
             this.groupBox10.TabIndex = 0;
             this.groupBox10.TabStop = false;
-            this.groupBox10.Text = " Proximiry Sensors";
+            this.groupBox10.Text = " Proximity Sensors";
             // 
             // ElevationProximityOveride2
             // 
-            this.ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
+            this.ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
             this.ElevationProximityOveride2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ElevationProximityOveride2.Location = new System.Drawing.Point(194, 282);
             this.ElevationProximityOveride2.Name = "ElevationProximityOveride2";
             this.ElevationProximityOveride2.Size = new System.Drawing.Size(88, 23);
             this.ElevationProximityOveride2.TabIndex = 14;
-            this.ElevationProximityOveride2.Text = "OVER RIDE";
+            this.ElevationProximityOveride2.Text = "ENABLED";
             this.ElevationProximityOveride2.UseVisualStyleBackColor = false;
             this.ElevationProximityOveride2.Click += new System.EventHandler(this.ElevationProximityOverideButton2_Click);
             // 
             // ElevationProximityOveride1
             // 
-            this.ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+            this.ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
             this.ElevationProximityOveride1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ElevationProximityOveride1.Location = new System.Drawing.Point(194, 224);
             this.ElevationProximityOveride1.Name = "ElevationProximityOveride1";
             this.ElevationProximityOveride1.Size = new System.Drawing.Size(90, 23);
             this.ElevationProximityOveride1.TabIndex = 13;
-            this.ElevationProximityOveride1.Text = "OVER RIDE";
+            this.ElevationProximityOveride1.Text = "ENABLED";
             this.ElevationProximityOveride1.UseVisualStyleBackColor = false;
             this.ElevationProximityOveride1.Click += new System.EventHandler(this.ElevationProximityOverideButton1_Click);
             // 
             // ORAzimuthSens2
             // 
-            this.ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
+            this.ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
             this.ORAzimuthSens2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ORAzimuthSens2.Location = new System.Drawing.Point(194, 134);
             this.ORAzimuthSens2.Name = "ORAzimuthSens2";
             this.ORAzimuthSens2.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens2.TabIndex = 12;
-            this.ORAzimuthSens2.Text = "OVER RIDE";
+            this.ORAzimuthSens2.Text = "ENABLED";
             this.ORAzimuthSens2.UseVisualStyleBackColor = false;
             this.ORAzimuthSens2.Click += new System.EventHandler(this.ORAzimuthSens2_Click);
             // 
             // ORAzimuthSens1
             // 
-            this.ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
+            this.ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
             this.ORAzimuthSens1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ORAzimuthSens1.Location = new System.Drawing.Point(194, 53);
             this.ORAzimuthSens1.Name = "ORAzimuthSens1";
             this.ORAzimuthSens1.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens1.TabIndex = 11;
-            this.ORAzimuthSens1.Text = "OVER RIDE";
+            this.ORAzimuthSens1.Text = "ENABLED";
             this.ORAzimuthSens1.UseVisualStyleBackColor = false;
             this.ORAzimuthSens1.Click += new System.EventHandler(this.ORAzimuthSens1_Click);
             // 
@@ -1688,63 +1688,64 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(20, 292);
+            this.label3.Location = new System.Drawing.Point(12, 292);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(168, 13);
+            this.label3.Size = new System.Drawing.Size(155, 13);
             this.label3.TabIndex = 10;
-            this.label3.Text = "Elevation Proximity Sensor 2";
+            this.label3.Text = "Elevation Limit Switch 90°";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(6, 56);
+            this.label4.Location = new System.Drawing.Point(12, 56);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(159, 13);
+            this.label4.Size = new System.Drawing.Size(150, 13);
             this.label4.TabIndex = 7;
-            this.label4.Text = "Azimuth Proximity Sensor 1";
+            this.label4.Text = "Azimuth Limit Switch -10°";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
             // 
             // label21
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(6, 137);
+            this.label21.Location = new System.Drawing.Point(12, 137);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(159, 13);
+            this.label21.Size = new System.Drawing.Size(153, 13);
             this.label21.TabIndex = 8;
-            this.label21.Text = "Azimuth Proximity Sensor 2";
+            this.label21.Text = "Azimuth Limit Switch 375°";
             // 
             // label22
             // 
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(20, 229);
+            this.label22.Location = new System.Drawing.Point(12, 229);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(168, 13);
+            this.label22.Size = new System.Drawing.Size(148, 13);
             this.label22.TabIndex = 9;
-            this.label22.Text = "Elevation Proximity Sensor 1";
+            this.label22.Text = "Elevation Limit Switch 0°";
             // 
             // groupBox11
             // 
             this.groupBox11.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox11.Controls.Add(this.WSOverride);
             this.groupBox11.Controls.Add(this.label24);
-            this.groupBox11.Location = new System.Drawing.Point(5, 30);
+            this.groupBox11.Location = new System.Drawing.Point(3, 30);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(334, 99);
+            this.groupBox11.Size = new System.Drawing.Size(338, 99);
             this.groupBox11.TabIndex = 27;
             this.groupBox11.TabStop = false;
             this.groupBox11.Text = "Weather Station";
             // 
             // WSOverride
             // 
-            this.WSOverride.BackColor = System.Drawing.Color.Red;
+            this.WSOverride.BackColor = System.Drawing.Color.LimeGreen;
             this.WSOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.WSOverride.Location = new System.Drawing.Point(239, 39);
+            this.WSOverride.Location = new System.Drawing.Point(240, 39);
             this.WSOverride.Name = "WSOverride";
             this.WSOverride.Size = new System.Drawing.Size(89, 23);
             this.WSOverride.TabIndex = 13;
-            this.WSOverride.Text = "OVER RIDE";
+            this.WSOverride.Text = "ENABLED";
             this.WSOverride.UseVisualStyleBackColor = false;
             this.WSOverride.Click += new System.EventHandler(this.WSOverride_Click);
             // 
@@ -1752,7 +1753,7 @@
             // 
             this.label24.AutoSize = true;
             this.label24.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label24.Location = new System.Drawing.Point(13, 39);
+            this.label24.Location = new System.Drawing.Point(12, 43);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(99, 13);
             this.label24.TabIndex = 12;

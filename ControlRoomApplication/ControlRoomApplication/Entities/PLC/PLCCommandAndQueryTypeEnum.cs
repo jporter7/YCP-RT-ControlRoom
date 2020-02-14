@@ -82,12 +82,12 @@ namespace ControlRoomApplication.Entities
         /// <item><description><para><em>IN</em></para></description></item>
         /// limit at -10
         /// </summary>
-        AZ_0_LIMIT = 8 + 1,
+        AZ_0_LIMIT = 8 + 1, /// Azimuth proximity sensor 1
         /// <summary>
         /// <item><description><para><em>IN</em></para></description></item>
         /// limit at 375 degrees
         /// </summary>
-        AZ_375_LIMIT = 9 + 1,
+        AZ_375_LIMIT = 9 + 1, /// Azimuth proximity sensor 2
         /// <summary>
         /// <item><description><para><em>IN</em></para></description></item>
         /// home sensor at 0 degrees,
@@ -109,7 +109,7 @@ namespace ControlRoomApplication.Entities
         /// <remarks>
         /// im not 100% certian that the telesope will actually have this switch
         /// </remarks>
-        EL_10_LIMIT = 12 + 1,
+        EL_10_LIMIT = 12 + 1, /// Elevation proximity sensor 1?
         /// <summary>
         /// <item><description><para><em>IN</em></para></description></item>
         /// active between 0 and -15 degrees
@@ -119,7 +119,7 @@ namespace ControlRoomApplication.Entities
         /// <item><description><para><em>IN</em></para></description></item>
         /// limit at 90 degrees
         /// </summary>
-        EL_90_LIMIT = 14 + 1,
+        EL_90_LIMIT = 14 + 1, /// Elevation proximity sensor 2?
 
 
 

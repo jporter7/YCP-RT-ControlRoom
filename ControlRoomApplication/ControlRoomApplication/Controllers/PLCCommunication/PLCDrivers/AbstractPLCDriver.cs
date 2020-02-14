@@ -134,6 +134,9 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool[] Get_Limit_switches();
 
+        public abstract void setregvalue(ushort adr, ushort value);
+
+
         /// <summary>
         /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 
         /// after calling this method we should zero out the apsolute encoders
@@ -148,5 +151,41 @@ namespace ControlRoomApplication.Controllers
         /// <param name="axis"></param>
         /// <returns></returns>
         public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
+
+        /// <summary>
+        ///  Checks that the motor temperatures are within acceptable ranges. If the temperature exceeds
+        ///  the corresponding value in SimulationConstants.cs, it will return false, otherwise
+        ///  it will return true if everything is good.
+        /// </summary>
+        /// <returns></returns>
+        public bool tempMonitor()
+        {
+            // Check azimuth motor
+            if(Parent.Micro_controler.tempData.azimuthTemp < SimulationConstants.STABLE_MOTOR_TEMP)
+            {
+                logger.Info("Azimuth motor temperature BELOW stable temperature by " + (SimulationConstants.STABLE_MOTOR_TEMP - Parent.Micro_controler.tempData.azimuthTemp) + " degrees Fahrenheit.");
+                return false;
+            }
+            else if(Parent.Micro_controler.tempData.azimuthTemp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
+            {
+                logger.Info("Azimuth motor temperature OVERHEATING by " + (Parent.Micro_controler.tempData.azimuthTemp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
+                return false;
+            }
+
+            // Check elevation motor
+            if (Parent.Micro_controler.tempData.elevationTemp < SimulationConstants.STABLE_MOTOR_TEMP)
+            {
+                logger.Info("Elevation motor temperature BELOW stable temperature by " + (SimulationConstants.STABLE_MOTOR_TEMP - Parent.Micro_controler.tempData.elevationTemp) + " degrees Fahrenheit.");
+                return false;
+            }
+            else if (Parent.Micro_controler.tempData.elevationTemp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
+            {
+                logger.Info("Elevation motor temperature OVERHEATING by " + (Parent.Micro_controler.tempData.elevationTemp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
+                return false;
+            }
+
+            logger.Info("All motor temperatures are stable.");
+            return true;
+        }
     }
 }

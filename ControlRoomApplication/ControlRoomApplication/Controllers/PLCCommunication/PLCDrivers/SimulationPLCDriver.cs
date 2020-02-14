@@ -210,5 +210,10 @@ namespace ControlRoomApplication.Controllers
         public override Task<bool> Home() {
             return driver.Home();
         }
+
+        public override void setregvalue(ushort adr, ushort value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
