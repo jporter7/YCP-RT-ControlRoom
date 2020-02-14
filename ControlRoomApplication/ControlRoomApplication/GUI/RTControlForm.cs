@@ -451,48 +451,48 @@ namespace ControlRoomApplication.Main
             switch (caseSwitch)
             {
                 case 0:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Stow();
+                    controlRoom.RadioTelescopeControllers[rtId-1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId-1].PLCDriver.Stow();
                     //Stow Script selected (index 0 of control script combo)
                     break;
                 case 1:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.FullElevationMove();
+                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.FullElevationMove();
                     //Full Elevation selected (index 1 of control script combo)
                     break;
                 case 2:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Full_360_CW_Rotation();
+                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Full_360_CW_Rotation();
                     //Full 360 CW selected (index 2 of control script combo)
                     break;
                 case 3:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Full_360_CCW_Rotation();
+                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Full_360_CCW_Rotation();
                     //Full 360 CCW  selected (index 3 of control script combo)
                     break;
                 case 4:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Thermal_Calibrate();
+                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Thermal_Calibrate();
                     //Thermal Calibration selected (index 4 of control script combo)
                     break;
                 case 5:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.SnowDump();
+                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.SnowDump();
                     //Snow Dump selected (index 5 of control script combo)
                     break;
                 case 6:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.RecoverFromLimitSwitch();
+                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.RecoverFromLimitSwitch();
                     //Recover from Limit Switch (index 6 of control script combo)
                     break;
                 case 7:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Recover_CW_Hardstop();
+                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Recover_CW_Hardstop();
                     //Recover from Clockwise Hardstop (index 7 of control script combo)
                     break;
                 case 8:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Recover_CCW_Hardstop();
+                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Recover_CCW_Hardstop();
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
                     break;
                 default:
