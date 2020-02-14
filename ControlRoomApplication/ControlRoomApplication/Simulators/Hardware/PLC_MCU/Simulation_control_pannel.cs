@@ -45,7 +45,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 //MCU_TCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse("127.0.0.2"), 8080));
                 //Console.WriteLine(MCU_ip,)
                 MCU_TCPListener = new TcpListener( new IPEndPoint( IPAddress.Parse( MCU_ip ) , MCU_port ) );
-                MCU_emulator_thread = new Thread( new ThreadStart( Run_MCU_server_thread ) );
+                MCU_emulator_thread = new Thread( new ThreadStart( Run_MCU_server_thread ) ) { Name="MCU Simulator Thread"};
             } catch(Exception e) {
                 if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
                     logger.Error(e);
@@ -66,7 +66,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
 
         public void startPLC() {
             try {
-                PLC_emulator_thread = new Thread( new ThreadStart( Run_PLC_emulator_thread ) );
+                PLC_emulator_thread = new Thread( new ThreadStart( Run_PLC_emulator_thread ) ) { Name = "PLC simulator thread"};
                 PLC_emulator_thread.Start();
             } catch(Exception e) {
                 if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {

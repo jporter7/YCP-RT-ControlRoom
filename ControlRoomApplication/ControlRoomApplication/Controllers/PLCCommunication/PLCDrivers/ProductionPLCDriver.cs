@@ -52,7 +52,7 @@ namespace ControlRoomApplication.Controllers
             try
             {
                 PLCTCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(local_ip), PLC_port));
-                ClientManagmentThread = new Thread(new ThreadStart(HandleClientManagementThread));
+                ClientManagmentThread = new Thread( new ThreadStart( HandleClientManagementThread ) ) { Name = "PLC server Thread"};
             }
             catch (Exception e)
             {
@@ -118,15 +118,24 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+        /// <summary>
+        /// Waits for the PLC to contact the controll room 
+        /// </summary>
+        /// <remarks>
+        /// the PLC is constantly trying to send data to the controll room if the control room is not present it will retry again until it sucsfully connects
+        /// this method will return a task that completes when that first contact occors or when it times out
+        /// </remarks>
+        /// <param name="timeoutS"></param>
+        /// <returns></returns>
         public async Task WaitForPLCConnection(int timeoutS) {
             var timout = new CancellationTokenSource( timeoutS*1000 );
             bool PLC_alive = false;
             while(!timout.Token.IsCancellationRequested && !PLC_alive) {
                 PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
-                await Task.Delay( 50 );
+                Task.Delay( 50 ).Wait();
                 if(PLC_alive) {
                     timout.Dispose();
-                    Console.WriteLine("Sucsefully connected to PLC");
+                    logger.Info("sucsefully conected to the PLC");
                     return;
                 }
             }
@@ -821,7 +830,7 @@ namespace ControlRoomApplication.Controllers
 
             bool ELHome = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME] );
 
-            await MCU.HomeBothAxyes( true , ELHome , 0.25 );
+            MCU.HomeBothAxyes( true , ELHome , 0.25 ).Wait();
 
             return true;
         }

@@ -493,8 +493,9 @@ namespace ControlRoomApplication.Main
            
             if (loopBackBox.Checked)
             {
+                ProdcheckBox.Checked = false;
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
-                this.txtMcuCOMPort.Text = "8081"; //default MCU Port
+                this.txtMcuCOMPort.Text = ((int)(8081 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
@@ -503,6 +504,21 @@ namespace ControlRoomApplication.Main
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
             this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
+        }
+
+        private void ProdcheckBox_CheckedChanged( object sender , EventArgs e ) {
+            if(ProdcheckBox.Checked) {
+                loopBackBox.Checked = false;
+                this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
+                this.txtMcuCOMPort.Text = "502"; //default MCU Port
+                this.txtPLCIP.Text = "192.168.0.50";//default IP address
+                if(LocalIPCombo.FindStringExact( "192.168.0.70" ) == -1) {
+                    this.LocalIPCombo.Items.Add( IPAddress.Parse( "192.168.0.70" ) );
+                }
+                this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact( "192.168.0.70" );
+            }
+            this.txtPLCPort.Text = "502";
+            this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact( "Production PLC" );
         }
 
         private void createWSButton_Click(object sender, EventArgs e)
@@ -631,5 +647,7 @@ namespace ControlRoomApplication.Main
         {
 
         }
+
+
     }
 }

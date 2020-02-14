@@ -4,6 +4,7 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
 //using ControlRoomApplication.GUI;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -520,6 +521,7 @@ namespace ControlRoomApplication.Main
                     break;
                 case 6:
                     controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes.AsQueryable().Where(x => x.Id == rtId).First();
                     controlRoom.RadioTelescopes[rtId].PLCDriver.RecoverFromLimitSwitch();
                     //Recover from Limit Switch (index 6 of control script combo)
                     break;
@@ -532,6 +534,10 @@ namespace ControlRoomApplication.Main
                     controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
                     controlRoom.RadioTelescopes[rtId].PLCDriver.Recover_CCW_Hardstop();
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
+                    break;
+                case 9:
+                    controlRoom.RadioTelescopes[rtId-1].PLCDriver.Home();
+                    //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
                     break;
                 default:
 
