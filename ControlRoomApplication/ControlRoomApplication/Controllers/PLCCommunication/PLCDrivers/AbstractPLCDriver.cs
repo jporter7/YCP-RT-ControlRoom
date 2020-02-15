@@ -72,7 +72,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract void Bring_down();
 
-        public abstract bool Test_Conection();
+        public abstract bool Test_Connection();
 
         public abstract Orientation read_Position();
 

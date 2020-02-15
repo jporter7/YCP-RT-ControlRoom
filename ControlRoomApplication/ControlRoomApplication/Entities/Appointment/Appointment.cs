@@ -94,6 +94,8 @@ namespace ControlRoomApplication.Entities
         [Column("telescope_id")]
         public int telescope_id { get; set; }
 
+
+
         /// <summary>
         /// The getter/setter for the status asscociated with this Appointment.
         /// This is the 
@@ -210,9 +212,12 @@ namespace ControlRoomApplication.Entities
         /// The getter/setter for the SpectraCyberConfig type.
         /// </summary>
         //       [Required]
-        //    [Column("spectracyber_config")]
+        [Column("spectracyber_config_id")]
+        public int spectracyber_config_id { get; set; }
+        //  [ForeignKey("spectracyber_config_id")]
         [NotMapped]
         public SpectraCyberConfig SpectraCyberConfig { get; set; }
+
 
         /// <summary>
         /// Compares the current Appointment to another object and it

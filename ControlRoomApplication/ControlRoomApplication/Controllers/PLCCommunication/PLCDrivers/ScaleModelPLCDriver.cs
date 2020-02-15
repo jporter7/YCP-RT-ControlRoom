@@ -207,7 +207,7 @@ namespace ControlRoomApplication.Controllers {
         public override void Bring_down() {
         }
 
-        public override bool Test_Conection() {
+        public override bool Test_Connection() {
             return true;
         }
 

@@ -58,9 +58,9 @@ namespace ControlRoomApplication.Controllers
             driver.Bring_down();
         }
 
-        public override bool Test_Conection()
+        public override bool Test_Connection()
         {
-            return driver.Test_Conection();
+            return driver.Test_Connection();
         }
 
         public override Orientation read_Position()

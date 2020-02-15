@@ -32,7 +32,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> Whether or not the RT responded. </returns>
         public bool TestCommunication()
         {
-            return RadioTelescope.PLCDriver.Test_Conection();
+            return RadioTelescope.PLCDriver.Test_Connection();
         }
 
         /// <summary>

@@ -334,7 +334,7 @@ namespace ControlRoomApplication.Controllers
 
 
 
-        public override bool Test_Conection() {
+        public override bool Test_Connection() {
             return TestIfComponentIsAlive();
         }
 

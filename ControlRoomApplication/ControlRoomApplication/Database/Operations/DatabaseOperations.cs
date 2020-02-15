@@ -102,6 +102,7 @@ namespace ControlRoomApplication.Database
                     appt0.end_time = appt0.start_time.AddSeconds(10 + rand.Next(90));
                     appt0._Status = AppointmentStatusEnum.REQUESTED;
                     appt0._Type = AppointmentTypeEnum.DRIFT_SCAN;
+                    appt0._Priority = AppointmentPriorityEnum.MANUAL;
                     appt0.Orientation = new Orientation(30, 30);
                     appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                     appt0.telescope_id = RT_id;
@@ -112,6 +113,7 @@ namespace ControlRoomApplication.Database
                     appt1.end_time = appt1.start_time.AddSeconds(10 + rand.Next(90));
                     appt1._Status = AppointmentStatusEnum.REQUESTED;
                     appt1._Type = AppointmentTypeEnum.CELESTIAL_BODY;
+                    appt1._Priority = AppointmentPriorityEnum.MANUAL;
                     appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
                     appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
                     appt1.telescope_id = RT_id;
@@ -122,6 +124,7 @@ namespace ControlRoomApplication.Database
                     appt2.end_time = appt2.start_time.AddSeconds(10 + rand.Next(90));
                     appt2._Status = AppointmentStatusEnum.REQUESTED;
                     appt2._Type = AppointmentTypeEnum.POINT;
+                    appt2._Priority = AppointmentPriorityEnum.MANUAL;
                     appt2.Coordinates.Add(coordinate2);
                     appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
                     appt2.telescope_id = RT_id;
@@ -132,6 +135,7 @@ namespace ControlRoomApplication.Database
                     appt3.end_time = appt3.start_time.AddMinutes(10 + rand.Next(90));
                     appt3._Status = AppointmentStatusEnum.REQUESTED;
                     appt3._Type = AppointmentTypeEnum.RASTER;
+                    appt3._Priority = AppointmentPriorityEnum.MANUAL;
                     appt3.Coordinates.Add(coordinate0);
                     appt3.Coordinates.Add(coordinate1);
                     appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
@@ -143,6 +147,10 @@ namespace ControlRoomApplication.Database
                     Context.Appointments.AddRange(appts);
                     SaveContext(Context);
                 }
+            }
+            else
+            {
+                logger.Error("Cannot populate a non-local database!");
             }
         }
 
@@ -156,21 +164,6 @@ namespace ControlRoomApplication.Database
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     Context.Appointments.Add(appt);
-                    SaveContext(Context);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Deletes the local database, if it exists.
-        /// </summary>
-        public static void DeleteLocalDatabase()
-        {
-            if (!USING_REMOTE_DATABASE)
-            {
-                using (RTDbContext Context = InitializeDatabaseContext())
-                {
-                    Context.Database.Delete();
                     SaveContext(Context);
                 }
             }
