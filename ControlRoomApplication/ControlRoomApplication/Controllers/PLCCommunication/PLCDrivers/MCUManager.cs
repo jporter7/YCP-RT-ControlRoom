@@ -1,6 +1,7 @@
 ﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Configuration;
+using ControlRoomApplication.Simulators.Hardware;
 using Modbus.Device;
 using System;
 using System.Collections.Concurrent;
@@ -95,29 +96,35 @@ namespace ControlRoomApplication.Controllers {
     public class MCUpositonStore {
         public int AZ_Steps, EL_Steps;
         public int AZ_Encoder, EL_Encoder;
-        public MCUpositonStore( ) {
+        public MCUpositonStore() {
 
         }
-        public MCUpositonStore( MCUpositonStore current , MCUpositonStore previous ) {
+
+        public MCUpositonStore(MCUpositonRegs mCUpositon) {
+            this.AZ_Encoder = mCUpositon.AZ_Encoder;
+            this.AZ_Steps = mCUpositon.AZ_Steps;
+            this.EL_Encoder = mCUpositon.EL_Encoder;
+            this.EL_Steps = mCUpositon.EL_Steps;
+        }
+        public MCUpositonStore(MCUpositonStore current, MCUpositonStore previous) {
             this.AZ_Steps = previous.AZ_Steps - current.AZ_Steps;
             this.EL_Steps = previous.EL_Steps - current.EL_Steps;
             this.AZ_Encoder = previous.AZ_Encoder - current.AZ_Encoder;
             this.EL_Encoder = previous.EL_Encoder - current.EL_Encoder;
         }
 
-        public void SUM( MCUpositonStore current , MCUpositonStore previous ) {
-            this.AZ_Steps += previous.AZ_Steps - current.AZ_Steps;
-            this.EL_Steps += previous.EL_Steps - current.EL_Steps;
-            this.AZ_Encoder += previous.AZ_Encoder - current.AZ_Encoder;
-            this.EL_Encoder += previous.EL_Encoder - current.EL_Encoder;
+        public void SUM(MCUpositonStore current, MCUpositonStore previous) {
+            this.AZ_Steps += current.AZ_Steps - previous.AZ_Steps;
+            this.EL_Steps += current.EL_Steps - previous.EL_Steps;
+            this.AZ_Encoder += current.AZ_Encoder - previous.AZ_Encoder;
+            this.EL_Encoder += current.EL_Encoder - previous.EL_Encoder;
         }
 
-        public void SUMAbsolute( MCUpositonStore current , MCUpositonStore previous ) {
-            int x = (previous.AZ_Steps - current.AZ_Steps) , y= (previous.EL_Steps - current.EL_Steps), z = (previous.AZ_Encoder - current.AZ_Encoder), w = (previous.EL_Encoder - current.EL_Encoder);
-            this.AZ_Steps +=x;
-            this.EL_Steps += y;
-            this.AZ_Encoder += z;
-            this.EL_Encoder += w;
+        public void SUMAbsolute(MCUpositonStore current, MCUpositonStore previous) {
+            this.AZ_Steps += Math.Abs(current.AZ_Steps - previous.AZ_Steps);
+            this.EL_Steps += Math.Abs(current.EL_Steps - previous.EL_Steps);
+            this.AZ_Encoder += Math.Abs(current.AZ_Encoder - previous.AZ_Encoder);
+            this.EL_Encoder += Math.Abs(current.EL_Encoder - previous.EL_Encoder);
         }
     }
 
@@ -503,6 +510,10 @@ namespace ControlRoomApplication.Controllers {
         }
 
 
+
+
+
+
         /// <summary>
         /// sends a home command and waits for the MCU to finish homeing
         /// </summary>
@@ -524,10 +535,10 @@ namespace ControlRoomApplication.Controllers {
                 elHomeDir = CWHome;
             }
 
-            //set config word to 0x0040 to have the RT home at the minimumum speed
+            //set config word to 0x0040 to have the RT home at the minimumum speed// this requires the MCU to be configured properly
             ushort[] data = {
-                azHomeDir , 0x0000      , 0x0000, 0x0000,(ushort)((AZ_Speed & 0xFFFF0000)>>16),(ushort)(AZ_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000,
-                elHomeDir , 0x0000 ,      0x0000, 0x0000,(ushort)((EL_Speed & 0xFFFF0000)>>16),(ushort)(EL_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000
+                azHomeDir , 0x0000, 0x0000, 0x0000,(ushort)((AZ_Speed & 0xFFFF0000)>>16),(ushort)(AZ_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000,
+                elHomeDir , 0x0000, 0x0000, 0x0000,(ushort)((EL_Speed & 0xFFFF0000)>>16),(ushort)(EL_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000
             };
             int timeout;
             if(Current_AZConfiguration.HomeTimeoutSec > Current_ELConfiguration.HomeTimeoutSec) {
@@ -543,9 +554,9 @@ namespace ControlRoomApplication.Controllers {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
             } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();
-            FixedSizedQueue<MCUpositonStore> positionHistory = new FixedSizedQueue<MCUpositonStore>( 120 );//120 samples at 1 sample/50mS = 6 seconds of data
-            var datatask = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 );
-            var MCUdata = datatask.GetAwaiter().GetResult();
+            FixedSizedQueue<MCUpositonStore> positionHistory = new FixedSizedQueue<MCUpositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
+            Task<ushort[]> datatask;
+            ushort[] MCUdata;
             while(!ThisMove.timeout.IsCancellationRequested) {
                 var updatePoss =  mCUpositon.update();
                 datatask = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 );
@@ -554,10 +565,10 @@ namespace ControlRoomApplication.Controllers {
 
 
                 updatePoss.Wait();
-                positionHistory.Enqueue(mCUpositon as MCUpositonStore);
+                positionHistory.Enqueue(new MCUpositonStore(mCUpositon));
                 Console.WriteLine( "{0}, {0}, {0}, {0}" , mCUpositon.AZ_Encoder, mCUpositon.EL_Encoder, mCUpositon.AZ_Steps , mCUpositon.EL_Steps);
                 bool isMoving = Is_Moing( MCUdata );
-                if(Math.Abs( mCUpositon.AZ_Steps ) < 4 && Math.Abs( mCUpositon.EL_Steps ) < 4 && !isMoving) {
+                if(Math.Abs( mCUpositon.AZ_Steps ) < 4 && Math.Abs( mCUpositon.EL_Steps ) < 4 && !isMoving) {//if the encoders fave been 0'ed out with some error
                     consecutiveSucsefullMoves++;
                     consecutiveErrors = 0;
                     ThisMove.completed = true;
@@ -566,66 +577,33 @@ namespace ControlRoomApplication.Controllers {
                 }
                 try {
                     var movement = positionHistory.GetAbsolutePosChange();
+                    if(movement.AZ_Encoder <50 && movement.EL_Encoder < 50) {//if the telescope has been still for 7 seconds
+                        bool AZCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
+                        bool AZHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
+                        bool ELCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
+                        bool ELHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
+                        if (Math.Abs(mCUpositon.AZ_Steps) > 4 || Math.Abs(mCUpositon.EL_Steps) > 4) {//and the pozition is not 0 then homeing has failed
+                            consecutiveSucsefullMoves = 0;
+                            consecutiveErrors++;
+                            ThisMove.completed = false;
+                            ThisMove.Dispose();
+                            throw new Exception("Homing faild to reach 0 properly");
+                        }else if (ELHomeErr || AZHomeErr || AZCmdErr || ELCmdErr) {
+                            consecutiveSucsefullMoves = 0;
+                            consecutiveErrors++;
+                            ThisMove.completed = false;
+                            ThisMove.Dispose();
+                            throw new Exception(String.Format("Homing faild due to an error MCU status bits were    ELHomeErr={0}   AZHomeErr={1}   AZCmdErr={2}   ELCmdErr={3}", ELHomeErr, AZHomeErr, AZCmdErr, ELCmdErr));
+                        }
+                    }
                 } catch(Exception err) {
                     Console.WriteLine( err );
                 }
-
-
-            }
-            var data2 = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 ).GetAwaiter().GetResult();
-            if(Math.Abs( mCUpositon.AZ_Steps )> 4 || Math.Abs( mCUpositon.EL_Steps) > 4) {
-                consecutiveSucsefullMoves = 0;
-                consecutiveErrors++;
-                ThisMove.completed = false;
-                ThisMove.Dispose();
-                throw new Exception( "Homing faild to reach 0 properly" );
             }
             ThisMove.Dispose();
             return true;
         }
 
-
-        private bool AxysDoneHomeing(RadioTelescopeAxisEnum axisEnum, ushort[] MCUdata ) {
-            int AsxsisDataOfset = 0;
-            if(axisEnum == RadioTelescopeAxisEnum.AZIMUTH) {
-                AsxsisDataOfset = (int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW;
-            } else if(axisEnum == RadioTelescopeAxisEnum.ELEVATION) {
-                AsxsisDataOfset = (int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW;
-            }
-            bool CmdErr = ((MCUdata[AsxsisDataOfset] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
-            bool HomeErr = ((MCUdata[AsxsisDataOfset] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-
-            return false;
-        }
-
-
-        /*
-                        bool azCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
-                bool elCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
-                bool azHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-                bool elHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-                
-                if(elCmdErr || azCmdErr) {//TODO:add more checks to this 
-                    ThisMove.completed = true;
-                    ThisMove.ComandError = new Exception( "MCU command error bit was set" );
-                    consecutiveSucsefullMoves = 0;
-                    consecutiveErrors++;
-                    Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS ) ).Wait();
-                    ThisMove.Dispose();
-                    return false;
-                }
-
-                if(azHomeErr || elHomeErr) {//TODO:add more checks to this 
-                    ThisMove.completed = true;
-                    ThisMove.ComandError = new Exception( "MCU Failed to Home" );
-                    consecutiveSucsefullMoves = 0;
-                    consecutiveErrors++;
-                    Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS ) ).Wait();
-                    ThisMove.Dispose();
-                    return false;
-                }
-
-    */
         private ushort[] prepairRelativeMoveData(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
             if (SpeedAZ < AZStartSpeed) {
                 throw new ArgumentOutOfRangeException("SpeedAZ", SpeedAZ,
