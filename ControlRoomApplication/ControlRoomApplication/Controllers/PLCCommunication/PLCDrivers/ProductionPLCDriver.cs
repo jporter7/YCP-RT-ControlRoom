@@ -813,7 +813,7 @@ namespace ControlRoomApplication.Controllers
 
             bool ZeroOne = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME] );  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
             bool ZeroTwo = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );//active between -1 to 10   and 359 to 370
-
+            /* // comented out for testing
             if(ZeroOne & ZeroTwo) {//very close to 0 degrees 
                 MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 15 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 ).GetAwaiter().GetResult();
                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
@@ -826,7 +826,7 @@ namespace ControlRoomApplication.Controllers
             } else {
                 //we know our position is valid and can imedeatly perform a cw home
             }
-
+            */
 
             bool ELHome = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME] );
 

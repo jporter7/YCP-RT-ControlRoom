@@ -113,10 +113,11 @@ namespace ControlRoomApplication.Controllers {
         }
 
         public void SUMAbsolute( MCUpositonStore current , MCUpositonStore previous ) {
-            this.AZ_Steps += previous.AZ_Steps - current.AZ_Steps;
-            this.EL_Steps += previous.EL_Steps - current.EL_Steps;
-            this.AZ_Encoder += previous.AZ_Encoder - current.AZ_Encoder;
-            this.EL_Encoder += previous.EL_Encoder - current.EL_Encoder;
+            int x = (previous.AZ_Steps - current.AZ_Steps) , y= (previous.EL_Steps - current.EL_Steps), z = (previous.AZ_Encoder - current.AZ_Encoder), w = (previous.EL_Encoder - current.EL_Encoder);
+            this.AZ_Steps +=x;
+            this.EL_Steps += y;
+            this.AZ_Encoder += z;
+            this.EL_Encoder += w;
         }
     }
 
@@ -142,11 +143,16 @@ namespace ControlRoomApplication.Controllers {
             if(typeof(T)==typeof( MCUpositonStore )) {
                 var en = base.GetEnumerator();
                 MCUpositonStore x, y,sum=new MCUpositonStore();
-                x = en.Current as MCUpositonStore;
-                while(en.MoveNext()) {
-                    y = en.Current as MCUpositonStore;
-                    sum.SUMAbsolute( y , x );
-                    x = y;
+                try {
+                    en.MoveNext();
+                    x = en.Current as MCUpositonStore;
+                    while(en.MoveNext()) {
+                        y = en.Current as MCUpositonStore;
+                        sum.SUMAbsolute( y , x );
+                        x = y;
+                    }
+                } catch (Exception err){
+                    Console.WriteLine( err );
                 }
                 return sum;
             }else return new MCUpositonStore();
@@ -536,13 +542,65 @@ namespace ControlRoomApplication.Controllers {
             var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.RELETIVE_MOVE ) {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
             } ).GetAwaiter().GetResult();
+            Task.Delay( 500 ).Wait();
             FixedSizedQueue<MCUpositonStore> positionHistory = new FixedSizedQueue<MCUpositonStore>( 120 );//120 samples at 1 sample/50mS = 6 seconds of data
+            var datatask = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 );
+            var MCUdata = datatask.GetAwaiter().GetResult();
             while(!ThisMove.timeout.IsCancellationRequested) {
                 var updatePoss =  mCUpositon.update();
-                var datatask = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 );
+                datatask = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 );
                 Task.Delay( 50 ).Wait();
-                var MCUdata = datatask.GetAwaiter().GetResult();
-                bool azCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
+                MCUdata = datatask.GetAwaiter().GetResult();
+
+
+                updatePoss.Wait();
+                positionHistory.Enqueue(mCUpositon as MCUpositonStore);
+                Console.WriteLine( "{0}, {0}, {0}, {0}" , mCUpositon.AZ_Encoder, mCUpositon.EL_Encoder, mCUpositon.AZ_Steps , mCUpositon.EL_Steps);
+                bool isMoving = Is_Moing( MCUdata );
+                if(Math.Abs( mCUpositon.AZ_Steps ) < 4 && Math.Abs( mCUpositon.EL_Steps ) < 4 && !isMoving) {
+                    consecutiveSucsefullMoves++;
+                    consecutiveErrors = 0;
+                    ThisMove.completed = true;
+                    ThisMove.Dispose();
+                    return true;
+                }
+                try {
+                    var movement = positionHistory.GetAbsolutePosChange();
+                } catch(Exception err) {
+                    Console.WriteLine( err );
+                }
+
+
+            }
+            var data2 = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 ).GetAwaiter().GetResult();
+            if(Math.Abs( mCUpositon.AZ_Steps )> 4 || Math.Abs( mCUpositon.EL_Steps) > 4) {
+                consecutiveSucsefullMoves = 0;
+                consecutiveErrors++;
+                ThisMove.completed = false;
+                ThisMove.Dispose();
+                throw new Exception( "Homing faild to reach 0 properly" );
+            }
+            ThisMove.Dispose();
+            return true;
+        }
+
+
+        private bool AxysDoneHomeing(RadioTelescopeAxisEnum axisEnum, ushort[] MCUdata ) {
+            int AsxsisDataOfset = 0;
+            if(axisEnum == RadioTelescopeAxisEnum.AZIMUTH) {
+                AsxsisDataOfset = (int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW;
+            } else if(axisEnum == RadioTelescopeAxisEnum.ELEVATION) {
+                AsxsisDataOfset = (int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW;
+            }
+            bool CmdErr = ((MCUdata[AsxsisDataOfset] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
+            bool HomeErr = ((MCUdata[AsxsisDataOfset] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
+
+            return false;
+        }
+
+
+        /*
+                        bool azCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
                 bool elCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
                 bool azHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
                 bool elHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
@@ -557,7 +615,7 @@ namespace ControlRoomApplication.Controllers {
                     return false;
                 }
 
-                if(elCmdErr || azCmdErr) {//TODO:add more checks to this 
+                if(azHomeErr || elHomeErr) {//TODO:add more checks to this 
                     ThisMove.completed = true;
                     ThisMove.ComandError = new Exception( "MCU Failed to Home" );
                     consecutiveSucsefullMoves = 0;
@@ -567,41 +625,7 @@ namespace ControlRoomApplication.Controllers {
                     return false;
                 }
 
-                updatePoss.Wait();
-                positionHistory.Enqueue(mCUpositon as MCUpositonStore);
-                bool isMoving = Is_Moing( MCUdata );
-                if(mCUpositon.AZ_Steps == 0 && mCUpositon.EL_Steps == 0 && !isMoving) {
-                    consecutiveSucsefullMoves++;
-                    consecutiveErrors = 0;
-                    ThisMove.completed = true;
-                    ThisMove.Dispose();
-                    return true;
-                }
-                var movement = positionHistory.GetAbsolutePosChange();
-
-
-            }
-            var data2 = MCUModbusMaster.ReadHoldingRegistersAsync( 0 , 12 ).GetAwaiter().GetResult();
-            if(mCUpositon.AZ_Steps != 0 || mCUpositon.EL_Steps != 0) {
-                consecutiveSucsefullMoves = 0;
-                consecutiveErrors++;
-                ThisMove.completed = false;
-                ThisMove.Dispose();
-                throw new Exception( "Homing faild to reach 0 properly" );
-            }
-            ThisMove.Dispose();
-            return true;
-        }
-
-
-        private bool AxysDoneHomeing(int AsxsisDataOfset, ushort[] MCUdata ) {
-            bool CmdErr = ((MCUdata[AsxsisDataOfset] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
-            bool HomeErr = ((MCUdata[AsxsisDataOfset] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-
-            return false;
-        }
-
-
+    */
         private ushort[] prepairRelativeMoveData(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
             if (SpeedAZ < AZStartSpeed) {
                 throw new ArgumentOutOfRangeException("SpeedAZ", SpeedAZ,
