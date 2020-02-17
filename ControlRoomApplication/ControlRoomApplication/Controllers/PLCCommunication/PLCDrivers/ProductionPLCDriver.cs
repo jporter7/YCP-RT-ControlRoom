@@ -854,22 +854,64 @@ namespace ControlRoomApplication.Controllers
         }
 
         public async Task<bool> JogOffLimitSwitches() {
-            if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
-                MCU.Send_Jog_command(0.2, false, 0, false);
-            } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit) {
-                MCU.Send_Jog_command(0.2, true, 0, false);
-            } else {
-                throw new ArgumentException("both the CW and CCW limit switch in the Azimuth were true only one limit Swithc can be active at once");
-            }
+           var AZTAsk = Task.Run( () => {
+               int AZstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_AZIMUTH );
+               var timeoutMS = MCUManager.estimateTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
+               var timeout = new CancellationTokenSource( timeoutMS );
+                if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
+                    MCU.Send_Jog_command(0.2, true , 0, false);
+                   while(!timeout.IsCancellationRequested) {
+                       if(!limitSwitchData.Azimuth_CCW_Limit) {
+                           Cancel_move();
+                           return true;
+                       }
+                   }
+                   return false;
+               } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit) {
+                    MCU.Send_Jog_command(0.2, false , 0, false);
+                   while(!timeout.IsCancellationRequested) {
+                       if(!limitSwitchData.Azimuth_CW_Limit) {
+                           Cancel_move();
+                           return true;
+                       }
+                   }
+                   return false;
+               } else if(!limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) { return true; } else {
+                   throw new ArgumentException("both the CW and CCW limit switch in the Azimuth were true only one limit Swithc can be active at once");
+                }
+            } );
+            var ELTAsk = Task<bool>.Run( ()  => {
+                int ELstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_ELEVATION );
+                var timeoutMS = MCUManager.estimateTime( ELstepSpeed , 50 , ConversionHelper.DegreesToSteps( 30 , MotorConstants.GEARING_RATIO_ELEVATION ) );
+                var timeout = new CancellationTokenSource( timeoutMS );
+                if(limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) {
+                    MCU.Send_Jog_command( 0 , false , 0.2 , true );
+                    while(!timeout.IsCancellationRequested) {
+                        if(!limitSwitchData.Elevation_Lower_Limit) {
+                            Cancel_move();
+                            return true;
+                        }
+                    }
+                    return false;
+                } else if(!limitSwitchData.Elevation_Lower_Limit && limitSwitchData.Elevation_Upper_Limit) {
+                    MCU.Send_Jog_command( 0 , false , 0.2 , false );
+                    while(!timeout.IsCancellationRequested) {
+                        if(!limitSwitchData.Elevation_Upper_Limit) {
+                            Cancel_move();
+                            return true;
+                        }
+                    }
+                    return false;
+                } else if(!limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) { return true; }else {
+                    throw new ArgumentException( "both the CW and CCW limit switch in the Elevation were true only one limit Swithc can be active at once" );
+                }
+            } );
 
-            if (limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) {
-                MCU.Send_Jog_command(0, false, 0.2, true);
-            } else if (!limitSwitchData.Elevation_Lower_Limit && limitSwitchData.Elevation_Upper_Limit) {
-                MCU.Send_Jog_command(0, false, 0.2, false);
-            } else {
-                throw new ArgumentException("both the CW and CCW limit switch in the Elevation were true only one limit Swithc can be active at once");
-            }
+            AZTAsk.Start();
+            ELTAsk.Start();
 
+            AZTAsk.GetAwaiter().GetResult();
+            ELTAsk.GetAwaiter().GetResult();
             return true;
         }
 

@@ -21,7 +21,40 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            Application.Run(new MainForm());
+            //Application.Run(new MainForm());
+
+            MicroControlerControler ctrl = new MicroControlerControler( "192.168.0.70",1602 );
+            var s = Task.Run( () => {
+                ctrl.BringUp();
+            } );
+
+            EncoderReader read = new EncoderReader( "192.168.0.80" , 1602 );
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth);
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+
+
+            s.GetAwaiter().GetResult();
+
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+            Task.Delay( 1000 ).Wait();
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+            Task.Delay( 1000 ).Wait();
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+
+            Console.WriteLine( read.GetCurentOrientation().Azimuth );
 
             //DatabaseOperations.DeleteLocalDatabase();
             /*
@@ -76,24 +109,6 @@ namespace ControlRoomApplication.Main
             plc.StartAsyncAcceptingClients();
             plc.WaitForPLCConnection( 30 ).GetAwaiter().GetResult();
             Console.WriteLine( "PLC connected" );
-            /*
-            ushort[] exsistingin = plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 );
-            ushort[] exsistingout = plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 );
-            int ch = 0;
-
-            while(true) {
-                Task<ushort[]> newin = plc.MCUModbusMaster.ReadHoldingRegistersAsync( zero , (ushort)20 );
-                ushort[] newout = plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 );
-                bool x = newout.SequenceEqual( exsistingout );
-                if(!x) {
-                    exsistingout = newout;
-                    ch++;
-                    printRegs( newin.Result , newout );
-                }
-                if(ch>4) {
-                    break;
-                }
-            }///
 
             double gearedSpeedAZ = .06, gearedSpeedEL = .1;
             ushort homeTimeoutSecondsElevation = 50, homeTimeoutSecondsAzimuth = 50;
@@ -112,9 +127,47 @@ namespace ControlRoomApplication.Main
             //plc.Start_jog(RadioTelescopeAxisEnum.AZIMUTH,1000,true);
             //printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
             Task.Delay( 500 ).Wait();
-            plc.HomeBothAxyes().Wait();
-
+          //  plc.HomeBothAxyes().Wait();
+            
             Task.Delay( 4000 ).Wait();
+
+            plc.JogOffLimitSwitches().Wait();
+
+            void printRegs(ushort[] inreg2 , ushort[] outreg2 ) {
+                string outstr = " inreg";
+                for(int v = 0; v < inreg2.Length; v++) {
+                    //outstr += Convert.ToString(inreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                    outstr += Convert.ToString( inreg2[v] , 2 ).PadLeft( 17 ) + ",";
+                }
+                outstr += "\noutreg";
+                for(int v = 0; v < outreg2.Length; v++) {
+                    //outstr += Convert.ToString(outreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                    outstr += Convert.ToString( outreg2[v] , 2 ).PadLeft( 17 ) + ",";
+                }
+                Console.WriteLine( outstr );
+            }
+
+
+            /*
+            ushort[] exsistingin = plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 );
+            ushort[] exsistingout = plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 );
+            int ch = 0;
+
+            while(true) {
+                Task<ushort[]> newin = plc.MCUModbusMaster.ReadHoldingRegistersAsync( zero , (ushort)20 );
+                ushort[] newout = plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 );
+                bool x = newout.SequenceEqual( exsistingout );
+                if(!x) {
+                    exsistingout = newout;
+                    ch++;
+                    printRegs( newin.Result , newout );
+                }
+                if(ch>4) {
+                    break;
+                }
+            }//*/
+
+
             /*
            // plc.Move_to_orientation(new Entities.Orientation(0,60),new Entities.Orientation(0,0));
             Task.Delay( 500 ).Wait();
@@ -130,23 +183,10 @@ namespace ControlRoomApplication.Main
             plc.Immediade_stop();
             // plc.HomeBothAxyes().Wait();
 
-            ///
-//Environment.Exit(0);
-            void printRegs(ushort[] inreg2 , ushort[] outreg2 ) {
-                string outstr = " inreg";
-                for(int v = 0; v < inreg2.Length; v++) {
-                    //outstr += Convert.ToString(inreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
-                    outstr += Convert.ToString( inreg2[v] , 2 ).PadLeft( 17 ) + ",";
-                }
-                outstr += "\noutreg";
-                for(int v = 0; v < outreg2.Length; v++) {
-                    //outstr += Convert.ToString(outreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
-                    outstr += Convert.ToString( outreg2[v] , 2 ).PadLeft( 17 ) + ",";
-                }
-                Console.WriteLine( outstr );
-            }
+            //*/
+            //Environment.Exit(0);
 
-            
+
             //*/
             /*
             runer();

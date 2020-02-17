@@ -566,7 +566,7 @@ namespace ControlRoomApplication.Controllers {
 
                 updatePoss.Wait();
                 positionHistory.Enqueue(new MCUpositonStore(mCUpositon));
-                Console.WriteLine( "{0}, {0}, {0}, {0}" , mCUpositon.AZ_Encoder, mCUpositon.EL_Encoder, mCUpositon.AZ_Steps , mCUpositon.EL_Steps);
+                Console.WriteLine( "{0}, {1}, {2}, {3}" , mCUpositon.AZ_Encoder, mCUpositon.EL_Encoder, mCUpositon.AZ_Steps , mCUpositon.EL_Steps);
                 bool isMoving = Is_Moing( MCUdata );
                 if(Math.Abs( mCUpositon.AZ_Steps ) < 4 && Math.Abs( mCUpositon.EL_Steps ) < 4 && !isMoving) {//if the encoders fave been 0'ed out with some error
                     consecutiveSucsefullMoves++;
@@ -575,7 +575,7 @@ namespace ControlRoomApplication.Controllers {
                     ThisMove.Dispose();
                     return true;
                 }
-                try {
+                if(positionHistory.Count > positionHistory.Size - 2) {
                     var movement = positionHistory.GetAbsolutePosChange();
                     if(movement.AZ_Encoder <50 && movement.EL_Encoder < 50) {//if the telescope has been still for 7 seconds
                         bool AZCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
@@ -587,18 +587,19 @@ namespace ControlRoomApplication.Controllers {
                             consecutiveErrors++;
                             ThisMove.completed = false;
                             ThisMove.Dispose();
-                            throw new Exception("Homing faild to reach 0 properly");
-                        }else if (ELHomeErr || AZHomeErr || AZCmdErr || ELCmdErr) {
+                            return false;
+                            //throw new Exception("Homing faild to reach 0 properly");
+                        } else if (ELHomeErr || AZHomeErr || AZCmdErr || ELCmdErr) {
                             consecutiveSucsefullMoves = 0;
                             consecutiveErrors++;
                             ThisMove.completed = false;
                             ThisMove.Dispose();
-                            throw new Exception(String.Format("Homing faild due to an error MCU status bits were    ELHomeErr={0}   AZHomeErr={1}   AZCmdErr={2}   ELCmdErr={3}", ELHomeErr, AZHomeErr, AZCmdErr, ELCmdErr));
+                            return false;
+                            //throw new Exception(String.Format("Homing faild due to an error MCU status bits were    ELHomeErr={0}   AZHomeErr={1}   AZCmdErr={2}   ELCmdErr={3}", ELHomeErr, AZHomeErr, AZCmdErr, ELCmdErr));
                         }
                     }
-                } catch(Exception err) {
-                    Console.WriteLine( err );
                 }
+
             }
             ThisMove.Dispose();
             return true;
@@ -645,7 +646,7 @@ namespace ControlRoomApplication.Controllers {
             TimeToMove += 100;
 
             var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( CMDdata , MCUcomandType.RELETIVE_MOVE ) { AZ_Programed_Speed = SpeedAZ , EL_Programed_Speed = SpeedEL , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } ).GetAwaiter().GetResult();
-            Task.Delay( 50 ).Wait();//wait for comand to be read
+            Task.Delay( 500 ).Wait();//wait for comand to be read
 
 
             while(!ThisMove.timeout.IsCancellationRequested) {
@@ -688,11 +689,21 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
+        /// <summary>
+        /// estimate time to complete a move based on input values
+        /// </summary>
+        /// <param name="maxVel"></param>
+        /// <param name="acc"></param>
+        /// <param name="dist"></param>
+        /// <returns></returns>
         public static int estimateTime(int maxVel, int acc, int dist) {
             //acc steps/millisecond/second
             //maxVel steps/second
             //dist steps
             //return millisecond
+            dist = Math.Abs( dist );
+            maxVel = Math.Abs( maxVel );
+            acc = Math.Abs( acc );
             int t1 = ((maxVel) / acc);//ms
             double t1s = t1 / 1000.0;
             int distT1 = (int)(((acc*1000) / 2) * (t1s * t1s) * 2);
