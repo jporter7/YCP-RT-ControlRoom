@@ -25,7 +25,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="is_Test">if this is true the sim telescope will teleport to its final position</param>
         public SimulationPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC,bool is_Test ) : base(local_ip, MCU_ip, MCU_port, PLC_port )
         {
-            SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, false);
+            SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, is_Test);
             Thread.Sleep(1000);//wait for server in simMcu to come up
             driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
             if(startPLC) {

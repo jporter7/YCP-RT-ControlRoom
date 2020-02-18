@@ -70,7 +70,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestConstructorAndProperties()
         {
-            Assert.AreEqual(ControlRoom, CRController.ControlRoom);
+            Assert.IsTrue(ControlRoom == CRController.ControlRoom);
         }
 
         [TestMethod]

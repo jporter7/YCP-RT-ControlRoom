@@ -64,9 +64,9 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the Orientation asscociated with this Appointment.
         /// </summary>
-        [Column("orientation_id")]
-        public int orientation_id { get; set; }
-      //  [ForeignKey("orientation_id")]
+      //  [Column("orientation_id")]
+      //  public int orientation_id { get; set; }
+     //   [ForeignKey("id")]
         [NotMapped]
         public Orientation Orientation { get; set; }
 
@@ -93,8 +93,6 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("telescope_id")]
         public int telescope_id { get; set; }
-
-
 
         /// <summary>
         /// The getter/setter for the status asscociated with this Appointment.

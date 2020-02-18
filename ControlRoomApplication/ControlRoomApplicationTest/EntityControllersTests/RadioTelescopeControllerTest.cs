@@ -49,13 +49,14 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
         [TestInitialize]
         public void testInit() {
-            TestRTPLC = new TestPLCDriver( ip , ip , port , port,true );
+            TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
 
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController( new SpectraCyberSimulator() );
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
 
+            TestRTPLC.SetParent(TestRT);
 
             TestRTPLC.StartAsyncAcceptingClients();
         }
@@ -143,12 +144,14 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // The Radio Telescope should now have a CurrentOrientation of (0, -90)
             Assert.IsTrue( response );
-            Assert.AreEqual( orientation.Azimuth , 0.0 , 0.001 );
-            Assert.AreEqual( orientation.Elevation , 0.0 , 0.001 );
+            Assert.AreEqual( 0.0, orientation.Azimuth, 0.001 );
+            Assert.AreEqual( 90.0 , orientation.Elevation, 0.001 );
         }
 
         [TestMethod]
         public void TestThermalCalibrateRadioTelescope() {
+            
+
             // Call the CalibrateRadioTelescope method
             var response = TestRadioTelescopeController.ThermalCalibrateRadioTelescope();
 
