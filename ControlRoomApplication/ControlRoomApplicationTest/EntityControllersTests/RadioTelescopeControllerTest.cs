@@ -103,17 +103,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
-        public void TestGetCurrentLimitSwitchStatuses() {
-            // Test the limit switch statuses
-            var responses = TestRadioTelescopeController.GetCurrentLimitSwitchStatuses();
-
-            // Make sure each limit switch is online
-            foreach(var response in responses) {
-                Assert.IsFalse( response );
-            }
-        }
-
-        [TestMethod]
         public void TestGetCurrentSafetyInterlockStatus() {
             Thread.Sleep( 1000 );
             //estRTPLC.setSaftyInterlock();

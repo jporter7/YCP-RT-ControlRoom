@@ -192,11 +192,6 @@ namespace ControlRoomApplication.Controllers
             return driver.Get_interlock_status();
         }
 
-        public override bool[] Get_Limit_switches()
-        {
-            return driver.Get_Limit_switches();
-        }
-
         public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
         {
             return driver.GET_MCU_Status( axis );
@@ -212,6 +207,10 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Stop_Jog() {
             return driver.Stop_Jog();
+        }
+
+        public override Task<bool> JogOffLimitSwitches() {
+            return driver.JogOffLimitSwitches();
         }
     }
 }

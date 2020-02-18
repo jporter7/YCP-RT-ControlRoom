@@ -60,32 +60,6 @@ namespace ControlRoomApplication.Controllers
             return RadioTelescope.Encoders.GetCurentOrientation();
         }
 
-
-        /// <summary>
-        /// Gets the current status of the four limit switches.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        /// <returns>
-        ///     An array of four booleans, where "true" means that the limit switch was triggered, and "false" means otherwise.
-        ///     The order of the limit switches are as follows:
-        ///         0: Under limit    azimuth
-        ///         1: Under warning  azimuth
-        ///         2: Over  warning  azimuth
-        ///         3: Over  limit    azimuth
-        ///         4: Under limit    elevation
-        ///         5: Under warning  elevation
-        ///         6: Over  warning  elevation
-        ///         7: Over  limit    elevation
-        /// </returns>
-        public bool[] GetCurrentLimitSwitchStatuses()
-        {
-            //throw new NotImplementedException();
-            return RadioTelescope.PLCDriver.Get_Limit_switches();
-        }
-
         /// <summary>
         /// Gets the status of the interlock system associated with this Radio Telescope.
         /// 

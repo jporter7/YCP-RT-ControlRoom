@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ControlRoomApplication.Simulators.Hardware;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.Sensors;
+using ControlRoomApplication.Controllers.PLCCommunication;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -24,6 +25,7 @@ namespace ControlRoomApplication.Controllers
         public LimitSwitchData limitSwitchData;
         public HomeSensorData homeSensorData;
         public MiscPlcInput plcInput;
+        protected PLCEvents pLCEvents;
 
 
         /// <summary>
@@ -137,7 +139,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Get_interlock_status();
 
-        public abstract bool[] Get_Limit_switches();
+        public abstract Task<bool> JogOffLimitSwitches();
 
         /// <summary>
         /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 

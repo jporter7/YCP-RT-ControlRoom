@@ -21,40 +21,7 @@ namespace ControlRoomApplication.Main
         [STAThread]
         public static void Main(string[] args)
         {
-            //Application.Run(new MainForm());
-
-            MicroControlerControler ctrl = new MicroControlerControler( "192.168.0.70",1602 );
-            var s = Task.Run( () => {
-                ctrl.BringUp();
-            } );
-
-            EncoderReader read = new EncoderReader( "192.168.0.80" , 1602 );
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth);
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
-
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
-
-
-            s.GetAwaiter().GetResult();
-
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
-            Task.Delay( 1000 ).Wait();
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
-            Task.Delay( 1000 ).Wait();
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
-
-            Console.WriteLine( read.GetCurentOrientation().Azimuth );
+            Application.Run(new MainForm());
 
             //DatabaseOperations.DeleteLocalDatabase();
             /*
@@ -107,7 +74,7 @@ namespace ControlRoomApplication.Main
             ushort zero = 0, readadr = 1024;//7500
             Console.WriteLine("waiting...");
             plc.StartAsyncAcceptingClients();
-            plc.WaitForPLCConnection( 30 ).GetAwaiter().GetResult();
+            plc.WaitForPLCConnection( 40 ).GetAwaiter().GetResult();
             Console.WriteLine( "PLC connected" );
 
             double gearedSpeedAZ = .06, gearedSpeedEL = .1;
@@ -129,9 +96,28 @@ namespace ControlRoomApplication.Main
             Task.Delay( 500 ).Wait();
           //  plc.HomeBothAxyes().Wait();
             
-            Task.Delay( 4000 ).Wait();
+            Task.Delay( 400 ).Wait();
 
-            plc.JogOffLimitSwitches().Wait();
+            //plc.JogOffLimitSwitches().Wait();
+            while(true) {
+                plc.Start_jog( .2 , true , 0 , false );
+                Task.Delay( 2000 ).Wait();
+                plc.Start_jog( .4 , true , 0 , false );
+                Task.Delay( 2000 ).Wait();
+                plc.Start_jog( .4 , true , .2 , false );
+                Task.Delay( 2000 ).Wait();
+                plc.Start_jog( .4 , true , .4 , false );
+                Task.Delay( 2000 ).Wait();
+                plc.Start_jog( .2 , false , 2 , false );
+                Task.Delay( 6000 ).Wait();
+                plc.Start_jog( .4 , true , 2 , true );
+                Task.Delay( 6000 ).Wait();
+                plc.Start_jog( .5 , false , 2 , false );
+                Task.Delay( 8000 ).Wait();
+                plc.Stop_Jog();
+                Task.Delay( 600 ).Wait();
+            }
+
 
             void printRegs(ushort[] inreg2 , ushort[] outreg2 ) {
                 string outstr = " inreg";

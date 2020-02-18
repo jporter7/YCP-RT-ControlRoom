@@ -395,10 +395,6 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool[] Get_Limit_switches() {
-            throw new NotImplementedException();
-        }
-
         public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {//set 
             bool[] stuf = new bool[33];
             for(int i = 0; i < 32; i++) {
@@ -413,6 +409,10 @@ namespace ControlRoomApplication.Controllers {
         }
 
         public override Task<bool> Home() {
+            throw new NotImplementedException();
+        }
+
+        public override Task<bool> JogOffLimitSwitches() {
             throw new NotImplementedException();
         }
     }
