@@ -256,7 +256,6 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
         {
-            appt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
             Orientation free_orientation = null;
             if (appt.Orientation == null)
             {

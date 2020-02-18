@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private Simulation_control_pannel SimMCU;
-        private ProductionPLCDriver driver; 
+        public ProductionPLCDriver driver; 
         /// <summary>
         /// 
         /// </summary>

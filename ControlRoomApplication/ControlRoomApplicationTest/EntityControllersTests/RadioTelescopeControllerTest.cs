@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System.Threading;
 
 namespace ControlRoomApplicationTest.EntityControllersTests {
@@ -54,9 +55,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController( new SpectraCyberSimulator() );
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
+            TestRT.WeatherStation = new SimulationWeatherStation(1000);
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
 
-            TestRTPLC.SetParent(TestRT);
+            // TestRTPLC.SetParent(TestRT);
+            TestRTPLC.driver.SetParent(TestRT);
 
             TestRTPLC.StartAsyncAcceptingClients();
         }
@@ -150,15 +153,14 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
         [TestMethod]
         public void TestThermalCalibrateRadioTelescope() {
-            
+            Orientation before = TestRadioTelescopeController.GetCurrentOrientation();
 
             // Call the CalibrateRadioTelescope method
             var response = TestRadioTelescopeController.ThermalCalibrateRadioTelescope();
 
-            // The Radio Telescope should now have a CurrentOrienation of (0,0)
-            Assert.IsTrue( response );
-            Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth , 0.0 );
-            Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation , 0.0 );
+            // The Radio Telescope should now have a CurrentOrienation of what it had before the call
+            Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth , before.Azimuth );
+            Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation , before.Elevation );
         }
 
         [TestMethod]
