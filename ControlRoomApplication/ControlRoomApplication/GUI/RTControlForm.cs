@@ -4,6 +4,7 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
 //using ControlRoomApplication.GUI;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -195,6 +196,8 @@ namespace ControlRoomApplication.Main
         private void timer1_Tick(object sender, EventArgs e)
         {
             Entities.Orientation currentOrienation = controlRoom.RadioTelescopeControllers[rtId - 1].GetCurrentOrientation();
+            SetAZText(String.Format("{0:N2}",currentOrienation.Azimuth));
+            SetELText(String.Format("{0:N2}", currentOrienation.Elevation));
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
             SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
             SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
@@ -275,6 +278,42 @@ namespace ControlRoomApplication.Main
             else
             {
                 ActualDecTextBox.Text = text;
+            }
+        }
+
+
+        delegate void SetAZTextCallback(string text);
+        private void SetAZText(string text) {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (label4.InvokeRequired) {
+                SetAZTextCallback d = new SetAZTextCallback(SetAZText);
+                try {
+                    Invoke(d, new object[] { text });
+
+                }
+                catch { }
+            } else {
+                label4.Text = text;
+            }
+        }
+
+
+        delegate void SetELTextCallback(string text);
+        private void SetELText(string text) {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (label5.InvokeRequired) {
+                SetELTextCallback d = new SetELTextCallback(SetELText);
+                try {
+                    Invoke(d, new object[] { text });
+
+                }
+                catch { }
+            } else {
+                label5.Text = text;
             }
         }
 
@@ -481,8 +520,9 @@ namespace ControlRoomApplication.Main
                     //Snow Dump selected (index 5 of control script combo)
                     break;
                 case 6:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.RecoverFromLimitSwitch();
+                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopes.AsQueryable().Where(x => x.Id == rtId).First();
+                    controlRoom.RadioTelescopes[rtId].PLCDriver.RecoverFromLimitSwitch();
                     //Recover from Limit Switch (index 6 of control script combo)
                     break;
                 case 7:
@@ -494,6 +534,10 @@ namespace ControlRoomApplication.Main
                     controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
                     controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Recover_CCW_Hardstop();
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
+                    break;
+                case 9:
+                    controlRoom.RadioTelescopes[rtId-1].PLCDriver.Home();
+                    //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
                     break;
                 default:
 
@@ -552,7 +596,7 @@ namespace ControlRoomApplication.Main
             if (ControledButtonRadio.Checked)
             {
                 logger.Info("Executed Controlled Stop");
-                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeStopJog();
             }
             else if (immediateRadioButton.Checked)
             {
@@ -603,11 +647,6 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void plusElaButton_Down(object sender, MouseEventArgs e ){
             double speed = Convert.ToDouble( speedComboBox.Text);
             logger.Info("Jog PosButton MouseDown");
@@ -641,6 +680,7 @@ namespace ControlRoomApplication.Main
             //  Stop Move
             ExecuteCorrectStop();
         }
+
     }
 }
 

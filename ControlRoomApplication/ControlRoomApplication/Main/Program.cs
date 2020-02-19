@@ -70,8 +70,68 @@ namespace ControlRoomApplication.Main
                 Console.WriteLine( "{0} milliseconds passed" , end - start );
             };
             ///
-            ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver( "192.168.0.20" , "192.168.0.50" , 502 , 502 , true );
+            ProductionPLCDriver plc = new ControlRoomApplication.Controllers.ProductionPLCDriver( "192.168.0.70" , "192.168.0.50" , 502 , 502  );
             ushort zero = 0, readadr = 1024;//7500
+            Console.WriteLine("waiting...");
+            plc.StartAsyncAcceptingClients();
+            plc.WaitForPLCConnection( 40 ).GetAwaiter().GetResult();
+            Console.WriteLine( "PLC connected" );
+
+            double gearedSpeedAZ = .06, gearedSpeedEL = .1;
+            ushort homeTimeoutSecondsElevation = 50, homeTimeoutSecondsAzimuth = 50;
+
+
+            printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+
+            plc.Configure_MCU( gearedSpeedAZ , gearedSpeedEL , homeTimeoutSecondsAzimuth , homeTimeoutSecondsElevation );
+
+            //printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+
+            // Task.Delay( 5000 ).Wait();
+            //bool home =plc.HomeBothAxyes().GetAwaiter().GetResult();
+            //Console.WriteLine( home.ToString() );
+            // plc.Move_to_orientation(new Entities.Orientation(3,2),new Entities.Orientation(0,0));
+            //plc.Start_jog(RadioTelescopeAxisEnum.AZIMUTH,1000,true);
+            //printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+            Task.Delay( 500 ).Wait();
+          //  plc.HomeBothAxyes().Wait();
+            
+            Task.Delay( 400 ).Wait();
+
+            //plc.JogOffLimitSwitches().Wait();
+            while(true) {
+                plc.Start_jog( .2 , true , 0 , false );
+                Task.Delay( 2000 ).Wait();
+                plc.Start_jog( .4 , true , 0 , false );
+                Task.Delay( 2000 ).Wait();
+                plc.Start_jog( .4 , true , .2 , false );
+                Task.Delay( 2000 ).Wait();
+                plc.Start_jog( .4 , true , .4 , false );
+                Task.Delay( 2000 ).Wait();
+                plc.Start_jog( .2 , false , 2 , false );
+                Task.Delay( 6000 ).Wait();
+                plc.Start_jog( .4 , true , 2 , true );
+                Task.Delay( 6000 ).Wait();
+                plc.Start_jog( .5 , false , 2 , false );
+                Task.Delay( 8000 ).Wait();
+                plc.Stop_Jog();
+                Task.Delay( 600 ).Wait();
+            }
+
+
+            void printRegs(ushort[] inreg2 , ushort[] outreg2 ) {
+                string outstr = " inreg";
+                for(int v = 0; v < inreg2.Length; v++) {
+                    //outstr += Convert.ToString(inreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                    outstr += Convert.ToString( inreg2[v] , 2 ).PadLeft( 17 ) + ",";
+                }
+                outstr += "\noutreg";
+                for(int v = 0; v < outreg2.Length; v++) {
+                    //outstr += Convert.ToString(outreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
+                    outstr += Convert.ToString( outreg2[v] , 2 ).PadLeft( 17 ) + ",";
+                }
+                Console.WriteLine( outstr );
+            }
 
 
             /*
@@ -91,43 +151,26 @@ namespace ControlRoomApplication.Main
                 if(ch>4) {
                     break;
                 }
-            }///
-
-            double gearedSpeedAZ = .1, gearedSpeedEL = .1;
-            ushort homeTimeoutSecondsElevation = 50, homeTimeoutSecondsAzimuth = 50;
+            }//*/
 
 
-            printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
+            /*
+           // plc.Move_to_orientation(new Entities.Orientation(0,60),new Entities.Orientation(0,0));
+            Task.Delay( 500 ).Wait();
+            printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+            plc.Cancel_move();
 
-            plc.Configure_MCU( gearedSpeedAZ , gearedSpeedEL , homeTimeoutSecondsAzimuth , homeTimeoutSecondsElevation );
+            Task.Delay( 4000 ).Wait();
+            printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+            plc.Controled_stop();
 
-            printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
+            Task.Delay( 4000 ).Wait();
+            printRegs( plc.readModbusReregs( zero , (ushort)20 ) , plc.readModbusReregs( readadr , (ushort)20 ) );
+            plc.Immediade_stop();
+            // plc.HomeBothAxyes().Wait();
 
-            // Task.Delay( 5000 ).Wait();
-            //bool home =plc.HomeBothAxyes().GetAwaiter().GetResult();
-            //Console.WriteLine( home.ToString() );
-            // plc.Move_to_orientation(new Entities.Orientation(3,2),new Entities.Orientation(0,0));
-            //plc.Start_jog(RadioTelescopeAxisEnum.AZIMUTH,1000,true);
-              printRegs( plc.MCUModbusMaster.ReadHoldingRegisters( zero , (ushort)20 ) , plc.MCUModbusMaster.ReadHoldingRegisters( readadr , (ushort)20 ) );
-
-
-            Task.Delay( 2000 );
-
-            ///
-
-            void printRegs(ushort[] inreg2 , ushort[] outreg2 ) {
-                string outstr = " inreg";
-                for(int v = 0; v < inreg2.Length; v++) {
-                    //outstr += Convert.ToString(inreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
-                    outstr += Convert.ToString( inreg2[v] , 2 ).PadLeft( 17 ) + ",";
-                }
-                outstr += "\noutreg";
-                for(int v = 0; v < outreg2.Length; v++) {
-                    //outstr += Convert.ToString(outreg[v], 2).PadLeft(16).Replace(" ", "0") + " , ";
-                    outstr += Convert.ToString( outreg2[v] , 2 ).PadLeft( 17 ) + ",";
-                }
-                Console.WriteLine( outstr );
-            }
+            //*/
+            //Environment.Exit(0);
 
 
             //*/

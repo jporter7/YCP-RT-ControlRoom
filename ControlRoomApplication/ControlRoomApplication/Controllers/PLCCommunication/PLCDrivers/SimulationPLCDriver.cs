@@ -183,19 +183,13 @@ namespace ControlRoomApplication.Controllers
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }
 
-        public override bool Start_jog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
-        {
-            return driver.Start_jog(axis, speed, clockwise);
+        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
+            return driver.Start_jog( AZspeed, AZ_CW, ELspeed, EL_CW);
         }
 
         public override bool Get_interlock_status()
         {
             return driver.Get_interlock_status();
-        }
-
-        public override bool[] Get_Limit_switches()
-        {
-            return driver.Get_Limit_switches();
         }
 
         public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
@@ -209,6 +203,14 @@ namespace ControlRoomApplication.Controllers
 
         public override Task<bool> Home() {
             return driver.Home();
+        }
+
+        public override bool Stop_Jog() {
+            return driver.Stop_Jog();
+        }
+
+        public override Task<bool> JogOffLimitSwitches() {
+            return driver.JogOffLimitSwitches();
         }
     }
 }

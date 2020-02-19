@@ -60,32 +60,6 @@ namespace ControlRoomApplication.Controllers
             return RadioTelescope.Encoders.GetCurentOrientation();
         }
 
-
-        /// <summary>
-        /// Gets the current status of the four limit switches.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        /// <returns>
-        ///     An array of four booleans, where "true" means that the limit switch was triggered, and "false" means otherwise.
-        ///     The order of the limit switches are as follows:
-        ///         0: Under limit    azimuth
-        ///         1: Under warning  azimuth
-        ///         2: Over  warning  azimuth
-        ///         3: Over  limit    azimuth
-        ///         4: Under limit    elevation
-        ///         5: Under warning  elevation
-        ///         6: Over  warning  elevation
-        ///         7: Over  limit    elevation
-        /// </returns>
-        public bool[] GetCurrentLimitSwitchStatuses()
-        {
-            //throw new NotImplementedException();
-            return RadioTelescope.PLCDriver.Get_Limit_switches();
-        }
-
         /// <summary>
         /// Gets the status of the interlock system associated with this Radio Telescope.
         /// 
@@ -138,10 +112,13 @@ namespace ControlRoomApplication.Controllers
 
         /// <summary>
         /// Method used to request to set configuration of elements of the RT.
-        /// 
-        /// takes the starting speed of the motor in degrees per second (speed of tellescope after gearing)
-        /// and home timeout which is currently unused
+        /// takes the starting speed of the motor in RPM (speed of tellescope after gearing)
         /// </summary>
+        /// <param name="startSpeedAzimuth">RPM</param>
+        /// <param name="startSpeedElevation">RPM</param>
+        /// <param name="homeTimeoutAzimuth">SEC</param>
+        /// <param name="homeTimeoutElevation">SEC</param>
+        /// <returns></returns>
         public bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return RadioTelescope.PLCDriver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
@@ -173,18 +150,6 @@ namespace ControlRoomApplication.Controllers
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow));
         }
 
-        /// <summary>
-        /// Method used to request to start jogging one of the Radio Telescope's axes
-        /// at a speed, in either the clockwise or counter-clockwise direction.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, double speed, bool clockwise)
-        {
-            return RadioTelescope.PLCDriver.Start_jog(axis, speed , clockwise);
-        }
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's azimuth
@@ -196,7 +161,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeAzimuthJog(double speed, bool clockwise)
         {
-            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.AZIMUTH, speed, clockwise);
+            return RadioTelescope.PLCDriver.Start_jog( speed, clockwise, 0,false );
         }
 
         /// <summary>
@@ -209,12 +174,20 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeElevationJog(double speed, bool clockwise)
         {
-            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise);
+            return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, clockwise);
+        }
+
+
+        /// <summary>
+        /// send a clear move to the MCU to stop a jog
+        /// </summary>
+        public bool ExecuteRadioTelescopeStopJog() {
+            return RadioTelescope.PLCDriver.Stop_Jog();
         }
 
         /// <summary>
         /// Method used to request that all of the Radio Telescope's movement comes
-        /// to a controlled stop.
+        /// to a controlled stop. this will not work for jog moves use 
         /// 
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived

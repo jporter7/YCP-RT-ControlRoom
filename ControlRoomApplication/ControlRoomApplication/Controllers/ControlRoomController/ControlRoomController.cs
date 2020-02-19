@@ -13,10 +13,9 @@ namespace ControlRoomApplication.Controllers
         private Thread WeatherMonitoringThread;
         private bool KeepWeatherMonitoringThreadAlive;
 
-        public ControlRoomController(ControlRoom controlRoom)
-        {
+        public ControlRoomController( ControlRoom controlRoom ) {
             ControlRoom = controlRoom;
-            WeatherMonitoringThread = new Thread(new ThreadStart(WeatherMonitoringRoutine));
+            WeatherMonitoringThread = new Thread( new ThreadStart( WeatherMonitoringRoutine ) ) { Name = "Weather Monitoring Routine" };
             KeepWeatherMonitoringThreadAlive = false;
         }
 
