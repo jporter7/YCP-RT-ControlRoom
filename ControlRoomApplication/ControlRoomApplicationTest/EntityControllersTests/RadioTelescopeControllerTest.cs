@@ -157,6 +157,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Call the CalibrateRadioTelescope method
             var response = TestRadioTelescopeController.ThermalCalibrateRadioTelescope();
+            // this var response is going to be null because there is no reading. It means that the 
+            // telescope isn't calibrated. At this time, all we care about is the movement
 
             // The Radio Telescope should now have a CurrentOrienation of what it had before the call
             Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth , before.Azimuth );
