@@ -328,6 +328,7 @@ namespace ControlRoomApplication.Main
 
             // Return Radio Telescope
             RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id, ctrler, encoder );
+            abstractPLCDriver.SetParent(rt);
 
             logger.Info("RadioTelescope Built Successfully");
             return rt;

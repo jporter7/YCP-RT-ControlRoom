@@ -461,42 +461,42 @@ namespace ControlRoomApplication.Main
                     break;
                 case 1:
                     rtController.ExecuteRadioTelescopeControlledStop();
-                    tele.PLCDriver.FullElevationMove();
+                    tele.PLCDriver.FullElevationMove().GetAwaiter();
                     //Full Elevation selected (index 1 of control script combo)
                     break;
                 case 2:
                     rtController.ExecuteRadioTelescopeControlledStop();
-                    tele.PLCDriver.Full_360_CW_Rotation();
+                    tele.PLCDriver.Full_360_CW_Rotation().GetAwaiter();
                     //Full 360 CW selected (index 2 of control script combo)
                     break;
                 case 3:
                     rtController.ExecuteRadioTelescopeControlledStop();
-                    tele.PLCDriver.Full_360_CCW_Rotation();
+                    tele.PLCDriver.Full_360_CCW_Rotation().GetAwaiter();
                     //Full 360 CCW  selected (index 3 of control script combo)
                     break;
                 case 4:
                     rtController.ExecuteRadioTelescopeControlledStop();
-                    tele.PLCDriver.Thermal_Calibrate();
+                    tele.PLCDriver.Thermal_Calibrate().GetAwaiter();
                     //Thermal Calibration selected (index 4 of control script combo)
                     break;
                 case 5:
                     rtController.ExecuteRadioTelescopeControlledStop();
-                    tele.PLCDriver.SnowDump();
+                    tele.PLCDriver.SnowDump().GetAwaiter();
                     //Snow Dump selected (index 5 of control script combo)
                     break;
                 case 6:
                     rtController.ExecuteRadioTelescopeControlledStop();
-                    tele.PLCDriver.RecoverFromLimitSwitch();
+                    tele.PLCDriver.RecoverFromLimitSwitch().GetAwaiter();
                     //Recover from Limit Switch (index 6 of control script combo)
                     break;
                 case 7:
                     rtController.ExecuteRadioTelescopeControlledStop();
-                    tele.PLCDriver.Recover_CW_Hardstop();
+                    tele.PLCDriver.Recover_CW_Hardstop().GetAwaiter();
                     //Recover from Clockwise Hardstop (index 7 of control script combo)
                     break;
                 case 8:
                     rtController.ExecuteRadioTelescopeControlledStop();
-                    tele.PLCDriver.Recover_CCW_Hardstop();
+                    tele.PLCDriver.Recover_CCW_Hardstop().GetAwaiter();
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
                     break;
                 default:

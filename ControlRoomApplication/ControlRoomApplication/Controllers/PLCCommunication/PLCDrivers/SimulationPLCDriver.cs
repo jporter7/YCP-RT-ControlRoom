@@ -80,6 +80,7 @@ namespace ControlRoomApplication.Controllers
 
         public override Task<bool> Thermal_Calibrate()
         {
+            driver.SetParent(Parent);
             return driver.Thermal_Calibrate();
         }
 
