@@ -131,7 +131,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ThermalCalibrateRadioTelescope()
+        public Task<bool> ThermalCalibrateRadioTelescope()
         {
             return RadioTelescope.PLCDriver.Thermal_Calibrate();
         }
@@ -155,7 +155,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool MoveRadioTelescopeToOrientation(Orientation orientation)
+        public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)
         {
             return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position());
         }
@@ -168,7 +168,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool MoveRadioTelescopeToCoordinate(Coordinate coordinate)
+        public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow));
         }

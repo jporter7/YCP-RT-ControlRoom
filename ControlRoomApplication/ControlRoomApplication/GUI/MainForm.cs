@@ -457,7 +457,8 @@ namespace ControlRoomApplication.Main
         private void FreeControl_Click(object sender, EventArgs e)
         {
             logger.Info("Free Control Button Clicked");
-            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+            int rtIDforControl = AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id;
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {

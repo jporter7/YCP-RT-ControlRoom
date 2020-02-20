@@ -225,11 +225,11 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Thermal_Calibrate() {
-            return true;
+        public override Task<bool> Thermal_Calibrate() {
+            return null;
 
         }
-
+        
         public override bool Configure_MCU( double startSpeedAzimuth , double startSpeedElevation , int homeTimeoutAzimuth , int homeTimeoutElevation ) {
             return true;
         }
@@ -285,7 +285,7 @@ namespace ControlRoomApplication.Controllers {
 
 
 
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
 
 
@@ -302,81 +302,81 @@ namespace ControlRoomApplication.Controllers {
 
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL);
+            return new Task<bool> (() => send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL));
 
         }
 
-        public override bool SnowDump()
+        public override Task<bool> SnowDump()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Stow()
+        public override Task<bool> Stow()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Full_360_CCW_Rotation()
+        public override Task<bool> Full_360_CCW_Rotation()
         {
             throw new NotImplementedException();
         }
 
-        public override bool HitAzimuthLeftLimitSwitch()
+        public override Task<bool> HitAzimuthLeftLimitSwitch()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Full_360_CW_Rotation()
+        public override Task<bool> Full_360_CW_Rotation()
         {
             throw new NotImplementedException();
         }
 
-        public override bool HitAzimuthRightLimitSwitch()
+        public override Task<bool> HitAzimuthRightLimitSwitch()
         {
             throw new NotImplementedException();
         }
       
-        public override bool Recover_CW_Hardstop()
+        public override Task<bool> Recover_CW_Hardstop()
         {
             throw new NotImplementedException();
         }
 
-        public override bool HitElevationLowerLimitSwitch()
+        public override Task<bool> HitElevationLowerLimitSwitch()
         {
             throw new NotImplementedException();
         }
 
-        public override bool HitElevationUpperLimitSwitch()
+        public override Task<bool> HitElevationUpperLimitSwitch()
         {
             throw new NotImplementedException();
         }
 
-        public override bool RecoverFromLimitSwitch()
+        public override Task<bool> RecoverFromLimitSwitch()
         {
             throw new NotImplementedException();
         }
 
-        public override bool FullElevationMove()
+        public override Task<bool> FullElevationMove()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Hit_CW_Hardstop()
+        public override Task<bool> Hit_CW_Hardstop()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Hit_CCW_Hardstop()
+        public override Task<bool> Hit_CCW_Hardstop()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Recover_CCW_Hardstop()
+        public override Task<bool> Recover_CCW_Hardstop()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Hit_Hardstops()
+        public override Task<bool> Hit_Hardstops()
         {
             throw new NotImplementedException();
         }

@@ -78,82 +78,82 @@ namespace ControlRoomApplication.Controllers
             return driver.Shutdown_PLC_MCU();
         }
 
-        public override bool Thermal_Calibrate()
+        public override Task<bool> Thermal_Calibrate()
         {
             return driver.Thermal_Calibrate();
         }
 
-        public override bool SnowDump()
+        public override Task<bool> SnowDump()
         {
             return driver.SnowDump();
         }
 
-        public override bool Stow()
+        public override Task<bool> Stow()
         {
             return driver.Stow();
         }
 
-        public override bool HitAzimuthLeftLimitSwitch()
+        public override Task<bool> HitAzimuthLeftLimitSwitch()
         {
             return driver.HitAzimuthLeftLimitSwitch();
         }
 
-        public override bool HitAzimuthRightLimitSwitch()
+        public override Task<bool> HitAzimuthRightLimitSwitch()
         {
             return driver.HitAzimuthRightLimitSwitch();
         }
 
-        public override bool HitElevationLowerLimitSwitch()
+        public override Task<bool> HitElevationLowerLimitSwitch()
         {
             return driver.HitElevationLowerLimitSwitch();
         }
 
-        public override bool HitElevationUpperLimitSwitch()
+        public override Task<bool> HitElevationUpperLimitSwitch()
         {
             return driver.HitElevationUpperLimitSwitch();
         }
 
-        public override bool RecoverFromLimitSwitch()
+        public override Task<bool> RecoverFromLimitSwitch()
         {
             return driver.RecoverFromLimitSwitch();
         }
 
-        public override bool FullElevationMove()
+        public override Task<bool> FullElevationMove()
         {
             return driver.FullElevationMove();
         }
 
-        public override bool Full_360_CCW_Rotation()
+        public override Task<bool> Full_360_CCW_Rotation()
         {
             return driver.Full_360_CCW_Rotation();
         }
 
-        public override bool Full_360_CW_Rotation()
+        public override Task<bool> Full_360_CW_Rotation()
         {
             return driver.Full_360_CW_Rotation();
         }
 
-        public override bool Hit_CW_Hardstop()
+        public override Task<bool> Hit_CW_Hardstop()
         {
             return driver.Hit_CW_Hardstop();
         }
 
-        public override bool Hit_CCW_Hardstop()
+        public override Task<bool> Hit_CCW_Hardstop()
         {
             return driver.Hit_CCW_Hardstop();
         }
 
-        public override bool Recover_CW_Hardstop()
+        public override Task<bool> Recover_CW_Hardstop()
         {
             return driver.Recover_CW_Hardstop();
         }
 
-        public override bool Recover_CCW_Hardstop()
+        public override Task<bool> Recover_CCW_Hardstop()
         {
             return driver.Recover_CCW_Hardstop();
         }
 
-        public override bool Hit_Hardstops()
+        public override Task<bool> Hit_Hardstops()
         {
             return driver.Hit_Hardstops();
         }
@@ -178,7 +178,7 @@ namespace ControlRoomApplication.Controllers
             return driver.relative_move(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL);
         }
 
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }

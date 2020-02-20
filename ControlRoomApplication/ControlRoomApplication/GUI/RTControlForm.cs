@@ -16,6 +16,7 @@ namespace ControlRoomApplication.Main
         public double Increment { get; set; }
         public CoordinateCalculationController CoordCalc { set; get; }
         public ControlRoom controlRoom { get; set; }
+        private RadioTelescopeController rtController { get; set; }
         // private ControlRoomController MainControlRoomController { get; set; }
         private Thread ControlRoomThread { get; set; }
         public int rtId { get; set; }
@@ -36,7 +37,8 @@ namespace ControlRoomApplication.Main
             // Set RT id
             rtId = new_rtId;
             // Make coordCalc
-            CoordCalc = controlRoom.RadioTelescopeControllers[rtId - 1].CoordinateController;
+            rtController = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId);
+            CoordCalc = rtController.CoordinateController;
             // Set increment
             Increment = 1;
             UpdateIncrementButtons();
@@ -194,7 +196,7 @@ namespace ControlRoomApplication.Main
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Entities.Orientation currentOrienation = controlRoom.RadioTelescopeControllers[rtId - 1].GetCurrentOrientation();
+            Entities.Orientation currentOrienation = rtController.GetCurrentOrientation();
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
             SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
             SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
@@ -448,51 +450,53 @@ namespace ControlRoomApplication.Main
         logger.Info("Run Script Button Clicked");
             int caseSwitch = controlScriptsCombo.SelectedIndex;
 
+            RadioTelescope tele = rtController.RadioTelescope;
+
             switch (caseSwitch)
             {
                 case 0:
-                    controlRoom.RadioTelescopeControllers[rtId-1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId-1].PLCDriver.Stow();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.Stow().GetAwaiter();
                     //Stow Script selected (index 0 of control script combo)
                     break;
                 case 1:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.FullElevationMove();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.FullElevationMove();
                     //Full Elevation selected (index 1 of control script combo)
                     break;
                 case 2:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Full_360_CW_Rotation();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.Full_360_CW_Rotation();
                     //Full 360 CW selected (index 2 of control script combo)
                     break;
                 case 3:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Full_360_CCW_Rotation();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.Full_360_CCW_Rotation();
                     //Full 360 CCW  selected (index 3 of control script combo)
                     break;
                 case 4:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Thermal_Calibrate();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.Thermal_Calibrate();
                     //Thermal Calibration selected (index 4 of control script combo)
                     break;
                 case 5:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.SnowDump();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.SnowDump();
                     //Snow Dump selected (index 5 of control script combo)
                     break;
                 case 6:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.RecoverFromLimitSwitch();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.RecoverFromLimitSwitch();
                     //Recover from Limit Switch (index 6 of control script combo)
                     break;
                 case 7:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Recover_CW_Hardstop();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.Recover_CW_Hardstop();
                     //Recover from Clockwise Hardstop (index 7 of control script combo)
                     break;
                 case 8:
-                    controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId - 1].PLCDriver.Recover_CCW_Hardstop();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    tele.PLCDriver.Recover_CCW_Hardstop();
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
                     break;
                 default:

@@ -75,7 +75,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             // Create an Orientation object with an azimuth of 311 and elevation of 42
             Orientation Orientation = new Orientation( 311.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            var response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             // Ensure the objects are identical
@@ -86,17 +86,17 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Orientation = new Orientation( 28.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
             // Call the GetCurrentOrientationMethod
             CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
-            Assert.IsTrue( response );
+            Assert.IsTrue( response);
             Assert.AreEqual( Orientation.Azimuth , CurrentOrientation.Azimuth , 0.001 );
             Assert.AreEqual( Orientation.Elevation , CurrentOrientation.Elevation , 0.001 );
 
 
             Orientation = new Orientation( 310.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
             // Call the GetCurrentOrientationMethod
             CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             // Ensure the objects are identical
@@ -169,7 +169,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation Orientation = new Orientation( 311.0 , 42.0 );
 
             // Set the RadioTelescope's CurrentOrientation field
-            var response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
