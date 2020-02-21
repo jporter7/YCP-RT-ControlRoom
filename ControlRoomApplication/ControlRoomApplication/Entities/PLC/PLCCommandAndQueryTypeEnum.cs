@@ -86,7 +86,7 @@ namespace ControlRoomApplication.Entities
         /// <item><description><para><em>IN</em></para></description></item>
         /// high when gate is open
         /// </summary>
-        Safety_INTERLOCK = 16 + 1,
+        Gate_Safety_INTERLOCK = 16 + 1,
 
         /// <summary>
         /// <item><description><para><em>IN</em></para></description></item>
@@ -108,6 +108,11 @@ namespace ControlRoomApplication.Entities
         /// high when the ELEVATION motor has a fault
         /// </summary>
         EL_MTR_DRIVER_FAULT = 20 + 1,
+        /// <summary>
+        /// <item><description><para><em>IN</em></para></description></item>
+        /// the elevation will have a second sensor connected directly to the Elevation Frame
+        /// </summary>
+        EL_SLIP_CAPTURE = 21+1,
 
 
         /// <summary>

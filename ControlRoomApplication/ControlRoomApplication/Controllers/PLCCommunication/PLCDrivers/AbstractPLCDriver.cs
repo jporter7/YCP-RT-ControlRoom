@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Simulators.Hardware;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.Sensors;
+using ControlRoomApplication.Controllers.PLCCommunication;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -21,7 +23,10 @@ namespace ControlRoomApplication.Controllers
         protected RadioTelescope Parent;
 
         public LimitSwitchData limitSwitchData;
-        public ProximitySensorData proximitySensorData;
+        public HomeSensorData homeSensorData;
+        public MiscPlcInput plcInput;
+        protected PLCEvents pLCEvents;
+
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup
@@ -128,11 +133,13 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 
-        public abstract bool Start_jog(RadioTelescopeAxisEnum axis, double speed, bool clockwise);
+        public abstract bool Start_jog( double AZspeed ,bool AZ_CW, double ELspeed ,bool EL_CW);
+
+        public abstract bool Stop_Jog();
 
         public abstract bool Get_interlock_status();
 
-        public abstract bool[] Get_Limit_switches();
+        public abstract Task<bool> JogOffLimitSwitches();
 
         /// <summary>
         /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 
