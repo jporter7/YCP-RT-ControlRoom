@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Simulators.Hardware;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.Sensors;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -22,6 +23,7 @@ namespace ControlRoomApplication.Controllers
 
         public LimitSwitchData limitSwitchData;
         public ProximitySensorData proximitySensorData;
+        public OverrideSwitchData overrides;
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup
@@ -164,24 +166,32 @@ namespace ControlRoomApplication.Controllers
             if(Parent.Micro_controler.tempData.azimuthTemp < SimulationConstants.STABLE_MOTOR_TEMP)
             {
                 logger.Info("Azimuth motor temperature BELOW stable temperature by " + (SimulationConstants.STABLE_MOTOR_TEMP - Parent.Micro_controler.tempData.azimuthTemp) + " degrees Fahrenheit.");
-                return false;
+                
+                // Only overrides if switch is true
+                if (!overrides.overrideAzimuthMotTemp) return false;
             }
             else if(Parent.Micro_controler.tempData.azimuthTemp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
             {
                 logger.Info("Azimuth motor temperature OVERHEATING by " + (Parent.Micro_controler.tempData.azimuthTemp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
-                return false;
+
+                // Only overrides if switch is true
+                if (!overrides.overrideAzimuthMotTemp) return false;
             }
 
             // Check elevation motor
             if (Parent.Micro_controler.tempData.elevationTemp < SimulationConstants.STABLE_MOTOR_TEMP)
             {
                 logger.Info("Elevation motor temperature BELOW stable temperature by " + (SimulationConstants.STABLE_MOTOR_TEMP - Parent.Micro_controler.tempData.elevationTemp) + " degrees Fahrenheit.");
-                return false;
+
+                // Only overrides if switch is true
+                if (!overrides.overrideElevatMotTemp) return false;
             }
             else if (Parent.Micro_controler.tempData.elevationTemp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
             {
                 logger.Info("Elevation motor temperature OVERHEATING by " + (Parent.Micro_controler.tempData.elevationTemp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
-                return false;
+
+                // Only overrides if switch is true
+                if (!overrides.overrideElevatMotTemp) return false;
             }
 
             logger.Info("All motor temperatures are stable.");
