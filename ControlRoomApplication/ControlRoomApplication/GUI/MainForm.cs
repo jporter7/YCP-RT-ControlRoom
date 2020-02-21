@@ -193,6 +193,9 @@ namespace ControlRoomApplication.Main
                 logger.Info("Starting Weather Monitoring Routine");
                 MainControlRoomController.StartWeatherMonitoringRoutine();
 
+                logger.Info("Starting Spectra Cyber Controleler");
+                ARadioTelescope.SpectraCyberController.BringUp();
+
                 // Start RT controller's threaded management
                 logger.Info("Starting RT controller's threaded management");
                 RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];

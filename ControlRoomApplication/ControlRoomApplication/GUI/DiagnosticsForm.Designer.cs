@@ -164,6 +164,7 @@
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.WSOverride = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
+            this.SpectraConfig = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -893,6 +894,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.SpectraConfig);
             this.tabControl1.Location = new System.Drawing.Point(2, 11);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -1523,7 +1525,7 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
             this.tabPage3.Size = new System.Drawing.Size(645, 411);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Sensor Over Rides";
+            this.tabPage3.Text = "Sensor Overrides";
             this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
             // 
             // groupBox13
@@ -1758,6 +1760,16 @@
             this.label24.TabIndex = 12;
             this.label24.Text = "Weather Station";
             // 
+            // SpectraConfig
+            // 
+            this.SpectraConfig.Location = new System.Drawing.Point(4, 22);
+            this.SpectraConfig.Name = "SpectraConfig";
+            this.SpectraConfig.Padding = new System.Windows.Forms.Padding(3);
+            this.SpectraConfig.Size = new System.Drawing.Size(645, 411);
+            this.SpectraConfig.TabIndex = 3;
+            this.SpectraConfig.Text = "Spectra Config";
+            this.SpectraConfig.UseVisualStyleBackColor = true;
+            // 
             // DiagnosticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1951,5 +1963,6 @@
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.Label AZTempUnitLabel;
         private System.Windows.Forms.Label ElTempUnitLabel;
+        private System.Windows.Forms.TabPage SpectraConfig;
     }
 }

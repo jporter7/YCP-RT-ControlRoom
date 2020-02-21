@@ -429,7 +429,7 @@ namespace ControlRoomApplication.Database
                Context.SensorStatus.Add(sensors);
                SaveContext(Context);
 
-               logger.Info("Added sensor status data to database");
+               //logger.Info("Added sensor status data to database");
            }
         }
 

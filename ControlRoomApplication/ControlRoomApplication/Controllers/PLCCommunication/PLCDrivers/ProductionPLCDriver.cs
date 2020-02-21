@@ -856,13 +856,13 @@ namespace ControlRoomApplication.Controllers
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
             bool Sucess = true;
 
-            await MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
+            MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
             if(!is_test) {
                 Task task = Task.Delay( 100 );//wait to ensure it is porcessed
                 await task;
             }
             ushort[] data = prepairMCUCommand( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL );
-            await MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , data );
+            MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , data );
             return Sucess;
         }
 
