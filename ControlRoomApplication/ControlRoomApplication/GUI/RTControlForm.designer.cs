@@ -492,7 +492,7 @@
             "Recover From Clockwise Hardstop",
             "Recover From Counter-Clockwise Hardstop",
             "Home Telescope"});
-            this.controlScriptsCombo.Location = new System.Drawing.Point(12, 28);
+            this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
             this.controlScriptsCombo.TabIndex = 23;
@@ -759,10 +759,10 @@
             // 
             this.finalizeSettingsButton.BackColor = System.Drawing.Color.DarkGray;
             this.finalizeSettingsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.finalizeSettingsButton.Location = new System.Drawing.Point(327, 7);
+            this.finalizeSettingsButton.Location = new System.Drawing.Point(309, 10);
             this.finalizeSettingsButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.finalizeSettingsButton.Name = "finalizeSettingsButton";
-            this.finalizeSettingsButton.Size = new System.Drawing.Size(70, 27);
+            this.finalizeSettingsButton.Size = new System.Drawing.Size(97, 27);
             this.finalizeSettingsButton.TabIndex = 40;
             this.finalizeSettingsButton.Text = "Finalize Settings";
             this.finalizeSettingsButton.UseVisualStyleBackColor = false;
