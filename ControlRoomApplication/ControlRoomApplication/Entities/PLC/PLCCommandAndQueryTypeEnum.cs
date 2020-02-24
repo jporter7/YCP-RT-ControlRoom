@@ -30,6 +30,16 @@ namespace ControlRoomApplication.Entities
         /// this mainly serves as a place holder
         /// </summary>
         E_STOP_OVERRIDE = 2+1,
+        /// <summary>
+        /// <item><description><para><em>OUT</em></para></description></item>
+        /// this word (ushort) is incramented every 1 second by the PLCDriver and is used by the PLC to determine if the control room is active
+        /// </summary>
+        CTRL_HEART_BEAT = 3+1,
+        /// <summary>
+        ///  <item><description><para><em>OUT</em></para></description></item>
+        ///  when this word is changed the PLC will shutDown the MCU
+        /// </summary>
+        MCU_RESET = 4+1,
 
 
         /// <summary>
@@ -86,7 +96,7 @@ namespace ControlRoomApplication.Entities
         /// <item><description><para><em>IN</em></para></description></item>
         /// high when gate is open
         /// </summary>
-        Safety_INTERLOCK = 16 + 1,
+        Gate_Safety_INTERLOCK = 16 + 1,
 
         /// <summary>
         /// <item><description><para><em>IN</em></para></description></item>
@@ -108,6 +118,11 @@ namespace ControlRoomApplication.Entities
         /// high when the ELEVATION motor has a fault
         /// </summary>
         EL_MTR_DRIVER_FAULT = 20 + 1,
+        /// <summary>
+        /// <item><description><para><em>IN</em></para></description></item>
+        /// the elevation will have a second sensor connected directly to the Elevation Frame
+        /// </summary>
+        EL_SLIP_CAPTURE = 21+1,
 
 
         /// <summary>

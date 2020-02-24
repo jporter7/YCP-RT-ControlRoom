@@ -4,8 +4,10 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
 //using ControlRoomApplication.GUI;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Main
 {
@@ -27,7 +29,7 @@ namespace ControlRoomApplication.Main
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public bool freeEditActive;
         public bool manualControlActive;
-
+        public bool spectraEditActive;
 
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
@@ -83,6 +85,13 @@ namespace ControlRoomApplication.Main
             ControledButtonRadio.Enabled = false;
             immediateRadioButton.Enabled = false;
             speedComboBox.Enabled = false;
+
+            //Initialize Start and Stop Scan buttons as disabled
+            spectraEditActive = true;
+            startScanButton.BackColor = System.Drawing.Color.DarkGray;
+            startScanButton.Enabled = false;
+            stopScanButton.BackColor = System.Drawing.Color.DarkGray;
+            stopScanButton.Enabled = false;
 
             logger.Info("Radio Telescope Control Form Initalized");
         }
@@ -197,6 +206,8 @@ namespace ControlRoomApplication.Main
         private void timer1_Tick(object sender, EventArgs e)
         {
             Entities.Orientation currentOrienation = rtController.GetCurrentOrientation();
+            SetAZText(String.Format("{0:N2}",currentOrienation.Azimuth));
+            SetELText(String.Format("{0:N2}", currentOrienation.Elevation));
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
             SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
             SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
@@ -277,6 +288,42 @@ namespace ControlRoomApplication.Main
             else
             {
                 ActualDecTextBox.Text = text;
+            }
+        }
+
+
+        delegate void SetAZTextCallback(string text);
+        private void SetAZText(string text) {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (label4.InvokeRequired) {
+                SetAZTextCallback d = new SetAZTextCallback(SetAZText);
+                try {
+                    Invoke(d, new object[] { text });
+
+                }
+                catch { }
+            } else {
+                label4.Text = text;
+            }
+        }
+
+
+        delegate void SetELTextCallback(string text);
+        private void SetELText(string text) {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (label5.InvokeRequired) {
+                SetELTextCallback d = new SetELTextCallback(SetELText);
+                try {
+                    Invoke(d, new object[] { text });
+
+                }
+                catch { }
+            } else {
+                label5.Text = text;
             }
         }
 
@@ -447,7 +494,7 @@ namespace ControlRoomApplication.Main
         //Case Depends on which script is currently selected 
         private void runControlScript_Click(object sender, EventArgs e)
         {
-        logger.Info("Run Script Button Clicked");
+            logger.Info("Run Script Button Clicked");
             int caseSwitch = controlScriptsCombo.SelectedIndex;
 
             RadioTelescope tele = rtController.RadioTelescope;
@@ -498,6 +545,10 @@ namespace ControlRoomApplication.Main
                     rtController.ExecuteRadioTelescopeControlledStop();
                     tele.PLCDriver.Recover_CCW_Hardstop().GetAwaiter();
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
+                    break;
+                case 9:
+                    controlRoom.RadioTelescopes[rtId-1].PLCDriver.Home();
+                    //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
                     break;
                 default:
 
@@ -556,7 +607,7 @@ namespace ControlRoomApplication.Main
             if (ControledButtonRadio.Checked)
             {
                 logger.Info("Executed Controlled Stop");
-                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeControlledStop();
+                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeStopJog();
             }
             else if (immediateRadioButton.Checked)
             {
@@ -607,11 +658,6 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void label5_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void plusElaButton_Down(object sender, MouseEventArgs e ){
             double speed = Convert.ToDouble( speedComboBox.Text);
             logger.Info("Jog PosButton MouseDown");
@@ -644,6 +690,125 @@ namespace ControlRoomApplication.Main
 
             //  Stop Move
             ExecuteCorrectStop();
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void groupBox4_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void finalizeSettings_Click(object sender, EventArgs e)
+        {
+            logger.Info("[SpectraCyberController] Finalize settings button has been clicked");
+
+            if (spectraEditActive)
+            {
+                scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
+                scanTypeComboBox.Enabled = false;
+                integrationStep.BackColor = System.Drawing.Color.DarkGray;
+                integrationStep.Enabled = false;
+                offsetVoltage.BackColor = System.Drawing.Color.DarkGray;
+                offsetVoltage.Enabled = false;
+                bandwidth.BackColor = System.Drawing.Color.DarkGray;
+                bandwidth.Enabled = false;
+                gain.BackColor = System.Drawing.Color.DarkGray;
+                gain.Enabled = false;
+
+                startScanButton.BackColor = System.Drawing.Color.LimeGreen;
+                startScanButton.Enabled = true;
+
+                spectraEditActive = false;
+            }
+            else
+            {
+                scanTypeComboBox.BackColor = System.Drawing.Color.White;
+                scanTypeComboBox.Enabled = true;
+                integrationStep.BackColor = System.Drawing.Color.White;
+                integrationStep.Enabled = true;
+                offsetVoltage.BackColor = System.Drawing.Color.White;
+                offsetVoltage.Enabled = true;
+                bandwidth.BackColor = System.Drawing.Color.White;
+                bandwidth.Enabled = true;
+                gain.BackColor = System.Drawing.Color.White;
+                gain.Enabled = true;
+
+                startScanButton.BackColor = System.Drawing.Color.DarkGray;
+                startScanButton.Enabled = false;
+
+                spectraEditActive = true;
+            }
+
+        }
+
+
+        private void startScan_Click(object sender, EventArgs e)
+        {
+            logger.Info("[SpectraCyberController] Start Scan button has been clicked");
+            int caseSwitch = scanTypeComboBox.SelectedIndex;
+
+            switch (caseSwitch)
+            {
+                case 0:
+                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                    //We need to add in code to manage the if_gain
+                    break;
+                case 1:
+                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                    break;
+            }
+
+            startScanButton.Enabled = false;
+            startScanButton.BackColor = System.Drawing.Color.DarkGray;
+
+            stopScanButton.Enabled = true;
+            stopScanButton.BackColor = System.Drawing.Color.Red;
+
+            controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.StartScan();
+            logger.Info("[SpectraCyberController] Scan has started");
+        }
+
+        private void stopScan_Click(object sender, EventArgs e)
+        {
+            if (controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.OFF ||
+                controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.UNKNOWN)
+                logger.Info("[SpectraCyberController] There is no scan to stop");
+            else
+            {
+                controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.StopScan();
+                logger.Info("[SpectraCyberController] Scan has stopped");
+            }
+
+            startScanButton.Enabled = true;
+            startScanButton.BackColor = System.Drawing.Color.LimeGreen;
+
+            stopScanButton.Enabled = false;
+            stopScanButton.BackColor = System.Drawing.Color.DarkGray;
+
+        }
+
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

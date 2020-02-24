@@ -35,7 +35,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             this.plc = plc;
             this.micro_ctrl_IP = micro_ctrl_IP;
             this.port = port;
-            new Thread( new ThreadStart( run_simulation ) ).Start();
+            new Thread( new ThreadStart( run_simulation ) ) { Name = "Encoder Sim Thread"}.Start();
         }
 
         public override Orientation GetCurentOrientation() {

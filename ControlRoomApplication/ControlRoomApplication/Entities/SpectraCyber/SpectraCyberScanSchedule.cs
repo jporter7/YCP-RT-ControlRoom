@@ -4,7 +4,7 @@ namespace ControlRoomApplication.Entities
 {
     public class SpectraCyberScanSchedule
     {
-        private SpectraCyberScanScheduleMode Mode { get; set; }
+        public SpectraCyberScanScheduleMode Mode { get; set; }
         private double ScanDelayMS { get; set; }
         // If this is true, that means the scanning starts after ScanDelayMS time has passed
         // Otherwise, an amount of time equal to ScanIntervalMS has to pass again, then it starts scanning

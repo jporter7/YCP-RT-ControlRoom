@@ -193,6 +193,9 @@ namespace ControlRoomApplication.Main
                 logger.Info("Starting Weather Monitoring Routine");
                 MainControlRoomController.StartWeatherMonitoringRoutine();
 
+                logger.Info("Starting Spectra Cyber Controleler");
+                ARadioTelescope.SpectraCyberController.BringUp();
+
                 // Start RT controller's threaded management
                 logger.Info("Starting RT controller's threaded management");
                 RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];
@@ -213,7 +216,7 @@ namespace ControlRoomApplication.Main
                 {
                     logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
 
-                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(.1, .1, 0, 0);
+                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(.06, .06, 300, 300);
                 }
                 else
                 {
@@ -495,8 +498,9 @@ namespace ControlRoomApplication.Main
            
             if (loopBackBox.Checked)
             {
+                ProdcheckBox.Checked = false;
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
-                this.txtMcuCOMPort.Text = "8081"; //default MCU Port
+                this.txtMcuCOMPort.Text = ((int)(8081 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
@@ -505,6 +509,21 @@ namespace ControlRoomApplication.Main
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
             this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
+        }
+
+        private void ProdcheckBox_CheckedChanged( object sender , EventArgs e ) {
+            if(ProdcheckBox.Checked) {
+                loopBackBox.Checked = false;
+                this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
+                this.txtMcuCOMPort.Text = "502"; //default MCU Port
+                this.txtPLCIP.Text = "192.168.0.50";//default IP address
+                if(LocalIPCombo.FindStringExact( "192.168.0.70" ) == -1) {
+                    this.LocalIPCombo.Items.Add( IPAddress.Parse( "192.168.0.70" ) );
+                }
+                this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact( "192.168.0.70" );
+            }
+            this.txtPLCPort.Text = "502";
+            this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact( "Production PLC" );
         }
 
         private void createWSButton_Click(object sender, EventArgs e)
@@ -633,5 +652,7 @@ namespace ControlRoomApplication.Main
         {
 
         }
+
+
     }
 }

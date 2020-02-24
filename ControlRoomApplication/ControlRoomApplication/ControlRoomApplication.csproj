@@ -181,10 +181,13 @@
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCEvents.cs" />
+    <Compile Include="Controllers\Sensors\MiscPlcInput.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />
     <Compile Include="Controllers\Sensors\LimitSwitchData.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
@@ -193,8 +196,10 @@
     <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
+    <Compile Include="Entities\Configuration\MCUConfiguration.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
     <Compile Include="Entities\DiagnosticData\Temperature.cs" />
+    <Compile Include="Entities\Exceptions\MCUExceptions.cs" />
     <Compile Include="Entities\Location\SensorLocationEnum.cs" />
     <Compile Include="Entities\Log\Log.cs" />
     <Compile Include="Entities\Override\Override.cs" />

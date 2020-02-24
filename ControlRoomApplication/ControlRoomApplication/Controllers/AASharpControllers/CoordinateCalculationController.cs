@@ -32,6 +32,8 @@ namespace ControlRoomApplication.Controllers
             AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, Location.Latitude);
 
             // Since AASharp considers south zero, flip the orientation 180 degrees
+            //TO_INFORM: (forword from jacob) this was written by last simesters team so i dont 100% understand it but
+            //TODO:from my understanding if this is the offset between the AASharp 0 and the 0 for our telescope we may need to change this again based on what the final position of the telescope is when it's installed 
             Horizontal.X += 180;
             if (Horizontal.X > 360)
             {

@@ -381,18 +381,18 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override bool Start_jog( RadioTelescopeAxisEnum axis , double speed , bool clockwise ) {
+        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
             throw new NotImplementedException();
 
+        }
+
+        public override bool Stop_Jog() {
+            throw new NotImplementedException();
         }
 
         public override bool Get_interlock_status() {
             return true;
 
-        }
-
-        public override bool[] Get_Limit_switches() {
-            throw new NotImplementedException();
         }
 
         public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {//set 
@@ -409,6 +409,10 @@ namespace ControlRoomApplication.Controllers {
         }
 
         public override Task<bool> Home() {
+            throw new NotImplementedException();
+        }
+
+        public override Task<bool> JogOffLimitSwitches() {
             throw new NotImplementedException();
         }
     }
