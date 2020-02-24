@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using ControlRoomApplication.Entities.Configuration;
+using ControlRoomApplication.Controllers.PLCCommunication;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -26,6 +27,7 @@ namespace ControlRoomApplication.Controllers
         private long PLC_last_contact = 0;
         private bool keep_modbus_server_alive = true;
         private bool is_test = false;
+        private int temp =0;
         private MCUManager MCU;
         /// <summary>
         /// set this ONLY if using test driver, removes timouts and delays
@@ -46,8 +48,8 @@ namespace ControlRoomApplication.Controllers
 
             limitSwitchData = new Simulators.Hardware.LimitSwitchData();
             homeSensorData = new Simulators.Hardware.HomeSensorData();
-            pLCEvents = new PLCCommunication.PLCEvents();
-            MCU = new MCUManager( MCU_ip , MCU_port , limitSwitchData );
+            pLCEvents = new PLCEvents();
+            MCU = new MCUManager( MCU_ip , MCU_port  );
 
             try {
                 PLCTCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(local_ip), PLC_port));
@@ -98,10 +100,61 @@ namespace ControlRoomApplication.Controllers
             //PLC_Modbusserver.ListenAsync().GetAwaiter().GetResult();
 
             // prevent the main thread from exiting
+            Task.Delay(2000).Wait();
+
+            PLCEvents.setDefaultLimitHandler( DefaultLimitSwitchHandle );
+
             while (keep_modbus_server_alive) {
-                Thread.Sleep(100);
+                Thread.Sleep(1000);
+                PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.CTRL_HEART_BEAT]++;
             }
         }
+
+        private async void DefaultLimitSwitchHandle( object sender , limitEventArgs e ) {
+            if(e.Value) {
+                //JogOffLimitSwitches().GetAwaiter().GetResult();
+                switch(e.ChangedValue) {
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
+                            MCU.SendSingleAxisJog( true , true , 0.25 ).Wait();
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
+                            MCU.SendSingleAxisJog( true , false , 0.25 ).Wait();
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
+                            MCU.SendSingleAxisJog( false , false , 0.25 ).Wait();
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
+                            MCU.SendSingleAxisJog( false , true , 0.25 ).Wait();
+                            break;
+                        }
+
+                }
+            }
+            if(!e.Value) {
+                switch(e.ChangedValue) {
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
+                            MCU.StopSingleAxisJog( true ).Wait();
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
+                            MCU.StopSingleAxisJog( true ).Wait();
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
+                            MCU.StopSingleAxisJog( false ).Wait();
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
+                            MCU.StopSingleAxisJog( false ).Wait();
+                            break;
+                        }
+                }
+            }
+        }
+
 
         public override bool StartAsyncAcceptingClients() {
             MCU.StartAsyncAcceptingClients();
@@ -813,7 +866,10 @@ namespace ControlRoomApplication.Controllers
 
             bool ZeroOne = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME] );  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
             bool ZeroTwo = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );//active between -1 to 10   and 359 to 370
-             // comented out for testing
+                                                                                                                                                 // comented out for testing
+            PLCEvents.OverrideLimitHandlers( ( object sender , limitEventArgs e ) => {
+                logger.Debug( "limit hit durring homing, default handler disabled" );
+            });
             if(ZeroOne & ZeroTwo) {//very close to 0 degrees 
                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
                 MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 ).GetAwaiter().GetResult();
@@ -842,6 +898,7 @@ namespace ControlRoomApplication.Controllers
 
             bool ELHome = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME] );
 
+            PLCEvents.ResetOverrides();
             MCU.HomeBothAxyes( true , ELHome , 0.25 ).Wait();
 
             return true;
@@ -855,20 +912,24 @@ namespace ControlRoomApplication.Controllers
                 if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
                     MCU.Send_Jog_command(0.2, true , 0, false);
                    while(!timeout.IsCancellationRequested) {
-                       if(!limitSwitchData.Azimuth_CCW_Limit) {
-                           Cancel_move();
-                           return true;
-                       }
+                        Task.Delay( 33 ).Wait();
+                        if(!limitSwitchData.Azimuth_CCW_Limit) {
+                            Cancel_move();
+                            return true;
+                        }
                    }
+                   Cancel_move();
                    return false;
                } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit) {
                     MCU.Send_Jog_command(0.2, false , 0, false);
                    while(!timeout.IsCancellationRequested) {
-                       if(!limitSwitchData.Azimuth_CW_Limit) {
-                           Cancel_move();
-                           return true;
-                       }
+                        Task.Delay( 33 ).Wait();
+                        if(!limitSwitchData.Azimuth_CW_Limit) {
+                            Cancel_move();
+                            return true;
+                        }
                    }
+                   Cancel_move();
                    return false;
                } else if(!limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) { return true; } else {
                    throw new ArgumentException("both the CW and CCW limit switch in the Azimuth were true only one limit Swithc can be active at once");
@@ -881,20 +942,24 @@ namespace ControlRoomApplication.Controllers
                 if(limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) {
                     MCU.Send_Jog_command( 0 , false , 0.2 , false );
                     while(!timeout.IsCancellationRequested) {
+                        Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Elevation_Lower_Limit) {
                             Cancel_move();
                             return true;
                         }
                     }
+                    Cancel_move();
                     return false;
                 } else if(!limitSwitchData.Elevation_Lower_Limit && limitSwitchData.Elevation_Upper_Limit) {
                     MCU.Send_Jog_command( 0 , false , 0.2 , true );
                     while(!timeout.IsCancellationRequested) {
+                        Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Elevation_Upper_Limit) {
                             Cancel_move();
                             return true;
                         }
                     }
+                    Cancel_move();
                     return false;
                 } else if(!limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) { return true; }else {
                     throw new ArgumentException( "both the CW and CCW limit switch in the Elevation were true only one limit Swithc can be active at once" );

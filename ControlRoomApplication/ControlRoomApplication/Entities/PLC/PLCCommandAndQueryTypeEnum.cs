@@ -30,6 +30,16 @@ namespace ControlRoomApplication.Entities
         /// this mainly serves as a place holder
         /// </summary>
         E_STOP_OVERRIDE = 2+1,
+        /// <summary>
+        /// <item><description><para><em>OUT</em></para></description></item>
+        /// this word (ushort) is incramented every 1 second by the PLCDriver and is used by the PLC to determine if the control room is active
+        /// </summary>
+        CTRL_HEART_BEAT = 3+1,
+        /// <summary>
+        ///  <item><description><para><em>OUT</em></para></description></item>
+        ///  when this word is changed the PLC will shutDown the MCU
+        /// </summary>
+        MCU_RESET = 4+1,
 
 
         /// <summary>
