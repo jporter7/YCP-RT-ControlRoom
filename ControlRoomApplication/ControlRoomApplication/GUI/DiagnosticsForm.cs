@@ -961,7 +961,6 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideAzimuthProx1 = true;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, 1);
                 logger.Info("Overriding azimuth proximity sensor 1.");
-                
             }
             else if (rtController.overrides.overrideAzimuthProx1)
             {

@@ -286,6 +286,15 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="adr"></param>
+        public override ushort getregvalue(ushort adr)
+        {
+            return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
+        }
+
+        /// <summary>
         /// see   ControlRoomApplication.Entities.PLC_modbus_server_register_mapping
         /// for register maping
         /// </summary>

@@ -137,6 +137,8 @@ namespace ControlRoomApplication.Controllers
 
         public abstract void setregvalue(ushort adr, ushort value);
 
+        public abstract ushort getregvalue(ushort adr);
+
 
         /// <summary>
         /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 

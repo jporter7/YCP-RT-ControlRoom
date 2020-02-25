@@ -415,5 +415,10 @@ namespace ControlRoomApplication.Controllers {
         public override Task<bool> Home() {
             throw new NotImplementedException();
         }
+
+        public override ushort getregvalue(ushort adr)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

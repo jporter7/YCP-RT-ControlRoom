@@ -339,8 +339,9 @@ namespace ControlRoomApplication.Controllers
         {
             while(true)
             {
-                tempAcceptable = checkTemp(DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR));
-                tempAcceptable = checkTemp(DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR));
+                if (checkTemp(DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR)) &&
+                    checkTemp(DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR))) tempAcceptable = true;
+                else tempAcceptable = false;
                 Thread.Sleep(1000);
             }
         }
