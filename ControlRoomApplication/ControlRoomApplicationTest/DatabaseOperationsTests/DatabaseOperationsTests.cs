@@ -45,35 +45,19 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         }
 
-        [TestCleanup]
-        public void TearDown()
-        {
-            DatabaseOperations.DeleteLocalDatabase();
-        }
-
         [TestMethod]
         public void TestPopulateLocalDatabase()
-        {
-            DatabaseOperations.DeleteLocalDatabase();
+        { 
             DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(4 * NumRTInstances, appt_count);
-        }
-
-        [TestMethod]
-        public void TestDeleteLocalDatabase()
-        {
-            DatabaseOperations.DeleteLocalDatabase();
-            var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(0, appt_count);
-            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
+            Assert.AreEqual(45 * NumRTInstances, appt_count);
         }
 
         [TestMethod]
         public void TestGetListOfAppointmentsForRadioTelescope()
         {
             var appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances);
-            Assert.AreEqual(4 * NumRTInstances, appts.Count);
+            Assert.AreEqual(37 * NumRTInstances, appts.Count);
         }
 
         [TestMethod]
@@ -83,6 +67,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             new_appt.start_time = DateTime.UtcNow;
             new_appt.end_time = DateTime.UtcNow.AddMinutes(1);
             new_appt._Status = AppointmentStatusEnum.REQUESTED;
+            new_appt._Priority = AppointmentPriorityEnum.MANUAL;
             new_appt._Type = AppointmentTypeEnum.POINT;
             new_appt.Coordinates.Add(new Coordinate(0,0));
             new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
@@ -98,7 +83,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         public void TestGetTotalAppointmentCount()
         {
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(4 * NumRTInstances, appt_count);
+            Assert.AreEqual(33 * NumRTInstances, appt_count);
         }
 
         [TestMethod]
@@ -109,7 +94,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.CreateRFData(appt.Id, data3);
 
             // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(1).Find(x => x.Id == appt.Id);
 
             Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data1.Id).Intensity, data1.Intensity);
             Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data2.Id).Intensity, data2.Intensity);

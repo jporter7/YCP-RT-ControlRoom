@@ -32,7 +32,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> Whether or not the RT responded. </returns>
         public bool TestCommunication()
         {
-            return RadioTelescope.PLCDriver.Test_Conection();
+            return RadioTelescope.PLCDriver.Test_Connection();
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ThermalCalibrateRadioTelescope()
+        public Task<bool> ThermalCalibrateRadioTelescope()
         {
             return RadioTelescope.PLCDriver.Thermal_Calibrate();
         }
@@ -133,7 +133,7 @@ namespace ControlRoomApplication.Controllers
         /// AbstractRadioTelescope class has implemented it.
         /// <see cref="Controllers.BlkHeadUcontroler.EncoderReader"/>
         /// </summary>
-        public bool MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
+        public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
         {
             return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position());
         }
@@ -146,7 +146,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool MoveRadioTelescopeToCoordinate(Coordinate coordinate)
+        public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow));
         }

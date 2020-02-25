@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System.Threading;
 
 namespace ControlRoomApplicationTest.EntityControllersTests {
@@ -49,13 +50,16 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
         [TestInitialize]
         public void testInit() {
-            TestRTPLC = new TestPLCDriver( ip , ip , port , port,true );
+            TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
 
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController( new SpectraCyberSimulator() );
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
+            TestRT.WeatherStation = new SimulationWeatherStation(1000);
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
 
+            // TestRTPLC.SetParent(TestRT);
+            TestRTPLC.driver.SetParent(TestRT);
 
             TestRTPLC.StartAsyncAcceptingClients();
         }
@@ -71,7 +75,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             // Create an Orientation object with an azimuth of 311 and elevation of 42
             Orientation Orientation = new Orientation( 311.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            var response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             // Ensure the objects are identical
@@ -82,17 +86,17 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Orientation = new Orientation( 28.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
             // Call the GetCurrentOrientationMethod
             CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
-            Assert.IsTrue( response );
+            Assert.IsTrue( response);
             Assert.AreEqual( Orientation.Azimuth , CurrentOrientation.Azimuth , 0.001 );
             Assert.AreEqual( Orientation.Elevation , CurrentOrientation.Elevation , 0.001 );
 
 
             Orientation = new Orientation( 310.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
             // Call the GetCurrentOrientationMethod
             CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             // Ensure the objects are identical
@@ -132,19 +136,22 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // The Radio Telescope should now have a CurrentOrientation of (0, -90)
             Assert.IsTrue( response );
-            Assert.AreEqual( orientation.Azimuth , 0.0 , 0.001 );
-            Assert.AreEqual( orientation.Elevation , 0.0 , 0.001 );
+            Assert.AreEqual( 0.0, orientation.Azimuth, 0.001 );
+            Assert.AreEqual( 90.0 , orientation.Elevation, 0.001 );
         }
 
         [TestMethod]
         public void TestThermalCalibrateRadioTelescope() {
+            Orientation before = TestRadioTelescopeController.GetCurrentOrientation();
+
             // Call the CalibrateRadioTelescope method
             var response = TestRadioTelescopeController.ThermalCalibrateRadioTelescope();
+            // this var response is going to be null because there is no reading. It means that the 
+            // telescope isn't calibrated. At this time, all we care about is the movement
 
-            // The Radio Telescope should now have a CurrentOrienation of (0,0)
-            Assert.IsTrue( response );
-            Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth , 0.0 );
-            Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation , 0.0 );
+            // The Radio Telescope should now have a CurrentOrienation of what it had before the call
+            Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Azimuth , before.Azimuth );
+            Assert.AreEqual( TestRadioTelescopeController.RadioTelescope.CurrentOrientation.Elevation , before.Elevation );
         }
 
         [TestMethod]
@@ -153,7 +160,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation Orientation = new Orientation( 311.0 , 42.0 );
 
             // Set the RadioTelescope's CurrentOrientation field
-            var response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();

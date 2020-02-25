@@ -64,9 +64,9 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the Orientation asscociated with this Appointment.
         /// </summary>
-        [Column("orientation_id")]
-        public int orientation_id { get; set; }
-      //  [ForeignKey("orientation_id")]
+      //  [Column("orientation_id")]
+      //  public int orientation_id { get; set; }
+     //   [ForeignKey("id")]
         [NotMapped]
         public Orientation Orientation { get; set; }
 
@@ -210,9 +210,12 @@ namespace ControlRoomApplication.Entities
         /// The getter/setter for the SpectraCyberConfig type.
         /// </summary>
         //       [Required]
-        //    [Column("spectracyber_config")]
+        [Column("spectracyber_config_id")]
+        public int spectracyber_config_id { get; set; }
+        //  [ForeignKey("spectracyber_config_id")]
         [NotMapped]
         public SpectraCyberConfig SpectraCyberConfig { get; set; }
+
 
         /// <summary>
         /// Compares the current Appointment to another object and it

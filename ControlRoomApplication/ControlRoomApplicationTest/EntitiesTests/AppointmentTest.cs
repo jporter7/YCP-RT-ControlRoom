@@ -11,7 +11,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
     {
         // Class being tested
         private Appointment appointment_1;
-        private Appointment appointment_2;
+        private Appointment greaterThan;
+        private Appointment equalTo;
 
         // Attributes in the class that need to be tested
         private int user_id;
@@ -35,7 +36,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         {
             // Initialize appointment entity
             appointment_1 = new Appointment();
-            appointment_2 = new Appointment();
+            greaterThan = new Appointment();
 
             // Initialize data for fields
             user_id = 1;
@@ -67,8 +68,10 @@ namespace ControlRoomApplicationTest.EntitiesTests
             appointment_1._Type = type;
             appointment_1.SpectraCyberConfig = spectracyber_config;
 
-            appointment_2.start_time = startTime_2;
-            appointment_2.end_time = endTime_2;
+            greaterThan.start_time = startTime_2;
+            greaterThan.end_time = endTime_2;
+
+            equalTo = appointment_1;
         }
 
         [TestMethod]
@@ -90,8 +93,10 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestMethod]
         public void TestComparable()
         {
-            Assert.IsTrue(appointment_1 != appointment_2);
-            Assert.IsTrue(appointment_1 < appointment_2);
+            Assert.IsTrue(appointment_1 != greaterThan);
+            Assert.IsTrue(appointment_1 < greaterThan);
+            Assert.IsTrue(greaterThan > appointment_1);
+            Assert.IsTrue(appointment_1 == equalTo);
         }
     }
 }
