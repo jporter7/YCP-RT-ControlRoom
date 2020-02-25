@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
+using System.Threading;
+using ControlRoomApplication.Controllers.Sensors;
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -10,6 +13,14 @@ namespace ControlRoomApplication.Controllers
     {
         public RadioTelescope RadioTelescope { get; set; }
         public CoordinateCalculationController CoordinateController { get; set; }
+        private bool tempAcceptable;
+        public OverrideSwitchData overrides;
+
+        // Thread that monitors database current temperature
+        Thread tempM;
+
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Constructor that takes an AbstractRadioTelescope object and sets the
@@ -20,6 +31,9 @@ namespace ControlRoomApplication.Controllers
         {
             RadioTelescope = radioTelescope;
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
+
+            tempM = new Thread(tempMonitor);
+            tempM.Start();
         }
 
         /// <summary>
@@ -133,7 +147,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ThermalCalibrateRadioTelescope()
         {
-            return RadioTelescope.PLCDriver.Thermal_Calibrate();
+            if (!tempAcceptable) return false;
+            return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
         }
 
         /// <summary>
@@ -144,7 +159,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
-            return RadioTelescope.PLCDriver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
+            return RadioTelescope.PLCDriver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation); // NO MOVE
         }
 
         /// <summary>
@@ -157,7 +172,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool MoveRadioTelescopeToOrientation(Orientation orientation)
         {
-            return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position());
+            if (!tempAcceptable) return false;
+            return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position()); // MOVE
         }
 
         /// <summary>
@@ -170,7 +186,8 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
-            return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow));
+            if (!tempAcceptable) return false;
+            return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow)); // MOVE
         }
 
         /// <summary>
@@ -183,7 +200,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
         {
-            return RadioTelescope.PLCDriver.Start_jog(axis, speed, clockwise);
+            return RadioTelescope.PLCDriver.Start_jog(axis, speed, clockwise); // NO MOVE
         }
 
         /// <summary>
@@ -196,7 +213,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeAzimuthJog(int speed, bool clockwise)
         {
-            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.AZIMUTH, speed, clockwise);
+            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.AZIMUTH, speed, clockwise); // NO MOVE
         }
 
         /// <summary>
@@ -209,7 +226,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeElevationJog(int speed, bool clockwise)
         {
-            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise);
+            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise); // NO MOVE
         }
 
         /// <summary>
@@ -222,7 +239,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeControlledStop()
         {
-            return RadioTelescope.PLCDriver.Controled_stop(RadioTelescopeAxisEnum.UNKNOWN, true);
+            return RadioTelescope.PLCDriver.Controled_stop(RadioTelescopeAxisEnum.UNKNOWN, true); // NO MOVE
         }
 
         /// <summary>
@@ -235,7 +252,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeImmediateStop()
         {
-            return RadioTelescope.PLCDriver.Immediade_stop();
+            return RadioTelescope.PLCDriver.Immediade_stop(); // NO MOVE
         }
 
         /// <summary>
@@ -315,6 +332,64 @@ namespace ControlRoomApplication.Controllers
             }
 
             return rfDataList;
+        }
+
+        // Checks the motor temperatures against acceptable ranges every second
+        private void tempMonitor()
+        {
+            while(true)
+            {
+                tempAcceptable = checkTemp(DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR));
+                tempAcceptable = checkTemp(DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR));
+                Thread.Sleep(1000);
+            }
+        }
+
+        /// <summary>
+        ///  Checks that the motor temperatures are within acceptable ranges. If the temperature exceeds
+        ///  the corresponding value in SimulationConstants.cs, it will return false, otherwise
+        ///  it will return true if everything is good.
+        ///  Tl;dr:
+        ///  False - bad
+        ///  True - good
+        /// </summary>
+        /// <returns>override bool</returns>
+        public bool checkTemp(Temperature t)
+        {
+            // Determine whether azimuth or elevation
+            String s;
+            bool b;
+            if (t.location_ID == (int)SensorLocationEnum.AZ_MOTOR)
+            {
+                s = "Azimuth";
+                b = overrides.overrideAzimuthMotTemp;
+            }
+            else
+            {
+                s = "Elevation";
+                b = overrides.overrideElevatMotTemp;
+            }
+
+            // Check temperatures
+            if (t.temp < SimulationConstants.STABLE_MOTOR_TEMP)
+            {
+                logger.Info(s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+
+                // Only overrides if switch is true
+                if (!b) return false;
+                else return true;
+            }
+            else if (t.temp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
+            {
+                logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
+
+                // Only overrides if switch is true
+                if (!b) return false;
+                else return true;
+            }
+            logger.Info(s + " motor temperature stable.");
+
+            return true;
         }
     }
 }
