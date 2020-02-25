@@ -14,10 +14,23 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers {
+    //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
+    // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
+    // so the best thing to do would be to split up the AZ and EL components of MCUcomand and then have 2 inststances for running command one for AZ one for EL
     /// <summary>
     /// used to keep track of what comand the MCU is running
     /// </summary>
     public class MCUcomand : IDisposable{
+        /// <summary>
+        /// similar to priority to keep certian moves from overriding others, 0 is highest
+        /// </summary>
+        /// <remarks>
+        /// if 2 move with same priority conflict the one that is incoming will override the exsisting move
+        /// 0 is intended for emergency types of moves like software and hardware stops
+        /// 2 is user scheduald moves lie manual jogs,
+        /// 4 is normal moves like those comming from appointments
+        /// </remarks>
+        public int Move_Priority;
         /// <summary>
         /// stores the data that is to be sent to the mcu
         /// </summary>
@@ -43,18 +56,43 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         public int AZ_Programed_Speed,EL_Programed_Speed,AZ_ACC = 50,EL_ACC = 50;
 
-        public bool AZ_Jog_CW, EL_Jog_CW;
+        /// <summary>
+        /// these are set to determine the direction of motion
+        /// </summary>
+        public bool AZ_CW, EL_CW;
 
         /// <summary>
         /// create a MCU command and record the current time
         /// </summary>
         /// <param name="data"></param>
         /// <param name="CMDType"></param>
-        public MCUcomand( ushort[] data, MCUcomandType CMDType ) {
+        public MCUcomand( ushort[] data, MCUcomandType CMDType, int priority ) {
             ComandType = CMDType;
             comandData = data;
             issued = DateTime.Now;
+            Move_Priority = priority;
         }
+
+        /// <summary>
+        /// creat a comand for movement
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="CMDType"></param>
+        /// <param name="AZCW"></param>
+        /// <param name="ELCW"></param>
+        /// <param name="AZSpeed"></param>
+        /// <param name="ElSpeed"></param>
+        public MCUcomand( ushort[] data , MCUcomandType CMDType, int priority , bool AZCW,bool ELCW,int AZSpeed,int ElSpeed ) {
+            ComandType = CMDType;
+            comandData = data;
+            issued = DateTime.Now;
+            AZ_CW = AZCW;
+            EL_CW = ELCW;
+            AZ_Programed_Speed = AZSpeed;
+            EL_Programed_Speed = ElSpeed;
+            Move_Priority = priority;
+        }
+
         public CancellationTokenSource timeout;
         public void Dispose() {
             try {
@@ -203,6 +241,7 @@ namespace ControlRoomApplication.Controllers {
         };
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         private Thread MCU_Monitor_Thread;
+        private Thread SoftwareStopThread;
         private int AZStartSpeed = 0;
         private int ELStartSpeed = 0;
         private bool keep_modbus_server_alive = true;
@@ -214,14 +253,15 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// this value should not be changed from outside the MCU class
         /// </summary>
-        public MCUcomand RunningCommand= new MCUcomand(new ushort[20],MCUcomandType.CLEAR_LAST_MOVE) { completed = true };
-        private MCUcomand PreviousCommand = new MCUcomand( new ushort[20] , MCUcomandType.CLEAR_LAST_MOVE ) { completed = true };
+        public MCUcomand RunningCommand= new MCUcomand(new ushort[20],MCUcomandType.CLEAR_LAST_MOVE,99) { completed = true };
+        private MCUcomand PreviousCommand = new MCUcomand( new ushort[20] , MCUcomandType.CLEAR_LAST_MOVE,99 ) { completed = true };
         private int consecutiveErrors = 0;
         private int consecutiveSucsefullMoves = 0;
         private int MCU_port;
         private string MCU_ip;
         private DateTime lastConnectAttempt = DateTime.Now ;
         private bool initialConnect = true;
+        private bool SoftWareStopEnabled = true;
 
         public MCUManager( string _MCU_ip , int _MCU_port ) {
             MCU_port = _MCU_port;
@@ -232,6 +272,7 @@ namespace ControlRoomApplication.Controllers {
                 MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
                 mCUpositon = new MCUpositonRegs( MCUModbusMaster );
                 MCU_Monitor_Thread = new Thread( new ThreadStart( MonitorMCU ) ) { Name = "MCU Monitor Thread" };
+                SoftwareStopThread = new Thread( new ThreadStart( SoftwareStopper ) ) { Name = "softwre stop thread" };
             } catch(Exception e) {
                 if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
                     logger.Error( "[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString() );
@@ -302,6 +343,28 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
+        /// this thread will check if the telescope is about to move outeide of the 
+        /// </summary>
+        private void SoftwareStopper() {
+            while(keep_modbus_server_alive) {
+                try {
+                    if(SoftWareStopEnabled) {
+                        var current = read_Position();
+                        var Distance = estimateDistanceToStop( RunningCommand );
+                        var expected = new Orientation( current.Azimuth + Distance.Azimuth , current.Elevation + Distance.Elevation );
+                        if((expected.Azimuth > 360 || expected.Azimuth < 0) && Math.Abs( Distance.Azimuth ) > 0.1) {
+                            Controled_stop(0);
+                        }
+                        if((expected.Elevation > 90 || expected.Elevation < 0) && Math.Abs( Distance.Elevation ) > 0.1) {
+                            Controled_stop(0);
+                        }
+                    }
+                } catch { }
+                Task.Delay( 20 ).Wait();
+            }
+        }
+
+        /// <summary>
         /// starts the MCU monitor thread
         /// </summary>
         /// <returns></returns>
@@ -309,6 +372,7 @@ namespace ControlRoomApplication.Controllers {
             keep_modbus_server_alive = true;
             try {
                 MCU_Monitor_Thread.Start();
+                SoftwareStopThread.Start();
             } catch(Exception e) {
                 if((e is ThreadStateException) || (e is OutOfMemoryException)) {
                     logger.Error( "failed to start prodi=uction plc and mcu threads err:____    {0}" , e );
@@ -327,6 +391,7 @@ namespace ControlRoomApplication.Controllers {
             keep_modbus_server_alive = false;
             try {
                 MCU_Monitor_Thread.Join();
+                SoftwareStopThread.Join();
             } catch(Exception e) {
                 if((e is ThreadStateException) || (e is ThreadStartException)) {
                     logger.Error( e );
@@ -380,8 +445,8 @@ namespace ControlRoomApplication.Controllers {
         /// clears the previos move comand from mthe PLC, only works for jog moves
         /// </summary>
         /// <returns></returns>
-        public bool Cancel_move() {
-            var cmd = new MCUcomand( MESSAGE_CONTENTS_CLEAR_MOVE , MCUcomandType.CLEAR_LAST_MOVE ) { completed = false };
+        public bool Cancel_move(int priority) {
+            var cmd = new MCUcomand( MESSAGE_CONTENTS_CLEAR_MOVE , MCUcomandType.CLEAR_LAST_MOVE,priority ) { completed = false };
             Send_Generic_Command_And_Track( cmd ).GetAwaiter().GetResult();
             Wait_For_Stop_Motion( cmd );
             return true;
@@ -391,19 +456,19 @@ namespace ControlRoomApplication.Controllers {
         /// attempts to bring the Telescope to a controlled stop certian moves like Homeing are un affected by this
         /// </summary>
         /// <returns></returns>
-        public bool Controled_stop() {
+        public bool Controled_stop( int priority ) {
             if(RunningCommand.ComandType == MCUcomandType.JOG) {
-                Cancel_move();
+                Cancel_move( priority );
             } else {
-                var cmd = new MCUcomand( MESSAGE_CONTENTS_HOLD_MOVE , MCUcomandType.HOLD_MOVE ) { completed = false };
+                var cmd = new MCUcomand( MESSAGE_CONTENTS_HOLD_MOVE , MCUcomandType.HOLD_MOVE , priority ) { completed = false };
                 Send_Generic_Command_And_Track( cmd ).GetAwaiter().GetResult();
                 Wait_For_Stop_Motion( cmd );
             }
             return true;
         }
 
-        public bool Immediade_stop() {
-            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_IMMEDIATE_STOP , MCUcomandType.IMIDEAT_STOP ) { completed = true } ).GetAwaiter().GetResult();
+        public bool Immediade_stop( int priority ) {
+            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_IMMEDIATE_STOP , MCUcomandType.IMIDEAT_STOP , priority ) { completed = true } ).GetAwaiter().GetResult();
             return true;
         }
 
@@ -412,24 +477,24 @@ namespace ControlRoomApplication.Controllers {
             bool azCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
             bool elCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
             if(elCmdErr || azCmdErr) {
-                Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS ) { completed = true } ).GetAwaiter().GetResult();
+                Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS , 0 ) { completed = true } ).GetAwaiter().GetResult();
             }
         }
 
 
-        private async Task<bool> Override_And_Stop_Motion() {
+        private async Task<bool> Override_And_Stop_Motion( int priority ) {
             var data = TryReadRegs( 0 , 15 ).GetAwaiter().GetResult();
             if(Is_Moing( data )) {
                 if(RunningCommand.ComandType == MCUcomandType.JOG) {
-                    Cancel_move();
+                    Cancel_move( priority );
                     WatTillStopped().Wait();
-                }else if(RunningCommand.ComandType == MCUcomandType.RELETIVE_MOVE) {
-                    Cancel_move();
+                } else if(RunningCommand.ComandType == MCUcomandType.RELETIVE_MOVE) {
+                    Cancel_move( priority );
                     Task.Delay( 100 ).Wait();
-                    Controled_stop();
+                    Controled_stop( priority );
                     WatTillStopped().Wait();
                 } else {
-                    Immediade_stop();
+                    Immediade_stop( priority );
                 }
             }
             return true;
@@ -446,23 +511,54 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns>false if the telescope was still running at the end of the timeout</returns>
         private async Task<bool> WatTillStopped() {
-            int mS_To_DecelerateAZ = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
-            int mS_To_DecelerateEL = (int)1.25 * (PreviousCommand.EL_Programed_Speed - AZStartSpeed) / PreviousCommand.EL_ACC;
+            try {
+                int mS_To_Decelerate = estimateStopTime( PreviousCommand );
+                var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
+                while(!timout.IsCancellationRequested) {
+                    var datatask = TryReadRegs( 0 , 12 );
+                    Task.Delay( 33 ).Wait();
+                    if(!Is_Moing( datatask.GetAwaiter().GetResult() )) {
+                        return true;
+                    }
+                }
+                return false;
+            } catch {
+                return false;
+            }
+
+        }
+
+        private int estimateStopTime( MCUcomand CMD ) {
+            int mS_To_DecelerateAZ = (int)1.25 * (CMD.AZ_Programed_Speed - AZStartSpeed) / CMD.AZ_ACC;
+            int mS_To_DecelerateEL = (int)1.25 * (CMD.EL_Programed_Speed - AZStartSpeed) / CMD.EL_ACC;
             int mS_To_Decelerate;
             if(mS_To_DecelerateAZ > mS_To_DecelerateEL) {
                 mS_To_Decelerate = mS_To_DecelerateAZ;
             } else {
                 mS_To_Decelerate = mS_To_DecelerateEL;
             }
-            var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
-            while(!timout.IsCancellationRequested) {
-                var datatask = TryReadRegs( 0 , 12 );
-                Task.Delay( 33 ).Wait();
-                if(!Is_Moing( datatask.GetAwaiter().GetResult() )) {
-                    return true;
+            return mS_To_Decelerate;
+        }
+
+        private Orientation estimateDistanceToStop( MCUcomand CMD ) {
+            int StepsAZ = 0, StepsEL = 0;
+            if(CMD.AZ_Programed_Speed > 0) {
+                int mS_To_DecelerateAZ = (int)((1.25 * (CMD.AZ_Programed_Speed - AZStartSpeed) / (double)CMD.AZ_ACC) / 1000.0);
+                StepsAZ = (int)(mS_To_DecelerateAZ * ((CMD.AZ_Programed_Speed + ConversionHelper.RPMToSPS( Current_AZConfiguration.StartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH )) / 2.0));
+                StepsAZ += (int)(CMD.AZ_Programed_Speed * 0.25);//add 100 ms worth of steps
+                if(!CMD.AZ_CW) {
+                    StepsAZ = -StepsAZ;
                 }
             }
-            return false;
+            if(CMD.EL_Programed_Speed > 0) {
+                int mS_To_DecelerateEL = (int)((1.25 * (CMD.EL_Programed_Speed - AZStartSpeed) / (double)CMD.EL_ACC) / 1000.0);
+                StepsEL = (int)(mS_To_DecelerateEL * ((CMD.EL_Programed_Speed + ConversionHelper.RPMToSPS( Current_ELConfiguration.StartSpeed , MotorConstants.GEARING_RATIO_ELEVATION )) / 2.0));
+                StepsEL += (int)(CMD.EL_Programed_Speed * 0.25);//add 100 ms worth of steps
+                if(!CMD.EL_CW) {
+                    StepsEL = -StepsEL;
+                }
+            }
+            return new Orientation( ConversionHelper.StepsToDegrees( StepsAZ , MotorConstants.GEARING_RATIO_AZIMUTH ) , ConversionHelper.StepsToDegrees( StepsEL , MotorConstants.GEARING_RATIO_ELEVATION ) );
         }
 
 
@@ -472,27 +568,36 @@ namespace ControlRoomApplication.Controllers {
         /// <returns>false if the telescope was still running at the end of the timeout</returns>
         private async Task<bool> WatTillStoppedPerAxis(bool is_AZ) {
             if(is_AZ) {
-                int mS_To_Decelerate = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
-                var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
-                while(!timout.IsCancellationRequested) {
-                    var datatask = TryReadRegs( 0 , 12 );
-                    Task.Delay( 33 ).Wait();
-                    if(!Is_Moing_Per_Axis( datatask.GetAwaiter().GetResult() , is_AZ )) {
-                        return true;
+                try {
+                    int mS_To_Decelerate = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
+                    var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
+                    while(!timout.IsCancellationRequested) {
+                        var datatask = TryReadRegs( 0 , 12 );
+                        Task.Delay( 33 ).Wait();
+                        if(!Is_Moing_Per_Axis( datatask.GetAwaiter().GetResult() , is_AZ )) {
+                            return true;
+                        }
                     }
+                    return false;
+                } catch {
+                    return false;
                 }
-                return false;
             } else {
-                int mS_To_Decelerate = (int)1.25 * (PreviousCommand.EL_Programed_Speed - ELStartSpeed) / PreviousCommand.EL_ACC;
-                var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
-                while(!timout.IsCancellationRequested) {
-                    var datatask = TryReadRegs( 0 , 12 );
-                    Task.Delay( 33 ).Wait();
-                    if(!Is_Moing_Per_Axis( datatask.GetAwaiter().GetResult() , is_AZ )) {
-                        return true;
+                try {
+                    int mS_To_Decelerate = (int)1.25 * (PreviousCommand.EL_Programed_Speed - ELStartSpeed) / PreviousCommand.EL_ACC;
+                    var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
+                    while(!timout.IsCancellationRequested) {
+                        var datatask = TryReadRegs( 0 , 12 );
+                        Task.Delay( 33 ).Wait();
+                        if(!Is_Moing_Per_Axis( datatask.GetAwaiter().GetResult() , is_AZ )) {
+                            return true;
+                        }
                     }
+                    return false;
+                } catch {
+                    return false;
                 }
-                return false;
+
             }
 
         }
@@ -530,7 +635,8 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public async Task<bool> Configure_MCU( MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig ) {
+
+        public async Task<bool> Configure_MCU( MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig , int priority ) {
             Current_AZConfiguration = AZconfig;
             Current_ELConfiguration = ELconfig;
             int gearedSpeedAZ = ConversionHelper.RPMToSPS( AZconfig.StartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH );
@@ -541,11 +647,11 @@ namespace ControlRoomApplication.Controllers {
             ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
 
-            Immediade_stop();
+            Immediade_stop( priority );
             Task.Delay( 50 ).Wait();
             checkForAndResetErrors();
             Task.Delay( 50 ).Wait();
-            Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.CONFIGURE ) { completed = true} ).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.CONFIGURE , priority ) { completed = true} ).GetAwaiter().GetResult();
             Task.Delay( 100 ).Wait();
             //TODO: check for configuration Errors
             return true;
@@ -641,7 +747,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="ELHomeCW"></param>
         /// <param name="RPM"></param>
         /// <returns></returns>
-        public async Task<bool> HomeBothAxyes( bool AZHomeCW , bool ELHomeCW , double RPM ) {
+        public async Task<bool> HomeBothAxyes( bool AZHomeCW , bool ELHomeCW , double RPM,int priority ) {
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_AZIMUTH );
             ushort ACCELERATION = 50;
@@ -666,11 +772,11 @@ namespace ControlRoomApplication.Controllers {
             } else {
                 timeout = Current_ELConfiguration.HomeTimeoutSec;
             }
-            Cancel_move();
+            Cancel_move( priority );
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
-            Controled_stop();
+            Controled_stop( priority );
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
-            var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.RELETIVE_MOVE ) {
+            var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.RELETIVE_MOVE , priority ) {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
             } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();
@@ -748,10 +854,10 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
-        public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL,int priority ) {
             mCUpositon.update().Wait();
             var startPos =  mCUpositon as MCUpositonStore;
-            Cancel_move();
+            Cancel_move( priority );
             Task.Delay( 50 ).Wait();//wait to ensure it is porcessed
             ushort[] CMDdata = prepairRelativeMoveData( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL );
 
@@ -763,7 +869,7 @@ namespace ControlRoomApplication.Controllers {
             TimeToMove = ( int)(TimeToMove * 1.2);
             TimeToMove += 100;
 
-            var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( CMDdata , MCUcomandType.RELETIVE_MOVE ) { AZ_Programed_Speed = SpeedAZ , EL_Programed_Speed = SpeedEL , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } ).GetAwaiter().GetResult();
+            var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( CMDdata , MCUcomandType.RELETIVE_MOVE, priority, positionTranslationAZ > 0, positionTranslationEL > 0, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();//wait for comand to be read
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
@@ -786,7 +892,7 @@ namespace ControlRoomApplication.Controllers {
                     ThisMove.ComandError = new Exception( "MCU command error bit was set" );
                     consecutiveSucsefullMoves = 0;
                     consecutiveErrors++;
-                    Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS ) ).Wait();
+                    Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS,0 ) ).Wait();
                     PLCEvents.DurringOverrideRemoveSecondary( handle );
                     ThisMove.Dispose();
                     return false;
@@ -849,7 +955,7 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-        public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELClockwise ) {
+        public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELClockwise , int priority ) {
             ushort dir;
 
             if(AZClockwise) {
@@ -887,45 +993,41 @@ namespace ControlRoomApplication.Controllers {
                 //if telescope is already joging changing direction requires stopping first
                 ushort[] data3 = new ushort[20];
                 data2.CopyTo( data3 , 0 );
-                booth = (RunningCommand.AZ_Jog_CW != AZClockwise) && (RunningCommand.EL_Jog_CW != ELClockwise);
+                booth = (RunningCommand.AZ_CW != AZClockwise) && (RunningCommand.EL_CW != ELClockwise);
                 if(booth) {//if both axis need to change direction
-                    Cancel_move();
+                    Cancel_move( priority );
                     WatTillStopped().GetAwaiter().GetResult();
-                } else if(RunningCommand.EL_Jog_CW != ELClockwise) {//if only elevation needs to change direction
-                    for(int j = 0; j <= data3.Length-11; j++) {
+                } else if(RunningCommand.EL_CW != ELClockwise) {//if only elevation needs to change direction
+                    for(int j = 0; j <= data3.Length - 11; j++) {
                         data3[j + 10] = MESSAGE_CONTENTS_CLEAR_MOVE[j + 10];//replace elevation portion of move with controled stop
                     }
-                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG ) {
-                        EL_Programed_Speed = ELstepSpeed ,
+                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG , priority , AZClockwise , ELClockwise , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
-                        EL_Jog_CW = ELClockwise
                     } ).GetAwaiter().GetResult();
                     WatTillStoppedPerAxis( true ).GetAwaiter().GetResult();
-                } else if(RunningCommand.AZ_Jog_CW != AZClockwise) {//only Azimuth needs to change direction
-                    for(int j = 0; j <= data3.Length-1; j++) {
+                } else if(RunningCommand.AZ_CW != AZClockwise) {//only Azimuth needs to change direction
+                    for(int j = 0; j <= data3.Length - 1; j++) {
                         data3[j] = MESSAGE_CONTENTS_CLEAR_MOVE[j];//replace Azimuth portion of move with controled stop
                     }
-                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG ) {
-                        AZ_Programed_Speed = AZstepSpeed ,
+                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG , priority , AZClockwise , ELClockwise , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
-                        AZ_Jog_CW = AZClockwise ,
                     } ).GetAwaiter().GetResult();
                     WatTillStoppedPerAxis( false ).GetAwaiter().GetResult();
                 }
             }
 
-            _ = Send_Generic_Command_And_Track( new MCUcomand( data2 , MCUcomandType.JOG ) {//send the portion of the jog move that was previously replaced with a contoroled stop
-                AZ_Programed_Speed = AZstepSpeed ,
-                EL_Programed_Speed = ELstepSpeed ,
+            _ = Send_Generic_Command_And_Track( new MCUcomand( data2 , MCUcomandType.JOG , priority , AZClockwise , ELClockwise , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
                 EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                 AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
-                AZ_Jog_CW = AZClockwise ,
-                EL_Jog_CW = ELClockwise
             } ).GetAwaiter().GetResult();
             return true;
         }
 
-        private async Task<MCUcomand> Send_Generic_Command_And_Track( MCUcomand incoming ) {
+        private async Task<MCUcomand> Send_Generic_Command_And_Track( MCUcomand incoming ) {//TODO: implament priority 
+            if((incoming.Move_Priority > RunningCommand.Move_Priority)&& !RunningCommand.completed) {
+                return incoming;
+            }
+            Console.WriteLine( "running: {0} ||| {1}     incomming: {2} ||| {3}", RunningCommand.ComandType.ToString(), RunningCommand.Move_Priority , incoming.ComandType.ToString(),incoming.Move_Priority );
             PreviousCommand = RunningCommand;
             if(RunningCommand.ComandType == MCUcomandType.JOG) {
                 if(incoming.ComandType == MCUcomandType.CLEAR_LAST_MOVE || incoming.ComandType == MCUcomandType.IMIDEAT_STOP || incoming.ComandType == MCUcomandType.JOG) {
@@ -965,7 +1067,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="CW"></param>
         /// <param name="speed"></param>
         /// <returns></returns>
-        public async Task<bool> SendSingleAxisJog(bool AZ,bool CW, double speed) {
+        public async Task<bool> SendSingleAxisJog(bool AZ,bool CW, double speed, int priority ) {
             ushort DataOffset, dir;
             int StepSpeed;
             if(CW) {
@@ -980,6 +1082,8 @@ namespace ControlRoomApplication.Controllers {
             }
             ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(StepSpeed >> 16) , (ushort)(StepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
             TryWriteRegs( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset ), data ).Wait();
+            RunningCommand.Move_Priority = priority;
+            RunningCommand.completed = false;
             return true;
         }
 
@@ -990,7 +1094,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="CW"></param>
         /// <param name="speed"></param>
         /// <returns></returns>
-        public async Task<bool> StopSingleAxisJog( bool AZ ) {
+        public async Task<bool> StopSingleAxisJog( bool AZ,int priority ) {
             ushort DataOffset;
 
             if(AZ) {
@@ -1003,6 +1107,8 @@ namespace ControlRoomApplication.Controllers {
                 data[i] = MESSAGE_CONTENTS_CLEAR_MOVE[i];
             }
             TryWriteRegs( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset) , data ).Wait();
+            RunningCommand.Move_Priority = priority;
+            RunningCommand.completed = true;
             return true;
         }
 
@@ -1017,20 +1123,5 @@ namespace ControlRoomApplication.Controllers {
                 return false;
             } else { return true; }
         }
-
-
-        public bool Test() {
-            var x = prepairRelativeMoveData( 50_000 , 100_000 , 50 , ConversionHelper.DegreesToSteps( 200 , MotorConstants.GEARING_RATIO_AZIMUTH ) , ConversionHelper.DegreesToSteps( 300 , MotorConstants.GEARING_RATIO_ELEVATION ) );
-            TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , x).Wait();
-            Task.Delay( 7000 ).Wait();
-            ushort dir = 0x0100;// 0x0080;
-            int AZstepSpeed = ConversionHelper.RPMToSPS( .2 , MotorConstants.GEARING_RATIO_AZIMUTH );
-            ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(AZstepSpeed >> 16) , (ushort)(AZstepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
-            TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + 10 , data ).Wait();
-
-            return true;
-        }
-
-
     }
 }
