@@ -100,6 +100,7 @@ namespace ControlRoomApplication.GUI
                 {
                     rtController = rtc;
                 }
+                Console.WriteLine("----------TELESCOPE ID---------" + rtc.RadioTelescope.Id);
             }
 
                 dataGridView1.ColumnCount = 2;
