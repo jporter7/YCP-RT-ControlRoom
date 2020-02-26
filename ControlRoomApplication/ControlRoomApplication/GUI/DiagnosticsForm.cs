@@ -10,6 +10,7 @@ using ControlRoomApplication.Database;
 using ControlRoomApplication.Constants;
 using System;
 using ControlRoomApplication.Main;
+using ControlRoomApplication.Controllers.Sensors;
 
 namespace ControlRoomApplication.GUI
 {
@@ -67,9 +68,13 @@ namespace ControlRoomApplication.GUI
 
         // Alert Flags
         bool farenheit = true;
-        
 
+        private RadioTelescopeController rtController;
         private int rtId;
+
+        // This is being passed through so the Weather Station override bool can be modified
+        private readonly MainForm mainF;
+
         private string[] statuses = { "Offline", "Offline", "Offline", "Offline" };
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -79,16 +84,25 @@ namespace ControlRoomApplication.GUI
         /// Initializes the diagnostic form based off of the specified configuration.
         /// </summary>
         /// 
-        public DiagnosticsForm(ControlRoom controlRoom, int rtId)
+        public DiagnosticsForm(ControlRoom controlRoom, int rtId, MainForm mainF)
         {
             InitializeComponent();
 
             this.controlRoom = controlRoom;
 
-
             this.rtId = rtId;
 
-            dataGridView1.ColumnCount = 2;
+            this.mainF = mainF;
+
+            foreach (RadioTelescopeController rtc in controlRoom.RadioTelescopeControllers)
+            {
+                if ((rtc.RadioTelescope.Id-1) == rtId)
+                {
+                    rtController = rtc;
+                }
+            }
+
+                dataGridView1.ColumnCount = 2;
             dataGridView1.Columns[0].HeaderText = "Hardware";
             dataGridView1.Columns[1].HeaderText = "Status";
 
@@ -590,73 +604,84 @@ namespace ControlRoomApplication.GUI
 
         private void ORAzimuthSens1_Click(object sender, EventArgs e)
         {
-            logger.Info("Over Ride azimuth sensor 1 clicked");
-            bool overRideAz1 = (ORAzimuthSens1.Text == "Over Ridden");
-            if (!overRideAz1)
+            if (!rtController.overrides.overrideAzimuthProx1)
             {
-                ORAzimuthSens1.Text = "Over Ridden";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
-                
-            }
-            else if (overRideAz1)
-            {
-                ORAzimuthSens1.Text = "Over Ride";
+                ORAzimuthSens1.Text = "OVERRIDING";
                 ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
-
+                rtController.overrides.overrideAzimuthProx1 = true;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, 1);
+                logger.Info("Overriding azimuth proximity sensor 1.");
+            }
+            else if (rtController.overrides.overrideAzimuthProx1)
+            {
+                ORAzimuthSens1.Text = "ENABLED";
+                ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
+                rtController.overrides.overrideAzimuthProx1 = false;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, 0);
+                logger.Info("Enabled azimuth proximity sensor 1.");
             }
         }
 
         private void ORAzimuthSens2_Click(object sender, EventArgs e)
         {
-                logger.Info("Over Ride azimuth sensor 2 clicked");
-                bool overRideAz2= (ORAzimuthSens2.Text == "Over Ridden");
-                if (!overRideAz2)
-                {
-                    ORAzimuthSens2.Text = "Over Ridden";
-                    ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
+            if (!rtController.overrides.overrideAzimuthProx2)
+            {
+                ORAzimuthSens2.Text = "OVERRIDING";
+                ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
+                rtController.overrides.overrideAzimuthProx2 = true;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT, 1);
+                logger.Info("Overriding azimuth proximity sensor 2.");
 
-                }
-                else if (overRideAz2)
-                {
-                    ORAzimuthSens2.Text = "Over Ride";
-                    ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
-
-                }
+            }
+            else if (rtController.overrides.overrideAzimuthProx2)
+            {
+                ORAzimuthSens2.Text = "ENABLED";
+                ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
+                rtController.overrides.overrideAzimuthProx2 = false;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT, 0);
+                logger.Info("Enabled azimuth proximity sensor 2.");
+            }
         }
 
         private void ElevationProximityOverideButton1_Click(object sender, EventArgs e)
         {
-            logger.Info("Over Ride elevation Proximity Override 1 clicked");
-            bool overRideEl1 = (ElevationProximityOveride1.Text == "Over Ridden");
-            if (!overRideEl1)
+            if (!rtController.overrides.overrideElevatProx1)
             {
-                ElevationProximityOveride1.Text = "Over Ridden";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+                ElevationProximityOveride1.Text = "OVERRIDING";
+                ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+                rtController.overrides.overrideElevatProx1 = true;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, 1);
+                logger.Info("Overriding azimuth elevation sensor 1.");
 
             }
-            else if (overRideEl1)
+            else if (rtController.overrides.overrideElevatProx1)
             {
-                ElevationProximityOveride1.Text = "Over Ride";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+                ElevationProximityOveride1.Text = "ENABLED";
+                ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+                rtController.overrides.overrideElevatProx1 = false;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, 0);
+                logger.Info("Enabled azimuth elevation sensor 1.");
 
             }
         }
 
         private void ElevationProximityOverideButton2_Click(object sender, EventArgs e)
         {
-            logger.Info("Over Ride elevation Proximity Override 2 clicked");
-            bool overRideEl2 = (ElevationProximityOveride2.Text == "Over Ridden");
-            if (!overRideEl2)
+            if (!rtController.overrides.overrideElevatProx2)
             {
-                ElevationProximityOveride2.Text = "Over Ridden";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
-
-            }
-            else if (overRideEl2)
-            {
-                ElevationProximityOveride2.Text = "Over Ride";
+                ElevationProximityOveride2.Text = "OVERRIDING";
                 ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
-
+                rtController.overrides.overrideElevatProx2 = true;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, 1);
+                logger.Info("Overriding azimuth elevation sensor 2.");
+            }
+            else
+            {
+                ElevationProximityOveride2.Text = "ENABLED";
+                ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
+                rtController.overrides.overrideElevatProx2 = false;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, 0);
+                logger.Info("Enabled azimuth elevation sensor 2.");
             }
         }
 
@@ -711,37 +736,40 @@ namespace ControlRoomApplication.GUI
 
         private void WSOverride_Click(object sender, EventArgs e)
         {
-            logger.Info("Over Ride azimuth sensor 1 clicked");
-            bool overRideWS = (WSOverride.Text == "Over Ridden");
-            if (!overRideWS)
+            if (!mainF.getWSOverride())
             {
-                WSOverride.Text = "Over Ridden";
-                WSOverride.BackColor = System.Drawing.Color.LimeGreen;
+                WSOverride.Text = "OVERRIDING";
+                WSOverride.BackColor = System.Drawing.Color.Red;
+                mainF.setWSOverride(true);
+                logger.Info("Overriding weather station sensor.");
 
             }
-            else if (overRideWS)
+            else
             {
-                WSOverride.Text = "Over Ride";
-                WSOverride.BackColor = System.Drawing.Color.Red;
-
+                WSOverride.Text = "ENABLED";
+                WSOverride.BackColor = System.Drawing.Color.LimeGreen;
+                mainF.setWSOverride(false);
+                logger.Info("Enabled weather station sensor.");
             }
         }
 
         private void MGOverride_Click(object sender, EventArgs e)
         {
-            logger.Info("Over Ride azimuth sensor 1 clicked");
-            bool overRideMG = (MGOverride.Text == "Over Ridden");
-            if (!overRideMG)
+            if (!rtController.overrides.overrideGate)
             {
-                MGOverride.Text = "Over Ridden";
-                MGOverride.BackColor = System.Drawing.Color.LimeGreen;
-
-            }
-            else if (overRideMG)
-            {
-                MGOverride.Text = "Over Ride";
+                MGOverride.Text = "OVERRIDING";
                 MGOverride.BackColor = System.Drawing.Color.Red;
-
+                rtController.overrides.overrideGate = true;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, 1);
+                logger.Info("Overriding main gate sensor.");
+            }
+            else if (rtController.overrides.overrideGate)
+            {
+                MGOverride.Text = "ENABLED";
+                MGOverride.BackColor = System.Drawing.Color.LimeGreen;
+                rtController.overrides.overrideGate = false;
+                rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, 0);
+                logger.Info("Enabled main gate sensor.");
             }
         }
 
@@ -757,37 +785,39 @@ namespace ControlRoomApplication.GUI
 
         private void AzMotTempSensOverride_Click(object sender, EventArgs e)
         {
-            logger.Info("Over Ride azimuth motor sensor clicked");
-            bool overRideAZMot = (AzMotTempSensOverride.Text == "Over Ridden");
-            if (!overRideAZMot)
+            if (!rtController.overrides.overrideAzimuthMotTemp)
             {
-                AzMotTempSensOverride.Text = "Over Ridden";
-                AzMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
-
-            }
-            else if (overRideAZMot)
-            {
-                AzMotTempSensOverride.Text = "Over Ride";
+                AzMotTempSensOverride.Text = "OVERRIDING";
                 AzMotTempSensOverride.BackColor = System.Drawing.Color.Red;
-
+                rtController.overrides.overrideAzimuthMotTemp = true;
+                //rtController.RadioTelescope.PLCDriver.setregvalue(0, 1);
+                logger.Info("Overriding azimuth motor temperature sensor.");
+            }
+            else if (rtController.overrides.overrideAzimuthMotTemp)
+            {
+                AzMotTempSensOverride.Text = "ENABLED";
+                AzMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
+                rtController.overrides.overrideAzimuthMotTemp = false;
+                //rtController.RadioTelescope.PLCDriver.setregvalue(0, 0);
+                logger.Info("Enabled azimuth motor temperature sensor.");
             }
         }
 
         private void ElMotTempSensOverride_Click(object sender, EventArgs e)
         {
-            logger.Info("Over Ride azimuth motor sensor clicked");
-            bool overRideELMot = (ElMotTempSensOverride.Text == "Over Ridden");
-            if (!overRideELMot)
+            if (!rtController.overrides.overrideElevatMotTemp)
             {
-                ElMotTempSensOverride.Text = "Over Ridden";
-                ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
-
-            }
-            else if (overRideELMot)
-            {
-                ElMotTempSensOverride.Text = "Over Ride";
+                ElMotTempSensOverride.Text = "OVERRIDING";
                 ElMotTempSensOverride.BackColor = System.Drawing.Color.Red;
-
+                rtController.overrides.overrideElevatMotTemp = true;
+                logger.Info("Overriding elevation motor temperature sensor.");
+            }
+            else if (rtController.overrides.overrideElevatMotTemp)
+            {
+                ElMotTempSensOverride.Text = "ENABLED";
+                ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
+                rtController.overrides.overrideElevatMotTemp = false;
+                logger.Info("Enabled elevation motor temperature sensor.");
             }
         }
 
@@ -796,6 +826,17 @@ namespace ControlRoomApplication.GUI
             // create a override by the control room computer
             controlRoom.RTControllerManagementThreads[0].ActiveOverrides.Add(new Override(SensorItemEnum.WIND_SPEED, "Control Room Computer"));
             controlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // Getter for RadioTelescopeController
+        public RadioTelescopeController getRTController()
+        {
+            return rtController;
         }
     }
 }
