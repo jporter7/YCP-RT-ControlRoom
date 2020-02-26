@@ -34,7 +34,6 @@
             this.NegRAButton = new System.Windows.Forms.Button();
             this.PosRAButton = new System.Windows.Forms.Button();
             this.ActualRATextBox = new System.Windows.Forms.TextBox();
-            this.ActualDecTextBox = new System.Windows.Forms.TextBox();
             this.ActualPositionLabel = new System.Windows.Forms.Label();
             this.ActualRALabel = new System.Windows.Forms.Label();
             this.ActualDecLabel = new System.Windows.Forms.Label();
@@ -54,6 +53,7 @@
             this.overRideGroupbox = new System.Windows.Forms.GroupBox();
             this.label8 = new System.Windows.Forms.Label();
             this.statusTextBox = new System.Windows.Forms.TextBox();
+            this.ActualDecTextBox = new System.Windows.Forms.TextBox();
             this.decIncGroupbox = new System.Windows.Forms.GroupBox();
             this.tenButtonDec = new System.Windows.Forms.Button();
             this.fiveButtonDec = new System.Windows.Forms.Button();
@@ -78,12 +78,25 @@
             this.subElaButton = new System.Windows.Forms.Button();
             this.plusJogButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.spectraCyberGroupBox = new System.Windows.Forms.GroupBox();
+            this.finalizeSettingsButton = new System.Windows.Forms.Button();
+            this.gain = new System.Windows.Forms.ComboBox();
+            this.stopScanButton = new System.Windows.Forms.Button();
+            this.startScanButton = new System.Windows.Forms.Button();
+            this.bandwidth = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.integrationStep = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.offsetVoltage = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.scanTypeComboBox = new System.Windows.Forms.ComboBox();
             this.RAIncGroupbox.SuspendLayout();
             this.overRideGroupbox.SuspendLayout();
             this.decIncGroupbox.SuspendLayout();
             this.freeControlGroupbox.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.manualGroupBox.SuspendLayout();
+            this.spectraCyberGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // PosDecButton
@@ -146,15 +159,6 @@
             this.ActualRATextBox.ReadOnly = true;
             this.ActualRATextBox.Size = new System.Drawing.Size(100, 20);
             this.ActualRATextBox.TabIndex = 5;
-            // 
-            // ActualDecTextBox
-            // 
-            this.ActualDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ActualDecTextBox.Location = new System.Drawing.Point(154, 120);
-            this.ActualDecTextBox.Name = "ActualDecTextBox";
-            this.ActualDecTextBox.ReadOnly = true;
-            this.ActualDecTextBox.Size = new System.Drawing.Size(100, 20);
-            this.ActualDecTextBox.TabIndex = 6;
             // 
             // ActualPositionLabel
             // 
@@ -252,11 +256,11 @@
             this.RAIncGroupbox.Controls.Add(this.fiveButton);
             this.RAIncGroupbox.Controls.Add(this.oneButton);
             this.RAIncGroupbox.Controls.Add(this.oneForthButton);
-            this.RAIncGroupbox.Location = new System.Drawing.Point(6, 54);
+            this.RAIncGroupbox.Location = new System.Drawing.Point(4, 45);
             this.RAIncGroupbox.Margin = new System.Windows.Forms.Padding(2);
             this.RAIncGroupbox.Name = "RAIncGroupbox";
             this.RAIncGroupbox.Padding = new System.Windows.Forms.Padding(2);
-            this.RAIncGroupbox.Size = new System.Drawing.Size(230, 55);
+            this.RAIncGroupbox.Size = new System.Drawing.Size(188, 54);
             this.RAIncGroupbox.TabIndex = 16;
             this.RAIncGroupbox.TabStop = false;
             this.RAIncGroupbox.Text = "Right Ascension Increment";
@@ -266,7 +270,7 @@
             // 
             this.tenButton.BackColor = System.Drawing.Color.DarkGray;
             this.tenButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.tenButton.Location = new System.Drawing.Point(182, 18);
+            this.tenButton.Location = new System.Drawing.Point(136, 15);
             this.tenButton.Margin = new System.Windows.Forms.Padding(2);
             this.tenButton.Name = "tenButton";
             this.tenButton.Size = new System.Drawing.Size(40, 30);
@@ -279,7 +283,7 @@
             // 
             this.fiveButton.BackColor = System.Drawing.Color.DarkGray;
             this.fiveButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.fiveButton.Location = new System.Drawing.Point(124, 18);
+            this.fiveButton.Location = new System.Drawing.Point(93, 15);
             this.fiveButton.Margin = new System.Windows.Forms.Padding(2);
             this.fiveButton.Name = "fiveButton";
             this.fiveButton.Size = new System.Drawing.Size(40, 30);
@@ -292,7 +296,7 @@
             // 
             this.oneButton.BackColor = System.Drawing.Color.DarkGray;
             this.oneButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.oneButton.Location = new System.Drawing.Point(65, 18);
+            this.oneButton.Location = new System.Drawing.Point(49, 15);
             this.oneButton.Margin = new System.Windows.Forms.Padding(2);
             this.oneButton.Name = "oneButton";
             this.oneButton.Size = new System.Drawing.Size(40, 30);
@@ -305,7 +309,7 @@
             // 
             this.oneForthButton.BackColor = System.Drawing.Color.DarkGray;
             this.oneForthButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.oneForthButton.Location = new System.Drawing.Point(7, 18);
+            this.oneForthButton.Location = new System.Drawing.Point(5, 15);
             this.oneForthButton.Margin = new System.Windows.Forms.Padding(2);
             this.oneForthButton.Name = "oneForthButton";
             this.oneForthButton.Size = new System.Drawing.Size(40, 30);
@@ -332,7 +336,7 @@
             this.errorLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.errorLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.errorLabel.ForeColor = System.Drawing.Color.Red;
-            this.errorLabel.Location = new System.Drawing.Point(265, 423);
+            this.errorLabel.Location = new System.Drawing.Point(335, 423);
             this.errorLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.errorLabel.Name = "errorLabel";
             this.errorLabel.Size = new System.Drawing.Size(230, 19);
@@ -374,11 +378,21 @@
             // 
             // statusTextBox
             // 
-            this.statusTextBox.Location = new System.Drawing.Point(152, 164);
+            this.statusTextBox.Location = new System.Drawing.Point(143, 164);
             this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.statusTextBox.Name = "statusTextBox";
             this.statusTextBox.Size = new System.Drawing.Size(102, 20);
             this.statusTextBox.TabIndex = 15;
+            // 
+            // ActualDecTextBox
+            // 
+            this.ActualDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.ActualDecTextBox.Location = new System.Drawing.Point(153, 119);
+            this.ActualDecTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ActualDecTextBox.Name = "ActualDecTextBox";
+            this.ActualDecTextBox.ReadOnly = true;
+            this.ActualDecTextBox.Size = new System.Drawing.Size(76, 20);
+            this.ActualDecTextBox.TabIndex = 6;
             // 
             // decIncGroupbox
             // 
@@ -388,11 +402,11 @@
             this.decIncGroupbox.Controls.Add(this.fiveButtonDec);
             this.decIncGroupbox.Controls.Add(this.oneButtonDec);
             this.decIncGroupbox.Controls.Add(this.oneForthButtonDec);
-            this.decIncGroupbox.Location = new System.Drawing.Point(6, 128);
+            this.decIncGroupbox.Location = new System.Drawing.Point(4, 104);
             this.decIncGroupbox.Margin = new System.Windows.Forms.Padding(2);
             this.decIncGroupbox.Name = "decIncGroupbox";
             this.decIncGroupbox.Padding = new System.Windows.Forms.Padding(2);
-            this.decIncGroupbox.Size = new System.Drawing.Size(230, 55);
+            this.decIncGroupbox.Size = new System.Drawing.Size(188, 56);
             this.decIncGroupbox.TabIndex = 20;
             this.decIncGroupbox.TabStop = false;
             this.decIncGroupbox.Text = "Declanation Increment";
@@ -401,7 +415,7 @@
             // 
             this.tenButtonDec.BackColor = System.Drawing.Color.DarkGray;
             this.tenButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.tenButtonDec.Location = new System.Drawing.Point(182, 18);
+            this.tenButtonDec.Location = new System.Drawing.Point(136, 15);
             this.tenButtonDec.Margin = new System.Windows.Forms.Padding(2);
             this.tenButtonDec.Name = "tenButtonDec";
             this.tenButtonDec.Size = new System.Drawing.Size(40, 30);
@@ -413,7 +427,7 @@
             // 
             this.fiveButtonDec.BackColor = System.Drawing.Color.DarkGray;
             this.fiveButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.fiveButtonDec.Location = new System.Drawing.Point(124, 18);
+            this.fiveButtonDec.Location = new System.Drawing.Point(93, 15);
             this.fiveButtonDec.Margin = new System.Windows.Forms.Padding(2);
             this.fiveButtonDec.Name = "fiveButtonDec";
             this.fiveButtonDec.Size = new System.Drawing.Size(40, 30);
@@ -425,7 +439,7 @@
             // 
             this.oneButtonDec.BackColor = System.Drawing.Color.DarkGray;
             this.oneButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.oneButtonDec.Location = new System.Drawing.Point(65, 18);
+            this.oneButtonDec.Location = new System.Drawing.Point(49, 15);
             this.oneButtonDec.Margin = new System.Windows.Forms.Padding(2);
             this.oneButtonDec.Name = "oneButtonDec";
             this.oneButtonDec.Size = new System.Drawing.Size(40, 30);
@@ -437,7 +451,7 @@
             // 
             this.oneForthButtonDec.BackColor = System.Drawing.Color.DarkGray;
             this.oneForthButtonDec.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.oneForthButtonDec.Location = new System.Drawing.Point(7, 18);
+            this.oneForthButtonDec.Location = new System.Drawing.Point(5, 15);
             this.oneForthButtonDec.Margin = new System.Windows.Forms.Padding(2);
             this.oneForthButtonDec.Name = "oneForthButtonDec";
             this.oneForthButtonDec.Size = new System.Drawing.Size(40, 30);
@@ -476,8 +490,9 @@
             "Snow Dump",
             "Recover From Limit Switch",
             "Recover From Clockwise Hardstop",
-            "Recover From Counter-Clockwise Hardstop"});
-            this.controlScriptsCombo.Location = new System.Drawing.Point(11, 33);
+            "Recover From Counter-Clockwise Hardstop",
+            "Home Telescope"});
+            this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
             this.controlScriptsCombo.TabIndex = 23;
@@ -489,18 +504,22 @@
             this.groupBox4.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox4.Controls.Add(this.runControlScriptButton);
             this.groupBox4.Controls.Add(this.controlScriptsCombo);
-            this.groupBox4.Location = new System.Drawing.Point(297, 36);
+            this.groupBox4.Location = new System.Drawing.Point(296, 29);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(460, 99);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox4.Size = new System.Drawing.Size(418, 65);
             this.groupBox4.TabIndex = 24;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Control Scripts";
+            this.groupBox4.Text = "Control Scripts and Spectra";
+            this.groupBox4.Enter += new System.EventHandler(this.groupBox4_Enter);
             // 
             // runControlScriptButton
             // 
             this.runControlScriptButton.BackColor = System.Drawing.Color.DarkGray;
             this.runControlScriptButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.runControlScriptButton.Location = new System.Drawing.Point(320, 32);
+            this.runControlScriptButton.Location = new System.Drawing.Point(288, 16);
+            this.runControlScriptButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.runControlScriptButton.Name = "runControlScriptButton";
             this.runControlScriptButton.Size = new System.Drawing.Size(126, 33);
             this.runControlScriptButton.TabIndex = 24;
@@ -524,9 +543,11 @@
             this.manualGroupBox.Controls.Add(this.plusElaButton);
             this.manualGroupBox.Controls.Add(this.subElaButton);
             this.manualGroupBox.Controls.Add(this.plusJogButton);
-            this.manualGroupBox.Location = new System.Drawing.Point(423, 148);
+            this.manualGroupBox.Location = new System.Drawing.Point(423, 213);
+            this.manualGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.manualGroupBox.Name = "manualGroupBox";
-            this.manualGroupBox.Size = new System.Drawing.Size(334, 266);
+            this.manualGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.manualGroupBox.Size = new System.Drawing.Size(279, 201);
             this.manualGroupBox.TabIndex = 25;
             this.manualGroupBox.TabStop = false;
             this.manualGroupBox.Text = "Manual Control";
@@ -553,23 +574,25 @@
             this.label5.Size = new System.Drawing.Size(22, 13);
             this.label5.TabIndex = 27;
             this.label5.Text = "0.0";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 193);
+            this.label3.Location = new System.Drawing.Point(6, 147);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(38, 13);
             this.label3.TabIndex = 26;
             this.label3.Text = "Speed";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // manualControlButton
             // 
             this.manualControlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.manualControlButton.BackColor = System.Drawing.Color.OrangeRed;
             this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.manualControlButton.Location = new System.Drawing.Point(179, 45);
+            this.manualControlButton.Location = new System.Drawing.Point(125, 17);
+            this.manualControlButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.manualControlButton.Name = "manualControlButton";
             this.manualControlButton.Size = new System.Drawing.Size(150, 28);
             this.manualControlButton.TabIndex = 25;
@@ -581,7 +604,8 @@
             // 
             this.immediateRadioButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.immediateRadioButton.AutoSize = true;
-            this.immediateRadioButton.Location = new System.Drawing.Point(9, 167);
+            this.immediateRadioButton.Location = new System.Drawing.Point(9, 123);
+            this.immediateRadioButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.immediateRadioButton.Name = "immediateRadioButton";
             this.immediateRadioButton.Size = new System.Drawing.Size(98, 17);
             this.immediateRadioButton.TabIndex = 24;
@@ -593,7 +617,8 @@
             this.ControledButtonRadio.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.ControledButtonRadio.AutoSize = true;
             this.ControledButtonRadio.Checked = true;
-            this.ControledButtonRadio.Location = new System.Drawing.Point(9, 144);
+            this.ControledButtonRadio.Location = new System.Drawing.Point(9, 104);
+            this.ControledButtonRadio.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.ControledButtonRadio.Name = "ControledButtonRadio";
             this.ControledButtonRadio.Size = new System.Drawing.Size(97, 17);
             this.ControledButtonRadio.TabIndex = 23;
@@ -607,7 +632,8 @@
             this.speedComboBox.Items.AddRange(new object[] {
             "0.1 RPM",
             "2 RPM"});
-            this.speedComboBox.Location = new System.Drawing.Point(6, 209);
+            this.speedComboBox.Location = new System.Drawing.Point(9, 162);
+            this.speedComboBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.speedComboBox.Name = "speedComboBox";
             this.speedComboBox.Size = new System.Drawing.Size(121, 21);
             this.speedComboBox.TabIndex = 10;
@@ -630,59 +656,66 @@
             this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 8;
             this.label1.Text = "Current Elavation: ";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // subJogButton
             // 
             this.subJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.subJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.subJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subJogButton.Location = new System.Drawing.Point(194, 170);
+            this.subJogButton.Location = new System.Drawing.Point(150, 104);
+            this.subJogButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.subJogButton.Name = "subJogButton";
             this.subJogButton.Size = new System.Drawing.Size(40, 40);
             this.subJogButton.TabIndex = 6;
             this.subJogButton.Text = "- Jog";
             this.subJogButton.UseVisualStyleBackColor = false;
-            this.subJogButton.Click += new System.EventHandler(this.subJogButton_Click);
+            this.subJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.subJogButton_Down);
+            this.subJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.subJogButton_Up);
             // 
             // plusElaButton
             // 
             this.plusElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.plusElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusElaButton.Location = new System.Drawing.Point(235, 119);
+            this.plusElaButton.Location = new System.Drawing.Point(190, 59);
+            this.plusElaButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.plusElaButton.Name = "plusElaButton";
             this.plusElaButton.Size = new System.Drawing.Size(40, 40);
             this.plusElaButton.TabIndex = 4;
             this.plusElaButton.Text = "+ Ela";
             this.plusElaButton.UseVisualStyleBackColor = false;
-            this.plusElaButton.Click += new System.EventHandler(this.plusElaButton_Click);
+            this.plusElaButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.plusElaButton_Down);
+            this.plusElaButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.plusElaButton_Up);
             // 
             // subElaButton
             // 
             this.subElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.subElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.subElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subElaButton.Location = new System.Drawing.Point(235, 216);
+            this.subElaButton.Location = new System.Drawing.Point(190, 148);
+            this.subElaButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.subElaButton.Name = "subElaButton";
             this.subElaButton.Size = new System.Drawing.Size(40, 40);
             this.subElaButton.TabIndex = 5;
             this.subElaButton.Text = "- Ela";
             this.subElaButton.UseVisualStyleBackColor = false;
-            this.subElaButton.Click += new System.EventHandler(this.subElaButton_Click);
+            this.subElaButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.subElaButton_Down);
+            this.subElaButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.subElaButton_Up);
             // 
             // plusJogButton
             // 
             this.plusJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.plusJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusJogButton.Location = new System.Drawing.Point(280, 170);
+            this.plusJogButton.Location = new System.Drawing.Point(230, 104);
+            this.plusJogButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.plusJogButton.Name = "plusJogButton";
             this.plusJogButton.Size = new System.Drawing.Size(40, 40);
             this.plusJogButton.TabIndex = 7;
             this.plusJogButton.Text = "+ Jog";
             this.plusJogButton.UseVisualStyleBackColor = false;
-            this.plusJogButton.Click += new System.EventHandler(this.plusJogButton_Click);
+            this.plusJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_Down);
+            this.plusJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_UP);
             // 
             // button1
             // 
@@ -690,7 +723,8 @@
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.button1.Location = new System.Drawing.Point(735, 9);
+            this.button1.Location = new System.Drawing.Point(692, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(22, 23);
             this.button1.TabIndex = 26;
@@ -698,19 +732,181 @@
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.helpButton_click);
             // 
+            // spectraCyberGroupBox
+            // 
+            this.spectraCyberGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+            this.spectraCyberGroupBox.Controls.Add(this.finalizeSettingsButton);
+            this.spectraCyberGroupBox.Controls.Add(this.gain);
+            this.spectraCyberGroupBox.Controls.Add(this.stopScanButton);
+            this.spectraCyberGroupBox.Controls.Add(this.startScanButton);
+            this.spectraCyberGroupBox.Controls.Add(this.bandwidth);
+            this.spectraCyberGroupBox.Controls.Add(this.label7);
+            this.spectraCyberGroupBox.Controls.Add(this.integrationStep);
+            this.spectraCyberGroupBox.Controls.Add(this.label9);
+            this.spectraCyberGroupBox.Controls.Add(this.offsetVoltage);
+            this.spectraCyberGroupBox.Controls.Add(this.label12);
+            this.spectraCyberGroupBox.Controls.Add(this.scanTypeComboBox);
+            this.spectraCyberGroupBox.Location = new System.Drawing.Point(296, 111);
+            this.spectraCyberGroupBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.spectraCyberGroupBox.Name = "spectraCyberGroupBox";
+            this.spectraCyberGroupBox.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.spectraCyberGroupBox.Size = new System.Drawing.Size(418, 84);
+            this.spectraCyberGroupBox.TabIndex = 29;
+            this.spectraCyberGroupBox.TabStop = false;
+            this.spectraCyberGroupBox.Text = "Spectra Cyber";
+            // 
+            // finalizeSettingsButton
+            // 
+            this.finalizeSettingsButton.BackColor = System.Drawing.Color.DarkGray;
+            this.finalizeSettingsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.finalizeSettingsButton.Location = new System.Drawing.Point(309, 10);
+            this.finalizeSettingsButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.finalizeSettingsButton.Name = "finalizeSettingsButton";
+            this.finalizeSettingsButton.Size = new System.Drawing.Size(97, 27);
+            this.finalizeSettingsButton.TabIndex = 40;
+            this.finalizeSettingsButton.Text = "Finalize Settings";
+            this.finalizeSettingsButton.UseVisualStyleBackColor = false;
+            this.finalizeSettingsButton.Click += new System.EventHandler(this.finalizeSettings_Click);
+            // 
+            // gain
+            // 
+            this.gain.BackColor = System.Drawing.Color.DarkGray;
+            this.gain.FormattingEnabled = true;
+            this.gain.Items.AddRange(new object[] {
+            "X1",
+            "X5",
+            "X10",
+            "X20",
+            "X50",
+            "X60"});
+            this.gain.Location = new System.Drawing.Point(4, 56);
+            this.gain.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.gain.MaxDropDownItems = 6;
+            this.gain.Name = "gain";
+            this.gain.Size = new System.Drawing.Size(57, 21);
+            this.gain.TabIndex = 39;
+            this.gain.Text = "Gain";
+            // 
+            // stopScanButton
+            // 
+            this.stopScanButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.stopScanButton.BackColor = System.Drawing.Color.OrangeRed;
+            this.stopScanButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.stopScanButton.Location = new System.Drawing.Point(368, 44);
+            this.stopScanButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.stopScanButton.Name = "stopScanButton";
+            this.stopScanButton.Size = new System.Drawing.Size(40, 30);
+            this.stopScanButton.TabIndex = 37;
+            this.stopScanButton.Text = "Stop Scan";
+            this.stopScanButton.UseVisualStyleBackColor = false;
+            this.stopScanButton.Click += new System.EventHandler(this.stopScan_Click);
+            // 
+            // startScanButton
+            // 
+            this.startScanButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.startScanButton.BackColor = System.Drawing.Color.LimeGreen;
+            this.startScanButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.startScanButton.Location = new System.Drawing.Point(307, 44);
+            this.startScanButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.startScanButton.Name = "startScanButton";
+            this.startScanButton.Size = new System.Drawing.Size(40, 30);
+            this.startScanButton.TabIndex = 36;
+            this.startScanButton.Text = "Start Scan";
+            this.startScanButton.UseVisualStyleBackColor = false;
+            this.startScanButton.Click += new System.EventHandler(this.startScan_Click);
+            // 
+            // bandwidth
+            // 
+            this.bandwidth.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.bandwidth.Location = new System.Drawing.Point(192, 17);
+            this.bandwidth.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.bandwidth.Name = "bandwidth";
+            this.bandwidth.Size = new System.Drawing.Size(76, 20);
+            this.bandwidth.TabIndex = 35;
+            // 
+            // label7
+            // 
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(131, 21);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(57, 13);
+            this.label7.TabIndex = 34;
+            this.label7.Text = "Bandwidth";
+            // 
+            // integrationStep
+            // 
+            this.integrationStep.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.integrationStep.Location = new System.Drawing.Point(192, 57);
+            this.integrationStep.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.integrationStep.Name = "integrationStep";
+            this.integrationStep.Size = new System.Drawing.Size(44, 20);
+            this.integrationStep.TabIndex = 33;
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(189, 44);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(82, 13);
+            this.label9.TabIndex = 32;
+            this.label9.Text = "Integration Step";
+            this.label9.Click += new System.EventHandler(this.label9_Click);
+            // 
+            // offsetVoltage
+            // 
+            this.offsetVoltage.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.offsetVoltage.Location = new System.Drawing.Point(94, 58);
+            this.offsetVoltage.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.offsetVoltage.Name = "offsetVoltage";
+            this.offsetVoltage.Size = new System.Drawing.Size(44, 20);
+            this.offsetVoltage.TabIndex = 27;
+            // 
+            // label12
+            // 
+            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(91, 44);
+            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(74, 13);
+            this.label12.TabIndex = 26;
+            this.label12.Text = "Offset Voltage";
+            this.label12.Click += new System.EventHandler(this.label12_Click);
+            // 
+            // scanTypeComboBox
+            // 
+            this.scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
+            this.scanTypeComboBox.FormattingEnabled = true;
+            this.scanTypeComboBox.Items.AddRange(new object[] {
+            "Continuous",
+            "Spectral"});
+            this.scanTypeComboBox.Location = new System.Drawing.Point(4, 18);
+            this.scanTypeComboBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.scanTypeComboBox.MaxDropDownItems = 2;
+            this.scanTypeComboBox.Name = "scanTypeComboBox";
+            this.scanTypeComboBox.Size = new System.Drawing.Size(83, 21);
+            this.scanTypeComboBox.TabIndex = 25;
+            this.scanTypeComboBox.Text = "Scan Type";
+            // 
             // FreeControlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Gray;
-            this.ClientSize = new System.Drawing.Size(764, 451);
+            this.ClientSize = new System.Drawing.Size(725, 439);
+            this.Controls.Add(this.spectraCyberGroupBox);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.manualGroupBox);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.freeControlGroupbox);
             this.Controls.Add(this.overRideGroupbox);
             this.Controls.Add(this.errorLabel);
-            this.MinimumSize = new System.Drawing.Size(600, 480);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MinimumSize = new System.Drawing.Size(600, 478);
             this.Name = "FreeControlForm";
             this.Text = "Control Form";
             this.RAIncGroupbox.ResumeLayout(false);
@@ -721,6 +917,8 @@
             this.groupBox4.ResumeLayout(false);
             this.manualGroupBox.ResumeLayout(false);
             this.manualGroupBox.PerformLayout();
+            this.spectraCyberGroupBox.ResumeLayout(false);
+            this.spectraCyberGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -732,7 +930,6 @@
         private System.Windows.Forms.Button NegRAButton;
         private System.Windows.Forms.Button PosRAButton;
         private System.Windows.Forms.TextBox ActualRATextBox;
-        private System.Windows.Forms.TextBox ActualDecTextBox;
         private System.Windows.Forms.Label ActualPositionLabel;
         private System.Windows.Forms.Label ActualRALabel;
         private System.Windows.Forms.Label ActualDecLabel;
@@ -776,5 +973,18 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox statusTextBox;
+        private System.Windows.Forms.TextBox ActualDecTextBox;
+        private System.Windows.Forms.GroupBox spectraCyberGroupBox;
+        private System.Windows.Forms.Button finalizeSettingsButton;
+        private System.Windows.Forms.ComboBox gain;
+        private System.Windows.Forms.Button stopScanButton;
+        private System.Windows.Forms.Button startScanButton;
+        private System.Windows.Forms.TextBox bandwidth;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox integrationStep;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox offsetVoltage;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ComboBox scanTypeComboBox;
     }
 }

@@ -30,6 +30,8 @@ namespace ControlRoomApplication.Controllers
                     ReadTimeout = AbstractSpectraCyberConstants.TIMEOUT_MS,
                     WriteTimeout = AbstractSpectraCyberConstants.TIMEOUT_MS
                 };
+
+                logger.Info("[SpectraCyberController] Created serial port connection");
             }
             catch (Exception e)
             {
@@ -48,6 +50,8 @@ namespace ControlRoomApplication.Controllers
             try
             {
                 ((SpectraCyber)SpectraCyber).SerialPort.Open();
+
+                logger.Info("[SpectraCyberController] Serial port has been opened");
             }
             catch (Exception e)
             {
@@ -71,7 +75,10 @@ namespace ControlRoomApplication.Controllers
             {
                 // Initialize thread and start it
                 CommunicationThread = new Thread(() => RunCommunicationThread());
+                logger.Info("[SpectraCyberController] The communication thread has been assigned");
+
                 CommunicationThread.Start();
+                logger.Info("[SpectraCyberController] The communication thread has started");
             }
             catch (Exception e)
             {
@@ -104,6 +111,8 @@ namespace ControlRoomApplication.Controllers
                 {
                     ((SpectraCyber)SpectraCyber).SerialPort.Close();
                 }
+
+                logger.Info("[SpectraCyberController] The serial port has been closed");
             }
             catch (Exception e)
             {

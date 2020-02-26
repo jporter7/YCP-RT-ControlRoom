@@ -46,7 +46,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> Whether or not the RT responded. </returns>
         public bool TestCommunication()
         {
-            return RadioTelescope.PLCDriver.Test_Conection();
+            return RadioTelescope.PLCDriver.Test_Connection();
         }
 
         /// <summary>
@@ -72,32 +72,6 @@ namespace ControlRoomApplication.Controllers
         public Orientation GetAbsoluteOrientation()
         {
             return RadioTelescope.Encoders.GetCurentOrientation();
-        }
-
-
-        /// <summary>
-        /// Gets the current status of the four limit switches.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        /// <returns>
-        ///     An array of four booleans, where "true" means that the limit switch was triggered, and "false" means otherwise.
-        ///     The order of the limit switches are as follows:
-        ///         0: Under limit    azimuth
-        ///         1: Under warning  azimuth
-        ///         2: Over  warning  azimuth
-        ///         3: Over  limit    azimuth
-        ///         4: Under limit    elevation
-        ///         5: Under warning  elevation
-        ///         6: Over  warning  elevation
-        ///         7: Over  limit    elevation
-        /// </returns>
-        public bool[] GetCurrentLimitSwitchStatuses()
-        {
-            //throw new NotImplementedException();
-            return RadioTelescope.PLCDriver.Get_Limit_switches();
         }
 
         /// <summary>
@@ -145,7 +119,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ThermalCalibrateRadioTelescope()
+        public Task<bool> ThermalCalibrateRadioTelescope()
         {
             if (!tempAcceptable) return false;
             return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
@@ -153,10 +127,13 @@ namespace ControlRoomApplication.Controllers
 
         /// <summary>
         /// Method used to request to set configuration of elements of the RT.
-        /// 
-        /// takes the starting speed of the motor in degrees per second (speed of tellescope after gearing)
-        /// and home timeout which is currently unused
+        /// takes the starting speed of the motor in RPM (speed of tellescope after gearing)
         /// </summary>
+        /// <param name="startSpeedAzimuth">RPM</param>
+        /// <param name="startSpeedElevation">RPM</param>
+        /// <param name="homeTimeoutAzimuth">SEC</param>
+        /// <param name="homeTimeoutElevation">SEC</param>
+        /// <returns></returns>
         public bool ConfigureRadioTelescope(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return RadioTelescope.PLCDriver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation); // NO MOVE
@@ -169,8 +146,9 @@ namespace ControlRoomApplication.Controllers
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
+        /// <see cref="Controllers.BlkHeadUcontroler.EncoderReader"/>
         /// </summary>
-        public bool MoveRadioTelescopeToOrientation(Orientation orientation)
+        public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
         {
             if (!tempAcceptable) return false;
             return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position()); // MOVE
@@ -184,24 +162,12 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool MoveRadioTelescopeToCoordinate(Coordinate coordinate)
+        public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
             if (!tempAcceptable) return false;
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow)); // MOVE
         }
 
-        /// <summary>
-        /// Method used to request to start jogging one of the Radio Telescope's axes
-        /// at a speed, in either the clockwise or counter-clockwise direction.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        public bool StartRadioTelescopeJog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
-        {
-            return RadioTelescope.PLCDriver.Start_jog(axis, speed, clockwise); // NO MOVE
-        }
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's azimuth
@@ -211,9 +177,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeAzimuthJog(int speed, bool clockwise)
+        public bool StartRadioTelescopeAzimuthJog(double speed, bool clockwise)
         {
-            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.AZIMUTH, speed, clockwise); // NO MOVE
+            return RadioTelescope.PLCDriver.Start_jog( speed, clockwise, 0,false ); // NO MOVE
         }
 
         /// <summary>
@@ -224,14 +190,22 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeElevationJog(int speed, bool clockwise)
+        public bool StartRadioTelescopeElevationJog(double speed, bool clockwise)
         {
-            return StartRadioTelescopeJog(RadioTelescopeAxisEnum.ELEVATION, speed, clockwise); // NO MOVE
+            return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, clockwise); // NO MOVE
+        }
+
+
+        /// <summary>
+        /// send a clear move to the MCU to stop a jog
+        /// </summary>
+        public bool ExecuteRadioTelescopeStopJog() {
+            return RadioTelescope.PLCDriver.Stop_Jog();
         }
 
         /// <summary>
         /// Method used to request that all of the Radio Telescope's movement comes
-        /// to a controlled stop.
+        /// to a controlled stop. this will not work for jog moves use 
         /// 
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
@@ -239,7 +213,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeControlledStop()
         {
-            return RadioTelescope.PLCDriver.Controled_stop(RadioTelescopeAxisEnum.UNKNOWN, true); // NO MOVE
+            return RadioTelescope.PLCDriver.Controled_stop(); // NO MOVE
         }
 
         /// <summary>
@@ -255,29 +229,7 @@ namespace ControlRoomApplication.Controllers
             return RadioTelescope.PLCDriver.Immediade_stop(); // NO MOVE
         }
 
-        /// <summary>
-        /// Method used to move in a relative motion. Meaning, movement in only one direction (Elevation or azimuth).
-        /// Only translates in the specified direction
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        public bool ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum axis, int speed, int position)
-        {
-            int positionTranslationAZ=0, positionTranslationEL=0;
-            if (axis == RadioTelescopeAxisEnum.ELEVATION)
-            {
-                positionTranslationEL = position;
-            }
-            else if (axis == RadioTelescopeAxisEnum.AZIMUTH)
-            {
-                positionTranslationAZ = position;
-            }
-            else return false;
 
-            return RadioTelescope.PLCDriver.relative_move(speed, (ushort) 50, positionTranslationAZ, positionTranslationEL);
-        }
         /// <summary>
         /// return true if the RT has finished the previous move comand
         /// </summary>
@@ -288,8 +240,8 @@ namespace ControlRoomApplication.Controllers
             var Tel = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.ELEVATION );
 
             Taz.Wait();
-            bool azFin = Taz.Result[(int)MCUConstants.MCUStutusBits.Move_Complete];
-            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStutusBits.Move_Complete];
+            bool azFin = Taz.Result[(int)MCUConstants.MCUStutusBitsMSW.Move_Complete];
+            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStutusBitsMSW.Move_Complete];
             if(axis == RadioTelescopeAxisEnum.BOTH) {
                 return elFin && azFin;
             } else if(axis == RadioTelescopeAxisEnum.AZIMUTH) {

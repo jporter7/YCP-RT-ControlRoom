@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Controllers
 
         protected RadioTelescope Parent { get; set; }
         protected AbstractSpectraCyber SpectraCyber { get; set; }
-        protected SpectraCyberScanSchedule Schedule { get; set; }
+        public SpectraCyberScanSchedule Schedule { get; set; }
 
         protected Thread CommunicationThread { get; set; }
         protected bool KillCommunicationThreadFlag { get; set; }
@@ -59,6 +59,11 @@ namespace ControlRoomApplication.Controllers
             }
             return success;
 
+        }
+
+        public void SetSpectraCyberGain()
+        {
+            
         }
 
         public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
@@ -264,6 +269,8 @@ namespace ControlRoomApplication.Controllers
         {
             bool KeepRunningCommsThread = true;
 
+            logger.Info("[SpectraCyberController] The scan schedule type is " + Schedule.GetMode());
+
             // Loop until the thread is attempting to be shutdown (don't directly reference SpectraCyber.KillCommunicationThreadFlag
             // because it can't be kept in the mutex's scope)
             while (KeepRunningCommsThread)
@@ -274,7 +281,9 @@ namespace ControlRoomApplication.Controllers
                 if (Schedule.PollReadiness())
                 {
                     AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointmentID);
+                    logger.Info("[SpectraCyberController] Added the RF Data to the database");
                     Schedule.Consume();
+                    logger.Info("[SpectraCyberController] The schedule hath been consumed by Cthulhu");
                     //logger.Info("[AbstractSpectraCyberController] SC Scan");
                 }
 

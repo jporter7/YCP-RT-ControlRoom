@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ControlRoomApplication.Simulators.Hardware;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.Sensors;
+using ControlRoomApplication.Controllers.PLCCommunication;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -22,7 +23,10 @@ namespace ControlRoomApplication.Controllers
         protected RadioTelescope Parent;
 
         public LimitSwitchData limitSwitchData;
-        public ProximitySensorData proximitySensorData;
+        public HomeSensorData homeSensorData;
+        public MiscPlcInput plcInput;
+        protected PLCEvents pLCEvents;
+
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup
@@ -73,7 +77,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract void Bring_down();
 
-        public abstract bool Test_Conection();
+        public abstract bool Test_Connection();
 
         public abstract Orientation read_Position();
 
@@ -84,56 +88,58 @@ namespace ControlRoomApplication.Controllers
         // All of the "scripts" are here all the way to....
         // Control Scripts
 
-        public abstract bool Thermal_Calibrate();
+        public abstract Task<bool> Thermal_Calibrate();
 
-        public abstract bool FullElevationMove();
+        public abstract Task<bool> FullElevationMove();
 
-        public abstract bool Full_360_CCW_Rotation();
+        public abstract Task<bool> Full_360_CCW_Rotation();
 
-        public abstract bool Full_360_CW_Rotation();
+        public abstract Task<bool> Full_360_CW_Rotation();
 
-        public abstract bool Stow();
+        public abstract Task<bool> Stow();
 
-        public abstract bool SnowDump();
+        public abstract Task<bool> SnowDump();
 
         // Diagnostics Scripts
 
-        public abstract bool HitAzimuthLeftLimitSwitch();
+        public abstract Task<bool> HitAzimuthLeftLimitSwitch();
 
-        public abstract bool HitAzimuthRightLimitSwitch();
+        public abstract Task<bool> HitAzimuthRightLimitSwitch();
 
-        public abstract bool HitElevationLowerLimitSwitch();
+        public abstract Task<bool> HitElevationLowerLimitSwitch();
 
-        public abstract bool HitElevationUpperLimitSwitch();
+        public abstract Task<bool> HitElevationUpperLimitSwitch();
 
-        public abstract bool RecoverFromLimitSwitch();
+        public abstract Task<bool> RecoverFromLimitSwitch();
 
-        public abstract bool Hit_CW_Hardstop();
+        public abstract Task<bool> Hit_CW_Hardstop();
 
-        public abstract bool Hit_CCW_Hardstop();
-        public abstract bool Recover_CW_Hardstop();
+        public abstract Task<bool> Hit_CCW_Hardstop();
+        public abstract Task<bool> Recover_CW_Hardstop();
 
-        public abstract bool Recover_CCW_Hardstop();
+        public abstract Task<bool> Recover_CCW_Hardstop();
 
-        public abstract bool Hit_Hardstops();
+        public abstract Task<bool> Hit_Hardstops();
 
         // ... to here
 
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
-        public abstract bool Controled_stop(RadioTelescopeAxisEnum axis, bool both);
+        public abstract bool Controled_stop();
 
         public abstract bool Immediade_stop();
 
         public abstract bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL);
 
-        public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
+        public abstract Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 
-        public abstract bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise);
+        public abstract bool Start_jog( double AZspeed ,bool AZ_CW, double ELspeed ,bool EL_CW);
+
+        public abstract bool Stop_Jog();
 
         public abstract bool Get_interlock_status();
 
-        public abstract bool[] Get_Limit_switches();
+        public abstract Task<bool> JogOffLimitSwitches();
 
         public abstract void setregvalue(ushort adr, ushort value);
 
@@ -149,7 +155,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
-        /// see <see cref="MCUConstants.MCUStutusBits"/> for description of each bit
+        /// see <see cref="MCUConstants.MCUStutusBitsMSW"/> for description of each bit
         /// </summary>
         /// <param name="axis"></param>
         /// <returns></returns>

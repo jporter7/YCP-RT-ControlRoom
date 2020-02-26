@@ -15,7 +15,13 @@ namespace ControlRoomApplication.Simulators.Hardware
     /// </summary>
     public struct LimitSwitchData
     {
+        /// <summary>
+        /// limit at 360 degrees
+        /// </summary>
         public bool Azimuth_CW_Limit;
+        /// <summary>
+        /// limit at - 10 degrees
+        /// </summary>
         public bool Azimuth_CCW_Limit;
         public bool Elevation_Lower_Limit;
         public bool Elevation_Upper_Limit;

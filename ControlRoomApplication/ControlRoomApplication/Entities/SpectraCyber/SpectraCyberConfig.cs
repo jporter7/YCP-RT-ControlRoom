@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ControlRoomApplication.Entities
 {
     [Table("spectracyber_config")]
-    [Serializable]
     public class SpectraCyberConfig
     {
         public SpectraCyberConfig(SpectraCyberModeTypeEnum mode, SpectraCyberIntegrationTimeEnum integration_time, 

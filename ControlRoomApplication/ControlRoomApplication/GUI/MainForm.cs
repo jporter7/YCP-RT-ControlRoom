@@ -145,7 +145,7 @@ namespace ControlRoomApplication.Main
                 {
                     logger.Info("Populating Local Database");
                     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
-                    Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).StartTime.ToString());
+                    Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).start_time.ToString());
                     logger.Info("Disabling ManualControl and FreeControl");
                     //ManualControl.Enabled = false;
                     FreeControl.Enabled = false;
@@ -193,23 +193,30 @@ namespace ControlRoomApplication.Main
                 logger.Info("Starting Weather Monitoring Routine");
                 MainControlRoomController.StartWeatherMonitoringRoutine();
 
+                logger.Info("Starting Spectra Cyber Controleler");
+                ARadioTelescope.SpectraCyberController.BringUp();
+
                 // Start RT controller's threaded management
                 logger.Info("Starting RT controller's threaded management");
                 RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];
+
+                // add telescope to database
+                DatabaseOperations.AddRadioTelescope(ARadioTelescope);
+
                 int RT_ID = ManagementThread.RadioTelescopeID;
                 List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
 
                 logger.Info("Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
                 foreach (Appointment appt in AllAppointments)
                 {
-                    logger.Info("\t[" + appt.Id + "] " + appt.StartTime.ToString() + " -> " + appt.EndTime.ToString());
+                    logger.Info("\t[" + appt.Id + "] " + appt.start_time.ToString() + " -> " + appt.end_time.ToString());
                 }
 
                 if (ManagementThread.Start())
                 {
                     logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
 
-                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(.1, .1, 0, 0);
+                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(.06, .06, 300, 300);
                 }
                 else
                 {
@@ -324,6 +331,7 @@ namespace ControlRoomApplication.Main
 
             // Return Radio Telescope
             RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id, ctrler, encoder );
+            abstractPLCDriver.SetParent(rt);
 
             logger.Info("RadioTelescope Built Successfully");
             return rt;
@@ -453,7 +461,8 @@ namespace ControlRoomApplication.Main
         private void FreeControl_Click(object sender, EventArgs e)
         {
             logger.Info("Free Control Button Clicked");
-            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+            int rtIDforControl = AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id;
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {
@@ -489,8 +498,9 @@ namespace ControlRoomApplication.Main
            
             if (loopBackBox.Checked)
             {
+                ProdcheckBox.Checked = false;
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
-                this.txtMcuCOMPort.Text = "221"; //default MCU Port
+                this.txtMcuCOMPort.Text = ((int)(8081 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
@@ -499,6 +509,21 @@ namespace ControlRoomApplication.Main
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
             this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
+        }
+
+        private void ProdcheckBox_CheckedChanged( object sender , EventArgs e ) {
+            if(ProdcheckBox.Checked) {
+                loopBackBox.Checked = false;
+                this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
+                this.txtMcuCOMPort.Text = "502"; //default MCU Port
+                this.txtPLCIP.Text = "192.168.0.50";//default IP address
+                if(LocalIPCombo.FindStringExact( "192.168.0.70" ) == -1) {
+                    this.LocalIPCombo.Items.Add( IPAddress.Parse( "192.168.0.70" ) );
+                }
+                this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact( "192.168.0.70" );
+            }
+            this.txtPLCPort.Text = "502";
+            this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact( "Production PLC" );
         }
 
         private void createWSButton_Click(object sender, EventArgs e)
@@ -634,5 +659,12 @@ namespace ControlRoomApplication.Main
         {
             return MainControlRoomController.weatherStationOverride;
         }
+
+        private void txtMcuCOMPort_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
     }
 }

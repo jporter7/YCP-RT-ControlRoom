@@ -14,7 +14,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static ControlRoom ControlRoom;
         public static Orientation CalibrationOrientation;
         public static string IP = PLCConstants.LOCAL_HOST_IP;
-        public static int Port = 8094;
+        public static int Port1 = 15001;
+        public static int Port2 = 15003;
         public static RadioTelescopeController RTController0;
         public static RadioTelescopeController RTController1;
         public static RadioTelescopeController RTController2;
@@ -33,7 +34,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController0 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                     new TestPLCDriver(IP, IP, Port, Port,true),
+                     new TestPLCDriver(IP, IP, Port1, Port2, true),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -42,7 +43,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController1 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new TestPLCDriver(IP, IP, Port+3, Port+3,true),
+                    new TestPLCDriver(IP, IP, Port1 + 3, Port2 + 3,true),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -51,7 +52,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             RTController2 = new RadioTelescopeController(
                 new RadioTelescope(
                     new SpectraCyberSimulatorController(new SpectraCyberSimulator()),
-                    new TestPLCDriver(IP, IP, Port+6, Port+6,true),
+                    new TestPLCDriver(IP, IP, Port1 + 6, Port2 + 6,true),
                     MiscellaneousConstants.JOHN_RUDY_PARK,
                     CalibrationOrientation
                 )
@@ -70,7 +71,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestConstructorAndProperties()
         {
-            Assert.AreEqual(ControlRoom, CRController.ControlRoom);
+            Assert.IsTrue(ControlRoom == CRController.ControlRoom);
         }
 
         [TestMethod]

@@ -26,9 +26,6 @@ namespace ControlRoomApplication.GUI
 
         FakeEncoderSensor myEncoder = new FakeEncoderSensor();
         /***********DEMO MODE VARIABLES**************/
-        private double[] azEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //12    11.3 ticks per degree
-        private double[] elEncDemo = { 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2, 3.4, 3.6, 3.8, 4.0, 4.2, 4.4, 4.6, 4.8, 5.0, 5.2, 5.4, 5.6, 5.8, 6.0, 6.2, 6.4, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.8, 8.0, 8.2, 8.4, 8.6, 8.8, 9.0, 9.2, 9.4, 9.6, 9.8, 10.0, 10.2, 10.4, 10.6, 10.8, 11.0, 11.2, 11.4, 11.6, 11.8, 12.0, 12.2, 12.4, 12.6, 12.8, 13.0, 13.2, 13.4, 13.6, 13.8, 14.0, 14.2, 14.4, 14.6, 14.8, 15.0, 15.2, 15.4, 15.6, 15.8, 16.0 }; //10 bits of precision, 2.8 
-
         DateTime currentEncodDate = DateTime.Now;
 
         /***********DEMO MODE VARIABLES END*********/
@@ -240,190 +237,8 @@ namespace ControlRoomApplication.GUI
                 _azEncoderTicks = (int)(_azEncoderDegrees * 11.38);
                 _elEncoderTicks = (int)(_elEncoderDegrees * 2.8);
 
-                // Azimuth Limit Switch sim logic
-                if (_azEncoderDegrees < SimulationConstants.LIMIT_CW_AZ_DEGREES)
-                {
-                    if (!_azCWLimitChange)
-                    {
-                        _azCWLimitOld = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CW_Limit;
-                        _azCWLimitChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CW_Limit = true;
-                }
-                else if (_azEncoderDegrees > SimulationConstants.LIMIT_CCW_AZ_DEGREES)
-                {
-                    if (!_azCCWLimitChange)
-                    {
-                        _azCCWLimitOld = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CCW_Limit;
-                        _azCCWLimitChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CCW_Limit = true;
-                }
-                else
-                {
-                    if (!_azCWLimitChange)
-                    {
-                        _azCWLimitOld = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CW_Limit;
-                        _azCWLimitChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CW_Limit = false;
 
-                    if (!_azCCWLimitChange)
-                    {
-                        _azCWLimitOld = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CCW_Limit;
-                        _azCCWLimitChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CCW_Limit = false;
-                }
-
-                // Elevation Limit Switch sim logic
-                if (_elEncoderDegrees < SimulationConstants.LIMIT_LOW_EL_DEGREES)
-                {
-                    if (!_elLowerLimitChange)
-                    {
-                        _elLowerLimitOld = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Lower_Limit;
-                        _elLowerLimitChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Lower_Limit = true;
-                }
-                else if (_elEncoderDegrees > SimulationConstants.LIMIT_HIGH_EL_DEGREES)
-                {
-                    if (!_elUpperLimitChange)
-                    {
-                        _elUpperLimitOld = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit;
-                        _elUpperLimitChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit = true;
-                }
-                else
-                {
-                    if (!_elLowerLimitChange)
-                    {
-                        _elLowerLimitOld = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Lower_Limit;
-                        _elLowerLimitChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Lower_Limit = false;
-
-                    if (!_elUpperLimitChange)
-                    {
-                        _elUpperLimitOld = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit;
-                        _elUpperLimitChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit = false;
-                }
-
-                // Azimuth Proximity Sensor Logic
-                if (_azEncoderDegrees < SimulationConstants.PROX_CW_AZ_DEGREES)
-                {
-                    if (!_azCWProxChange)
-                    {
-                        _azCWProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor;
-                        _azCWProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor = true;
-                }
-                else if (_azEncoderDegrees > SimulationConstants.PROX_CCW_AZ_DEGREES)
-                {
-                    if (!_azCCWProxChange)
-                    {
-                        _azCCWProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor;
-                        _azCCWProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor = true;
-                }
-                else
-                {
-                    if (!_azCWProxChange)
-                    {
-                        _azCWProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor;
-                        _azCWProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor = false;
-
-                    if (!_azCCWProxChange)
-                    {
-                        _azCCWProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor;
-                        _azCCWProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor = false;
-                }
-
-                // Elevation Proximity Logic
-                if (_elEncoderDegrees < SimulationConstants.LIMIT_LOW_EL_DEGREES)
-                {
-                    if (!_elLowerProxChange)
-                    {
-                        _elLowerProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor;
-                        _elLowerProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor = true;
-                }
-                else if (_elEncoderDegrees > SimulationConstants.LIMIT_HIGH_EL_DEGREES)
-                {
-                    if (!_elUpperProxChange)
-                    {
-                        _elUpperProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor;
-                        _elUpperProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor = true;
-                }
-                else
-                {
-                    if (!_elUpperProxChange)
-                    {
-                        _elUpperProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor;
-                        _elUpperProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor = false;
-
-                    if (!_elLowerProxChange)
-                    {
-                        _elLowerProxOld = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor;
-                        _elLowerProxChange = true;
-                    }
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor = false;
-                }
             }
-            // AKA Run Demo checkbox has not been selected
-            else
-            {
-                controlRoom.RadioTelescopes[rtId].Micro_controler.setStableOrTesting(true);
-                
-                myEncoder.SetAzimuthAngle(0.0);
-                myEncoder.SetElevationAngle(0.0);
-
-                _azEncoderTicks = 0;
-                _elEncoderTicks = 0;
-
-                // If the value in the struct has been modified, then it restores it to the value held before the change
-                // This will help to prevent the mismatch of values where a true limit switch value is displayed as a false
-                // Limit Switch Logic
-                if (_azCWLimitChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CW_Limit = _azCWLimitOld;
-
-                if (_azCCWLimitChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Azimuth_CCW_Limit = _azCCWLimitOld;
-
-                if (_elLowerLimitChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Lower_Limit = _elLowerLimitOld;
-
-                if (_elUpperLimitChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit = _elUpperLimitOld;
-
-                // Proximity Sensor Logic
-                if (_azCWProxChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor = _azCWProxOld;
-
-                if (_azCCWProxChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor = _azCCWProxOld;
-
-                if (_elLowerProxChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor = _elLowerProxOld;
-
-                if (_elUpperProxChange)
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor = _elUpperProxOld;
-            }
-
             
             double ElMotTemp = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.elevationTemp;
             double AzMotTemp = controlRoom.RadioTelescopes[rtId].Micro_controler.tempData.azimuthTemp;
@@ -489,12 +304,12 @@ namespace ControlRoomApplication.GUI
             lblElLimStatus1.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Lower_Limit.ToString();
             lblElLimStatus2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.limitSwitchData.Elevation_Upper_Limit.ToString();
 
-            lblAzProxStatus1.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CCW_Prox_Sensor.ToString();
-            lblAzProxStatus2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Azimuth_CW_Prox_Sensor.ToString();
-            lblAzProxStatus3.Text = "Not Used";
+            lblAzHomeStatus1.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.homeSensorData.Azimuth_Home_One.ToString();
+            lblAzHomeStatus2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.homeSensorData.Azimuth_Home_Two.ToString();
+            lblELHomeStatus.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.homeSensorData.Elevation_Home.ToString();
 
-            lblEleProx1.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Lower_Prox_Sensor.ToString();
-            lblEleProx2.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.proximitySensorData.Elevation_Upper_Prox_Sensor.ToString();
+            lbEstopStat.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.plcInput.Estop.ToString();
+            lbGateStat.Text = controlRoom.RadioTelescopes[rtId].PLCDriver.plcInput.Gate_Sensor.ToString();
 
             ///*** Temperature Logic Start***/
             //if (elevationTemperature <= 79 && azimuthTemperature <= 79)
@@ -566,9 +381,9 @@ namespace ControlRoomApplication.GUI
             /*
             if (controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay != null)
             {
-                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.StartTime.ToLocalTime().ToString("hh:mm tt"));
-                SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.EndTime.ToLocalTime().ToString("hh:mm tt"));
-                SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.Status.ToString());
+                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.start_time.ToLocalTime().ToString("hh:mm tt"));
+                SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.end_time.ToLocalTime().ToString("hh:mm tt"));
+                SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay._Status.ToString());
             }
             //*/
             GetHardwareStatuses();
@@ -596,6 +411,11 @@ namespace ControlRoomApplication.GUI
             //    }
             //    MCU_Statui.Update();
             //}
+
+            // This nextrsection is for reading the spectra cyber info and changing it (ONLY if we are on a manual appointment)
+
+
+
 
         }
 
@@ -678,10 +498,6 @@ namespace ControlRoomApplication.GUI
 
         }
 
-        private void lblAzLimStatus2_Click(object sender, System.EventArgs e)
-        {
-
-        }
 
         private void button4_Click(object sender, System.EventArgs e)
         {
@@ -780,172 +596,6 @@ namespace ControlRoomApplication.GUI
 
         }
 
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox4_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox6_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tabPage3_Click(object sender, EventArgs e)
-        {
-
-
-        }
-
-        private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void windSpeedLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void windDirLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void fldAzTemp_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label25_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void fldElTemp_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void barometricPressureLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void splitContainer1_Panel2_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void MCU_Statui_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblElevationTemp_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblElProx1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblEleProx1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblAzProx2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblAzProxStatus2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblElLimit1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblElLimStatus1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblAzLimit2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void fanLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label24_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void txtTemperature_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox4_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void startTimeTextBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void button7_Click(object sender, EventArgs e)
         {
             string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
@@ -1035,11 +685,6 @@ namespace ControlRoomApplication.GUI
             }
         }
 
-        private void splitContainer1_Panel1_Paint_1(object sender, PaintEventArgs e)
-        {
-
-        }
-
         private void diagnosticScriptCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (diagnosticScriptCombo.SelectedIndex >= 0)
@@ -1054,10 +699,6 @@ namespace ControlRoomApplication.GUI
 
         }
 
-        private void selectDemo_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
         /** Conversion from fahrenheit to celsius (Currently not being used) 
             if(celOrFar)
             {

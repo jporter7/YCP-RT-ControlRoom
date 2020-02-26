@@ -8,11 +8,10 @@ using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Simulators.Hardware
 {
-    public struct ProximitySensorData
+    public struct HomeSensorData
     {
-        public bool Azimuth_CW_Prox_Sensor;
-        public bool Azimuth_CCW_Prox_Sensor;
-        public bool Elevation_Lower_Prox_Sensor;
-        public bool Elevation_Upper_Prox_Sensor;
+        public bool Azimuth_Home_One;
+        public bool Azimuth_Home_Two;
+        public bool Elevation_Home;
     }
 }

@@ -11,7 +11,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
     {
         // Class being tested
         private Appointment appointment_1;
-        private Appointment appointment_2;
+        private Appointment greaterThan;
+        private Appointment equalTo;
 
         // Attributes in the class that need to be tested
         private int user_id;
@@ -35,7 +36,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         {
             // Initialize appointment entity
             appointment_1 = new Appointment();
-            appointment_2 = new Appointment();
+            greaterThan = new Appointment();
 
             // Initialize data for fields
             user_id = 1;
@@ -55,43 +56,47 @@ namespace ControlRoomApplicationTest.EntitiesTests
             endTime_2 = DateTime.UtcNow.AddDays(1).AddHours(1);
 
             // Initialize fields we are testing against
-            appointment_1.UserId = user_id;
-            appointment_1.StartTime = startTime_1;
-            appointment_1.EndTime = endTime_1;
+            appointment_1.user_id = user_id;
+            appointment_1.start_time = startTime_1;
+            appointment_1.end_time = endTime_1;
             appointment_1.CelestialBody = celestial_body;
             appointment_1.Orientation = orientation;
             appointment_1.Coordinates.Add(coordinate);
             appointment_1.RFDatas.Add(rf_data);
-            appointment_1.TelescopeId = telescope_id;
-            appointment_1.Status = status;
-            appointment_1.Type = type;
+            appointment_1.telescope_id = telescope_id;
+            appointment_1._Status = status;
+            appointment_1._Type = type;
             appointment_1.SpectraCyberConfig = spectracyber_config;
 
-            appointment_2.StartTime = startTime_2;
-            appointment_2.EndTime = endTime_2;
+            greaterThan.start_time = startTime_2;
+            greaterThan.end_time = endTime_2;
+
+            equalTo = appointment_1;
         }
 
         [TestMethod]
         public void TestGettersAndSetters()
         {
-            Assert.AreEqual(user_id, appointment_1.UserId);
-            Assert.AreEqual(startTime_1, appointment_1.StartTime);
-            Assert.AreEqual(endTime_1, appointment_1.EndTime);
+            Assert.AreEqual(user_id, appointment_1.user_id);
+            Assert.AreEqual(startTime_1, appointment_1.start_time);
+            Assert.AreEqual(endTime_1, appointment_1.end_time);
             Assert.AreEqual(celestial_body, appointment_1.CelestialBody);
             Assert.AreEqual(orientation, appointment_1.Orientation);
             Assert.AreEqual(coordinate, appointment_1.Coordinates.ToList()[0]);
             Assert.AreEqual(rf_data, appointment_1.RFDatas.ToList()[0]);
-            Assert.AreEqual(telescope_id, appointment_1.TelescopeId);
-            Assert.AreEqual(status, appointment_1.Status);
-            Assert.AreEqual(type, appointment_1.Type);
+            Assert.AreEqual(telescope_id, appointment_1.telescope_id);
+            Assert.AreEqual(status, appointment_1._Status);
+            Assert.AreEqual(type, appointment_1._Type);
             Assert.AreEqual(spectracyber_config, appointment_1.SpectraCyberConfig);
         }
 
         [TestMethod]
         public void TestComparable()
         {
-            Assert.IsTrue(appointment_1 != appointment_2);
-            Assert.IsTrue(appointment_1 < appointment_2);
+            Assert.IsTrue(appointment_1 != greaterThan);
+            Assert.IsTrue(appointment_1 < greaterThan);
+            Assert.IsTrue(greaterThan > appointment_1);
+            Assert.IsTrue(appointment_1 == equalTo);
         }
     }
 }

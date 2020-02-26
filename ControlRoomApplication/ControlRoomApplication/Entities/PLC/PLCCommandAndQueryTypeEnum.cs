@@ -2,52 +2,6 @@
 
 namespace ControlRoomApplication.Entities
 {
-    public enum PLCCommandAndQueryTypeEnum : byte
-    {
-        UNDEFINED = 0x0,
-        TEST_CONNECTION = 0x1,
-        GET_CURRENT_AZEL_POSITIONS = 0x2,// remove, encoders not handled by plc anymore
-        GET_CURRENT_LIMIT_SWITCH_STATUSES = 0x3,
-        GET_CURRENT_SAFETY_INTERLOCK_STATUS = 0x4,
-        CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION = 0x5,
-        SHUTDOWN = 0x6,
-        THERMAL_CALIBRATE = 0x7,
-        SET_CONFIGURATION = 0x8,
-        CONTROLLED_STOP = 0x9,
-        IMMEDIATE_STOP= 0xA,
-        SET_OBJECTIVE_AZEL_POSITION = 0xB,
-        START_JOG_MOVEMENT = 0xC,
-        TRANSLATE_AZEL_POSITION = 0xD
-    }
-
-    public class PLCCommandAndQueryTypeConversionHelper
-    {
-        public static PLCCommandAndQueryTypeEnum GetFromByte(byte input)
-        {
-            if (!Enum.IsDefined(typeof(PLCCommandAndQueryTypeEnum), input))
-            {
-                return PLCCommandAndQueryTypeEnum.UNDEFINED;
-            }
-            else
-            {
-                return (PLCCommandAndQueryTypeEnum)input;
-            }
-        }
-
-        public static byte ConvertToByte(PLCCommandAndQueryTypeEnum input)
-        {
-            if (!Enum.IsDefined(typeof(PLCCommandAndQueryTypeEnum), input))
-            {
-                return ConvertToByte(PLCCommandAndQueryTypeEnum.UNDEFINED);
-            }
-            else
-            {
-                return (byte)input;
-            }
-        }
-    }
-
-
     /// <summary>
     /// the cctrlroom has a modbus server running on it that is maped to input and output regs on the plc 
     /// 0-20 arr comand bytes that go through the plc to the mcu
@@ -76,6 +30,16 @@ namespace ControlRoomApplication.Entities
         /// this mainly serves as a place holder
         /// </summary>
         E_STOP_OVERRIDE = 2+1,
+        /// <summary>
+        /// <item><description><para><em>OUT</em></para></description></item>
+        /// this word (ushort) is incramented every 1 second by the PLCDriver and is used by the PLC to determine if the control room is active
+        /// </summary>
+        CTRL_HEART_BEAT = 3+1,
+        /// <summary>
+        ///  <item><description><para><em>OUT</em></para></description></item>
+        ///  when this word is changed the PLC will shutDown the MCU
+        /// </summary>
+        MCU_RESET = 4+1,
 
 
         /// <summary>
@@ -132,7 +96,7 @@ namespace ControlRoomApplication.Entities
         /// <item><description><para><em>IN</em></para></description></item>
         /// high when gate is open
         /// </summary>
-        Safety_INTERLOCK = 16 + 1,
+        Gate_Safety_INTERLOCK = 16 + 1,
 
         /// <summary>
         /// <item><description><para><em>IN</em></para></description></item>
@@ -154,6 +118,11 @@ namespace ControlRoomApplication.Entities
         /// high when the ELEVATION motor has a fault
         /// </summary>
         EL_MTR_DRIVER_FAULT = 20 + 1,
+        /// <summary>
+        /// <item><description><para><em>IN</em></para></description></item>
+        /// the elevation will have a second sensor connected directly to the Elevation Frame
+        /// </summary>
+        EL_SLIP_CAPTURE = 21+1,
 
 
         /// <summary>

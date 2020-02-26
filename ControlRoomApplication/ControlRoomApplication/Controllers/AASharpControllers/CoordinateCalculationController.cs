@@ -32,6 +32,8 @@ namespace ControlRoomApplication.Controllers
             AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, Location.Latitude);
 
             // Since AASharp considers south zero, flip the orientation 180 degrees
+            //TO_INFORM: (forword from jacob) this was written by last simesters team so i dont 100% understand it but
+            //TODO:from my understanding if this is the offset between the AASharp 0 and the 0 for our telescope we may need to change this again based on what the final position of the telescope is when it's installed 
             Horizontal.X += 180;
             if (Horizontal.X > 360)
             {
@@ -70,7 +72,7 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation CalculateOrientation(Appointment appt, DateTime datetime)
         {
-            switch (appt.Type)
+            switch (appt._Type)
             {
                 case (AppointmentTypeEnum.POINT):
                     return GetPointOrientation(appt, datetime);
@@ -199,7 +201,7 @@ namespace ControlRoomApplication.Controllers
 
             // Find the width and the height of the square in points (minutes),
             // rounded down to an integer
-            double num_points = (appt.EndTime - appt.StartTime).TotalMinutes;
+            double num_points = (appt.end_time - appt.start_time).TotalMinutes;
             double point_width = Math.Floor(Math.Sqrt(num_points));
             double point_height = Math.Floor(Math.Sqrt(num_points));
             if (point_width == 0 || point_height == 0)
@@ -221,7 +223,7 @@ namespace ControlRoomApplication.Controllers
             // finding the point_width and point_height)
             // If it is, just stay at the last point of the square
             double max_point = point_width * point_height;
-            double point = (datetime - appt.StartTime).TotalMinutes;
+            double point = (datetime - appt.start_time).TotalMinutes;
             if (point >= max_point)
             {
                 point = max_point - 1;
@@ -256,7 +258,6 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
         {
-            appt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
             Orientation free_orientation = null;
             if (appt.Orientation == null)
             {

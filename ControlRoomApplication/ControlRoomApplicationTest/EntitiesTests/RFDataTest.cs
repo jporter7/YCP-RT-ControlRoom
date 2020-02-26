@@ -28,7 +28,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             apptId = 1;
             appt.Id = apptId;
             DateTime start = DateTime.UtcNow;
-            appt.StartTime = start;
+            appt.start_time = start;
         }
 
         [TestMethod]
@@ -47,7 +47,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreEqual(id, rfdata.Id);
             Assert.AreEqual(timeCaptured, rfdata.TimeCaptured);
             Assert.AreEqual(intensity, rfdata.Intensity);
-            Assert.AreEqual(appt.StartTime.Date, rfdata.Appointment.StartTime.Date);
+            Assert.AreEqual(appt.start_time.Date, rfdata.Appointment.start_time.Date);
         }
 
         [TestMethod]

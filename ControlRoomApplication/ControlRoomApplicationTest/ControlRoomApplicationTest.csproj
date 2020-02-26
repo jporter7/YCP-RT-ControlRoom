@@ -81,7 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
-    <Compile Include="EntitiesTests\PLCCommandAndQueryTypeEnumTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />
     <Compile Include="EntitiesTests\LocationTest.cs" />
     <Compile Include="EntitiesTests\CelestialBodyTest.cs" />
@@ -93,7 +92,6 @@
     <Compile Include="EntitiesTests\HeartbeatInterfaceTests\HeartbeatInterfaceTest.cs" />
     <Compile Include="EntitiesTests\HeartbeatTrackerContainerTest.cs" />
     <Compile Include="EntitiesTests\OrientationTest.cs" />
-    <Compile Include="EntitiesTests\PLCCommandResponseExpectationEnumTest.cs" />
     <Compile Include="EntitiesTests\PLCTest.cs" />
     <Compile Include="EntitiesTests\RFDataTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberIntegratioinTimeEnumTest.cs" />

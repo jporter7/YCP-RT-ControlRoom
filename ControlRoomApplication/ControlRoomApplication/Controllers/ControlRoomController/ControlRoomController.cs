@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Controllers
         public ControlRoomController(ControlRoom controlRoom)
         {
             ControlRoom = controlRoom;
-            WeatherMonitoringThread = new Thread(new ThreadStart(WeatherMonitoringRoutine));
+            WeatherMonitoringThread = new Thread( new ThreadStart( WeatherMonitoringRoutine ) ) { Name = "Weather Monitoring Routine" };
             KeepWeatherMonitoringThreadAlive = false;
         }
 
@@ -116,7 +116,7 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (windSpeedStatus == 0)
                 {
-                    logger.Info("[ControlRoomController] Wind speeds are in a Safe State: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    //logger.Info("[ControlRoomController] Wind speeds are in a Safe State: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
                     currentSensor.Status = SensorStatusEnum.NORMAL;
                     DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
                 }
@@ -129,7 +129,7 @@ namespace ControlRoomApplication.Controllers
                     logger.Info("Wind speed sensor back in normal range.");
                 }*/
 
-                logger.Info("Current wind speed is: " + ControlRoom.WeatherStation.GetWindSpeed());
+                //logger.Info("Current wind speed is: " + ControlRoom.WeatherStation.GetWindSpeed());
 
                 Thread.Sleep(1000);                
             }
