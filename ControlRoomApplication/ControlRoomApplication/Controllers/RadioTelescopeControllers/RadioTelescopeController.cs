@@ -121,7 +121,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public Task<bool> ThermalCalibrateRadioTelescope()
         {
-            if (!tempAcceptable) return false;
+            if (!tempAcceptable) return Task.FromResult(false);
             return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
         }
 
@@ -150,7 +150,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
         {
-            if (!tempAcceptable) return false;
+            if (!tempAcceptable) return Task.FromResult(false);
             return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position()); // MOVE
         }
 
@@ -164,7 +164,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
-            if (!tempAcceptable) return false;
+            if (!tempAcceptable) return Task.FromResult(false);
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow)); // MOVE
         }
 

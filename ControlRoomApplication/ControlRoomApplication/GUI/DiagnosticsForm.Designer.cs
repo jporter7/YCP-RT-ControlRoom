@@ -1524,7 +1524,7 @@
             this.tabPage3.Size = new System.Drawing.Size(863, 509);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Sensor Overrides";
-            this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
+            //this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
             // 
             // groupBox13
             // 
