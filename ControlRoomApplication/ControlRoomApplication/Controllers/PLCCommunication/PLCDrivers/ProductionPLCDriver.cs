@@ -393,7 +393,8 @@ namespace ControlRoomApplication.Controllers
 
 
         public override bool Get_interlock_status() {
-            return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
+            return plcInput.Gate_Sensor;
+            //return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
         }
 
         private bool Int_to_bool(int val) {

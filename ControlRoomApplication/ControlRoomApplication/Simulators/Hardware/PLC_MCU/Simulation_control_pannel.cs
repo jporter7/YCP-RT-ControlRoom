@@ -102,10 +102,10 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                     //Thread.Sleep(1000);
                 }
                 logger.Info("________________PLC sim running");
-                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK , new ushort[] { 1 } );
+                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK , new ushort[] { BoolToInt( true ) } );
                 while(runsimulator) {
                     if(isTest) {
-                        PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK , new ushort[] { 1 } );
+                        PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK , new ushort[] { BoolToInt( true ) } );
                         Thread.Sleep( 5 );
                         continue;
                     } else {
