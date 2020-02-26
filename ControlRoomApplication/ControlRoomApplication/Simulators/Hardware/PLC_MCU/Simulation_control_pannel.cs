@@ -28,10 +28,15 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
         private bool runsimulator = true, mooving = false, jogging = false, isconfigured = false, isTest = false;
 
         private int acc, distAZ, distEL, currentAZ, currentEL, AZ_speed, EL_speed;
-        private int AZ10Lim = -ConversionHelper.DegreesToSteps( 10 , MotorConstants.GEARING_RATIO_AZIMUTH );
-        private int AZ370Lim = ConversionHelper.DegreesToSteps( 375 , MotorConstants.GEARING_RATIO_AZIMUTH );
-        private int EL0Lim = -ConversionHelper.DegreesToSteps( 15 , MotorConstants.GEARING_RATIO_ELEVATION );
-        private int EL90Lim = ConversionHelper.DegreesToSteps( 93 , MotorConstants.GEARING_RATIO_ELEVATION );
+        private int AZ10Lim_ON = -ConversionHelper.DegreesToSteps( 10 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int AZ370Lim_ON = ConversionHelper.DegreesToSteps( 375 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int EL0Lim_ON = -ConversionHelper.DegreesToSteps( 15 , MotorConstants.GEARING_RATIO_ELEVATION );
+        private int EL90Lim_ON = ConversionHelper.DegreesToSteps( 93 , MotorConstants.GEARING_RATIO_ELEVATION );
+
+        private int AZ10Lim_OFF = ConversionHelper.DegreesToSteps( 5 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int AZ370Lim_OFF = ConversionHelper.DegreesToSteps( 355 , MotorConstants.GEARING_RATIO_AZIMUTH );
+        private int EL0Lim_OFF = -ConversionHelper.DegreesToSteps( 4 , MotorConstants.GEARING_RATIO_ELEVATION );
+        private int EL90Lim_OFF = ConversionHelper.DegreesToSteps( 89 , MotorConstants.GEARING_RATIO_ELEVATION );
 
         bool AZ10LimStatus = false, AZ370LimStatus = false, EL0LimStatus = false, EL90LimStatus = false;
 
@@ -104,22 +109,46 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                         Thread.Sleep( 5 );
                         continue;
                     } else {
-                        if(AZ10LimStatus != (currentAZ < AZ10Lim)) {
-                            AZ10LimStatus = (currentAZ < AZ10Lim);
-                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT , new ushort[] { BoolToInt( AZ10LimStatus ) } );
-                        }
-                        if(AZ370LimStatus != (currentAZ > AZ370Lim)) {
-                            AZ370LimStatus = (currentAZ > AZ370Lim);
-                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT , new ushort[] { BoolToInt( AZ370LimStatus ) } );
+                        if(!AZ10LimStatus) {
+                            if(currentAZ < AZ10Lim_ON) {
+                                AZ10LimStatus = true;
+                                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT , new ushort[] { BoolToInt( !AZ10LimStatus ) } );
+                            }
+                        }else if(currentAZ > AZ10Lim_OFF) {
+                            AZ10LimStatus = false;
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT , new ushort[] { BoolToInt( !AZ10LimStatus ) } );
                         }
 
-                        if(EL0LimStatus != (currentEL < EL0Lim)) {
-                            EL0LimStatus = (currentEL < EL0Lim);
-                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, new ushort[] { BoolToInt( EL0LimStatus ) } );
+
+
+                        if(!AZ370LimStatus) {
+                            if(currentAZ > AZ370Lim_ON) {
+                                AZ370LimStatus =true;
+                                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT , new ushort[] { BoolToInt( !AZ370LimStatus ) } );
+                            }
+                        } else if(currentAZ < AZ370Lim_OFF) {
+                            AZ370LimStatus = false;
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT , new ushort[] { BoolToInt( !AZ370LimStatus ) } );
                         }
-                        if(EL90LimStatus != (currentEL > EL90Lim)) {
-                            EL90LimStatus = (currentEL > EL90Lim);
-                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT , new ushort[] { BoolToInt( EL90LimStatus ) } );
+
+                        if(!EL0LimStatus) {
+                            if(currentEL < EL0Lim_ON) {
+                                EL0LimStatus = (currentEL < EL0Lim_ON);
+                                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT , new ushort[] { BoolToInt( !EL0LimStatus ) } );
+                            }
+                        } else if(currentEL > EL0Lim_OFF) {
+                            EL0LimStatus = (currentEL > EL0Lim_OFF);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT , new ushort[] { BoolToInt( !EL0LimStatus ) } );
+                        }
+
+                        if(!EL90LimStatus) {
+                            if(currentEL > EL90Lim_ON) {
+                                EL90LimStatus = (currentEL > EL90Lim_ON);
+                                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT , new ushort[] { BoolToInt( !EL90LimStatus ) } );
+                            }
+                        } else if(currentEL < EL90Lim_OFF) {
+                            EL90LimStatus = (currentEL < EL90Lim_OFF);
+                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT , new ushort[] { BoolToInt( !EL90LimStatus ) } );
                         }
                     }
                     Thread.Sleep( 50 );
@@ -157,11 +186,10 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             ushort[] previos_out, current_out;
             previos_out = Copy_modbus_registers( 1025 , 20 );
             while(runsimulator) {
+                Thread.Sleep( 1 );
                 if(isTest) {
-                    Thread.Sleep( 5 );
                     continue;
                 }
-                Thread.Sleep( 50 );
                 current_out = Copy_modbus_registers( 1025 , 20 );
                 if(!current_out.SequenceEqual( previos_out )) {
                     handleCMD( current_out );
@@ -197,6 +225,11 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             MCU_Modbusserver.DataStore.HoldingRegisters[4] = (ushort)(currentAZ & 0xffff);
             MCU_Modbusserver.DataStore.HoldingRegisters[13] = (ushort)((currentEL & 0xffff0000) >> 16);
             MCU_Modbusserver.DataStore.HoldingRegisters[14] = (ushort)(currentEL & 0xffff);
+
+            MCU_Modbusserver.DataStore.HoldingRegisters[5] = (ushort)(((int)(currentAZ/2.5) & 0xffff0000) >> 16);
+            MCU_Modbusserver.DataStore.HoldingRegisters[6] = (ushort)((int)(currentAZ / 2.5) & 0xffff);
+            MCU_Modbusserver.DataStore.HoldingRegisters[15] = (ushort)(((int)(currentEL / 2.5) & 0xffff0000) >> 16);
+            MCU_Modbusserver.DataStore.HoldingRegisters[16] = (ushort)((int)(currentEL / 2.5) & 0xffff);
             return true;
         }
 
@@ -208,7 +241,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             }
             logger.Info(outstr);
             jogging = false;
-            if((data[0] |0xff00) == 0x8400) {//if not configured dont move
+            if((data[0] & 0xf000) == 0x8000) {//if not configured dont move
 
                 isconfigured = true;
             } else if(!isconfigured) {
@@ -221,7 +254,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
                 AZ_speed = (data[2] << 16) + data[3];
-                AZ_speed /= 5;
+                AZ_speed /= 250;
                 EL_speed = AZ_speed;
                 acc = data[4];
                 distAZ = (data[6] << 16) + data[7];
@@ -233,16 +266,16 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
                 if(data[0] == 0x0080) {
-                    AZ_speed = ((data[4] << 16) + data[5]) / 20;
+                    AZ_speed = ((data[4] << 16) + data[5]) / 1000;
                 } else if(data[0] == 0x0100) {
-                    AZ_speed = -((data[4] << 16) + data[5]) / 20;
+                    AZ_speed = -((data[4] << 16) + data[5]) / 1000;
                 } else {
                     AZ_speed = 0;
                 }
                 if(data[10] == 0x0080) {
-                    EL_speed = ((data[14] << 16) + data[15]) / 20;
+                    EL_speed = ((data[14] << 16) + data[15]) / 1000;
                 } else if(data[10] == 0x0100) {
-                    EL_speed = -((data[14] << 16) + data[15]) / 20;
+                    EL_speed = -((data[14] << 16) + data[15]) / 1000;
                 } else {
                     EL_speed = 0;
                 }
@@ -252,8 +285,8 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 mooving = true;
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
-                AZ_speed = ((data[4] << 16) + data[5]) / 5;
-                EL_speed = ((data[14] << 16) + data[15]) / 5;
+                AZ_speed = ((data[4] << 16) + data[5]) / 250;
+                EL_speed = ((data[14] << 16) + data[15]) / 250;
                 acc = data[6];
                 distAZ = (data[2] << 16) + data[3];
                 distEL = (data[12] << 16) + data[13];

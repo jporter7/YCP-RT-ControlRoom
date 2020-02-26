@@ -814,8 +814,8 @@ namespace ControlRoomApplication.Controllers
             positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
 
-            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(1), MotorConstants.GEARING_RATIO_ELEVATION);
-            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 1 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.6 ), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.6 ), MotorConstants.GEARING_RATIO_AZIMUTH);
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
             logger.Info("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
@@ -831,10 +831,10 @@ namespace ControlRoomApplication.Controllers
         /// <param name="AZspeed"></param>
         /// <param name="AZ_CW"></param>
         /// <param name="ELspeed"></param>
-        /// <param name="EL_CW"></param>
+        /// <param name="ELPositive"></param>
         /// <returns></returns>
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
-            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), EL_CW,2);
+        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool ELPositive) {
+            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive,2);
         }
 
         public override bool Stop_Jog() {

@@ -119,17 +119,17 @@ namespace ControlRoomApplication.Controllers {
         public async Task update() {
             ushort[] data = TryReadRegs( 0 , 20 ).GetAwaiter().GetResult();
             AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
-            EL_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW];
+            EL_Steps = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW]);
             AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
-            EL_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW];
+            EL_Encoder = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
             return;
         }
         public async Task<MCUpositonStore> updateAndReturnDif( MCUpositonStore previous ) {
             ushort[] data = TryReadRegs( 0 , 20 ).GetAwaiter().GetResult();
             AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
-            EL_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW];
+            EL_Steps = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW]);
             AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
-            EL_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW];
+            EL_Encoder = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
             MCUpositonStore dif = new MCUpositonStore( (this as MCUpositonStore) , previous);
             return dif;
         }
@@ -261,7 +261,7 @@ namespace ControlRoomApplication.Controllers {
         private string MCU_ip;
         private DateTime lastConnectAttempt = DateTime.Now ;
         private bool initialConnect = true;
-        private bool SoftWareStopEnabled = true;
+        private bool SoftWareStopEnabled = false;
 
         public MCUManager( string _MCU_ip , int _MCU_port ) {
             MCU_port = _MCU_port;
@@ -853,8 +853,10 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="ACCELERATION"></param>
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
+        ///  <param name="priority"></param>
         /// <returns></returns>
         public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL,int priority ) {
+            positionTranslationEL = -positionTranslationEL;
             mCUpositon.update().Wait();
             var startPos =  mCUpositon as MCUpositonStore;
             Cancel_move( priority );
@@ -955,9 +957,9 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-        public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELClockwise , int priority ) {
+        public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELPositive , int priority ) {
             ushort dir;
-
+            ELPositive = !ELPositive;
             if(AZClockwise) {
                 dir = 0x0080;
             } else dir = 0x0100;
@@ -978,7 +980,7 @@ namespace ControlRoomApplication.Controllers {
                 for(int j = 0; j < data.Length; j++) {
                     data2[j + 10] = data[j];
                 }
-                if(ELClockwise) {
+                if(ELPositive) {
                     dir = 0x0080;
                 } else dir = 0x0100;
 
@@ -993,15 +995,15 @@ namespace ControlRoomApplication.Controllers {
                 //if telescope is already joging changing direction requires stopping first
                 ushort[] data3 = new ushort[20];
                 data2.CopyTo( data3 , 0 );
-                booth = (RunningCommand.AZ_CW != AZClockwise) && (RunningCommand.EL_CW != ELClockwise);
+                booth = (RunningCommand.AZ_CW != AZClockwise) && (RunningCommand.EL_CW != ELPositive);
                 if(booth) {//if both axis need to change direction
                     Cancel_move( priority );
                     WatTillStopped().GetAwaiter().GetResult();
-                } else if(RunningCommand.EL_CW != ELClockwise) {//if only elevation needs to change direction
+                } else if(RunningCommand.EL_CW != ELPositive) {//if only elevation needs to change direction
                     for(int j = 0; j <= data3.Length - 11; j++) {
                         data3[j + 10] = MESSAGE_CONTENTS_CLEAR_MOVE[j + 10];//replace elevation portion of move with controled stop
                     }
-                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG , priority , AZClockwise , ELClockwise , AZstepSpeed , ELstepSpeed ) {
+                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } ).GetAwaiter().GetResult();
                     WatTillStoppedPerAxis( true ).GetAwaiter().GetResult();
@@ -1009,14 +1011,14 @@ namespace ControlRoomApplication.Controllers {
                     for(int j = 0; j <= data3.Length - 1; j++) {
                         data3[j] = MESSAGE_CONTENTS_CLEAR_MOVE[j];//replace Azimuth portion of move with controled stop
                     }
-                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG , priority , AZClockwise , ELClockwise , AZstepSpeed , ELstepSpeed ) {
+                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } ).GetAwaiter().GetResult();
                     WatTillStoppedPerAxis( false ).GetAwaiter().GetResult();
                 }
             }
 
-            _ = Send_Generic_Command_And_Track( new MCUcomand( data2 , MCUcomandType.JOG , priority , AZClockwise , ELClockwise , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
+            _ = Send_Generic_Command_And_Track( new MCUcomand( data2 , MCUcomandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
                 EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                 AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
             } ).GetAwaiter().GetResult();

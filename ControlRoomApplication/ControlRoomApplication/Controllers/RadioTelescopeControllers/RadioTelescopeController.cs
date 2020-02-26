@@ -160,9 +160,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeAzimuthJog(double speed, bool clockwise)
+        public bool StartRadioTelescopeAzimuthJog(double speed, bool PositiveDIR)
         {
-            return RadioTelescope.PLCDriver.Start_jog( speed, clockwise, 0,false );
+            return RadioTelescope.PLCDriver.Start_jog( speed, PositiveDIR, 0,false );
         }
 
         /// <summary>
@@ -173,9 +173,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeElevationJog(double speed, bool clockwise)
+        public bool StartRadioTelescopeElevationJog(double speed, bool PositiveDIR)
         {
-            return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, clockwise);
+            return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, PositiveDIR);
         }
 
 
