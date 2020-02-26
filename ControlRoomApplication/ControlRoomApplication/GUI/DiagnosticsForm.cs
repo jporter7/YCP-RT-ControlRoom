@@ -398,6 +398,11 @@ namespace ControlRoomApplication.GUI
             //    MCU_Statui.Update();
             //}
 
+            // This nextrsection is for reading the spectra cyber info and changing it (ONLY if we are on a manual appointment)
+
+
+
+
         }
 
         private void DiagnosticsForm_Load(object sender, System.EventArgs e)

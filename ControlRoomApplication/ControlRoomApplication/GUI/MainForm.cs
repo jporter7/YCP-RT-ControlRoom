@@ -193,6 +193,9 @@ namespace ControlRoomApplication.Main
                 logger.Info("Starting Weather Monitoring Routine");
                 MainControlRoomController.StartWeatherMonitoringRoutine();
 
+                logger.Info("Starting Spectra Cyber Controleler");
+                ARadioTelescope.SpectraCyberController.BringUp();
+
                 // Start RT controller's threaded management
                 logger.Info("Starting RT controller's threaded management");
                 RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];
@@ -328,6 +331,7 @@ namespace ControlRoomApplication.Main
 
             // Return Radio Telescope
             RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id, ctrler, encoder );
+            abstractPLCDriver.SetParent(rt);
 
             logger.Info("RadioTelescope Built Successfully");
             return rt;
@@ -457,7 +461,8 @@ namespace ControlRoomApplication.Main
         private void FreeControl_Click(object sender, EventArgs e)
         {
             logger.Info("Free Control Button Clicked");
-            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, current_rt_id);
+            int rtIDforControl = AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id;
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {

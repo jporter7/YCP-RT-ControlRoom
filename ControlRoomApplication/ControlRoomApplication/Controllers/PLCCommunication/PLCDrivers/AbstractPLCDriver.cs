@@ -77,7 +77,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract void Bring_down();
 
-        public abstract bool Test_Conection();
+        public abstract bool Test_Connection();
 
         public abstract Orientation read_Position();
 
@@ -88,38 +88,38 @@ namespace ControlRoomApplication.Controllers
         // All of the "scripts" are here all the way to....
         // Control Scripts
 
-        public abstract bool Thermal_Calibrate();
+        public abstract Task<bool> Thermal_Calibrate();
 
-        public abstract bool FullElevationMove();
+        public abstract Task<bool> FullElevationMove();
 
-        public abstract bool Full_360_CCW_Rotation();
+        public abstract Task<bool> Full_360_CCW_Rotation();
 
-        public abstract bool Full_360_CW_Rotation();
+        public abstract Task<bool> Full_360_CW_Rotation();
 
-        public abstract bool Stow();
+        public abstract Task<bool> Stow();
 
-        public abstract bool SnowDump();
+        public abstract Task<bool> SnowDump();
 
         // Diagnostics Scripts
 
-        public abstract bool HitAzimuthLeftLimitSwitch();
+        public abstract Task<bool> HitAzimuthLeftLimitSwitch();
 
-        public abstract bool HitAzimuthRightLimitSwitch();
+        public abstract Task<bool> HitAzimuthRightLimitSwitch();
 
-        public abstract bool HitElevationLowerLimitSwitch();
+        public abstract Task<bool> HitElevationLowerLimitSwitch();
 
-        public abstract bool HitElevationUpperLimitSwitch();
+        public abstract Task<bool> HitElevationUpperLimitSwitch();
 
-        public abstract bool RecoverFromLimitSwitch();
+        public abstract Task<bool> RecoverFromLimitSwitch();
 
-        public abstract bool Hit_CW_Hardstop();
+        public abstract Task<bool> Hit_CW_Hardstop();
 
-        public abstract bool Hit_CCW_Hardstop();
-        public abstract bool Recover_CW_Hardstop();
+        public abstract Task<bool> Hit_CCW_Hardstop();
+        public abstract Task<bool> Recover_CW_Hardstop();
 
-        public abstract bool Recover_CCW_Hardstop();
+        public abstract Task<bool> Recover_CCW_Hardstop();
 
-        public abstract bool Hit_Hardstops();
+        public abstract Task<bool> Hit_Hardstops();
 
         // ... to here
 
@@ -131,7 +131,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL);
 
-        public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
+        public abstract Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 
         public abstract bool Start_jog( double AZspeed ,bool AZ_CW, double ELspeed ,bool EL_CW);
 

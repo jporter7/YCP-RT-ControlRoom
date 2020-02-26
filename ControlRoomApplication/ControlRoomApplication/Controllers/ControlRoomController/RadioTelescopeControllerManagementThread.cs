@@ -84,9 +84,11 @@ namespace ControlRoomApplication.Controllers
             OverallSensorStatus = true;
 
             Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
-
-            // currently just gets the 0th index management thread because multiple telescopes is not implemented yet!
-            TCPListener = new RemoteListener(8090, IPAddress.Parse("10.127.7.112"), controller);
+           
+            // Commented out because we will not be using this functionality in the future.
+            // We will switch to connecting to a server on the cloud
+            // Kate Kennelly 2/14/2020
+            // TCPListener = new RemoteListener(8090, IPAddress.Parse("10.127.7.112"), controller);
         }
 
         public bool Start()

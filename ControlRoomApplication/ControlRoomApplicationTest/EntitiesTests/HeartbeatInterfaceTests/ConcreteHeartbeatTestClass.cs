@@ -10,7 +10,8 @@ namespace ControlRoomApplicationTest.EntitiesTests.HeartbeatInterfaceTests
 
         protected override bool KillHeartbeatComponent()
         {
-            throw new System.NotImplementedException();
+            // kill imaginary heartbeat
+            return true;
         }
 
         protected override bool TestIfComponentIsAlive()

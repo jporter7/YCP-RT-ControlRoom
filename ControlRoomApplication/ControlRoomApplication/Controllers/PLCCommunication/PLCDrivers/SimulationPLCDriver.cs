@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private Simulation_control_pannel SimMCU;
-        private ProductionPLCDriver driver; 
+        public ProductionPLCDriver driver; 
         /// <summary>
         /// 
         /// </summary>
@@ -25,7 +25,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="is_Test">if this is true the sim telescope will teleport to its final position</param>
         public SimulationPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool startPLC,bool is_Test ) : base(local_ip, MCU_ip, MCU_port, PLC_port )
         {
-            SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, false);
+            SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, is_Test);
             Thread.Sleep(1000);//wait for server in simMcu to come up
             driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
             if(startPLC) {
@@ -58,9 +58,9 @@ namespace ControlRoomApplication.Controllers
             driver.Bring_down();
         }
 
-        public override bool Test_Conection()
+        public override bool Test_Connection()
         {
-            return driver.Test_Conection();
+            return driver.Test_Connection();
         }
 
         public override Orientation read_Position()
@@ -78,82 +78,83 @@ namespace ControlRoomApplication.Controllers
             return driver.Shutdown_PLC_MCU();
         }
 
-        public override bool Thermal_Calibrate()
+        public override Task<bool> Thermal_Calibrate()
         {
+            driver.SetParent(Parent);
             return driver.Thermal_Calibrate();
         }
 
-        public override bool SnowDump()
+        public override Task<bool> SnowDump()
         {
             return driver.SnowDump();
         }
 
-        public override bool Stow()
+        public override Task<bool> Stow()
         {
             return driver.Stow();
         }
 
-        public override bool HitAzimuthLeftLimitSwitch()
+        public override Task<bool> HitAzimuthLeftLimitSwitch()
         {
             return driver.HitAzimuthLeftLimitSwitch();
         }
 
-        public override bool HitAzimuthRightLimitSwitch()
+        public override Task<bool> HitAzimuthRightLimitSwitch()
         {
             return driver.HitAzimuthRightLimitSwitch();
         }
 
-        public override bool HitElevationLowerLimitSwitch()
+        public override Task<bool> HitElevationLowerLimitSwitch()
         {
             return driver.HitElevationLowerLimitSwitch();
         }
 
-        public override bool HitElevationUpperLimitSwitch()
+        public override Task<bool> HitElevationUpperLimitSwitch()
         {
             return driver.HitElevationUpperLimitSwitch();
         }
 
-        public override bool RecoverFromLimitSwitch()
+        public override Task<bool> RecoverFromLimitSwitch()
         {
             return driver.RecoverFromLimitSwitch();
         }
 
-        public override bool FullElevationMove()
+        public override Task<bool> FullElevationMove()
         {
             return driver.FullElevationMove();
         }
 
-        public override bool Full_360_CCW_Rotation()
+        public override Task<bool> Full_360_CCW_Rotation()
         {
             return driver.Full_360_CCW_Rotation();
         }
 
-        public override bool Full_360_CW_Rotation()
+        public override Task<bool> Full_360_CW_Rotation()
         {
             return driver.Full_360_CW_Rotation();
         }
 
-        public override bool Hit_CW_Hardstop()
+        public override Task<bool> Hit_CW_Hardstop()
         {
             return driver.Hit_CW_Hardstop();
         }
 
-        public override bool Hit_CCW_Hardstop()
+        public override Task<bool> Hit_CCW_Hardstop()
         {
             return driver.Hit_CCW_Hardstop();
         }
 
-        public override bool Recover_CW_Hardstop()
+        public override Task<bool> Recover_CW_Hardstop()
         {
             return driver.Recover_CW_Hardstop();
         }
 
-        public override bool Recover_CCW_Hardstop()
+        public override Task<bool> Recover_CCW_Hardstop()
         {
             return driver.Recover_CCW_Hardstop();
         }
 
-        public override bool Hit_Hardstops()
+        public override Task<bool> Hit_Hardstops()
         {
             return driver.Hit_Hardstops();
         }
@@ -178,7 +179,7 @@ namespace ControlRoomApplication.Controllers
             return driver.relative_move(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL);
         }
 
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }
