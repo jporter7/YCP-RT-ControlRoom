@@ -213,5 +213,15 @@ namespace ControlRoomApplication.Controllers
         public override Task<bool> JogOffLimitSwitches() {
             return driver.JogOffLimitSwitches();
         }
+
+        public override void setregvalue(ushort adr, ushort value)
+        {
+            driver.setregvalue(adr, value);
+        }
+
+        public override ushort getregvalue(ushort adr)
+        {
+            return driver.getregvalue(adr);
+        }
     }
 }

@@ -188,6 +188,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCEvents.cs" />
     <Compile Include="Controllers\Sensors\MiscPlcInput.cs" />
+    <Compile Include="Controllers\Sensors\OverrideSwitchData.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />
     <Compile Include="Controllers\Sensors\LimitSwitchData.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />

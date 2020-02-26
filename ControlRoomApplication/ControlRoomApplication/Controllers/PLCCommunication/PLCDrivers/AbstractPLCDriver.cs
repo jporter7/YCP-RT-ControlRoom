@@ -141,6 +141,11 @@ namespace ControlRoomApplication.Controllers
 
         public abstract Task<bool> JogOffLimitSwitches();
 
+        public abstract void setregvalue(ushort adr, ushort value);
+
+        public abstract ushort getregvalue(ushort adr);
+
+
         /// <summary>
         /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 
         /// after calling this method we should zero out the apsolute encoders
@@ -155,5 +160,6 @@ namespace ControlRoomApplication.Controllers
         /// <param name="axis"></param>
         /// <returns></returns>
         public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
+
     }
 }

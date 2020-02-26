@@ -25,6 +25,7 @@ namespace ControlRoomApplication.Controllers
 
         public List<Override> ActiveOverrides;
         public List<Sensor> Sensors;
+
         private bool OverallSensorStatus;
 
         public Orientation NextObjectiveOrientation

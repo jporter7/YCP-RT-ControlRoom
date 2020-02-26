@@ -51,7 +51,6 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                     if(data.type == "temp") {
                         temps.Add( Temperature.Generate( element.time , element.val , SensorLocationEnumTypeConversionHelper.FromInt( element.loc ) ) );
                         threshold = 80;
-
                     } else if(data.type == "acc") {
                         accs.Add( Acceleration.Generate( element.time , element.val , element.x , element.y , element.z , SensorLocationEnumTypeConversionHelper.FromInt( element.loc ) ) );
                         threshold = 1.65;
@@ -80,6 +79,5 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         {
             _stableOrTesting = testOrNot;
         }
-
     }
 }
