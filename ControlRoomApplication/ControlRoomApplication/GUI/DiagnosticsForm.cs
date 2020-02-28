@@ -553,33 +553,33 @@ namespace ControlRoomApplication.GUI
             switch (caseSwitch)
             {
                 case 0:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.HitAzimuthLeftLimitSwitch();//Change left to CCW
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.HitAzimuthLeftLimitSwitch();//Change left to CCW
                     //Hit Azimuth Counter-Clockwise Limit Switch (index 0 of control script combo)
                     break;
                 case 1:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.HitAzimuthRightLimitSwitch();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.HitAzimuthRightLimitSwitch();
                     //Hit Azimuth Clockwise Limit Switch (index 1 of control script combo)
                     break;
                 case 2:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.HitElevationLowerLimitSwitch();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.HitElevationLowerLimitSwitch();
                     //Elevation Lower Limit Switch (index 2 of control script combo)
                     break;
                 case 3:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.HitElevationUpperLimitSwitch();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.HitElevationUpperLimitSwitch();
                     //Elevation Upper Limit Switch (index 3 of control script combo)
                     break;
                 case 4:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Hit_CW_Hardstop();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.Hit_CW_Hardstop();
                     //Hit Clockwise Hardstop (index 4 of control script combo)
                     break;
                 case 5:
-                    controlRoom.RadioTelescopeControllers[rtId].ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopes[rtId].PLCDriver.Hit_CCW_Hardstop();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
+                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.Hit_CCW_Hardstop();
                     //Hit Counter-Clockwise Hardstop (index 4 of control script combo)
                     break;
                 default:
