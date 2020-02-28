@@ -308,7 +308,7 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("dataGridView1_CellContent Clicked");
             try {
-                DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, dataGridView1.CurrentCell.RowIndex, this);
+                DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id, this);
                 diagnosticForm.Show();
             }
             catch {
