@@ -5,6 +5,7 @@ using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplicationTest.EntityControllersTests {
     [TestClass]
@@ -13,7 +14,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         private static int port = 8086;
 
         private static RadioTelescopeController TestRadioTelescopeController;
-        private static TestPLCDriver TestRTPLC;
+        private static ProductionPLCDriver TestRTPLC;
         /*
         [ClassInitialize]
         public static void SetUp(TestContext context)
@@ -50,8 +51,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
         [TestInitialize]
         public void testInit() {
-            TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
-
+            //TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
+            TestRTPLC = new ProductionPLCDriver("192.168.0.70", "192.168.0.50" , 502 , 502 );
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController( new SpectraCyberSimulator() );
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
@@ -59,9 +60,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
 
             // TestRTPLC.SetParent(TestRT);
-            TestRTPLC.driver.SetParent(TestRT);
+            //TestRTPLC.driver.SetParent(TestRT);
 
             TestRTPLC.StartAsyncAcceptingClients();
+
+            TestRTPLC.Configure_MCU( .06 , .06 , 300 , 300 );
         }
 
         [TestMethod]
@@ -108,7 +111,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
         [TestMethod]
         public void TestGetCurrentSafetyInterlockStatus() {
-            Thread.Sleep( 1000 );
+            Task.Delay( 1000 ).Wait();
             //estRTPLC.setSaftyInterlock();
 
             // Test the safety interlock status
@@ -243,18 +246,18 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
                 current_orientation = new Orientation( ConversionHelper.StepsToDegrees( current_stepsAZ , MotorConstants.GEARING_RATIO_AZIMUTH ) , ConversionHelper.StepsToDegrees( current_stepsEL , MotorConstants.GEARING_RATIO_ELEVATION ) );
 
-                Assert.AreEqual( target_orientation.Azimuth , current_orientation.Azimuth , 0.001 );
-                Assert.AreEqual( target_orientation.Elevation , current_orientation.Elevation , 0.001 );
+                Assert.AreEqual( target_orientation.Azimuth , current_orientation.Azimuth , 0.1 );
+                Assert.AreEqual( target_orientation.Elevation , current_orientation.Elevation , 0.1 );
                 Console.WriteLine( "AZ_finni0 {0,10} EL_finni0 {1,10}" , current_stepsAZ , current_stepsEL );
                 // current_orientation = new Orientation(ConversionHelper.StepsToDegrees(current_stepsAZ + positionTranslationAZ, MotorConstants.GEARING_RATIO_AZIMUTH), ConversionHelper.StepsToDegrees(current_stepsEL + positionTranslationEL, MotorConstants.GEARING_RATIO_ELEVATION));
                 //Console.WriteLine(current_orientation.Elevation + "    "+ target_orientation.Elevation);
                 // Console.WriteLine("AZ_step1 {0,10} EL_step1 {1,10}", positionTranslationAZ, positionTranslationEL);
-                TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move( 50 , 50 , positionTranslationAZ , positionTranslationEL );
+                TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move( 100_000 , 50 , positionTranslationAZ , positionTranslationEL );
 
                 current_orientation2 = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
 
-                Assert.AreEqual( target_orientation.Azimuth , current_orientation2.Azimuth , 0.001 );
-                Assert.AreEqual( target_orientation.Elevation , current_orientation2.Elevation , 0.001 );
+                Assert.AreEqual( target_orientation.Azimuth , current_orientation2.Azimuth , 0.1 );
+                Assert.AreEqual( target_orientation.Elevation , current_orientation2.Elevation , 0.1 );
             }
         }
 
