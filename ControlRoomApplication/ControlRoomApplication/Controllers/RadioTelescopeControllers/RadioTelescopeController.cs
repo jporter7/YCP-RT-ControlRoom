@@ -291,10 +291,30 @@ namespace ControlRoomApplication.Controllers
         // Checks the motor temperatures against acceptable ranges every second
         private void tempMonitor()
         {
-            while(true)
+            // Getting initial current temperatures
+            Temperature currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
+            bool AZ = checkTemp(currAZ);
+
+            Temperature currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
+            bool EL = checkTemp(currEL);
+
+            // Loop through every one second to get new temperatures. If the temperature has changed, notify the user
+            while (true)
             {
-                if (checkTemp(DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR)) &&
-                    checkTemp(DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR))) tempAcceptable = true;
+                // Only updates the info if the temperature has changed
+                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp) {
+                    currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
+                    AZ = checkTemp(currAZ);
+                }
+
+                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp)
+                {
+                    currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
+                    EL = checkTemp(currEL);
+                }
+
+                // Determines if the temperature is acceptable for both motors
+                if (AZ && EL) tempAcceptable = true;
                 else tempAcceptable = false;
                 Thread.Sleep(1000);
             }
