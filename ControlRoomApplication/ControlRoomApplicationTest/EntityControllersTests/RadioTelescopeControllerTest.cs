@@ -5,6 +5,7 @@ using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplicationTest.EntityControllersTests {
     [TestClass]
@@ -13,7 +14,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         private static int port = 8086;
 
         private static RadioTelescopeController TestRadioTelescopeController;
-        private static TestPLCDriver TestRTPLC;
+        private static ProductionPLCDriver TestRTPLC;
         /*
         [ClassInitialize]
         public static void SetUp(TestContext context)
@@ -50,8 +51,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
         [TestInitialize]
         public void testInit() {
-            TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
-
+            //TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
+            TestRTPLC = new ProductionPLCDriver("192.168.0.70", "192.168.0.50" , 502 , 502 );
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController( new SpectraCyberSimulator() );
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
@@ -59,9 +60,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
 
             // TestRTPLC.SetParent(TestRT);
-            TestRTPLC.driver.SetParent(TestRT);
+            //TestRTPLC.driver.SetParent(TestRT);
 
             TestRTPLC.StartAsyncAcceptingClients();
+
+            TestRTPLC.Configure_MCU( .06 , .06 , 300 , 300 );
         }
 
         [TestMethod]
@@ -108,7 +111,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
         [TestMethod]
         public void TestGetCurrentSafetyInterlockStatus() {
-            Thread.Sleep( 1000 );
+            Task.Delay( 1000 ).Wait();
             //estRTPLC.setSaftyInterlock();
 
             // Test the safety interlock status
@@ -243,19 +246,140 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
                 current_orientation = new Orientation( ConversionHelper.StepsToDegrees( current_stepsAZ , MotorConstants.GEARING_RATIO_AZIMUTH ) , ConversionHelper.StepsToDegrees( current_stepsEL , MotorConstants.GEARING_RATIO_ELEVATION ) );
 
-                Assert.AreEqual( target_orientation.Azimuth , current_orientation.Azimuth , 0.001 );
-                Assert.AreEqual( target_orientation.Elevation , current_orientation.Elevation , 0.001 );
+                Assert.AreEqual( target_orientation.Azimuth , current_orientation.Azimuth , 0.1 );
+                Assert.AreEqual( target_orientation.Elevation , current_orientation.Elevation , 0.1 );
                 Console.WriteLine( "AZ_finni0 {0,10} EL_finni0 {1,10}" , current_stepsAZ , current_stepsEL );
                 // current_orientation = new Orientation(ConversionHelper.StepsToDegrees(current_stepsAZ + positionTranslationAZ, MotorConstants.GEARING_RATIO_AZIMUTH), ConversionHelper.StepsToDegrees(current_stepsEL + positionTranslationEL, MotorConstants.GEARING_RATIO_ELEVATION));
                 //Console.WriteLine(current_orientation.Elevation + "    "+ target_orientation.Elevation);
                 // Console.WriteLine("AZ_step1 {0,10} EL_step1 {1,10}", positionTranslationAZ, positionTranslationEL);
-                TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move( 50 , 50 , positionTranslationAZ , positionTranslationEL );
+                TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move( 100_000 , 50 , positionTranslationAZ , positionTranslationEL );
 
                 current_orientation2 = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
 
-                Assert.AreEqual( target_orientation.Azimuth , current_orientation2.Azimuth , 0.001 );
-                Assert.AreEqual( target_orientation.Elevation , current_orientation2.Elevation , 0.001 );
+                Assert.AreEqual( target_orientation.Azimuth , current_orientation2.Azimuth , 0.1 );
+                Assert.AreEqual( target_orientation.Elevation , current_orientation2.Elevation , 0.1 );
             }
+        }
+
+        [TestMethod]
+        public void test_temperature_check()
+        {
+            // Azimuth tests
+            Temperature t1 = new Temperature(); t1.temp = 100; t1.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
+            Temperature t2 = new Temperature(); t2.temp = 50; t2.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
+            Temperature t3 = new Temperature(); t3.temp = 150; t3.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
+
+            Temperature t4 = new Temperature(); t4.temp = 151; t4.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
+            Temperature t5 = new Temperature(); t5.temp = 49; t5.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Too cold
+
+
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t1));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t2));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t3));
+
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t5));
+
+            // Elevation tests
+            Temperature t6 = new Temperature(); t6.temp = 100; t6.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
+            Temperature t7 = new Temperature(); t7.temp = 50; t7.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
+            Temperature t8 = new Temperature(); t8.temp = 150; t8.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
+
+            Temperature t9 = new Temperature(); t9.temp = 151; t9.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
+            Temperature t0 = new Temperature(); t0.temp = 49; t0.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Too cold
+
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t6));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t7));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t8));
+
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t9));
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t0));
+        }
+
+        [TestMethod]
+        public void test_temperature_overrides()
+        {
+            // Overriding azimuth
+            TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = true;
+
+            // Azimuth temperatures
+            Temperature t1 = new Temperature(); t1.temp = 100; t1.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
+            Temperature t2 = new Temperature(); t2.temp = 50; t2.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
+            Temperature t3 = new Temperature(); t3.temp = 150; t3.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
+
+            Temperature t4 = new Temperature(); t4.temp = 151; t4.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
+            Temperature t5 = new Temperature(); t5.temp = 49; t5.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Too cold
+
+            // Elevation temperatures
+            Temperature t6 = new Temperature(); t6.temp = 100; t6.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
+            Temperature t7 = new Temperature(); t7.temp = 50; t7.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
+            Temperature t8 = new Temperature(); t8.temp = 150; t8.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
+
+            Temperature t9 = new Temperature(); t9.temp = 151; t9.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
+            Temperature t0 = new Temperature(); t0.temp = 49; t0.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Too cold
+
+
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t1));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t2));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t3));
+
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t4));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t5));
+
+            // Elevation should still return false
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t9)); 
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t0));
+
+            // Take away override for azimuth
+            TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = false;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t5));
+
+
+            // Overriding elevation
+            TestRadioTelescopeController.overrides.overrideElevatMotTemp = true;
+
+
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t6));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t7));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t8));
+
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t9));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t0));
+
+            //Azimuth should still return false
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t5));
+
+            // Take away override for elevation
+            TestRadioTelescopeController.overrides.overrideElevatMotTemp = false;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t9));
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t0));
+        }
+
+        [TestMethod]
+        public void test_plc_overrides()
+        {
+            // Default override settings (no override)
+            Assert.IsTrue(0 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT));
+            Assert.IsTrue(0 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT));
+            Assert.IsTrue(0 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT));
+            Assert.IsTrue(0 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT));
+            Assert.IsTrue(0 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE));
+
+            // Flip switches
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, 1);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT, 1);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, 1);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, 1);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, 1);
+
+            // Now overriding
+            Assert.IsTrue(1 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT));
+            Assert.IsTrue(1 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT));
+            Assert.IsTrue(1 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT));
+            Assert.IsTrue(1 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT));
+            Assert.IsTrue(1 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE));
         }
     }
 }

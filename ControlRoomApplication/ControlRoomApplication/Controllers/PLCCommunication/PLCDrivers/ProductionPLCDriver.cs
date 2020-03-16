@@ -115,19 +115,19 @@ namespace ControlRoomApplication.Controllers
                 //JogOffLimitSwitches().GetAwaiter().GetResult();
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
-                            MCU.SendSingleAxisJog( true , true , 0.25 ).Wait();
+                            MCU.SendSingleAxisJog( true , true , 0.25 , 0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.SendSingleAxisJog( true , false , 0.25 ).Wait();
+                            MCU.SendSingleAxisJog( true , false , 0.25,0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.SendSingleAxisJog( false , false , 0.25 ).Wait();
+                            MCU.SendSingleAxisJog( false , false , 0.25 , 0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.SendSingleAxisJog( false , true , 0.25 ).Wait();
+                            MCU.SendSingleAxisJog( false , true , 0.25 , 0 ).Wait();
                             break;
                         }
 
@@ -136,19 +136,19 @@ namespace ControlRoomApplication.Controllers
             if(!e.Value) {
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
-                            MCU.StopSingleAxisJog( true ).Wait();
+                            MCU.StopSingleAxisJog( true , 0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.StopSingleAxisJog( true ).Wait();
+                            MCU.StopSingleAxisJog( true , 0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.StopSingleAxisJog( false ).Wait();
+                            MCU.StopSingleAxisJog( false , 0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.StopSingleAxisJog( false ).Wait();
+                            MCU.StopSingleAxisJog( false , 0 ).Wait();
                             break;
                         }
                 }
@@ -376,8 +376,17 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="adr"></param>
         /// <param name="value"></param>
-        public void setregvalue(ushort adr, ushort value) {
+        public override void setregvalue(ushort adr, ushort value) {
             PLC_Modbusserver.DataStore.HoldingRegisters[adr] = value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="adr"></param>
+        public override ushort getregvalue(ushort adr)
+        {
+            return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
         }
 
         /// <summary>
@@ -393,7 +402,8 @@ namespace ControlRoomApplication.Controllers
 
 
         public override bool Get_interlock_status() {
-            return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
+            return plcInput.Gate_Sensor;
+            //return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
         }
 
         private bool Int_to_bool(int val) {
@@ -753,7 +763,8 @@ namespace ControlRoomApplication.Controllers
         public override bool Configure_MCU(double startSpeedRPMAzimuth, double startSpeedRPMElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation) {
             return MCU.Configure_MCU(
                     new MCUConfigurationAxys() { StartSpeed = startSpeedRPMAzimuth, HomeTimeoutSec = homeTimeoutSecondsAzimuth },
-                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true }
+                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true },
+                    0
                 ).GetAwaiter().GetResult();
         }
 
@@ -794,7 +805,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override bool Cancel_move() {
-            return MCU.Cancel_move();
+            return MCU.Cancel_move(2);
         }
 
         /// <summary>
@@ -802,11 +813,11 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override bool Controled_stop(  ) {
-            return MCU.Controled_stop();
+            return MCU.Controled_stop(2);
         }
 
         public override bool Immediade_stop() {
-            return MCU.Immediade_stop();
+            return MCU.Immediade_stop(2);
         }
 
         // Is called when the PLC and/or MCU is shutdown, stows the telescope
@@ -834,8 +845,8 @@ namespace ControlRoomApplication.Controllers
             positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
 
-            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(1), MotorConstants.GEARING_RATIO_ELEVATION);
-            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 1 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.6 ), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.6 ), MotorConstants.GEARING_RATIO_AZIMUTH);
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
             logger.Info("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
@@ -851,18 +862,18 @@ namespace ControlRoomApplication.Controllers
         /// <param name="AZspeed"></param>
         /// <param name="AZ_CW"></param>
         /// <param name="ELspeed"></param>
-        /// <param name="EL_CW"></param>
+        /// <param name="ELPositive"></param>
         /// <returns></returns>
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
-            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), EL_CW);
+        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool ELPositive) {
+            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive,2);
         }
 
         public override bool Stop_Jog() {
-            return MCU.Cancel_move();
+            return MCU.Cancel_move(2);
         }
 
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL ,2).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -880,6 +891,8 @@ namespace ControlRoomApplication.Controllers
         public async Task<bool> HomeBothAxyes() {
             //place holder function until MCU homing functionality can be tested
             //this method will also likley undego signifigant change once the hardeware configuration is locked down
+            int PRIORITY = 2;
+
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.1 ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.1 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
             int EL_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
@@ -893,24 +906,24 @@ namespace ControlRoomApplication.Controllers
             });
             if(ZeroOne & ZeroTwo) {//very close to 0 degrees 
                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 ).GetAwaiter().GetResult();
+                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0, PRIORITY ).GetAwaiter().GetResult();
                 if (limitSwitchData.Azimuth_CW_Limit) {// we were actually at 360 and need to go back towards 0
                     JogOffLimitSwitches().GetAwaiter().GetResult();
-                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0 , PRIORITY ).GetAwaiter().GetResult();
                 }
             } else if(ZeroOne & !ZeroTwo) {//350 to 360 or -10 to 0
                 //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
-                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( -20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 ).GetAwaiter().GetResult();
+                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( -20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 , PRIORITY ).GetAwaiter().GetResult();
                 if (limitSwitchData.Azimuth_CCW_Limit) {// we were actually less than 0 and need to go back past 0
                     JogOffLimitSwitches().GetAwaiter().GetResult();
-                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps( 25, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps( 25, MotorConstants.GEARING_RATIO_AZIMUTH), 0 , PRIORITY ).GetAwaiter().GetResult();
                 }
             } else if(!ZeroOne & ZeroTwo) {//0 to 10   or 360 to 370
                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 ).GetAwaiter().GetResult();
+                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 , PRIORITY ).GetAwaiter().GetResult();
                 if (limitSwitchData.Azimuth_CW_Limit) {// we were actually at 360 and need to go back towards 0
                     JogOffLimitSwitches().GetAwaiter().GetResult();
-                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0 , PRIORITY ).GetAwaiter().GetResult();
                 }
             } else {
                 //we know our position is valid and can imedeatly perform a cw home
@@ -920,18 +933,19 @@ namespace ControlRoomApplication.Controllers
             bool ELHome = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME] );
 
             PLCEvents.ResetOverrides();
-            MCU.HomeBothAxyes( true , ELHome , 0.25 ).Wait();
+            MCU.HomeBothAxyes( true , ELHome , 0.25 , PRIORITY ).Wait();
 
             return true;
         }
 
         public override async Task<bool> JogOffLimitSwitches() {
-           var AZTAsk = Task.Run( () => {
+            int PRIORITY = 0;
+            var AZTAsk = Task.Run( () => {
                int AZstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_AZIMUTH );
                var timeoutMS = MCUManager.estimateTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
                var timeout = new CancellationTokenSource( timeoutMS );
                 if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
-                    MCU.Send_Jog_command(0.2, true , 0, false);
+                    MCU.Send_Jog_command(0.2, true , 0, false, PRIORITY );
                    while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Azimuth_CCW_Limit) {
@@ -942,7 +956,7 @@ namespace ControlRoomApplication.Controllers
                    Cancel_move();
                    return false;
                } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit) {
-                    MCU.Send_Jog_command(0.2, false , 0, false);
+                    MCU.Send_Jog_command(0.2, false , 0, false, PRIORITY );
                    while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Azimuth_CW_Limit) {
@@ -961,7 +975,7 @@ namespace ControlRoomApplication.Controllers
                 var timeoutMS = MCUManager.estimateTime( ELstepSpeed , 50 , ConversionHelper.DegreesToSteps( 30 , MotorConstants.GEARING_RATIO_ELEVATION ) );
                 var timeout = new CancellationTokenSource( timeoutMS );
                 if(limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) {
-                    MCU.Send_Jog_command( 0 , false , 0.2 , false );
+                    MCU.Send_Jog_command( 0 , false , 0.2 , false , PRIORITY );
                     while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Elevation_Lower_Limit) {
@@ -972,7 +986,7 @@ namespace ControlRoomApplication.Controllers
                     Cancel_move();
                     return false;
                 } else if(!limitSwitchData.Elevation_Lower_Limit && limitSwitchData.Elevation_Upper_Limit) {
-                    MCU.Send_Jog_command( 0 , false , 0.2 , true );
+                    MCU.Send_Jog_command( 0 , false , 0.2 , true , PRIORITY );
                     while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Elevation_Upper_Limit) {

@@ -507,7 +507,7 @@ namespace ControlRoomApplication.Main
 
             RadioTelescope tele = rtController.RadioTelescope;
 
-            Thread thread;
+            Thread thread =new Thread(() => { } );
 
             switch (caseSwitch)
             {
@@ -595,6 +595,11 @@ namespace ControlRoomApplication.Main
                     //Script cannot be run
                     break;
             }
+            try {
+                thread.Start();
+            } catch {
+
+            }
         }
 
         //Control Script combo box enables run button when a script has been selected
@@ -614,7 +619,7 @@ namespace ControlRoomApplication.Main
             // UpdateText("Moving at " + comboBox1.Text);
 
             // Start CW Jog
-            controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeAzimuthJog( speed , false );
+            rtController.StartRadioTelescopeAzimuthJog( speed , false );
         }
 
         private void subJogButton_Up( object sender , MouseEventArgs e ) {
@@ -631,7 +636,7 @@ namespace ControlRoomApplication.Main
             // UpdateText("Moving at " + comboBox1.Text);
 
             // Start CW Jog
-            controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeAzimuthJog( speed , true );
+            rtController.StartRadioTelescopeAzimuthJog( speed , true );
         }
 
         private void plusJogButton_UP( object sender , MouseEventArgs e ) {
@@ -647,12 +652,12 @@ namespace ControlRoomApplication.Main
             if (ControledButtonRadio.Checked)
             {
                 logger.Info("Executed Controlled Stop");
-                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeStopJog();
+                rtController.ExecuteRadioTelescopeStopJog();
             }
             else if (immediateRadioButton.Checked)
             {
                 logger.Info("Executed Immediate Stop");
-                controlRoom.RadioTelescopeControllers[rtId - 1].ExecuteRadioTelescopeImmediateStop();
+                rtController.ExecuteRadioTelescopeImmediateStop();
             }
             else
             {
@@ -704,7 +709,7 @@ namespace ControlRoomApplication.Main
             // UpdateText("Moving at " + comboBox1.Text);
 
             // Start CW Jog
-            controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeElevationJog(speed, true);
+            rtController.StartRadioTelescopeElevationJog(speed, true);
         }
 
         private void plusElaButton_Up( object sender , MouseEventArgs e ) {
@@ -721,7 +726,7 @@ namespace ControlRoomApplication.Main
             //UpdateText("Moving at " + speedComboBox.Text);
 
             // Start CW Jog
-            controlRoom.RadioTelescopeControllers[rtId - 1].StartRadioTelescopeElevationJog( speed, false);
+            rtController.StartRadioTelescopeElevationJog( speed, false);
         }
 
         private void subElaButton_Up( object sender , MouseEventArgs e ) {
@@ -847,6 +852,11 @@ namespace ControlRoomApplication.Main
         }
 
         private void label12_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void FreeControlForm_Load(object sender, EventArgs e)
         {
 
         }

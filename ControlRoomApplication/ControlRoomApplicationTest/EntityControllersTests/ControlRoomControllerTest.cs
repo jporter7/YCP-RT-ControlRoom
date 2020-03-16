@@ -146,6 +146,16 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(true, CRController.RemoveRadioTelescopeController(RTController0, true));
             Assert.AreEqual(false, CRController.RemoveRadioTelescopeController(RTController0, true));
         }
+
+        [TestMethod]
+        public void TestWeatherStationOverride()
+        {
+            Assert.IsFalse(CRController.weatherStationOverride);
+            CRController.weatherStationOverride = true;
+            Assert.IsTrue(CRController.weatherStationOverride);
+
+        }
+
         [ClassCleanup]
         public static void Bringdown( ) {
             RTController0.RadioTelescope.PLCDriver.Bring_down();

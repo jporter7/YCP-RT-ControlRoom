@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Runtime.InteropServices;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Controllers.Sensors;
 
 namespace ControlRoomApplication.Entities.WeatherStation
 {
