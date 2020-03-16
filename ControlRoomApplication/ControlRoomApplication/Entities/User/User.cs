@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 
-namespace ControlRoomApplication.Entities.User
+namespace ControlRoomApplication.Entities
 {
     [Table("user")]
     public class User
@@ -13,17 +13,28 @@ namespace ControlRoomApplication.Entities.User
         public User()
         {
         }
+
+        public User(string firstName, string lastName, string email)
+        {
+            first_name = firstName;
+            last_name = lastName;
+            email_address = email;
+        }
     
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("id")]
         public int Id { get; set; }
 
-        [MaxLength(100)]
-        [Required]
-        [Column("username")]
-        public string Username { get; set; }
-        // This establishes the User relationship to Appointments
-        public virtual Collection<Appointment> Appointments { get; set; }
+        // not nullable
+        [Column("first_name")]
+        public string first_name { get; set; }
+
+        // not nullable
+        [Column("last_name")]
+        public string last_name { get; set; }
+
+        // not nullable
+        [Column("email_address")]
+        public string email_address { get; set; }
     }
 }

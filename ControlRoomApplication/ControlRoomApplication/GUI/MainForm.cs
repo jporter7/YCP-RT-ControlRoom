@@ -144,7 +144,7 @@ namespace ControlRoomApplication.Main
                 if (checkBox1.Checked)
                 {
                     logger.Info("Populating Local Database");
-                    DatabaseOperations.PopulateLocalDatabase(current_rt_id);
+               //     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
                     Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).start_time.ToString());
                     logger.Info("Disabling ManualControl and FreeControl");
                     //ManualControl.Enabled = false;

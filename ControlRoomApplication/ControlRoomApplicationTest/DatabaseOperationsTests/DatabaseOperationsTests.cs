@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Controllers;
 
 namespace ControlRoomApplicationTest.DatabaseOperationsTests
 {
@@ -17,13 +18,18 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         // Test Appointment objects
         private Appointment appt;
+        private Appointment initial;
         private int NumRTInstances = 1;
+        private int NumAppointments = 0;
 
         [TestInitialize]
         public void BuildUp()
         {
             // Initialize context
-            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
+            //   DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
+
+            NumAppointments = DatabaseOperations.GetTotalAppointmentCount();
+            NumRTInstances = DatabaseOperations.GetTotalRTCount();
 
             // RFData initialization
             data1 = new RFData();
@@ -40,24 +46,39 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             data3.Intensity = 12987;
             data3.TimeCaptured = date.AddSeconds(10);
 
+            initial = new Appointment();
+            initial.start_time = DateTime.UtcNow;
+            initial.end_time = DateTime.UtcNow.AddMinutes(1);
+            initial._Status = AppointmentStatusEnum.REQUESTED;
+            initial._Priority = AppointmentPriorityEnum.MANUAL;
+            initial._Type = AppointmentTypeEnum.POINT;
+            initial.Coordinates.Add(new Coordinate(0, 0));
+            initial.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+            initial.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
+            initial.User = new User("control", "room", "controlroom@gmail.com"); ;
+
+            DatabaseOperations.AddAppointment(initial);
+            NumAppointments++;
+            NumRTInstances++;
+
             // Init appt
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances)[0];
 
         }
 
-        [TestMethod]
+ /*       [TestMethod]
         public void TestPopulateLocalDatabase()
         { 
             DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
             Assert.AreEqual(45 * NumRTInstances, appt_count);
         }
-
+*/
         [TestMethod]
         public void TestGetListOfAppointmentsForRadioTelescope()
         {
-            var appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances);
-            Assert.AreEqual(37 * NumRTInstances, appts.Count);
+            var appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(initial.Telescope.Id);
+            Assert.AreEqual(1, appts.Count);
         }
 
         [TestMethod]
@@ -71,8 +92,8 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             new_appt._Type = AppointmentTypeEnum.POINT;
             new_appt.Coordinates.Add(new Coordinate(0,0));
             new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-            new_appt.telescope_id = 1;
-            new_appt.user_id = 1;
+            new_appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
+            new_appt.User = new User("control", "room", "controlroom@gmail.com"); ;
 
             DatabaseOperations.AddAppointment(new_appt);
             var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(1);
