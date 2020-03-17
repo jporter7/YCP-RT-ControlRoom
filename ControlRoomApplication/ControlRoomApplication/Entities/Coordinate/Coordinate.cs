@@ -25,5 +25,13 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("declination")]
         public double Declination { get; set; }
+
+        [Required]
+        [Column("hours")]
+        public int hours { get; set; }
+
+        [Required]
+        [Column("minutes")]
+        public int minutes { get; set; }
     }
 }
