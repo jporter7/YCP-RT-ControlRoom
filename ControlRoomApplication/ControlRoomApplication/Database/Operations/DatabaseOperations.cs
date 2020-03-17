@@ -328,7 +328,10 @@ namespace ControlRoomApplication.Database
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     // Update database appt with new status
-                    var db_appt = Context.Appointments.SqlQuery("Select * from appointment").ToList<Appointment>().ToList().Find(x => x.Id == appt.Id);
+                    List<Appointment> appts = Context.Appointments.Include(t => t.Telescope).ToList();
+                    var db_appt = appts.Find(x => x.Id == appt.Id);
+                    RadioTelescope tele = db_appt.Telescope;
+
                     if (db_appt != null)
                     {
                         db_appt.CelestialBody = appt.CelestialBody;
@@ -342,6 +345,10 @@ namespace ControlRoomApplication.Database
                         db_appt.Telescope = appt.Telescope;
                         db_appt._Type = appt._Type;
                         db_appt.User = appt.User;
+
+                        // we do not want to push a new user. There should already be a control room user in the db
+                        Context.Entry(db_appt.User).State = EntityState.Unchanged;
+
                         SaveContext(Context);
                     }
                 }
@@ -362,7 +369,7 @@ namespace ControlRoomApplication.Database
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x.start_time < DateTime.UtcNow || x._Status == AppointmentStatusEnum.COMPLETED);
+                    appointments.RemoveAll(x => x._Status == AppointmentStatusEnum.COMPLETED);
                     appointments.Sort();
                     logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;

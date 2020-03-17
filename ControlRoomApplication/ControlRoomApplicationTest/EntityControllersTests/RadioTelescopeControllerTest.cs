@@ -14,7 +14,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         private static int port = 8086;
 
         private static RadioTelescopeController TestRadioTelescopeController;
-        private static ProductionPLCDriver TestRTPLC;
+        private static TestPLCDriver TestRTPLC;
         /*
         [ClassInitialize]
         public static void SetUp(TestContext context)
@@ -51,7 +51,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
         [TestInitialize]
         public void testInit() {
-            //TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
+            TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
             TestRTPLC = new ProductionPLCDriver("192.168.0.70", "192.168.0.50" , 502 , 502 );
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController( new SpectraCyberSimulator() );
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
@@ -59,8 +59,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             TestRT.WeatherStation = new SimulationWeatherStation(1000);
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
 
-            // TestRTPLC.SetParent(TestRT);
-            //TestRTPLC.driver.SetParent(TestRT);
+             TestRTPLC.SetParent(TestRT);
+            TestRTPLC.driver.SetParent(TestRT);
 
             TestRTPLC.StartAsyncAcceptingClients();
 

@@ -18,7 +18,6 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         // Test Appointment objects
         private Appointment appt;
-        private Appointment initial;
         private int NumRTInstances = 1;
         private int NumAppointments = 0;
 
@@ -46,23 +45,23 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             data3.Intensity = 12987;
             data3.TimeCaptured = date.AddSeconds(10);
 
-            initial = new Appointment();
-            initial.start_time = DateTime.UtcNow;
-            initial.end_time = DateTime.UtcNow.AddMinutes(1);
-            initial._Status = AppointmentStatusEnum.REQUESTED;
-            initial._Priority = AppointmentPriorityEnum.MANUAL;
-            initial._Type = AppointmentTypeEnum.POINT;
-            initial.Coordinates.Add(new Coordinate(0, 0));
-            initial.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-            initial.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
-            initial.User = new User("control", "room", "controlroom@gmail.com"); ;
+            appt = new Appointment();
+            appt.start_time = DateTime.UtcNow;
+            appt.end_time = DateTime.UtcNow.AddMinutes(1);
+            appt._Status = AppointmentStatusEnum.REQUESTED;
+            appt._Priority = AppointmentPriorityEnum.MANUAL;
+            appt._Type = AppointmentTypeEnum.POINT;
+            appt.Coordinates.Add(new Coordinate(0, 0));
+            appt.CelestialBody = new CelestialBody();
+            appt.CelestialBody.Coordinate = new Coordinate();
+            appt.Orientation = new Orientation();
+            appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+            appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
+            appt.User = DatabaseOperations.GetControlRoomUser();
 
-            DatabaseOperations.AddAppointment(initial);
+            DatabaseOperations.AddAppointment(appt);
             NumAppointments++;
             NumRTInstances++;
-
-            // Init appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances)[0];
 
         }
 
@@ -77,7 +76,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestGetListOfAppointmentsForRadioTelescope()
         {
-            var appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(initial.Telescope.Id);
+            var appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id);
             Assert.AreEqual(1, appts.Count);
         }
 
@@ -90,21 +89,25 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             new_appt._Status = AppointmentStatusEnum.REQUESTED;
             new_appt._Priority = AppointmentPriorityEnum.MANUAL;
             new_appt._Type = AppointmentTypeEnum.POINT;
-            new_appt.Coordinates.Add(new Coordinate(0,0));
+            new_appt.Coordinates.Add(new Coordinate(0, 0));
+            new_appt.CelestialBody = new CelestialBody();
+            new_appt.CelestialBody.Coordinate = new Coordinate();
+            new_appt.Orientation = new Orientation();
             new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
             new_appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
-            new_appt.User = new User("control", "room", "controlroom@gmail.com"); ;
-
+            new_appt.User = DatabaseOperations.GetControlRoomUser();
             DatabaseOperations.AddAppointment(new_appt);
-            var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(1);
-            Assert.IsTrue(1 == output_appts.Where(x => x.Id == new_appt.Id).Count());
+            NumAppointments++;
+
+            var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(new_appt.Telescope.Id);
+            Assert.IsTrue(1 == output_appts.Count());
         }
 
         [TestMethod]
         public void TestGetTotalAppointmentCount()
         {
             var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(33 * NumRTInstances, appt_count);
+            Assert.AreEqual(NumAppointments, appt_count);
         }
 
         [TestMethod]
@@ -115,7 +118,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.CreateRFData(appt.Id, data3);
 
             // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(1).Find(x => x.Id == appt.Id);
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
 
             Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data1.Id).Intensity, data1.Intensity);
             Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data2.Id).Intensity, data2.Intensity);
@@ -134,7 +137,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.CreateRFData(appt.Id, data1);
 
             // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
 
             RFData testData = appt.RFDatas.ToList().Find(x => x.Id == data1.Id);
 
@@ -149,7 +152,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.CreateRFData(appt.Id, data1);
 
             // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
 
             RFData testData = appt.RFDatas.ToList().Find(x => x.Id == data1.Id);
 
@@ -164,7 +167,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.UpdateAppointment(appt);
             
             // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
             var testStatus = appt._Status;
 
             Assert.AreEqual(AppointmentStatusEnum.IN_PROGRESS, testStatus);
@@ -179,7 +182,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.UpdateAppointment(appt);
 
             // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(NumRTInstances).Find(x => x.Id == appt.Id);
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
 
             var testCoord = appt.Coordinates.First();
 
@@ -190,10 +193,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestGetNextAppointment()
         {
-            var appt = DatabaseOperations.GetNextAppointment(NumRTInstances);
-            Assert.IsTrue(appt != null);
-            Assert.IsTrue(appt.start_time > DateTime.UtcNow);
-            Assert.IsTrue(appt._Status != AppointmentStatusEnum.COMPLETED);
+            var nextAppt = DatabaseOperations.GetNextAppointment(appt.Telescope.Id);
+            Assert.IsTrue(nextAppt != null);
+            Assert.IsTrue(nextAppt._Status != AppointmentStatusEnum.COMPLETED);
         }
     }
 }

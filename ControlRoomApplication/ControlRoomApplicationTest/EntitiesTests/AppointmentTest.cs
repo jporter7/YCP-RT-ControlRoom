@@ -69,6 +69,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             appointment_1._Status = status;
             appointment_1._Type = type;
             appointment_1.SpectraCyberConfig = spectracyber_config;
+            appointment_1.Telescope = telescope;
 
             greaterThan.start_time = startTime_2;
             greaterThan.end_time = endTime_2;
