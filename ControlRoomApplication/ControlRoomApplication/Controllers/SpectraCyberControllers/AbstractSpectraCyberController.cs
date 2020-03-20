@@ -190,6 +190,7 @@ namespace ControlRoomApplication.Controllers
         // Start scanning, keep doing so until requested to stop
         public void StartScan()
         {
+            logger.Info("[SpectraCyberAbstractController] Scan has been started");
             try
             {
                 CommunicationMutex.WaitOne();
@@ -205,6 +206,8 @@ namespace ControlRoomApplication.Controllers
         // Stop scanning and return scan results
         public void StopScan()
         {
+            logger.Info("[SpectraCyberAbstractController] Scan has been stopped");
+
             try
             {
                 CommunicationMutex.WaitOne();

@@ -19,6 +19,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+
         protected override void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response)
         {
             // pass

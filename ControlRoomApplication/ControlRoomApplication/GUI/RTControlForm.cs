@@ -44,6 +44,7 @@ namespace ControlRoomApplication.Main
             // Set increment
             Increment = 1;
             UpdateIncrementButtons();
+
             // Add free control appt
             CurrentAppointment = new Appointment();
             CurrentAppointment.start_time = DateTime.UtcNow.AddSeconds(5);
@@ -54,7 +55,9 @@ namespace ControlRoomApplication.Main
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
             CurrentAppointment.telescope_id = rtId;
             CurrentAppointment.user_id = 1;
+            System.Threading.Thread.Sleep(5000);
             DatabaseOperations.AddAppointment(CurrentAppointment);
+
             //Calibrate Move
             CalibrateMove();
             runControlScriptButton.Enabled = false;
@@ -760,6 +763,7 @@ namespace ControlRoomApplication.Main
                 startScanButton.Enabled = true;
 
                 spectraEditActive = false;
+
             }
             else
             {
@@ -778,6 +782,7 @@ namespace ControlRoomApplication.Main
                 startScanButton.Enabled = false;
 
                 spectraEditActive = true;
+
             }
 
         }
@@ -791,15 +796,15 @@ namespace ControlRoomApplication.Main
             switch (caseSwitch)
             {
                 case 0:
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+                    rtController.RadioTelescope.SpectraCyberController.SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    rtController.RadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
                     //We need to add in code to manage the if_gain
                     break;
                 case 1:
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
                     break;
             }
 
@@ -809,18 +814,18 @@ namespace ControlRoomApplication.Main
             stopScanButton.Enabled = true;
             stopScanButton.BackColor = System.Drawing.Color.Red;
 
-            controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.StartScan();
+            rtController.RadioTelescope.SpectraCyberController.StartScan();
             logger.Info("[SpectraCyberController] Scan has started");
         }
 
         private void stopScan_Click(object sender, EventArgs e)
         {
-            if (controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.OFF ||
-                controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.UNKNOWN)
+            if (rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.OFF ||
+                rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.UNKNOWN)
                 logger.Info("[SpectraCyberController] There is no scan to stop");
             else
             {
-                controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.StopScan();
+                rtController.RadioTelescope.SpectraCyberController.StopScan();
                 logger.Info("[SpectraCyberController] Scan has stopped");
             }
 
