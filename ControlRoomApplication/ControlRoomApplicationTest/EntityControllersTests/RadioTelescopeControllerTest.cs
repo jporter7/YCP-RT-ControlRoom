@@ -52,7 +52,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestInitialize]
         public void testInit() {
             TestRTPLC = new TestPLCDriver( ip, ip, 15001, 15003, true );
-            TestRTPLC = new ProductionPLCDriver("192.168.0.70", "192.168.0.50" , 502 , 502 );
+       //     TestRTPLC = new ProductionPLCDriver("192.168.0.70", "192.168.0.50" , 502 , 502 );
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController( new SpectraCyberSimulator() );
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
