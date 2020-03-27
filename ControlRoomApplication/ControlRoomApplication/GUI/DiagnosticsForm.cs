@@ -138,7 +138,7 @@ namespace ControlRoomApplication.GUI
         /// Gets and displays the current statuses of the hardware components for the specified configuration.
         /// </summary>
         private void GetHardwareStatuses() {
-            if (controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.SpectraCyberController.IsConsideredAlive()) {
+            if (rtController.RadioTelescope.SpectraCyberController.IsConsideredAlive()) {
                 statuses[0] = "Online";
             }
 
@@ -198,14 +198,16 @@ namespace ControlRoomApplication.GUI
         {
             double currWindSpeed = controlRoom.WeatherStation.GetWindSpeed();//wind speed
 
-            _azEncoderDegrees = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).GetAbsoluteOrientation().Azimuth;
-            _elEncoderDegrees = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).GetAbsoluteOrientation().Elevation;
+            double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
+
+            _azEncoderDegrees = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
+            _elEncoderDegrees = rtController.RadioTelescope.Encoders.GetCurentOrientation().Elevation;
 
             timer1.Interval = 200;
 
             if (selectDemo.Checked == true)
             {
-                controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.setStableOrTesting(false);
+                rtController.RadioTelescope.Micro_controler.setStableOrTesting(false);
 
                 // Simulating Encoder Sensors
                 TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
@@ -233,9 +235,9 @@ namespace ControlRoomApplication.GUI
 
 
             }
-            
-            double ElMotTemp = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.tempData.elevationTemp;
-            double AzMotTemp = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.tempData.azimuthTemp;
+
+            double ElMotTemp = rtController.RadioTelescope.Micro_controler.tempData.elevationTemp;
+            double AzMotTemp = rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp;
             float insideTemp = controlRoom.WeatherStation.GetInsideTemp();
             float outsideTemp = controlRoom.WeatherStation.GetOutsideTemp();
             /** Conversion from fahrenheit to celsius 
@@ -278,10 +280,9 @@ namespace ControlRoomApplication.GUI
                 fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
             }
 
-            /** Temperature of motors **/
-           
-            fldElTemp.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.tempData.elevationTemp.ToString();
-            fldAzTemp.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.tempData.azimuthTemp.ToString();
+            /** Temperature of motors **/           
+            fldElTemp.Text = rtController.RadioTelescope.Micro_controler.tempData.elevationTemp.ToString();
+            fldAzTemp.Text = rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp.ToString();
 
             /** Encoder Position in both degrees and motor ticks **/
             lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 3).ToString();
@@ -292,18 +293,18 @@ namespace ControlRoomApplication.GUI
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
             /** Proximity and Limit Switches **/
-            lblAzLimStatus1.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CCW_Limit.ToString();
-            lblAzLimStatus2.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CW_Limit.ToString();
+            lblAzLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CCW_Limit.ToString();
+            lblAzLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CW_Limit.ToString();
 
-            lblElLimStatus1.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.limitSwitchData.Elevation_Lower_Limit.ToString();
-            lblElLimStatus2.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.limitSwitchData.Elevation_Upper_Limit.ToString();
+            lblElLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Lower_Limit.ToString();
+            lblElLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Upper_Limit.ToString();
 
-            lblAzHomeStatus1.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_One.ToString();
-            lblAzHomeStatus2.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_Two.ToString();
-            lblELHomeStatus.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.homeSensorData.Elevation_Home.ToString();
+            lblAzHomeStatus1.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_One.ToString();
+            lblAzHomeStatus2.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_Two.ToString();
+            lblELHomeStatus.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Elevation_Home.ToString();
 
-            lbEstopStat.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.plcInput.Estop.ToString();
-            lbGateStat.Text = controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.plcInput.Gate_Sensor.ToString();
+            lbEstopStat.Text = rtController.RadioTelescope.PLCDriver.plcInput.Estop.ToString();
+            lbGateStat.Text = rtController.RadioTelescope.PLCDriver.plcInput.Gate_Sensor.ToString();
 
             ///*** Temperature Logic Start***/
             //if (elevationTemperature <= 79 && azimuthTemperature <= 79)
@@ -553,33 +554,33 @@ namespace ControlRoomApplication.GUI
             switch (caseSwitch)
             {
                 case 0:
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.HitAzimuthLeftLimitSwitch();//Change left to CCW
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.RadioTelescope.PLCDriver.HitAzimuthLeftLimitSwitch();//Change left to CCW
                     //Hit Azimuth Counter-Clockwise Limit Switch (index 0 of control script combo)
                     break;
                 case 1:
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.HitAzimuthRightLimitSwitch();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.RadioTelescope.PLCDriver.HitAzimuthRightLimitSwitch();
                     //Hit Azimuth Clockwise Limit Switch (index 1 of control script combo)
                     break;
                 case 2:
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.HitElevationLowerLimitSwitch();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.RadioTelescope.PLCDriver.HitElevationLowerLimitSwitch();
                     //Elevation Lower Limit Switch (index 2 of control script combo)
                     break;
                 case 3:
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.HitElevationUpperLimitSwitch();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.RadioTelescope.PLCDriver.HitElevationUpperLimitSwitch();
                     //Elevation Upper Limit Switch (index 3 of control script combo)
                     break;
                 case 4:
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.Hit_CW_Hardstop();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.RadioTelescope.PLCDriver.Hit_CW_Hardstop();
                     //Hit Clockwise Hardstop (index 4 of control script combo)
                     break;
                 case 5:
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).ExecuteRadioTelescopeControlledStop();
-                    controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.PLCDriver.Hit_CCW_Hardstop();
+                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.RadioTelescope.PLCDriver.Hit_CCW_Hardstop();
                     //Hit Counter-Clockwise Hardstop (index 4 of control script combo)
                     break;
                 default:
