@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
@@ -199,10 +200,18 @@ namespace ControlRoomApplication.Database
                         createUser = false;
                     }
                     
-
-                    Context.CelestialBodies.Add(appt.CelestialBody);
-                    Context.Orientations.Add(appt.Orientation);
-                    Context.SpectraCyberConfigs.Add(appt.SpectraCyberConfig);
+                    if (Context.CelestialBodies.Any(t => t.Id == appt.CelestialBody.Id) == false)
+                    {
+                        if (Context.Coordinates.Any(t => t.Id == appt.CelestialBody.Coordinate.Id))
+                            Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                    
+                        Context.CelestialBodies.Add(appt.CelestialBody);
+                    }
+                    if (Context.Orientations.Any(t => t.Id == appt.Orientation.Id) == false)
+                        Context.Orientations.Add(appt.Orientation);
+                    if (Context.SpectraCyberConfigs.Any(t => t.Id == appt.SpectraCyberConfig.Id) == false)
+                        Context.SpectraCyberConfigs.Add(appt.SpectraCyberConfig);
+                    
                     Context.Appointments.Add(appt);
                     SaveContext(Context);
                 }
@@ -218,7 +227,13 @@ namespace ControlRoomApplication.Database
             using (RTDbContext Context = InitializeDatabaseContext())
             { 
                 // Use Include method to load related entities from the database
-                List<Appointment> appoints = Context.Appointments.SqlQuery("Select * from appointment").ToList<Appointment>();
+                var appoints = Context.Appointments.Include(t => t.Telescope)
+                                                    .Include(t => t.CelestialBody)
+                                                     .Include(t => t.Orientation)
+                                                //  .Include(t => t.SpectraCyberConfig)
+                                                     .Include(t => t.User)
+                                                    
+                                                                       .ToList<Appointment>();
 
                 appts = appoints.Where(x => x.telescope_id == radioTelescopeId).ToList();
             }
@@ -322,35 +337,16 @@ namespace ControlRoomApplication.Database
         /// </summary>
         /// <param name="appt"> The appt that is being updated. </param>
         public static void UpdateAppointment(Appointment appt)
-        { 
+        {
             if (VerifyAppointmentStatus(appt))
             {
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
-                    // Update database appt with new status
-                    List<Appointment> appts = Context.Appointments.Include(t => t.Telescope).ToList();
-                    var db_appt = appts.Find(x => x.Id == appt.Id);
-                    RadioTelescope tele = db_appt.Telescope;
 
-                    if (db_appt != null)
-                    {
-                        db_appt.CelestialBody = appt.CelestialBody;
-                        db_appt.Coordinates = appt.Coordinates;
-                        db_appt.end_time = appt.end_time;
-                        db_appt.Orientation = appt.Orientation;
-                        db_appt.RFDatas = appt.RFDatas;
-                        db_appt.SpectraCyberConfig = appt.SpectraCyberConfig;
-                        db_appt.start_time = appt.start_time;
-                        db_appt._Status = appt._Status;
-                        db_appt.Telescope = appt.Telescope;
-                        db_appt._Type = appt._Type;
-                        db_appt.User = appt.User;
+                    Context.Appointments.AddOrUpdate(appt);
 
-                        // we do not want to push a new user. There should already be a control room user in the db
-                        Context.Entry(db_appt.User).State = EntityState.Unchanged;
+                    Context.SaveChangesAsync();
 
-                        SaveContext(Context);
-                    }
                 }
             }
         }

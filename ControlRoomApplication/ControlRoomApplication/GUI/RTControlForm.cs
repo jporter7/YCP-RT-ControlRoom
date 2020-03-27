@@ -185,7 +185,6 @@ namespace ControlRoomApplication.Main
         public void CalibrateMove()
         {
             logger.Info("CalibrateMove ");
-            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Orientation = new Entities.Orientation(0, 90);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
             TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
@@ -195,7 +194,6 @@ namespace ControlRoomApplication.Main
         private void CoordMove()
         {
             logger.Info("CoordMove ");
-            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Coordinates.Add(TargetCoordinate);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
             UpdateText();
