@@ -160,11 +160,12 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
             MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
             //Console.WriteLine("plcdriver data writen 1 reg "+ e.Data.B[0]+" start adr "+ e.StartAddress);
-            ushort[] data = new ushort[e.Data.B.Count];
-            for(int i = 0; i < e.Data.B.Count; i++) {
-                data[i] = e.Data.B[i];
+            ushort[] data = new ushort[20];//e.Data.B.Count
+            if (e.StartAddress >= 1023)
+            {
+                data = Copy_modbus_registers(1025, 20);
+                handleTestCMD(data);
             }
-            handleTestCMD( data );
         }
 
         private void Run_MCU_server_thread() {
@@ -304,7 +305,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             for(int v = 0; v < data.Length; v++) {
                 outstr += Convert.ToString( data[v] , 16 ).PadLeft( 5 ) + ",";
             }
-            // Console.WriteLine(outstr);
+            Console.WriteLine(outstr);
             if(data[1] == 0x0403)//move cmd
             {
                 distAZ = (data[6] << 16) + data[7];

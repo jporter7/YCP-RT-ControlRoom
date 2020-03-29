@@ -197,6 +197,7 @@
     <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
+    <Compile Include="Entities\CelestialBody\CelestialBodyStatusEnum.cs" />
     <Compile Include="Entities\Configuration\MCUConfiguration.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
     <Compile Include="Entities\DiagnosticData\Temperature.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="Entities\Location\SensorLocationEnum.cs" />
     <Compile Include="Entities\Log\Log.cs" />
     <Compile Include="Entities\Override\Override.cs" />
+    <Compile Include="Entities\ProximitySensor\AbstractProximitySensor.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
     <Compile Include="Entities\Sensor\Sensor.cs" />
     <Compile Include="Entities\Sensor\SensorItemEnum.cs" />
@@ -212,6 +214,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberBandwidthEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />
+    <Compile Include="Entities\User\User.cs" />
     <Compile Include="Entities\WeatherStation\AbstractWeatherStation.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Location\Location.cs" />

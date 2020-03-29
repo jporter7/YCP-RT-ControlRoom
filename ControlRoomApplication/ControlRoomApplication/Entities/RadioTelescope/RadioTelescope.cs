@@ -9,6 +9,12 @@ namespace ControlRoomApplication.Entities
     [Table("radio_telescope")]
     public class RadioTelescope
     {
+
+        public RadioTelescope()
+        {
+
+        }
+
         public RadioTelescope(AbstractSpectraCyberController spectraCyberController, AbstractPLCDriver plcCommsHandler, Location location, Orientation calibrationOrientation)
         {
             PLCDriver = plcCommsHandler;

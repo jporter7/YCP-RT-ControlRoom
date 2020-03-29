@@ -34,16 +34,16 @@ Package Settings:
 
 MySQL Set Up:
 
-	The last step is the setup of the MySql Server. Follow the link here:
-	https://dev.mysql.com/downloads/windows/installer/8.0.html, and download the smaller msi file. Run the
+	The next step is the setup of the MySql Server. Follow the link here:
+	https://dev.mysql.com/downloads/windows/installer/8.0.html, and download the smaller msi file. Run the 
 	file after it has finished downloading and follow the normal installation process choosing defaults for
-	all of the options until you reach the root password creation window. Make sure to set the root password
-	to ycpRT2018!. This will allow the Control Room to link to your local MySql database. Follow through the
-	rest of the installation process choosing defaults for all of the rest of the options until the service
-	is finished. The service should start running immediately (you can look in the Services section of the
-	Task Manager to check if it is running). Finally, reopen the Control Room Application within Visual
-	Studio, and build it. If you are still running into a MySql connection error, run the MySql installer
-	again. Select add, and then choose MySQL Connectors, Connector/NET, and then choose the version that
-	matches your MySQL version using the green arrow. Select next and follow the standard installation
-	procedure. Finally, build and run the project to ensure it runs correctly.
+	all of the options until you reach the root password creation window. Contact a System Administrator to
+	receive the password. This will allow the Control Room to link to your local MySql database. Follow
+	through the rest of the installation process choosing defaults for all of the rest of the options until
+	the service is finished. The service should start running immediately (you can look in the Services
+	section of the Task Manager to check if it is running). Finally, reopen the Control Room Application
+	within Visual Studio, and build it. If you are still running into a MySql connection error, run the
+	MySql installer again. Select add, and then choose MySQL Connectors, then Connector/NET, and then choose
+	the version using the green arrow. Select next and follow the standard installation procedure. Finally,
+	you must install and run the RT-Contracts Application.
 

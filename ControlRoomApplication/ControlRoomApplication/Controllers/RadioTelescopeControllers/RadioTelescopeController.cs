@@ -13,7 +13,7 @@ namespace ControlRoomApplication.Controllers
     {
         public RadioTelescope RadioTelescope { get; set; }
         public CoordinateCalculationController CoordinateController { get; set; }
-        private bool tempAcceptable;
+        private bool tempAcceptable = true;
         public OverrideSwitchData overrides;
 
         // Thread that monitors database current temperature

@@ -35,8 +35,9 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the user id associated with this Appointment.
         /// </summary>
-        [Column("user_id")]
         public int user_id { get; set; }
+        [ForeignKey("user_id")]
+        public User User { get; set; }
 
         /// <summary>
         /// The getter/setter for the start time associated with this Appointment.
@@ -55,19 +56,15 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the celestial body asscociated with this Appointment.
         /// </summary>
-        [Column("celestial_body_id")]
         public int celestial_body_id { get; set; }
-      //  [ForeignKey("celestial_body_id")]
-        [NotMapped]
+        [ForeignKey("celestial_body_id")]
         public CelestialBody CelestialBody { get; set; }
 
         /// <summary>
         /// The getter/setter for the Orientation asscociated with this Appointment.
         /// </summary>
-      //  [Column("orientation_id")]
-      //  public int orientation_id { get; set; }
-     //   [ForeignKey("id")]
-        [NotMapped]
+        public int orientation_id { get; set; }
+        [ForeignKey("orientation_id")]
         public Orientation Orientation { get; set; }
 
         /// <summary>
@@ -75,6 +72,7 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         // [Required]
         // [Column("coordinates")]
+        [NotMapped]
         public virtual ICollection<Coordinate> Coordinates { get; set; } = new List<Coordinate>();
 
         /// <summary>
@@ -82,6 +80,7 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         //[Required]
         //[Column("rf_datas")]
+        [NotMapped]
         public virtual ICollection<RFData> RFDatas { get; set; } = new List<RFData>();
 
         [Column("public")]
@@ -90,9 +89,9 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the telescope asscociated with this Appointment.
         /// </summary>
-        [Required]
-        [Column("telescope_id")]
-        public int telescope_id { get; set; }
+        public int telescope_id { get;set; }
+        [ForeignKey("telescope_id")]
+        public RadioTelescope Telescope { get; set; }
 
         /// <summary>
         /// The getter/setter for the status asscociated with this Appointment.
@@ -209,11 +208,8 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the SpectraCyberConfig type.
         /// </summary>
-        //       [Required]
-        [Column("spectracyber_config_id")]
         public int spectracyber_config_id { get; set; }
-        //  [ForeignKey("spectracyber_config_id")]
-        [NotMapped]
+        [ForeignKey("spectracyber_config_id")]
         public SpectraCyberConfig SpectraCyberConfig { get; set; }
 
 

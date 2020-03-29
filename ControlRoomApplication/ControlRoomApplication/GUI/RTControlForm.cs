@@ -14,6 +14,7 @@ namespace ControlRoomApplication.Main
     public partial class FreeControlForm : Form
     {
         public Appointment CurrentAppointment { get; set; }
+        public User ControlRoomUser { get; set; }
         public Coordinate TargetCoordinate { get; set; }
         public double Increment { get; set; }
         public CoordinateCalculationController CoordCalc { set; get; }
@@ -45,6 +46,8 @@ namespace ControlRoomApplication.Main
             Increment = 1;
             UpdateIncrementButtons();
 
+            ControlRoomUser = DatabaseOperations.GetControlRoomUser();
+
             // Add free control appt
             CurrentAppointment = new Appointment();
             CurrentAppointment.start_time = DateTime.UtcNow.AddSeconds(5);
@@ -53,9 +56,12 @@ namespace ControlRoomApplication.Main
             CurrentAppointment._Type = AppointmentTypeEnum.FREE_CONTROL;
             CurrentAppointment._Priority = AppointmentPriorityEnum.MANUAL;
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-            CurrentAppointment.telescope_id = rtId;
-            CurrentAppointment.user_id = 1;
-            System.Threading.Thread.Sleep(5000);
+            CurrentAppointment.CelestialBody = new CelestialBody("control room");
+            CurrentAppointment.CelestialBody.Coordinate = new Coordinate(0, 0);
+            CurrentAppointment.Orientation = rtController.GetAbsoluteOrientation();
+            CurrentAppointment.Telescope = controlRoom.RadioTelescopes.Find(x => x.Id == rtId);
+            CurrentAppointment.User = ControlRoomUser;
+         
             DatabaseOperations.AddAppointment(CurrentAppointment);
 
             //Calibrate Move
@@ -180,7 +186,6 @@ namespace ControlRoomApplication.Main
         public void CalibrateMove()
         {
             logger.Info("CalibrateMove ");
-            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Orientation = new Entities.Orientation(0, 90);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
             TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
@@ -190,7 +195,6 @@ namespace ControlRoomApplication.Main
         private void CoordMove()
         {
             logger.Info("CoordMove ");
-            CurrentAppointment = DatabaseOperations.GetUpdatedAppointment(CurrentAppointment.Id);
             CurrentAppointment.Coordinates.Add(TargetCoordinate);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
             UpdateText();
