@@ -20,14 +20,14 @@ namespace ControlRoomApplication.Controllers
         RadioTelescopeController RTController;
 
 
-        public RemoteListener(int port, IPAddress localAddr, RadioTelescopeController telescopeController)
+        public RemoteListener(int port, IPAddress localAddr/*, RadioTelescopeController telescopeController*/)
         {
             logger.Debug("Setting up remote listener");
 
-            RTController = telescopeController;
+            //RTController = telescopeController;
 
             //server = new TcpListener(localAddr, port);
-            server = new TcpListener(IPAddress.Any, port);
+            server = new TcpListener(port);
 
             // Start listening for client requests.
             server.Start();

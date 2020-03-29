@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ControlRoomApplication.Controllers;
+using System.Net;
 
 namespace ControlRoomApplication.Entities
 {
@@ -7,7 +8,7 @@ namespace ControlRoomApplication.Entities
     {
         public List<RadioTelescopeControllerManagementThread> RTControllerManagementThreads { get; }
         public AbstractWeatherStation WeatherStation { get; }
-
+        private RemoteListener mobileControlServer { get; }
 
         public List<RadioTelescopeController> RadioTelescopeControllers
         {
@@ -43,6 +44,7 @@ namespace ControlRoomApplication.Entities
         {
             RTControllerManagementThreads = new List<RadioTelescopeControllerManagementThread>();
             WeatherStation = weatherStation;
+            mobileControlServer = new RemoteListener(25565, IPAddress.Parse("192.168.1.178"));
         }
     }
 }
