@@ -6,6 +6,7 @@ namespace ControlRoomApplication.Entities
     {
         UNKNOWN,
         CONTINUUM,
-        SPECTRAL
+        SPECTRAL,
+        NONE
     }
 }

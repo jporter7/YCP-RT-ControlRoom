@@ -193,8 +193,13 @@ namespace ControlRoomApplication.Main
                 logger.Info("Starting Weather Monitoring Routine");
                 MainControlRoomController.StartWeatherMonitoringRoutine();
 
-                logger.Info("Starting Spectra Cyber Controleler");
+                logger.Info("Starting Spectra Cyber Controller");
                 ARadioTelescope.SpectraCyberController.BringUp();
+
+                logger.Info("Setting Default Values for Spectra Cyber Controller");
+                ARadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+                ARadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                ARadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(2.0);
 
                 // Start RT controller's threaded management
                 logger.Info("Starting RT controller's threaded management");
@@ -352,7 +357,7 @@ namespace ControlRoomApplication.Main
                 case 1:
                 default:
                     logger.Info("Building SpectraCyberSimulator");
-                    return new SpectraCyberTestController(new SpectraCyberSimulator());
+                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             }
         }
 
