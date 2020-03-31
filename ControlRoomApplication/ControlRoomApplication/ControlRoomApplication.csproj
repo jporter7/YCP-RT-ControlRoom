@@ -321,7 +321,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Simulators\CSV\Spectra_Cyber_Sim_CSV.csv" />
-    <None Include="UIDoc.pdf" />
+    <None Include="UIDoc.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="circle-cropped.ico" />

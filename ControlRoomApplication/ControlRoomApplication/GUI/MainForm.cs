@@ -3,6 +3,8 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System;
+using System.IO;
+
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
@@ -639,8 +641,9 @@ namespace ControlRoomApplication.Main
         //Help button clicked ( user interface documentation PDF)
         private void helpButton_click(object sender, EventArgs e)
         {
-            string filename = "UIDoc.pdf";
-            System.Diagnostics.Process.Start(filename);
+            string filename = Directory.GetCurrentDirectory() + "\\" + "UIDoc.pdf";
+            if(File.Exists(filename))
+                System.Diagnostics.Process.Start(filename);
         }
 
         private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)
