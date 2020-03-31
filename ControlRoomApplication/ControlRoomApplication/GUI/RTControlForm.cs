@@ -4,6 +4,7 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
 //using ControlRoomApplication.GUI;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -670,8 +671,9 @@ namespace ControlRoomApplication.Main
         //This Button executes a system call that opens up the user interface documentation as a PDF
         private void helpButton_click(object sender, EventArgs e)
         {
-            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
-            System.Diagnostics.Process.Start(filename);
+            string filename = Directory.GetCurrentDirectory() + "\\" + "UIDoc.pdf";
+            if (File.Exists(filename))
+                System.Diagnostics.Process.Start(filename);
         }
 
         private void groupBox2_Enter(object sender, EventArgs e)

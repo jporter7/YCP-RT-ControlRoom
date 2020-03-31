@@ -1,6 +1,7 @@
 ﻿using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware;
 using System.Windows.Forms;
+using System.IO;
 using System.Drawing;
 using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
 using ControlRoomApplication.Simulators.Hardware.MCU;
@@ -593,8 +594,9 @@ namespace ControlRoomApplication.GUI
 
         private void button7_Click(object sender, EventArgs e)
         {
-            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
-            System.Diagnostics.Process.Start(filename);
+            string filename = Directory.GetCurrentDirectory() + "\\" + "UIDoc.pdf";
+            if (File.Exists(filename))
+                System.Diagnostics.Process.Start(filename);
         }
 
         private void ORAzimuthSens1_Click(object sender, EventArgs e)
