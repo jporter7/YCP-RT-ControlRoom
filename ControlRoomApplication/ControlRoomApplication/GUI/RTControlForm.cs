@@ -55,13 +55,15 @@ namespace ControlRoomApplication.Main
             CurrentAppointment._Status = AppointmentStatusEnum.REQUESTED;
             CurrentAppointment._Type = AppointmentTypeEnum.FREE_CONTROL;
             CurrentAppointment._Priority = AppointmentPriorityEnum.MANUAL;
-            CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+            CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
             CurrentAppointment.CelestialBody = new CelestialBody("control room");
             CurrentAppointment.CelestialBody.Coordinate = new Coordinate(0, 0);
             CurrentAppointment.Orientation = rtController.GetAbsoluteOrientation();
             CurrentAppointment.Telescope = controlRoom.RadioTelescopes.Find(x => x.Id == rtId);
             CurrentAppointment.User = ControlRoomUser;
-         
+
+            rtController.RadioTelescope.SpectraCyberController.Schedule.Mode = SpectraCyberScanScheduleMode.OFF;
+
             DatabaseOperations.AddAppointment(CurrentAppointment);
 
             //Calibrate Move

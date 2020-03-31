@@ -317,10 +317,12 @@ namespace ControlRoomApplication.Controllers
         {
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
 
+            logger.Info("[AbstractSpectrCyberController] Created RF Data: " + rfData.Intensity);
+
             //
             // Add to database
             //
-            DatabaseOperations.CreateRFData(appId, rfData);
+            //DatabaseOperations.CreateRFData(appId, rfData);
 
             return rfData;
         }

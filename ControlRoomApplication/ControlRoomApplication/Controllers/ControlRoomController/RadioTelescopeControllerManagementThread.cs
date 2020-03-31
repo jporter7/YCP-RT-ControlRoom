@@ -181,8 +181,10 @@ namespace ControlRoomApplication.Controllers
                         Name = "RTControllerIntermediateThread (ID=" + RadioTelescopeID.ToString() + ")"
                     };
 
-                    // Start SpectraCyber
-                    StartReadingData(NextAppointment);
+                    // Start SpectraCyber if the next appointment is NOT an appointment created by the control form
+                    // This is to allow for greater control of the spectra cyber output from the control form
+                    if(NextAppointment._Type != AppointmentTypeEnum.FREE_CONTROL)
+                        StartReadingData(NextAppointment);
 
                     // Start movement thread
                     AppointmentMovementThread.Start();

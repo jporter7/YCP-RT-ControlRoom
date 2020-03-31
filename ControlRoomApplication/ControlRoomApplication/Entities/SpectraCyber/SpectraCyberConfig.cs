@@ -28,7 +28,7 @@ namespace ControlRoomApplication.Entities
             Bandwidth = SpectraCyberBandwidthEnum.SMALL_BANDWIDTH;
         }
 
-        public SpectraCyberConfig() : this(SpectraCyberModeTypeEnum.UNKNOWN) { }
+        public SpectraCyberConfig() : this(SpectraCyberModeTypeEnum.SPECTRAL) { }
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -36,7 +36,7 @@ namespace ControlRoomApplication.Entities
 
         [Required]
         [Column("mode")]
-        public SpectraCyberModeTypeEnum Mode { get; set; }
+        public SpectraCyberModeTypeEnum Mode { get; set; }        
 
         [Required]
         [Column("integration_time")]
