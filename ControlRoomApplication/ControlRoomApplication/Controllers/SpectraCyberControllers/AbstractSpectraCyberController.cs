@@ -14,6 +14,7 @@ namespace ControlRoomApplication.Controllers
         protected RadioTelescope Parent { get; set; }
         protected AbstractSpectraCyber SpectraCyber { get; set; }
         public SpectraCyberScanSchedule Schedule { get; set; }
+        public SpectraCyberConfigValues configVals;
 
         protected Thread CommunicationThread { get; set; }
         protected bool KillCommunicationThreadFlag { get; set; }
@@ -26,7 +27,29 @@ namespace ControlRoomApplication.Controllers
             KillCommunicationThreadFlag = false;
             CommunicationMutex = new Mutex();
             SpectraCyber.CurrentModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+            configVals = new SpectraCyberConfigValues(SpectraCyberModeTypeEnum.CONTINUUM, 0, 0.3, 10, SpectraCyberDCGainEnum.X1, 1200);
         }
+
+        public struct SpectraCyberConfigValues
+        {
+            public SpectraCyberModeTypeEnum spectraCyberMode;
+            public double offsetVoltage;
+            public double integrationStep;
+            public double IFGain;
+            public SpectraCyberDCGainEnum DCGain;
+            public double bandwidth;
+
+            public SpectraCyberConfigValues(SpectraCyberModeTypeEnum spectraCyberModeIN, double offsetVoltageIN, double integrationStepIN,
+                                            double IFGainIN, SpectraCyberDCGainEnum DCGainIN, double bandwidthIN)
+            {
+                spectraCyberMode = spectraCyberModeIN;
+                offsetVoltage = offsetVoltageIN;
+                integrationStep = integrationStepIN;
+                IFGain = IFGainIN;
+                DCGain = DCGainIN;
+                bandwidth = bandwidthIN;
+            }
+        };
 
         public RadioTelescope GetParent()
         {
@@ -66,8 +89,19 @@ namespace ControlRoomApplication.Controllers
             
         }
 
+        public void SetDCGain(SpectraCyberDCGainEnum dcgain)
+        {
+            configVals.DCGain = dcgain;
+        }
+
+        public void SetIFGain(double ifgain)
+        {
+            configVals.IFGain = ifgain;
+        }
+
         public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
         {
+            configVals.spectraCyberMode = type;
             SpectraCyber.CurrentModeType = type;
         }
 
@@ -106,6 +140,8 @@ namespace ControlRoomApplication.Controllers
                 logger.Info("[AbstractSpectraCyberController] ERROR: input voltage outside of range [0, 4.095]");
                 return false;
             }
+
+            configVals.offsetVoltage = offset;
 
             int Magnitude = (int)(offset * 1000);
             string Command = "!" + identifier + IntToHexString(Magnitude);
@@ -158,6 +194,11 @@ namespace ControlRoomApplication.Controllers
         public bool SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum time)
         {
             return SetSomeIntegrationTime(time, 'L');
+        }
+
+        public void SetBandwidth(double bandwidth)
+        {
+            configVals.bandwidth = bandwidth;
         }
 
         // Perform a single scan, based on current mode

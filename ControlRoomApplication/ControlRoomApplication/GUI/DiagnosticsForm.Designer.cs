@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -164,6 +164,19 @@
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.WSOverride = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.lblIntegrationStep = new System.Windows.Forms.Label();
+            this.IntegrationStepVal = new System.Windows.Forms.Label();
+            this.lblDCGain = new System.Windows.Forms.Label();
+            this.DCGainVal = new System.Windows.Forms.Label();
+            this.lblIFGain = new System.Windows.Forms.Label();
+            this.IFGainVal = new System.Windows.Forms.Label();
+            this.lblBandwidth = new System.Windows.Forms.Label();
+            this.BandwidthVal = new System.Windows.Forms.Label();
+            this.lblOffsetVoltage = new System.Windows.Forms.Label();
+            this.OffsetVoltageVal = new System.Windows.Forms.Label();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.consoleLogBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -190,6 +203,8 @@
             this.groupBox12.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox11.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -198,14 +213,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle7;
             this.dataGridView1.Location = new System.Drawing.Point(3, 6);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -261,7 +276,7 @@
             // startTimeTextBox
             // 
             this.startTimeTextBox.Location = new System.Drawing.Point(2, 44);
-            this.startTimeTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.startTimeTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.startTimeTextBox.Name = "startTimeTextBox";
             this.startTimeTextBox.Size = new System.Drawing.Size(76, 20);
             this.startTimeTextBox.TabIndex = 8;
@@ -269,7 +284,7 @@
             // endTimeTextBox
             // 
             this.endTimeTextBox.Location = new System.Drawing.Point(85, 44);
-            this.endTimeTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.endTimeTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.endTimeTextBox.Name = "endTimeTextBox";
             this.endTimeTextBox.Size = new System.Drawing.Size(76, 20);
             this.endTimeTextBox.TabIndex = 9;
@@ -277,7 +292,7 @@
             // statusTextBox
             // 
             this.statusTextBox.Location = new System.Drawing.Point(182, 44);
-            this.statusTextBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.statusTextBox.Name = "statusTextBox";
             this.statusTextBox.Size = new System.Drawing.Size(102, 20);
             this.statusTextBox.TabIndex = 10;
@@ -551,7 +566,7 @@
             this.btnAddOneEncoder.BackColor = System.Drawing.Color.DarkGray;
             this.btnAddOneEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnAddOneEncoder.Location = new System.Drawing.Point(113, 23);
-            this.btnAddOneEncoder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnAddOneEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddOneEncoder.Name = "btnAddOneEncoder";
             this.btnAddOneEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddOneEncoder.TabIndex = 41;
@@ -564,7 +579,7 @@
             this.btnAddFiveEncoder.BackColor = System.Drawing.Color.DarkGray;
             this.btnAddFiveEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnAddFiveEncoder.Location = new System.Drawing.Point(162, 23);
-            this.btnAddFiveEncoder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnAddFiveEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddFiveEncoder.Name = "btnAddFiveEncoder";
             this.btnAddFiveEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddFiveEncoder.TabIndex = 42;
@@ -577,7 +592,7 @@
             this.btnAddXEncoder.BackColor = System.Drawing.Color.DarkGray;
             this.btnAddXEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnAddXEncoder.Location = new System.Drawing.Point(209, 23);
-            this.btnAddXEncoder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnAddXEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddXEncoder.Name = "btnAddXEncoder";
             this.btnAddXEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnAddXEncoder.TabIndex = 43;
@@ -590,7 +605,7 @@
             this.btnSubtractOneEncoder.BackColor = System.Drawing.Color.DarkGray;
             this.btnSubtractOneEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnSubtractOneEncoder.Location = new System.Drawing.Point(114, 53);
-            this.btnSubtractOneEncoder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSubtractOneEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnSubtractOneEncoder.Name = "btnSubtractOneEncoder";
             this.btnSubtractOneEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractOneEncoder.TabIndex = 44;
@@ -603,7 +618,7 @@
             this.btnSubtractFiveEncoder.BackColor = System.Drawing.Color.DarkGray;
             this.btnSubtractFiveEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnSubtractFiveEncoder.Location = new System.Drawing.Point(162, 53);
-            this.btnSubtractFiveEncoder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSubtractFiveEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnSubtractFiveEncoder.Name = "btnSubtractFiveEncoder";
             this.btnSubtractFiveEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractFiveEncoder.TabIndex = 45;
@@ -616,7 +631,7 @@
             this.btnSubtractXEncoder.BackColor = System.Drawing.Color.DarkGray;
             this.btnSubtractXEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnSubtractXEncoder.Location = new System.Drawing.Point(209, 53);
-            this.btnSubtractXEncoder.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnSubtractXEncoder.Margin = new System.Windows.Forms.Padding(2);
             this.btnSubtractXEncoder.Name = "btnSubtractXEncoder";
             this.btnSubtractXEncoder.Size = new System.Drawing.Size(33, 24);
             this.btnSubtractXEncoder.TabIndex = 46;
@@ -661,7 +676,7 @@
             this.button1.BackColor = System.Drawing.Color.DarkGray;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button1.Location = new System.Drawing.Point(209, 57);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(33, 24);
             this.button1.TabIndex = 54;
@@ -673,7 +688,7 @@
             this.button2.BackColor = System.Drawing.Color.DarkGray;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button2.Location = new System.Drawing.Point(162, 57);
-            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(33, 24);
             this.button2.TabIndex = 53;
@@ -685,7 +700,7 @@
             this.button3.BackColor = System.Drawing.Color.DarkGray;
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button3.Location = new System.Drawing.Point(112, 57);
-            this.button3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(33, 24);
             this.button3.TabIndex = 52;
@@ -697,7 +712,7 @@
             this.button4.BackColor = System.Drawing.Color.DarkGray;
             this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button4.Location = new System.Drawing.Point(209, 25);
-            this.button4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(33, 24);
             this.button4.TabIndex = 51;
@@ -709,7 +724,7 @@
             this.button5.BackColor = System.Drawing.Color.DarkGray;
             this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button5.Location = new System.Drawing.Point(162, 25);
-            this.button5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button5.Margin = new System.Windows.Forms.Padding(2);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(33, 24);
             this.button5.TabIndex = 50;
@@ -721,7 +736,7 @@
             this.button6.BackColor = System.Drawing.Color.DarkGray;
             this.button6.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.button6.Location = new System.Drawing.Point(113, 25);
-            this.button6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button6.Margin = new System.Windows.Forms.Padding(2);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(33, 24);
             this.button6.TabIndex = 49;
@@ -836,6 +851,8 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Location = new System.Drawing.Point(2, 11);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -854,7 +871,7 @@
             this.tabPage1.Controls.Add(this.dataGridView1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
             this.tabPage1.Size = new System.Drawing.Size(645, 411);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Appointment Control";
@@ -1018,7 +1035,7 @@
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
             this.tabPage2.Size = new System.Drawing.Size(645, 411);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Sensor Data";
@@ -1065,9 +1082,9 @@
             this.groupBox6.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox6.Controls.Add(this.splitContainer1);
             this.groupBox6.Location = new System.Drawing.Point(314, 267);
-            this.groupBox6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox6.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox6.Size = new System.Drawing.Size(324, 140);
             this.groupBox6.TabIndex = 38;
             this.groupBox6.TabStop = false;
@@ -1212,9 +1229,9 @@
             this.groupBox5.Controls.Add(this.label11);
             this.groupBox5.Controls.Add(this.windSpeedLabel);
             this.groupBox5.Location = new System.Drawing.Point(314, 78);
-            this.groupBox5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox5.Size = new System.Drawing.Size(324, 185);
             this.groupBox5.TabIndex = 37;
             this.groupBox5.TabStop = false;
@@ -1494,7 +1511,7 @@
             this.tabPage3.Controls.Add(this.groupBox11);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
             this.tabPage3.Size = new System.Drawing.Size(645, 411);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Sensor Overrides";
@@ -1518,7 +1535,7 @@
             this.ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
             this.ElMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ElMotTempSensOverride.Location = new System.Drawing.Point(227, 78);
-            this.ElMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ElMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.ElMotTempSensOverride.Name = "ElMotTempSensOverride";
             this.ElMotTempSensOverride.Size = new System.Drawing.Size(91, 23);
             this.ElMotTempSensOverride.TabIndex = 15;
@@ -1542,7 +1559,7 @@
             this.AzMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
             this.AzMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.AzMotTempSensOverride.Location = new System.Drawing.Point(229, 23);
-            this.AzMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.AzMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.AzMotTempSensOverride.Name = "AzMotTempSensOverride";
             this.AzMotTempSensOverride.Size = new System.Drawing.Size(89, 23);
             this.AzMotTempSensOverride.TabIndex = 13;
@@ -1578,7 +1595,7 @@
             this.MGOverride.BackColor = System.Drawing.Color.LimeGreen;
             this.MGOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.MGOverride.Location = new System.Drawing.Point(229, 31);
-            this.MGOverride.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MGOverride.Margin = new System.Windows.Forms.Padding(2);
             this.MGOverride.Name = "MGOverride";
             this.MGOverride.Size = new System.Drawing.Size(89, 23);
             this.MGOverride.TabIndex = 13;
@@ -1610,7 +1627,7 @@
             this.groupBox10.Controls.Add(this.label22);
             this.groupBox10.Location = new System.Drawing.Point(347, 24);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox10.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox10.Size = new System.Drawing.Size(293, 366);
             this.groupBox10.TabIndex = 0;
             this.groupBox10.TabStop = false;
@@ -1715,9 +1732,9 @@
             this.groupBox11.Controls.Add(this.WSOverride);
             this.groupBox11.Controls.Add(this.label24);
             this.groupBox11.Location = new System.Drawing.Point(2, 24);
-            this.groupBox11.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox11.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox11.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox11.Size = new System.Drawing.Size(339, 106);
             this.groupBox11.TabIndex = 27;
             this.groupBox11.TabStop = false;
@@ -1728,7 +1745,7 @@
             this.WSOverride.BackColor = System.Drawing.Color.LimeGreen;
             this.WSOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.WSOverride.Location = new System.Drawing.Point(228, 35);
-            this.WSOverride.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.WSOverride.Margin = new System.Windows.Forms.Padding(2);
             this.WSOverride.Name = "WSOverride";
             this.WSOverride.Size = new System.Drawing.Size(89, 23);
             this.WSOverride.TabIndex = 13;
@@ -1746,6 +1763,151 @@
             this.label24.Size = new System.Drawing.Size(99, 13);
             this.label24.TabIndex = 12;
             this.label24.Text = "Weather Station";
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.lblIntegrationStep);
+            this.tabPage4.Controls.Add(this.IntegrationStepVal);
+            this.tabPage4.Controls.Add(this.lblDCGain);
+            this.tabPage4.Controls.Add(this.DCGainVal);
+            this.tabPage4.Controls.Add(this.lblIFGain);
+            this.tabPage4.Controls.Add(this.IFGainVal);
+            this.tabPage4.Controls.Add(this.lblBandwidth);
+            this.tabPage4.Controls.Add(this.BandwidthVal);
+            this.tabPage4.Controls.Add(this.lblOffsetVoltage);
+            this.tabPage4.Controls.Add(this.OffsetVoltageVal);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(645, 411);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "RFData";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // lblIntegrationStep
+            // 
+            this.lblIntegrationStep.AutoSize = true;
+            this.lblIntegrationStep.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblIntegrationStep.Location = new System.Drawing.Point(300, 363);
+            this.lblIntegrationStep.Name = "lblIntegrationStep";
+            this.lblIntegrationStep.Size = new System.Drawing.Size(105, 15);
+            this.lblIntegrationStep.TabIndex = 14;
+            this.lblIntegrationStep.Text = "IntegrationStep";
+            // 
+            // IntegrationStepVal
+            // 
+            this.IntegrationStepVal.AutoSize = true;
+            this.IntegrationStepVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.IntegrationStepVal.Location = new System.Drawing.Point(514, 363);
+            this.IntegrationStepVal.Name = "IntegrationStepVal";
+            this.IntegrationStepVal.Size = new System.Drawing.Size(35, 15);
+            this.IntegrationStepVal.TabIndex = 15;
+            this.IntegrationStepVal.Text = "NaN";
+            // 
+            // lblDCGain
+            // 
+            this.lblDCGain.AutoSize = true;
+            this.lblDCGain.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDCGain.Location = new System.Drawing.Point(6, 389);
+            this.lblDCGain.Name = "lblDCGain";
+            this.lblDCGain.Size = new System.Drawing.Size(56, 15);
+            this.lblDCGain.TabIndex = 12;
+            this.lblDCGain.Text = "DCGain";
+            // 
+            // DCGainVal
+            // 
+            this.DCGainVal.AutoSize = true;
+            this.DCGainVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DCGainVal.Location = new System.Drawing.Point(220, 389);
+            this.DCGainVal.Name = "DCGainVal";
+            this.DCGainVal.Size = new System.Drawing.Size(35, 15);
+            this.DCGainVal.TabIndex = 13;
+            this.DCGainVal.Text = "NaN";
+            // 
+            // lblIFGain
+            // 
+            this.lblIFGain.AutoSize = true;
+            this.lblIFGain.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblIFGain.Location = new System.Drawing.Point(6, 363);
+            this.lblIFGain.Name = "lblIFGain";
+            this.lblIFGain.Size = new System.Drawing.Size(53, 15);
+            this.lblIFGain.TabIndex = 10;
+            this.lblIFGain.Text = "IF Gain";
+            this.lblIFGain.Click += new System.EventHandler(this.label39_Click);
+            // 
+            // IFGainVal
+            // 
+            this.IFGainVal.AutoSize = true;
+            this.IFGainVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.IFGainVal.Location = new System.Drawing.Point(220, 363);
+            this.IFGainVal.Name = "IFGainVal";
+            this.IFGainVal.Size = new System.Drawing.Size(35, 15);
+            this.IFGainVal.TabIndex = 11;
+            this.IFGainVal.Text = "NaN";
+            this.IFGainVal.Click += new System.EventHandler(this.label40_Click);
+            // 
+            // lblBandwidth
+            // 
+            this.lblBandwidth.AutoSize = true;
+            this.lblBandwidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBandwidth.Location = new System.Drawing.Point(153, 333);
+            this.lblBandwidth.Name = "lblBandwidth";
+            this.lblBandwidth.Size = new System.Drawing.Size(74, 15);
+            this.lblBandwidth.TabIndex = 8;
+            this.lblBandwidth.Text = "Bandwidth";
+            // 
+            // BandwidthVal
+            // 
+            this.BandwidthVal.AutoSize = true;
+            this.BandwidthVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BandwidthVal.Location = new System.Drawing.Point(367, 333);
+            this.BandwidthVal.Name = "BandwidthVal";
+            this.BandwidthVal.Size = new System.Drawing.Size(35, 15);
+            this.BandwidthVal.TabIndex = 9;
+            this.BandwidthVal.Text = "NaN";
+            // 
+            // lblOffsetVoltage
+            // 
+            this.lblOffsetVoltage.AutoSize = true;
+            this.lblOffsetVoltage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblOffsetVoltage.Location = new System.Drawing.Point(300, 389);
+            this.lblOffsetVoltage.Name = "lblOffsetVoltage";
+            this.lblOffsetVoltage.Size = new System.Drawing.Size(92, 15);
+            this.lblOffsetVoltage.TabIndex = 6;
+            this.lblOffsetVoltage.Text = "OffsetVoltage";
+            // 
+            // OffsetVoltageVal
+            // 
+            this.OffsetVoltageVal.AutoSize = true;
+            this.OffsetVoltageVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.OffsetVoltageVal.Location = new System.Drawing.Point(514, 389);
+            this.OffsetVoltageVal.Name = "OffsetVoltageVal";
+            this.OffsetVoltageVal.Size = new System.Drawing.Size(35, 15);
+            this.OffsetVoltageVal.TabIndex = 7;
+            this.OffsetVoltageVal.Text = "NaN";
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.consoleLogBox);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(645, 411);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Console Log";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // consoleLogBox
+            // 
+            this.consoleLogBox.AcceptsReturn = true;
+            this.consoleLogBox.AcceptsTab = true;
+            this.consoleLogBox.AllowDrop = true;
+            this.consoleLogBox.Location = new System.Drawing.Point(6, 6);
+            this.consoleLogBox.Multiline = true;
+            this.consoleLogBox.Name = "consoleLogBox";
+            this.consoleLogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.consoleLogBox.Size = new System.Drawing.Size(631, 400);
+            this.consoleLogBox.TabIndex = 0;
             // 
             // DiagnosticsForm
             // 
@@ -1799,6 +1961,10 @@
             this.groupBox10.PerformLayout();
             this.groupBox11.ResumeLayout(false);
             this.groupBox11.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1940,5 +2106,18 @@
         private System.Windows.Forms.Label lbEstopStat;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.Label lblDCGain;
+        private System.Windows.Forms.Label DCGainVal;
+        private System.Windows.Forms.Label lblIFGain;
+        private System.Windows.Forms.Label IFGainVal;
+        private System.Windows.Forms.Label lblBandwidth;
+        private System.Windows.Forms.Label BandwidthVal;
+        private System.Windows.Forms.Label lblOffsetVoltage;
+        private System.Windows.Forms.Label OffsetVoltageVal;
+        private System.Windows.Forms.Label lblIntegrationStep;
+        private System.Windows.Forms.Label IntegrationStepVal;
+        private System.Windows.Forms.TextBox consoleLogBox;
     }
 }
