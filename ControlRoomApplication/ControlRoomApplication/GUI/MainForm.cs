@@ -3,6 +3,8 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System;
+using System.IO;
+
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
@@ -193,8 +195,13 @@ namespace ControlRoomApplication.Main
                 logger.Info("Starting Weather Monitoring Routine");
                 MainControlRoomController.StartWeatherMonitoringRoutine();
 
-                logger.Info("Starting Spectra Cyber Controleler");
+                logger.Info("Starting Spectra Cyber Controller");
                 ARadioTelescope.SpectraCyberController.BringUp();
+
+                logger.Info("Setting Default Values for Spectra Cyber Controller");
+                ARadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+                ARadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                ARadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(2.0);
 
                 // Start RT controller's threaded management
                 logger.Info("Starting RT controller's threaded management");
@@ -352,7 +359,7 @@ namespace ControlRoomApplication.Main
                 case 1:
                 default:
                     logger.Info("Building SpectraCyberSimulator");
-                    return new SpectraCyberTestController(new SpectraCyberSimulator());
+                    return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             }
         }
 
@@ -634,8 +641,9 @@ namespace ControlRoomApplication.Main
         //Help button clicked ( user interface documentation PDF)
         private void helpButton_click(object sender, EventArgs e)
         {
-            string filename = "UIDoc.pdf";
-            System.Diagnostics.Process.Start(filename);
+            string filename = Directory.GetCurrentDirectory() + "\\" + "UIDoc.pdf";
+            if(File.Exists(filename))
+                System.Diagnostics.Process.Start(filename);
         }
 
         private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)

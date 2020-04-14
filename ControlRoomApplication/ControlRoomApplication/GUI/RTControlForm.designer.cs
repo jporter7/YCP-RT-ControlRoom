@@ -792,10 +792,10 @@
             this.stopScanButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.stopScanButton.BackColor = System.Drawing.Color.OrangeRed;
             this.stopScanButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.stopScanButton.Location = new System.Drawing.Point(368, 44);
+            this.stopScanButton.Location = new System.Drawing.Point(361, 44);
             this.stopScanButton.Margin = new System.Windows.Forms.Padding(2);
             this.stopScanButton.Name = "stopScanButton";
-            this.stopScanButton.Size = new System.Drawing.Size(40, 30);
+            this.stopScanButton.Size = new System.Drawing.Size(45, 36);
             this.stopScanButton.TabIndex = 37;
             this.stopScanButton.Text = "Stop Scan";
             this.stopScanButton.UseVisualStyleBackColor = false;
@@ -806,10 +806,10 @@
             this.startScanButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.startScanButton.BackColor = System.Drawing.Color.LimeGreen;
             this.startScanButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.startScanButton.Location = new System.Drawing.Point(307, 44);
+            this.startScanButton.Location = new System.Drawing.Point(309, 44);
             this.startScanButton.Margin = new System.Windows.Forms.Padding(2);
             this.startScanButton.Name = "startScanButton";
-            this.startScanButton.Size = new System.Drawing.Size(40, 30);
+            this.startScanButton.Size = new System.Drawing.Size(48, 36);
             this.startScanButton.TabIndex = 36;
             this.startScanButton.Text = "Start Scan";
             this.startScanButton.UseVisualStyleBackColor = false;

@@ -90,6 +90,8 @@ namespace ControlRoomApplication.Controllers
                 response.SerialIdentifier = request.ResponseIdentifier;
 
                 // Generate random data
+                /// <TODO>
+                /// May need to update to more accurately match the data seen from the real spectra cyber
                 int minIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MINIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
                 int maxIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MAXIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
                 response.DecimalData = random.Next(minIntensityScaled, maxIntensityScaled + 1);
@@ -105,5 +107,6 @@ namespace ControlRoomApplication.Controllers
         {
             return true;
         }
+
     }
 }

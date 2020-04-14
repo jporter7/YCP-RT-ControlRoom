@@ -190,6 +190,7 @@ namespace ControlRoomApplication.Controllers
         // Start scanning, keep doing so until requested to stop
         public void StartScan()
         {
+            logger.Info("[SpectraCyberAbstractController] Scan has been started");
             try
             {
                 CommunicationMutex.WaitOne();
@@ -205,6 +206,8 @@ namespace ControlRoomApplication.Controllers
         // Stop scanning and return scan results
         public void StopScan()
         {
+            logger.Info("[SpectraCyberAbstractController] Scan has been stopped");
+
             try
             {
                 CommunicationMutex.WaitOne();
@@ -314,10 +317,12 @@ namespace ControlRoomApplication.Controllers
         {
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
 
+            logger.Info("[AbstractSpectrCyberController] Created RF Data: " + rfData.Intensity);
+
             //
             // Add to database
             //
-            DatabaseOperations.CreateRFData(appId, rfData);
+            //DatabaseOperations.CreateRFData(appId, rfData);
 
             return rfData;
         }

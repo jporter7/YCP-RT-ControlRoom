@@ -4,6 +4,7 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
 //using ControlRoomApplication.GUI;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -55,14 +56,17 @@ namespace ControlRoomApplication.Main
             CurrentAppointment._Status = AppointmentStatusEnum.REQUESTED;
             CurrentAppointment._Type = AppointmentTypeEnum.FREE_CONTROL;
             CurrentAppointment._Priority = AppointmentPriorityEnum.MANUAL;
-            CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
+            CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
             CurrentAppointment.CelestialBody = new CelestialBody("control room");
             CurrentAppointment.CelestialBody.Coordinate = new Coordinate(0, 0);
             CurrentAppointment.Orientation = rtController.GetAbsoluteOrientation();
             CurrentAppointment.Telescope = controlRoom.RadioTelescopes.Find(x => x.Id == rtId);
             CurrentAppointment.User = ControlRoomUser;
-         
+
+            rtController.RadioTelescope.SpectraCyberController.Schedule.Mode = SpectraCyberScanScheduleMode.OFF;
+
             DatabaseOperations.AddAppointment(CurrentAppointment);
+
             //Calibrate Move
             CalibrateMove();
             runControlScriptButton.Enabled = false;
@@ -667,8 +671,9 @@ namespace ControlRoomApplication.Main
         //This Button executes a system call that opens up the user interface documentation as a PDF
         private void helpButton_click(object sender, EventArgs e)
         {
-            string filename = "C:/Users/RadioTelescopeTWO/Desktop/RadioTelescope/RT-Control/YCP-RT-ControlRoom/ControlRoomApplication/ControlRoomApplication/Documentation/UIDoc.pdf";
-            System.Diagnostics.Process.Start(filename);
+            string filename = Directory.GetCurrentDirectory() + "\\" + "UIDoc.pdf";
+            if (File.Exists(filename))
+                System.Diagnostics.Process.Start(filename);
         }
 
         private void groupBox2_Enter(object sender, EventArgs e)
@@ -766,6 +771,7 @@ namespace ControlRoomApplication.Main
                 startScanButton.Enabled = true;
 
                 spectraEditActive = false;
+
             }
             else
             {
@@ -784,6 +790,7 @@ namespace ControlRoomApplication.Main
                 startScanButton.Enabled = false;
 
                 spectraEditActive = true;
+
             }
 
         }
@@ -797,15 +804,15 @@ namespace ControlRoomApplication.Main
             switch (caseSwitch)
             {
                 case 0:
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+                    rtController.RadioTelescope.SpectraCyberController.SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    rtController.RadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
                     //We need to add in code to manage the if_gain
                     break;
                 case 1:
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
-                    controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
                     break;
             }
 
@@ -815,18 +822,18 @@ namespace ControlRoomApplication.Main
             stopScanButton.Enabled = true;
             stopScanButton.BackColor = System.Drawing.Color.Red;
 
-            controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.StartScan();
+            rtController.RadioTelescope.SpectraCyberController.StartScan();
             logger.Info("[SpectraCyberController] Scan has started");
         }
 
         private void stopScan_Click(object sender, EventArgs e)
         {
-            if (controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.OFF ||
-                controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.UNKNOWN)
+            if (rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.OFF ||
+                rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.UNKNOWN)
                 logger.Info("[SpectraCyberController] There is no scan to stop");
             else
             {
-                controlRoom.RadioTelescopes[rtId - 1].SpectraCyberController.StopScan();
+                rtController.RadioTelescope.SpectraCyberController.StopScan();
                 logger.Info("[SpectraCyberController] Scan has stopped");
             }
 
