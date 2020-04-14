@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
@@ -15,35 +16,20 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         private RFData data1;
         private RFData data2;
         private RFData data3;
+        private RFData data4;
 
         // Test Appointment objects
         private Appointment appt;
         private int NumRTInstances = 1;
         private int NumAppointments = 0;
+        private int NumRFData = -1;
 
         [TestInitialize]
         public void BuildUp()
-        {
-            // Initialize context
-            //   DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
-
+        { 
             NumAppointments = DatabaseOperations.GetTotalAppointmentCount();
             NumRTInstances = DatabaseOperations.GetTotalRTCount();
-
-            // RFData initialization
-            data1 = new RFData();
-            data2 = new RFData();
-            data3 = new RFData();
-            DateTime date = DateTime.UtcNow;
-
-            data1.Intensity = 9234875;
-            data1.TimeCaptured = date;
-
-            data2.Intensity = 8739425;
-            data2.TimeCaptured = date.AddSeconds(5);
-
-            data3.Intensity = 12987;
-            data3.TimeCaptured = date.AddSeconds(10);
+            NumRFData = DatabaseOperations.GetTotalRFDataCount();
 
             appt = new Appointment();
             appt.start_time = DateTime.UtcNow;
@@ -60,6 +46,30 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt.User = DatabaseOperations.GetControlRoomUser();
 
             DatabaseOperations.AddAppointment(appt);
+
+            // RFData initialization
+            data1 = new RFData();
+            data2 = new RFData();
+            data3 = new RFData();
+            data4 = new RFData();
+            DateTime date = DateTime.UtcNow;
+
+            data1.Intensity = 9234875;
+            data1.TimeCaptured = new DateTime(1999, 07, 19, 08, 15, 12);
+            data1.appointment_id = appt.Id;
+
+            data2.Intensity = 8739425;
+            data2.TimeCaptured = new DateTime(2013, 12, 30, 15, 10, 16);
+            data2.appointment_id = appt.Id;
+
+            data3.Intensity = 12987;
+            data3.TimeCaptured = new DateTime(2017, 05, 21, 17, 0, 0);
+            data3.appointment_id = appt.Id;
+
+            data4.Intensity = 12987;
+            data4.TimeCaptured = new DateTime(2019, 06, 26, 2, 31, 59);
+            data4.appointment_id = appt.Id;
+
             NumAppointments++;
             NumRTInstances++;
 
@@ -113,50 +123,52 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestCreateRFData()
         {
-            DatabaseOperations.CreateRFData(appt.Id, data1);
-            DatabaseOperations.CreateRFData(appt.Id, data2);
-            DatabaseOperations.CreateRFData(appt.Id, data3);
+            DatabaseOperations.AddRFData(data1);
+            DatabaseOperations.AddRFData(data2);
 
-            // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
+            Assert.AreEqual(DatabaseOperations.GetTotalRFDataCount(), NumRFData + 2);
 
-            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data1.Id).Intensity, data1.Intensity);
-            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data2.Id).Intensity, data2.Intensity);
-            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data3.Id).Intensity, data3.Intensity);
+            List<RFData> datas = DatabaseOperations.GetListOfRFData();
+            RFData dbData1 = datas.Find(x => x.Id == data1.Id);
+            RFData dbData2 = datas.Find(x => x.Id == data2.Id);
 
-            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data1.Id).TimeCaptured.Date, data1.TimeCaptured.Date);
-            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data2.Id).TimeCaptured.Date, data2.TimeCaptured.Date);
-            Assert.AreEqual(appt.RFDatas.ToList().Find(x => x.Id == data3.Id).TimeCaptured.Date, data3.TimeCaptured.Date);
+            Assert.IsTrue(dbData1 != null);
+            Assert.IsTrue(dbData2 != null);
+
+            Assert.AreEqual(dbData1.Intensity, data1.Intensity);
+            Assert.AreEqual(dbData2.Intensity, data2.Intensity);
+
+            Assert.IsTrue(dbData1.TimeCaptured == data1.TimeCaptured);
+            Assert.IsTrue(dbData2.TimeCaptured == data2.TimeCaptured);
+
         }
 
         [TestMethod]
         public void TestCreateRFData_InvalidDate()
         {
-            data1.TimeCaptured = DateTime.UtcNow.AddDays(1);
+            data3.TimeCaptured = DateTime.UtcNow.AddDays(1);
 
-            DatabaseOperations.CreateRFData(appt.Id, data1);
+            DatabaseOperations.AddRFData(data3);
 
-            // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
+            List<RFData> datas = DatabaseOperations.GetListOfRFData();
 
-            RFData testData = appt.RFDatas.ToList().Find(x => x.Id == data1.Id);
+            RFData testData = appt.RFDatas.ToList().Find(x => x.Id == data3.Id);
 
-            Assert.AreEqual(null, testData);
+            Assert.AreEqual(null, datas.Find(t => t.Id == data3.Id));
         }
 
         [TestMethod]
         public void TestCreateRFData_InvalidIntensity()
         {
-            data1.Intensity = -239458;
+            data4.Intensity = -239458;
 
-            DatabaseOperations.CreateRFData(appt.Id, data1);
+            DatabaseOperations.AddRFData(data4);
 
-            // update appt
-            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
+            List<RFData> datas = DatabaseOperations.GetListOfRFData();
 
-            RFData testData = appt.RFDatas.ToList().Find(x => x.Id == data1.Id);
+            RFData testData = appt.RFDatas.ToList().Find(x => x.Id == data4.Id);
 
-            Assert.AreEqual(null, testData);
+            Assert.AreEqual(null, datas.Find(t => t.Id == data4.Id));
         }
 
         [TestMethod]

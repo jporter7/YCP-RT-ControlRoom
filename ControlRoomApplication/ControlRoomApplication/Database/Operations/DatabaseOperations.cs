@@ -317,19 +317,50 @@ namespace ControlRoomApplication.Database
         /// Creates and stores and RFData reading in the local database.
         /// </summary>
         /// <param name="data">The RFData reading to be created/stored.</param>
-        /// <param name="apptId"></param>
-        public static void CreateRFData(int apptId, RFData data)
+        public static void AddRFData(RFData data)
         {
             
             if (VerifyRFData(data))
             {
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
-                    var appt = Context.Appointments.Find(apptId);
+                    // add the rf data to the list in appointment
+                    var appt = Context.Appointments.Find(data.appointment_id);
                     appt.RFDatas.Add(data);
-                    SaveContext(Context);
+
+                    // add the rf data to the database
+                    Context.RFDatas.AddOrUpdate(data);
+
+                    Context.SaveChangesAsync();
                 }
             }
+        }
+
+        public static int GetTotalRFDataCount()
+        {
+            int count = -1;
+
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                count = Context.RFDatas.Count();
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Returns the list of Appointments from the database.
+        /// </summary>
+        public static List<RFData> GetListOfRFData()
+        {
+            List<RFData> appts = new List<RFData>();
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                // Use Include method to load related entities from the database
+                appts = Context.RFDatas./*Include(t => t.Appointment).*/ToList<RFData>();
+
+            }
+            return appts;
         }
 
         /// <summary>

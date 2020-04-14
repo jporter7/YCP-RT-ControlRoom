@@ -229,8 +229,12 @@ namespace ControlRoomApplication.Controllers
         }
 
         // Start scanning, keep doing so until requested to stop
-        public void StartScan()
+        public void StartScan(int appId)
         {
+
+            // set the spectra cyber active appointment so that rf data has an appointment to refer to
+            SpectraCyber.ActiveAppointmentID = appId;
+
             logger.Info("[SpectraCyberAbstractController] Scan has been started");
             try
             {
@@ -357,13 +361,12 @@ namespace ControlRoomApplication.Controllers
         private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, int appId)
         {
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
+            rfData.appointment_id = appId;
 
             logger.Info("[AbstractSpectrCyberController] Created RF Data: " + rfData.Intensity);
 
-            //
             // Add to database
-            //
-            //DatabaseOperations.CreateRFData(appId, rfData);
+            DatabaseOperations.AddRFData(rfData);
 
             return rfData;
         }

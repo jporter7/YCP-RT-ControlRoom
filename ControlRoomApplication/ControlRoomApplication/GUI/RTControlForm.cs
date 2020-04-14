@@ -849,7 +849,7 @@ namespace ControlRoomApplication.Main
             stopScanButton.Enabled = true;
             stopScanButton.BackColor = System.Drawing.Color.Red;
 
-            rtController.RadioTelescope.SpectraCyberController.StartScan();
+            rtController.RadioTelescope.SpectraCyberController.StartScan(CurrentAppointment.Id);
             logger.Info("[SpectraCyberController] Scan has started");
         }
 

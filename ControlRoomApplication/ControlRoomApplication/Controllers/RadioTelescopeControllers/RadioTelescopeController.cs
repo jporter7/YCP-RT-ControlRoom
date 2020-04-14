@@ -269,25 +269,6 @@ namespace ControlRoomApplication.Controllers
             return ResponseMetBasicExpectations(MinorResponseBytes, 0x3);
         }
 
-        private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
-        {
-            RFData rfData = new RFData();
-            rfData.TimeCaptured = spectraCyberResponse.DateTimeCaptured;
-            rfData.Intensity = spectraCyberResponse.DecimalData;
-            return rfData;
-        }
-
-        private static List<RFData> GenerateRFDataList(List<SpectraCyberResponse> spectraCyberResponses)
-        {
-            List<RFData> rfDataList = new List<RFData>();
-            foreach (SpectraCyberResponse response in spectraCyberResponses)
-            {
-                rfDataList.Add(GenerateRFData(response));
-            }
-
-            return rfDataList;
-        }
-
         // Checks the motor temperatures against acceptable ranges every second
         private void tempMonitor()
         {
