@@ -17,16 +17,14 @@ namespace ControlRoomApplication.Controllers
         public TcpListener server = null;
         private Thread TCPMonitoringThread;
         private bool KeepTCPMonitoringThreadAlive;
-        RadioTelescopeController RTController;
+        private ControlRoom controlRoom;
 
-
-        public RemoteListener(int port, IPAddress localAddr/*, RadioTelescopeController telescopeController*/)
+        public RemoteListener(int port, ControlRoom control)
         {
             logger.Debug("Setting up remote listener");
 
-            //RTController = telescopeController;
+            controlRoom = control;
 
-            //server = new TcpListener(localAddr, port);
             server = new TcpListener(port);
 
             // Start listening for client requests.
@@ -128,7 +126,7 @@ namespace ControlRoomApplication.Controllers
             if (data.IndexOf("COORDINATE_MOVE") != -1)
             {
                 // we have a move command coming in
-                RTController.ExecuteRadioTelescopeControlledStop();
+                controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].ExecuteRadioTelescopeControlledStop();
 
                 // get azimuth and orientation
                 int azimuthIndex = data.IndexOf("AZIM");
@@ -152,7 +150,7 @@ namespace ControlRoomApplication.Controllers
 
                 Orientation movingTo = new Orientation(azimuth, elevation);
 
-                RTController.MoveRadioTelescopeToOrientation(movingTo);
+                controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].MoveRadioTelescopeToOrientation(movingTo);
 
                 // TODO: store the User Id and movement somewhere in the database
 
@@ -162,6 +160,57 @@ namespace ControlRoomApplication.Controllers
             else if (data.IndexOf("SET_OVERRIDE") != -1)
             {
                 // we have an override command coming in
+            }
+            else if (data.IndexOf("SCRIPT") != -1)
+            {
+                // we have a move command coming in
+                controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].ExecuteRadioTelescopeControlledStop();
+
+                // get azimuth and orientation
+                int colonIndex = data.IndexOf(":");
+                string script = "";
+
+                if (colonIndex != -1)
+                {
+                    script = data.Substring(colonIndex);
+                }
+                else
+                    return false;
+
+                logger.Debug("Script " + script);
+
+                if (script == "DUMP")
+                {
+                    // we have to use the - 1 here because the mobile app does not specify which radio telescope to control. This will just
+                    // enable them to control the most recently created telescope.
+                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.SnowDump();
+                }
+                else if (script == "FULL_EV")
+                {
+                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.FullElevationMove();
+                }
+                else if (script == "CALIBRATE")
+                {
+                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.Thermal_Calibrate();
+                }
+                else if (script == "STOW")
+                {
+                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.Stow();
+                }
+                else if (script == "FULL_CLOCK")
+                {
+                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.Full_360_CW_Rotation();
+                }
+                else if (script == "FULL_COUNTER")
+                {
+                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.Full_360_CCW_Rotation();
+                }
+                else
+                {
+                    return false;
+                }
+
+                return true;
             }
 
             // can't find a keyword then we fail

@@ -44,7 +44,7 @@ namespace ControlRoomApplication.Entities
         {
             RTControllerManagementThreads = new List<RadioTelescopeControllerManagementThread>();
             WeatherStation = weatherStation;
-            mobileControlServer = new RemoteListener(25565, IPAddress.Parse("192.168.1.178"));
+            mobileControlServer = new RemoteListener(25565, this);
         }
     }
 }
