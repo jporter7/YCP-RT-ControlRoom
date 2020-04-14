@@ -32,6 +32,7 @@ namespace ControlRoomApplication.Main
         public bool freeEditActive;
         public bool manualControlActive;
         public bool spectraEditActive;
+        public SpectraCyberDCGainEnum DCGainInput;
 
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
@@ -764,8 +765,8 @@ namespace ControlRoomApplication.Main
                 offsetVoltage.Enabled = false;
                 bandwidth.BackColor = System.Drawing.Color.DarkGray;
                 bandwidth.Enabled = false;
-                gain.BackColor = System.Drawing.Color.DarkGray;
-                gain.Enabled = false;
+                DCGain.BackColor = System.Drawing.Color.DarkGray;
+                DCGain.Enabled = false;
 
                 startScanButton.BackColor = System.Drawing.Color.LimeGreen;
                 startScanButton.Enabled = true;
@@ -783,8 +784,8 @@ namespace ControlRoomApplication.Main
                 offsetVoltage.Enabled = true;
                 bandwidth.BackColor = System.Drawing.Color.White;
                 bandwidth.Enabled = true;
-                gain.BackColor = System.Drawing.Color.White;
-                gain.Enabled = true;
+                DCGain.BackColor = System.Drawing.Color.White;
+                DCGain.Enabled = true;
 
                 startScanButton.BackColor = System.Drawing.Color.DarkGray;
                 startScanButton.Enabled = false;
@@ -793,6 +794,29 @@ namespace ControlRoomApplication.Main
 
             }
 
+            int caseSwitch = DCGain.SelectedIndex;
+
+            switch (caseSwitch)
+            {
+                case 0:
+                    DCGainInput = SpectraCyberDCGainEnum.X1;
+                    break;
+                case 1:
+                    DCGainInput = SpectraCyberDCGainEnum.X5;
+                    break;
+                case 2:
+                    DCGainInput = SpectraCyberDCGainEnum.X10;
+                    break;
+                case 3:
+                    DCGainInput = SpectraCyberDCGainEnum.X20;
+                    break;
+                case 4:
+                    DCGainInput = SpectraCyberDCGainEnum.X50;
+                    break;
+                case 5:
+                    DCGainInput = SpectraCyberDCGainEnum.X60;
+                    break;
+            }
         }
 
 
@@ -805,14 +829,17 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+                    rtController.RadioTelescope.SpectraCyberController.SetBandwidth(Convert.ToDouble(bandwidth.Text));
                     rtController.RadioTelescope.SpectraCyberController.SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
                     rtController.RadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
-                    //We need to add in code to manage the if_gain
+                    rtController.RadioTelescope.SpectraCyberController.SetDCGain(DCGainInput);
                     break;
                 case 1:
                     rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+                    rtController.RadioTelescope.SpectraCyberController.SetBandwidth(Convert.ToDouble(bandwidth.Text));
                     rtController.RadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
                     rtController.RadioTelescope.SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetIFGain(Convert.ToDouble(IFGainVal.Text));
                     break;
             }
 
@@ -867,150 +894,3 @@ namespace ControlRoomApplication.Main
         }
     }
 }
-
-
-
-
-
-
-
-//--------------------------------------------------------------------------------------------------------------------
-
-//- - - - - - - -Below this line is commented out code from the origional Radio Telescope Manual Form - - - - - - - - 
-
-//--------------------------------------------------------------------------------------------------------------------
-
-
-//  private void PosButton_MouseDown(object sender, MouseEventArgs e)
-////  {
-//      logger.Info("Jog PosButton MouseDown");
-//     // UpdateText("Moving at " + comboBox1.Text);
-
-//      // Start CW Jog
-//      rt_controller.StartRadioTelescopeAzimuthJog(speed, true);
-// // }
-
-//  private void PosButton_MouseUp(object sender, MouseEventArgs e)
-//{
-//  logger.Info("Jog PosButton MouseUp");
-//  UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
-// Stop Move
-//ExecuteCorrectStop();
-//   }
-
-// private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-// {
-// if(comboBox1.Text == "2 RPM")
-// {
-//     logger.Info("Speed set to 2 RPM");
-//     speed = 333333;
-// }
-//// else if(comboBox1.Text == "0.1 RPM")
-// {
-//     logger.Info("Speed set to 0.1 RPM");
-//     speed = 16667;
-// }
-
-//else
-//{
-//    logger.Info("Invalid Speed Selected");
-//    throw new Exception();
-//}
-///
-
-//private void ExecuteCorrectStop()
-//{
-//   // //if (ControledButtonRadio.Checked)
-//   // {
-//   //     logger.Info("Executed Controlled Stop");
-//   //     rt_controller.ExecuteRadioTelescopeControlledStop();
-//   // }
-//   //// else if (radioButton2.Checked)
-//   // {
-//   //     logger.Info("Executed Immediate Stop");
-//   //     rt_controller.ExecuteRadioTelescopeImmediateStop();
-//   // }
-//    //else
-//    //{
-//    //    logger.Info("Invalid Stop Selected");
-//    //    throw new Exception();
-//    //}
-//}
-
-//private void button1_Click(object sender, EventArgs e)
-//{//
-//  //  logger.Info("Move Relative Button Clicked");
-//    //int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
-//    //int pos = ConversionHelper.DegreesToSteps( (int)numericUpDown1.Value , MotorConstants.GEARING_RATIO_AZIMUTH );
-//   // rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);
-//}
-
-//private void timer1_Tick(object sender, EventArgs e)
-//{
-//   // Entities.Orientation currentOrienation = rt_controller.GetCurrentOrientation();
-//   // SetActualAZText(currentOrienation.Azimuth.ToString("0.##"));
-//  //  SetActualELText(currentOrienation.Elevation.ToString("0.##"));
-//}
-
-//  delegate void SetActualAZTextCallback(string text);
-//private void SetActualAZText(string text)
-//{
-//    // InvokeRequired required compares the thread ID of the
-//    // calling thread to the thread ID of the creating thread.
-//    // If these threads are different, it returns true.
-//   // if (ActualAZTextBox.InvokeRequired)
-//    {
-//        //SetActualAZTextCallback d = new SetActualAZTextCallback(SetActualAZText);
-//        var d = new SetActualAZTextCallback(SetActualAZText);
-//        try
-//        {
-//            var task = Task.Run( () => Invoke( d , new object[] { text } ));
-//            if(!task.Wait( 300 ))
-//                throw new Exception( "Timed out" );
-
-//        }
-//        catch  {
-
-//        }
-//    }
-//    else
-//    {
-//     //   ActualAZTextBox.Text = text;
-//    }
-//}
-
-//delegate void SetActualELTextCallback(string text);
-//private void SetActualELText(string text)
-//{ }
-// InvokeRequired required compares the thread ID of the
-// calling thread to the thread ID of the creating thread.
-// If these threads are different, it returns true.
-//    if (ActualELTextBox.InvokeRequired)
-//    {
-//        //SetActualELTextCallback d = new SetActualELTextCallback(SetActualELText);
-//        var d = new SetActualELTextCallback(SetActualELText);
-//        try
-//        {
-//            var task = Task.Run( () => Invoke( d , new object[] { text } ) );
-//            if(!task.Wait( 300 ))
-//                throw new Exception( "Timed out" );
-
-//        }
-//        catch { }
-//    }
-//    else
-//    {
-//        ActualELTextBox.Text = text;
-//    }
-//}
-
-//        private void NegButton_Click(object sender, EventArgs e)
-//        {
-
-//        }
-
-//        private void ManualControlForm_Load(object sender, EventArgs e)
-//        {
-
-//        }

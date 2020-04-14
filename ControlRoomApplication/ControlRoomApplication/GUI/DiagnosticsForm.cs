@@ -112,7 +112,6 @@ namespace ControlRoomApplication.GUI
             dataGridView1.Rows.Add(mcuRow);
             dataGridView1.Update();
 
-
             //MCU_Statui.ColumnCount = 2;
             //MCU_Statui.Columns[0].HeaderText = "Status name";
             //MCU_Statui.Columns[1].HeaderText = "value";
@@ -241,18 +240,7 @@ namespace ControlRoomApplication.GUI
             double AzMotTemp = rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp;
             float insideTemp = controlRoom.WeatherStation.GetInsideTemp();
             float outsideTemp = controlRoom.WeatherStation.GetOutsideTemp();
-            /** Conversion from fahrenheit to celsius 
-            if(celOrFar)
-            {
-               
-            }**/
-            //double ElMotTempFar = (ElMotTemp) * (9 / 5) + 32;
-            //double AzMotTempFar = (AzMotTemp) * (9 / 5) + 32;
-            //float insideTempFar = (insideTemp) * (9 / 5) + 32;
-            //float outsideTempFar = (outsideTemp) * (9 / 5) + 32;
-            /** Conversion from celsius to farenheit
-             
-           }**/
+
             double ElMotTempCel = (ElMotTemp - 32) * (5.0 / 9);
             double AzMotTempCel = (AzMotTemp - 32) * (5.0 / 9);
             double insideTempCel = (insideTemp - 32) * (5.0 / 9);
@@ -307,112 +295,27 @@ namespace ControlRoomApplication.GUI
             lbEstopStat.Text = rtController.RadioTelescope.PLCDriver.plcInput.Estop.ToString();
             lbGateStat.Text = rtController.RadioTelescope.PLCDriver.plcInput.Gate_Sensor.ToString();
 
-            ///*** Temperature Logic Start***/
-            //if (elevationTemperature <= 79 && azimuthTemperature <= 79)
-            //{
-            //    warningLabel.Visible = false;
-            //    lblShutdown.Visible = false;
-            //    fanLabel.Visible = false;
-            //    warningSent = false;
-            //    shutdownSent = false;
-            //}
-            //else if (elevationTemperature > 79 && elevationTemperature < 100 || azimuthTemperature > 79 && azimuthTemperature < 100)
-            //{
-            //    if (warningSent == false)
-            //    {
-            //        warningLabel.Visible = true;
-            //    }
-            //    else
-            //    {
-            //        warningLabel.Visible = false;
-            //    }
-
-            //    lblShutdown.Visible = false;
-            //    warningLabel.ForeColor = Color.Yellow;
-            //    warningLabel.Text = "Warning Sent";
-
-            //    warningSent = true;
-
-            //    fanLabel.Visible = true;
-            //    fanLabel.ForeColor = Color.Blue;
-            //    fanLabel.Text = "Fans On";
-
-            //}
-            //else if (elevationTemperature >= 100 || azimuthTemperature >= 100)
-            //{
-            //    warningLabel.Visible = false;
-
-            //    if (shutdownSent == false)
-            //    {
-            //        lblShutdown.Visible = true;
-            //    }
-            //    else
-            //    {
-            //        lblShutdown.Visible = false;
-            //    }
-
-            //    lblShutdown.ForeColor = Color.Red;
-            //    lblShutdown.Text = "Shutdown Sent";
-
-            //    shutdownSent = true;
-
-            //    fanLabel.Visible = true;
-            //    fanLabel.ForeColor = Color.Blue;
-            //    fanLabel.Text = "Fans Stay On";
-
-
-            //}
-            //else
-            //{
-            //    warningLabel.Visible = false;
-            //    warningLabel.ForeColor = Color.Black;
-            //    warningLabel.Text = "";
-
-            //    fanLabel.Visible = false;
-            //    fanLabel.ForeColor = Color.Blue;
-            //    fanLabel.Text = "Fans On";
-            //}
-
-            /*** Temperature Logic End***/
-            /*
-            if (controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay != null)
-            {
-                SetStartTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.start_time.ToLocalTime().ToString("hh:mm tt"));
-                SetEndTimeText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay.end_time.ToLocalTime().ToString("hh:mm tt"));
-                SetApptStatusText(controlRoom.RTControllerManagementThreads[rtId].AppointmentToDisplay._Status.ToString());
-            }
-            //*/
             GetHardwareStatuses();
 
             SetCurrentWeatherData();
 
             dataGridView1.Update();
 
+            // Spectra Cyber Tab Updates
+            BandwidthVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.bandwidth.ToString();
+            IFGainVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.IFGain.ToString();
+            DCGainVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.DCGain.ToString();
+            IntegrationStepVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.integrationStep.ToString();
+            OffsetVoltageVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.offsetVoltage.ToString();
 
-            //if(MCU_Statui.Rows.Count > 5) {
-            //    bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
-            //    foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
-            //        string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
-            //        //MCU_Statui.Rows[(int)stutusBit][1] = stuti[(int)stutusBit].ToString();
-            //        //string[] row = { ((PLC_modbus_server_register_mapping)reg).ToString() , Convert.ToString( val[reg + 1] ).PadLeft( 5 ) };//.Replace(" ", "0") };
-            //        //PLC_regs.Rows.Add(row);
-            //        MCU_Statui.Rows[(int)stutusBit].SetValues( row );
-            //    }
-            //} else {
-            //    MCU_Statui.Rows.Clear();
-            //    bool[] stuti = controlRoom.RadioTelescopes[rtId].PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH ).GetAwaiter().GetResult();
-            //    foreach(MCUConstants.MCUStutusBits stutusBit in (MCUConstants.MCUStutusBits[])Enum.GetValues( typeof( MCUConstants.MCUStutusBits ) )) {
-            //        string[] row = { stutusBit.ToString() , stuti[(int)stutusBit].ToString() };
-            //        MCU_Statui.Rows.Add( row );
-            //    }
-            //    MCU_Statui.Update();
-            //}
+            // Console Log Output Update
+            consoleLogBox.Text = mainF.log.loggerQueue;
 
-            // This nextrsection is for reading the spectra cyber info and changing it (ONLY if we are on a manual appointment)
-
-
-
-
+            if (!consoleLogBox.Focused)
+            {
+                consoleLogBox.SelectionStart = consoleLogBox.TextLength;
+                consoleLogBox.ScrollToCaret();
+            }
         }
 
         private void DiagnosticsForm_Load(object sender, System.EventArgs e)
@@ -428,15 +331,6 @@ namespace ControlRoomApplication.GUI
         private void btnTest_Click(object sender, System.EventArgs e)
         {
             double temperature = 0;
-
-            //if(double.TryParse(txtTemperature.Text, out temperature))
-            //{
-            //    fldAzTemp.Text = temperature.ToString();
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
         }
 
         private void btnAddOneTemp_Click(object sender, System.EventArgs e)
@@ -834,6 +728,16 @@ namespace ControlRoomApplication.GUI
         public RadioTelescopeController getRTController()
         {
             return rtController;
+        }
+
+        private void label40_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label39_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
