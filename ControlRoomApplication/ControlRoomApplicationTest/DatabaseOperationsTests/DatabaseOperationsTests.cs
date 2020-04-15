@@ -52,22 +52,23 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             data2 = new RFData();
             data3 = new RFData();
             data4 = new RFData();
-            DateTime date = DateTime.UtcNow;
+            DateTime now = DateTime.UtcNow;
+            DateTime date = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
 
             data1.Intensity = 9234875;
-            data1.TimeCaptured = new DateTime(1999, 07, 19, 08, 15, 12);
+            data1.TimeCaptured = date;
             data1.appointment_id = appt.Id;
 
             data2.Intensity = 8739425;
-            data2.TimeCaptured = new DateTime(2013, 12, 30, 15, 10, 16);
+            data2.TimeCaptured = date.AddSeconds(3);
             data2.appointment_id = appt.Id;
 
             data3.Intensity = 12987;
-            data3.TimeCaptured = new DateTime(2017, 05, 21, 17, 0, 0);
+            data3.TimeCaptured = date.AddSeconds(4);
             data3.appointment_id = appt.Id;
 
             data4.Intensity = 12987;
-            data4.TimeCaptured = new DateTime(2019, 06, 26, 2, 31, 59);
+            data4.TimeCaptured = date.AddSeconds(5);
             data4.appointment_id = appt.Id;
 
             NumAppointments++;
