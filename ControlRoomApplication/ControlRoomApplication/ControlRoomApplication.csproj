@@ -206,6 +206,7 @@
     <Compile Include="Entities\Log\Log.cs" />
     <Compile Include="Entities\Override\Override.cs" />
     <Compile Include="Entities\ProximitySensor\AbstractProximitySensor.cs" />
+    <Compile Include="Entities\PushNotification\pushNotification.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
     <Compile Include="Entities\Sensor\Sensor.cs" />
     <Compile Include="Entities\Sensor\SensorItemEnum.cs" />

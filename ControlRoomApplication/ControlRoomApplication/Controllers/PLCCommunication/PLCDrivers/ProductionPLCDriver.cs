@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using ControlRoomApplication.Entities.Configuration;
+using ControlRoomApplication.Entities.PushNotification;
 using ControlRoomApplication.Controllers.PLCCommunication;
 
 namespace ControlRoomApplication.Controllers
@@ -337,10 +338,16 @@ namespace ControlRoomApplication.Controllers
                         bool previous = plcInput.Gate_Sensor;
                         plcInput.Gate_Sensor = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
                         if(previous != plcInput.Gate_Sensor) {
-                            if(plcInput.Gate_Sensor)
-                                logger.Info( "gate oppened" );
+                            if (plcInput.Gate_Sensor)
+                            {
+                                logger.Info("gate opened");
+                                pushNotification.send("GATE ACTIVITY", "Gate has been opened.");
+                            }
                             else
-                                logger.Info( "gate closed" );
+                            {
+                                logger.Info("gate closed");
+                                pushNotification.send("GATE ACTIVITY", "Gate has been closed.");
+                            }
                         }
                         break;
                     }
@@ -348,10 +355,16 @@ namespace ControlRoomApplication.Controllers
                         bool previous = plcInput.Estop;
                         plcInput.Estop = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.E_STOP] );
                         if(previous != plcInput.Estop) {
-                            if(plcInput.Estop)
-                                logger.Info( "Estop Hit" );
+                            if (plcInput.Estop)
+                            {
+                                logger.Info("Estop Hit");
+                                pushNotification.send("E-STOP ACTIVITY", "E-stop has been hit.");
+                            }
                             else
-                                logger.Info( "Estop released" );
+                            {
+                                logger.Info("Estop released");
+                                pushNotification.send("E-STOP ACTIVITY", "E-stop has been released.");
+                            }
                         }
                         break;
                     }

@@ -6,6 +6,7 @@ using ControlRoomApplication.Entities;
 using System.Threading;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities.PushNotification;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -59,7 +60,6 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-
             return RadioTelescope.PLCDriver.read_Position();
         }
 
@@ -122,6 +122,7 @@ namespace ControlRoomApplication.Controllers
         public Task<bool> ThermalCalibrateRadioTelescope()
         {
             if (!tempAcceptable) return Task.FromResult(false);
+            pushNotification.send("TELESCOPE MOVEMENT", "Thermal calibration commencing.");
             return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
         }
 
@@ -151,6 +152,7 @@ namespace ControlRoomApplication.Controllers
         public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
         {
             if (!tempAcceptable) return Task.FromResult(false);
+            pushNotification.send("TELESCOPE MOVEMENT", "Moving telescope to orientation: A: " + orientation.Azimuth + "; E: " + orientation.Elevation);
             return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position()); // MOVE
         }
 
@@ -165,13 +167,14 @@ namespace ControlRoomApplication.Controllers
         public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
             if (!tempAcceptable) return Task.FromResult(false);
+            pushNotification.send("TELESCOPE MOVEMENT", "Moving telescope to coordinate: RA: " + coordinate.RightAscension + "; D: " + coordinate.Declination);
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow)); // MOVE
         }
 
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's azimuth
-        /// at a speed, in either the clockwise or counter-clockwise direction.
+        /// at a speed (in RPM), in either the clockwise or counter-clockwise direction.
         /// 
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
@@ -180,12 +183,13 @@ namespace ControlRoomApplication.Controllers
         public bool StartRadioTelescopeAzimuthJog(double speed, bool PositiveDIR)
         {
             if (!tempAcceptable) return false;
+            pushNotification.send("TELESCOPE MOVEMENT", "Jogging azimuth motor at " + speed + " RPM");
             return RadioTelescope.PLCDriver.Start_jog( speed, PositiveDIR, 0,false );// MOVE
         }
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's elevation
-        /// at a speed, in either the clockwise or counter-clockwise direction.
+        /// at a speed (in RPM), in either the clockwise or counter-clockwise direction.
         /// 
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
@@ -194,6 +198,7 @@ namespace ControlRoomApplication.Controllers
         public bool StartRadioTelescopeElevationJog(double speed, bool PositiveDIR)
         {
             if (!tempAcceptable) return false;
+            pushNotification.send("TELESCOPE MOVEMENT", "Jogging elevation motor at " + speed + " RPM");
             return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, PositiveDIR);// MOVE
         }
 
@@ -349,6 +354,7 @@ namespace ControlRoomApplication.Controllers
             if (t.temp < SimulationConstants.STABLE_MOTOR_TEMP)
             {
                 logger.Info(s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
 
                 // Only overrides if switch is true
                 if (!b) return false;
@@ -357,12 +363,14 @@ namespace ControlRoomApplication.Controllers
             else if (t.temp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
             {
                 logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
+                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
 
                 // Only overrides if switch is true
                 if (!b) return false;
                 else return true;
             }
             logger.Info(s + " motor temperature stable.");
+            pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature stable.");
 
             return true;
         }
