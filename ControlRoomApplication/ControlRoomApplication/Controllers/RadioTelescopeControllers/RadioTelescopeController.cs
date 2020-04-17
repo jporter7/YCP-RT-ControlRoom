@@ -122,7 +122,6 @@ namespace ControlRoomApplication.Controllers
         public Task<bool> ThermalCalibrateRadioTelescope()
         {
             if (!tempAcceptable) return Task.FromResult(false);
-            pushNotification.send("TELESCOPE MOVEMENT", "Thermal calibration commencing.");
             return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
         }
 
@@ -152,7 +151,6 @@ namespace ControlRoomApplication.Controllers
         public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
         {
             if (!tempAcceptable) return Task.FromResult(false);
-            pushNotification.send("TELESCOPE MOVEMENT", "Moving telescope to orientation: A: " + orientation.Azimuth + "; E: " + orientation.Elevation);
             return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position()); // MOVE
         }
 
@@ -167,7 +165,6 @@ namespace ControlRoomApplication.Controllers
         public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
             if (!tempAcceptable) return Task.FromResult(false);
-            pushNotification.send("TELESCOPE MOVEMENT", "Moving telescope to coordinate: RA: " + coordinate.RightAscension + "; D: " + coordinate.Declination);
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow)); // MOVE
         }
 
@@ -183,7 +180,6 @@ namespace ControlRoomApplication.Controllers
         public bool StartRadioTelescopeAzimuthJog(double speed, bool PositiveDIR)
         {
             if (!tempAcceptable) return false;
-            pushNotification.send("TELESCOPE MOVEMENT", "Jogging azimuth motor at " + speed + " RPM");
             return RadioTelescope.PLCDriver.Start_jog( speed, PositiveDIR, 0,false );// MOVE
         }
 
@@ -198,7 +194,6 @@ namespace ControlRoomApplication.Controllers
         public bool StartRadioTelescopeElevationJog(double speed, bool PositiveDIR)
         {
             if (!tempAcceptable) return false;
-            pushNotification.send("TELESCOPE MOVEMENT", "Jogging elevation motor at " + speed + " RPM");
             return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, PositiveDIR);// MOVE
         }
 
