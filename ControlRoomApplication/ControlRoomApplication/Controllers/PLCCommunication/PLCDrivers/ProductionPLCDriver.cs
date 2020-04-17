@@ -258,10 +258,16 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CCW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CCW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_0_LIMIT , limitSwitchData.Azimuth_CCW_Limit );
-                            if(limitSwitchData.Azimuth_CCW_Limit)
-                                logger.Info( "Azimuth CCW Limit Switch Hit" );
+                            if (limitSwitchData.Azimuth_CCW_Limit)
+                            {
+                                logger.Info("Azimuth CCW Limit Switch Hit");
+                                pushNotification.send("LIMIT SWITCH", "Azimuth CCW limit switch hit");
+                            }
                             else
-                                logger.Info( "Azimuth CCW Limit Switch Not Hit" );
+                            {
+                                logger.Info("Azimuth CCW Limit Switch Not Hit");
+                                pushNotification.send("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
+                            }
                         }
                         break;
                     }
@@ -270,9 +276,15 @@ namespace ControlRoomApplication.Controllers
                         homeSensorData.Azimuth_Home_One = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_HOME] );
                         if(previous != homeSensorData.Azimuth_Home_One) {
                             if (homeSensorData.Azimuth_Home_One)
-                                logger.Info( "Azimuth_Home_One Sensor Hit" );
+                            {
+                                logger.Info("Azimuth_Home_One Sensor Hit");
+                                pushNotification.send("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
+                            }
                             else
-                                logger.Info( "Azimuth_Home_One Sensor Not Hit" );
+                            {
+                                logger.Info("Azimuth_Home_One Sensor Not Hit");
+                                pushNotification.send("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
+                            }
                         }
                         break;
                     }
@@ -281,9 +293,15 @@ namespace ControlRoomApplication.Controllers
                         homeSensorData.Azimuth_Home_Two = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );
                         if(previous != homeSensorData.Azimuth_Home_Two) {
                             if (homeSensorData.Azimuth_Home_Two)
-                                logger.Info( "Azimuth_Home_Two Sensor Hit" );
+                            {
+                                logger.Info("Azimuth_Home_Two Sensor Hit");
+                                pushNotification.send("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
+                            }
                             else
-                                logger.Info( "Azimuth_Home_Two Sensor Not Hit" );
+                            {
+                                logger.Info("Azimuth_Home_Two Sensor Not Hit");
+                                pushNotification.send("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
+                            }
                         }
                         break;
                     }
@@ -293,9 +311,15 @@ namespace ControlRoomApplication.Controllers
                         if(previous != limitSwitchData.Azimuth_CW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_375_LIMIT , limitSwitchData.Azimuth_CW_Limit );
                             if (limitSwitchData.Azimuth_CW_Limit)
-                                logger.Info( "Azimuth CW Limit Switch Hit" );
+                            {
+                                logger.Info("Azimuth CW Limit Switch Hit");
+                                pushNotification.send("LIMIT SWITCH", "Azimuth CW limit switch hit");
+                            }
                             else
-                                logger.Info( "Azimuth CW Limit Switch Not Hit" );
+                            {
+                                logger.Info("Azimuth CW Limit Switch Not Hit");
+                                pushNotification.send("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
+                            }
                         }
                         break;
                     }
@@ -305,9 +329,15 @@ namespace ControlRoomApplication.Controllers
                         if(previous != limitSwitchData.Elevation_Lower_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.EL_10_LIMIT , limitSwitchData.Elevation_Lower_Limit );
                             if (limitSwitchData.Elevation_Lower_Limit)
-                                logger.Info( "Elevation Lower Limit Switch Hit" );
+                            {
+                                logger.Info("Elevation Lower Limit Switch Hit");
+                                pushNotification.send("LIMIT SWITCH", "Elevation lower limit switch hit");
+                            }
                             else
-                                logger.Info( "Elevation Lower Limit Switch Not Hit" );
+                            {
+                                logger.Info("Elevation Lower Limit Switch Not Hit");
+                                pushNotification.send("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
+                            }
                         }
                         break;
                     }
@@ -316,9 +346,15 @@ namespace ControlRoomApplication.Controllers
                         homeSensorData.Elevation_Home = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_0_HOME] );
                         if(previous != homeSensorData.Elevation_Home) {
                             if (homeSensorData.Elevation_Home)
-                                logger.Info( "Elevation Home Sensor Hit" );
+                            {
+                                logger.Info("Elevation Home Sensor Hit");
+                                pushNotification.send("LIMIT SWITCH", "Elevation home sensor hit");
+                            }
                             else
-                                logger.Info( "Elevation Home Sensor Not Hit" );
+                            {
+                                logger.Info("Elevation Home Sensor Not Hit");
+                                pushNotification.send("LIMIT SWITCH", "Elevation home sensor NOT hit");
+                            }
                         }
                         break;
                     }
@@ -328,9 +364,15 @@ namespace ControlRoomApplication.Controllers
                         if(previous != limitSwitchData.Elevation_Upper_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.EL_90_LIMIT , limitSwitchData.Elevation_Upper_Limit );
                             if (limitSwitchData.Elevation_Upper_Limit)
-                                logger.Info( "Elevation Upper Limit Switch Hit" );
+                            {
+                                logger.Info("Elevation Upper Limit Switch Hit");
+                                pushNotification.send("LIMIT SWITCH", "Elevation upper limit switch hit");
+                            }
                             else
-                                logger.Info( "Elevation Upper Limit Switch Not Hit" );
+                            {
+                                logger.Info("Elevation Upper Limit Switch Not Hit");
+                                pushNotification.send("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
+                            }
                         }
                         break;
                     }
