@@ -370,7 +370,7 @@ namespace ControlRoomApplication.Controllers
         {
             logger.Info("Starting Reading of RFData");
             RTController.RadioTelescope.SpectraCyberController.SetApptConfig(appt);
-            RTController.RadioTelescope.SpectraCyberController.StartScan();
+            RTController.RadioTelescope.SpectraCyberController.StartScan(appt.Id);
         }
 
         /// <summary>
