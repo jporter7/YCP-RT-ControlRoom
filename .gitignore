@@ -265,3 +265,4 @@ AWSConstants.cs
 /ControlRoomApplication/ControlRoomApplication/Constants/AWSConstants.cs
 /ControlRoomApplication/results.xml
 /ControlRoomApplication/ControlRoomApplication.dll
+/ControlRoomApplication/ControlRoomApplication/Entities/PushNotification/pushNotification.cs
