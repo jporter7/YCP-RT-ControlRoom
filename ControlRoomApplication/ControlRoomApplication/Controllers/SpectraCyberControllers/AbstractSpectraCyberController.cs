@@ -361,7 +361,7 @@ namespace ControlRoomApplication.Controllers
         private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, int appId)
         {
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
-            rfData.appointment_id = appId;
+            rfData.Appointment = DatabaseOperations.GetUpdatedAppointment(appId);
 
             logger.Info("[AbstractSpectrCyberController] Created RF Data: " + rfData.Intensity);
 

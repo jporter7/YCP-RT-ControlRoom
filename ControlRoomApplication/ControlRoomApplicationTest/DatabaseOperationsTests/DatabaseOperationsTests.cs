@@ -34,9 +34,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt = new Appointment();
             appt.start_time = DateTime.UtcNow;
             appt.end_time = DateTime.UtcNow.AddMinutes(1);
-            appt._Status = AppointmentStatusEnum.REQUESTED;
+            appt._Status = AppointmentStatusEnum.IN_PROGRESS;
             appt._Priority = AppointmentPriorityEnum.MANUAL;
-            appt._Type = AppointmentTypeEnum.POINT;
+            appt._Type = AppointmentTypeEnum.FREE_CONTROL;
             appt.Coordinates.Add(new Coordinate(0, 0));
             appt.CelestialBody = new CelestialBody();
             appt.CelestialBody.Coordinate = new Coordinate();
@@ -55,21 +55,22 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DateTime now = DateTime.UtcNow;
             DateTime date = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
 
+            Appointment RFappt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
             data1.Intensity = 9234875;
             data1.TimeCaptured = date;
-            data1.appointment_id = appt.Id;
+            data1.Appointment = RFappt;
 
             data2.Intensity = 8739425;
             data2.TimeCaptured = date.AddSeconds(3);
-            data2.appointment_id = appt.Id;
+            data2.Appointment = RFappt;
 
             data3.Intensity = 12987;
             data3.TimeCaptured = date.AddSeconds(4);
-            data3.appointment_id = appt.Id;
+            data3.Appointment = RFappt;
 
             data4.Intensity = 12987;
             data4.TimeCaptured = date.AddSeconds(5);
-            data4.appointment_id = appt.Id;
+            data4.Appointment = RFappt;
 
             NumAppointments++;
             NumRTInstances++;

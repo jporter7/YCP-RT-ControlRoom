@@ -322,16 +322,30 @@ namespace ControlRoomApplication.Database
             
             if (VerifyRFData(data))
             {
-                using (RTDbContext Context = InitializeDatabaseContext())
+                try
                 {
-                    // add the rf data to the list in appointment
-                    var appt = Context.Appointments.Find(data.appointment_id);
-                    appt.RFDatas.Add(data);
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        // add the rf data to the list in appointment
+                        var appt = Context.Appointments.Find(data.Appointment.Id);
+                        appt.RFDatas.Add(data);
 
-                    // add the rf data to the database
-                    Context.RFDatas.AddOrUpdate(data);
+                        // add the rf data to the database
+                        Context.RFDatas.AddOrUpdate(data);
 
-                    Context.SaveChangesAsync();
+                        try
+                        {
+                            Context.SaveChangesAsync();
+                        }
+                        catch (Exception e)
+                        {
+                            // do someting
+                        }
+
+                    }
+                }catch(Exception e)
+                {
+                    ;
                 }
             }
         }
@@ -357,7 +371,7 @@ namespace ControlRoomApplication.Database
             using (RTDbContext Context = InitializeDatabaseContext())
             {
                 // Use Include method to load related entities from the database
-                appts = Context.RFDatas./*Include(t => t.Appointment).*/ToList<RFData>();
+                appts = Context.RFDatas.Include(t => t.Appointment).ToList<RFData>();
 
             }
             return appts;
