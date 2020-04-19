@@ -12,6 +12,7 @@ using ControlRoomApplication.Constants;
 using System;
 using ControlRoomApplication.Main;
 using ControlRoomApplication.Controllers.Sensors;
+using ControlRoomApplication.Entities.PushNotification;
 
 namespace ControlRoomApplication.GUI
 {
@@ -502,6 +503,7 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideAzimuthProx1 = true;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, 1);
                 logger.Info("Overriding azimuth proximity sensor 1.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding azimuth proximity sensor 1.");
             }
             else if (rtController.overrides.overrideAzimuthProx1)
             {
@@ -510,6 +512,7 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideAzimuthProx1 = false;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, 0);
                 logger.Info("Enabled azimuth proximity sensor 1.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled azimuth proximity sensor 1.");
             }
         }
 
@@ -522,6 +525,7 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideAzimuthProx2 = true;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT, 1);
                 logger.Info("Overriding azimuth proximity sensor 2.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding azimuth proximity sensor 2.");
 
             }
             else if (rtController.overrides.overrideAzimuthProx2)
@@ -531,6 +535,7 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideAzimuthProx2 = false;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT, 0);
                 logger.Info("Enabled azimuth proximity sensor 2.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled azimuth proximity sensor 2.");
             }
         }
 
@@ -542,7 +547,8 @@ namespace ControlRoomApplication.GUI
                 ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
                 rtController.overrides.overrideElevatProx1 = true;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, 1);
-                logger.Info("Overriding azimuth elevation sensor 1.");
+                logger.Info("Overriding elevation proximity sensor 1.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding elevation proximity sensor 1.");
 
             }
             else if (rtController.overrides.overrideElevatProx1)
@@ -551,7 +557,8 @@ namespace ControlRoomApplication.GUI
                 ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.overrides.overrideElevatProx1 = false;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, 0);
-                logger.Info("Enabled azimuth elevation sensor 1.");
+                logger.Info("Enabled elevation proximity sensor 1.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled elevation proximity sensor 1.");
 
             }
         }
@@ -564,7 +571,8 @@ namespace ControlRoomApplication.GUI
                 ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
                 rtController.overrides.overrideElevatProx2 = true;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, 1);
-                logger.Info("Overriding azimuth elevation sensor 2.");
+                logger.Info("Overriding elevation proximity sensor 2.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding elevation proximity sensor 2.");
             }
             else
             {
@@ -572,7 +580,8 @@ namespace ControlRoomApplication.GUI
                 ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.overrides.overrideElevatProx2 = false;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, 0);
-                logger.Info("Enabled azimuth elevation sensor 2.");
+                logger.Info("Enabled elevation proximity sensor 2.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled elevation proximity sensor 2.");
             }
         }
 
@@ -633,6 +642,7 @@ namespace ControlRoomApplication.GUI
                 WSOverride.BackColor = System.Drawing.Color.Red;
                 mainF.setWSOverride(true);
                 logger.Info("Overriding weather station sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding weather station sensor.");
 
             }
             else
@@ -641,6 +651,7 @@ namespace ControlRoomApplication.GUI
                 WSOverride.BackColor = System.Drawing.Color.LimeGreen;
                 mainF.setWSOverride(false);
                 logger.Info("Enabled weather station sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled weather station sensor.");
             }
         }
 
@@ -653,6 +664,7 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideGate = true;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, 1);
                 logger.Info("Overriding main gate sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding main gate sensor.");
             }
             else if (rtController.overrides.overrideGate)
             {
@@ -661,6 +673,7 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideGate = false;
                 rtController.RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, 0);
                 logger.Info("Enabled main gate sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled main gate sensor.");
             }
         }
 
@@ -683,6 +696,7 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideAzimuthMotTemp = true;
                 //rtController.RadioTelescope.PLCDriver.setregvalue(0, 1);
                 logger.Info("Overriding azimuth motor temperature sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding azimuth motor temperature sensor.");
             }
             else if (rtController.overrides.overrideAzimuthMotTemp)
             {
@@ -691,6 +705,7 @@ namespace ControlRoomApplication.GUI
                 rtController.overrides.overrideAzimuthMotTemp = false;
                 //rtController.RadioTelescope.PLCDriver.setregvalue(0, 0);
                 logger.Info("Enabled azimuth motor temperature sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled azimuth motor temperature sensor.");
             }
         }
 
@@ -702,6 +717,7 @@ namespace ControlRoomApplication.GUI
                 ElMotTempSensOverride.BackColor = System.Drawing.Color.Red;
                 rtController.overrides.overrideElevatMotTemp = true;
                 logger.Info("Overriding elevation motor temperature sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding elevation motor temperature sensor.");
             }
             else if (rtController.overrides.overrideElevatMotTemp)
             {
@@ -709,6 +725,7 @@ namespace ControlRoomApplication.GUI
                 ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.overrides.overrideElevatMotTemp = false;
                 logger.Info("Enabled elevation motor temperature sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled elevation motor temperature sensor.");
             }
         }
 
