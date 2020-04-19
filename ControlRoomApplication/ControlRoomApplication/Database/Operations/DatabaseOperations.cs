@@ -322,30 +322,18 @@ namespace ControlRoomApplication.Database
             
             if (VerifyRFData(data))
             {
-                try
+
+                using (RTDbContext Context = InitializeDatabaseContext())
                 {
-                    using (RTDbContext Context = InitializeDatabaseContext())
-                    {
-                        // add the rf data to the list in appointment
-                        var appt = Context.Appointments.Find(data.Appointment.Id);
-                        appt.RFDatas.Add(data);
+                    // add the rf data to the list in appointment
+                    var appt = Context.Appointments.Find(data.Appointment.Id);
+                    appt.RFDatas.Add(data);
 
-                        // add the rf data to the database
-                        Context.RFDatas.AddOrUpdate(data);
+                    // add the rf data to the database
+                    Context.RFDatas.AddOrUpdate(data);
 
-                        try
-                        {
-                            Context.SaveChangesAsync();
-                        }
-                        catch (Exception e)
-                        {
-                            // do someting
-                        }
+                    Context.SaveChangesAsync();
 
-                    }
-                }catch(Exception e)
-                {
-                    ;
                 }
             }
         }
