@@ -25,6 +25,8 @@ namespace ControlRoomApplication.Main
             modelBuilder.Entity<Appointment>().HasRequired(t => t.Telescope).WithMany().Map(d => d.MapKey("telescope_id"));
             modelBuilder.Entity<Appointment>().HasRequired(t => t.User).WithMany().Map(d => d.MapKey("user_id"));
 
+            modelBuilder.Entity<RFData>().HasRequired(t => t.Appointment).WithMany().Map(d => d.MapKey("appointment_id"));
+
         }
 
         public DbSet<Appointment> Appointments { get; set; }

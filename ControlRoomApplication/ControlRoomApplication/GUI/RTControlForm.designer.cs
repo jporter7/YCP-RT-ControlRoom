@@ -80,7 +80,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.spectraCyberGroupBox = new System.Windows.Forms.GroupBox();
             this.finalizeSettingsButton = new System.Windows.Forms.Button();
-            this.gain = new System.Windows.Forms.ComboBox();
+            this.DCGain = new System.Windows.Forms.ComboBox();
             this.stopScanButton = new System.Windows.Forms.Button();
             this.startScanButton = new System.Windows.Forms.Button();
             this.bandwidth = new System.Windows.Forms.TextBox();
@@ -90,6 +90,9 @@
             this.offsetVoltage = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.scanTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.IFGainVal = new System.Windows.Forms.TextBox();
+            this.lblIFGain = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.RAIncGroupbox.SuspendLayout();
             this.overRideGroupbox.SuspendLayout();
             this.decIncGroupbox.SuspendLayout();
@@ -735,8 +738,11 @@
             // spectraCyberGroupBox
             // 
             this.spectraCyberGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+            this.spectraCyberGroupBox.Controls.Add(this.label10);
+            this.spectraCyberGroupBox.Controls.Add(this.IFGainVal);
+            this.spectraCyberGroupBox.Controls.Add(this.lblIFGain);
             this.spectraCyberGroupBox.Controls.Add(this.finalizeSettingsButton);
-            this.spectraCyberGroupBox.Controls.Add(this.gain);
+            this.spectraCyberGroupBox.Controls.Add(this.DCGain);
             this.spectraCyberGroupBox.Controls.Add(this.stopScanButton);
             this.spectraCyberGroupBox.Controls.Add(this.startScanButton);
             this.spectraCyberGroupBox.Controls.Add(this.bandwidth);
@@ -768,24 +774,24 @@
             this.finalizeSettingsButton.UseVisualStyleBackColor = false;
             this.finalizeSettingsButton.Click += new System.EventHandler(this.finalizeSettings_Click);
             // 
-            // gain
+            // DCGain
             // 
-            this.gain.BackColor = System.Drawing.Color.DarkGray;
-            this.gain.FormattingEnabled = true;
-            this.gain.Items.AddRange(new object[] {
+            this.DCGain.BackColor = System.Drawing.Color.DarkGray;
+            this.DCGain.FormattingEnabled = true;
+            this.DCGain.Items.AddRange(new object[] {
             "X1",
             "X5",
             "X10",
             "X20",
             "X50",
             "X60"});
-            this.gain.Location = new System.Drawing.Point(4, 56);
-            this.gain.Margin = new System.Windows.Forms.Padding(2);
-            this.gain.MaxDropDownItems = 6;
-            this.gain.Name = "gain";
-            this.gain.Size = new System.Drawing.Size(57, 21);
-            this.gain.TabIndex = 39;
-            this.gain.Text = "Gain";
+            this.DCGain.Location = new System.Drawing.Point(4, 56);
+            this.DCGain.Margin = new System.Windows.Forms.Padding(2);
+            this.DCGain.MaxDropDownItems = 6;
+            this.DCGain.Name = "DCGain";
+            this.DCGain.Size = new System.Drawing.Size(57, 21);
+            this.DCGain.TabIndex = 39;
+            this.DCGain.Text = "Gain";
             // 
             // stopScanButton
             // 
@@ -838,7 +844,7 @@
             // integrationStep
             // 
             this.integrationStep.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.integrationStep.Location = new System.Drawing.Point(192, 57);
+            this.integrationStep.Location = new System.Drawing.Point(215, 57);
             this.integrationStep.Margin = new System.Windows.Forms.Padding(2);
             this.integrationStep.Name = "integrationStep";
             this.integrationStep.Size = new System.Drawing.Size(44, 20);
@@ -848,7 +854,7 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(189, 44);
+            this.label9.Location = new System.Drawing.Point(212, 44);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(82, 13);
@@ -859,7 +865,7 @@
             // offsetVoltage
             // 
             this.offsetVoltage.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.offsetVoltage.Location = new System.Drawing.Point(94, 58);
+            this.offsetVoltage.Location = new System.Drawing.Point(136, 57);
             this.offsetVoltage.Margin = new System.Windows.Forms.Padding(2);
             this.offsetVoltage.Name = "offsetVoltage";
             this.offsetVoltage.Size = new System.Drawing.Size(44, 20);
@@ -869,7 +875,7 @@
             // 
             this.label12.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(91, 44);
+            this.label12.Location = new System.Drawing.Point(133, 43);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(74, 13);
@@ -891,6 +897,37 @@
             this.scanTypeComboBox.Size = new System.Drawing.Size(83, 21);
             this.scanTypeComboBox.TabIndex = 25;
             this.scanTypeComboBox.Text = "Scan Type";
+            // 
+            // IFGainVal
+            // 
+            this.IFGainVal.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.IFGainVal.Location = new System.Drawing.Point(77, 57);
+            this.IFGainVal.Margin = new System.Windows.Forms.Padding(2);
+            this.IFGainVal.Name = "IFGainVal";
+            this.IFGainVal.Size = new System.Drawing.Size(44, 20);
+            this.IFGainVal.TabIndex = 42;
+            // 
+            // lblIFGain
+            // 
+            this.lblIFGain.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblIFGain.AutoSize = true;
+            this.lblIFGain.Location = new System.Drawing.Point(74, 43);
+            this.lblIFGain.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblIFGain.Name = "lblIFGain";
+            this.lblIFGain.Size = new System.Drawing.Size(38, 13);
+            this.lblIFGain.TabIndex = 41;
+            this.lblIFGain.Text = "IFGain";
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(4, 41);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(44, 13);
+            this.label10.TabIndex = 43;
+            this.label10.Text = "DCGain";
             // 
             // FreeControlForm
             // 
@@ -977,7 +1014,7 @@
         private System.Windows.Forms.TextBox ActualDecTextBox;
         private System.Windows.Forms.GroupBox spectraCyberGroupBox;
         private System.Windows.Forms.Button finalizeSettingsButton;
-        private System.Windows.Forms.ComboBox gain;
+        private System.Windows.Forms.ComboBox DCGain;
         private System.Windows.Forms.Button stopScanButton;
         private System.Windows.Forms.Button startScanButton;
         private System.Windows.Forms.TextBox bandwidth;
@@ -987,5 +1024,8 @@
         private System.Windows.Forms.TextBox offsetVoltage;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.ComboBox scanTypeComboBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TextBox IFGainVal;
+        private System.Windows.Forms.Label lblIFGain;
     }
 }

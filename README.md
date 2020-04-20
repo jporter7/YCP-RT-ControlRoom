@@ -29,8 +29,10 @@ Package Settings:
 	install, take care to choose the correct version of the package. The packages you will install are:
 	EntityFramework v6.2.0, My.Sql.Data.EntityFrameWork v8.0.17, MySql.Data v8.0.17, AASharp v1.93.3,
 	and AWSSDK.RDS v3.3.38.2. Be sure to only install the packages specified, as certain other packages
-	will negate the effects of others and may break you project.  Finally, for security reasons, you must
-	contact a system administrator for a copy of the AWSConstants file for access to the AWS Server’s data. 
+	will negate the effects of others and may break you project. Finally, for security reasons, you must
+	contact a system administrator for a copy of the AWSConstants file for access to the AWS Server’s data,
+	and the pushNotifications file for sending push notifications. The pushNotifications file belongs in
+	"ControlRoomApplication\ControlRoomApplication\Entities\PushNotification\pushNotification.cs".
 
 MySQL Set Up:
 

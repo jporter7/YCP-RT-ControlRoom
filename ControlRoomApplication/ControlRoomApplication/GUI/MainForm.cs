@@ -13,10 +13,12 @@ using ControlRoomApplication.Database;
 using System.Net;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Entities.WeatherStation;
+using log4net.Appender;
+using ControlRoomApplication.Documentation;
 
 namespace ControlRoomApplication.Main
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IAppender
     {
         private static int current_rt_id;
         public List<KeyValuePair<RadioTelescope, AbstractPLCDriver>> AbstractRTDriverPairList { get; set; }
@@ -33,6 +35,7 @@ namespace ControlRoomApplication.Main
         public AbstractWeatherStation lastCreatedProductionWeatherStation = null;
 
         public bool finalSettings = true;
+        public LoggerQueue log = new LoggerQueue();
 
         enum TempSensorType
         {
@@ -54,7 +57,6 @@ namespace ControlRoomApplication.Main
             Test
 
         }
-
         
         enum MicrocontrollerType
         {
@@ -108,6 +110,11 @@ namespace ControlRoomApplication.Main
             
 
             logger.Info("MainForm Initalized");
+        }
+
+        public void DoAppend(log4net.Core.LoggingEvent loggingEvent)
+        {
+            log.loggerQueue += loggingEvent.Level.Name + ": " + loggingEvent.MessageObject.ToString() + Environment.NewLine;
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ using ControlRoomApplication.Entities;
 using System.Threading;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities.PushNotification;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -59,7 +60,6 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-
             return RadioTelescope.PLCDriver.read_Position();
         }
 
@@ -171,7 +171,7 @@ namespace ControlRoomApplication.Controllers
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's azimuth
-        /// at a speed, in either the clockwise or counter-clockwise direction.
+        /// at a speed (in RPM), in either the clockwise or counter-clockwise direction.
         /// 
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
@@ -185,7 +185,7 @@ namespace ControlRoomApplication.Controllers
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's elevation
-        /// at a speed, in either the clockwise or counter-clockwise direction.
+        /// at a speed (in RPM), in either the clockwise or counter-clockwise direction.
         /// 
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
@@ -269,25 +269,6 @@ namespace ControlRoomApplication.Controllers
             return ResponseMetBasicExpectations(MinorResponseBytes, 0x3);
         }
 
-        private static RFData GenerateRFData(SpectraCyberResponse spectraCyberResponse)
-        {
-            RFData rfData = new RFData();
-            rfData.TimeCaptured = spectraCyberResponse.DateTimeCaptured;
-            rfData.Intensity = spectraCyberResponse.DecimalData;
-            return rfData;
-        }
-
-        private static List<RFData> GenerateRFDataList(List<SpectraCyberResponse> spectraCyberResponses)
-        {
-            List<RFData> rfDataList = new List<RFData>();
-            foreach (SpectraCyberResponse response in spectraCyberResponses)
-            {
-                rfDataList.Add(GenerateRFData(response));
-            }
-
-            return rfDataList;
-        }
-
         // Checks the motor temperatures against acceptable ranges every second
         private void tempMonitor()
         {
@@ -349,6 +330,7 @@ namespace ControlRoomApplication.Controllers
             if (t.temp < SimulationConstants.STABLE_MOTOR_TEMP)
             {
                 logger.Info(s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
 
                 // Only overrides if switch is true
                 if (!b) return false;
@@ -357,12 +339,14 @@ namespace ControlRoomApplication.Controllers
             else if (t.temp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
             {
                 logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
+                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
 
                 // Only overrides if switch is true
                 if (!b) return false;
                 else return true;
             }
             logger.Info(s + " motor temperature stable.");
+            pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature stable.");
 
             return true;
         }

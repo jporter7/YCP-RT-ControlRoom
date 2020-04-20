@@ -2,6 +2,7 @@
 using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities.PushNotification;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -87,9 +88,13 @@ namespace ControlRoomApplication.Controllers
                 if (windSpeedStatus == 2)
                 {
                     logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
-                    
+
                     // Overriding the status warning if override is true
-                    if (!weatherStationOverride) currentSensor.Status = SensorStatusEnum.ALARM;
+                    if (!weatherStationOverride)
+                    {
+                        currentSensor.Status = SensorStatusEnum.ALARM;
+                        pushNotification.send("WARNING: WEATHER STATION", "Wind speeds are too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    }
                     DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
                     //ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
 
@@ -111,7 +116,11 @@ namespace ControlRoomApplication.Controllers
 
 
                     // Overriding the status warning if override is true
-                    if(!weatherStationOverride) currentSensor.Status = SensorStatusEnum.WARNING;
+                    if (!weatherStationOverride)
+                    {
+                        currentSensor.Status = SensorStatusEnum.WARNING;
+                        pushNotification.send("WARNING: WEATHER STATION", "Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    }
                     DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
                 }
                 else if (windSpeedStatus == 0)
