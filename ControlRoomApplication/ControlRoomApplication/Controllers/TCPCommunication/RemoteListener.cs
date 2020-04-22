@@ -177,29 +177,29 @@ namespace ControlRoomApplication.Controllers
 
                 logger.Debug("Script " + script);
 
-                if (script == "DUMP")
+                if (script.Contains("DUMP"))
                 {
                     // we have to use the - 1 here because the mobile app does not specify which radio telescope to control. This will just
                     // enable them to control the most recently created telescope.
                     rtController.RadioTelescope.PLCDriver.SnowDump();
                 }
-                else if (script == "FULL_EV")
+                else if (script.Contains("FULL_EV"))
                 {
                     rtController.RadioTelescope.PLCDriver.FullElevationMove();
                 }
-                else if (script == "CALIBRATE")
+                else if (script.Contains("CALIBRATE"))
                 {
                     rtController.RadioTelescope.PLCDriver.Thermal_Calibrate();
                 }
-                else if (script == "STOW")
+                else if (script.Contains("STOW"))
                 {
                     rtController.RadioTelescope.PLCDriver.Stow();
                 }
-                else if (script == "FULL_CLOCK")
+                else if (script.Contains("FULL_CLOCK"))
                 {
                     rtController.RadioTelescope.PLCDriver.Full_360_CW_Rotation();
                 }
-                else if (script == "FULL_COUNTER")
+                else if (script.Contains("FULL_COUNTER"))
                 {
                     rtController.RadioTelescope.PLCDriver.Full_360_CCW_Rotation();
                 }
