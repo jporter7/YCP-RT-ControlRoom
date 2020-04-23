@@ -91,11 +91,13 @@ namespace ControlRoomApplication.Controllers
 
         public void SetDCGain(SpectraCyberDCGainEnum dcgain)
         {
+            // DC Gain is G00X where x is the enum
             configVals.DCGain = dcgain;
         }
 
         public void SetIFGain(double ifgain)
         {
+            // IF Gain is A
             configVals.IFGain = ifgain;
         }
 

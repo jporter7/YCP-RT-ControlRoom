@@ -269,11 +269,11 @@ namespace ControlRoomApplication.GUI
                 fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
             }
 
-            /** Temperature of motors **/           
+            // Temperature of motors
             fldElTemp.Text = rtController.RadioTelescope.Micro_controler.tempData.elevationTemp.ToString();
             fldAzTemp.Text = rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp.ToString();
 
-            /** Encoder Position in both degrees and motor ticks **/
+            // Encoder Position in both degrees and motor ticks
             lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 3).ToString();
             lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
 
@@ -281,7 +281,7 @@ namespace ControlRoomApplication.GUI
             lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 3).ToString();
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
-            /** Proximity and Limit Switches **/
+            // Proximity and Limit Switches 
             lblAzLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CCW_Limit.ToString();
             lblAzLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CW_Limit.ToString();
 
