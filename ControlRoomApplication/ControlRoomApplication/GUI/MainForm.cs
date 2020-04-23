@@ -198,6 +198,10 @@ namespace ControlRoomApplication.Main
 
                 logger.Info("Adding RadioTelescope Controller");
                 MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
+                ARadioTelescope.SetParent(ProgramRTControllerList[current_rt_id - 1]);
+
+                // linking radio telescope controller to tcp listener
+                MainControlRoomController.ControlRoom.mobileControlServer.rtController = ARadioTelescope.GetParent();
 
                 logger.Info("Starting Weather Monitoring Routine");
                 MainControlRoomController.StartWeatherMonitoringRoutine();

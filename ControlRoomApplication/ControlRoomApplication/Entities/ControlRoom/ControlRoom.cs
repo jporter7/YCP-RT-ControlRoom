@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Entities
     {
         public List<RadioTelescopeControllerManagementThread> RTControllerManagementThreads { get; }
         public AbstractWeatherStation WeatherStation { get; }
-        private RemoteListener mobileControlServer { get; }
+        public RemoteListener mobileControlServer { get; }
 
         public List<RadioTelescopeController> RadioTelescopeControllers
         {
@@ -44,7 +44,7 @@ namespace ControlRoomApplication.Entities
         {
             RTControllerManagementThreads = new List<RadioTelescopeControllerManagementThread>();
             WeatherStation = weatherStation;
-            mobileControlServer = new RemoteListener(25565, this);
+            mobileControlServer = new RemoteListener(80, this);
         }
     }
 }
