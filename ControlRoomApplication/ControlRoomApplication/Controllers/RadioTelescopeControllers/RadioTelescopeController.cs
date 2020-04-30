@@ -350,5 +350,48 @@ namespace ControlRoomApplication.Controllers
 
             return true;
         }
+
+        /// <summary>
+        /// This will set the overrides based on input. Takes in the sensor that it will be changing,
+        /// and then the status, true or false.
+        /// true = overriding
+        /// false = enabled
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <param name="set"></param>
+        public void setOverride(String sensor, bool set)
+        {
+            if (sensor.Equals("azimuth motor temperature")) overrides.overrideAzimuthMotTemp = set;
+            else if (sensor.Equals("elevation motor temperature")) overrides.overrideElevatMotTemp = set;
+            else if (sensor.Equals("main gate"))
+            {
+                overrides.overrideGate = set;
+                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(set));
+            }
+            else if (sensor.Equals("elevation proximity (2)")) {
+                overrides.overrideElevatProx2 = set;
+                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, Convert.ToUInt16(set));
+            }
+            else if (sensor.Equals("elevation proximity (1)"))
+            {
+                overrides.overrideElevatProx1 = set;
+                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, Convert.ToUInt16(set));
+            }
+            else if (sensor.Equals("azimuth proximity (2)"))
+            {
+                overrides.overrideAzimuthProx2 = set;
+                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT, Convert.ToUInt16(set));
+
+            }
+            else if (sensor.Equals("azimuth proximity (1)"))
+            {
+                overrides.overrideAzimuthProx1 = set;
+                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, Convert.ToUInt16(set));
+            }
+
+            if (set) logger.Info("Overriding " + sensor + " sensor.");
+            else logger.Info("Enabled " + sensor + " sensor.");
+            pushNotification.send("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
+        }
     }
 }
