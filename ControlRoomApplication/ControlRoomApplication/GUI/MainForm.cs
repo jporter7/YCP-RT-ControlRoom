@@ -671,12 +671,12 @@ namespace ControlRoomApplication.Main
 
         public void setWSOverride(bool WSO)
         {
-            MainControlRoomController.weatherStationOverride = WSO;
+            MainControlRoomController.ControlRoom.weatherStationOverride = WSO;
         }
 
         public bool getWSOverride()
         {
-            return MainControlRoomController.weatherStationOverride;
+            return MainControlRoomController.ControlRoom.weatherStationOverride;
         }
 
         private void txtMcuCOMPort_TextChanged(object sender, EventArgs e)

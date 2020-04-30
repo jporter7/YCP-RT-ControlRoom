@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -18,11 +19,14 @@ namespace ControlRoomApplication.Controllers
         private Thread TCPMonitoringThread;
         private bool KeepTCPMonitoringThreadAlive;
         public RadioTelescopeController rtController;
+        private ControlRoom controlRoom;
 
         public RemoteListener(int port, ControlRoom control)
         {
             logger.Debug("Setting up remote listener");
             server = new TcpListener(port);
+
+            controlRoom = control;
 
             // Start listening for client requests.
             server.Start();
@@ -157,7 +161,50 @@ namespace ControlRoomApplication.Controllers
             }
             else if (data.IndexOf("SET_OVERRIDE") != -1)
             {
-                // we have an override command coming in
+                // false = ENABLED; true = OVERRIDING
+                // If "OVR" is contained in the data, will return true
+
+                // Non-PLC Overrides
+                if (data.Contains("WEATHER_STATION"))
+                {
+                    controlRoom.weatherStationOverride = data.Contains("OVR");
+                    rtController.setOverride("weather station", data.Contains("OVR"));
+                }
+                else if (data.Contains("AZIMUTH_MOT_TEMP"))
+                {
+                    rtController.setOverride("azimuth motor temperature", data.Contains("OVR"));
+                }
+                else if (data.Contains("ELEVATION_MOT_TEMP"))
+                {
+                    rtController.setOverride("elevation motor temperature", data.Contains("OVR"));
+                }
+
+                // PLC Overrides
+                else if (data.Contains("MAIN_GATE"))
+                {
+                    rtController.setOverride("main gate", data.Contains("OVR"));
+                }
+
+                // May be removed with slip ring
+                else if (data.Contains("AZIMUTH_LIMIT_10"))
+                {
+                    rtController.setOverride("azimuth proximity (1)", data.Contains("OVR"));
+                }
+                else if (data.Contains("AZIMUTH_LIMIT_375"))
+                {
+                    rtController.setOverride("azimuth proximity (2)", data.Contains("OVR"));
+                }
+                else if (data.Contains("ELEVATION_LIMIT_0"))
+                {
+                    rtController.setOverride("elevation proximity (1)", data.Contains("OVR"));
+                }
+                else if (data.Contains("ELEVATION_LIMIT_90"))
+                {
+                    rtController.setOverride("elevation proximity (2)", data.Contains("OVR"));
+                }
+                else return false;
+
+                return true;
             }
             else if (data.IndexOf("SCRIPT") != -1)
             {

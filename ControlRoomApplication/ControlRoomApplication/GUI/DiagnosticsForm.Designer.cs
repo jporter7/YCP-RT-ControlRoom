@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -213,14 +213,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle7.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle7;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.Location = new System.Drawing.Point(3, 6);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -1532,14 +1532,14 @@
             // 
             // ElMotTempSensOverride
             // 
-            this.ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
+            this.ElMotTempSensOverride.BackColor = System.Drawing.Color.Yellow;
             this.ElMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ElMotTempSensOverride.Location = new System.Drawing.Point(227, 78);
             this.ElMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.ElMotTempSensOverride.Name = "ElMotTempSensOverride";
             this.ElMotTempSensOverride.Size = new System.Drawing.Size(91, 23);
             this.ElMotTempSensOverride.TabIndex = 15;
-            this.ElMotTempSensOverride.Text = "ENABLED";
+            this.ElMotTempSensOverride.Text = "LOADING...";
             this.ElMotTempSensOverride.UseVisualStyleBackColor = false;
             this.ElMotTempSensOverride.Click += new System.EventHandler(this.ElMotTempSensOverride_Click);
             // 
@@ -1556,14 +1556,14 @@
             // 
             // AzMotTempSensOverride
             // 
-            this.AzMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
+            this.AzMotTempSensOverride.BackColor = System.Drawing.Color.Yellow;
             this.AzMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.AzMotTempSensOverride.Location = new System.Drawing.Point(229, 23);
             this.AzMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.AzMotTempSensOverride.Name = "AzMotTempSensOverride";
             this.AzMotTempSensOverride.Size = new System.Drawing.Size(89, 23);
             this.AzMotTempSensOverride.TabIndex = 13;
-            this.AzMotTempSensOverride.Text = "ENABLED";
+            this.AzMotTempSensOverride.Text = "LOADING...";
             this.AzMotTempSensOverride.UseVisualStyleBackColor = false;
             this.AzMotTempSensOverride.Click += new System.EventHandler(this.AzMotTempSensOverride_Click);
             // 
@@ -1592,14 +1592,14 @@
             // 
             // MGOverride
             // 
-            this.MGOverride.BackColor = System.Drawing.Color.LimeGreen;
+            this.MGOverride.BackColor = System.Drawing.Color.Yellow;
             this.MGOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.MGOverride.Location = new System.Drawing.Point(229, 31);
             this.MGOverride.Margin = new System.Windows.Forms.Padding(2);
             this.MGOverride.Name = "MGOverride";
             this.MGOverride.Size = new System.Drawing.Size(89, 23);
             this.MGOverride.TabIndex = 13;
-            this.MGOverride.Text = "ENABLED";
+            this.MGOverride.Text = "LOADING...";
             this.MGOverride.UseVisualStyleBackColor = false;
             this.MGOverride.Click += new System.EventHandler(this.MGOverride_Click);
             // 
@@ -1635,49 +1635,49 @@
             // 
             // ElevationProximityOveride2
             // 
-            this.ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
+            this.ElevationProximityOveride2.BackColor = System.Drawing.Color.Yellow;
             this.ElevationProximityOveride2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ElevationProximityOveride2.Location = new System.Drawing.Point(194, 282);
             this.ElevationProximityOveride2.Name = "ElevationProximityOveride2";
             this.ElevationProximityOveride2.Size = new System.Drawing.Size(88, 23);
             this.ElevationProximityOveride2.TabIndex = 14;
-            this.ElevationProximityOveride2.Text = "ENABLED";
+            this.ElevationProximityOveride2.Text = "LOADING...";
             this.ElevationProximityOveride2.UseVisualStyleBackColor = false;
             this.ElevationProximityOveride2.Click += new System.EventHandler(this.ElevationProximityOverideButton2_Click);
             // 
             // ElevationProximityOveride1
             // 
-            this.ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+            this.ElevationProximityOveride1.BackColor = System.Drawing.Color.Yellow;
             this.ElevationProximityOveride1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ElevationProximityOveride1.Location = new System.Drawing.Point(194, 224);
             this.ElevationProximityOveride1.Name = "ElevationProximityOveride1";
             this.ElevationProximityOveride1.Size = new System.Drawing.Size(90, 23);
             this.ElevationProximityOveride1.TabIndex = 13;
-            this.ElevationProximityOveride1.Text = "ENABLED";
+            this.ElevationProximityOveride1.Text = "LOADING...";
             this.ElevationProximityOveride1.UseVisualStyleBackColor = false;
             this.ElevationProximityOveride1.Click += new System.EventHandler(this.ElevationProximityOverideButton1_Click);
             // 
             // ORAzimuthSens2
             // 
-            this.ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
+            this.ORAzimuthSens2.BackColor = System.Drawing.Color.Yellow;
             this.ORAzimuthSens2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ORAzimuthSens2.Location = new System.Drawing.Point(194, 134);
             this.ORAzimuthSens2.Name = "ORAzimuthSens2";
             this.ORAzimuthSens2.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens2.TabIndex = 12;
-            this.ORAzimuthSens2.Text = "ENABLED";
+            this.ORAzimuthSens2.Text = "LOADING...";
             this.ORAzimuthSens2.UseVisualStyleBackColor = false;
             this.ORAzimuthSens2.Click += new System.EventHandler(this.ORAzimuthSens2_Click);
             // 
             // ORAzimuthSens1
             // 
-            this.ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
+            this.ORAzimuthSens1.BackColor = System.Drawing.Color.Yellow;
             this.ORAzimuthSens1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.ORAzimuthSens1.Location = new System.Drawing.Point(194, 53);
             this.ORAzimuthSens1.Name = "ORAzimuthSens1";
             this.ORAzimuthSens1.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens1.TabIndex = 11;
-            this.ORAzimuthSens1.Text = "ENABLED";
+            this.ORAzimuthSens1.Text = "LOADING...";
             this.ORAzimuthSens1.UseVisualStyleBackColor = false;
             this.ORAzimuthSens1.Click += new System.EventHandler(this.ORAzimuthSens1_Click);
             // 
@@ -1742,14 +1742,14 @@
             // 
             // WSOverride
             // 
-            this.WSOverride.BackColor = System.Drawing.Color.LimeGreen;
+            this.WSOverride.BackColor = System.Drawing.Color.Yellow;
             this.WSOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.WSOverride.Location = new System.Drawing.Point(228, 35);
             this.WSOverride.Margin = new System.Windows.Forms.Padding(2);
             this.WSOverride.Name = "WSOverride";
             this.WSOverride.Size = new System.Drawing.Size(89, 23);
             this.WSOverride.TabIndex = 13;
-            this.WSOverride.Text = "ENABLED";
+            this.WSOverride.Text = "LOADING...";
             this.WSOverride.UseVisualStyleBackColor = false;
             this.WSOverride.Click += new System.EventHandler(this.WSOverride_Click);
             // 

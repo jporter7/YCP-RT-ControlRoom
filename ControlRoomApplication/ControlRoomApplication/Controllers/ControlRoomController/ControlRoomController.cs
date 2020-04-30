@@ -15,7 +15,7 @@ namespace ControlRoomApplication.Controllers
         private bool KeepWeatherMonitoringThreadAlive;
 
         // Weather Station override
-        public bool weatherStationOverride = false;
+        //public bool weatherStationOverride = false;
 
         public ControlRoomController(ControlRoom controlRoom)
         {
@@ -90,7 +90,7 @@ namespace ControlRoomApplication.Controllers
                     logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
 
                     // Overriding the status warning if override is true
-                    if (!weatherStationOverride)
+                    if (!ControlRoom.weatherStationOverride)
                     {
                         currentSensor.Status = SensorStatusEnum.ALARM;
                         pushNotification.send("WARNING: WEATHER STATION", "Wind speeds are too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
@@ -116,7 +116,7 @@ namespace ControlRoomApplication.Controllers
 
 
                     // Overriding the status warning if override is true
-                    if (!weatherStationOverride)
+                    if (!ControlRoom.weatherStationOverride)
                     {
                         currentSensor.Status = SensorStatusEnum.WARNING;
                         pushNotification.send("WARNING: WEATHER STATION", "Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
