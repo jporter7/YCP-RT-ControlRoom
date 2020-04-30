@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Main;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -17,15 +18,15 @@ namespace ControlRoomApplication.Controllers
         public TcpListener server = null;
         private Thread TCPMonitoringThread;
         private bool KeepTCPMonitoringThreadAlive;
+        public RadioTelescopeController rtController;
         private ControlRoom controlRoom;
 
         public RemoteListener(int port, ControlRoom control)
         {
             logger.Debug("Setting up remote listener");
+            server = new TcpListener(port);
 
             controlRoom = control;
-
-            server = new TcpListener(port);
 
             // Start listening for client requests.
             server.Start();
@@ -51,7 +52,7 @@ namespace ControlRoomApplication.Controllers
                 // Perform a blocking call to accept requests.
                 // You could also user server.AcceptSocket() here.
                 TcpClient client = server.AcceptTcpClient();
-                Console.WriteLine("Connected!");
+                logger.Debug("TCP Client connected!");
 
                 data = null;
 
@@ -65,7 +66,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     // Translate data bytes to a ASCII string.
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
-                    Console.WriteLine("Received: {0}", data);
+                    logger.Debug("Received: " + data);
 
                     // Process the data sent by the client.
                     data = data.ToUpper();
@@ -123,10 +124,11 @@ namespace ControlRoomApplication.Controllers
 
         private bool processMessage(String data)
         {
+
             if (data.IndexOf("COORDINATE_MOVE") != -1)
             {
                 // we have a move command coming in
-                controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop();
 
                 // get azimuth and orientation
                 int azimuthIndex = data.IndexOf("AZIM");
@@ -150,7 +152,7 @@ namespace ControlRoomApplication.Controllers
 
                 Orientation movingTo = new Orientation(azimuth, elevation);
 
-                controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].MoveRadioTelescopeToOrientation(movingTo);
+                rtController.MoveRadioTelescopeToOrientation(movingTo);
 
                 // TODO: store the User Id and movement somewhere in the database
 
@@ -159,12 +161,55 @@ namespace ControlRoomApplication.Controllers
             }
             else if (data.IndexOf("SET_OVERRIDE") != -1)
             {
-                // we have an override command coming in
+                // false = ENABLED; true = OVERRIDING
+                // If "OVR" is contained in the data, will return true
+
+                // Non-PLC Overrides
+                if (data.Contains("WEATHER_STATION"))
+                {
+                    controlRoom.weatherStationOverride = data.Contains("OVR");
+                    rtController.setOverride("weather station", data.Contains("OVR"));
+                }
+                else if (data.Contains("AZIMUTH_MOT_TEMP"))
+                {
+                    rtController.setOverride("azimuth motor temperature", data.Contains("OVR"));
+                }
+                else if (data.Contains("ELEVATION_MOT_TEMP"))
+                {
+                    rtController.setOverride("elevation motor temperature", data.Contains("OVR"));
+                }
+
+                // PLC Overrides
+                else if (data.Contains("MAIN_GATE"))
+                {
+                    rtController.setOverride("main gate", data.Contains("OVR"));
+                }
+
+                // May be removed with slip ring
+                else if (data.Contains("AZIMUTH_LIMIT_10"))
+                {
+                    rtController.setOverride("azimuth proximity (1)", data.Contains("OVR"));
+                }
+                else if (data.Contains("AZIMUTH_LIMIT_375"))
+                {
+                    rtController.setOverride("azimuth proximity (2)", data.Contains("OVR"));
+                }
+                else if (data.Contains("ELEVATION_LIMIT_0"))
+                {
+                    rtController.setOverride("elevation proximity (1)", data.Contains("OVR"));
+                }
+                else if (data.Contains("ELEVATION_LIMIT_90"))
+                {
+                    rtController.setOverride("elevation proximity (2)", data.Contains("OVR"));
+                }
+                else return false;
+
+                return true;
             }
             else if (data.IndexOf("SCRIPT") != -1)
             {
                 // we have a move command coming in
-                controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop();
 
                 // get azimuth and orientation
                 int colonIndex = data.IndexOf(":");
@@ -172,38 +217,38 @@ namespace ControlRoomApplication.Controllers
 
                 if (colonIndex != -1)
                 {
-                    script = data.Substring(colonIndex);
+                    script = data.Substring(colonIndex + 2);
                 }
                 else
                     return false;
 
                 logger.Debug("Script " + script);
 
-                if (script == "DUMP")
+                if (script.Contains("DUMP"))
                 {
                     // we have to use the - 1 here because the mobile app does not specify which radio telescope to control. This will just
                     // enable them to control the most recently created telescope.
-                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.SnowDump();
+                    rtController.RadioTelescope.PLCDriver.SnowDump();
                 }
-                else if (script == "FULL_EV")
+                else if (script.Contains("FULL_EV"))
                 {
-                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.FullElevationMove();
+                    rtController.RadioTelescope.PLCDriver.FullElevationMove();
                 }
-                else if (script == "CALIBRATE")
+                else if (script.Contains("CALIBRATE"))
                 {
-                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.Thermal_Calibrate();
+                    rtController.RadioTelescope.PLCDriver.Thermal_Calibrate();
                 }
-                else if (script == "STOW")
+                else if (script.Contains("STOW"))
                 {
-                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.Stow();
+                    rtController.RadioTelescope.PLCDriver.Stow();
                 }
-                else if (script == "FULL_CLOCK")
+                else if (script.Contains("FULL_CLOCK"))
                 {
-                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.Full_360_CW_Rotation();
+                    rtController.RadioTelescope.PLCDriver.Full_360_CW_Rotation();
                 }
-                else if (script == "FULL_COUNTER")
+                else if (script.Contains("FULL_COUNTER"))
                 {
-                    controlRoom.RadioTelescopeControllers[controlRoom.RadioTelescopeControllers.Count - 1].RadioTelescope.PLCDriver.Full_360_CCW_Rotation();
+                    rtController.RadioTelescope.PLCDriver.Full_360_CCW_Rotation();
                 }
                 else
                 {

@@ -198,6 +198,10 @@ namespace ControlRoomApplication.Main
 
                 logger.Info("Adding RadioTelescope Controller");
                 MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
+                ARadioTelescope.SetParent(ProgramRTControllerList[current_rt_id - 1]);
+
+                // linking radio telescope controller to tcp listener
+                MainControlRoomController.ControlRoom.mobileControlServer.rtController = ARadioTelescope.GetParent();
 
                 logger.Info("Starting Weather Monitoring Routine");
                 MainControlRoomController.StartWeatherMonitoringRoutine();
@@ -667,12 +671,12 @@ namespace ControlRoomApplication.Main
 
         public void setWSOverride(bool WSO)
         {
-            MainControlRoomController.weatherStationOverride = WSO;
+            MainControlRoomController.ControlRoom.weatherStationOverride = WSO;
         }
 
         public bool getWSOverride()
         {
-            return MainControlRoomController.weatherStationOverride;
+            return MainControlRoomController.ControlRoom.weatherStationOverride;
         }
 
         private void txtMcuCOMPort_TextChanged(object sender, EventArgs e)
