@@ -546,6 +546,27 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
+        /// Grabs the current threshold value from the database for the specific sensor
+        /// </summary>
+        public static double GetThresholdForSensor(SensorItemEnum item)
+        {
+            double val;
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                List<ThresholdValues> thresholds = Context.ThresholdValues.Where<ThresholdValues>(t => t.sensor_name == item.ToString()).ToList<ThresholdValues>();
+
+                if (thresholds.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                val = Convert.ToDouble(thresholds[0].maxValue);
+            }
+
+            return val;
+        }
+
+        /// <summary>
         /// Adds the radio telescope
         /// </summary>
         public static void AddRadioTelescope(RadioTelescope telescope)

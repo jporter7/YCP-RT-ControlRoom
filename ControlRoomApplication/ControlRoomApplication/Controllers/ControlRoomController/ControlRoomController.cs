@@ -81,7 +81,7 @@ namespace ControlRoomApplication.Controllers
         {
             while (KeepWeatherMonitoringThreadAlive)
             {
-                Sensor currentSensor = ControlRoom.RTControllerManagementThreads[0].Sensors.Find(i => i.Item == SensorItemEnum.WIND_SPEED);
+                Sensor currentSensor = ControlRoom.RTControllerManagementThreads[0].Sensors.Find(i => i.Item == SensorItemEnum.WIND);
                 int windSpeedStatus = ControlRoom.WeatherStation.CurrentWindSpeedStatus;
 
                 // The Wind Speed has triggered an Alarm Status

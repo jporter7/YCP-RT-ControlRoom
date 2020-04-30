@@ -213,6 +213,7 @@
     <Compile Include="Entities\Sensor\SensorItemEnum.cs" />
     <Compile Include="Entities\Sensor\SensorStatus.cs" />
     <Compile Include="Entities\Sensor\SensorStatusEnum.cs" />
+    <Compile Include="Entities\Sensor\ThresholdValues.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberBandwidthEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />

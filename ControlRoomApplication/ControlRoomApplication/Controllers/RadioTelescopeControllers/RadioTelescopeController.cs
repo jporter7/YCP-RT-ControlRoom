@@ -312,6 +312,9 @@ namespace ControlRoomApplication.Controllers
         /// <returns>override bool</returns>
         public bool checkTemp(Temperature t)
         {
+            // get maximum temperature threshold
+            double max;
+
             // Determine whether azimuth or elevation
             String s;
             bool b;
@@ -319,11 +322,13 @@ namespace ControlRoomApplication.Controllers
             {
                 s = "Azimuth";
                 b = overrides.overrideAzimuthMotTemp;
+                max = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
             }
             else
             {
                 s = "Elevation";
                 b = overrides.overrideElevatMotTemp;
+                max = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
             }
 
             // Check temperatures
@@ -336,7 +341,7 @@ namespace ControlRoomApplication.Controllers
                 if (!b) return false;
                 else return true;
             }
-            else if (t.temp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
+            else if (t.temp > max)
             {
                 logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
                 pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
