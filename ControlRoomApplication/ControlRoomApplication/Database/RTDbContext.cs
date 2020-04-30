@@ -43,5 +43,6 @@ namespace ControlRoomApplication.Main
         public DbSet<SensorStatus> SensorStatus { get; set; }
         public DbSet<RadioTelescope> RadioTelescope { get; set; }
         public DbSet<ThresholdValues> ThresholdValues { get; set; }
+        public DbSet<Override> Override { get; set; }
     }
 }

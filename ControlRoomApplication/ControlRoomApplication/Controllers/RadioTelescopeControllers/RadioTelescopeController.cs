@@ -33,8 +33,12 @@ namespace ControlRoomApplication.Controllers
             RadioTelescope = radioTelescope;
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
 
+            overrides = new OverrideSwitchData();
+
             tempM = new Thread(tempMonitor);
             tempM.Start();
+
+
         }
 
         /// <summary>

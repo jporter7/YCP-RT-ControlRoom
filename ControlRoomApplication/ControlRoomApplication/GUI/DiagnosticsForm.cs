@@ -653,6 +653,9 @@ namespace ControlRoomApplication.GUI
                 logger.Info("Enabled weather station sensor.");
                 pushNotification.send("SENSOR OVERRIDES", "Enabled weather station sensor.");
             }
+
+            // Change value in database
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.WEATHER_STATION);
         }
 
         private void MGOverride_Click(object sender, EventArgs e)
@@ -707,6 +710,9 @@ namespace ControlRoomApplication.GUI
                 logger.Info("Enabled azimuth motor temperature sensor.");
                 pushNotification.send("SENSOR OVERRIDES", "Enabled azimuth motor temperature sensor.");
             }
+
+            // Change value in database
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
         }
 
         private void ElMotTempSensOverride_Click(object sender, EventArgs e)
@@ -727,6 +733,9 @@ namespace ControlRoomApplication.GUI
                 logger.Info("Enabled elevation motor temperature sensor.");
                 pushNotification.send("SENSOR OVERRIDES", "Enabled elevation motor temperature sensor.");
             }
+
+            // Change value in database
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
         }
 
         private void buttonWS_Click(object sender, EventArgs e)
@@ -734,6 +743,7 @@ namespace ControlRoomApplication.GUI
             // create a override by the control room computer
             controlRoom.RTControllerManagementThreads[0].ActiveOverrides.Add(new Override(SensorItemEnum.WIND, "Control Room Computer"));
             controlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
+          
         }
 
         private void label4_Click(object sender, EventArgs e)

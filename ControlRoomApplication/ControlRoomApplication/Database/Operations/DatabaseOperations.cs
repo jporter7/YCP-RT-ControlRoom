@@ -567,6 +567,50 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
+        /// Updates the current override to the opposite of the given sensor name
+        /// </summary>
+        public static void SwitchOverrideForSensor(SensorItemEnum item)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var overrides = Context.Override.Where<Override>(t => t.sensor_name == item.ToString()).ToList<Override>();
+                
+                if(overrides.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                Override current = overrides[0];
+                current.Overridden = current.Overridden == 1 ? Convert.ToSByte(0) : Convert.ToSByte(1);
+
+                Context.Override.AddOrUpdate(current);
+
+                Context.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Gets the current status of the override
+        /// </summary>
+        public static bool GetOverrideStatusForSensor(SensorItemEnum item)
+        {
+            Override current;
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var overrides = Context.Override.Where<Override>(t => t.sensor_name == item.ToString()).ToList<Override>();
+
+                if (overrides.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                current = overrides[0];
+            }
+
+            return current.Overridden == 1;
+        }
+
+        /// <summary>
         /// Adds the radio telescope
         /// </summary>
         public static void AddRadioTelescope(RadioTelescope telescope)
