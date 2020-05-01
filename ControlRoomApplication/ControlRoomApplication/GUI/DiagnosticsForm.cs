@@ -654,6 +654,9 @@ namespace ControlRoomApplication.GUI
                 mainF.setWSOverride(false);
                 rtController.setOverride("weather station", false);
             }
+
+            // Change value in database
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.WEATHER_STATION);
         }
 
         private void MGOverride_Click(object sender, EventArgs e)
@@ -670,6 +673,9 @@ namespace ControlRoomApplication.GUI
                 MGOverride.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("main gate", false);
             }
+
+            // Change value in database
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.GATE);
         }
 
         private void lblElEncoderDegrees_Click(object sender, EventArgs e)
@@ -698,6 +704,9 @@ namespace ControlRoomApplication.GUI
 
                 rtController.setOverride("azimuth motor temperature", false);
             }
+
+            // Change value in database
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
         }
 
         private void ElMotTempSensOverride_Click(object sender, EventArgs e)
@@ -716,13 +725,17 @@ namespace ControlRoomApplication.GUI
 
                 rtController.setOverride("elevation motor temperature", false);
             }
+
+            // Change value in database
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
         }
 
         private void buttonWS_Click(object sender, EventArgs e)
         {
             // create a override by the control room computer
-            controlRoom.RTControllerManagementThreads[0].ActiveOverrides.Add(new Override(SensorItemEnum.WIND_SPEED, "Control Room Computer"));
+            controlRoom.RTControllerManagementThreads[0].ActiveOverrides.Add(new Override(SensorItemEnum.WIND, "Control Room Computer"));
             controlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
+          
         }
 
         private void label4_Click(object sender, EventArgs e)

@@ -546,6 +546,71 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
+        /// Grabs the current threshold value from the database for the specific sensor
+        /// </summary>
+        public static double GetThresholdForSensor(SensorItemEnum item)
+        {
+            double val;
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                List<ThresholdValues> thresholds = Context.ThresholdValues.Where<ThresholdValues>(t => t.sensor_name == item.ToString()).ToList<ThresholdValues>();
+
+                if (thresholds.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                val = Convert.ToDouble(thresholds[0].maxValue);
+            }
+
+            return val;
+        }
+
+        /// <summary>
+        /// Updates the current override to the opposite of the given sensor name
+        /// </summary>
+        public static void SwitchOverrideForSensor(SensorItemEnum item)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var overrides = Context.Override.Where<Override>(t => t.sensor_name == item.ToString()).ToList<Override>();
+                
+                if(overrides.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                Override current = overrides[0];
+                current.Overridden = current.Overridden == 1 ? Convert.ToSByte(0) : Convert.ToSByte(1);
+
+                Context.Override.AddOrUpdate(current);
+
+                Context.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Gets the current status of the override
+        /// </summary>
+        public static bool GetOverrideStatusForSensor(SensorItemEnum item)
+        {
+            Override current;
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var overrides = Context.Override.Where<Override>(t => t.sensor_name == item.ToString()).ToList<Override>();
+
+                if (overrides.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                current = overrides[0];
+            }
+
+            return current.Overridden == 1;
+        }
+
+        /// <summary>
         /// Adds the radio telescope
         /// </summary>
         public static void AddRadioTelescope(RadioTelescope telescope)

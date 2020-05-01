@@ -18,7 +18,7 @@ namespace ControlRoomApplication.Main
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
+        { 
             modelBuilder.Entity<Appointment>().HasRequired(t => t.CelestialBody).WithMany().Map(d => d.MapKey("celestial_body_id"));
             modelBuilder.Entity<Appointment>().HasRequired(t => t.SpectraCyberConfig).WithMany().Map(d => d.MapKey("spectracyber_config_id"));
             modelBuilder.Entity<Appointment>().HasRequired(t => t.Orientation).WithMany().Map(d => d.MapKey("orientation_id"));
@@ -42,6 +42,7 @@ namespace ControlRoomApplication.Main
         public DbSet<WeatherData> Weather { get; set; }
         public DbSet<SensorStatus> SensorStatus { get; set; }
         public DbSet<RadioTelescope> RadioTelescope { get; set; }
-
+        public DbSet<ThresholdValues> ThresholdValues { get; set; }
+        public DbSet<Override> Override { get; set; }
     }
 }

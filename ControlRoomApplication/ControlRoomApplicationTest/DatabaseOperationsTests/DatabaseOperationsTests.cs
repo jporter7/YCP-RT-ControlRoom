@@ -211,5 +211,45 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.IsTrue(nextAppt != null);
             Assert.IsTrue(nextAppt._Status != AppointmentStatusEnum.COMPLETED);
         }
+
+        [TestMethod]
+        public void TestSwitchOverrideForSensor()
+        {
+            bool before = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
+
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.GATE);
+
+            bool after = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
+
+            Assert.IsTrue(before != after);
+        }
+
+        [TestMethod]
+        public void TestGetThresholdForSensor()
+        {
+            double wind = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.WIND);
+            Assert.IsTrue(wind > 0);
+
+            double az_motor_temp = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
+            Assert.IsTrue(az_motor_temp > 0);
+
+            double elev_motor_temp = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
+            Assert.IsTrue(elev_motor_temp > 0);
+
+            double az_motor_vibe = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_VIBRATION);
+            Assert.IsTrue(az_motor_vibe > 0);
+
+            double elev_motor_vibe = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_VIBRATION);
+            Assert.IsTrue(elev_motor_vibe > 0);
+
+            double az_motor_current = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_CURRENT);
+            Assert.IsTrue(az_motor_current > 0);
+
+            double elev_motor_current = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_CURRENT);
+            Assert.IsTrue(elev_motor_current > 0);
+
+            double counter_vibe = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.COUNTER_BALANCE_VIBRATION);
+            Assert.IsTrue(counter_vibe > 0);
+        }
     }
 }
