@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplication.Entities
 {
@@ -83,7 +84,7 @@ namespace ControlRoomApplication.Entities
                 if (CurrentWindSpeedMPH < MiscellaneousHardwareConstants.WEATHER_STATION_WARNING_WIND_SPEED_MPH)
                     return 0; // Safe State of the Wind Speed
                 else if (CurrentWindSpeedMPH >= MiscellaneousHardwareConstants.WEATHER_STATION_WARNING_WIND_SPEED_MPH
-                    && CurrentWindSpeedMPH <= MiscellaneousHardwareConstants.WEATHER_STATION_MAXIMUM_ALLOWABLE_WIND_SPEED_MPH)
+                    && CurrentWindSpeedMPH <= DatabaseOperations.GetThresholdForSensor(SensorItemEnum.WIND))
                     return 1; // Warning State of the Wind Speed
                 else
                     return 2; // Alarm State of the Wind Speed

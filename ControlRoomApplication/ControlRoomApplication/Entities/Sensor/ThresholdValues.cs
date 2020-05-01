@@ -8,16 +8,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities
 {
-    [Table("sensor_overrides")]
-    public class Override
-    { 
-
+    [Table("thresholds")]
+    public class ThresholdValues
+    {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [NotMapped]
-        public SensorItemEnum Item
+        public SensorItemEnum _Name
         {
             get
             {
@@ -52,25 +51,8 @@ namespace ControlRoomApplication.Entities
             }
         }
 
-        [NotMapped]
-        public DateTime Time_Created { get; set; }
-
-        [NotMapped]
-        public String User_Created_By { get; set; }
-
-        [Column("overridden")]
-        public SByte Overridden { get; set; }
-
-        public Override(SensorItemEnum INItem, String createdBy)
-        {
-            Time_Created = DateTime.Now;
-            Item = INItem;
-            User_Created_By = createdBy;
-        }
-
-        public Override()
-        {
-
-        }
+        [Required]
+        [Column("maximum")]
+        public Single maxValue { get; set; }
     }
 }
