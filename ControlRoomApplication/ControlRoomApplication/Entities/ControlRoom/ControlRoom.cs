@@ -10,6 +10,8 @@ namespace ControlRoomApplication.Entities
         public AbstractWeatherStation WeatherStation { get; }
         public RemoteListener mobileControlServer { get; }
 
+        public bool weatherStationOverride = false;
+
         public List<RadioTelescopeController> RadioTelescopeControllers
         {
             get
