@@ -347,8 +347,8 @@ namespace ControlRoomApplication.Controllers
             }
             else if (t.temp > max)
             {
-                logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
-                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - SimulationConstants.OVERHEAT_MOTOR_TEMP) + " degrees Fahrenheit.");
+                logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
 
                 // Only overrides if switch is true
                 if (!b) return false;
