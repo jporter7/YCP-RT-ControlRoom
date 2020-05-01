@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -169,20 +170,24 @@ namespace ControlRoomApplication.Controllers
                 {
                     controlRoom.weatherStationOverride = data.Contains("OVR");
                     rtController.setOverride("weather station", data.Contains("OVR"));
+                    DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.WEATHER_STATION);
                 }
                 else if (data.Contains("AZIMUTH_MOT_TEMP"))
                 {
                     rtController.setOverride("azimuth motor temperature", data.Contains("OVR"));
+                    DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
                 }
                 else if (data.Contains("ELEVATION_MOT_TEMP"))
                 {
                     rtController.setOverride("elevation motor temperature", data.Contains("OVR"));
+                    DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
                 }
 
                 // PLC Overrides
                 else if (data.Contains("MAIN_GATE"))
                 {
                     rtController.setOverride("main gate", data.Contains("OVR"));
+                    DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.GATE);
                 }
 
                 // May be removed with slip ring

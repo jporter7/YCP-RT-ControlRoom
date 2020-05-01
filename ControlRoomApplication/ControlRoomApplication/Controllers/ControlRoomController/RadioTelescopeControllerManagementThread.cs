@@ -84,7 +84,7 @@ namespace ControlRoomApplication.Controllers
             Sensors = new List<Sensor>();
             OverallSensorStatus = true;
 
-            Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
+            Sensors.Add(new Sensor(SensorItemEnum.WIND, SensorStatusEnum.NORMAL));
            
             // Commented out because we will not be using this functionality in the future.
             // We will switch to connecting to a server on the cloud
