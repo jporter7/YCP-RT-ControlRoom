@@ -4,7 +4,6 @@
     {
         UNDEFINED,
         SMALL_BANDWIDTH,
-        MID_BANDWIDTH,
         LARGE_BANDWIDTH
     }
 
@@ -15,11 +14,9 @@
             switch (time)
             {
                 case SpectraCyberBandwidthEnum.SMALL_BANDWIDTH:
-                    return "7.5";
-                case SpectraCyberBandwidthEnum.MID_BANDWIDTH:
-                    return "15";
+                    return "15Khz";
                 case SpectraCyberBandwidthEnum.LARGE_BANDWIDTH:
-                    return "30";
+                    return "30Khz";
                 case SpectraCyberBandwidthEnum.UNDEFINED:
                     throw new System.Exception("UNDEFINED SpectraCyberBandwidthEnum type");
                 default:

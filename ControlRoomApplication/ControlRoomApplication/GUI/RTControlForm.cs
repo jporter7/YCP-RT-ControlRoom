@@ -33,6 +33,8 @@ namespace ControlRoomApplication.Main
         public bool manualControlActive;
         public bool spectraEditActive;
         public SpectraCyberDCGainEnum DCGainInput;
+        public SpectraCyberIntegrationTimeEnum IntTimeInput;
+        public SpectraCyberBandwidthEnum BandwidthInput;
 
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
@@ -70,9 +72,7 @@ namespace ControlRoomApplication.Main
 
             //Calibrate Move
             CalibrateMove();
-            runControlScriptButton.Enabled = false;
-
-       
+            runControlScriptButton.Enabled = false;       
 
             //Initialize Free control Box as disabled
             freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
@@ -759,66 +759,99 @@ namespace ControlRoomApplication.Main
             {
                 scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
                 scanTypeComboBox.Enabled = false;
-                integrationStep.BackColor = System.Drawing.Color.DarkGray;
-                integrationStep.Enabled = false;
+                integrationStepCombo.BackColor = System.Drawing.Color.DarkGray;
+                integrationStepCombo.Enabled = false;
+                bandwidthComboBox.BackColor = System.Drawing.Color.DarkGray;
+                bandwidthComboBox.Enabled = false;
                 offsetVoltage.BackColor = System.Drawing.Color.DarkGray;
                 offsetVoltage.Enabled = false;
-                bandwidth.BackColor = System.Drawing.Color.DarkGray;
-                bandwidth.Enabled = false;
+                frequency.BackColor = System.Drawing.Color.DarkGray;
+                frequency.Enabled = false;
                 DCGain.BackColor = System.Drawing.Color.DarkGray;
                 DCGain.Enabled = false;
+                IFGainVal.BackColor = System.Drawing.Color.DarkGray;
+                IFGainVal.Enabled = false;
 
                 startScanButton.BackColor = System.Drawing.Color.LimeGreen;
                 startScanButton.Enabled = true;
 
                 spectraEditActive = false;
 
+                int caseSwitch = DCGain.SelectedIndex;
+
+                switch (caseSwitch)
+                {
+                    case 0:
+                        DCGainInput = SpectraCyberDCGainEnum.X1;
+                        break;
+                    case 1:
+                        DCGainInput = SpectraCyberDCGainEnum.X5;
+                        break;
+                    case 2:
+                        DCGainInput = SpectraCyberDCGainEnum.X10;
+                        break;
+                    case 3:
+                        DCGainInput = SpectraCyberDCGainEnum.X20;
+                        break;
+                    case 4:
+                        DCGainInput = SpectraCyberDCGainEnum.X50;
+                        break;
+                    case 5:
+                        DCGainInput = SpectraCyberDCGainEnum.X60;
+                        break;
+                }
+
+                caseSwitch = integrationStepCombo.SelectedIndex;
+
+                switch (caseSwitch)
+                {
+                    case 0:
+                        IntTimeInput = SpectraCyberIntegrationTimeEnum.SHORT_TIME_SPAN;
+                        break;
+                    case 1:
+                        IntTimeInput = SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN;
+                        break;
+                    case 2:
+                        IntTimeInput = SpectraCyberIntegrationTimeEnum.LONG_TIME_SPAN;
+                        break;
+                }
+
+                caseSwitch = bandwidthComboBox.SelectedIndex;
+
+                switch (caseSwitch)
+                {
+                    case 0:
+                        BandwidthInput = SpectraCyberBandwidthEnum.SMALL_BANDWIDTH;
+                        break;
+                    case 1:
+                        BandwidthInput = SpectraCyberBandwidthEnum.LARGE_BANDWIDTH;
+                        break;
+                }
+
             }
             else
             {
                 scanTypeComboBox.BackColor = System.Drawing.Color.White;
                 scanTypeComboBox.Enabled = true;
-                integrationStep.BackColor = System.Drawing.Color.White;
-                integrationStep.Enabled = true;
+                integrationStepCombo.BackColor = System.Drawing.Color.White;
+                integrationStepCombo.Enabled = true;
+                bandwidthComboBox.BackColor = System.Drawing.Color.White;
+                bandwidthComboBox.Enabled = true;
                 offsetVoltage.BackColor = System.Drawing.Color.White;
                 offsetVoltage.Enabled = true;
-                bandwidth.BackColor = System.Drawing.Color.White;
-                bandwidth.Enabled = true;
+                frequency.BackColor = System.Drawing.Color.White;
+                frequency.Enabled = true;
                 DCGain.BackColor = System.Drawing.Color.White;
                 DCGain.Enabled = true;
+                IFGainVal.BackColor = System.Drawing.Color.White;
+                IFGainVal.Enabled = true;
 
                 startScanButton.BackColor = System.Drawing.Color.DarkGray;
                 startScanButton.Enabled = false;
 
                 spectraEditActive = true;
-
-            }
-
-            int caseSwitch = DCGain.SelectedIndex;
-
-            switch (caseSwitch)
-            {
-                case 0:
-                    DCGainInput = SpectraCyberDCGainEnum.X1;
-                    break;
-                case 1:
-                    DCGainInput = SpectraCyberDCGainEnum.X5;
-                    break;
-                case 2:
-                    DCGainInput = SpectraCyberDCGainEnum.X10;
-                    break;
-                case 3:
-                    DCGainInput = SpectraCyberDCGainEnum.X20;
-                    break;
-                case 4:
-                    DCGainInput = SpectraCyberDCGainEnum.X50;
-                    break;
-                case 5:
-                    DCGainInput = SpectraCyberDCGainEnum.X60;
-                    break;
             }
         }
-
 
         private void startScan_Click(object sender, EventArgs e)
         {
@@ -829,17 +862,21 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-                    rtController.RadioTelescope.SpectraCyberController.SetBandwidth(Convert.ToDouble(bandwidth.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    rtController.RadioTelescope.SpectraCyberController.SetFrequency(Convert.ToDouble(frequency.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetContinuumIntegrationTime(IntTimeInput);
                     rtController.RadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetDCGain(DCGainInput);
+                    rtController.RadioTelescope.SpectraCyberController.SetContGain(DCGainInput);
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetBandwidth(BandwidthInput);
                     break;
                 case 1:
                     rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
-                    rtController.RadioTelescope.SpectraCyberController.SetBandwidth(Convert.ToDouble(bandwidth.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    rtController.RadioTelescope.SpectraCyberController.SetFrequency(Convert.ToDouble(frequency.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(IntTimeInput);
                     rtController.RadioTelescope.SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetIFGain(Convert.ToDouble(IFGainVal.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetSpecGain(DCGainInput);
+                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
+                    rtController.RadioTelescope.SpectraCyberController.SetBandwidth(BandwidthInput);
                     break;
             }
 
@@ -889,6 +926,11 @@ namespace ControlRoomApplication.Main
         }
 
         private void FreeControlForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
