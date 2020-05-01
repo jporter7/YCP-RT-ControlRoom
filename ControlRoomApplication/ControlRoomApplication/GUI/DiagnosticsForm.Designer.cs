@@ -1539,7 +1539,7 @@
             this.ElMotTempSensOverride.Name = "ElMotTempSensOverride";
             this.ElMotTempSensOverride.Size = new System.Drawing.Size(91, 23);
             this.ElMotTempSensOverride.TabIndex = 15;
-            this.ElMotTempSensOverride.Text = "LOADING...";
+            this.ElMotTempSensOverride.Text = "NOT LOADED";
             this.ElMotTempSensOverride.UseVisualStyleBackColor = false;
             this.ElMotTempSensOverride.Click += new System.EventHandler(this.ElMotTempSensOverride_Click);
             // 
@@ -1563,7 +1563,7 @@
             this.AzMotTempSensOverride.Name = "AzMotTempSensOverride";
             this.AzMotTempSensOverride.Size = new System.Drawing.Size(89, 23);
             this.AzMotTempSensOverride.TabIndex = 13;
-            this.AzMotTempSensOverride.Text = "LOADING...";
+            this.AzMotTempSensOverride.Text = "NOT LOADED";
             this.AzMotTempSensOverride.UseVisualStyleBackColor = false;
             this.AzMotTempSensOverride.Click += new System.EventHandler(this.AzMotTempSensOverride_Click);
             // 
@@ -1599,7 +1599,7 @@
             this.MGOverride.Name = "MGOverride";
             this.MGOverride.Size = new System.Drawing.Size(89, 23);
             this.MGOverride.TabIndex = 13;
-            this.MGOverride.Text = "LOADING...";
+            this.MGOverride.Text = "NOT LOADED";
             this.MGOverride.UseVisualStyleBackColor = false;
             this.MGOverride.Click += new System.EventHandler(this.MGOverride_Click);
             // 
@@ -1641,7 +1641,7 @@
             this.ElevationProximityOveride2.Name = "ElevationProximityOveride2";
             this.ElevationProximityOveride2.Size = new System.Drawing.Size(88, 23);
             this.ElevationProximityOveride2.TabIndex = 14;
-            this.ElevationProximityOveride2.Text = "LOADING...";
+            this.ElevationProximityOveride2.Text = "NOT LOADED";
             this.ElevationProximityOveride2.UseVisualStyleBackColor = false;
             this.ElevationProximityOveride2.Click += new System.EventHandler(this.ElevationProximityOverideButton2_Click);
             // 
@@ -1653,7 +1653,7 @@
             this.ElevationProximityOveride1.Name = "ElevationProximityOveride1";
             this.ElevationProximityOveride1.Size = new System.Drawing.Size(90, 23);
             this.ElevationProximityOveride1.TabIndex = 13;
-            this.ElevationProximityOveride1.Text = "LOADING...";
+            this.ElevationProximityOveride1.Text = "NOT LOADED";
             this.ElevationProximityOveride1.UseVisualStyleBackColor = false;
             this.ElevationProximityOveride1.Click += new System.EventHandler(this.ElevationProximityOverideButton1_Click);
             // 
@@ -1665,7 +1665,7 @@
             this.ORAzimuthSens2.Name = "ORAzimuthSens2";
             this.ORAzimuthSens2.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens2.TabIndex = 12;
-            this.ORAzimuthSens2.Text = "LOADING...";
+            this.ORAzimuthSens2.Text = "NOT LOADED";
             this.ORAzimuthSens2.UseVisualStyleBackColor = false;
             this.ORAzimuthSens2.Click += new System.EventHandler(this.ORAzimuthSens2_Click);
             // 
@@ -1677,7 +1677,7 @@
             this.ORAzimuthSens1.Name = "ORAzimuthSens1";
             this.ORAzimuthSens1.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens1.TabIndex = 11;
-            this.ORAzimuthSens1.Text = "LOADING...";
+            this.ORAzimuthSens1.Text = "NOT LOADED";
             this.ORAzimuthSens1.UseVisualStyleBackColor = false;
             this.ORAzimuthSens1.Click += new System.EventHandler(this.ORAzimuthSens1_Click);
             // 
@@ -1749,7 +1749,7 @@
             this.WSOverride.Name = "WSOverride";
             this.WSOverride.Size = new System.Drawing.Size(89, 23);
             this.WSOverride.TabIndex = 13;
-            this.WSOverride.Text = "LOADING...";
+            this.WSOverride.Text = "NOT LOADED";
             this.WSOverride.UseVisualStyleBackColor = false;
             this.WSOverride.Click += new System.EventHandler(this.WSOverride_Click);
             // 
