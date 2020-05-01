@@ -494,6 +494,7 @@ namespace ControlRoomApplication.Controllers
 
         private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, int appId)
         {
+            logger.Debug("Decimal " + spectraCyberResponse.DecimalData);
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
             rfData.Appointment = DatabaseOperations.GetUpdatedAppointment(appId);
 

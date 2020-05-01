@@ -265,6 +265,9 @@ namespace ControlRoomApplication.Controllers
             NextAppointment._Status = AppointmentStatusEnum.IN_PROGRESS;
             DatabaseOperations.UpdateAppointment(NextAppointment);
 
+            // send message to appointment's user
+            SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_STARTED);
+
             logger.Info("Appointment _Type: " + NextAppointment._Type);
 
             // Loop through each second or minute of the appointment (depending on appt type)
@@ -344,11 +347,18 @@ namespace ControlRoomApplication.Controllers
                 DatabaseOperations.UpdateAppointment(NextAppointment);
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
+
+                // send message to appointment's user
+                SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_CANCELLED);
+
             }
             else
             {
                 NextAppointment._Status = AppointmentStatusEnum.COMPLETED;
                 DatabaseOperations.UpdateAppointment(NextAppointment);
+
+                // send message to appointment's user
+                SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_COMPLETION);
             }
 
             DatabaseOperations.UpdateAppointment(NextAppointment);
