@@ -398,9 +398,16 @@ namespace ControlRoomApplication.Controllers
                 RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, Convert.ToUInt16(set));
             }
 
-            if (set) logger.Info("Overriding " + sensor + " sensor.");
-            else logger.Info("Enabled " + sensor + " sensor.");
-            pushNotification.send("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
+            if (set)
+            {
+                logger.Info("Overriding " + sensor + " sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
+            }
+            else
+            {
+                logger.Info("Enabled " + sensor + " sensor.");
+                pushNotification.send("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
+            }
         }
     }
 }
