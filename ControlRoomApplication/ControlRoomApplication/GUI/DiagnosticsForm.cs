@@ -653,6 +653,9 @@ namespace ControlRoomApplication.GUI
                 MGOverride.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("main gate", false);
             }
+
+            // Change value in database
+            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.GATE);
         }
 
         private void lblElEncoderDegrees_Click(object sender, EventArgs e)
