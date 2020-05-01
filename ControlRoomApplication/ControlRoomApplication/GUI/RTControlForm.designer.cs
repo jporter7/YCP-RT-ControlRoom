@@ -79,20 +79,22 @@
             this.plusJogButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.spectraCyberGroupBox = new System.Windows.Forms.GroupBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.IFGainVal = new System.Windows.Forms.TextBox();
+            this.lblIFGain = new System.Windows.Forms.Label();
             this.finalizeSettingsButton = new System.Windows.Forms.Button();
             this.DCGain = new System.Windows.Forms.ComboBox();
             this.stopScanButton = new System.Windows.Forms.Button();
             this.startScanButton = new System.Windows.Forms.Button();
-            this.bandwidth = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.integrationStep = new System.Windows.Forms.TextBox();
+            this.frequency = new System.Windows.Forms.TextBox();
+            this.lblFrequency = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.offsetVoltage = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.scanTypeComboBox = new System.Windows.Forms.ComboBox();
-            this.IFGainVal = new System.Windows.Forms.TextBox();
-            this.lblIFGain = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
+            this.integrationStepCombo = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.bandwidthComboBox = new System.Windows.Forms.ComboBox();
             this.RAIncGroupbox.SuspendLayout();
             this.overRideGroupbox.SuspendLayout();
             this.decIncGroupbox.SuspendLayout();
@@ -738,6 +740,9 @@
             // spectraCyberGroupBox
             // 
             this.spectraCyberGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+            this.spectraCyberGroupBox.Controls.Add(this.bandwidthComboBox);
+            this.spectraCyberGroupBox.Controls.Add(this.label6);
+            this.spectraCyberGroupBox.Controls.Add(this.integrationStepCombo);
             this.spectraCyberGroupBox.Controls.Add(this.label10);
             this.spectraCyberGroupBox.Controls.Add(this.IFGainVal);
             this.spectraCyberGroupBox.Controls.Add(this.lblIFGain);
@@ -745,9 +750,8 @@
             this.spectraCyberGroupBox.Controls.Add(this.DCGain);
             this.spectraCyberGroupBox.Controls.Add(this.stopScanButton);
             this.spectraCyberGroupBox.Controls.Add(this.startScanButton);
-            this.spectraCyberGroupBox.Controls.Add(this.bandwidth);
-            this.spectraCyberGroupBox.Controls.Add(this.label7);
-            this.spectraCyberGroupBox.Controls.Add(this.integrationStep);
+            this.spectraCyberGroupBox.Controls.Add(this.frequency);
+            this.spectraCyberGroupBox.Controls.Add(this.lblFrequency);
             this.spectraCyberGroupBox.Controls.Add(this.label9);
             this.spectraCyberGroupBox.Controls.Add(this.offsetVoltage);
             this.spectraCyberGroupBox.Controls.Add(this.label12);
@@ -760,6 +764,37 @@
             this.spectraCyberGroupBox.TabIndex = 29;
             this.spectraCyberGroupBox.TabStop = false;
             this.spectraCyberGroupBox.Text = "Spectra Cyber";
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(4, 41);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(44, 13);
+            this.label10.TabIndex = 43;
+            this.label10.Text = "DCGain";
+            // 
+            // IFGainVal
+            // 
+            this.IFGainVal.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.IFGainVal.Location = new System.Drawing.Point(77, 57);
+            this.IFGainVal.Margin = new System.Windows.Forms.Padding(2);
+            this.IFGainVal.Name = "IFGainVal";
+            this.IFGainVal.Size = new System.Drawing.Size(44, 20);
+            this.IFGainVal.TabIndex = 42;
+            // 
+            // lblIFGain
+            // 
+            this.lblIFGain.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblIFGain.AutoSize = true;
+            this.lblIFGain.Location = new System.Drawing.Point(74, 43);
+            this.lblIFGain.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblIFGain.Name = "lblIFGain";
+            this.lblIFGain.Size = new System.Drawing.Size(38, 13);
+            this.lblIFGain.TabIndex = 41;
+            this.lblIFGain.Text = "IFGain";
             // 
             // finalizeSettingsButton
             // 
@@ -821,34 +856,25 @@
             this.startScanButton.UseVisualStyleBackColor = false;
             this.startScanButton.Click += new System.EventHandler(this.startScan_Click);
             // 
-            // bandwidth
+            // frequency
             // 
-            this.bandwidth.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.bandwidth.Location = new System.Drawing.Point(192, 17);
-            this.bandwidth.Margin = new System.Windows.Forms.Padding(2);
-            this.bandwidth.Name = "bandwidth";
-            this.bandwidth.Size = new System.Drawing.Size(76, 20);
-            this.bandwidth.TabIndex = 35;
+            this.frequency.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.frequency.Location = new System.Drawing.Point(117, 18);
+            this.frequency.Margin = new System.Windows.Forms.Padding(2);
+            this.frequency.Name = "frequency";
+            this.frequency.Size = new System.Drawing.Size(76, 20);
+            this.frequency.TabIndex = 35;
             // 
-            // label7
+            // lblFrequency
             // 
-            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(131, 21);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(57, 13);
-            this.label7.TabIndex = 34;
-            this.label7.Text = "Bandwidth";
-            // 
-            // integrationStep
-            // 
-            this.integrationStep.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.integrationStep.Location = new System.Drawing.Point(215, 57);
-            this.integrationStep.Margin = new System.Windows.Forms.Padding(2);
-            this.integrationStep.Name = "integrationStep";
-            this.integrationStep.Size = new System.Drawing.Size(44, 20);
-            this.integrationStep.TabIndex = 33;
+            this.lblFrequency.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lblFrequency.AutoSize = true;
+            this.lblFrequency.Location = new System.Drawing.Point(114, 0);
+            this.lblFrequency.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblFrequency.Name = "lblFrequency";
+            this.lblFrequency.Size = new System.Drawing.Size(57, 13);
+            this.lblFrequency.TabIndex = 34;
+            this.lblFrequency.Text = "Frequency";
             // 
             // label9
             // 
@@ -888,7 +914,7 @@
             this.scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
             this.scanTypeComboBox.FormattingEnabled = true;
             this.scanTypeComboBox.Items.AddRange(new object[] {
-            "Continuous",
+            "Continuum",
             "Spectral"});
             this.scanTypeComboBox.Location = new System.Drawing.Point(4, 18);
             this.scanTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
@@ -898,36 +924,48 @@
             this.scanTypeComboBox.TabIndex = 25;
             this.scanTypeComboBox.Text = "Scan Type";
             // 
-            // IFGainVal
+            // integrationStepCombo
             // 
-            this.IFGainVal.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.IFGainVal.Location = new System.Drawing.Point(77, 57);
-            this.IFGainVal.Margin = new System.Windows.Forms.Padding(2);
-            this.IFGainVal.Name = "IFGainVal";
-            this.IFGainVal.Size = new System.Drawing.Size(44, 20);
-            this.IFGainVal.TabIndex = 42;
+            this.integrationStepCombo.BackColor = System.Drawing.Color.DarkGray;
+            this.integrationStepCombo.FormattingEnabled = true;
+            this.integrationStepCombo.Items.AddRange(new object[] {
+            "0.3",
+            "0.5(S)/1.00(C) ",
+            "1.00(S)/10.00(C)"});
+            this.integrationStepCombo.Location = new System.Drawing.Point(215, 56);
+            this.integrationStepCombo.Margin = new System.Windows.Forms.Padding(2);
+            this.integrationStepCombo.MaxDropDownItems = 6;
+            this.integrationStepCombo.Name = "integrationStepCombo";
+            this.integrationStepCombo.Size = new System.Drawing.Size(79, 21);
+            this.integrationStepCombo.TabIndex = 44;
+            this.integrationStepCombo.Text = "Int Step";
+            this.integrationStepCombo.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
-            // lblIFGain
+            // label6
             // 
-            this.lblIFGain.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lblIFGain.AutoSize = true;
-            this.lblIFGain.Location = new System.Drawing.Point(74, 43);
-            this.lblIFGain.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblIFGain.Name = "lblIFGain";
-            this.lblIFGain.Size = new System.Drawing.Size(38, 13);
-            this.lblIFGain.TabIndex = 41;
-            this.lblIFGain.Text = "IFGain";
+            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(212, 0);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(57, 13);
+            this.label6.TabIndex = 45;
+            this.label6.Text = "Bandiwdth";
             // 
-            // label10
+            // bandwidthComboBox
             // 
-            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(4, 41);
-            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(44, 13);
-            this.label10.TabIndex = 43;
-            this.label10.Text = "DCGain";
+            this.bandwidthComboBox.BackColor = System.Drawing.Color.DarkGray;
+            this.bandwidthComboBox.FormattingEnabled = true;
+            this.bandwidthComboBox.Items.AddRange(new object[] {
+            "15Khz",
+            "30Khz"});
+            this.bandwidthComboBox.Location = new System.Drawing.Point(215, 17);
+            this.bandwidthComboBox.Margin = new System.Windows.Forms.Padding(2);
+            this.bandwidthComboBox.MaxDropDownItems = 6;
+            this.bandwidthComboBox.Name = "bandwidthComboBox";
+            this.bandwidthComboBox.Size = new System.Drawing.Size(57, 21);
+            this.bandwidthComboBox.TabIndex = 46;
+            this.bandwidthComboBox.Text = "Band";
             // 
             // FreeControlForm
             // 
@@ -1017,9 +1055,8 @@
         private System.Windows.Forms.ComboBox DCGain;
         private System.Windows.Forms.Button stopScanButton;
         private System.Windows.Forms.Button startScanButton;
-        private System.Windows.Forms.TextBox bandwidth;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox integrationStep;
+        private System.Windows.Forms.TextBox frequency;
+        private System.Windows.Forms.Label lblFrequency;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox offsetVoltage;
         private System.Windows.Forms.Label label12;
@@ -1027,5 +1064,8 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox IFGainVal;
         private System.Windows.Forms.Label lblIFGain;
+        private System.Windows.Forms.ComboBox integrationStepCombo;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox bandwidthComboBox;
     }
 }

@@ -71,7 +71,7 @@ namespace ControlRoomApplication.GUI
 
         // Alert Flags
         bool farenheit = true;
-        
+
         private int rtId;
 
         // This is being passed through so the Weather Station override bool can be modified
@@ -303,11 +303,31 @@ namespace ControlRoomApplication.GUI
             dataGridView1.Update();
 
             // Spectra Cyber Tab Updates
-            BandwidthVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.bandwidth.ToString();
+            spectraModeTypeVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.spectraCyberMode.ToString();
+
+            BandwidthVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.bandwidth.GetValue();
+            frequencyVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.frequency.ToString();
             IFGainVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.IFGain.ToString();
-            DCGainVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.DCGain.ToString();
+
+            if(rtController.RadioTelescope.SpectraCyberController.configVals.spectraCyberMode == SpectraCyberModeTypeEnum.SPECTRAL)
+                DCGainVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.specGain.GetValue();
+            else if(rtController.RadioTelescope.SpectraCyberController.configVals.spectraCyberMode == SpectraCyberModeTypeEnum.CONTINUUM)
+                DCGainVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.contGain.GetValue();
+
             IntegrationStepVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.integrationStep.ToString();
+
             OffsetVoltageVal.Text = rtController.RadioTelescope.SpectraCyberController.configVals.offsetVoltage.ToString();
+
+            // Spectra Cyber Graph Update
+            if (rtController.RadioTelescope.SpectraCyberController.Schedule.GetMode() == SpectraCyberScanScheduleMode.CONTINUOUS_SCAN
+                || rtController.RadioTelescope.SpectraCyberController.Schedule.GetMode() == SpectraCyberScanScheduleMode.SCHEDULED_SCAN
+                || rtController.RadioTelescope.SpectraCyberController.Schedule.GetMode() == SpectraCyberScanScheduleMode.SINGLE_SCAN)
+            {
+                double intensity = rtController.RadioTelescope.SpectraCyberController.configVals.rfData;
+                double time = rtController.RadioTelescope.SpectraCyberController.configVals.scanTime;
+
+                spectraCyberScanChart.Series["Data/Time"].Points.AddXY(time, intensity);
+            }
 
             // Console Log Output Update
             consoleLogBox.Text = mainF.log.loggerQueue;

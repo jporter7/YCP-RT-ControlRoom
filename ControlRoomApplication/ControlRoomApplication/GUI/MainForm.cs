@@ -518,7 +518,7 @@ namespace ControlRoomApplication.Main
             {
                 ProdcheckBox.Checked = false;
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
-                this.txtMcuCOMPort.Text = ((int)(8081 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
+                this.txtMcuCOMPort.Text = ((int)(8083 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
@@ -526,7 +526,7 @@ namespace ControlRoomApplication.Main
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
-            this.txtPLCPort.Text = ((int)(8080+ ProgramPLCDriverList.Count*3)).ToString();
+            this.txtPLCPort.Text = ((int)(8082 + ProgramPLCDriverList.Count*3)).ToString();
         }
 
         private void ProdcheckBox_CheckedChanged( object sender , EventArgs e ) {

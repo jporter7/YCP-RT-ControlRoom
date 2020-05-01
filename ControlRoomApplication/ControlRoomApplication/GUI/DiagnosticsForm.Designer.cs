@@ -168,6 +168,7 @@
             this.WSOverride = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.spectraCyberScanChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.lblIntegrationStep = new System.Windows.Forms.Label();
             this.IntegrationStepVal = new System.Windows.Forms.Label();
             this.lblDCGain = new System.Windows.Forms.Label();
@@ -180,7 +181,10 @@
             this.OffsetVoltageVal = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.consoleLogBox = new System.Windows.Forms.TextBox();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.lblFrequency = new System.Windows.Forms.Label();
+            this.frequencyVal = new System.Windows.Forms.Label();
+            this.lblModeType = new System.Windows.Forms.Label();
+            this.spectraModeTypeVal = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -208,8 +212,8 @@
             this.groupBox10.SuspendLayout();
             this.groupBox11.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spectraCyberScanChart)).BeginInit();
             this.tabPage5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -1771,7 +1775,11 @@
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.chart1);
+            this.tabPage4.Controls.Add(this.lblModeType);
+            this.tabPage4.Controls.Add(this.spectraModeTypeVal);
+            this.tabPage4.Controls.Add(this.lblFrequency);
+            this.tabPage4.Controls.Add(this.frequencyVal);
+            this.tabPage4.Controls.Add(this.spectraCyberScanChart);
             this.tabPage4.Controls.Add(this.lblIntegrationStep);
             this.tabPage4.Controls.Add(this.IntegrationStepVal);
             this.tabPage4.Controls.Add(this.lblDCGain);
@@ -1789,6 +1797,25 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "RFData";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // spectraCyberScanChart
+            // 
+            chartArea1.AxisX.Title = "Time";
+            chartArea1.AxisY.Title = "RF Data";
+            chartArea1.Name = "ChartArea1";
+            this.spectraCyberScanChart.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.spectraCyberScanChart.Legends.Add(legend1);
+            this.spectraCyberScanChart.Location = new System.Drawing.Point(36, 0);
+            this.spectraCyberScanChart.Name = "spectraCyberScanChart";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series1.Legend = "Legend1";
+            series1.Name = "Data/Time";
+            this.spectraCyberScanChart.Series.Add(series1);
+            this.spectraCyberScanChart.Size = new System.Drawing.Size(571, 279);
+            this.spectraCyberScanChart.TabIndex = 16;
+            this.spectraCyberScanChart.Text = "spectraCyberScanChart";
             // 
             // lblIntegrationStep
             // 
@@ -1856,7 +1883,7 @@
             // 
             this.lblBandwidth.AutoSize = true;
             this.lblBandwidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBandwidth.Location = new System.Drawing.Point(153, 333);
+            this.lblBandwidth.Location = new System.Drawing.Point(6, 333);
             this.lblBandwidth.Name = "lblBandwidth";
             this.lblBandwidth.Size = new System.Drawing.Size(74, 15);
             this.lblBandwidth.TabIndex = 8;
@@ -1866,7 +1893,7 @@
             // 
             this.BandwidthVal.AutoSize = true;
             this.BandwidthVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BandwidthVal.Location = new System.Drawing.Point(367, 333);
+            this.BandwidthVal.Location = new System.Drawing.Point(220, 333);
             this.BandwidthVal.Name = "BandwidthVal";
             this.BandwidthVal.Size = new System.Drawing.Size(35, 15);
             this.BandwidthVal.TabIndex = 9;
@@ -1915,22 +1942,45 @@
             this.consoleLogBox.Size = new System.Drawing.Size(631, 400);
             this.consoleLogBox.TabIndex = 0;
             // 
-            // chart1
+            // lblFrequency
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(9, 6);
-            this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.Legend = "Legend1";
-            series1.Name = "RF Data";
-            this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(630, 324);
-            this.chart1.TabIndex = 16;
-            this.chart1.Text = "spectralScanChart";
+            this.lblFrequency.AutoSize = true;
+            this.lblFrequency.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFrequency.Location = new System.Drawing.Point(300, 333);
+            this.lblFrequency.Name = "lblFrequency";
+            this.lblFrequency.Size = new System.Drawing.Size(73, 15);
+            this.lblFrequency.TabIndex = 17;
+            this.lblFrequency.Text = "Frequency";
+            // 
+            // frequencyVal
+            // 
+            this.frequencyVal.AutoSize = true;
+            this.frequencyVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.frequencyVal.Location = new System.Drawing.Point(514, 333);
+            this.frequencyVal.Name = "frequencyVal";
+            this.frequencyVal.Size = new System.Drawing.Size(35, 15);
+            this.frequencyVal.TabIndex = 18;
+            this.frequencyVal.Text = "NaN";
+            // 
+            // lblModeType
+            // 
+            this.lblModeType.AutoSize = true;
+            this.lblModeType.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblModeType.Location = new System.Drawing.Point(155, 297);
+            this.lblModeType.Name = "lblModeType";
+            this.lblModeType.Size = new System.Drawing.Size(128, 15);
+            this.lblModeType.TabIndex = 19;
+            this.lblModeType.Text = "SpectraCyberMode";
+            // 
+            // spectraModeTypeVal
+            // 
+            this.spectraModeTypeVal.AutoSize = true;
+            this.spectraModeTypeVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.spectraModeTypeVal.Location = new System.Drawing.Point(369, 297);
+            this.spectraModeTypeVal.Name = "spectraModeTypeVal";
+            this.spectraModeTypeVal.Size = new System.Drawing.Size(35, 15);
+            this.spectraModeTypeVal.TabIndex = 20;
+            this.spectraModeTypeVal.Text = "NaN";
             // 
             // DiagnosticsForm
             // 
@@ -1986,9 +2036,9 @@
             this.groupBox11.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spectraCyberScanChart)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2143,6 +2193,10 @@
         private System.Windows.Forms.Label lblIntegrationStep;
         private System.Windows.Forms.Label IntegrationStepVal;
         private System.Windows.Forms.TextBox consoleLogBox;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart spectraCyberScanChart;
+        private System.Windows.Forms.Label lblFrequency;
+        private System.Windows.Forms.Label frequencyVal;
+        private System.Windows.Forms.Label lblModeType;
+        private System.Windows.Forms.Label spectraModeTypeVal;
     }
 }
