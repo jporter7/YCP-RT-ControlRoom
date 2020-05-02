@@ -14,11 +14,12 @@ namespace ControlRoomApplication.Entities
         {
         }
 
-        public User(string firstName, string lastName, string email)
+        public User(string firstName, string lastName, string email, NotificationTypeEnum e)
         {
             first_name = firstName;
             last_name = lastName;
             email_address = email;
+            _Notification_Type = e;
         }
     
         [Key]

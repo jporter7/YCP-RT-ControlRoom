@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Main
     {
         public RTDbContext() : base(MiscellaneousConstants.LOCAL_DATABASE_NAME)
         {
-
+            
         }
 
         public RTDbContext(string connectionString) : base(connectionString)

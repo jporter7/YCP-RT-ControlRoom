@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using ControlRoomApplication.Constants;
@@ -10,6 +11,7 @@ using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Main;
 using System.Reflection;
+using System.Data.Entity.Core.Objects;
 
 namespace ControlRoomApplication.Database
 {
@@ -230,7 +232,7 @@ namespace ControlRoomApplication.Database
                 var appoints = Context.Appointments.Include(t => t.Telescope)
                                                     .Include(t => t.CelestialBody)
                                                      .Include(t => t.Orientation)
-                                                //  .Include(t => t.SpectraCyberConfig)
+                                                  .Include(t => t.SpectraCyberConfig)
                                                      .Include(t => t.User)
                                                     
                                                                        .ToList<Appointment>();
@@ -255,7 +257,7 @@ namespace ControlRoomApplication.Database
                 
                 if(users.Count() == 0)
                 {
-                    users.Add(new User("control", "room", "controlroom@gmail.com"));
+                    users.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.SMS));
                     createUser = true;
                 }
                 if(users.Count() > 1)
@@ -266,21 +268,6 @@ namespace ControlRoomApplication.Database
                 controlRoomUser = users[0];
             }
             return controlRoomUser;
-        }
-
-        /// <summary>
-        /// Returns the updated Appointment from the database.
-        /// </summary>
-        public static Appointment GetUpdatedAppointment(int appt_id)
-        {
-            Appointment appt;
-            using (RTDbContext Context = InitializeDatabaseContext())
-            {
-                List<Appointment> appts = Context.Appointments.SqlQuery("Select * from appointment").ToList<Appointment>();
-
-                appt = appts.Find(x => x.Id == appt_id);
-            }
-            return appt;
         }
 
         /// <summary>
@@ -314,6 +301,21 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
+        /// Returns the updated Appointment from the database.
+        /// </summary>
+        public static Appointment GetUpdatedAppointment(Appointment appt)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.Appointments.Attach(appt);
+
+                Context.Entry(appt).Reload();
+
+            }
+            return appt;
+        }
+
+        /// <summary>
         /// Creates and stores and RFData reading in the local database.
         /// </summary>
         /// <param name="data">The RFData reading to be created/stored.</param>
@@ -325,15 +327,14 @@ namespace ControlRoomApplication.Database
 
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
+
                     // add the rf data to the list in appointment
-                    var appt = Context.Appointments.Find(data.Appointment.Id);
-                    appt.RFDatas.Add(data);
+                    data.Appointment.RFDatas.Add(data);
 
                     // add the rf data to the database
                     Context.RFDatas.AddOrUpdate(data);
-
+       
                     Context.SaveChangesAsync();
-
                 }
             }
         }

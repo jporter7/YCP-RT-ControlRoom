@@ -74,7 +74,7 @@ namespace ControlRoomApplication.Controllers
         public bool SetApptConfig(Appointment appt)
         {
             bool success = false;
-            SetActiveAppointmentID(appt.Id);
+            SetActiveAppointment(appt);
             SpectraCyberConfig config = appt.SpectraCyberConfig;
             SetSpectraCyberModeType(config.Mode);
             if(config.Mode == SpectraCyberModeTypeEnum.CONTINUUM)
@@ -182,16 +182,16 @@ namespace ControlRoomApplication.Controllers
             SpectraCyber.CurrentModeType = type;
         }
 
-        public void SetActiveAppointmentID(int apptId)
+        public void SetActiveAppointment(Appointment appt)
         {
             CommunicationMutex.WaitOne();
-            SpectraCyber.ActiveAppointmentID = apptId;
+            SpectraCyber.ActiveAppointment = appt;
             CommunicationMutex.ReleaseMutex();
         }
 
         public void RemoveActiveAppointmentID()
         {
-            SetActiveAppointmentID(-1);
+            SetActiveAppointment(null);
         }
 
         public void TestCommunication()
@@ -363,11 +363,11 @@ namespace ControlRoomApplication.Controllers
         }
 
         // Start scanning, keep doing so until requested to stop
-        public void StartScan(int appId)
+        public void StartScan(Appointment appt)
         {
 
             // set the spectra cyber active appointment so that rf data has an appointment to refer to
-            SpectraCyber.ActiveAppointmentID = appId;
+            SpectraCyber.ActiveAppointment = appt;
 
             logger.Info("[SpectraCyberAbstractController] Scan has been started");
             try
@@ -462,7 +462,7 @@ namespace ControlRoomApplication.Controllers
 
                 if (Schedule.PollReadiness())
                 {
-                    AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointmentID);
+                    AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointment);
                     logger.Info("[SpectraCyberController] Added the RF Data to the database");
                     Schedule.Consume();
                     logger.Info("[SpectraCyberController] The schedule hath been consumed by Cthulhu");
@@ -492,11 +492,12 @@ namespace ControlRoomApplication.Controllers
             return BringDown();
         }
 
-        private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, int appId)
+        private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, Appointment appt)
         {
             logger.Debug("Decimal " + spectraCyberResponse.DecimalData);
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
-            rfData.Appointment = DatabaseOperations.GetUpdatedAppointment(appId);
+            appt = DatabaseOperations.GetUpdatedAppointment(appt);
+            rfData.Appointment = appt;
 
             logger.Info("[AbstractSpectrCyberController] Created RF Data: " + rfData.Intensity);
 

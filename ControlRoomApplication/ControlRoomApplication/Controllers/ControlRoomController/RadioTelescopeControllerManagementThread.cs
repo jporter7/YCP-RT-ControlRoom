@@ -265,8 +265,11 @@ namespace ControlRoomApplication.Controllers
             NextAppointment._Status = AppointmentStatusEnum.IN_PROGRESS;
             DatabaseOperations.UpdateAppointment(NextAppointment);
 
-            // send message to appointment's user
-            SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_STARTED);
+            if (NextAppointment.User.first_name != "control")
+            {
+                // send message to appointment's user
+                SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_STARTED);
+            }
 
             logger.Info("Appointment _Type: " + NextAppointment._Type);
 
@@ -348,8 +351,11 @@ namespace ControlRoomApplication.Controllers
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
 
-                // send message to appointment's user
-                SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_CANCELLED);
+                if (NextAppointment.User.first_name != "control")
+                {
+                    // send message to appointment's user
+                    SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_CANCELLED);
+                }
 
             }
             else
@@ -357,8 +363,11 @@ namespace ControlRoomApplication.Controllers
                 NextAppointment._Status = AppointmentStatusEnum.COMPLETED;
                 DatabaseOperations.UpdateAppointment(NextAppointment);
 
-                // send message to appointment's user
-                SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_COMPLETION);
+                if (NextAppointment.User.first_name != "control")
+                {
+                    // send message to appointment's user
+                    SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_COMPLETION);
+                }
             }
 
             DatabaseOperations.UpdateAppointment(NextAppointment);
@@ -376,11 +385,11 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Calls the SpectraCyber controller to start the SpectraCyber readings.
         /// </summary>
-        private void StartReadingData(Appointment appt)
+        public void StartReadingData(Appointment appt)
         {
             logger.Info("Starting Reading of RFData");
             RTController.RadioTelescope.SpectraCyberController.SetApptConfig(appt);
-            RTController.RadioTelescope.SpectraCyberController.StartScan(appt.Id);
+            RTController.RadioTelescope.SpectraCyberController.StartScan(appt);
         }
 
         /// <summary>
