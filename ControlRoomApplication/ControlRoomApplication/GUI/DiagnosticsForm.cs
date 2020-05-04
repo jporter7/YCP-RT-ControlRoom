@@ -14,6 +14,7 @@ using ControlRoomApplication.Main;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Entities.PushNotification;
 using System.Threading;
+using System.ComponentModel;
 
 namespace ControlRoomApplication.GUI
 {
@@ -25,7 +26,7 @@ namespace ControlRoomApplication.GUI
         private RadioTelescopeController rtController { get; set; }
 
         // Thread that monitors the overrides, and updates the buttons as necessary
-        Thread updateOverride;
+        BackgroundWorker updateOverride;
 
 
         private int demoIndex = 0;
@@ -128,8 +129,9 @@ namespace ControlRoomApplication.GUI
 
             // Updates the override buttons so they reflect what the actual override values are
             updateButtons();
-            updateOverride = new Thread(checkOverrideVars);
-            updateOverride.Start();
+            updateOverride = new BackgroundWorker();
+            updateOverride.DoWork += new DoWorkEventHandler(checkOverrideVars);
+            updateOverride.RunWorkerAsync();
 
             logger.Info("DiagnosticsForm Initalized");
         }
@@ -759,7 +761,7 @@ namespace ControlRoomApplication.GUI
         }
 
         // Runs a check on the override variables, and if there is a change, updates the buttons appropriately
-        private void checkOverrideVars()
+        private void checkOverrideVars(object sender, DoWorkEventArgs e)
         {
             // Current overrides
             bool currMain = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
@@ -783,7 +785,11 @@ namespace ControlRoomApplication.GUI
                     currAZ = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
                     currEL = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
 
-                    updateButtons();
+                    this.Invoke((MethodInvoker)delegate
+                    {
+                        updateButtons();
+                    });
+
                 }
                 Thread.Sleep(1000);
             }
