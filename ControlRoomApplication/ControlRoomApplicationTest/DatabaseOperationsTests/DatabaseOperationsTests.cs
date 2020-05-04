@@ -55,7 +55,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DateTime now = DateTime.UtcNow;
             DateTime date = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
 
-            Appointment RFappt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
+            Appointment RFappt = appt;
             data1.Intensity = 9234875;
             data1.TimeCaptured = date;
             data1.Appointment = RFappt;

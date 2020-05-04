@@ -8,7 +8,7 @@ namespace ControlRoomApplication.Main
     {
         public RTDbContext() : base(MiscellaneousConstants.LOCAL_DATABASE_NAME)
         {
-
+            
         }
 
         public RTDbContext(string connectionString) : base(connectionString)
@@ -18,12 +18,13 @@ namespace ControlRoomApplication.Main
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        { 
+        {
+
             modelBuilder.Entity<Appointment>().HasRequired(t => t.CelestialBody).WithMany().Map(d => d.MapKey("celestial_body_id"));
             modelBuilder.Entity<Appointment>().HasRequired(t => t.SpectraCyberConfig).WithMany().Map(d => d.MapKey("spectracyber_config_id"));
             modelBuilder.Entity<Appointment>().HasRequired(t => t.Orientation).WithMany().Map(d => d.MapKey("orientation_id"));
             modelBuilder.Entity<Appointment>().HasRequired(t => t.Telescope).WithMany().Map(d => d.MapKey("telescope_id"));
-            modelBuilder.Entity<Appointment>().HasRequired(t => t.User).WithMany().Map(d => d.MapKey("user_id"));
+            modelBuilder.Entity<Appointment>().HasRequired(t => t.User);
 
             modelBuilder.Entity<RFData>().HasRequired(t => t.Appointment).WithMany().Map(d => d.MapKey("appointment_id"));
 

@@ -30,7 +30,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestMethod]
         public void TestGettersAndSetters()
         {
-            Assert.AreEqual(mode, spectraCyberConfig_1.Mode);
+            Assert.AreEqual(mode, spectraCyberConfig_1._Mode);
             Assert.AreEqual(integration_time, spectraCyberConfig_1.IntegrationTime);
             Assert.AreEqual(offset_voltage_1, spectraCyberConfig_1.OffsetVoltage);
             Assert.AreEqual(if_gain, spectraCyberConfig_1.IFGain);

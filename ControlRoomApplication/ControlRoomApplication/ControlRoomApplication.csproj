@@ -69,10 +69,13 @@
       <HintPath>..\packages\ArduinoUploader.3.1.0\lib\net452\ArduinoUploader.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.Core.3.3.31.7\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.Core.3.3.106.15\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.RDS.3.3.38.2\lib\net45\AWSSDK.RDS.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.SimpleNotificationService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.SimpleNotificationService.3.3.101.159\lib\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.3.1\lib\BouncyCastle.Crypto.dll</HintPath>
@@ -194,6 +197,7 @@
     <Compile Include="Controllers\BlkHeadUcontroler\EncoderReader.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
+    <Compile Include="Controllers\Communications\MessageType.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
@@ -209,7 +213,8 @@
     <Compile Include="Controllers\Sensors\LimitSwitchData.cs" />
     <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
     <Compile Include="Controllers\Sensors\ProximitySensorData.cs" />
-    <Compile Include="Controllers\TCPCommunication\RemoteListener.cs" />
+    <Compile Include="Controllers\Communications\RemoteListener.cs" />
+    <Compile Include="Controllers\Communications\SNSMessage.cs" />
     <Compile Include="Documentation\LoggerQueue.cs" />
     <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
@@ -233,6 +238,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberBandwidthEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />
+    <Compile Include="Entities\User\NotificationTypeEnum.cs" />
     <Compile Include="Entities\User\User.cs" />
     <Compile Include="Entities\WeatherStation\AbstractWeatherStation.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
@@ -387,6 +393,7 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.SimpleNotificationService.3.3.101.159\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
