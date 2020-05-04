@@ -39,6 +39,8 @@ namespace ControlRoomApplication.Entities
         [ForeignKey("user_id")]
         public virtual User User { get; set; }
 
+
+
         /// <summary>
         /// The getter/setter for the start time associated with this Appointment.
         /// </summary>

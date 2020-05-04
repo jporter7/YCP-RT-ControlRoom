@@ -257,7 +257,7 @@ namespace ControlRoomApplication.Database
                 
                 if(users.Count() == 0)
                 {
-                    users.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.SMS));
+                    users.Add(new User("control", "room", NotificationTypeEnum.SMS));
                     createUser = true;
                 }
                 if(users.Count() > 1)
@@ -333,8 +333,16 @@ namespace ControlRoomApplication.Database
 
                     // add the rf data to the database
                     Context.RFDatas.AddOrUpdate(data);
-       
-                    Context.SaveChangesAsync();
+
+                    Context.Entry(data.Appointment.User).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.CelestialBody).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.Orientation).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.SpectraCyberConfig).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.Telescope).State = EntityState.Unchanged;
+
+                    Context.SaveChanges();
                 }
             }
         }

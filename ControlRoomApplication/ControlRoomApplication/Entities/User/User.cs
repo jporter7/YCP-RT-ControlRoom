@@ -14,11 +14,10 @@ namespace ControlRoomApplication.Entities
         {
         }
 
-        public User(string firstName, string lastName, string email, NotificationTypeEnum e)
+        public User(string firstName, string lastName, NotificationTypeEnum e)
         {
             first_name = firstName;
             last_name = lastName;
-            email_address = email;
             _Notification_Type = e;
         }
     
@@ -34,8 +33,7 @@ namespace ControlRoomApplication.Entities
         [Column("last_name")]
         public string last_name { get; set; }
 
-        // not nullable
-        [Column("email_address")]
+        [Index("email_address", 1, IsUnique = true)]
         public string email_address { get; set; }
 
         /// <summary>

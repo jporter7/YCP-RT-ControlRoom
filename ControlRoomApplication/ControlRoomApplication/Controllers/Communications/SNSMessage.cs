@@ -13,6 +13,12 @@ namespace ControlRoomApplication.Controllers
     {
         public static void sendMessage(User user, MessageTypeEnum type)
         {
+
+            if (user.first_name == "control")
+            {
+                return;
+            }
+
             AmazonSimpleNotificationServiceClient snsClient = new AmazonSimpleNotificationServiceClient(AWSConstants.SNS_ACCESS_KEY, AWSConstants.SNS_SECRET_ACCESS_KEY, Amazon.RegionEndpoint.USEast1);
            
             PublishRequest pubRequest = new PublishRequest();

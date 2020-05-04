@@ -76,12 +76,12 @@ namespace ControlRoomApplication.Controllers
             bool success = false;
             SetActiveAppointment(appt);
             SpectraCyberConfig config = appt.SpectraCyberConfig;
-            SetSpectraCyberModeType(config.Mode);
-            if(config.Mode == SpectraCyberModeTypeEnum.CONTINUUM)
+            SetSpectraCyberModeType(config._Mode);
+            if(config._Mode == SpectraCyberModeTypeEnum.CONTINUUM)
             {
                 success = SetContinuumIntegrationTime(config.IntegrationTime) && SetContinuumOffsetVoltage(config.OffsetVoltage);
             }
-            else if(config.Mode == SpectraCyberModeTypeEnum.SPECTRAL)
+            else if(config._Mode == SpectraCyberModeTypeEnum.SPECTRAL)
             {
                 success = SetSpectralOffsetVoltage(config.OffsetVoltage) && SetSpectralIntegrationTime(config.IntegrationTime);
             }
