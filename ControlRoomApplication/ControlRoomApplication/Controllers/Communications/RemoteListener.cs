@@ -262,6 +262,10 @@ namespace ControlRoomApplication.Controllers
 
                 return true;
             }
+            else if (data.IndexOf("STOP_RT") != -1)
+            {
+                rtController.RadioTelescope.PLCDriver.Controled_stop();
+            }
 
             // can't find a keyword then we fail
             return false;
