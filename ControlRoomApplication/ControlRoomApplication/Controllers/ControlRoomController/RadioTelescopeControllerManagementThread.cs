@@ -265,11 +265,9 @@ namespace ControlRoomApplication.Controllers
             NextAppointment._Status = AppointmentStatusEnum.IN_PROGRESS;
             DatabaseOperations.UpdateAppointment(NextAppointment);
 
-            if (NextAppointment.User.first_name != "control")
-            {
-                // send message to appointment's user
-                SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_STARTED);
-            }
+            // send message to appointment's user
+            SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_STARTED);
+         
 
             logger.Info("Appointment _Type: " + NextAppointment._Type);
 
@@ -320,19 +318,14 @@ namespace ControlRoomApplication.Controllers
                         logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                         RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
 
-                        // Wait until MCU issues finished move status
-                        do
+                        if (InterruptAppointmentFlag)
                         {
-                            if (InterruptAppointmentFlag)
-                            {
-                                break;
-                            }
-
-                            //currentOrientation = RTController.GetCurrentOrientation();
-                            //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
-                            Thread.Sleep(100);
+                            break;
                         }
-                        while (!RTController.finished_exicuting_move(RadioTelescopeAxisEnum.BOTH));
+
+                         //currentOrientation = RTController.GetCurrentOrientation();
+                         //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                         Thread.Sleep(100);
 
                         NextObjectiveOrientation = null;
                     }
@@ -351,11 +344,9 @@ namespace ControlRoomApplication.Controllers
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
 
-                if (NextAppointment.User.first_name != "control")
-                {
-                    // send message to appointment's user
-                    SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_CANCELLED);
-                }
+                // send message to appointment's user
+                SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_CANCELLED);
+                
 
             }
             else
@@ -363,11 +354,8 @@ namespace ControlRoomApplication.Controllers
                 NextAppointment._Status = AppointmentStatusEnum.COMPLETED;
                 DatabaseOperations.UpdateAppointment(NextAppointment);
 
-                if (NextAppointment.User.first_name != "control")
-                {
-                    // send message to appointment's user
-                    SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_COMPLETION);
-                }
+                // send message to appointment's user
+                SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_COMPLETION);
             }
 
             DatabaseOperations.UpdateAppointment(NextAppointment);
