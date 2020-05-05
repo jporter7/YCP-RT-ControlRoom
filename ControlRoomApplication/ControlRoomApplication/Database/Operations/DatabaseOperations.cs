@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Database
 {
     public static class DatabaseOperations
     {
-        private static readonly bool USING_REMOTE_DATABASE = false;
+        private static readonly bool USING_REMOTE_DATABASE = true;
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // used to tell if we need to create a control room user
@@ -213,6 +213,8 @@ namespace ControlRoomApplication.Database
                         Context.Orientations.Add(appt.Orientation);
                     if (Context.SpectraCyberConfigs.Any(t => t.Id == appt.SpectraCyberConfig.Id) == false)
                         Context.SpectraCyberConfigs.Add(appt.SpectraCyberConfig);
+
+                    Context.Entry(appt.Telescope).State = EntityState.Unchanged;
                     
                     Context.Appointments.Add(appt);
                     SaveContext(Context);
@@ -227,17 +229,27 @@ namespace ControlRoomApplication.Database
         {
             List<Appointment> appts = new List<Appointment>();
             using (RTDbContext Context = InitializeDatabaseContext())
-            { 
-                // Use Include method to load related entities from the database
-                var appoints = Context.Appointments.Include(t => t.Telescope)
-                                                    .Include(t => t.CelestialBody)
-                                                     .Include(t => t.Orientation)
-                                                  .Include(t => t.SpectraCyberConfig)
-                                                     .Include(t => t.User)
-                                                    
-                                                                       .ToList<Appointment>();
+            {
+                try
+                {
 
-                appts = appoints.Where(x => x.telescope_id == radioTelescopeId).ToList();
+                    // Use Include method to load related entities from the database
+                    var appoints = Context.Appointments.Include(t => t.Telescope)
+                                                        .Include(t => t.CelestialBody)
+                                                        .Include(t => t.CelestialBody.Coordinate)
+                                                         .Include(t => t.Orientation)
+                                                      .Include(t => t.SpectraCyberConfig)
+                                                         .Include(t => t.User)
+                                                         .ToList<Appointment>();
+
+                    appts = appoints.Where(x => x.telescope_id == radioTelescopeId).ToList();
+                }
+                catch (Exception e)
+                {
+                    ;
+                }
+
+                
             }
             return appts;
         }
@@ -307,6 +319,15 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
+                Context.Entry(appt.CelestialBody).State = EntityState.Unchanged;
+                if (appt.Orientation != null)
+                    Context.Entry(appt.Orientation).State = EntityState.Unchanged;
+                Context.Entry(appt.SpectraCyberConfig).State = EntityState.Unchanged;
+                Context.Entry(appt.Telescope).State = EntityState.Unchanged;
+                Context.Entry(appt.User).State = EntityState.Unchanged;
+
+                Context.SaveChanges();
+
                 Context.Appointments.Attach(appt);
 
                 Context.Entry(appt).Reload();
@@ -336,9 +357,14 @@ namespace ControlRoomApplication.Database
 
                     Context.Entry(data.Appointment.User).State = EntityState.Unchanged;
                     Context.Entry(data.Appointment).State = EntityState.Unchanged;
-                    Context.Entry(data.Appointment.CelestialBody).State = EntityState.Unchanged;
-                    Context.Entry(data.Appointment.Orientation).State = EntityState.Unchanged;
-                    Context.Entry(data.Appointment.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                    if (data.Appointment.Orientation != null)
+                        Context.Entry(data.Appointment.Orientation).State = EntityState.Unchanged;
+                    if (data.Appointment.CelestialBody != null)
+                    {
+                        if (data.Appointment.CelestialBody.Coordinate != null)
+                            Context.Entry(data.Appointment.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                        Context.Entry(data.Appointment.CelestialBody).State = EntityState.Unchanged;
+                    }
                     Context.Entry(data.Appointment.SpectraCyberConfig).State = EntityState.Unchanged;
                     Context.Entry(data.Appointment.Telescope).State = EntityState.Unchanged;
 
@@ -407,9 +433,8 @@ namespace ControlRoomApplication.Database
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x._Status == AppointmentStatusEnum.COMPLETED);
+                    appointments.RemoveAll(x => x._Status == AppointmentStatusEnum.COMPLETED || x._Status == AppointmentStatusEnum.CANCELED);
                     appointments.Sort();
-                    logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;
                 }
                 else
@@ -451,7 +476,7 @@ namespace ControlRoomApplication.Database
         /// <returns> A boolean indicating whether or not the status is valid.</returns>
         private static bool VerifyAppointmentStatus(Appointment appt)
         {
-            return  appt._Status.Equals(AppointmentStatusEnum.CANCELLED) || 
+            return  appt._Status.Equals(AppointmentStatusEnum.CANCELED) || 
                     appt._Status.Equals(AppointmentStatusEnum.COMPLETED) ||
                     appt._Status.Equals(AppointmentStatusEnum.IN_PROGRESS) ||
                     appt._Status.Equals(AppointmentStatusEnum.REQUESTED) ||
@@ -632,5 +657,26 @@ namespace ControlRoomApplication.Database
                 logger.Info("Added radio telescope to database");
             }
         }
+
+        /// <summary>
+        /// Adds the radio telescope
+        /// </summary>
+        public static RadioTelescope FetchRadioTelescope()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var telescopes = Context.RadioTelescope.Where<RadioTelescope>(t => t.Id == 1).ToList<RadioTelescope>();
+
+                if(telescopes.Count != 1)
+                {
+                    throw new Exception();
+                }
+
+                logger.Info("Added radio telescope to database");
+
+                return telescopes[0];
+            }
+        }
+
     }
 }

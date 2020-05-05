@@ -115,8 +115,9 @@ namespace ControlRoomApplication.Entities
         [NotMapped]
         public SpectraCyberBandwidthEnum Bandwidth { get; set; }
 
-        [Required]
-        [Column("bandwidth")]
+   //     [Required]
+   //     [Column("bandwidth")]
+        [NotMapped]
         public int bandwidth
         {
             get

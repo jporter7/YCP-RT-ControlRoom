@@ -39,7 +39,8 @@ namespace ControlRoomApplication.Controllers
                     pubRequest.PhoneNumber = user.phone_number;
                 }
 
-
+                PublishResponse pubResponse = snsClient.Publish(pubRequest);
+                Console.WriteLine(pubResponse.MessageId);
             }
 
             // sending email
@@ -47,13 +48,6 @@ namespace ControlRoomApplication.Controllers
             {
                 
             }
-
-
-                // add optional MessageAttributes, for example:
-                //   pubRequest.MessageAttributes.Add("AWS.SNS.SMS.SenderID", new MessageAttributeValue
-                //      { StringValue = "SenderId", DataType = "String" });
-                PublishResponse pubResponse = snsClient.Publish(pubRequest);
-            Console.WriteLine(pubResponse.MessageId);
         }
     }
 }

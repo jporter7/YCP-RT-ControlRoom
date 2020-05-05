@@ -41,7 +41,7 @@ namespace ControlRoomApplication.Entities
         public RadioTelescope(AbstractSpectraCyberController spectraCyberController, AbstractPLCDriver plcCommsHandler, Location location, Orientation calibrationOrientation, int localDBID)
             : this(spectraCyberController, plcCommsHandler, location, calibrationOrientation)
         {
-            Id = localDBID;
+            Id = 1;
         }
 
         [Key]

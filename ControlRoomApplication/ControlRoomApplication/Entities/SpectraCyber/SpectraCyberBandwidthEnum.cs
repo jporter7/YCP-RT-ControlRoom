@@ -30,7 +30,7 @@
             {
                 case 15:
                     return SpectraCyberBandwidthEnum.SMALL_BANDWIDTH;
-                case 30:
+                case 1200:
                     return SpectraCyberBandwidthEnum.LARGE_BANDWIDTH;
                 default:
                     return SpectraCyberBandwidthEnum.UNDEFINED;
@@ -44,11 +44,12 @@
                 case SpectraCyberBandwidthEnum.SMALL_BANDWIDTH:
                     return 15;
                 case SpectraCyberBandwidthEnum.LARGE_BANDWIDTH:
-                    return 30;
-                case SpectraCyberBandwidthEnum.UNDEFINED:
-                    throw new System.Exception("UNDEFINED SpectraCyberBandwidthEnum type");
+                    return 1200;
+              //  case SpectraCyberBandwidthEnum.UNDEFINED:
+               //     throw new System.Exception("UNDEFINED SpectraCyberBandwidthEnum type");
                 default:
-                    throw new System.Exception("Unexpected SpectraCyberBandwidthEnum type");
+                    return 30;
+                //    throw new System.Exception("Unexpected SpectraCyberBandwidthEnum type");
             }
         }
     }
