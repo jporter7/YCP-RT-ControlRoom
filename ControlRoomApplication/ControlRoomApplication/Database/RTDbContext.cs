@@ -21,8 +21,8 @@ namespace ControlRoomApplication.Main
         {
 
             modelBuilder.Entity<Appointment>().HasRequired(t => t.CelestialBody).WithMany().Map(d => d.MapKey("celestial_body_id"));
-            modelBuilder.Entity<Appointment>().HasRequired(t => t.SpectraCyberConfig).WithMany().Map(d => d.MapKey("spectracyber_config_id"));
-            modelBuilder.Entity<Appointment>().HasRequired(t => t.Orientation).WithMany().Map(d => d.MapKey("orientation_id"));
+            modelBuilder.Entity<Appointment>().HasOptional(t => t.SpectraCyberConfig).WithMany().Map(d => d.MapKey("spectracyber_config_id"));
+            modelBuilder.Entity<Appointment>().HasOptional(t => t.Orientation).WithMany().Map(d => d.MapKey("orientation_id"));
             modelBuilder.Entity<Appointment>().HasRequired(t => t.Telescope).WithMany().Map(d => d.MapKey("telescope_id"));
             modelBuilder.Entity<Appointment>().HasRequired(t => t.User);
 

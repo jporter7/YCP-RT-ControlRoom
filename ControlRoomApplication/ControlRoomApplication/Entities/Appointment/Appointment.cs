@@ -20,7 +20,6 @@ namespace ControlRoomApplication.Entities
         {
             Coordinates = new List<Coordinate>();
             RFDatas = new List<RFData>();
-            SpectraCyberConfig = new SpectraCyberConfig();
             _Status = AppointmentStatusEnum.UNDEFINED;
             _Type = AppointmentTypeEnum.UNDEFINED;
         }
@@ -65,7 +64,7 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the Orientation asscociated with this Appointment.
         /// </summary>
-        public int orientation_id { get; set; }
+        public int? orientation_id { get; set; }
         [ForeignKey("orientation_id")]
         public virtual Orientation Orientation { get; set; }
 
@@ -210,7 +209,7 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the SpectraCyberConfig type.
         /// </summary>
-        public int spectracyber_config_id { get; set; }
+        public int? spectracyber_config_id { get; set; }
         [ForeignKey("spectracyber_config_id")]
         public virtual SpectraCyberConfig SpectraCyberConfig { get; set; }
 

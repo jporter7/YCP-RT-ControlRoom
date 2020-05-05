@@ -237,7 +237,7 @@ namespace ControlRoomApplication.Controllers
                 Thread.Sleep(100);
             }
 
-            logger.Info("Waiting for the next appointment to be within 10 minutes.");
+            logger.Info("Waiting for the next appointment to be within 1 minutes.");
             TimeSpan diff;
             while ((diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
             {
@@ -339,7 +339,7 @@ namespace ControlRoomApplication.Controllers
             if (InterruptAppointmentFlag)
             {
                 logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
-                NextAppointment._Status = AppointmentStatusEnum.CANCELLED;
+                NextAppointment._Status = AppointmentStatusEnum.CANCELED;
                 DatabaseOperations.UpdateAppointment(NextAppointment);
                 NextObjectiveOrientation = null;
                 InterruptAppointmentFlag = false;
@@ -357,8 +357,6 @@ namespace ControlRoomApplication.Controllers
                 // send message to appointment's user
                 SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_COMPLETION);
             }
-
-            DatabaseOperations.UpdateAppointment(NextAppointment);
         }
 
         /// <summary>
