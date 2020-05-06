@@ -190,8 +190,6 @@ namespace ControlRoomApplication.Main
         public void CalibrateMove()
         {
             logger.Info("CalibrateMove ");
-            CurrentAppointment.Orientation = new Entities.Orientation(0, 90);
-            DatabaseOperations.UpdateAppointment(CurrentAppointment);
             TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
             UpdateText();
         }
@@ -861,14 +859,15 @@ namespace ControlRoomApplication.Main
                     rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
                     break;
             }
-
+       
             startScanButton.Enabled = false;
             startScanButton.BackColor = System.Drawing.Color.DarkGray;
 
             stopScanButton.Enabled = true;
             stopScanButton.BackColor = System.Drawing.Color.Red;
 
-            rtController.RadioTelescope.SpectraCyberController.StartScan(CurrentAppointment.Id);
+             rtController.RadioTelescope.SpectraCyberController.StartScan(CurrentAppointment);
+          //  controlRoom.RTControllerManagementThreads.Find(t => t.RTController.RadioTelescope.Id == rtId).StartReadingData(CurrentAppointment);
             logger.Info("[SpectraCyberController] Scan has started");
         }
 

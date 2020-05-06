@@ -219,7 +219,7 @@ namespace ControlRoomApplication.Main
                 RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];
 
                 // add telescope to database
-                DatabaseOperations.AddRadioTelescope(ARadioTelescope);
+              //  DatabaseOperations.AddRadioTelescope(ARadioTelescope);
 
                 int RT_ID = ManagementThread.RadioTelescopeID;
                 List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
@@ -347,8 +347,17 @@ namespace ControlRoomApplication.Main
             // Create Radio Telescope Location
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
 
+            RadioTelescope rt = DatabaseOperations.FetchRadioTelescope();
+
             // Return Radio Telescope
-            RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id, ctrler, encoder );
+            //  RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id, ctrler, encoder );
+            rt.SpectraCyberController = BuildSpectraCyber();
+            rt.PLCDriver = abstractPLCDriver;
+            rt.Location = location;
+            rt.CalibrationOrientation = new Entities.Orientation(0, 90);
+            rt.Micro_controler = ctrler;
+            rt.Encoders = encoder;
+
             abstractPLCDriver.SetParent(rt);
 
             logger.Info("RadioTelescope Built Successfully");

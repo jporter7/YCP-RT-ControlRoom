@@ -20,7 +20,6 @@ namespace ControlRoomApplication.Entities
         {
             Coordinates = new List<Coordinate>();
             RFDatas = new List<RFData>();
-            SpectraCyberConfig = new SpectraCyberConfig();
             _Status = AppointmentStatusEnum.UNDEFINED;
             _Type = AppointmentTypeEnum.UNDEFINED;
         }
@@ -37,7 +36,9 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public int user_id { get; set; }
         [ForeignKey("user_id")]
-        public User User { get; set; }
+        public virtual User User { get; set; }
+
+
 
         /// <summary>
         /// The getter/setter for the start time associated with this Appointment.
@@ -58,14 +59,14 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public int celestial_body_id { get; set; }
         [ForeignKey("celestial_body_id")]
-        public CelestialBody CelestialBody { get; set; }
+        public virtual CelestialBody CelestialBody { get; set; }
 
         /// <summary>
         /// The getter/setter for the Orientation asscociated with this Appointment.
         /// </summary>
-        public int orientation_id { get; set; }
+        public int? orientation_id { get; set; }
         [ForeignKey("orientation_id")]
-        public Orientation Orientation { get; set; }
+        public virtual Orientation Orientation { get; set; }
 
         /// <summary>
         /// The getter/setter for the coordinates asscociated with this Appointment.
@@ -91,7 +92,7 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         public int telescope_id { get;set; }
         [ForeignKey("telescope_id")]
-        public RadioTelescope Telescope { get; set; }
+        public virtual RadioTelescope Telescope { get; set; }
 
         /// <summary>
         /// The getter/setter for the status asscociated with this Appointment.
@@ -208,9 +209,9 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the SpectraCyberConfig type.
         /// </summary>
-        public int spectracyber_config_id { get; set; }
+        public int? spectracyber_config_id { get; set; }
         [ForeignKey("spectracyber_config_id")]
-        public SpectraCyberConfig SpectraCyberConfig { get; set; }
+        public virtual SpectraCyberConfig SpectraCyberConfig { get; set; }
 
 
         /// <summary>

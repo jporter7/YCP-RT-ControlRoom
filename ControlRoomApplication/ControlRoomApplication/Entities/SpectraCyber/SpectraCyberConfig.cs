@@ -10,7 +10,7 @@ namespace ControlRoomApplication.Entities
         public SpectraCyberConfig(SpectraCyberModeTypeEnum mode, SpectraCyberIntegrationTimeEnum integration_time, 
                                   double offset_voltage, double if_gain, SpectraCyberDCGainEnum dc_gain, SpectraCyberBandwidthEnum bandwidth)
         {
-            Mode = mode;
+            _Mode = mode;
             IntegrationTime = integration_time;
             OffsetVoltage = offset_voltage;
             IFGain = if_gain;
@@ -20,7 +20,7 @@ namespace ControlRoomApplication.Entities
 
         public SpectraCyberConfig(SpectraCyberModeTypeEnum mode)
         {
-            Mode = mode;
+            _Mode = mode;
             IntegrationTime = SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN;
             OffsetVoltage = 0;
             IFGain = 10;
@@ -34,13 +34,58 @@ namespace ControlRoomApplication.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        [NotMapped]
+        public SpectraCyberModeTypeEnum _Mode
+        {
+            get
+            {
+                return (SpectraCyberModeTypeEnum)Enum.Parse(typeof(SpectraCyberModeTypeEnum), mode);
+            }
+            set
+            {
+                this.mode = value.ToString();
+            }
+        }
+
+        private string backingMode { get; set; }
+
         [Required]
         [Column("mode")]
-        public SpectraCyberModeTypeEnum Mode { get; set; }        
+        public string mode
+        {
+            get
+            {
+                return this.backingMode;
+            }
+            set
+            {
+                if (value == null || Enum.IsDefined(typeof(SpectraCyberModeTypeEnum), value))
+                {
+                    this.backingMode = value;
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
+            }
+        }
+
+        [NotMapped]
+        public SpectraCyberIntegrationTimeEnum IntegrationTime { get; set; }
 
         [Required]
         [Column("integration_time")]
-        public SpectraCyberIntegrationTimeEnum IntegrationTime { get; set; }
+        public double time
+        {
+            get
+            {
+                return SpectraCyberIntegrationTimeEnumHelper.GetDoubleValue(IntegrationTime);
+            }
+            set
+            {
+                IntegrationTime = SpectraCyberIntegrationTimeEnumHelper.GetEnumFromValue(value);
+            }
+        }
 
         [Required]
         [Column("offset_voltage")]
@@ -50,13 +95,42 @@ namespace ControlRoomApplication.Entities
         [Column("if_gain")]
         public double IFGain { get; set; }
 
-        [Required]
-        [Column("dc_gain")]
+        [NotMapped]
         public SpectraCyberDCGainEnum DCGain { get; set; }
 
         [Required]
-        [Column("bandwidth")]
+        [Column("dc_gain")]
+        public int dc_gain
+        {
+            get
+            {
+                return SpectraCyberDCGainEnumHelper.GetIntegerValue(DCGain);
+            }
+            set
+            {
+                DCGain = SpectraCyberDCGainEnumHelper.GetEnumFromValue(value);
+            }
+        }
+
+        [NotMapped]
         public SpectraCyberBandwidthEnum Bandwidth { get; set; }
+
+   //     [Required]
+   //     [Column("bandwidth")]
+        [NotMapped]
+        public int bandwidth
+        {
+            get
+            {
+                return SpectraCyberBandwidthEnumHelper.GetIntegerValue(Bandwidth);
+            }
+            set
+            {
+                Bandwidth = SpectraCyberBandwidthEnumHelper.GetEnumFromValue(value);
+            }
+        }
+
+
 
         /// <summary>
         /// Checks if the current SpectraCyberConfig is Equal to another SpectraCyberConfig  
@@ -69,7 +143,7 @@ namespace ControlRoomApplication.Entities
             {
                 return false;
             }
-            return  Mode == other.Mode && 
+            return  _Mode == other._Mode && 
                     IntegrationTime == other.IntegrationTime && 
                     OffsetVoltage == other.OffsetVoltage && 
                     IFGain == other.IFGain && 

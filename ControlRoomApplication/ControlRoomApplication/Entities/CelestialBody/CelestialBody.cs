@@ -32,7 +32,7 @@ namespace ControlRoomApplication.Entities
         // not nullable
         public int coordinate_id { get; set; }
         [ForeignKey("coordinate_id")]
-        public Coordinate Coordinate { get; set; }
+        public virtual Coordinate Coordinate { get; set; }
 
         
     }

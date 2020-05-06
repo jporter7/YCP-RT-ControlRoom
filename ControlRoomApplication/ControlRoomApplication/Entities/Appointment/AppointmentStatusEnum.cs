@@ -7,7 +7,7 @@ namespace ControlRoomApplication.Entities
         REQUESTED,
         SCHEDULED,
         IN_PROGRESS,
-        CANCELLED,
+        CANCELED,
         COMPLETED
     }
 }

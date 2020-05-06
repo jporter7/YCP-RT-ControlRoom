@@ -41,7 +41,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             greaterThan = new Appointment();
 
             // Initialize data for fields
-            controlRoomUser = new User("control", "room", "controlroom@gmail.com");
+            controlRoomUser = new User("control", "room", NotificationTypeEnum.SMS);
             startTime_1 = DateTime.UtcNow;
             endTime_1 = DateTime.UtcNow.AddHours(1);
             celestial_body = new CelestialBody(CelestialBodyConstants.SUN);

@@ -26,5 +26,35 @@
                     throw new System.Exception("Unexpected SpectraCyberIntegrationTimeEnum type");
             }
         }
+
+        public static SpectraCyberIntegrationTimeEnum GetEnumFromValue(double val)
+        {
+            switch (val)
+            {
+                case 0.3:
+                    return SpectraCyberIntegrationTimeEnum.SHORT_TIME_SPAN;
+                case 0.75:
+                    return SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN;
+                case 1:
+                    return SpectraCyberIntegrationTimeEnum.LONG_TIME_SPAN;
+                default:
+                    return SpectraCyberIntegrationTimeEnum.UNDEFINED;
+            }
+        }
+
+        public static double GetDoubleValue(this SpectraCyberIntegrationTimeEnum time)
+        {
+            switch (time)
+            {
+                case SpectraCyberIntegrationTimeEnum.SHORT_TIME_SPAN:
+                    return 0.3;
+                case SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN:
+                    return 0.75;
+                case SpectraCyberIntegrationTimeEnum.LONG_TIME_SPAN:
+                    return 1;
+                default:
+                    return 0.3;
+            }
+        }
     }
 }
