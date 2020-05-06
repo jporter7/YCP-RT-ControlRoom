@@ -761,8 +761,6 @@ namespace ControlRoomApplication.Main
                 scanTypeComboBox.Enabled = false;
                 integrationStepCombo.BackColor = System.Drawing.Color.DarkGray;
                 integrationStepCombo.Enabled = false;
-                bandwidthComboBox.BackColor = System.Drawing.Color.DarkGray;
-                bandwidthComboBox.Enabled = false;
                 offsetVoltage.BackColor = System.Drawing.Color.DarkGray;
                 offsetVoltage.Enabled = false;
                 frequency.BackColor = System.Drawing.Color.DarkGray;
@@ -816,18 +814,6 @@ namespace ControlRoomApplication.Main
                         break;
                 }
 
-                caseSwitch = bandwidthComboBox.SelectedIndex;
-
-                switch (caseSwitch)
-                {
-                    case 0:
-                        BandwidthInput = SpectraCyberBandwidthEnum.SMALL_BANDWIDTH;
-                        break;
-                    case 1:
-                        BandwidthInput = SpectraCyberBandwidthEnum.LARGE_BANDWIDTH;
-                        break;
-                }
-
             }
             else
             {
@@ -835,8 +821,6 @@ namespace ControlRoomApplication.Main
                 scanTypeComboBox.Enabled = true;
                 integrationStepCombo.BackColor = System.Drawing.Color.White;
                 integrationStepCombo.Enabled = true;
-                bandwidthComboBox.BackColor = System.Drawing.Color.White;
-                bandwidthComboBox.Enabled = true;
                 offsetVoltage.BackColor = System.Drawing.Color.White;
                 offsetVoltage.Enabled = true;
                 frequency.BackColor = System.Drawing.Color.White;
@@ -867,7 +851,6 @@ namespace ControlRoomApplication.Main
                     rtController.RadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
                     rtController.RadioTelescope.SpectraCyberController.SetContGain(DCGainInput);
                     rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetBandwidth(BandwidthInput);
                     break;
                 case 1:
                     rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
@@ -876,7 +859,6 @@ namespace ControlRoomApplication.Main
                     rtController.RadioTelescope.SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
                     rtController.RadioTelescope.SpectraCyberController.SetSpecGain(DCGainInput);
                     rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetBandwidth(BandwidthInput);
                     break;
             }
 
