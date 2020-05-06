@@ -27,7 +27,7 @@ namespace ControlRoomApplication.Entities
 
         [Required]
         [Column("intensity")]
-        public long Intensity { get; set; }
+        public double Intensity { get; set; }
 
         //public Orientation AcquisitionOrientation { get; set; }
 

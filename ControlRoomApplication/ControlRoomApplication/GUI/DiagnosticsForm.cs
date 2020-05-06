@@ -36,6 +36,8 @@ namespace ControlRoomApplication.GUI
         /***********DEMO MODE VARIABLES**************/
         DateTime currentEncodDate = DateTime.Now;
 
+        private bool graphClear = true;
+
         /***********DEMO MODE VARIABLES END*********/
         // Encoder Variables
         double _azEncoderDegrees = 0;
@@ -335,10 +337,46 @@ namespace ControlRoomApplication.GUI
                 || rtController.RadioTelescope.SpectraCyberController.Schedule.GetMode() == SpectraCyberScanScheduleMode.SCHEDULED_SCAN
                 || rtController.RadioTelescope.SpectraCyberController.Schedule.GetMode() == SpectraCyberScanScheduleMode.SINGLE_SCAN)
             {
-                double intensity = rtController.RadioTelescope.SpectraCyberController.configVals.rfData;
-                double time = rtController.RadioTelescope.SpectraCyberController.configVals.scanTime;
+                if (rtController.RadioTelescope.SpectraCyberController.configVals.spectraCyberMode == SpectraCyberModeTypeEnum.SPECTRAL)
+                {
+                    if(graphClear == true)
+                    {
+                        spectraCyberScanChart.Series.Clear();
+                        spectraCyberScanChart.Series.Add("Spectral");
+                        spectraCyberScanChart.Series["Spectral"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+                        spectraCyberScanChart.ChartAreas["ChartArea1"].AxisX.Title = "Frequency";
+                        graphClear = false;
+                    }
 
-                spectraCyberScanChart.Series["Data/Time"].Points.AddXY(time, intensity);
+                    double intensity = rtController.RadioTelescope.SpectraCyberController.configVals.rfData;
+                    double frequency = rtController.RadioTelescope.SpectraCyberController.configVals.bandscan;
+
+                    spectraCyberScanChart.Series["Spectral"].Points.AddXY(frequency, intensity);
+
+                    if (frequency >= rtController.RadioTelescope.SpectraCyberController.configVals.frequency / 2)
+                        spectraCyberScanChart.Series["Spectral"].Points.Clear();
+                }
+                else if (rtController.RadioTelescope.SpectraCyberController.configVals.spectraCyberMode == SpectraCyberModeTypeEnum.CONTINUUM)
+                {
+                    if (graphClear == true)
+                    {
+                        spectraCyberScanChart.Series.Clear();
+                        spectraCyberScanChart.Series.Add("Continuum");
+                        spectraCyberScanChart.Series["Continuum"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+                        spectraCyberScanChart.ChartAreas["ChartArea1"].AxisX.Title = "Time";
+                        graphClear = false;
+                    }
+
+                    double intensity = rtController.RadioTelescope.SpectraCyberController.configVals.rfData;
+                    double time = rtController.RadioTelescope.SpectraCyberController.configVals.scanTime;
+
+                    spectraCyberScanChart.Series["Continuum"].Points.AddXY(time, intensity);
+
+                }
+            }
+            else
+            {
+                graphClear = true;
             }
 
             // Console Log Output Update
