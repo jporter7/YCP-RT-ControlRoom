@@ -45,6 +45,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
             appt.User = DatabaseOperations.GetControlRoomUser();
 
+            DatabaseOperations.AddRadioTelescope(appt.Telescope);
             DatabaseOperations.AddAppointment(appt);
 
             // RFData initialization

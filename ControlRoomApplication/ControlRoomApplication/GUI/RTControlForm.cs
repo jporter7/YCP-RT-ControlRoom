@@ -2,11 +2,13 @@
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.GUI;
+using System.ComponentModel;
 //using ControlRoomApplication.GUI;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 
@@ -106,12 +108,24 @@ namespace ControlRoomApplication.Main
             stopScanButton.BackColor = System.Drawing.Color.DarkGray;
             stopScanButton.Enabled = false;
 
+            this.FormClosing += FreeControlForm_Closing;
+
+          //  var threads = controlRoom.RTControllerManagementThreads.Where<RadioTelescopeControllerManagementThread>(t => t.RTController == rtController).ToList<RadioTelescopeControllerManagementThread>();
+         //   threads[0].ManagementThread.Abort();
+           // controlRoom.RTControllerManagementThreads.Where<RadioControllerManagementThread>( t => t.R == rtController));
+
             logger.Info("Radio Telescope Control Form Initalized");
         }
 
-        private void FreeControlForm_FormClosing(Object sender, FormClosingEventArgs e)
+        void FreeControlForm_Closing(object sender, CancelEventArgs e)
         {
             logger.Info("Radio Telescope Control Form Closing");
+            CurrentAppointment._Status = AppointmentStatusEnum.COMPLETED;
+            DatabaseOperations.UpdateAppointment(CurrentAppointment);
+
+            var threads = controlRoom.RTControllerManagementThreads.Where<RadioTelescopeControllerManagementThread>(t => t.RTController == rtController).ToList<RadioTelescopeControllerManagementThread>();
+            threads[0].EndAppointment();
+
             timer1.Enabled = false;
         }
        // logger.Info("Adding RadioTelescope Controller");

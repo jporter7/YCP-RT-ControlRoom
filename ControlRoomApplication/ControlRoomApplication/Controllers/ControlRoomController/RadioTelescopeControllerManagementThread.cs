@@ -15,7 +15,7 @@ namespace ControlRoomApplication.Controllers
         public RadioTelescopeController RTController { get; private set; }
         public Appointment AppointmentToDisplay { get; private set; }
 
-        private Thread ManagementThread;
+        public Thread ManagementThread;
         private Mutex ManagementMutex;
         private volatile bool KeepThreadAlive;
         private volatile bool InterruptAppointmentFlag;
@@ -27,6 +27,8 @@ namespace ControlRoomApplication.Controllers
         public List<Sensor> Sensors;
 
         private bool OverallSensorStatus;
+
+        private bool endAppt = false;
 
         public Orientation NextObjectiveOrientation
         {
@@ -99,7 +101,7 @@ namespace ControlRoomApplication.Controllers
             try
             {
                // Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatusEnum.NORMAL));
-
+                
                 ManagementThread.Start();
             }
             catch (Exception e)
@@ -162,11 +164,13 @@ namespace ControlRoomApplication.Controllers
             
             while (KeepAlive)
             {
+                logger.Info("Waiting for next Appointment");
                 Appointment NextAppointment = WaitForNextAppointment();
 
                 if (NextAppointment != null)
                 {
                     logger.Info("Starting appointment...");
+                    endAppt = false;
 
                     // Calibrate telescope
                     if (NextAppointment._Type != AppointmentTypeEnum.FREE_CONTROL)
@@ -189,12 +193,21 @@ namespace ControlRoomApplication.Controllers
                     // Start movement thread
                     AppointmentMovementThread.Start();
 
-                    // End PLC thread & SpectraCyber 
-                    AppointmentMovementThread.Join();
-                    StopReadingRFData();
-
-                    // Stow Telescope
-                    EndAppointment();
+                    if(NextAppointment._Type != AppointmentTypeEnum.FREE_CONTROL)
+                    {
+                        // End PLC thread & SpectraCyber 
+                        AppointmentMovementThread.Join();
+                        StopReadingRFData();
+                        // Stow Telescope
+                        EndAppointment();
+                    }
+                    else
+                    {
+                        while (endAppt == false)
+                        {
+                            ;
+                        }
+                    }
 
                     logger.Info("Appointment completed.");
                 }
@@ -225,9 +238,12 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
         private Appointment WaitForNextAppointment()
         {
-            Appointment NextAppointment;
-            while ((NextAppointment = DatabaseOperations.GetNextAppointment(RadioTelescopeID)) == null)
+            Appointment NextAppointment = DatabaseOperations.GetNextAppointment(RadioTelescopeID);
+            TimeSpan diff;
+            while (NextAppointment != null && (diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
             {
+                NextAppointment = DatabaseOperations.GetNextAppointment(RadioTelescopeID);
+
                 if (InterruptAppointmentFlag || (!KeepThreadAlive))
                 {
                     return null;
@@ -235,11 +251,12 @@ namespace ControlRoomApplication.Controllers
 
                 // Delay between checking database for new appointments
                 Thread.Sleep(100);
+
+                logger.Info("Waiting for the next appointment to be within 1 minutes.");
             }
 
-            logger.Info("Waiting for the next appointment to be within 1 minutes.");
-            TimeSpan diff;
-            while ((diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
+            
+  /*          while ((diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
             {
                 if (InterruptAppointmentFlag || (!KeepThreadAlive))
                 {
@@ -248,7 +265,7 @@ namespace ControlRoomApplication.Controllers
 
                 // Wait more
             }
-
+            */
             logger.Info("The next appointment is now within the correct timeframe.");
             AppointmentToDisplay = NextAppointment;
             return NextAppointment;
@@ -362,9 +379,10 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Ends an appointment by returning the RT to the stow position.
         /// </summary>
-        private void EndAppointment()
+        public void EndAppointment()
         {
             logger.Info("Ending Appointment");
+            endAppt = true;
             RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90));
         }
 

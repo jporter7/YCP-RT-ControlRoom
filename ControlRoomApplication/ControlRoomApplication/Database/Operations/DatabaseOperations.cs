@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Database
 {
     public static class DatabaseOperations
     {
-        private static readonly bool USING_REMOTE_DATABASE = true;
+        private static readonly bool USING_REMOTE_DATABASE = false;
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // used to tell if we need to create a control room user
@@ -187,8 +187,7 @@ namespace ControlRoomApplication.Database
         /// </summary>
         public static void AddAppointment(Appointment appt)
         {
-            if (!USING_REMOTE_DATABASE)
-            {
+        
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
                     if (createUser == false)
@@ -219,7 +218,6 @@ namespace ControlRoomApplication.Database
                     Context.Appointments.Add(appt);
                     SaveContext(Context);
                 }
-            }
         }
 
         /// <summary>
@@ -269,7 +267,7 @@ namespace ControlRoomApplication.Database
                 
                 if(users.Count() == 0)
                 {
-                    users.Add(new User("control", "room", NotificationTypeEnum.SMS));
+                    users.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.SMS));
                     createUser = true;
                 }
                 if(users.Count() > 1)
@@ -320,6 +318,8 @@ namespace ControlRoomApplication.Database
             using (RTDbContext Context = InitializeDatabaseContext())
             {
                 Context.Entry(appt.CelestialBody).State = EntityState.Unchanged;
+                if (appt.CelestialBody.Coordinate != null)
+                    Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
                 if (appt.Orientation != null)
                     Context.Entry(appt.Orientation).State = EntityState.Unchanged;
                 Context.Entry(appt.SpectraCyberConfig).State = EntityState.Unchanged;
