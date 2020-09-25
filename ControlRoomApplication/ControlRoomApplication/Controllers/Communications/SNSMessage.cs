@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ControlRoomApplication.Entities;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers
 {

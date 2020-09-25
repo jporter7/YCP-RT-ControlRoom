@@ -267,4 +267,7 @@ AWSConstants.cs
 /ControlRoomApplication/ControlRoomApplication.dll
 
 # Sensitive push notification data
-/ControlRoomApplication/ControlRoomApplication/Entities/PushNotification/pushNotification.cs
+/ControlRoomApplication/ControlRoomApplication/Controllers/Communications/pushNotification.cs
+
+# Gradle stuff
+/.gradle

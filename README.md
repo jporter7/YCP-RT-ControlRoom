@@ -32,7 +32,7 @@ Package Settings:
 	will negate the effects of others and may break you project. Finally, for security reasons, you must
 	contact a system administrator for a copy of the AWSConstants file for access to the AWS Server’s data,
 	and the pushNotifications file for sending push notifications. The pushNotifications file belongs in
-	"ControlRoomApplication\ControlRoomApplication\Entities\PushNotification\pushNotification.cs".
+	"ControlRoomApplication\ControlRoomApplication\Controllers\Communications\pushNotification.cs".
 
 MySQL Set Up:
 
