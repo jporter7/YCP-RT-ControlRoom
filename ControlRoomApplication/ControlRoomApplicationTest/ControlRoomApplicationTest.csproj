@@ -80,6 +80,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommunicationTests\PushNoficiationTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />
     <Compile Include="EntitiesTests\LocationTest.cs" />

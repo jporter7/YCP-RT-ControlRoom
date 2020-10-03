@@ -6,7 +6,7 @@ using ControlRoomApplication.Entities;
 using System.Threading;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Database;
-using ControlRoomApplication.Entities.PushNotification;
+using ControlRoomApplication.Controllers.Communications;
 
 namespace ControlRoomApplication.Controllers
 {

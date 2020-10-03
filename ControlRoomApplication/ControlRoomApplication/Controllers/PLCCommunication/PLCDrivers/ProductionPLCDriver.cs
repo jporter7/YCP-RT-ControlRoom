@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using ControlRoomApplication.Entities.Configuration;
-using ControlRoomApplication.Entities.PushNotification;
+using ControlRoomApplication.Controllers.Communications;
 using ControlRoomApplication.Controllers.PLCCommunication;
 
 namespace ControlRoomApplication.Controllers

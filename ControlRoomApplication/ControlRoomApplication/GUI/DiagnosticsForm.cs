@@ -12,7 +12,7 @@ using ControlRoomApplication.Constants;
 using System;
 using ControlRoomApplication.Main;
 using ControlRoomApplication.Controllers.Sensors;
-using ControlRoomApplication.Entities.PushNotification;
+using ControlRoomApplication.Controllers.Communications;
 using System.Threading;
 using System.ComponentModel;
 

@@ -198,6 +198,7 @@
     <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
+    <Compile Include="Controllers\Communications\pushNotification.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
@@ -228,7 +229,6 @@
     <Compile Include="Entities\Log\Log.cs" />
     <Compile Include="Entities\Override\Override.cs" />
     <Compile Include="Entities\ProximitySensor\AbstractProximitySensor.cs" />
-    <Compile Include="Entities\PushNotification\pushNotification.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
     <Compile Include="Entities\Sensor\Sensor.cs" />
     <Compile Include="Entities\Sensor\SensorItemEnum.cs" />
