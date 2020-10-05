@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Entities
 {
@@ -44,6 +45,26 @@ namespace ControlRoomApplication.Entities
             bool az_equal = Math.Abs(Azimuth - other.Azimuth) < (360.0 / 4096);
             bool el_equal = Math.Abs(Elevation - other.Elevation) < (360.0 / 1024);
             return az_equal && el_equal;
+        }
+
+        /// <summary>
+        /// Checks if the current orientation is valid, based off of the max/min limit switch degrees
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public bool orientationValid()
+        {
+            // TODO: implement slip ring accomodation
+            if (
+                Azimuth > SimulationConstants.LIMIT_CCW_AZ_DEGREES ||
+                Azimuth < SimulationConstants.LIMIT_CW_AZ_DEGREES ||
+                Elevation > SimulationConstants.LIMIT_HIGH_EL_DEGREES ||
+                Elevation < SimulationConstants.LIMIT_LOW_EL_DEGREES
+                )
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
