@@ -59,8 +59,12 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
             TestRT.WeatherStation = new SimulationWeatherStation(1000);
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
+            
+            // Override motor temperature sensors
+            TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = true;
+            TestRadioTelescopeController.overrides.overrideElevatMotTemp = true;
 
-             TestRTPLC.SetParent(TestRT);
+            TestRTPLC.SetParent(TestRT);
             TestRTPLC.driver.SetParent(TestRT);
 
             TestRTPLC.StartAsyncAcceptingClients();
