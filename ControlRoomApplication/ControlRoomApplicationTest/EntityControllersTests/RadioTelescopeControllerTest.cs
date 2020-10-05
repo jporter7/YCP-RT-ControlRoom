@@ -346,48 +346,63 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
                DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
            }
 
-            // Azimuth tests
+
+            /** Azimuth tests **/
+
+            // Overheating
             Temperature t1 = new Temperature();
             t1.temp = 100;
-            t1.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
+            t1.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t1));
 
+            // Stable
             Temperature t2 = new Temperature();
             t2.temp = 50;
-            t2.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
+            t2.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t2));
 
+            // Overheating
             Temperature t3 = new Temperature();
             t3.temp = 150;
-            t3.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
+            t3.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t3));
 
+            // Overheating
             Temperature t4 = new Temperature();
             t4.temp = 151;
-            t4.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
+            t4.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
 
+            // Too cold
             Temperature t5 = new Temperature();
             t5.temp = 49;
-            t5.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Too cold
-
-            
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t1));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t2));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t3));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
+            t5.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
             Assert.IsFalse(TestRadioTelescopeController.checkTemp(t5));
 
-            // Elevation tests
-            Temperature t6 = new Temperature(); t6.temp = 100; t6.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
-            Temperature t7 = new Temperature(); t7.temp = 50; t7.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
-            Temperature t8 = new Temperature(); t8.temp = 150; t8.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
 
-            Temperature t9 = new Temperature(); t9.temp = 151; t9.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
-            Temperature t0 = new Temperature(); t0.temp = 49; t0.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Too cold
+            /** Elevation tests **/
 
+            // Overheating
+            Temperature t6 = new Temperature(); t6.temp = 100; t6.location_ID = (int)SensorLocationEnum.EL_MOTOR;
             Assert.IsFalse(TestRadioTelescopeController.checkTemp(t6));
+
+            // Stable
+            Temperature t7 = new Temperature(); t7.temp = 50; t7.location_ID = (int)SensorLocationEnum.EL_MOTOR;
             Assert.IsTrue(TestRadioTelescopeController.checkTemp(t7));
+
+            // Overheating
+            Temperature t8 = new Temperature(); t8.temp = 150; t8.location_ID = (int)SensorLocationEnum.EL_MOTOR;
             Assert.IsFalse(TestRadioTelescopeController.checkTemp(t8));
 
+            // Overheating
+            Temperature t9 = new Temperature(); t9.temp = 151; t9.location_ID = (int)SensorLocationEnum.EL_MOTOR;
             Assert.IsFalse(TestRadioTelescopeController.checkTemp(t9));
+
+            // Too cold
+            Temperature t0 = new Temperature(); t0.temp = 49; t0.location_ID = (int)SensorLocationEnum.EL_MOTOR;
             Assert.IsFalse(TestRadioTelescopeController.checkTemp(t0));
+
+
         }
 
         [TestMethod]
