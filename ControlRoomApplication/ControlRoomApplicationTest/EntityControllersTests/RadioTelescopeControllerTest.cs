@@ -348,63 +348,58 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
            if (DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
            {
                DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
-           }
+            }
 
+            // Enable motor temperature sensors
+            TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = false;
+            TestRadioTelescopeController.overrides.overrideElevatMotTemp = false;
 
             /** Azimuth tests **/
+            Temperature az = new Temperature(); az.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
 
             // Overheating
-            Temperature t1 = new Temperature();
-            t1.temp = 100;
-            t1.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t1));
+            az.temp = 100;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
 
             // Stable
-            Temperature t2 = new Temperature();
-            t2.temp = 50;
-            t2.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t2));
+            az.temp = 50;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
 
             // Overheating
-            Temperature t3 = new Temperature();
-            t3.temp = 150;
-            t3.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t3));
+            az.temp = 150;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
 
             // Overheating
-            Temperature t4 = new Temperature();
-            t4.temp = 151;
-            t4.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
+            az.temp = 151;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
 
             // Too cold
-            Temperature t5 = new Temperature();
-            t5.temp = 49;
-            t5.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t5));
+            az.temp = 49;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
 
 
             /** Elevation tests **/
+            Temperature el = new Temperature(); el.location_ID = (int)SensorLocationEnum.EL_MOTOR;
 
             // Overheating
-            Temperature t6 = new Temperature(); t6.temp = 100; t6.location_ID = (int)SensorLocationEnum.EL_MOTOR;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t6));
+            el.temp = 100;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
 
             // Stable
-            Temperature t7 = new Temperature(); t7.temp = 50; t7.location_ID = (int)SensorLocationEnum.EL_MOTOR;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t7));
+            el.temp = 50;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
 
             // Overheating
-            Temperature t8 = new Temperature(); t8.temp = 150; t8.location_ID = (int)SensorLocationEnum.EL_MOTOR;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t8));
+            el.temp = 150;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
 
             // Overheating
-            Temperature t9 = new Temperature(); t9.temp = 151; t9.location_ID = (int)SensorLocationEnum.EL_MOTOR;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t9));
+            el.temp = 151;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
 
             // Too cold
-            Temperature t0 = new Temperature(); t0.temp = 49; t0.location_ID = (int)SensorLocationEnum.EL_MOTOR;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t0));
+            el.temp = 49;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
 
 
         }
