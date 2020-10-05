@@ -225,6 +225,37 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
+        public void testOrientationChange_AnyDegrees_Success()
+        {
+            // Acquire current orientation
+            Orientation currOrientation;
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Calculate motor steps from current orientation
+            int currStepsAz, currStepsEl;
+            currStepsAz = ConversionHelper.DegreesToSteps(currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            currStepsEl = ConversionHelper.DegreesToSteps(currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Set target orientation on both Azimuth and Elevation, respectively
+            Orientation expectedOrientation = new Orientation(100, 100);
+
+            // Calculate motor steps necessary for movement
+            int posTransAz, posTransEl;
+            posTransAz = ConversionHelper.DegreesToSteps(expectedOrientation.Azimuth - currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Move telescope
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+
+            // Create result orientation
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Assert expected and result are identical
+            Assert.AreEqual(expectedOrientation, resultOrientation);
+        }
+
+        /*
+        [TestMethod]
         public void test_orientation_change() {
             Random random = new Random();
 
@@ -235,8 +266,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             int positionTranslationAZ, positionTranslationEL, current_stepsAZ, current_stepsEL;
             current_stepsAZ = ConversionHelper.DegreesToSteps( current_orientation.Azimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             current_stepsEL = ConversionHelper.DegreesToSteps( current_orientation.Elevation , MotorConstants.GEARING_RATIO_ELEVATION );
-            for(int i = 0; i < 1500; i++) {
+            for(int i = 0; i < 100; i++) {
                 Orientation target_orientation = new Orientation( random.NextDouble() * 360 , random.NextDouble() * 360 );
+
                 positionTranslationAZ = ConversionHelper.DegreesToSteps( (target_orientation.Azimuth - current_orientation.Azimuth) , MotorConstants.GEARING_RATIO_AZIMUTH );
                 positionTranslationEL = ConversionHelper.DegreesToSteps( (target_orientation.Elevation - current_orientation.Elevation) , MotorConstants.GEARING_RATIO_ELEVATION );
 
@@ -261,6 +293,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
                 Assert.AreEqual( target_orientation.Elevation , current_orientation2.Elevation , 0.1 );
             }
         }
+        */
 
         [TestMethod]
         public void test_temperature_check()
