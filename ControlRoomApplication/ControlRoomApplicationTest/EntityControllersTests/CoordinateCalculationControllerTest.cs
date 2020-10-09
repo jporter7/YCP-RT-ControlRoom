@@ -373,6 +373,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Appointment free_control_appt = new Appointment();
             free_control_appt._Type = AppointmentTypeEnum.FREE_CONTROL;
             free_control_appt._Status = AppointmentStatusEnum.REQUESTED;
+            free_control_appt._Priority = AppointmentPriorityEnum.PRIMARY;
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
 
             // Test free control move
