@@ -344,6 +344,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Appointment free_control_appt = new Appointment();
             free_control_appt._Type = AppointmentTypeEnum.FREE_CONTROL;
             free_control_appt._Status = AppointmentStatusEnum.REQUESTED;
+            free_control_appt._Priority = AppointmentPriorityEnum.PRIMARY;
             Orientation test_orientation = new Orientation(30, 30);
             free_control_appt.Orientation = test_orientation;
 
