@@ -6,6 +6,7 @@ using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
+using System.Threading;
 
 namespace ControlRoomApplicationTest.DatabaseOperationsTests
 {
@@ -102,18 +103,40 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             new_appt._Status = AppointmentStatusEnum.REQUESTED;
             new_appt._Priority = AppointmentPriorityEnum.MANUAL;
             new_appt._Type = AppointmentTypeEnum.POINT;
-            new_appt.Coordinates.Add(new Coordinate(0, 0));
+            new_appt.Coordinates.Add(new Coordinate(15, 15));
             new_appt.CelestialBody = new CelestialBody();
             new_appt.CelestialBody.Coordinate = new Coordinate();
             new_appt.Orientation = new Orientation();
             new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
             new_appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
             new_appt.User = DatabaseOperations.GetControlRoomUser();
-            DatabaseOperations.AddAppointment(new_appt);
-            //NumAppointments++;
 
-            //var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(new_appt.Telescope.Id);
-            //Assert.IsTrue(1 == output_appts.Count());
+            DatabaseOperations.AddRadioTelescope(new_appt.Telescope);
+            DatabaseOperations.AddAppointment(new_appt);
+
+            var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(new_appt.Telescope.Id);
+
+            Assert.IsTrue(1 == output_appts.Count()); // Should only be one appointment retrieved
+
+            //Assert.AreEqual(new_appt.start_time.ToString(), output_appts[0].start_time.ToString());
+            //Assert.AreEqual(new_appt.end_time.ToString(), output_appts[0].end_time.ToString());
+            Assert.AreEqual(new_appt._Status, output_appts[0]._Status);
+            Assert.AreEqual(new_appt._Priority, output_appts[0]._Priority);
+            Assert.AreEqual(new_appt._Type, output_appts[0]._Type);
+
+            // Coordinates
+            Assert.AreEqual(new_appt.Id, output_appts[0].Coordinates.First().apptId);
+            Assert.AreEqual(new_appt.Coordinates.First().hours, output_appts[0].Coordinates.First().hours);
+            Assert.AreEqual(new_appt.Coordinates.First().minutes, output_appts[0].Coordinates.First().minutes);
+            Assert.AreEqual(new_appt.Coordinates.First().Declination, output_appts[0].Coordinates.First().Declination);
+            Assert.AreEqual(new_appt.Coordinates.First().RightAscension, output_appts[0].Coordinates.First().RightAscension);
+
+            // Other entities that Appointment uses
+            Assert.AreEqual(new_appt.celestial_body_id, output_appts[0].celestial_body_id);
+            Assert.AreEqual(new_appt.orientation_id, output_appts[0].orientation_id);
+            Assert.AreEqual(new_appt.spectracyber_config_id, output_appts[0].spectracyber_config_id);
+            Assert.AreEqual(new_appt.telescope_id, output_appts[0].telescope_id);
+            Assert.AreEqual(new_appt.user_id, output_appts[0].user_id);
         }
 
         [TestMethod]
