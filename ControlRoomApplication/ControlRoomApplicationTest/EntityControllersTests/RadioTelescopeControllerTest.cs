@@ -229,7 +229,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
-        public void testOrientationChange_AnyDegrees_Success()
+        public void testOrientationChange_100_100Degrees()
         {
             // Acquire current orientation
             Orientation currOrientation;
@@ -242,6 +242,66 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Set target orientation on both Azimuth and Elevation, respectively
             Orientation expectedOrientation = new Orientation(100, 100);
+
+            // Calculate motor steps necessary for movement
+            int posTransAz, posTransEl;
+            posTransAz = ConversionHelper.DegreesToSteps(expectedOrientation.Azimuth - currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Move telescope
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+
+            // Create result orientation
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Assert expected and result are identical
+            Assert.AreEqual(expectedOrientation, resultOrientation);
+        }
+
+        [TestMethod]
+        public void testOrientationChange_0_0Degrees()
+        {
+            // Acquire current orientation
+            Orientation currOrientation;
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Calculate motor steps from current orientation
+            int currStepsAz, currStepsEl;
+            currStepsAz = ConversionHelper.DegreesToSteps(currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            currStepsEl = ConversionHelper.DegreesToSteps(currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Set target orientation on both Azimuth and Elevation, respectively
+            Orientation expectedOrientation = new Orientation(0, 0);
+
+            // Calculate motor steps necessary for movement
+            int posTransAz, posTransEl;
+            posTransAz = ConversionHelper.DegreesToSteps(expectedOrientation.Azimuth - currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Move telescope
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+
+            // Create result orientation
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Assert expected and result are identical
+            Assert.AreEqual(expectedOrientation, resultOrientation);
+        }
+
+        [TestMethod]
+        public void testOrientationChange_360_210Degrees()
+        {
+            // Acquire current orientation
+            Orientation currOrientation;
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Calculate motor steps from current orientation
+            int currStepsAz, currStepsEl;
+            currStepsAz = ConversionHelper.DegreesToSteps(currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            currStepsEl = ConversionHelper.DegreesToSteps(currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Set target orientation on both Azimuth and Elevation, respectively
+            Orientation expectedOrientation = new Orientation(360, 210);
 
             // Calculate motor steps necessary for movement
             int posTransAz, posTransEl;
