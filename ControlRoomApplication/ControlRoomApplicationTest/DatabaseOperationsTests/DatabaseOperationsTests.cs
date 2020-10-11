@@ -241,6 +241,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
             List<Coordinate> resultCoordinates = appt.Coordinates.ToList<Coordinate>();
 
+            // Verify only two results are returned
+            Assert.IsTrue(resultCoordinates.Count == 2);
+
             // Create expected coordinate list
             List<Coordinate> expectedCoordinates = new List<Coordinate>();
             expectedCoordinates.Add(new Coordinate(0, 0));
@@ -253,8 +256,37 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.AreEqual(expectedCoordinates[1].Declination, resultCoordinates[1].Declination);
             Assert.AreEqual(expectedCoordinates[1].RightAscension, resultCoordinates[1].RightAscension);
 
-            // Verify only two results are returned
-            Assert.IsTrue(resultCoordinates.Count == 2);
+        }
+
+        [TestMethod]
+        public void TestAddThenDeleteCoordinates()
+        {
+            // Create expected coordinates and add to the appointment
+            var coords = new Coordinate(5, 5);
+            appt.Coordinates.Add(coords);
+
+            // Add appointment to the database
+            DatabaseOperations.UpdateAppointment(appt);
+
+            Thread.Sleep(100);
+
+            // Delete coordinates and then update the DB entry
+            appt.Coordinates.Remove(coords);
+            DatabaseOperations.UpdateAppointment(appt);
+
+            // Retrieve appointment from the database
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
+            List<Coordinate> resultCoordinates = appt.Coordinates.ToList<Coordinate>();
+
+            // Verify only one result is returned
+            Assert.IsTrue(resultCoordinates.Count == 1);
+
+            // Create expected coordinate
+            Coordinate expectedCoordinate = new Coordinate(0, 0);
+
+            // Verify coordinates are correct
+            Assert.AreEqual(expectedCoordinate.Declination, resultCoordinates[0].Declination);
+            Assert.AreEqual(expectedCoordinate.RightAscension, resultCoordinates[0].RightAscension);
         }
 
         [TestMethod]

@@ -432,6 +432,19 @@ namespace ControlRoomApplication.Database
                     // Add appointment
                     Context.Appointments.AddOrUpdate(appt);
 
+                    // Retrieve all coordinates for appointment
+                    var coordsForAppt = Context.Coordinates.ToList<Coordinate>().Where(coord => coord.apptId == appt.Id);
+
+                    // Delete coordinates
+                    foreach(Coordinate c in coordsForAppt)
+                    {
+                        if (!appt.Coordinates.Any(co => co.Id == c.Id))
+                        {
+                            Context.Coordinates.Remove(c);
+                            Context.SaveChangesAsync();
+                        }
+                    }
+
                     // Add coordinates
                     foreach (Coordinate c in appt.Coordinates)
                     {
