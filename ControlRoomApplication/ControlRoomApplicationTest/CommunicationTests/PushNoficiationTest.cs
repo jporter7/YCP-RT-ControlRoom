@@ -17,8 +17,15 @@ namespace ControlRoomApplicationTest.CommunicationTests
     [TestClass]
     public class PushNoficiationTest
     {
+        /**
+         * Unfortunately, most of this functionality is handled outside of the control room,
+         * so we can only reasonably test that the file itself is present and the required
+         * methods are there. If there are any discrepencies, this test will not run at all.
+         * If everything is present, it will pass.
+         * */
+
         [TestMethod]
-        public void TestSendPushNotification()
+        public void TestPushNotificationFilePresence()
         {
             Assert.IsTrue(pushNotification.send("TEST", "This should pass."));
         }
