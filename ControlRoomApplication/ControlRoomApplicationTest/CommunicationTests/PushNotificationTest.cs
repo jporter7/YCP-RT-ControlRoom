@@ -15,7 +15,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
      * */
 
     [TestClass]
-    public class PushNoficiationTest
+    public class PushNotificationTest
     {
         /**
          * Unfortunately, most of this functionality is handled outside of the control room,
