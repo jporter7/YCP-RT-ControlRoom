@@ -8,11 +8,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.CommunicationTests
 {
-    /**
-     * WARNING: I highly recommend setting the sendPush variable at the top of
-     * pushNotification.cs to false, that way admins don't get a push notification
-     * every time these tests are run.
-     * */
 
     [TestClass]
     public class PushNotificationTest
@@ -27,6 +22,15 @@ namespace ControlRoomApplicationTest.CommunicationTests
         [TestMethod]
         public void TestPushNotificationFilePresence()
         {
+            Assert.IsTrue(pushNotification.send("TEST", "This should pass."));
+        }
+
+        [TestMethod]
+        public void TestSendPushNotification()
+        {
+            // If sendPush is false, set it to true
+            if (!pushNotification.getSendPush()) pushNotification.setSendPush(true);
+
             Assert.IsTrue(pushNotification.send("TEST", "This should pass."));
         }
     }
