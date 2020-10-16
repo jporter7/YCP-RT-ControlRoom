@@ -188,36 +188,45 @@ namespace ControlRoomApplication.Database
         public static void AddAppointment(Appointment appt)
         {
         
-                using (RTDbContext Context = InitializeDatabaseContext())
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                if (createUser == false)
                 {
-                    if (createUser == false)
-                    {
-                        // we have this line so that we do not add another user
-                        Context.Entry(appt.User).State = EntityState.Unchanged;
-                    }
-                    else
-                    {
-                        Context.Users.Add(appt.User);
-                        createUser = false;
-                    }
-                    
-                    if (Context.CelestialBodies.Any(t => t.Id == appt.CelestialBody.Id) == false)
-                    {
-                        if (Context.Coordinates.Any(t => t.Id == appt.CelestialBody.Coordinate.Id))
-                            Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
-                    
-                        Context.CelestialBodies.Add(appt.CelestialBody);
-                    }
-                    if (Context.Orientations.Any(t => t.Id == appt.Orientation.Id) == false)
-                        Context.Orientations.Add(appt.Orientation);
-                    if (Context.SpectraCyberConfigs.Any(t => t.Id == appt.SpectraCyberConfig.Id) == false)
-                        Context.SpectraCyberConfigs.Add(appt.SpectraCyberConfig);
-
-                    Context.Entry(appt.Telescope).State = EntityState.Unchanged;
-                    
-                    Context.Appointments.Add(appt);
-                    SaveContext(Context);
+                    // we have this line so that we do not add another user
+                    Context.Entry(appt.User).State = EntityState.Unchanged;
                 }
+                else
+                {
+                    Context.Users.Add(appt.User);
+                    createUser = false;
+                }
+                    
+                if (Context.CelestialBodies.Any(t => t.Id == appt.CelestialBody.Id) == false)
+                {
+                    if (Context.Coordinates.Any(t => t.Id == appt.CelestialBody.Coordinate.Id))
+                        Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                    
+                    Context.CelestialBodies.Add(appt.CelestialBody);
+                }
+                if (Context.Orientations.Any(t => t.Id == appt.Orientation.Id) == false)
+                    Context.Orientations.Add(appt.Orientation);
+                if (Context.SpectraCyberConfigs.Any(t => t.Id == appt.SpectraCyberConfig.Id) == false)
+                    Context.SpectraCyberConfigs.Add(appt.SpectraCyberConfig);
+
+                Context.Entry(appt.Telescope).State = EntityState.Unchanged;
+                
+                Context.Appointments.Add(appt);
+                SaveContext(Context);
+
+                // Add coordinates
+                List<Appointment> alist = Context.Appointments.ToList<Appointment>();
+                foreach (Coordinate c in appt.Coordinates)
+                {
+                    c.apptId = alist[alist.Count - 1].Id;
+                    Context.Coordinates.AddOrUpdate(c);
+                }
+                SaveContext(Context);
+            }
         }
 
         /// <summary>
@@ -235,18 +244,28 @@ namespace ControlRoomApplication.Database
                     var appoints = Context.Appointments.Include(t => t.Telescope)
                                                         .Include(t => t.CelestialBody)
                                                         .Include(t => t.CelestialBody.Coordinate)
-                                                         .Include(t => t.Orientation)
-                                                      .Include(t => t.SpectraCyberConfig)
-                                                         .Include(t => t.User)
-                                                         .ToList<Appointment>();
+                                                        .Include(t => t.Orientation)
+                                                        .Include(t => t.SpectraCyberConfig)
+                                                        .Include(t => t.User)
+                                                        .ToList<Appointment>();
 
                     appts = appoints.Where(x => x.telescope_id == radioTelescopeId).ToList();
+
+                    // Add coordinates to the appointment
+                    var coordsForAppt = Context.Coordinates.ToList<Coordinate>();
+                
+                    foreach(Appointment a in appts)
+                    {
+                        foreach(Coordinate c in coordsForAppt)
+                        {
+                            if(c.apptId == a.Id) a.Coordinates.Add(c);
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
                     ;
                 }
-
                 
             }
             return appts;
@@ -410,8 +429,28 @@ namespace ControlRoomApplication.Database
             {
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
-
+                    // Add appointment
                     Context.Appointments.AddOrUpdate(appt);
+
+                    // Retrieve all coordinates for appointment
+                    var coordsForAppt = Context.Coordinates.ToList<Coordinate>().Where(coord => coord.apptId == appt.Id);
+
+                    // Delete coordinates
+                    foreach(Coordinate c in coordsForAppt)
+                    {
+                        if (!appt.Coordinates.Any(co => co.Id == c.Id))
+                        {
+                            Context.Coordinates.Remove(c);
+                            Context.SaveChangesAsync();
+                        }
+                    }
+
+                    // Add coordinates
+                    foreach (Coordinate c in appt.Coordinates)
+                    {
+                        c.apptId = appt.Id;
+                        Context.Coordinates.AddOrUpdate(c);
+                    }
 
                     Context.SaveChangesAsync();
 

@@ -150,10 +150,10 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestWeatherStationOverride()
         {
+            CRController.ControlRoom.weatherStationOverride = false;
             Assert.IsFalse(CRController.ControlRoom.weatherStationOverride);
             CRController.ControlRoom.weatherStationOverride = true;
             Assert.IsTrue(CRController.ControlRoom.weatherStationOverride);
-
         }
 
         [ClassCleanup]

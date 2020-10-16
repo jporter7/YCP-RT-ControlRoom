@@ -59,8 +59,12 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
             TestRT.WeatherStation = new SimulationWeatherStation(1000);
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
+            
+            // Override motor temperature sensors
+            TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = true;
+            TestRadioTelescopeController.overrides.overrideElevatMotTemp = true;
 
-             TestRTPLC.SetParent(TestRT);
+            TestRTPLC.SetParent(TestRT);
             TestRTPLC.driver.SetParent(TestRT);
 
             TestRTPLC.StartAsyncAcceptingClients();
@@ -225,6 +229,135 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
+        public void testOrientationChange_100_100Degrees()
+        {
+            // Acquire current orientation
+            Orientation currOrientation;
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Calculate motor steps from current orientation
+            int currStepsAz, currStepsEl;
+            currStepsAz = ConversionHelper.DegreesToSteps(currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            currStepsEl = ConversionHelper.DegreesToSteps(currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Set target orientation on both Azimuth and Elevation, respectively
+            Orientation expectedOrientation = new Orientation(100, 100);
+
+            // Calculate motor steps necessary for movement
+            int posTransAz, posTransEl;
+            posTransAz = ConversionHelper.DegreesToSteps(expectedOrientation.Azimuth - currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Move telescope
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+
+            // Create result orientation
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Assert expected and result are identical
+            Assert.AreEqual(expectedOrientation, resultOrientation);
+        }
+
+        [TestMethod]
+        public void testOrientationChange_0_0Degrees()
+        {
+            // Acquire current orientation
+            Orientation currOrientation;
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Calculate motor steps from current orientation
+            int currStepsAz, currStepsEl;
+            currStepsAz = ConversionHelper.DegreesToSteps(currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            currStepsEl = ConversionHelper.DegreesToSteps(currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Set target orientation on both Azimuth and Elevation, respectively
+            Orientation expectedOrientation = new Orientation(0, 0);
+
+            // Calculate motor steps necessary for movement
+            int posTransAz, posTransEl;
+            posTransAz = ConversionHelper.DegreesToSteps(expectedOrientation.Azimuth - currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Move telescope
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+
+            // Create result orientation
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Assert expected and result are identical
+            Assert.AreEqual(expectedOrientation, resultOrientation);
+        }
+
+        [TestMethod]
+        public void testOrientationChange_360_210Degrees()
+        {
+            // Acquire current orientation
+            Orientation currOrientation;
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Calculate motor steps from current orientation
+            int currStepsAz, currStepsEl;
+            currStepsAz = ConversionHelper.DegreesToSteps(currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            currStepsEl = ConversionHelper.DegreesToSteps(currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Set target orientation on both Azimuth and Elevation, respectively
+            Orientation expectedOrientation = new Orientation(360, 210);
+
+            // Calculate motor steps necessary for movement
+            int posTransAz, posTransEl;
+            posTransAz = ConversionHelper.DegreesToSteps(expectedOrientation.Azimuth - currOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+            // Move telescope
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+
+            // Create result orientation
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+
+            // Assert expected and result are identical
+            Assert.AreEqual(expectedOrientation, resultOrientation);
+        }
+
+        [TestMethod]
+        public void testOrientationValid()
+        {
+            const int SAFE_VAL = 50;
+
+            // Valid (low edge azimuth)
+            Orientation orientation = new Orientation(-5, SAFE_VAL);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Valid (high edge azimuth)
+            orientation = new Orientation(365, SAFE_VAL);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Invalid (low azimuth)
+            orientation = new Orientation(-6, SAFE_VAL);
+            Assert.IsFalse(orientation.orientationValid());
+
+            // Invalid (high azimuth)
+            orientation = new Orientation(366, SAFE_VAL);
+            Assert.IsFalse(orientation.orientationValid());
+
+            // Valid (low edge elevation)
+            orientation = new Orientation(SAFE_VAL, -15);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Valid (high edge elevation)
+            orientation = new Orientation(SAFE_VAL, 93);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Invalid (low elevation)
+            orientation = new Orientation(SAFE_VAL, -16);
+            Assert.IsFalse(orientation.orientationValid());
+
+            // Invalid (high elevation)
+            orientation = new Orientation(SAFE_VAL, 94);
+            Assert.IsFalse(orientation.orientationValid());
+        }
+
+        /*
+        [TestMethod]
         public void test_orientation_change() {
             Random random = new Random();
 
@@ -235,8 +368,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             int positionTranslationAZ, positionTranslationEL, current_stepsAZ, current_stepsEL;
             current_stepsAZ = ConversionHelper.DegreesToSteps( current_orientation.Azimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
             current_stepsEL = ConversionHelper.DegreesToSteps( current_orientation.Elevation , MotorConstants.GEARING_RATIO_ELEVATION );
-            for(int i = 0; i < 1500; i++) {
+            for(int i = 0; i < 100; i++) {
                 Orientation target_orientation = new Orientation( random.NextDouble() * 360 , random.NextDouble() * 360 );
+
                 positionTranslationAZ = ConversionHelper.DegreesToSteps( (target_orientation.Azimuth - current_orientation.Azimuth) , MotorConstants.GEARING_RATIO_AZIMUTH );
                 positionTranslationEL = ConversionHelper.DegreesToSteps( (target_orientation.Elevation - current_orientation.Elevation) , MotorConstants.GEARING_RATIO_ELEVATION );
 
@@ -261,6 +395,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
                 Assert.AreEqual( target_orientation.Elevation , current_orientation2.Elevation , 0.1 );
             }
         }
+        */
 
         [TestMethod]
         public void test_temperature_check()
@@ -273,126 +408,107 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
            if (DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
            {
                DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
-           }
+            }
 
-            // Azimuth tests
-            Temperature t1 = new Temperature();
-            t1.temp = 100;
-            t1.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
+            // Enable motor temperature sensors
+            TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = false;
+            TestRadioTelescopeController.overrides.overrideElevatMotTemp = false;
 
-            Temperature t2 = new Temperature();
-            t2.temp = 50;
-            t2.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
+            /** Azimuth tests **/
+            Temperature az = new Temperature(); az.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
 
-            Temperature t3 = new Temperature();
-            t3.temp = 150;
-            t3.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
+            // Overheating
+            az.temp = 100;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
 
-            Temperature t4 = new Temperature();
-            t4.temp = 151;
-            t4.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
+            // Stable
+            az.temp = 50;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
 
-            Temperature t5 = new Temperature();
-            t5.temp = 49;
-            t5.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Too cold
+            // Overheating
+            az.temp = 150;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
 
-            
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t1));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t2));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t3));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t5));
+            // Overheating
+            az.temp = 151;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
 
-            // Elevation tests
-            Temperature t6 = new Temperature(); t6.temp = 100; t6.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
-            Temperature t7 = new Temperature(); t7.temp = 50; t7.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
-            Temperature t8 = new Temperature(); t8.temp = 150; t8.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
+            // Too cold
+            az.temp = 49;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
 
-            Temperature t9 = new Temperature(); t9.temp = 151; t9.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
-            Temperature t0 = new Temperature(); t0.temp = 49; t0.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Too cold
 
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t6));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t7));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t8));
+            /** Elevation tests **/
+            Temperature el = new Temperature(); el.location_ID = (int)SensorLocationEnum.EL_MOTOR;
 
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t9));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t0));
+            // Overheating
+            el.temp = 100;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
+
+            // Stable
+            el.temp = 50;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
+
+            // Overheating
+            el.temp = 150;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
+
+            // Overheating
+            el.temp = 151;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
+
+            // Too cold
+            el.temp = 49;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
+
+
         }
 
         [TestMethod]
         public void test_temperature_overrides()
         {
-            // make sure neither override is set
-            if (DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR))
-            {
-                DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-            }
-            if (DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
-            {
-                DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
-            }
-
-            // Overriding azimuth
+            // make sure both overrides are set
             TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = true;
-
-            // Azimuth temperatures
-            Temperature t1 = new Temperature(); t1.temp = 100; t1.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
-            Temperature t2 = new Temperature(); t2.temp = 50; t2.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
-            Temperature t3 = new Temperature(); t3.temp = 150; t3.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Stable
-
-            Temperature t4 = new Temperature(); t4.temp = 151; t4.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Overheating
-            Temperature t5 = new Temperature(); t5.temp = 49; t5.location_ID = (int)SensorLocationEnum.AZ_MOTOR; // Too cold
-
-            // Elevation temperatures
-            Temperature t6 = new Temperature(); t6.temp = 100; t6.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
-            Temperature t7 = new Temperature(); t7.temp = 50; t7.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
-            Temperature t8 = new Temperature(); t8.temp = 150; t8.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Stable
-
-            Temperature t9 = new Temperature(); t9.temp = 151; t9.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Overheating
-            Temperature t0 = new Temperature(); t0.temp = 49; t0.location_ID = (int)SensorLocationEnum.EL_MOTOR; // Too cold
-
-
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t1));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t2));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t3));
-
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t4));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t5));
-
-            // Elevation should still return false
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t9)); 
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t0));
-
-            // Take away override for azimuth
-            TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = false;
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t5));
-
-
-            // Overriding elevation
             TestRadioTelescopeController.overrides.overrideElevatMotTemp = true;
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
+
+            /** Azimuth temperatures **/
+            Temperature az = new Temperature(); az.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
+
+            // Stable
+            az.temp = 50;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
+
+            // Stable
+            az.temp = 150;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
+
+            // Overheating
+            az.temp = 151;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
+
+            // To cold
+            az.temp = 49;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
 
 
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t6));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t7));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t8));
+            /** Elevation temperatures **/
+            Temperature el = new Temperature(); el.location_ID = (int)SensorLocationEnum.EL_MOTOR;
 
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t9));
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(t0));
+            // Stable
+            el.temp = 50;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
 
-            //Azimuth should still return false
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t4));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t5));
+            // Stable
+            el.temp = 150;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
 
-            // Take away override for elevation
-            TestRadioTelescopeController.overrides.overrideElevatMotTemp = false;
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
+            // Overheating
+            el.temp = 151;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
 
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t9));
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(t0));
+            // To cold
+            el.temp = 49;
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
         }
 
         [TestMethod]

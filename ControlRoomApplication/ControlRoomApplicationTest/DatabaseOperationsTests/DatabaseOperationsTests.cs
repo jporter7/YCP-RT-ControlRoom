@@ -6,6 +6,7 @@ using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
+using System.Threading;
 
 namespace ControlRoomApplicationTest.DatabaseOperationsTests
 {
@@ -102,18 +103,40 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             new_appt._Status = AppointmentStatusEnum.REQUESTED;
             new_appt._Priority = AppointmentPriorityEnum.MANUAL;
             new_appt._Type = AppointmentTypeEnum.POINT;
-            new_appt.Coordinates.Add(new Coordinate(0, 0));
+            new_appt.Coordinates.Add(new Coordinate(15, 15));
             new_appt.CelestialBody = new CelestialBody();
             new_appt.CelestialBody.Coordinate = new Coordinate();
             new_appt.Orientation = new Orientation();
             new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
             new_appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
             new_appt.User = DatabaseOperations.GetControlRoomUser();
+
+            DatabaseOperations.AddRadioTelescope(new_appt.Telescope);
             DatabaseOperations.AddAppointment(new_appt);
-            NumAppointments++;
 
             var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(new_appt.Telescope.Id);
-            Assert.IsTrue(1 == output_appts.Count());
+
+            Assert.IsTrue(1 == output_appts.Count()); // Should only be one appointment retrieved
+
+            //Assert.AreEqual(new_appt.start_time.ToString(), output_appts[0].start_time.ToString());
+            //Assert.AreEqual(new_appt.end_time.ToString(), output_appts[0].end_time.ToString());
+            Assert.AreEqual(new_appt._Status, output_appts[0]._Status);
+            Assert.AreEqual(new_appt._Priority, output_appts[0]._Priority);
+            Assert.AreEqual(new_appt._Type, output_appts[0]._Type);
+
+            // Coordinates
+            Assert.AreEqual(new_appt.Id, output_appts[0].Coordinates.First().apptId);
+            Assert.AreEqual(new_appt.Coordinates.First().hours, output_appts[0].Coordinates.First().hours);
+            Assert.AreEqual(new_appt.Coordinates.First().minutes, output_appts[0].Coordinates.First().minutes);
+            Assert.AreEqual(new_appt.Coordinates.First().Declination, output_appts[0].Coordinates.First().Declination);
+            Assert.AreEqual(new_appt.Coordinates.First().RightAscension, output_appts[0].Coordinates.First().RightAscension);
+
+            // Other entities that Appointment uses
+            Assert.AreEqual(new_appt.celestial_body_id, output_appts[0].celestial_body_id);
+            Assert.AreEqual(new_appt.orientation_id, output_appts[0].orientation_id);
+            Assert.AreEqual(new_appt.spectracyber_config_id, output_appts[0].spectracyber_config_id);
+            Assert.AreEqual(new_appt.telescope_id, output_appts[0].telescope_id);
+            Assert.AreEqual(new_appt.user_id, output_appts[0].user_id);
         }
 
         [TestMethod]
@@ -189,20 +212,81 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         }
 
         [TestMethod]
-        public void TestUpdateAppointmentCoordinates()
+        public void TestUpdateAppointmentPriority()
         {
-            var origCoord = new Coordinate(0, 0);
-            appt.Coordinates.Add(origCoord);
+            var expectedPriority = AppointmentPriorityEnum.MANUAL;
+            appt._Priority = expectedPriority;
 
             DatabaseOperations.UpdateAppointment(appt);
 
             // update appt
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
 
-            var testCoord = appt.Coordinates.First();
+            var resultPriority = appt._Priority;
 
-            Assert.AreEqual(origCoord.RightAscension, testCoord.RightAscension);
-            Assert.AreEqual(origCoord.Declination, testCoord.Declination);
+            Assert.AreEqual(expectedPriority, resultPriority);
+        }
+
+        [TestMethod]
+        public void TestUpdateAppointmentCoordinates()
+        {
+            // Create expected coordinates and add to the appointment
+            var coords = new Coordinate(5, 5);
+            appt.Coordinates.Add(coords);
+
+            // Add appointment to the database
+            DatabaseOperations.UpdateAppointment(appt);
+
+            // Retrieve appointment from the database
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
+            List<Coordinate> resultCoordinates = appt.Coordinates.ToList<Coordinate>();
+
+            // Verify only two results are returned
+            Assert.IsTrue(resultCoordinates.Count == 2);
+
+            // Create expected coordinate list
+            List<Coordinate> expectedCoordinates = new List<Coordinate>();
+            expectedCoordinates.Add(new Coordinate(0, 0));
+            expectedCoordinates.Add(new Coordinate(5, 5));
+
+            // Verify coordinates are correct
+            Assert.AreEqual(expectedCoordinates[0].Declination, resultCoordinates[0].Declination);
+            Assert.AreEqual(expectedCoordinates[0].RightAscension, resultCoordinates[0].RightAscension);
+
+            Assert.AreEqual(expectedCoordinates[1].Declination, resultCoordinates[1].Declination);
+            Assert.AreEqual(expectedCoordinates[1].RightAscension, resultCoordinates[1].RightAscension);
+
+        }
+
+        [TestMethod]
+        public void TestAddThenDeleteCoordinates()
+        {
+            // Create expected coordinates and add to the appointment
+            var coords = new Coordinate(5, 5);
+            appt.Coordinates.Add(coords);
+
+            // Add appointment to the database
+            DatabaseOperations.UpdateAppointment(appt);
+
+            Thread.Sleep(100);
+
+            // Delete coordinates and then update the DB entry
+            appt.Coordinates.Remove(coords);
+            DatabaseOperations.UpdateAppointment(appt);
+
+            // Retrieve appointment from the database
+            appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
+            List<Coordinate> resultCoordinates = appt.Coordinates.ToList<Coordinate>();
+
+            // Verify only one result is returned
+            Assert.IsTrue(resultCoordinates.Count == 1);
+
+            // Create expected coordinate
+            Coordinate expectedCoordinate = new Coordinate(0, 0);
+
+            // Verify coordinates are correct
+            Assert.AreEqual(expectedCoordinate.Declination, resultCoordinates[0].Declination);
+            Assert.AreEqual(expectedCoordinate.RightAscension, resultCoordinates[0].RightAscension);
         }
 
         [TestMethod]
