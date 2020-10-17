@@ -4,10 +4,10 @@ using ControlRoomApplication.GUI;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
 using System;
 using System.IO;
-
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
 using System.Net;
@@ -127,121 +127,142 @@ namespace ControlRoomApplication.Main
         private void startButton_Click(object sender, EventArgs e)
         {
             logger.Info("Start Telescope Button Clicked");
-            shutdownButton.BackColor = System.Drawing.Color.Red;
-            shutdownButton.Enabled = true;
-            simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
-            comboMicrocontrollerBox.Enabled = true;
-            comboBox2.Enabled = true;
-            comboBox1.Enabled = true;
-            comboEncoderType.Enabled = true;
-            comboPLCType.Enabled = true;
-            LocalIPCombo.Enabled = true;
 
-            portGroupbox.BackColor = System.Drawing.Color.Gray;
-            txtPLCIP.Enabled = true;
-            txtMcuCOMPort.Enabled = true;
-            txtWSCOMPort.Enabled = true;
-            txtPLCPort.Enabled = true;
+            // This will tell us whether or not the RT is safe to start.
+            // It may not be safe to start if, for example, there are
+            // validation errors, or no Telescope is found in the DB
+            bool runRt = false;
 
-
-            if (txtPLCPort.Text != null 
-                && txtPLCIP.Text != null 
-                && comboBox1.SelectedIndex > -1)
+            if (DatabaseOperations.FetchFirstRadioTelescope() == null)
             {
-                
+                DialogResult result = MessageBox.Show(
+                    "No Radio Telescope found in the database. Would you like to create one?",
+                    "No Telescope Found",
+                    MessageBoxButtons.YesNoCancel);
 
-                if (checkBox1.Checked)
+                if (result == DialogResult.Yes)
                 {
-                    logger.Info("Populating Local Database");
-               //     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
-                    Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).start_time.ToString());
-                    logger.Info("Disabling ManualControl and FreeControl");
-                    //ManualControl.Enabled = false;
-                    FreeControl.Enabled = false;
-                   // createWSButton.Enabled = false;
+                    runRt = true;
                 }
-                else
-                {
-                    logger.Info("Enabling ManualControl and FreeControl");
-                   // ManualControl.Enabled = true;
-                    FreeControl.Enabled = true;
-                    
-                }
+            }
+            else runRt = true;
 
-                // If the main control room controller hasn't been initialized, initialize it.
-                if (MainControlRoomController == null)
+            if(runRt) { 
+                shutdownButton.BackColor = System.Drawing.Color.Red;
+                shutdownButton.Enabled = true;
+                simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
+                comboMicrocontrollerBox.Enabled = true;
+                comboBox2.Enabled = true;
+                comboBox1.Enabled = true;
+                comboEncoderType.Enabled = true;
+                comboPLCType.Enabled = true;
+                LocalIPCombo.Enabled = true;
+
+                portGroupbox.BackColor = System.Drawing.Color.Gray;
+                txtPLCIP.Enabled = true;
+                txtMcuCOMPort.Enabled = true;
+                txtWSCOMPort.Enabled = true;
+                txtPLCPort.Enabled = true;
+
+                if (txtPLCPort.Text != null
+                    && txtPLCIP.Text != null
+                    && comboBox1.SelectedIndex > -1)
                 {
-                    logger.Info("Initializing ControlRoomController");
-                    if (lastCreatedProductionWeatherStation == null)
-                        MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+
+
+                    if (checkBox1.Checked)
+                    {
+                        logger.Info("Populating Local Database");
+                        //     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
+                        Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).start_time.ToString());
+                        logger.Info("Disabling ManualControl and FreeControl");
+                        //ManualControl.Enabled = false;
+                        FreeControl.Enabled = false;
+                        // createWSButton.Enabled = false;
+                    }
                     else
-                        MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
+                    {
+                        logger.Info("Enabling ManualControl and FreeControl");
+                        // ManualControl.Enabled = true;
+                        FreeControl.Enabled = true;
+
+                    }
+
+                    // If the main control room controller hasn't been initialized, initialize it.
+                    if (MainControlRoomController == null)
+                    {
+                        logger.Info("Initializing ControlRoomController");
+                        if (lastCreatedProductionWeatherStation == null)
+                            MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                        else
+                            MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
+                    }
+
+                    //current_rt_id++;
+                    AbstractPLCDriver APLCDriver = BuildPLCDriver();
+                    AbstractMicrocontroller ctrler = build_CTRL();
+                    ctrler.BringUp();
+                    AbstractEncoderReader encoder = build_encoder(APLCDriver);
+                    RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder);
+                    ARadioTelescope.WeatherStation = MainControlRoomController.ControlRoom.WeatherStation;
+
+                    // Add the RT/PLC driver pair and the RT controller to their respective lists
+                    AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
+                    ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[AbstractRTDriverPairList.Count - 1].Key));
+                    ProgramPLCDriverList.Add(APLCDriver);
+
+                    // Start plc server and attempt to connect to it.
+                    logger.Info("Starting plc server and attempting to connect to it");
+                    ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
+                    //ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();//////####################################
+
+                    logger.Info("Adding RadioTelescope Controller");
+                    MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
+                    ARadioTelescope.SetParent(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
+
+                    // linking radio telescope controller to tcp listener
+                    MainControlRoomController.ControlRoom.mobileControlServer.rtController = ARadioTelescope.GetParent();
+
+                    logger.Info("Starting Weather Monitoring Routine");
+                    MainControlRoomController.StartWeatherMonitoringRoutine();
+
+                    logger.Info("Starting Spectra Cyber Controller");
+                    ARadioTelescope.SpectraCyberController.BringUp();
+
+                    logger.Info("Setting Default Values for Spectra Cyber Controller");
+                    ARadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+                    ARadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
+                    ARadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(2.0);
+
+                    // Start RT controller's threaded management
+                    logger.Info("Starting RT controller's threaded management");
+                    RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[MainControlRoomController.ControlRoom.RTControllerManagementThreads.Count - 1];
+
+                    // add telescope to database
+                    //DatabaseOperations.AddRadioTelescope(ARadioTelescope);
+
+                    int RT_ID = ManagementThread.RadioTelescopeID;
+                    List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
+
+                    logger.Info("Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+                    foreach (Appointment appt in AllAppointments)
+                    {
+                        logger.Info("\t[" + appt.Id + "] " + appt.start_time.ToString() + " -> " + appt.end_time.ToString());
+                    }
+
+                    if (ManagementThread.Start())
+                    {
+                        logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+
+                        ProgramRTControllerList[ProgramRTControllerList.Count - 1].ConfigureRadioTelescope(.06, .06, 300, 300);
+                    }
+                    else
+                    {
+                        logger.Info("ERROR starting RT controller management thread [" + RT_ID.ToString() + "]");
+                    }
+
+                    AddConfigurationToDataGrid();
                 }
-
-                current_rt_id++;
-                AbstractPLCDriver APLCDriver = BuildPLCDriver();
-                AbstractMicrocontroller ctrler = build_CTRL();
-                ctrler.BringUp();
-                AbstractEncoderReader encoder = build_encoder(APLCDriver);
-                RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder);
-                ARadioTelescope.WeatherStation = MainControlRoomController.ControlRoom.WeatherStation;
-
-                // Add the RT/PLC driver pair and the RT controller to their respective lists
-                AbstractRTDriverPairList.Add(new KeyValuePair<RadioTelescope, AbstractPLCDriver>(ARadioTelescope, APLCDriver));
-                ProgramRTControllerList.Add(new RadioTelescopeController(AbstractRTDriverPairList[current_rt_id - 1].Key));
-                ProgramPLCDriverList.Add(APLCDriver);
-
-                // Start plc server and attempt to connect to it.
-                logger.Info("Starting plc server and attempting to connect to it");
-                ProgramPLCDriverList[current_rt_id - 1].StartAsyncAcceptingClients();
-//ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();//////####################################
-
-                logger.Info("Adding RadioTelescope Controller");
-                MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
-                ARadioTelescope.SetParent(ProgramRTControllerList[current_rt_id - 1]);
-
-                // linking radio telescope controller to tcp listener
-                MainControlRoomController.ControlRoom.mobileControlServer.rtController = ARadioTelescope.GetParent();
-
-                logger.Info("Starting Weather Monitoring Routine");
-                MainControlRoomController.StartWeatherMonitoringRoutine();
-
-                logger.Info("Starting Spectra Cyber Controller");
-                ARadioTelescope.SpectraCyberController.BringUp();
-
-                logger.Info("Setting Default Values for Spectra Cyber Controller");
-                ARadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
-                ARadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
-                ARadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(2.0);
-
-                // Start RT controller's threaded management
-                logger.Info("Starting RT controller's threaded management");
-                RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[current_rt_id - 1];
-
-                // add telescope to database
-              //  DatabaseOperations.AddRadioTelescope(ARadioTelescope);
-
-                int RT_ID = ManagementThread.RadioTelescopeID;
-                List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
-
-                logger.Info("Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
-                foreach (Appointment appt in AllAppointments)
-                {
-                    logger.Info("\t[" + appt.Id + "] " + appt.start_time.ToString() + " -> " + appt.end_time.ToString());
-                }
-
-                if (ManagementThread.Start())
-                {
-                    logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
-
-                    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope(.06, .06, 300, 300);
-                }
-                else
-                {
-                    logger.Info("ERROR starting RT controller management thread [" + RT_ID.ToString() + "]" );
-                }
-
-                AddConfigurationToDataGrid();
             }
         }
 
@@ -342,26 +363,37 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Building RadioTelescope");
 
-           // PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(txtPLCIP.Text, int.Parse(txtPLCPort.Text));///###############################
+            // PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(txtPLCIP.Text, int.Parse(txtPLCPort.Text));///###############################
 
             // Create Radio Telescope Location
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
 
-            RadioTelescope rt = DatabaseOperations.FetchRadioTelescope();
+            // If no Telescope is present in the database, create a new one
+            RadioTelescope newRT = DatabaseOperations.FetchFirstRadioTelescope();
+            if(newRT == null)
+            {
+                // Create Radio Telescope
+                newRT = new RadioTelescope();
+                newRT.Location = location;
+                newRT.CalibrationOrientation = new Entities.Orientation(0, 90);
 
-            // Return Radio Telescope
-            //  RadioTelescope rt = new RadioTelescope(BuildSpectraCyber(), abstractPLCDriver, location, new Entities.Orientation(0,90), current_rt_id, ctrler, encoder );
-            rt.SpectraCyberController = BuildSpectraCyber();
-            rt.PLCDriver = abstractPLCDriver;
-            rt.Location = location;
-            rt.CalibrationOrientation = new Entities.Orientation(0, 90);
-            rt.Micro_controler = ctrler;
-            rt.Encoders = encoder;
+                DatabaseOperations.AddRadioTelescope(newRT);
 
-            abstractPLCDriver.SetParent(rt);
+                newRT.Id = DatabaseOperations.FetchFirstRadioTelescope().Id;
+            }
 
-            logger.Info("RadioTelescope Built Successfully");
-            return rt;
+            // These settings are not stored in the database, so they get are new every time
+            abstractPLCDriver.SetParent(newRT);
+            newRT.PLCDriver = abstractPLCDriver;
+            newRT.SpectraCyberController = BuildSpectraCyber();
+            newRT.Micro_controler = ctrler;
+            newRT.Encoders = encoder;
+            logger.Info("New RadioTelescope built successfully");
+
+            // 
+            current_rt_id = newRT.Id;
+
+            return newRT;
         }
 
         /// <summary>
