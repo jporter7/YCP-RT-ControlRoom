@@ -374,7 +374,6 @@ namespace ControlRoomApplication.Main
             {
                 // Create Radio Telescope
                 newRT = new RadioTelescope();
-                newRT.Location = location;
                 newRT.CalibrationOrientation = new Entities.Orientation(0, 90);
 
                 DatabaseOperations.AddRadioTelescope(newRT);
@@ -382,7 +381,8 @@ namespace ControlRoomApplication.Main
                 newRT.Id = DatabaseOperations.FetchFirstRadioTelescope().Id;
             }
 
-            // These settings are not stored in the database, so they get are new every time
+            // These settings are not stored in the database, so they are new every time
+            newRT.Location = location;
             abstractPLCDriver.SetParent(newRT);
             newRT.PLCDriver = abstractPLCDriver;
             newRT.SpectraCyberController = BuildSpectraCyber();
