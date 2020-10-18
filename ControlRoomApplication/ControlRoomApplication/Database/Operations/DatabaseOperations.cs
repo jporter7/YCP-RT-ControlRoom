@@ -700,20 +700,21 @@ namespace ControlRoomApplication.Database
         /// <summary>
         /// Adds the radio telescope
         /// </summary>
-        public static RadioTelescope FetchRadioTelescope()
+        public static RadioTelescope FetchFirstRadioTelescope()
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                var telescopes = Context.RadioTelescope.Where<RadioTelescope>(t => t.Id == 1).ToList<RadioTelescope>();
+                var telescopes = Context.RadioTelescope.ToList<RadioTelescope>();
 
-                if(telescopes.Count != 1)
+                foreach(RadioTelescope rt in telescopes)
                 {
-                    throw new Exception();
+                    logger.Info("Retrieved Radio Telescope from the database");
+                    return rt;
                 }
 
-                logger.Info("Added radio telescope to database");
-
-                return telescopes[0];
+                logger.Info("No Radio Telescope found in the database");
+                return null;
+                
             }
         }
 

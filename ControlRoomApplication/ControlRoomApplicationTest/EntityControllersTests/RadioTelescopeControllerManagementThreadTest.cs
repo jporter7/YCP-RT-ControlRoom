@@ -48,6 +48,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestMethod]
         public void TestConstructorsAndProperties()
         {
+
             Assert.AreEqual(RTC0, RTCMT0.RTController);
             Assert.AreEqual(RTC1, RTCMT1.RTController);
 
