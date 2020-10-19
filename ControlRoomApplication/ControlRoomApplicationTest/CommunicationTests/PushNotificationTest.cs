@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ControlRoomApplication.Controllers.Communications;
+using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.CommunicationTests
@@ -32,6 +33,12 @@ namespace ControlRoomApplicationTest.CommunicationTests
             if (!pushNotification.getSendPush()) pushNotification.setSendPush(true);
 
             Assert.IsTrue(pushNotification.send("TEST", "This should pass."));
+        }
+
+        [TestMethod]
+        public void TestSendingEmail()
+        {
+            Assert.IsTrue(pushNotification.sendEmail(true));
         }
     }
 }

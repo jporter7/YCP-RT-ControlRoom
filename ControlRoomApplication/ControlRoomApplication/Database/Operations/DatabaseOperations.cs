@@ -300,6 +300,27 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
+        /// Returns a list of all Users
+        /// </summary>
+        public static List<User> GetAllUsers()
+        {
+            List<User> AllUsers = new List<User>();
+
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                AllUsers = Context.Users.SqlQuery("Select * from user").ToList<User>();
+
+                if(AllUsers.Count() == 0)
+                {
+                    AllUsers.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.ALL));
+                    createUser = true;
+                }
+            }
+            return AllUsers;
+        }
+
+
+        /// <summary>
         /// Returns the list of Appointments from the database.
         /// </summary>
         public static int GetTotalAppointmentCount()
