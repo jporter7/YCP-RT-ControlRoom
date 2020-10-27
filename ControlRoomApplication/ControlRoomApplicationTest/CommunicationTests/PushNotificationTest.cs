@@ -38,7 +38,20 @@ namespace ControlRoomApplicationTest.CommunicationTests
         [TestMethod]
         public void TestSendingEmail()
         {
-            Assert.IsTrue(pushNotification.sendEmail(true));
+            EmailPartConstants.setSender("SystemTest@ycpradiotelescope.com");
+            EmailPartConstants.setSubject("Amazon SES Test");
+            EmailPartConstants.setText("AmazonSES Test (.NET)\r\nThis email was sent through AmazonSES using the AWS SDK for .NET.");
+            EmailPartConstants.setHtml(@"<html>
+<head></head>
+<body>
+  <h1>Amazon SES Test (AWS SDK for .NET)</h1>
+  <p>This email was sent with
+    <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
+    <a href='https://aws.amazon.com/sdk-for-net/'>
+      AWS SDK for .NET</a>.</p>
+</body>
+</html>");
+        Assert.IsTrue(pushNotification.sendEmail(true));
         }
     }
 }

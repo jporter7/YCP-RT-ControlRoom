@@ -60,7 +60,7 @@ namespace ControlRoomApplication.Controllers
             {
                 var sendRequest = new SendEmailRequest
                 {
-                    Source = EmailPartConstants.senderAddress,
+                    Source = EmailPartConstants.Sender,
                     Destination = new Destination
                     {
                         ToAddresses = new List<string> { user.email_address }
@@ -73,7 +73,7 @@ namespace ControlRoomApplication.Controllers
                             Html = new Content
                             {
                                 Charset = "UTF-8",
-                                Data = EmailPartConstants.html
+                                Data = EmailPartConstants.Html
                             },
                             Text = new Content
                             {
