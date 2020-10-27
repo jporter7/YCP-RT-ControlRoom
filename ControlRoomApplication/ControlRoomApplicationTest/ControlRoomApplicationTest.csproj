@@ -83,6 +83,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommunicationTests\EmailPartConstantsTest.cs" />
     <Compile Include="CommunicationTests\PushNotificationTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />
