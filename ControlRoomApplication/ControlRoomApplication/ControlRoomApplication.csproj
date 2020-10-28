@@ -244,6 +244,8 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />
     <Compile Include="Entities\User\NotificationTypeEnum.cs" />
     <Compile Include="Entities\User\User.cs" />
+    <Compile Include="Entities\User\UserRole.cs" />
+    <Compile Include="Entities\User\UserRoleEnum.cs" />
     <Compile Include="Entities\WeatherStation\AbstractWeatherStation.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Location\Location.cs" />

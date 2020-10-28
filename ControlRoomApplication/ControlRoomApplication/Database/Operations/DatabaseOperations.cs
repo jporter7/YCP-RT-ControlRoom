@@ -280,9 +280,9 @@ namespace ControlRoomApplication.Database
             using (RTDbContext Context = InitializeDatabaseContext())
             {
                 // Use Include method to load related entities from the database
-                List<User> users = Context.Users.SqlQuery("Select * from user").ToList<User>();
+                List<User> users = Context.Users.SqlQuery("Select * from user WHERE first_name = 'control'").ToList<User>();
 
-                users = users.Where(x => x.first_name == "control").ToList<User>();
+                // users = users.Where(x => x.first_name == "control").ToList<User>();
                 
                 if(users.Count() == 0)
                 {
@@ -310,15 +310,84 @@ namespace ControlRoomApplication.Database
             {
                 AllUsers = Context.Users.SqlQuery("Select * from user").ToList<User>();
 
-                if(AllUsers.Count() == 0)
+                if (AllUsers.Count() == 0)
                 {
-                    AllUsers.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.ALL));
+                    AllUsers.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.EMAIL));
                     createUser = true;
                 }
             }
             return AllUsers;
         }
+        
+        /// <summary>
+        /// Returns a list of all Admin Users
+        /// </summary>
+        public static List<User> GetAllAdminUsers()
+        {
+            List<User> AdminUsers = new List<User>();
 
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                AdminUsers = Context.Users.SqlQuery("SELECT * FROM user U INNER JOIN user_role UR ON U.id = UR.user_id WHERE UR.role = 'ADMIN'").ToList<User>();
+            }
+            if(AdminUsers.Count() == 0)
+            {
+                User dummy = CreateDummyUser();
+                AdminUsers.Add(dummy);
+            }
+            foreach (User u in AdminUsers)
+            {
+                UserRole ur = new UserRole(u.Id, UserRoleEnum.ADMIN);
+                u.UR = ur;
+            }
+            return AdminUsers;
+        }
+
+        /// <summary>
+        /// FOR TEST PURPOSES ONLY. Creates a dummy Admin-level user.
+        /// </summary>
+        /// <returns>Returns a fake 'user' with Admin privileges.</returns>
+        public static User CreateDummyUser()
+        {
+            User u = new User();
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                AddNewDummyUser();
+                u = GetDummyUser();
+                
+                Context.Database.ExecuteSqlCommand($"INSERT INTO user_role SET user_id = '{u.Id}', role = 'ADMIN'");
+                SaveContext(Context);
+            }
+            return u;
+        }
+
+        /// <summary>
+        /// FOR TEST PURPOSES ONLY. Adds the new dummy admin to the database.
+        /// </summary>
+        public static void AddNewDummyUser()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.Database.ExecuteSqlCommand("INSERT INTO user (first_name, last_name, email_address, notification_type) VALUES ('control2', 'room', 'controlroom2@gmail.com', 'ALL')");
+                SaveContext(Context);
+            }
+        }
+
+        /// <summary>
+        /// FOR TEST PURPOSES ONLY. Retrieves the dummy user from the database, if it does not already exist, to elevate to admin rank.
+        /// </summary>
+        /// <returns>The dummy user</returns>
+        public static User GetDummyUser()
+        {
+            User u = new User();
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                List<User> testUserList = new List<User>();
+                testUserList = Context.Users.SqlQuery("SELECT * FROM user WHERE (first_name = 'control2' AND last_name = 'room' AND email_address = 'controlroom2@gmail.com' AND notification_type = 'ALL')").ToList<User>();
+                u = testUserList.First();
+            }
+            return u;
+        }
 
         /// <summary>
         /// Returns the list of Appointments from the database.
