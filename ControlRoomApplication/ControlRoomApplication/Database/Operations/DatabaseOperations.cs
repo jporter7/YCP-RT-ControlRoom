@@ -335,6 +335,7 @@ namespace ControlRoomApplication.Database
                 User dummy = CreateDummyUser();
                 AdminUsers.Add(dummy);
             }
+            // We have to manually add the UserRole object to the admins pulled from the list; it doesn't travel with the SQL query
             foreach (User u in AdminUsers)
             {
                 UserRole ur = new UserRole(u.Id, UserRoleEnum.ADMIN);
