@@ -59,12 +59,13 @@ namespace ControlRoomApplication.Entities
 
         [Column("calibration_orientation_id")]
         public int calibration_orientation { get; set; }
-    //    [ForeignKey("calibration_orientation_id")]
+        //    [ForeignKey("calibration_orientation_id")]
         [NotMapped]
         public Orientation CalibrationOrientation { get; set; }
 
-        [NotMapped]
-        public Location Location { get; set; }
+        public int location_id { get; set; }
+        [ForeignKey("location_id")]
+        public virtual Location Location { get; set; }
 
         [NotMapped]
         public AbstractPLCDriver PLCDriver { get; set; }

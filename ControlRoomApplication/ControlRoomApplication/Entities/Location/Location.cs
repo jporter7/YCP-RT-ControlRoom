@@ -6,11 +6,12 @@ namespace ControlRoomApplication.Entities
     [Table("location")]
     public class Location
     {
-        public Location(double longitude, double latitude, double altitude)
+        public Location(double longitude, double latitude, double altitude, string name)
         {
             Longitude = longitude;
             Latitude = latitude;
             Altitude = altitude;
+            Name = name;
         }
 
         public Location()
@@ -33,5 +34,8 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("altitude")]
         public double Altitude;
+
+        [Column("name")]
+        public string Name;
     }
 }
