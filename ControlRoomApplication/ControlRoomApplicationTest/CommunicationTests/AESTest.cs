@@ -208,7 +208,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
         {
             String plaintext = "Test";
 
-            // Prepend timestamp to input
+            // Prepend junk data to input
             String input = "12/535/36 3r3:3k," + plaintext;
 
             String result = AES.verifyAndRemoveTimestamp(input);
@@ -221,7 +221,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
         {
             String plaintext = "Test";
 
-            // Prepend timestamp to input
+            // Prepend junk data to input
             String input = "// ::," + plaintext;
 
             String result = AES.verifyAndRemoveTimestamp(input);
