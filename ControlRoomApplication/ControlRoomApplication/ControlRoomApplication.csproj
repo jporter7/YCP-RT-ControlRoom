@@ -201,6 +201,7 @@
     <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
     <Compile Include="Controllers\Communications\EmailPartConstants.cs" />
+    <Compile Include="Controllers\Communications\Encryption\AES.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
     <Compile Include="Controllers\Communications\pushNotification.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
