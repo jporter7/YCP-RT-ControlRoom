@@ -240,6 +240,19 @@ namespace ControlRoomApplicationTest.CommunicationTests
         }
 
         [TestMethod]
+        public void TestAES_EncryptAndDecrypt_200Chars()
+        {
+            // This is used to generate a String of 200 characters, because
+            // C# has no built-in <String>.repeat function
+            String input;
+            for (input = ""; input.Length < 200; input = input + "A") { }
+
+            String result = AES.Decrypt(AES.Encrypt(input));
+
+            Assert.AreEqual(input, result);
+        }
+
+        [TestMethod]
         public void TestAES_EncryptAndDecrypt_NoChars()
         {
             String input = "";
