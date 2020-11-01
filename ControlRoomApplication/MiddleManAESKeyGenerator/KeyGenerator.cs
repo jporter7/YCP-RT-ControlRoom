@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using ControlRoomApplication.Controllers.Communications.Encryption;
+using System;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+//using ControlRoomApplication.Controllers.Communications.Encryption;
 
 namespace MiddleManAESKeyGenerator
 {
@@ -39,18 +34,10 @@ namespace MiddleManAESKeyGenerator
 
         private void btnGenKey_Click(object sender, EventArgs e)
         {
-            byte[] key;
-            byte[] iv;
-
-            // Generate new AES Key and IV
-            using(Aes aes = Aes.Create())
-            {
-                aes.KeySize = 128;
-                aes.GenerateKey();
-                aes.GenerateIV();
-                key = aes.Key;
-                iv = aes.IV;
-            }
+            // Generate and assign new keys
+            var keys = AES.getNewKeys();
+            byte[] key = keys[0];
+            byte[] iv = keys[1];
 
             // Prepare save dialog
             SaveFileDialog sfd = new SaveFileDialog();

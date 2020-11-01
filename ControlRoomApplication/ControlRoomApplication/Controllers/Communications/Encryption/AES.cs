@@ -130,5 +130,24 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
             else return "ERROR";
         }
 
+        // In list index 0: Key
+        // In list index 1: IV
+        // Returns randomly-generated new AES keys
+        public static List<byte[]> getNewKeys()
+        {
+            List<byte[]> keys = new List<byte[]>();
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.KeySize = 128;
+                aes.GenerateKey();
+                aes.GenerateIV();
+                keys.Add(aes.Key);
+                keys.Add(aes.IV);
+            }
+
+            return keys;
+        }
+
     }
 }
