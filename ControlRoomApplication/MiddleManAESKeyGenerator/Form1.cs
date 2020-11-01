@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -33,6 +34,47 @@ namespace MiddleManAESKeyGenerator
                     // TODO: Put website link with PDF
                 }
             }
+        }
+
+        private void btnGenKey_Click(object sender, EventArgs e)
+        {
+
+            byte[] key;
+            byte[] iv;
+
+            // Generate new AES Key and IV
+            using(Aes aes = Aes.Create())
+            {
+                aes.KeySize = 128;
+                aes.GenerateKey();
+                aes.GenerateIV();
+                key = aes.Key;
+                iv = aes.IV;
+            }
+
+            // Prepare save dialog
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Binary File|*.bin";
+            sfd.Title = "Save Key";
+            sfd.FileName = "AESKey.bin";
+
+            // Save the AES key
+            if(sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllBytes(sfd.FileName, key);
+            }
+
+            // Save the IV key
+            sfd.FileName = "IV.bin";
+            if(sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllBytes(sfd.FileName, iv);
+            }
+        }
+
+        private void updateDateUpdated()
+        {
+
         }
     }
 }
