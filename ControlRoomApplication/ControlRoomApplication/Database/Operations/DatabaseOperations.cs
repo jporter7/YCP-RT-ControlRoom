@@ -313,7 +313,9 @@ namespace ControlRoomApplication.Database
                 if (AllUsers.Count() == 0)
                 {
                     AllUsers.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.EMAIL));
-                    createUser = true;
+
+                    Context.Database.ExecuteSqlCommand("INSERT INTO user (first_name, last_name, email_address, notification_type) VALUES ('control', 'room', 'controlroom@gmail.com', 'ALL')");
+                    SaveContext(Context);
                 }
             }
             return AllUsers;

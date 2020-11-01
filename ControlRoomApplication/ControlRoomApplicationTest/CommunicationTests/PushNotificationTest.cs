@@ -38,10 +38,10 @@ namespace ControlRoomApplicationTest.CommunicationTests
         [TestMethod]
         public void TestSendingEmail()
         {
-            EmailPartConstants.setSender("SystemTest@ycpradiotelescope.com");
-            EmailPartConstants.setSubject("Amazon SES Test");
-            EmailPartConstants.setText("AmazonSES Test (.NET)\r\nThis email was sent through AmazonSES using the AWS SDK for .NET.");
-            EmailPartConstants.setHtml(@"<html>
+            EmailFields.setSender("SystemTest@ycpradiotelescope.com");
+            EmailFields.setSubject("Amazon SES Test");
+            EmailFields.setText("AmazonSES Test (.NET)\r\nThis email was sent through AmazonSES using the AWS SDK for .NET.");
+            EmailFields.setHtml(@"<html>
 <head></head>
 <body>
   <h1>Amazon SES Test (AWS SDK for .NET)</h1>

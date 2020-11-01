@@ -93,10 +93,10 @@ namespace ControlRoomApplication.Controllers
                     if (!ControlRoom.weatherStationOverride)
                     {
                         currentSensor.Status = SensorStatusEnum.ALARM;
-                        EmailPartConstants.setSender("system@ycpradiotelescope.com");
-                        EmailPartConstants.setSubject("WARNING: WEATHER STATION");
-                        EmailPartConstants.setText($"WARNING:\r\nWind speeds are too high: {ControlRoom.WeatherStation.CurrentWindSpeedMPH}");
-                        EmailPartConstants.setHtml($@"<html>
+                        EmailFields.setSender("system@ycpradiotelescope.com");
+                        EmailFields.setSubject("WARNING: WEATHER STATION");
+                        EmailFields.setText($"WARNING:\r\nWind speeds are too high: {ControlRoom.WeatherStation.CurrentWindSpeedMPH}");
+                        EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>WARNING</h1>
@@ -130,10 +130,10 @@ namespace ControlRoomApplication.Controllers
                     if (!ControlRoom.weatherStationOverride)
                     {
                         currentSensor.Status = SensorStatusEnum.WARNING;
-                        EmailPartConstants.setSender("system@ycpradiotelescope.com");
-                        EmailPartConstants.setSubject("WARNING: WEATHER STATION");
-                        EmailPartConstants.setText($"WARNING:\r\nWind speeds are in Warning Range: {ControlRoom.WeatherStation.CurrentWindSpeedMPH}");
-                        EmailPartConstants.setHtml($@"<html>
+                        EmailFields.setSender("system@ycpradiotelescope.com");
+                        EmailFields.setSubject("WARNING: WEATHER STATION");
+                        EmailFields.setText($"WARNING:\r\nWind speeds are in Warning Range: {ControlRoom.WeatherStation.CurrentWindSpeedMPH}");
+                        EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>WARNING</h1>

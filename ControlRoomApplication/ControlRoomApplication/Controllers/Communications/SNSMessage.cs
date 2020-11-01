@@ -60,25 +60,25 @@ namespace ControlRoomApplication.Controllers
             {
                 var sendRequest = new SendEmailRequest
                 {
-                    Source = EmailPartConstants.Sender,
+                    Source = EmailFields.Sender,
                     Destination = new Destination
                     {
                         ToAddresses = new List<string> { user.email_address }
                     },
                     Message = new Message
                     {
-                        Subject = new Content(EmailPartConstants.Subject),
+                        Subject = new Content(EmailFields.Subject),
                         Body = new Body
                         {
                             Html = new Content
                             {
                                 Charset = "UTF-8",
-                                Data = EmailPartConstants.Html
+                                Data = EmailFields.Html
                             },
                             Text = new Content
                             {
                                 Charset = "UTF-8",
-                                Data = EmailPartConstants.Text
+                                Data = EmailFields.Text
                             }
                         }
                     }

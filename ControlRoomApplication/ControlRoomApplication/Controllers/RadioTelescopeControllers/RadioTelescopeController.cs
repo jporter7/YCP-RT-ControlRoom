@@ -316,7 +316,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns>override bool</returns>
         public bool checkTemp(Temperature t)
         {
-            EmailPartConstants.setSender("system@ycpradiotelescope.com");
+            EmailFields.setSender("system@ycpradiotelescope.com");
             // get maximum temperature threshold
             double max;
 
@@ -336,13 +336,13 @@ namespace ControlRoomApplication.Controllers
                 max = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
             }
 
-            EmailPartConstants.setSubject("MOTOR TEMPERATURE");
+            EmailFields.setSubject("MOTOR TEMPERATURE");
             // Check temperatures
             if (t.temp < SimulationConstants.STABLE_MOTOR_TEMP)
             {
                 logger.Info(s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
-                EmailPartConstants.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature BELOW stable temperature by {Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp)} degrees Fahrenheit.");
-                EmailPartConstants.setHtml($@"<html>
+                EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature BELOW stable temperature by {Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp)} degrees Fahrenheit.");
+                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
    <h1>MOTOR TEMPERATURE</h1>
@@ -358,8 +358,8 @@ namespace ControlRoomApplication.Controllers
             else if (t.temp > max)
             {
                 logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
-                EmailPartConstants.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature OVERHEATING by {Math.Truncate(t.temp - max)} degrees Fahrenheit.");
-                EmailPartConstants.setHtml($@"<html>
+                EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature OVERHEATING by {Math.Truncate(t.temp - max)} degrees Fahrenheit.");
+                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
    <h1>MOTOR TEMPERATURE</h1>
@@ -374,8 +374,8 @@ namespace ControlRoomApplication.Controllers
                 else return true;
             }
             logger.Info(s + " motor temperature stable.");
-            EmailPartConstants.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature stable.");
-            EmailPartConstants.setHtml($@"<html>
+            EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature stable.");
+            EmailFields.setHtml($@"<html>
 <head></head>
 <body>
    <h1>MOTOR TEMPERATURE</h1>
@@ -426,14 +426,14 @@ namespace ControlRoomApplication.Controllers
                 RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, Convert.ToUInt16(set));
             }
 
-            EmailPartConstants.setSender("system@ycpradiotelescope.com");
-            EmailPartConstants.setSubject("SENSOR ORVERRIDES");
+            EmailFields.setSender("system@ycpradiotelescope.com");
+            EmailFields.setSubject("SENSOR ORVERRIDES");
 
             if (set)
             {
                 logger.Info("Overriding " + sensor + " sensor.");
-                EmailPartConstants.setText($"SENSOR OVERRIDES\r\nOverriding {sensor} sensor.");
-                EmailPartConstants.setHtml($@"<html>
+                EmailFields.setText($"SENSOR OVERRIDES\r\nOverriding {sensor} sensor.");
+                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>SENSOR OVERRIDES</h1>
@@ -446,8 +446,8 @@ namespace ControlRoomApplication.Controllers
             else
             {
                 logger.Info("Enabled " + sensor + " sensor.");
-                EmailPartConstants.setText($"SENSOR OVERRIDES\r\nEnabled {sensor} sensor.");
-                EmailPartConstants.setHtml($@"<html>
+                EmailFields.setText($"SENSOR OVERRIDES\r\nEnabled {sensor} sensor.");
+                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>SENSOR OVERRIDES</h1>

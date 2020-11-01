@@ -248,7 +248,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="e"></param>
         private void Server_Written_to_handler(object sender, DataStoreEventArgs e) {
             //e.Data.B //array representing data   
-            EmailPartConstants.setSender("system@ycpradiotelescope.com");
+            EmailFields.setSender("system@ycpradiotelescope.com");
             if (is_test) {
                 logger.Info("recived message from PLC");
             }
@@ -259,12 +259,12 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CCW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CCW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_0_LIMIT , limitSwitchData.Azimuth_CCW_Limit );
-                            EmailPartConstants.setSubject("LIMIT SWITCH");
+                            EmailFields.setSubject("LIMIT SWITCH");
                             if (limitSwitchData.Azimuth_CCW_Limit)
                             {
                                 logger.Info("Azimuth CCW Limit Switch Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nAzimuth CCW limit switch hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nAzimuth CCW limit switch hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -277,8 +277,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("Azimuth CCW Limit Switch Not Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nAzimuth CCW limit switch NOT hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nAzimuth CCW limit switch NOT hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -295,12 +295,12 @@ namespace ControlRoomApplication.Controllers
                         bool previous = homeSensorData.Azimuth_Home_One;
                         homeSensorData.Azimuth_Home_One = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_HOME] );
                         if(previous != homeSensorData.Azimuth_Home_One) {
-                            EmailPartConstants.setSubject("LIMIT SWITCH");
+                            EmailFields.setSubject("LIMIT SWITCH");
                             if (homeSensorData.Azimuth_Home_One)
                             {
                                 logger.Info("Azimuth_Home_One Sensor Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nAzimuth_Home_One sensor hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nAzimuth_Home_One sensor hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -313,8 +313,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("Azimuth_Home_One Sensor Not Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nAzimuth_Home_One sensor NOT hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nAzimuth_Home_One sensor NOT hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -331,12 +331,12 @@ namespace ControlRoomApplication.Controllers
                         bool previous = homeSensorData.Azimuth_Home_Two;
                         homeSensorData.Azimuth_Home_Two = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );
                         if(previous != homeSensorData.Azimuth_Home_Two) {
-                            EmailPartConstants.setSubject("LIMIT SWITCH");
+                            EmailFields.setSubject("LIMIT SWITCH");
                             if (homeSensorData.Azimuth_Home_Two)
                             {
                                 logger.Info("Azimuth_Home_Two Sensor Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nAzimuth_Home_Two sensor hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nAzimuth_Home_Two sensor hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -349,8 +349,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("Azimuth_Home_Two Sensor Not Hit");;
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nAzimuth_Home_Two sensor NOT hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nAzimuth_Home_Two sensor NOT hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -368,12 +368,12 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_375_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_375_LIMIT , limitSwitchData.Azimuth_CW_Limit );
-                            EmailPartConstants.setSubject("LIMIT SWITCH");
+                            EmailFields.setSubject("LIMIT SWITCH");
                             if (limitSwitchData.Azimuth_CW_Limit)
                             {
                                 logger.Info("Azimuth CW Limit Switch Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nAzimuth CW limit switch hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nAzimuth CW limit switch hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -386,8 +386,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("Azimuth CW Limit Switch Not Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nAzimuth CW limit switch NOT hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nAzimuth CW limit switch NOT hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -405,12 +405,12 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Elevation_Lower_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_10_LIMIT]);
                         if(previous != limitSwitchData.Elevation_Lower_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.EL_10_LIMIT , limitSwitchData.Elevation_Lower_Limit );
-                            EmailPartConstants.setSubject("LIMIT SWITCH");
+                            EmailFields.setSubject("LIMIT SWITCH");
                             if (limitSwitchData.Elevation_Lower_Limit)
                             {
                                 logger.Info("Elevation Lower Limit Switch Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nElevation lower limit switch hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nElevation lower limit switch hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -423,8 +423,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("Elevation Lower Limit Switch Not Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nElevation lower limit switch NOT hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nElevation lower limit switch NOT hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -441,12 +441,12 @@ namespace ControlRoomApplication.Controllers
                         bool previous = homeSensorData.Elevation_Home;
                         homeSensorData.Elevation_Home = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_0_HOME] );
                         if(previous != homeSensorData.Elevation_Home) {
-                            EmailPartConstants.setSubject("LIMIT SWITCH");
+                            EmailFields.setSubject("LIMIT SWITCH");
                             if (homeSensorData.Elevation_Home)
                             {
                                 logger.Info("Elevation Home Sensor Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nElevation home sensor hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nElevation home sensor hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -459,8 +459,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("Elevation Home Sensor Not Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nElevation home sensor NOT hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nElevation home sensor NOT hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -478,12 +478,12 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Elevation_Upper_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_90_LIMIT] );
                         if(previous != limitSwitchData.Elevation_Upper_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.EL_90_LIMIT , limitSwitchData.Elevation_Upper_Limit );
-                            EmailPartConstants.setSubject("LIMIT SWITCH");
+                            EmailFields.setSubject("LIMIT SWITCH");
                             if (limitSwitchData.Elevation_Upper_Limit)
                             {
                                 logger.Info("Elevation Upper Limit Switch Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nElevation upper limit switch hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nElevation upper limit switch hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -496,8 +496,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("Elevation Upper Limit Switch Not Hit");
-                                EmailPartConstants.setText("LIMIT SWITCH\r\nElevation upper limit switch NOT hit");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("LIMIT SWITCH\r\nElevation upper limit switch NOT hit");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>LIMIT SWITCH</h1>
@@ -514,12 +514,12 @@ namespace ControlRoomApplication.Controllers
                         bool previous = plcInput.Gate_Sensor;
                         plcInput.Gate_Sensor = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
                         if(previous != plcInput.Gate_Sensor) {
-                            EmailPartConstants.setSubject("GATE ACTIVITY");
+                            EmailFields.setSubject("GATE ACTIVITY");
                             if (plcInput.Gate_Sensor)
                             {
                                 logger.Info("gate opened");
-                                EmailPartConstants.setText("GATE ACTIVITY\r\nGate has been opened.");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("GATE ACTIVITY\r\nGate has been opened.");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>GATE ACTIVITY</h1>
@@ -532,8 +532,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("gate closed");
-                                EmailPartConstants.setText("GATE ACTIVITY\r\nGate has been closed.");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("GATE ACTIVITY\r\nGate has been closed.");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>GATE ACTIVITY</h1>
@@ -550,12 +550,12 @@ namespace ControlRoomApplication.Controllers
                         bool previous = plcInput.Estop;
                         plcInput.Estop = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.E_STOP] );
                         if(previous != plcInput.Estop) {
-                            EmailPartConstants.setSubject("E-STOP ACTIVITY");
+                            EmailFields.setSubject("E-STOP ACTIVITY");
                             if (plcInput.Estop)
                             {
                                 logger.Info("Estop Hit");
-                                EmailPartConstants.setText("E-STOP ACTIVITY\r\nE-stop has been hit.");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("E-STOP ACTIVITY\r\nE-stop has been hit.");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>E-STOP ACTIVITY</h1>
@@ -568,8 +568,8 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info("Estop released");
-                                EmailPartConstants.setText("E-STOP ACTIVITY\r\nE-stop has been released.");
-                                EmailPartConstants.setHtml($@"<html>
+                                EmailFields.setText("E-STOP ACTIVITY\r\nE-stop has been released.");
+                                EmailFields.setHtml($@"<html>
 <head></head>
 <body>
     <h1>E-STOP ACTIVITY</h1>

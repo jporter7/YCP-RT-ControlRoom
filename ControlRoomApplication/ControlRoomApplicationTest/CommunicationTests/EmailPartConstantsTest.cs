@@ -19,39 +19,39 @@ namespace ControlRoomApplicationTest.CommunicationTests
 </body>
 </html";
 
-            EmailPartConstants epc = new EmailPartConstants(sender, subject, text, html);
+            EmailFields epc = new EmailFields(sender, subject, text, html);
 
-            Assert.IsTrue(EmailPartConstants.Sender == sender);
-            Assert.IsTrue(EmailPartConstants.Subject == subject);
-            Assert.IsTrue(EmailPartConstants.Text == text);
-            Assert.IsTrue(EmailPartConstants.Html == html);
+            Assert.IsTrue(EmailFields.Sender == sender);
+            Assert.IsTrue(EmailFields.Subject == subject);
+            Assert.IsTrue(EmailFields.Text == text);
+            Assert.IsTrue(EmailFields.Html == html);
         }
 
         [TestMethod]
         public void TestSetSender()
         {
             string sender = "test.email@test.email.com";
-            EmailPartConstants.setSender(sender);
+            EmailFields.setSender(sender);
 
-            Assert.IsTrue(EmailPartConstants.Sender == sender);
+            Assert.IsTrue(EmailFields.Sender == sender);
         }
 
         [TestMethod]
         public void TestSetSubject()
         {
             string subject = "test subject";
-            EmailPartConstants.setSubject(subject);
+            EmailFields.setSubject(subject);
 
-            Assert.IsTrue(EmailPartConstants.Subject == subject);
+            Assert.IsTrue(EmailFields.Subject == subject);
         }
 
         [TestMethod]
         public void TestSetText()
         {
             string text = "Test text\n";
-            EmailPartConstants.setText(text);
+            EmailFields.setText(text);
 
-            Assert.IsTrue(EmailPartConstants.Text == text);
+            Assert.IsTrue(EmailFields.Text == text);
         }
 
         [TestMethod]
@@ -63,9 +63,9 @@ namespace ControlRoomApplicationTest.CommunicationTests
     <h1>This is a test</h1>
 </body>
 </html";
-            EmailPartConstants.setHtml(html);
+            EmailFields.setHtml(html);
 
-            Assert.IsTrue(EmailPartConstants.Html == html);
+            Assert.IsTrue(EmailFields.Html == html);
         }
 
     }
