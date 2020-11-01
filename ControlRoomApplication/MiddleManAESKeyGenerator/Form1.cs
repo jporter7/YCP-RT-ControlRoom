@@ -62,22 +62,24 @@ namespace MiddleManAESKeyGenerator
             if(sfd.ShowDialog() == DialogResult.OK)
             {
                 File.WriteAllBytes(sfd.FileName, key);
+                
+                // Save the IV key
+                sfd.FileName = "IV.bin";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(sfd.FileName, iv);
+                    updateDateUpdated();
+                }
             }
 
-            // Save the IV key
-            sfd.FileName = "IV.bin";
-            if(sfd.ShowDialog() == DialogResult.OK)
-            {
-                File.WriteAllBytes(sfd.FileName, iv);
-            }
-
-            updateDateUpdated();
         }
 
         // Updates the date.cfg file with the lastest date the keys were updated
         private void updateDateUpdated()
         {
-
+            DateTime date = DateTime.Now;
+            File.WriteAllText("date.cfg", date.ToString());
+            lblLastGenerated.Text = "Keys Last Generated:\n" + date.ToString("MMMM dd, yyyy");
         }
 
         // Retrieves the date the key was last generated
@@ -95,8 +97,8 @@ namespace MiddleManAESKeyGenerator
                 if (!DateTime.TryParse(data, out date)) throw new Exception();
 
                 // If it makes it to this point, the String is good data and can be
-                // printed to the user interface
-                lblLastGenerated.Text += date.ToString("MM/dd/yyyy");
+                // printed to the user interface.
+                lblLastGenerated.Text += "\n" + date.ToString("MMMM dd, yyyy");
             }
 
             // If the key was never generated, or the config file is corrupted, 
