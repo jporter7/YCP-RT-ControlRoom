@@ -261,5 +261,31 @@ namespace ControlRoomApplicationTest.CommunicationTests
 
             Assert.AreEqual(input, result);
         }
+
+        [TestMethod]
+        public void TestAES_GetNewKeys_OnlyTwoKeys()
+        {
+            Assert.IsTrue(AES.getNewKeys().Count == 2);
+        }
+
+        [TestMethod]
+        public void TestAES_GetNewKeys_KeysAreCorrectSize()
+        {
+            var keys = AES.getNewKeys();
+
+            // With AES-128, we only want 16-byte keys
+            Assert.IsTrue(keys[0].Length == 16);
+            Assert.IsTrue(keys[1].Length == 16);
+        }
+
+        [TestMethod]
+        public void TestAES_GetNewKeys_KeysAreRandom()
+        {
+            var keys = AES.getNewKeys();
+            var keys2 = AES.getNewKeys();
+
+            Assert.AreNotEqual(keys[0], keys2[0]);
+            Assert.AreNotEqual(keys[1], keys2[1]);
+        }
     }
 }
