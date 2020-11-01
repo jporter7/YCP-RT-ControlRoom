@@ -17,6 +17,7 @@ namespace MiddleManAESKeyGenerator
         public frmKeygen()
         {
             InitializeComponent();
+            retrieveDateUpdated();
         }
 
         private void btnDocumentation_Click(object sender, EventArgs e)
@@ -38,7 +39,6 @@ namespace MiddleManAESKeyGenerator
 
         private void btnGenKey_Click(object sender, EventArgs e)
         {
-
             byte[] key;
             byte[] iv;
 
@@ -70,11 +70,41 @@ namespace MiddleManAESKeyGenerator
             {
                 File.WriteAllBytes(sfd.FileName, iv);
             }
+
+            updateDateUpdated();
         }
 
+        // Updates the date.cfg file with the lastest date the keys were updated
         private void updateDateUpdated()
         {
 
+        }
+
+        // Retrieves the date the key was last generated
+        private void retrieveDateUpdated()
+        {
+            try
+            {
+                String data = File.ReadAllText("date.cfg");
+
+                // We attempt to parse the date first instead of just directly printing
+                // the String to protect against the possibility of file corruption.
+                // If the file were corrupted, we do not want it to give misleading
+                // information.
+                DateTime date;
+                if (!DateTime.TryParse(data, out date)) throw new Exception();
+
+                // If it makes it to this point, the String is good data and can be
+                // printed to the user interface
+                lblLastGenerated.Text += date.ToString("MM/dd/yyyy");
+            }
+
+            // If the key was never generated, or the config file is corrupted, 
+            // no date will appear.
+            catch (Exception e)
+            {
+                lblLastGenerated.Text += "\nNEVER GENERATED";
+            }
         }
     }
 }
