@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmKeygen));
             this.btnDocumentation = new System.Windows.Forms.Button();
             this.btnGenKey = new System.Windows.Forms.Button();
             this.lblLastGenerated = new System.Windows.Forms.Label();
@@ -35,11 +36,11 @@
             // 
             // btnDocumentation
             // 
-            this.btnDocumentation.Location = new System.Drawing.Point(147, 12);
+            this.btnDocumentation.Location = new System.Drawing.Point(127, 12);
             this.btnDocumentation.Name = "btnDocumentation";
-            this.btnDocumentation.Size = new System.Drawing.Size(23, 24);
+            this.btnDocumentation.Size = new System.Drawing.Size(43, 24);
             this.btnDocumentation.TabIndex = 1;
-            this.btnDocumentation.Text = "?";
+            this.btnDocumentation.Text = "Help";
             this.btnDocumentation.UseVisualStyleBackColor = true;
             this.btnDocumentation.Click += new System.EventHandler(this.btnDocumentation_Click);
             // 
@@ -71,6 +72,7 @@
             this.Controls.Add(this.btnGenKey);
             this.Controls.Add(this.btnDocumentation);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmKeygen";
