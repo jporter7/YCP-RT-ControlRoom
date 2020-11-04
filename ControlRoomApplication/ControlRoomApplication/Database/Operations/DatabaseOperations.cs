@@ -479,6 +479,7 @@ namespace ControlRoomApplication.Database
                     }
                     Context.Entry(data.Appointment.SpectraCyberConfig).State = EntityState.Unchanged;
                     Context.Entry(data.Appointment.Telescope).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.Telescope.Location).State = EntityState.Unchanged;
 
                     Context.SaveChanges();
                 }
