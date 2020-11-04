@@ -363,17 +363,13 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Building RadioTelescope");
 
-            // PLCClientCommunicationHandler PLCCommsHandler = new PLCClientCommunicationHandler(txtPLCIP.Text, int.Parse(txtPLCPort.Text));///###############################
-
-            // Create Radio Telescope Location
-            Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
-
             // If no Telescope is present in the database, create a new one
             RadioTelescope newRT = DatabaseOperations.FetchFirstRadioTelescope();
             if(newRT == null)
             {
                 // Create Radio Telescope
                 newRT = new RadioTelescope();
+                newRT.Location = new Location();
                 newRT.CalibrationOrientation = new Entities.Orientation(0, 90);
 
                 DatabaseOperations.AddRadioTelescope(newRT);
@@ -382,7 +378,6 @@ namespace ControlRoomApplication.Main
             }
 
             // These settings are not stored in the database, so they are new every time
-            newRT.Location = location;
             abstractPLCDriver.SetParent(newRT);
             newRT.PLCDriver = abstractPLCDriver;
             newRT.SpectraCyberController = BuildSpectraCyber();

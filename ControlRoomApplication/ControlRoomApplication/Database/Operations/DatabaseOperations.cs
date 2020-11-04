@@ -407,6 +407,7 @@ namespace ControlRoomApplication.Database
                     }
                     Context.Entry(data.Appointment.SpectraCyberConfig).State = EntityState.Unchanged;
                     Context.Entry(data.Appointment.Telescope).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.Telescope.Location).State = EntityState.Unchanged;
 
                     Context.SaveChanges();
                 }
@@ -725,7 +726,7 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                var telescopes = Context.RadioTelescope.ToList<RadioTelescope>();
+                var telescopes = Context.RadioTelescope.Include(t => t.Location).ToList<RadioTelescope>();
 
                 foreach(RadioTelescope rt in telescopes)
                 {
