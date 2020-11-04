@@ -797,7 +797,7 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                var telescopes = Context.RadioTelescope.ToList<RadioTelescope>();
+                var telescopes = Context.RadioTelescope.Include(t => t.Location).ToList<RadioTelescope>();
 
                 foreach(RadioTelescope rt in telescopes)
                 {
