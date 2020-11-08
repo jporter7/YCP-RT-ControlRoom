@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Database;
 using System.Net;
-
+using ControlRoomApplication.Controllers.Communications;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -363,7 +364,17 @@ namespace ControlRoomApplication.Controllers
 
                 // send message to appointment's user
                 SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_CANCELLED);
-                
+
+                string subject = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_CANCELLED);
+                string text = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_CANCELLED);
+                string html = $@"<html>
+<head></head>
+<body>
+    <p>{MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_CANCELLED)}</p>
+</body>
+</html>";
+                EmailAppointmentUser(subject, text, html, NextAppointment.User);
+
 
             }
             else
@@ -373,7 +384,32 @@ namespace ControlRoomApplication.Controllers
 
                 // send message to appointment's user
                 SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_COMPLETION);
+
+                string subject = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION);
+                string text = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION);
+                string html = $@"<html>
+<head></head>
+<body>
+    <p>{MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION)}</p>
+</body>
+<html>";
+                EmailAppointmentUser(subject, text, html, NextAppointment.User);
+
+
             }
+        }
+
+        /// <summary>
+        /// Sets up and sends email to appointment user
+        /// </summary>
+        public void EmailAppointmentUser(string subject, string text, string html, User send)
+        {
+            EmailFields.setSender("noreply@ycpradiotelescope.com");
+            EmailFields.setSubject(subject);
+            EmailFields.setText(text);
+            EmailFields.setHtml(html);
+
+            pushNotification.SendToAppointmentUser(send);
         }
 
         /// <summary>

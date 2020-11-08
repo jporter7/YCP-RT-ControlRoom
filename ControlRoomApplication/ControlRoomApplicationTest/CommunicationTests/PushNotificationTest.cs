@@ -51,7 +51,14 @@ namespace ControlRoomApplicationTest.CommunicationTests
       AWS SDK for .NET</a>.</p>
 </body>
 </html>");
-        Assert.IsTrue(pushNotification.sendEmail(true));
+
+
+            User fakeUser = new User("Test", "User", "testradiotelescope@gmail.com", NotificationTypeEnum.ALL);
+
+            Assert.IsTrue(pushNotification.sendEmail(true));
+            Assert.IsTrue(pushNotification.SendToAppointmentUser(fakeUser));
         }
+
+
     }
 }
