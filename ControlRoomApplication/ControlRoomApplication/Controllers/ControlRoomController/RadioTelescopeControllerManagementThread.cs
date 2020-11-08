@@ -367,15 +367,7 @@ namespace ControlRoomApplication.Controllers
 
                 string subject = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_CANCELLED);
                 string text = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_CANCELLED);
-                string html = $@"<html>
-<head></head>
-<body>
-    <p>{MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_CANCELLED)}</p>
-</body>
-</html>";
-                EmailAppointmentUser(subject, text, html, NextAppointment.User);
-
-
+                EmailAppointmentUser(subject, text, NextAppointment.User);
             }
             else
             {
@@ -387,27 +379,25 @@ namespace ControlRoomApplication.Controllers
 
                 string subject = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION);
                 string text = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION);
-                string html = $@"<html>
-<head></head>
-<body>
-    <p>{MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION)}</p>
-</body>
-<html>";
-                EmailAppointmentUser(subject, text, html, NextAppointment.User);
 
-
+                EmailAppointmentUser(subject, text, NextAppointment.User);
             }
         }
 
         /// <summary>
         /// Sets up and sends email to appointment user
         /// </summary>
-        public void EmailAppointmentUser(string subject, string text, string html, User send)
+        public void EmailAppointmentUser(string subject, string text, User send)
         {
             EmailFields.setSender("noreply@ycpradiotelescope.com");
             EmailFields.setSubject(subject);
             EmailFields.setText(text);
-            EmailFields.setHtml(html);
+            EmailFields.setHtml($@"<html>
+<head></head>
+<body>
+    <p>{text}</p>
+</body>
+<html>");
 
             pushNotification.SendToAppointmentUser(send);
         }
