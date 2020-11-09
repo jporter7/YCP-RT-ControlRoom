@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amazon.SimpleEmail.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ namespace ControlRoomApplication.Controllers.Communications
         public static string Subject { get; set; }
         public static string Text { get; set; }
         public static string Html { get; set; }
+
+        public static string AttachmentPath { get; set; }
 
         public EmailFields(string sender, string subject, string text, string html)
         {
@@ -36,6 +39,14 @@ namespace ControlRoomApplication.Controllers.Communications
         public static void setHtml(string html)
         {
             Html = html;
+        }
+        public static string getAttachmentPath()
+        {
+            return AttachmentPath;
+        }
+        public static void setAttachmentPath(string attachpath)
+        {
+            AttachmentPath = attachpath;
         }
     }
 }

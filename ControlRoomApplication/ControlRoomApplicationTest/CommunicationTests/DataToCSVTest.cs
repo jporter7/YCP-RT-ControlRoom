@@ -1,13 +1,17 @@
 ﻿using ControlRoomApplication.Controllers.Communications;
 using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ControlRoomApplicationTest.CommunicationTests
 {
     [TestClass]
     public class DataToCSVTest
     {
+        public static string testpath = $"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test-out-{System.DateTime.Now.ToString("yyyyMMddHHmmss")}")}";
+
         [TestMethod]
         public void TestConvertDataToCSV()
         {
@@ -27,7 +31,25 @@ namespace ControlRoomApplicationTest.CommunicationTests
             JunkRFData.Add(junk1);
             JunkRFData.Add(junk2);
 
-            Assert.IsTrue(DataToCSV.ExportToCSV(JunkRFData, $"test_out-{System.DateTime.Now.ToString("yyyyMMddHHmmss")}"));
+            Assert.IsTrue(DataToCSV.ExportToCSV(JunkRFData, testpath));
+        }
+
+        [TestMethod]
+        public void TestDeleteCSV()
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory;
+            string testfile = Path.Combine(path, "testfile.csv");
+
+            FileStream file = File.Create(testfile);
+            file.Close();
+
+            Assert.IsTrue(DataToCSV.DeleteCSVFileWhenDone(testfile));
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DataToCSV.DeleteCSVFileWhenDone(testpath);
         }
     }
 }

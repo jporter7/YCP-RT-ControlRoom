@@ -6,6 +6,7 @@ using ControlRoomApplication.Database;
 using System.Net;
 using ControlRoomApplication.Controllers.Communications;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -380,14 +381,32 @@ namespace ControlRoomApplication.Controllers
                 string subject = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION);
                 string text = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION);
 
-                EmailAppointmentUser(subject, text, NextAppointment.User);
+                string fname = System.DateTime.Now.ToString("yyyyMMddHHmmss");
+                string currentPath = AppDomain.CurrentDomain.BaseDirectory;
+
+                List<RFData> data = (List<RFData>)NextAppointment.RFDatas;
+                try
+                {
+                    EmailFields.setAttachmentPath(Path.Combine(currentPath, $"{fname}.csv"));
+                    DataToCSV.ExportToCSV(data, fname);
+                }
+                catch (Exception e)
+                {
+                    Console.Out.WriteLine($"Could not write data! Error: {e}");
+                }
+
+                EmailAppointmentUser(subject, text, NextAppointment.User, EmailFields.getAttachmentPath());
+
+                // Clean up after yourself, otherwise you'll just fill up our storage space
+                DataToCSV.DeleteCSVFileWhenDone(EmailFields.getAttachmentPath());
+                EmailFields.setAttachmentPath(null);
             }
         }
 
         /// <summary>
         /// Sets up and sends email to appointment user
         /// </summary>
-        public void EmailAppointmentUser(string subject, string text, User send)
+        public void EmailAppointmentUser(string subject, string text, User send, string AttachPath = null)
         {
             EmailFields.setSender("noreply@ycpradiotelescope.com");
             EmailFields.setSubject(subject);
@@ -399,7 +418,7 @@ namespace ControlRoomApplication.Controllers
 </body>
 <html>");
 
-            pushNotification.SendToAppointmentUser(send);
+            pushNotification.SendToAppointmentUser(send, AttachPath);
         }
 
         /// <summary>

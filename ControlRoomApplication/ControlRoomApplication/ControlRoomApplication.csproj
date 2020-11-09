@@ -204,6 +204,7 @@
     <Compile Include="Controllers\Communications\EmailFields.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
     <Compile Include="Controllers\Communications\pushNotification.cs" />
+    <Compile Include="Controllers\Communications\SendAttachmentHelper.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />

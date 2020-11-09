@@ -69,5 +69,21 @@ namespace ControlRoomApplication.Controllers.Communications
             }
             return success;
         }
+
+        public static bool DeleteCSVFileWhenDone(string filepath)
+        {
+            bool success = false;
+
+            try
+            {
+                File.Delete(filepath);
+                success = true;
+            }
+            catch (Exception e)
+            {
+                Console.Out.WriteLine($"Could not delete file! Exception: {e}");
+            }
+            return success; 
+        }
     }
 }
