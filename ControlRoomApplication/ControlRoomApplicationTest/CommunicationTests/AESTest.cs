@@ -104,7 +104,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
         public void TestAES_VerifyAndRemoveTimestamp_TooOldBy1Second()
         {
             // Prepend timestamp to input
-            String input = DateTime.Now.AddSeconds(-16).ToString("MM/dd/yy HH:mm:ss") + ",Test";
+            String input = DateTime.Now.AddSeconds(-31).ToString("MM/dd/yy HH:mm:ss") + ",Test";
 
             String result = AES.verifyAndRemoveTimestamp(input);
 
@@ -112,10 +112,10 @@ namespace ControlRoomApplicationTest.CommunicationTests
         }
 
         [TestMethod]
-        public void TestAES_VerifyAndRemoveTimestamp_TooNewBy16Seconds()
+        public void TestAES_VerifyAndRemoveTimestamp_TooNewBy31Seconds()
         {
             // Prepend timestamp to input
-            String input = DateTime.Now.AddSeconds(16).ToString("MM/dd/yy HH:mm:ss") + ",Test";
+            String input = DateTime.Now.AddSeconds(31).ToString("MM/dd/yy HH:mm:ss") + ",Test";
 
             String result = AES.verifyAndRemoveTimestamp(input);
 
@@ -126,7 +126,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
         public void TestAES_VerifyAndRemoveTimestamp_TooNewBy1Second()
         {
             // Prepend timestamp to input
-            String input = DateTime.Now.AddSeconds(-16).ToString("MM/dd/yy HH:mm:ss") + ",Test";
+            String input = DateTime.Now.AddSeconds(-31).ToString("MM/dd/yy HH:mm:ss") + ",Test";
 
             String result = AES.verifyAndRemoveTimestamp(input);
 
@@ -134,12 +134,12 @@ namespace ControlRoomApplicationTest.CommunicationTests
         }
 
         [TestMethod]
-        public void TestAES_VerifyAndRemoveTimestamp_OK14Seconds()
+        public void TestAES_VerifyAndRemoveTimestamp_OK29Seconds()
         {
             String plaintext = "Test";
 
             // Prepend timestamp to input
-            String input = DateTime.Now.AddSeconds(-14).ToString("MM/dd/yy HH:mm:ss") + "," + plaintext;
+            String input = DateTime.Now.AddSeconds(-29).ToString("MM/dd/yy HH:mm:ss") + "," + plaintext;
 
             String result = AES.verifyAndRemoveTimestamp(input);
 

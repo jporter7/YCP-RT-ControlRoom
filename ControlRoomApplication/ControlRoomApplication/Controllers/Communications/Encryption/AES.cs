@@ -113,7 +113,7 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
 
             if (
                 // accept date from up to 15 seconds ago
-                (DateTime.Compare(date, DateTime.Now.AddSeconds(-15)) > 0) &&
+                (DateTime.Compare(date, DateTime.Now.AddSeconds(-30)) > 0) &&
                 
                 // incoming date must be BEFORE now
                 (DateTime.Compare(date, DateTime.Now) <= 0) && 
