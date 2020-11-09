@@ -200,10 +200,12 @@
     <Compile Include="Controllers\BlkHeadUcontroler\EncoderReader.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
     <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
-    <Compile Include="Controllers\Communications\EmailPartConstants.cs" />
+    <Compile Include="Controllers\Communications\DataToCSV.cs" />
+    <Compile Include="Controllers\Communications\EmailFields.cs" />
     <Compile Include="Controllers\Communications\Encryption\AES.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
     <Compile Include="Controllers\Communications\pushNotification.cs" />
+    <Compile Include="Controllers\Communications\SendAttachmentHelper.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
@@ -245,6 +247,8 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />
     <Compile Include="Entities\User\NotificationTypeEnum.cs" />
     <Compile Include="Entities\User\User.cs" />
+    <Compile Include="Entities\User\UserRole.cs" />
+    <Compile Include="Entities\User\UserRoleEnum.cs" />
     <Compile Include="Entities\WeatherStation\AbstractWeatherStation.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Location\Location.cs" />
