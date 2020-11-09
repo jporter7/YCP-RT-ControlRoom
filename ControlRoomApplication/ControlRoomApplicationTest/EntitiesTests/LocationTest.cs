@@ -16,7 +16,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void BuildUp()
         {
             // Initialize appointment entity
-            location = new Location(longitude, latitude, altitude);
+            location = new Location(longitude, latitude, altitude, "");
         }
 
         [TestMethod]
