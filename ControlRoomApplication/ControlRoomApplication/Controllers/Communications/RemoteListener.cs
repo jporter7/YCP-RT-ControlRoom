@@ -7,6 +7,7 @@ using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Controllers.Communications.Encryption;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -65,8 +66,11 @@ namespace ControlRoomApplication.Controllers
                 // Loop to receive all the data sent by the client.
                 while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    // Translate data bytes to a ASCII string.
-                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                    // Translate data bytes to a decrypted ASCII string.
+
+                    data = AES.Decrypt(bytes); // use this line if incoming data is encrypted
+                    //data = System.Text.Encoding.ASCII.GetString(bytes, 0, i); // use this line if incoming data is in plaintext
+
                     logger.Debug("Received: " + data);
 
                     // Process the data sent by the client.

@@ -202,6 +202,7 @@
     <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
     <Compile Include="Controllers\Communications\DataToCSV.cs" />
     <Compile Include="Controllers\Communications\EmailFields.cs" />
+    <Compile Include="Controllers\Communications\Encryption\AES.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
     <Compile Include="Controllers\Communications\pushNotification.cs" />
     <Compile Include="Controllers\Communications\SendAttachmentHelper.cs" />

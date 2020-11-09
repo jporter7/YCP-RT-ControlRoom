@@ -87,6 +87,7 @@
     <Compile Include="CommunicationTests\DataToCSVTest.cs" />
     <Compile Include="CommunicationTests\EmailPartConstantsTest.cs" />
     <Compile Include="CommunicationTests\PushNotificationTest.cs" />
+    <Compile Include="CommunicationTests\AESTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />
     <Compile Include="EntitiesTests\LocationTest.cs" />
