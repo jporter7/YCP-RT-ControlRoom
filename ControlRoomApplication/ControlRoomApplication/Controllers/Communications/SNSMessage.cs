@@ -112,15 +112,17 @@ namespace ControlRoomApplication.Controllers
                         EmailFields.Subject,
                         EmailFields.Text);
 
-                    Attachment data = new Attachment(AttachPath, MediaTypeNames.Application.Octet);
-                    ContentDisposition disposition = data.ContentDisposition;
-                    disposition.CreationDate = System.IO.File.GetCreationTime(AttachPath);
-                    disposition.ModificationDate = System.IO.File.GetLastWriteTime(AttachPath);
-                    disposition.ReadDate = System.IO.File.GetLastAccessTime(AttachPath);
+                    using (Attachment data = new Attachment(AttachPath, MediaTypeNames.Application.Octet))
+                    {
+                        ContentDisposition disposition = data.ContentDisposition;
+                        disposition.CreationDate = System.IO.File.GetCreationTime(AttachPath);
+                        disposition.ModificationDate = System.IO.File.GetLastWriteTime(AttachPath);
+                        disposition.ReadDate = System.IO.File.GetLastAccessTime(AttachPath);
 
-                    message.Attachments.Add(data);
+                        message.Attachments.Add(data);
 
-                    request.RawMessage.Data = SendAttachmentHelper.ConvertMailMessageToMemoryStream(message);
+                        request.RawMessage.Data = SendAttachmentHelper.ConvertMailMessageToMemoryStream(message);
+                    }
                     try
                     {
                         Console.WriteLine("Sending email using Amazon SES...");

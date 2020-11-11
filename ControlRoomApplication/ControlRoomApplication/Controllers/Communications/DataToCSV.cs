@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace ControlRoomApplication.Controllers.Communications
 {
@@ -28,10 +29,10 @@ namespace ControlRoomApplication.Controllers.Communications
                     FileStream file = File.Create(final_loc);
                     file.Close();
 
-                    foreach(PropertyInfo property in info)
+                    foreach (PropertyInfo property in info)
                     {
                         // We only want the TimeCaptured and Intensity fields to be listed in the CSV
-                        if(property.Name != "Appointment" && property.Name != "Id" && property.Name != "appointment_id")
+                        if (property.Name != "Appointment" && property.Name != "Id" && property.Name != "appointment_id")
                         {
                             header += property.Name + ", ";
                         }
@@ -49,16 +50,17 @@ namespace ControlRoomApplication.Controllers.Communications
                     var line = "";
                     foreach (PropertyInfo property in info)
                     {
-                        if(property.Name != "Appointment" && property.Name != "Id" && property.Name != "appointment_id")
+                        if (property.Name != "Appointment" && property.Name != "Id" && property.Name != "appointment_id")
                         {
                             line += property.GetValue(rf, null) + ", ";
                         }
                     }
                     line = line.Substring(0, line.Length - 2);
                     sb.AppendLine(line);
-                    TextWriter sw = new StreamWriter(final_loc, true);
-                    sw.Write(sb.ToString());
-                    sw.Close();
+                    using (TextWriter sw = new StreamWriter(final_loc, true))
+                    {
+                        sw.Write(sb);
+                    }
                 }
                 success = true;
             }
@@ -73,17 +75,28 @@ namespace ControlRoomApplication.Controllers.Communications
         public static bool DeleteCSVFileWhenDone(string filepath)
         {
             bool success = false;
+            int numAttempts = 0;
 
-            try
+            while (numAttempts < 10)
             {
-                File.Delete(filepath);
-                success = true;
+                try
+                {
+                    File.Delete(filepath);
+                    success = true;
+                    break;
+                }
+                catch (IOException)
+                {
+                    numAttempts++;
+                    Thread.Sleep(100);
+                }
             }
-            catch (Exception e)
+
+            if(numAttempts == 9)
             {
-                Console.Out.WriteLine($"Could not delete file! Exception: {e}");
+                Console.Out.WriteLine($"Could not delete file at '{filepath}'! File may be stuck in a locked state.");
             }
-            return success; 
+            return success;
         }
     }
 }
