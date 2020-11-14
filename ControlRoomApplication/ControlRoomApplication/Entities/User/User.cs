@@ -22,6 +22,15 @@ namespace ControlRoomApplication.Entities
             email_address = email;
         }
     
+        public User(string firstName, string lastName, string email, NotificationTypeEnum e, UserRole ur)
+        {
+            first_name = firstName;
+            last_name = lastName;
+            _Notification_Type = e;
+            email_address = email;
+            UR = ur;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -77,6 +86,8 @@ namespace ControlRoomApplication.Entities
             }
         }
 
+        [NotMapped]
+        public UserRole UR { get; set; }
 
         [Column("phone_number")]
         [StringLength(25)]

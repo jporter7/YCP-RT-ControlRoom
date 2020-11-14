@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Database;
 using System.Net;
-
+using ControlRoomApplication.Controllers.Communications;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -363,8 +365,10 @@ namespace ControlRoomApplication.Controllers
 
                 // send message to appointment's user
                 SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_CANCELLED);
-                
 
+                string subject = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_CANCELLED);
+                string text = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_CANCELLED);
+                EmailAppointmentUser(subject, text, NextAppointment.User);
             }
             else
             {
@@ -373,7 +377,48 @@ namespace ControlRoomApplication.Controllers
 
                 // send message to appointment's user
                 SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_COMPLETION);
+
+                string subject = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION);
+                string text = MessageTypeExtension.GetDescription(MessageTypeEnum.APPOINTMENT_COMPLETION);
+
+                string fname = System.DateTime.Now.ToString("yyyyMMddHHmmss");
+                string currentPath = AppDomain.CurrentDomain.BaseDirectory;
+
+                List<RFData> data = (List<RFData>)NextAppointment.RFDatas;
+                try
+                {
+                    EmailFields.setAttachmentPath(Path.Combine(currentPath, $"{fname}.csv"));
+                    DataToCSV.ExportToCSV(data, fname);
+                }
+                catch (Exception e)
+                {
+                    Console.Out.WriteLine($"Could not write data! Error: {e}");
+                }
+
+                EmailAppointmentUser(subject, text, NextAppointment.User, EmailFields.getAttachmentPath());
+
+                // Clean up after yourself, otherwise you'll just fill up our storage space
+                DataToCSV.DeleteCSVFileWhenDone(EmailFields.getAttachmentPath());
+                EmailFields.setAttachmentPath(null);
             }
+        }
+
+        /// <summary>
+        /// Sets up and sends email to appointment user
+        /// </summary>
+        public void EmailAppointmentUser(string subject, string text, User send, string AttachPath = null)
+        {
+            EmailFields.setSender("noreply@ycpradiotelescope.com");
+            EmailFields.setSubject(subject);
+            EmailFields.setText(text);
+            EmailFields.setHtml($@"<html>
+<head></head>
+<body>
+    <p>{text}</p>
+</body>
+<html>");
+
+            pushNotification.SendToAppointmentUser(send, AttachPath);
         }
 
         /// <summary>

@@ -336,5 +336,22 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             double counter_vibe = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.COUNTER_BALANCE_VIBRATION);
             Assert.IsTrue(counter_vibe > 0);
         }
+
+        [TestMethod]
+        public void TestGetAllUsers()
+        {
+            List<User> users = new List<User>();
+            users = DatabaseOperations.GetAllUsers();
+            Assert.IsTrue(users.Count > 0);
+        }
+
+        [TestMethod]
+        public void TestGetAllAdminUsers()
+        {
+            List<User> AdminUsers = new List<User>();
+            AdminUsers = DatabaseOperations.GetAllAdminUsers();
+            Assert.IsTrue(AdminUsers.Count > 0);
+            Assert.IsTrue(AdminUsers.All(user => user.UR._User_Role == UserRoleEnum.ADMIN));
+        }
     }
 }
