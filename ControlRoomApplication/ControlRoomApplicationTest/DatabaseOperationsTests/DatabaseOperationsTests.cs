@@ -120,7 +120,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
             var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(new_appt.Telescope.Id);
 
-            Assert.IsTrue(2 == output_appts.Count()); // Should only be one appointment retrieved
+            Assert.IsTrue(2 == output_appts.Count()); // Should be two appointments retrieved
 
             //Assert.AreEqual(new_appt.start_time.ToString(), output_appts[0].start_time.ToString());
             //Assert.AreEqual(new_appt.end_time.ToString(), output_appts[0].end_time.ToString());
@@ -356,6 +356,43 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             AdminUsers = DatabaseOperations.GetAllAdminUsers();
             Assert.IsTrue(AdminUsers.Count > 0);
             Assert.IsTrue(AdminUsers.All(user => user.UR._User_Role == UserRoleEnum.ADMIN));
+        }
+
+        [TestMethod]
+        public void TestAddAndRetrieveRadioTelescope()
+        {
+            RadioTelescope telescope = new RadioTelescope();
+
+            // not saved in the database
+            telescope.SpectraCyberController = new SpectraCyberController(new SpectraCyber());
+            telescope.PLCDriver = new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false);
+
+            // saved in the database
+            telescope.online = 1;
+            telescope.CurrentOrientation = new Orientation(25, 25);
+            telescope.CalibrationOrientation = new Orientation(30, 30);
+            telescope.Location = new Location(1, 2, 3, "test");
+
+            DatabaseOperations.AddRadioTelescope(telescope);
+
+            RadioTelescope retrievedTele = DatabaseOperations.FetchLastRadioTelescope();
+
+            // online
+            Assert.IsTrue(telescope.online == retrievedTele.online);
+
+            // location
+            Assert.IsTrue(telescope.Location.Latitude == retrievedTele.Location.Latitude);
+            Assert.IsTrue(telescope.Location.Longitude == retrievedTele.Location.Longitude);
+            Assert.IsTrue(telescope.Location.Altitude == retrievedTele.Location.Altitude);
+            Assert.IsTrue(telescope.Location.Name == retrievedTele.Location.Name);
+
+            // current orientation (not yet implemented)
+            //Assert.IsTrue(telescope.CurrentOrientation.Azimuth == retrievedTele.CurrentOrientation.Azimuth);
+            //Assert.IsTrue(telescope.CurrentOrientation.Elevation == retrievedTele.CurrentOrientation.Elevation);
+
+            // calibration orientation (not yet implemented)
+            //Assert.IsTrue(telescope.CalibrationOrientation.Azimuth == retrievedTele.CalibrationOrientation.Azimuth);
+            //Assert.IsTrue(telescope.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
         }
     }
 }

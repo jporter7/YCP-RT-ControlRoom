@@ -67,6 +67,9 @@ namespace ControlRoomApplication.Entities
         [ForeignKey("location_id")]
         public virtual Location Location { get; set; }
 
+        //[Column("telescope_type")]
+        //public RadioTelescopeTypeEnum type { get; set; }
+
         [NotMapped]
         public AbstractPLCDriver PLCDriver { get; set; }
 

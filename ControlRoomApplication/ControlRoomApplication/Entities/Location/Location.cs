@@ -23,19 +23,19 @@ namespace ControlRoomApplication.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
+        //[Required]
         [Column("longitude")]
-        public double Longitude;
+        public double Longitude { get; set; }
 
-        [Required]
+        //[Required]
         [Column("latitude")]
-        public double Latitude;
+        public double Latitude { get; set; }
 
-        [Required]
+        //[Required]
         [Column("altitude")]
-        public double Altitude;
+        public double Altitude { get; set; }
 
         [Column("name")]
-        public string Name;
+        public string Name { get; set; }
     }
 }

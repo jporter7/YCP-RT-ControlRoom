@@ -812,5 +812,18 @@ namespace ControlRoomApplication.Database
             }
         }
 
+        /// <summary>
+        /// This function is only intended to be used for testing.
+        /// </summary>
+        /// <returns>last RadioTelescope found in the database</returns>
+        public static RadioTelescope FetchLastRadioTelescope()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var telescopes = Context.RadioTelescope.Include(t => t.Location).ToList<RadioTelescope>();
+                return telescopes[telescopes.Count - 1];
+            }
+        }
+
     }
 }

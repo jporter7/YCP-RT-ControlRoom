@@ -28,12 +28,16 @@ namespace ControlRoomApplication.Main
 
             modelBuilder.Entity<RFData>().HasRequired(t => t.Appointment).WithMany().Map(d => d.MapKey("appointment_id"));
 
+            // RadioTelescope
+            modelBuilder.Entity<RadioTelescope>().HasRequired(t => t.Location);
+
         }
 
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<RFData> RFDatas { get; set; }
         public DbSet<Orientation> Orientations { get; set; }
         public DbSet<Coordinate> Coordinates { get; set; }
+        public DbSet<Location> Location { get; set; }
         public DbSet<Log> Logs { get; set; }
         public DbSet<Temperature> Temperatures { get; set; }
         public DbSet<Acceleration> Accelerations { get; set; }
