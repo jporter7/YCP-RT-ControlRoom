@@ -263,6 +263,16 @@ namespace ControlRoomApplicationTest.CommunicationTests
         }
 
         [TestMethod]
+        public void TestAES_Decrypt_InvalidData()
+        {
+            byte[] invalid = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+
+            String result = AES.Decrypt(invalid);
+
+            Assert.AreEqual(result, "Error: Invalid byte array for decryption.");
+        }
+
+        [TestMethod]
         public void TestAES_GetNewKeys_OnlyTwoKeys()
         {
             Assert.IsTrue(AES.getNewKeys().Count == 2);

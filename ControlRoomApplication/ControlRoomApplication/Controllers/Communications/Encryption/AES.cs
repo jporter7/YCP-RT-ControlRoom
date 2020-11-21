@@ -10,6 +10,9 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
 {
     public class AES
     {
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public static byte[] Encrypt(string plainText)
         {
             // Retrieve keys, located in the same directory as the Control Room executable
@@ -57,20 +60,29 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
             // First remove any trailing zeroes
             byte[] cipherTextNoZeroes = removeTrailingZeroes(cipherText);
 
-            // Create AesManaged    
-            using (AesManaged aes = new AesManaged())
+            // In case the data received is invalid, we want to return an error.
+            try
             {
-                // Create a decryptor    
-                ICryptoTransform decryptor = aes.CreateDecryptor(Key, IV);
-                using (MemoryStream ms = new MemoryStream(cipherTextNoZeroes))
+                // Create AesManaged    
+                using (AesManaged aes = new AesManaged())
                 {
-                    using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                    // Create a decryptor    
+                    ICryptoTransform decryptor = aes.CreateDecryptor(Key, IV);
+                    using (MemoryStream ms = new MemoryStream(cipherTextNoZeroes))
                     {
-                        // convert stream to String
-                        using (StreamReader reader = new StreamReader(cs))
-                            plaintext = reader.ReadToEnd();
+                        using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                        {
+                            // convert stream to String
+                            using (StreamReader reader = new StreamReader(cs))
+                                plaintext = reader.ReadToEnd();
+                        }
                     }
                 }
+            }
+            catch
+            {
+                logger.Info("Encryption error: Invalid byte array for decryption.");
+                return "Error: Invalid byte array for decryption.";
             }
 
             // Unlace the text, then verify/remove the timestamp
