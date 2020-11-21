@@ -287,5 +287,35 @@ namespace ControlRoomApplicationTest.CommunicationTests
             Assert.AreNotEqual(keys[0], keys2[0]);
             Assert.AreNotEqual(keys[1], keys2[1]);
         }
+
+        [TestMethod]
+        public void TestAES_RemoveTrailingZeroes_ZeroesPresent()
+        {
+            byte[] zeroes = {1, 1, 1, 1, 255, 0, 0, 0, 0, 0};
+
+            byte[] noZeroes = AES.removeTrailingZeroes(zeroes);
+
+            Assert.IsTrue(noZeroes.Length == 4);
+        }
+
+        [TestMethod]
+        public void TestAES_RemoveTrailingZeroes_NoZeroesPresent()
+        {
+            byte[] noZeroes = {1, 1, 1, 1, 255};
+
+            byte[] stillNoZeroes = AES.removeTrailingZeroes(noZeroes);
+
+            Assert.IsTrue(stillNoZeroes.Length == 4);
+        }
+
+        [TestMethod]
+        public void TestAES_RemoveTrailingZeroes_ZeroesPresentEverywhere()
+        {
+            byte[] zeroes = {1, 0, 1, 0, 1, 0, 1, 0, 255, 0};
+
+            byte[] noEndZeroes = AES.removeTrailingZeroes(zeroes);
+
+            Assert.IsTrue(noEndZeroes.Length == 8);
+        }
     }
 }

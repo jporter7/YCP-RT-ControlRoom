@@ -39,8 +39,13 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
                 }
             }
 
+            // Append 255 byte to the end of the array
+            byte[] encryptedMarked = new byte[encrypted.Length + 1];
+            encrypted.CopyTo(encryptedMarked, 0);
+            encryptedMarked[encryptedMarked.Length - 1] = 255;
+
             // Return encrypted data    
-            return encrypted;
+            return encryptedMarked;
         }
         public static string Decrypt(byte[] cipherText)
         {
@@ -49,12 +54,15 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
             byte[] IV = File.ReadAllBytes("IV.bin");
             string plaintext = null;
 
+            // First remove any trailing zeroes
+            byte[] cipherTextNoZeroes = removeTrailingZeroes(cipherText);
+
             // Create AesManaged    
             using (AesManaged aes = new AesManaged())
             {
                 // Create a decryptor    
                 ICryptoTransform decryptor = aes.CreateDecryptor(Key, IV);
-                using (MemoryStream ms = new MemoryStream(cipherText))
+                using (MemoryStream ms = new MemoryStream(cipherTextNoZeroes))
                 {
                     using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                     {
@@ -147,6 +155,31 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
             }
 
             return keys;
+        }
+
+        // This function uses 255 as a marker to know when a byte array's data ends
+        // and trailing zeroes begin
+        public static byte[] removeTrailingZeroes(byte[] withZeroes)
+        {
+            // If there are no zeroes, return original array without marker
+            if (withZeroes[withZeroes.Length - 1] == 255)
+            {
+                var noMarker = new byte[withZeroes.Length - 1];
+                Array.Copy(withZeroes, noMarker, withZeroes.Length - 1);
+                return noMarker;
+            }
+            else
+            {
+                // Find index of the last non-zero value
+                int i = withZeroes.Length - 1;
+                while (withZeroes[i] == 0) i--;
+
+                // Copy only the beginning elements before trailing zeroes to new array
+                var noZeroes = new byte[i];
+                Array.Copy(withZeroes, noZeroes, i);
+
+                return noZeroes;
+            }
         }
 
     }
