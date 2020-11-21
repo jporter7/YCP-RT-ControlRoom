@@ -283,8 +283,8 @@ namespace ControlRoomApplicationTest.CommunicationTests
         {
             var keys = AES.getNewKeys();
 
-            // With AES-128, we only want 16-byte keys
-            Assert.IsTrue(keys[0].Length == 16);
+            // With AES-256, we only want a 32-byte key, 16-byte iv
+            Assert.IsTrue(keys[0].Length == 32);
             Assert.IsTrue(keys[1].Length == 16);
         }
 
