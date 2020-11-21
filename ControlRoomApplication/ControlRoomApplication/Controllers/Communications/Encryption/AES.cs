@@ -16,8 +16,14 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
         public static byte[] Encrypt(string plainText)
         {
             // Retrieve keys, located in the same directory as the Control Room executable
-            byte[] Key = File.ReadAllBytes("AESKey.bin");
-            byte[] IV = File.ReadAllBytes("IV.bin");
+            byte[] Key = retrieveExistingKey();
+            byte[] IV = retrieveExistingIv();
+
+            // Verify key and IV are not null
+            if (Key == null || IV == null)
+            {
+                return new byte[0];
+            }
 
             byte[] encrypted;
 
@@ -53,8 +59,15 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
         public static string Decrypt(byte[] cipherText)
         {
             // Retrieve keys, located in the same directory as the Control Room executable
-            byte[] Key = File.ReadAllBytes("AESKey.bin");
-            byte[] IV = File.ReadAllBytes("IV.bin");
+            byte[] Key = retrieveExistingKey();
+            byte[] IV = retrieveExistingIv();
+
+            // Verify key and IV are not null
+            if (Key == null || IV == null)
+            {
+                return "Decryption error: Keys were found to be invalid.";
+            }
+
             string plaintext = null;
 
             // First remove any trailing zeroes
@@ -148,6 +161,53 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
                 return half[1];
             }
             else return "ERROR";
+        }
+
+        // Retrieves an existing key from a directory with error checks
+        private static byte[] retrieveExistingKey()
+        {
+            byte[] key = new byte[0];
+
+            // Error check key
+            try
+            {
+                key = File.ReadAllBytes("AESKey.bin");
+                if (key.Length != 32)
+                {
+                    logger.Info("Encryption error: AESKey.bin does not contain 32 bytes.");
+                    return null;
+                }
+            }
+            catch
+            {
+                logger.Info("Encryption error: Missing AESKey.bin.");
+                return null;
+            }
+
+            return key;
+        }
+
+        private static byte[] retrieveExistingIv()
+        {
+            byte[] iv = new byte[0];
+
+            // Error check IV
+            try
+            {
+                iv = File.ReadAllBytes("IV.bin");
+                if (iv.Length != 16)
+                {
+                    logger.Info("Encryption error: IV.bin does not contain 16 bytes.");
+                    return null;
+                }
+            }
+            catch
+            {
+                logger.Info("Encryption error: Missing IV.bin.");
+                return null;
+            }
+
+            return iv;
         }
 
         // In list index 0: Key
