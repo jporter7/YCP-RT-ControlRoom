@@ -46,6 +46,8 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
             appt.User = DatabaseOperations.GetControlRoomUser();
 
+            //appt.Telescope.type = RadioTelescopeTypeEnum.SLIP_RING;
+
             DatabaseOperations.AddRadioTelescope(appt.Telescope);
             DatabaseOperations.AddAppointment(appt);
 
@@ -108,35 +110,37 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             new_appt.CelestialBody.Coordinate = new Coordinate();
             new_appt.Orientation = new Orientation();
             new_appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-            new_appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
+            new_appt.Telescope = appt.Telescope;
             new_appt.User = DatabaseOperations.GetControlRoomUser();
 
-            DatabaseOperations.AddRadioTelescope(new_appt.Telescope);
+            //new_appt.Telescope.type = appt.Telescope.type;
+
+            //DatabaseOperations.AddRadioTelescope(new_appt.Telescope);
             DatabaseOperations.AddAppointment(new_appt);
 
             var output_appts = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(new_appt.Telescope.Id);
 
-            Assert.IsTrue(1 == output_appts.Count()); // Should only be one appointment retrieved
+            Assert.IsTrue(2 == output_appts.Count()); // Should only be one appointment retrieved
 
             //Assert.AreEqual(new_appt.start_time.ToString(), output_appts[0].start_time.ToString());
             //Assert.AreEqual(new_appt.end_time.ToString(), output_appts[0].end_time.ToString());
-            Assert.AreEqual(new_appt._Status, output_appts[0]._Status);
-            Assert.AreEqual(new_appt._Priority, output_appts[0]._Priority);
-            Assert.AreEqual(new_appt._Type, output_appts[0]._Type);
+            Assert.AreEqual(new_appt._Status, output_appts[1]._Status);
+            Assert.AreEqual(new_appt._Priority, output_appts[1]._Priority);
+            Assert.AreEqual(new_appt._Type, output_appts[1]._Type);
 
             // Coordinates
-            Assert.AreEqual(new_appt.Id, output_appts[0].Coordinates.First().apptId);
-            Assert.AreEqual(new_appt.Coordinates.First().hours, output_appts[0].Coordinates.First().hours);
-            Assert.AreEqual(new_appt.Coordinates.First().minutes, output_appts[0].Coordinates.First().minutes);
-            Assert.AreEqual(new_appt.Coordinates.First().Declination, output_appts[0].Coordinates.First().Declination);
-            Assert.AreEqual(new_appt.Coordinates.First().RightAscension, output_appts[0].Coordinates.First().RightAscension);
+            Assert.AreEqual(new_appt.Id, output_appts[1].Coordinates.First().apptId);
+            Assert.AreEqual(new_appt.Coordinates.First().hours, output_appts[1].Coordinates.First().hours);
+            Assert.AreEqual(new_appt.Coordinates.First().minutes, output_appts[1].Coordinates.First().minutes);
+            Assert.AreEqual(new_appt.Coordinates.First().Declination, output_appts[1].Coordinates.First().Declination);
+            Assert.AreEqual(new_appt.Coordinates.First().RightAscension, output_appts[1].Coordinates.First().RightAscension);
 
             // Other entities that Appointment uses
-            Assert.AreEqual(new_appt.celestial_body_id, output_appts[0].celestial_body_id);
-            Assert.AreEqual(new_appt.orientation_id, output_appts[0].orientation_id);
-            Assert.AreEqual(new_appt.spectracyber_config_id, output_appts[0].spectracyber_config_id);
-            Assert.AreEqual(new_appt.telescope_id, output_appts[0].telescope_id);
-            Assert.AreEqual(new_appt.user_id, output_appts[0].user_id);
+            Assert.AreEqual(new_appt.celestial_body_id, output_appts[1].celestial_body_id);
+            Assert.AreEqual(new_appt.orientation_id, output_appts[1].orientation_id);
+            Assert.AreEqual(new_appt.spectracyber_config_id, output_appts[1].spectracyber_config_id);
+            Assert.AreEqual(new_appt.telescope_id, output_appts[1].telescope_id);
+            Assert.AreEqual(new_appt.user_id, output_appts[1].user_id);
         }
 
         [TestMethod]
