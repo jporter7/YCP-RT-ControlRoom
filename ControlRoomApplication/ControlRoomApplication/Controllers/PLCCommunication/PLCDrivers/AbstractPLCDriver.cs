@@ -161,5 +161,6 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
 
+        public abstract void setTelescopeType(RadioTelescopeTypeEnum type);
     }
 }
