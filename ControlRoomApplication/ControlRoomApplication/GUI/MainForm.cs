@@ -369,8 +369,13 @@ namespace ControlRoomApplication.Main
             {
                 // Create Radio Telescope
                 newRT = new RadioTelescope();
-                newRT.Location = new Location();
+                newRT.Location = new Location(0, 0, 0, "");
                 newRT.CalibrationOrientation = new Entities.Orientation(0, 90);
+                newRT.CurrentOrientation = new Entities.Orientation(0, 0);
+
+                // This is the TELESCOPE TYPE
+                // It is only set to HARD_STOPS right now because that is what we are using for testing
+                newRT._TeleType = RadioTelescopeTypeEnum.HARD_STOPS;
 
                 DatabaseOperations.AddRadioTelescope(newRT);
 
@@ -380,6 +385,7 @@ namespace ControlRoomApplication.Main
             // These settings are not stored in the database, so they are new every time
             abstractPLCDriver.SetParent(newRT);
             newRT.PLCDriver = abstractPLCDriver;
+            newRT.PLCDriver.setTelescopeType(newRT._TeleType);
             newRT.SpectraCyberController = BuildSpectraCyber();
             newRT.Micro_controler = ctrler;
             newRT.Encoders = encoder;
