@@ -67,8 +67,41 @@ namespace ControlRoomApplication.Entities
         [ForeignKey("location_id")]
         public virtual Location Location { get; set; }
 
-        //[Column("telescope_type")]
-        //public RadioTelescopeTypeEnum type { get; set; }
+        [NotMapped]
+        public RadioTelescopeTypeEnum _TeleType
+        {
+            get
+            {
+                return (RadioTelescopeTypeEnum)Enum.Parse(typeof(RadioTelescopeTypeEnum), teleType);
+            }
+            set
+            {
+                this.teleType = value.ToString();
+            }
+        }
+
+        private string backingTeleType { get; set; }
+
+        [Required]
+        [Column("telescope_type")]
+        public string teleType
+        {
+            get
+            {
+                return this.backingTeleType;
+            }
+            set
+            {
+                if (value == null || Enum.IsDefined(typeof(RadioTelescopeTypeEnum), value))
+                {
+                    this.backingTeleType = value;
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
+            }
+        }
 
         [NotMapped]
         public AbstractPLCDriver PLCDriver { get; set; }

@@ -44,9 +44,8 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt.Orientation = new Orientation();
             appt.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
             appt.Telescope = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation());
+            appt.Telescope._TeleType = RadioTelescopeTypeEnum.SLIP_RING;
             appt.User = DatabaseOperations.GetControlRoomUser();
-
-            //appt.Telescope.type = RadioTelescopeTypeEnum.SLIP_RING;
 
             DatabaseOperations.AddRadioTelescope(appt.Telescope);
             DatabaseOperations.AddAppointment(appt);
@@ -372,6 +371,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             telescope.CurrentOrientation = new Orientation(25, 25);
             telescope.CalibrationOrientation = new Orientation(30, 30);
             telescope.Location = new Location(1, 2, 3, "test");
+            telescope._TeleType = RadioTelescopeTypeEnum.SLIP_RING;
 
             DatabaseOperations.AddRadioTelescope(telescope);
 
@@ -379,6 +379,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
             // online
             Assert.IsTrue(telescope.online == retrievedTele.online);
+
+            // type
+            Assert.IsTrue(telescope.teleType == retrievedTele.teleType);
 
             // location
             Assert.IsTrue(telescope.Location.Latitude == retrievedTele.Location.Latitude);
