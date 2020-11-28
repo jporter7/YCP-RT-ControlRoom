@@ -23,7 +23,16 @@ namespace ControlRoomApplication.Controllers
 
         public static double StepsToDegrees(int steps, int gearingRatio)
         {
-            return steps * 360.0 / (MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
+            double baseOrientation = steps * 360.0 / (MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
+
+            double normalizedOrientation = baseOrientation % 360;
+
+            if (normalizedOrientation < 0)
+            {
+                normalizedOrientation += 360;
+            }
+
+            return normalizedOrientation;
         }
 
         public static int DegreesToSteps_Encoder( double degrees , int gearingRatio ) {
@@ -31,7 +40,17 @@ namespace ControlRoomApplication.Controllers
         }
 
         public static double StepsToDegrees_Encoder( int steps , int gearingRatio ) {
-            return steps * 360.0 / (MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
+            double baseOrientation = steps * 360.0 / (MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
+
+            // Normalize the orientation between 0-360
+            double normalizedOrientation = baseOrientation % 360;
+
+            if (normalizedOrientation < 0)
+            {
+                normalizedOrientation += 360;
+            }
+
+            return normalizedOrientation;
         }
 
         public static double RPMToDPS(double rpms)
