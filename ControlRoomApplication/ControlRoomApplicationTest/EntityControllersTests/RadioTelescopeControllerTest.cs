@@ -381,8 +381,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
-        public void testOrientationChange_359_210Degrees()
+        public void testOrientationChange_360_210Degrees()
         {
+            // Set the Telescope Type to SLIP RING
+            TestRTPLC.setTelescopeType(RadioTelescopeTypeEnum.HARD_STOPS);
+
             // Acquire current orientation
             Orientation currOrientation;
             currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
@@ -393,7 +396,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             currStepsEl = ConversionHelper.DegreesToSteps(currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Set target orientation on both Azimuth and Elevation, respectively
-            Orientation expectedOrientation = new Orientation(359, 210);
+            Orientation expectedOrientation = new Orientation(360, 210);
 
             // Calculate motor steps necessary for movement
             int posTransAz, posTransEl;

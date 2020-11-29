@@ -21,7 +21,8 @@ namespace ControlRoomApplication.Controllers
             return (int)(degrees * MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio / 360.0);
         }
 
-        public static double StepsToDegrees(int steps, int gearingRatio)
+        // Only to be used with the slip ring, which has full 360-degree rotation
+        public static double StepsToDegrees_Normalized(int steps, int gearingRatio)
         {
             double baseOrientation = steps * 360.0 / (MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
 
@@ -35,11 +36,18 @@ namespace ControlRoomApplication.Controllers
             return normalizedOrientation;
         }
 
+        public static double StepsToDegrees(int steps, int gearingRatio)
+        {
+            return steps * 360.0 / (MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
+        }
+
         public static int DegreesToSteps_Encoder( double degrees , int gearingRatio ) {
             return (int)(degrees * MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio / 360.0);
         }
 
-        public static double StepsToDegrees_Encoder( int steps , int gearingRatio ) {
+        // Only to be used with the slip ring, which has full 360-degree rotation
+        public static double StepsToDegrees_Encoder_Normalized(int steps, int gearingRatio)
+        {
             double baseOrientation = steps * 360.0 / (MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
 
             // Normalize the orientation between 0-360
@@ -51,6 +59,11 @@ namespace ControlRoomApplication.Controllers
             }
 
             return normalizedOrientation;
+        }
+
+        public static double StepsToDegrees_Encoder( int steps , int gearingRatio )
+        {
+            return steps * 360.0 / (MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
         }
 
         public static double RPMToDPS(double rpms)

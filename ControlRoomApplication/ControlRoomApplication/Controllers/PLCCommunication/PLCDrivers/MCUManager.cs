@@ -262,6 +262,7 @@ namespace ControlRoomApplication.Controllers {
         private DateTime lastConnectAttempt = DateTime.Now ;
         private bool initialConnect = true;
         private bool SoftWareStopEnabled = false;
+        private RadioTelescopeTypeEnum telescopeType;
 
         public MCUManager( string _MCU_ip , int _MCU_port ) {
             MCU_port = _MCU_port;
@@ -416,10 +417,22 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public Orientation read_Position() {
             mCUpositon.update().Wait();
-            return new Orientation(
-                ConversionHelper.StepsToDegrees_Encoder(mCUpositon.AZ_Encoder, MotorConstants.GEARING_RATIO_AZIMUTH),
-                ConversionHelper.StepsToDegrees_Encoder(mCUpositon.EL_Encoder, MotorConstants.GEARING_RATIO_ELEVATION)
-            );
+
+            // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
+            if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
+            {
+                return new Orientation(
+                    ConversionHelper.StepsToDegrees_Encoder_Normalized(mCUpositon.AZ_Encoder, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.EL_Encoder, MotorConstants.GEARING_RATIO_ELEVATION)
+                );
+            }
+            else
+            {
+                return new Orientation(
+                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.AZ_Encoder, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.EL_Encoder, MotorConstants.GEARING_RATIO_ELEVATION)
+                );
+            }
         }
         /// <summary>
         /// gets the position from MCU step count, thsi should be compaired with the value from <see cref="read_Position"/>
@@ -434,10 +447,22 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public Orientation read_Position_steps() {
             mCUpositon.update().Wait();
-            return new Orientation(
-                ConversionHelper.StepsToDegrees( mCUpositon.AZ_Steps , MotorConstants.GEARING_RATIO_AZIMUTH ) ,
-                ConversionHelper.StepsToDegrees( mCUpositon.EL_Steps, MotorConstants.GEARING_RATIO_ELEVATION )
-            );
+
+            // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
+            if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
+            {
+                return new Orientation(
+                    ConversionHelper.StepsToDegrees_Normalized(mCUpositon.AZ_Steps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(mCUpositon.EL_Steps, MotorConstants.GEARING_RATIO_ELEVATION)
+                );
+            }
+            else
+            {
+                return new Orientation(
+                    ConversionHelper.StepsToDegrees(mCUpositon.AZ_Steps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(mCUpositon.EL_Steps, MotorConstants.GEARING_RATIO_ELEVATION)
+                );
+            }
         }
 
 
@@ -1124,6 +1149,11 @@ namespace ControlRoomApplication.Controllers {
             if(val == 0) {
                 return false;
             } else { return true; }
+        }
+
+        public void setTelescopeType(RadioTelescopeTypeEnum type)
+        {
+            telescopeType = type;
         }
     }
 }

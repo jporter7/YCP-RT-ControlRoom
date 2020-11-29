@@ -1295,6 +1295,9 @@ namespace ControlRoomApplication.Controllers
         public override void setTelescopeType(RadioTelescopeTypeEnum type)
         {
             telescopeType = type;
+
+            // Also set the MCU's telescope type
+            MCU.setTelescopeType(type);
         }
     }
 }
