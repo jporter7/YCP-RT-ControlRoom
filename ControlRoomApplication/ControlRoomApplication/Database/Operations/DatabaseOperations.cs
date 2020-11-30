@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Database
 {
     public static class DatabaseOperations
     {
-        private static readonly bool USING_REMOTE_DATABASE = false;
+        private static readonly bool USING_REMOTE_DATABASE = true;
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // used to tell if we need to create a control room user
@@ -480,6 +480,8 @@ namespace ControlRoomApplication.Database
                     Context.Entry(data.Appointment.SpectraCyberConfig).State = EntityState.Unchanged;
                     Context.Entry(data.Appointment.Telescope).State = EntityState.Unchanged;
                     Context.Entry(data.Appointment.Telescope.Location).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.Telescope.CurrentOrientation).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.Telescope.CalibrationOrientation).State = EntityState.Unchanged;
 
                     Context.SaveChanges();
                 }

@@ -50,17 +50,13 @@ namespace ControlRoomApplication.Entities
 
         [Column("online")]
         public int online { get; set; }
-
-        [Column("current_orientation_id")]
-        public int current_orientation { get; set; }
-    //    [ForeignKey("current_orientation_id")]
-        [NotMapped]
+        
+        public int current_orientation_id { get; set; }
+        [ForeignKey("current_orientation_id")]
         public Orientation CurrentOrientation { get; set; }
-
-        [Column("calibration_orientation_id")]
-        public int calibration_orientation { get; set; }
-        //    [ForeignKey("calibration_orientation_id")]
-        [NotMapped]
+        
+        public int calibration_orientation_id { get; set; }
+        [ForeignKey("calibration_orientation_id")]
         public Orientation CalibrationOrientation { get; set; }
 
         public int location_id { get; set; }
