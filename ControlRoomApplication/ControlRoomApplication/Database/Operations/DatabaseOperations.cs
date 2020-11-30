@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Database
 {
     public static class DatabaseOperations
     {
-        private static readonly bool USING_REMOTE_DATABASE = true;
+        private static readonly bool USING_REMOTE_DATABASE = false;
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         // used to tell if we need to create a control room user
@@ -822,7 +822,12 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                var telescopes = Context.RadioTelescope.Include(t => t.Location).ToList<RadioTelescope>();
+                var telescopes = Context.RadioTelescope
+                    .Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .ToList<RadioTelescope>();
+
                 return telescopes[telescopes.Count - 1];
             }
         }
