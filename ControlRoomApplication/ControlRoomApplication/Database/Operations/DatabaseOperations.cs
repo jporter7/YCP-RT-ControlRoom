@@ -429,9 +429,14 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                Context.Entry(appt.CelestialBody).State = EntityState.Unchanged;
-                if (appt.CelestialBody.Coordinate != null)
-                    Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                // Because the celestial body is not required, we only want to 
+                // perform these operations if one is present.
+                if (appt.celestial_body_id != null)
+                {
+                    Context.Entry(appt.CelestialBody).State = EntityState.Unchanged;
+                    if (appt.CelestialBody.Coordinate != null)
+                        Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                }
                 if (appt.Orientation != null)
                     Context.Entry(appt.Orientation).State = EntityState.Unchanged;
                 Context.Entry(appt.SpectraCyberConfig).State = EntityState.Unchanged;
@@ -479,9 +484,17 @@ namespace ControlRoomApplication.Database
                     }
                     Context.Entry(data.Appointment.SpectraCyberConfig).State = EntityState.Unchanged;
                     Context.Entry(data.Appointment.Telescope).State = EntityState.Unchanged;
-                    Context.Entry(data.Appointment.Telescope.Location).State = EntityState.Unchanged;
-                    Context.Entry(data.Appointment.Telescope.CurrentOrientation).State = EntityState.Unchanged;
-                    Context.Entry(data.Appointment.Telescope.CalibrationOrientation).State = EntityState.Unchanged;
+
+                    // Only perform the following operations on a real telescope
+                    // (i.e. the fields will not be null)
+                    if(data.Appointment.Telescope.Location != null)
+                        Context.Entry(data.Appointment.Telescope.Location).State = EntityState.Unchanged;
+
+                    if(data.Appointment.Telescope.CurrentOrientation != null)
+                        Context.Entry(data.Appointment.Telescope.CurrentOrientation).State = EntityState.Unchanged;
+
+                    if(data.Appointment.Telescope.CalibrationOrientation != null)
+                        Context.Entry(data.Appointment.Telescope.CalibrationOrientation).State = EntityState.Unchanged;
 
                     Context.SaveChanges();
                 }
