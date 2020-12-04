@@ -68,8 +68,8 @@ namespace ControlRoomApplication.Controllers
                 {
                     // Translate data bytes to a decrypted ASCII string.
 
-                    data = AES.Decrypt(bytes); // use this line if incoming data is encrypted
-                    //data = System.Text.Encoding.ASCII.GetString(bytes, 0, i); // use this line if incoming data is in plaintext
+                    //data = AES.Decrypt(bytes); // use this line if incoming data is encrypted
+                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i); // use this line if incoming data is in plaintext
 
                     logger.Debug("Received: " + data);
 
