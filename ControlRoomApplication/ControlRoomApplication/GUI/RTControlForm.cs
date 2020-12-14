@@ -11,6 +11,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic;
 
 namespace ControlRoomApplication.Main
 {
@@ -604,6 +605,36 @@ namespace ControlRoomApplication.Main
                         tele.PLCDriver.Home();
                     });
                     //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
+                    break;
+
+                case 10:
+                    thread = new Thread(() =>
+                    {
+                        double azimuthPos = 0;
+                        string input = "";
+                        string warning = "";
+
+                        // Notify the user if they do not have the type set to SLIP_RING
+                        if(rtController.RadioTelescope._TeleType != RadioTelescopeTypeEnum.SLIP_RING)
+                        {
+                            warning = "\n\nWarning: The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
+                            " This script is best run with a telescope type of SLIP_RING.";
+                        }
+
+
+                        // Get validated user input for azimuth position
+                        do
+                        {
+                            input = Interaction.InputBox("Please type an azimuth orientation between 0 and 360 degrees." + warning,
+                                "Azimuth Orientation", "0");
+
+                        } while ((!Double.TryParse(input, out azimuthPos) || azimuthPos > 360 || azimuthPos < 0) && !input.Equals(""));
+
+                        // Only run script if cancel button was not hit
+                        if (!input.Equals("")) tele.PLCDriver.CustomAzimuthMove(azimuthPos);
+                        else MessageBox.Show("Custom azimuth movement script cancelled.", "Script Cancelled");
+                    });
+                    // Custom azimuth position. This is only used to test the slip ring implementation
                     break;
                 default:
 

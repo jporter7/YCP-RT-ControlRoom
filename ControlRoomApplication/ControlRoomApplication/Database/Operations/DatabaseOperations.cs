@@ -429,9 +429,14 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                Context.Entry(appt.CelestialBody).State = EntityState.Unchanged;
-                if (appt.CelestialBody.Coordinate != null)
-                    Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                // Because the celestial body is not required, we only want to 
+                // perform these operations if one is present.
+                if (appt.celestial_body_id != null)
+                {
+                    Context.Entry(appt.CelestialBody).State = EntityState.Unchanged;
+                    if (appt.CelestialBody.Coordinate != null)
+                        Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                }
                 if (appt.Orientation != null)
                     Context.Entry(appt.Orientation).State = EntityState.Unchanged;
                 Context.Entry(appt.SpectraCyberConfig).State = EntityState.Unchanged;
@@ -479,7 +484,17 @@ namespace ControlRoomApplication.Database
                     }
                     Context.Entry(data.Appointment.SpectraCyberConfig).State = EntityState.Unchanged;
                     Context.Entry(data.Appointment.Telescope).State = EntityState.Unchanged;
-                    Context.Entry(data.Appointment.Telescope.Location).State = EntityState.Unchanged;
+
+                    // Only perform the following operations on a real telescope
+                    // (i.e. the fields will not be null)
+                    if(data.Appointment.Telescope.Location != null)
+                        Context.Entry(data.Appointment.Telescope.Location).State = EntityState.Unchanged;
+
+                    if(data.Appointment.Telescope.CurrentOrientation != null)
+                        Context.Entry(data.Appointment.Telescope.CurrentOrientation).State = EntityState.Unchanged;
+
+                    if(data.Appointment.Telescope.CalibrationOrientation != null)
+                        Context.Entry(data.Appointment.Telescope.CalibrationOrientation).State = EntityState.Unchanged;
 
                     Context.SaveChanges();
                 }
@@ -809,6 +824,24 @@ namespace ControlRoomApplication.Database
                 logger.Info("No Radio Telescope found in the database");
                 return null;
                 
+            }
+        }
+
+        /// <summary>
+        /// This function is only intended to be used for testing.
+        /// </summary>
+        /// <returns>last RadioTelescope found in the database</returns>
+        public static RadioTelescope FetchLastRadioTelescope()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var telescopes = Context.RadioTelescope
+                    .Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .ToList<RadioTelescope>();
+
+                return telescopes[telescopes.Count - 1];
             }
         }
 

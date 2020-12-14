@@ -50,22 +50,54 @@ namespace ControlRoomApplication.Entities
 
         [Column("online")]
         public int online { get; set; }
-
-        [Column("current_orientation_id")]
-        public int current_orientation { get; set; }
-    //    [ForeignKey("current_orientation_id")]
-        [NotMapped]
+        
+        public int current_orientation_id { get; set; }
+        [ForeignKey("current_orientation_id")]
         public Orientation CurrentOrientation { get; set; }
-
-        [Column("calibration_orientation_id")]
-        public int calibration_orientation { get; set; }
-        //    [ForeignKey("calibration_orientation_id")]
-        [NotMapped]
+        
+        public int calibration_orientation_id { get; set; }
+        [ForeignKey("calibration_orientation_id")]
         public Orientation CalibrationOrientation { get; set; }
 
         public int location_id { get; set; }
         [ForeignKey("location_id")]
         public virtual Location Location { get; set; }
+
+        [NotMapped]
+        public RadioTelescopeTypeEnum _TeleType
+        {
+            get
+            {
+                return (RadioTelescopeTypeEnum)Enum.Parse(typeof(RadioTelescopeTypeEnum), teleType);
+            }
+            set
+            {
+                this.teleType = value.ToString();
+            }
+        }
+
+        private string backingTeleType { get; set; }
+
+        [Required]
+        [Column("telescope_type")]
+        public string teleType
+        {
+            get
+            {
+                return this.backingTeleType;
+            }
+            set
+            {
+                if (value == null || Enum.IsDefined(typeof(RadioTelescopeTypeEnum), value))
+                {
+                    this.backingTeleType = value;
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
+            }
+        }
 
         [NotMapped]
         public AbstractPLCDriver PLCDriver { get; set; }

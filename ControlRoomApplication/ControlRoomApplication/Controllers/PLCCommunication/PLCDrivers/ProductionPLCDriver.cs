@@ -30,6 +30,7 @@ namespace ControlRoomApplication.Controllers
         private bool is_test = false;
         private int temp =0;
         private MCUManager MCU;
+        private RadioTelescopeTypeEnum telescopeType = RadioTelescopeTypeEnum.NONE;
         /// <summary>
         /// set this ONLY if using test driver, removes timouts and delays
         /// </summary>
@@ -866,6 +867,17 @@ namespace ControlRoomApplication.Controllers
             return Move_to_orientation(currentPos, elFinish);
         }
         
+        // This is only used to test the slip ring
+        public override Task<bool> CustomAzimuthMove(double azimuthPos)
+        {
+            Orientation currentPos = read_Position();
+
+            Orientation movement = new Orientation(azimuthPos, currentPos.Elevation);
+
+            // Move to desired azimuth coordinate
+            return Move_to_orientation(movement, currentPos);
+        }
+        
         /// <summary>
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
@@ -1069,7 +1081,29 @@ namespace ControlRoomApplication.Controllers
         public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
             int positionTranslationAZ, positionTranslationEL;
-            positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
+
+            // Calculates the hard stop calculation by default
+            double azimuthOrientationMovement = target_orientation.Azimuth - current_orientation.Azimuth;
+
+            // If the type is a slip ring, checks to see if it needs to calculate a new route
+            if(telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
+            {
+                if(azimuthOrientationMovement > 180)
+                {
+                    azimuthOrientationMovement = (target_orientation.Azimuth - 360) - current_orientation.Azimuth;
+                }
+                else if(azimuthOrientationMovement < -180)
+                {
+                    azimuthOrientationMovement = (360 - current_orientation.Azimuth) + target_orientation.Azimuth;
+                }
+            }
+            else if(telescopeType == RadioTelescopeTypeEnum.NONE)
+            {
+                logger.Info("ERROR: Invalid Telescope Type!");
+                return Task.FromResult(false);
+            }
+
+            positionTranslationAZ = ConversionHelper.DegreesToSteps(azimuthOrientationMovement, MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
 
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.6 ), MotorConstants.GEARING_RATIO_ELEVATION);
@@ -1256,6 +1290,14 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public bool workaroundAlive() {
             return TestIfComponentIsAlive();
+        }
+
+        public override void setTelescopeType(RadioTelescopeTypeEnum type)
+        {
+            telescopeType = type;
+
+            // Also set the MCU's telescope type
+            MCU.setTelescopeType(type);
         }
     }
 }

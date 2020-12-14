@@ -168,6 +168,10 @@
             this.WSOverride = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.lblModeType = new System.Windows.Forms.Label();
+            this.spectraModeTypeVal = new System.Windows.Forms.Label();
+            this.lblFrequency = new System.Windows.Forms.Label();
+            this.frequencyVal = new System.Windows.Forms.Label();
             this.spectraCyberScanChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.lblIntegrationStep = new System.Windows.Forms.Label();
             this.IntegrationStepVal = new System.Windows.Forms.Label();
@@ -181,10 +185,6 @@
             this.OffsetVoltageVal = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.consoleLogBox = new System.Windows.Forms.TextBox();
-            this.lblFrequency = new System.Windows.Forms.Label();
-            this.frequencyVal = new System.Windows.Forms.Label();
-            this.lblModeType = new System.Windows.Forms.Label();
-            this.spectraModeTypeVal = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -1646,7 +1646,7 @@
             // 
             this.ElevationProximityOveride2.BackColor = System.Drawing.Color.Yellow;
             this.ElevationProximityOveride2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElevationProximityOveride2.Location = new System.Drawing.Point(194, 282);
+            this.ElevationProximityOveride2.Location = new System.Drawing.Point(194, 114);
             this.ElevationProximityOveride2.Name = "ElevationProximityOveride2";
             this.ElevationProximityOveride2.Size = new System.Drawing.Size(88, 23);
             this.ElevationProximityOveride2.TabIndex = 14;
@@ -1658,7 +1658,7 @@
             // 
             this.ElevationProximityOveride1.BackColor = System.Drawing.Color.Yellow;
             this.ElevationProximityOveride1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElevationProximityOveride1.Location = new System.Drawing.Point(194, 224);
+            this.ElevationProximityOveride1.Location = new System.Drawing.Point(194, 56);
             this.ElevationProximityOveride1.Name = "ElevationProximityOveride1";
             this.ElevationProximityOveride1.Size = new System.Drawing.Size(90, 23);
             this.ElevationProximityOveride1.TabIndex = 13;
@@ -1670,7 +1670,7 @@
             // 
             this.ORAzimuthSens2.BackColor = System.Drawing.Color.Yellow;
             this.ORAzimuthSens2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ORAzimuthSens2.Location = new System.Drawing.Point(194, 134);
+            this.ORAzimuthSens2.Location = new System.Drawing.Point(194, 271);
             this.ORAzimuthSens2.Name = "ORAzimuthSens2";
             this.ORAzimuthSens2.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens2.TabIndex = 12;
@@ -1682,7 +1682,7 @@
             // 
             this.ORAzimuthSens1.BackColor = System.Drawing.Color.Yellow;
             this.ORAzimuthSens1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ORAzimuthSens1.Location = new System.Drawing.Point(194, 53);
+            this.ORAzimuthSens1.Location = new System.Drawing.Point(194, 190);
             this.ORAzimuthSens1.Name = "ORAzimuthSens1";
             this.ORAzimuthSens1.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens1.TabIndex = 11;
@@ -1694,7 +1694,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(9, 282);
+            this.label3.Location = new System.Drawing.Point(9, 114);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(155, 13);
@@ -1705,7 +1705,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(9, 53);
+            this.label4.Location = new System.Drawing.Point(9, 190);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(150, 13);
@@ -1717,7 +1717,7 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(11, 134);
+            this.label21.Location = new System.Drawing.Point(11, 271);
             this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(153, 13);
@@ -1728,7 +1728,7 @@
             // 
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(9, 224);
+            this.label22.Location = new System.Drawing.Point(9, 56);
             this.label22.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(148, 13);
@@ -1797,6 +1797,46 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "RFData";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // lblModeType
+            // 
+            this.lblModeType.AutoSize = true;
+            this.lblModeType.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblModeType.Location = new System.Drawing.Point(155, 297);
+            this.lblModeType.Name = "lblModeType";
+            this.lblModeType.Size = new System.Drawing.Size(128, 15);
+            this.lblModeType.TabIndex = 19;
+            this.lblModeType.Text = "SpectraCyberMode";
+            // 
+            // spectraModeTypeVal
+            // 
+            this.spectraModeTypeVal.AutoSize = true;
+            this.spectraModeTypeVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.spectraModeTypeVal.Location = new System.Drawing.Point(369, 297);
+            this.spectraModeTypeVal.Name = "spectraModeTypeVal";
+            this.spectraModeTypeVal.Size = new System.Drawing.Size(35, 15);
+            this.spectraModeTypeVal.TabIndex = 20;
+            this.spectraModeTypeVal.Text = "NaN";
+            // 
+            // lblFrequency
+            // 
+            this.lblFrequency.AutoSize = true;
+            this.lblFrequency.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFrequency.Location = new System.Drawing.Point(300, 333);
+            this.lblFrequency.Name = "lblFrequency";
+            this.lblFrequency.Size = new System.Drawing.Size(73, 15);
+            this.lblFrequency.TabIndex = 17;
+            this.lblFrequency.Text = "Frequency";
+            // 
+            // frequencyVal
+            // 
+            this.frequencyVal.AutoSize = true;
+            this.frequencyVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.frequencyVal.Location = new System.Drawing.Point(514, 333);
+            this.frequencyVal.Name = "frequencyVal";
+            this.frequencyVal.Size = new System.Drawing.Size(35, 15);
+            this.frequencyVal.TabIndex = 18;
+            this.frequencyVal.Text = "NaN";
             // 
             // spectraCyberScanChart
             // 
@@ -1941,46 +1981,6 @@
             this.consoleLogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.consoleLogBox.Size = new System.Drawing.Size(631, 400);
             this.consoleLogBox.TabIndex = 0;
-            // 
-            // lblFrequency
-            // 
-            this.lblFrequency.AutoSize = true;
-            this.lblFrequency.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFrequency.Location = new System.Drawing.Point(300, 333);
-            this.lblFrequency.Name = "lblFrequency";
-            this.lblFrequency.Size = new System.Drawing.Size(73, 15);
-            this.lblFrequency.TabIndex = 17;
-            this.lblFrequency.Text = "Frequency";
-            // 
-            // frequencyVal
-            // 
-            this.frequencyVal.AutoSize = true;
-            this.frequencyVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.frequencyVal.Location = new System.Drawing.Point(514, 333);
-            this.frequencyVal.Name = "frequencyVal";
-            this.frequencyVal.Size = new System.Drawing.Size(35, 15);
-            this.frequencyVal.TabIndex = 18;
-            this.frequencyVal.Text = "NaN";
-            // 
-            // lblModeType
-            // 
-            this.lblModeType.AutoSize = true;
-            this.lblModeType.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblModeType.Location = new System.Drawing.Point(155, 297);
-            this.lblModeType.Name = "lblModeType";
-            this.lblModeType.Size = new System.Drawing.Size(128, 15);
-            this.lblModeType.TabIndex = 19;
-            this.lblModeType.Text = "SpectraCyberMode";
-            // 
-            // spectraModeTypeVal
-            // 
-            this.spectraModeTypeVal.AutoSize = true;
-            this.spectraModeTypeVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.spectraModeTypeVal.Location = new System.Drawing.Point(369, 297);
-            this.spectraModeTypeVal.Name = "spectraModeTypeVal";
-            this.spectraModeTypeVal.Size = new System.Drawing.Size(35, 15);
-            this.spectraModeTypeVal.TabIndex = 20;
-            this.spectraModeTypeVal.Text = "NaN";
             // 
             // DiagnosticsForm
             // 

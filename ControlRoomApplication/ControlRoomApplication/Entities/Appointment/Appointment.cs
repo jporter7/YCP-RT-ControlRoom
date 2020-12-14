@@ -57,7 +57,7 @@ namespace ControlRoomApplication.Entities
         /// <summary>
         /// The getter/setter for the celestial body asscociated with this Appointment.
         /// </summary>
-        public int celestial_body_id { get; set; }
+        public int? celestial_body_id { get; set; }
         [ForeignKey("celestial_body_id")]
         public virtual CelestialBody CelestialBody { get; set; }
 

@@ -21,6 +21,21 @@ namespace ControlRoomApplication.Controllers
             return (int)(degrees * MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio / 360.0);
         }
 
+        // Only to be used with the slip ring, which has full 360-degree rotation
+        public static double StepsToDegrees_Normalized(int steps, int gearingRatio)
+        {
+            double baseOrientation = steps * 360.0 / (MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
+
+            double normalizedOrientation = baseOrientation % 360;
+
+            if (normalizedOrientation < 0)
+            {
+                normalizedOrientation += 360;
+            }
+
+            return normalizedOrientation;
+        }
+
         public static double StepsToDegrees(int steps, int gearingRatio)
         {
             return steps * 360.0 / (MotorConstants.STEPS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
@@ -30,7 +45,24 @@ namespace ControlRoomApplication.Controllers
             return (int)(degrees * MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio / 360.0);
         }
 
-        public static double StepsToDegrees_Encoder( int steps , int gearingRatio ) {
+        // Only to be used with the slip ring, which has full 360-degree rotation
+        public static double StepsToDegrees_Encoder_Normalized(int steps, int gearingRatio)
+        {
+            double baseOrientation = steps * 360.0 / (MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
+
+            // Normalize the orientation between 0-360
+            double normalizedOrientation = baseOrientation % 360;
+
+            if (normalizedOrientation < 0)
+            {
+                normalizedOrientation += 360;
+            }
+
+            return normalizedOrientation;
+        }
+
+        public static double StepsToDegrees_Encoder( int steps , int gearingRatio )
+        {
             return steps * 360.0 / (MotorConstants.ENCODER_COUNTS_PER_REVOLUTION_BEFORE_GEARING * gearingRatio);
         }
 

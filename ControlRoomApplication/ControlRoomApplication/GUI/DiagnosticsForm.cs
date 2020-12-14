@@ -135,6 +135,15 @@ namespace ControlRoomApplication.GUI
             updateOverride.DoWork += new DoWorkEventHandler(checkOverrideVars);
             updateOverride.RunWorkerAsync();
 
+            // Set azimuth limit switch overrides to hidden if slip ring is the telescope type
+            if(rtController.RadioTelescope._TeleType == RadioTelescopeTypeEnum.SLIP_RING)
+            {
+                ORAzimuthSens1.Visible = false;
+                ORAzimuthSens2.Visible = false;
+                label4.Visible = false;
+                label21.Visible = false;
+            }
+
             logger.Info("DiagnosticsForm Initalized");
         }
 
@@ -296,9 +305,19 @@ namespace ControlRoomApplication.GUI
             lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 3).ToString();
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
-            // Proximity and Limit Switches 
-            lblAzLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CCW_Limit.ToString();
-            lblAzLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CW_Limit.ToString();
+            // Proximity and Limit Switches
+
+            // Tell the user azimuth limits are not present if the telescope type is set to SLIP_RING
+            if (rtController.RadioTelescope._TeleType == RadioTelescopeTypeEnum.SLIP_RING)
+            {
+                lblAzLimStatus1.Text = "N/A";
+                lblAzLimStatus2.Text = "N/A";
+            }
+            else
+            {
+                lblAzLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CCW_Limit.ToString();
+                lblAzLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CW_Limit.ToString();
+            }
 
             lblElLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Lower_Limit.ToString();
             lblElLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Upper_Limit.ToString();

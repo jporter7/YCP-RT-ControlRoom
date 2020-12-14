@@ -63,7 +63,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             // Override motor temperature sensors
             TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = true;
             TestRadioTelescopeController.overrides.overrideElevatMotTemp = true;
-
+            TestRTPLC.setTelescopeType(RadioTelescopeTypeEnum.HARD_STOPS);
             TestRTPLC.SetParent(TestRT);
             TestRTPLC.driver.SetParent(TestRT);
 
@@ -163,7 +163,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
-        public void TestMoveRadioTelescope() {
+        public void TestMoveRadioTelescope_HardStops()
+        {
+            // Set the Telescope Type to HARD STOPS
+            TestRTPLC.setTelescopeType(RadioTelescopeTypeEnum.HARD_STOPS);
+
             // Create an Orientation object with an azimuth of 311 and elevation of 42
             Orientation Orientation = new Orientation( 311.0 , 42.0 );
 
@@ -177,6 +181,94 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Assert.IsTrue( response );
             Assert.AreEqual( Orientation.Azimuth , CurrentOrientation.Azimuth , 0.001 );
             Assert.AreEqual( Orientation.Elevation , CurrentOrientation.Elevation , 0.001 );
+        }
+
+        [TestMethod]
+        public void TestMoveRadioTelescope_SlipRing_311degrees()
+        {
+            // Set the Telescope Type to SLIP RING
+            TestRTPLC.setTelescopeType(RadioTelescopeTypeEnum.SLIP_RING);
+
+            // Create an Orientation object with an azimuth of 311 and elevation of 0
+            Orientation TargetOrientation = new Orientation(311.0, 0);
+
+            // Set the RadioTelescope's CurrentOrientation field
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation).GetAwaiter().GetResult();
+
+            // Call the GetCurrentOrientationMethod
+            Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+
+            // Ensure the objects are identical
+            Assert.IsTrue(response);
+            Assert.AreEqual(TargetOrientation.Azimuth, CurrentOrientation.Azimuth, 0.001);
+            Assert.AreEqual(TargetOrientation.Elevation, CurrentOrientation.Elevation, 0.001);
+        }
+
+        [TestMethod]
+        public void TestMoveRadioTelescope_SlipRing_359degrees()
+        {
+            // Set the Telescope Type to SLIP RING
+            TestRTPLC.setTelescopeType(RadioTelescopeTypeEnum.SLIP_RING);
+
+            // Create an Orientation object with an azimuth of 311 and elevation of 0
+            Orientation TargetOrientation = new Orientation(359.0, 0);
+
+            // Set the RadioTelescope's CurrentOrientation field
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation).GetAwaiter().GetResult();
+
+            // Call the GetCurrentOrientationMethod
+            Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+
+            // Ensure the objects are identical
+            Assert.IsTrue(response);
+            Assert.AreEqual(TargetOrientation.Azimuth, CurrentOrientation.Azimuth, 0.001);
+            Assert.AreEqual(TargetOrientation.Elevation, CurrentOrientation.Elevation, 0.001);
+        }
+
+        [TestMethod]
+        public void TestMoveRadioTelescope_SlipRing_MoveFrom350To90()
+        {
+            // Set the Telescope Type to SLIP RING
+            TestRTPLC.setTelescopeType(RadioTelescopeTypeEnum.SLIP_RING);
+
+            // Initial movement from 0 to 350
+            Orientation InitialOrientation = new Orientation(350, 0);
+            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation).GetAwaiter().GetResult();
+
+            // Move from 350 to 90
+            Orientation TargetOrientation = new Orientation(90, 0);
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation).GetAwaiter().GetResult();
+
+            // Call the GetCurrentOrientationMethod
+            Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+
+            // Ensure the objects are identical
+            Assert.IsTrue(response);
+            Assert.AreEqual(TargetOrientation.Azimuth, CurrentOrientation.Azimuth, 0.001);
+            Assert.AreEqual(TargetOrientation.Elevation, CurrentOrientation.Elevation, 0.001);
+        }
+
+        [TestMethod]
+        public void TestMoveRadioTelescope_SlipRing_MoveFrom90To350()
+        {
+            // Set the Telescope Type to SLIP RING
+            TestRTPLC.setTelescopeType(RadioTelescopeTypeEnum.SLIP_RING);
+
+            // Initial movement from 0 to 90
+            Orientation InitialOrientation = new Orientation(90, 0);
+            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation).GetAwaiter().GetResult();
+
+            // Move from 90 to 350
+            Orientation TargetOrientation = new Orientation(350, 0);
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation).GetAwaiter().GetResult();
+
+            // Call the GetCurrentOrientationMethod
+            Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+
+            // Ensure the objects are identical
+            Assert.IsTrue(response);
+            Assert.AreEqual(TargetOrientation.Azimuth, CurrentOrientation.Azimuth, 0.001);
+            Assert.AreEqual(TargetOrientation.Elevation, CurrentOrientation.Elevation, 0.001);
         }
 
         [TestMethod]
@@ -291,6 +383,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void testOrientationChange_360_210Degrees()
         {
+            // Set the Telescope Type to SLIP RING
+            TestRTPLC.setTelescopeType(RadioTelescopeTypeEnum.HARD_STOPS);
+
             // Acquire current orientation
             Orientation currOrientation;
             currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
@@ -315,7 +410,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
 
             // Assert expected and result are identical
-            Assert.AreEqual(expectedOrientation, resultOrientation);
+            Assert.AreEqual(expectedOrientation.Azimuth, resultOrientation.Azimuth, 0.001);
+            Assert.AreEqual(expectedOrientation.Elevation, resultOrientation.Elevation, 0.001);
         }
 
         [TestMethod]

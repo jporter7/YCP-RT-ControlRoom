@@ -223,5 +223,15 @@ namespace ControlRoomApplication.Controllers
         {
             return driver.getregvalue(adr);
         }
+
+        public override void setTelescopeType(RadioTelescopeTypeEnum type)
+        {
+            driver.setTelescopeType(type);
+        }
+
+        public override Task<bool> CustomAzimuthMove(double azimuthPos)
+        {
+            return driver.CustomAzimuthMove(azimuthPos);
+        }
     }
 }
