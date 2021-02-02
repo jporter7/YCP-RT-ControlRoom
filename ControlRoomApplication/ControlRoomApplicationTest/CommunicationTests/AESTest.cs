@@ -263,6 +263,16 @@ namespace ControlRoomApplicationTest.CommunicationTests
         }
 
         [TestMethod]
+        public void TestAES_Decrypt_InvalidData()
+        {
+            byte[] invalid = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+
+            String result = AES.Decrypt(invalid);
+
+            Assert.AreEqual(result, "Error: Invalid byte array for decryption.");
+        }
+
+        [TestMethod]
         public void TestAES_GetNewKeys_OnlyTwoKeys()
         {
             Assert.IsTrue(AES.getNewKeys().Count == 2);
@@ -273,8 +283,8 @@ namespace ControlRoomApplicationTest.CommunicationTests
         {
             var keys = AES.getNewKeys();
 
-            // With AES-128, we only want 16-byte keys
-            Assert.IsTrue(keys[0].Length == 16);
+            // With AES-256, we only want a 32-byte key, 16-byte iv
+            Assert.IsTrue(keys[0].Length == 32);
             Assert.IsTrue(keys[1].Length == 16);
         }
 
@@ -286,6 +296,36 @@ namespace ControlRoomApplicationTest.CommunicationTests
 
             Assert.AreNotEqual(keys[0], keys2[0]);
             Assert.AreNotEqual(keys[1], keys2[1]);
+        }
+
+        [TestMethod]
+        public void TestAES_RemoveTrailingZeroes_ZeroesPresent()
+        {
+            byte[] zeroes = {1, 1, 1, 1, 255, 0, 0, 0, 0, 0};
+
+            byte[] noZeroes = AES.removeTrailingZeroes(zeroes);
+
+            Assert.IsTrue(noZeroes.Length == 4);
+        }
+
+        [TestMethod]
+        public void TestAES_RemoveTrailingZeroes_NoZeroesPresent()
+        {
+            byte[] noZeroes = {1, 1, 1, 1, 255};
+
+            byte[] stillNoZeroes = AES.removeTrailingZeroes(noZeroes);
+
+            Assert.IsTrue(stillNoZeroes.Length == 4);
+        }
+
+        [TestMethod]
+        public void TestAES_RemoveTrailingZeroes_ZeroesPresentEverywhere()
+        {
+            byte[] zeroes = {1, 0, 1, 0, 1, 0, 1, 0, 255, 0};
+
+            byte[] noEndZeroes = AES.removeTrailingZeroes(zeroes);
+
+            Assert.IsTrue(noEndZeroes.Length == 8);
         }
     }
 }

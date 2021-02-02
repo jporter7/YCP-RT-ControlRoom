@@ -494,7 +494,8 @@
             "Recover From Limit Switch",
             "Recover From Clockwise Hardstop",
             "Recover From Counter-Clockwise Hardstop",
-            "Home Telescope"});
+            "Home Telescope",
+            "Custom Azimuth Movement (Slip Ring Test)"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);

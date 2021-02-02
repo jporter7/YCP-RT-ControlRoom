@@ -424,5 +424,15 @@ namespace ControlRoomApplication.Controllers {
         public override Task<bool> JogOffLimitSwitches() {
             throw new NotImplementedException();
         }
+
+        public override void setTelescopeType(RadioTelescopeTypeEnum type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<bool> CustomAzimuthMove(double azimuthPos)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
