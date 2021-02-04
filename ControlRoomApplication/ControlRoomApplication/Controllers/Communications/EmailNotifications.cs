@@ -114,10 +114,10 @@ namespace ControlRoomApplication.Controllers.Communications
 
                     // message is an instance of a System.Net.Mail.MailMessage
                     MailMessage message = new MailMessage(
-                        EmailFields.Sender,
+                        sender,
                         user.email_address,
-                        EmailFields.Subject,
-                        EmailFields.Text);
+                        subject,
+                        body);
 
                     using (Attachment data = new Attachment(AttachPath, MediaTypeNames.Application.Octet))
                     {

@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommunicationTests\DataToCSVTest.cs" />
+    <Compile Include="CommunicationTests\EmailNotificationTests.cs" />
     <Compile Include="CommunicationTests\EmailPartConstantsTest.cs" />
     <Compile Include="CommunicationTests\PushNotificationTest.cs" />
     <Compile Include="CommunicationTests\AESTest.cs" />
