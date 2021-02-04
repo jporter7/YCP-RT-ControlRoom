@@ -404,7 +404,7 @@ namespace ControlRoomApplication.Controllers
                 EmailNotifications.sendToUser(NextAppointment.User, subject, text, emailSender, attachmentPath);
 
                 // Clean up after yourself, otherwise you'll just fill up our storage space
-                DataToCSV.DeleteCSVFileWhenDone(EmailFields.getAttachmentPath());
+                DataToCSV.DeleteCSVFileWhenDone(attachmentPath);
             }
         }
 

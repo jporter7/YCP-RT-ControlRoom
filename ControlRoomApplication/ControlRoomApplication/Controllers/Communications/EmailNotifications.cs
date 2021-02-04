@@ -6,6 +6,7 @@ using System.Net.Mime;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Amazon;
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplication.Controllers.Communications
 {
@@ -24,7 +25,7 @@ namespace ControlRoomApplication.Controllers.Communications
             }
             else
             {
-                //admins = DatabaseOperations.GetAllAdminUsers();
+                admins = DatabaseOperations.GetAllAdminUsers();
             }
 
             foreach (User u in admins)
@@ -34,7 +35,8 @@ namespace ControlRoomApplication.Controllers.Communications
                     try
                     {
                         // All-admin notifications will always be sent from SYSTEM by default.
-                        EmailNotifications.sendEmail(u, subject, body, sender);
+                        // Commenting this out until thread bug is fixed
+                        // EmailNotifications.sendEmail(u, subject, body, sender);
                         success = true;
                     }
                     catch (Exception e)
@@ -52,7 +54,8 @@ namespace ControlRoomApplication.Controllers.Communications
             bool success = false;
             try
             {
-                EmailNotifications.sendEmail(u, subject, body, sender, AttachmentPath);
+                // Commenting this out until thread bug is fixed
+                //EmailNotifications.sendEmail(u, subject, body, sender, AttachmentPath);
                 success = true;
             }
             catch (Exception e)
