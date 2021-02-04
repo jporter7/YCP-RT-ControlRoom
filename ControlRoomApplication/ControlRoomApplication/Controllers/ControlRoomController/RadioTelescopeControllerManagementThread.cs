@@ -411,12 +411,6 @@ namespace ControlRoomApplication.Controllers
             EmailFields.setSender("noreply@ycpradiotelescope.com");
             EmailFields.setSubject(subject);
             EmailFields.setText(text);
-            EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-    <p>{text}</p>
-</body>
-<html>");
 
             pushNotification.SendToAppointmentUser(send, AttachPath);
         }

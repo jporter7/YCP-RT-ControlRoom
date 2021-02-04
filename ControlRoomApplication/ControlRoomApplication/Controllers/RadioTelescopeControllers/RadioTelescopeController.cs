@@ -342,13 +342,7 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info(s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
                 EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature BELOW stable temperature by {Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp)} degrees Fahrenheit.");
-                EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-   <h1>MOTOR TEMPERATURE</h1>
-   <p>{s} motor temperature BELOW stable temperature by {Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp)} degrees Fahrenheit.</p>
-</body>
-</html>");
+
                 pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
                 pushNotification.sendEmail(false);
                 // Only overrides if switch is true
@@ -359,13 +353,7 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
                 EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature OVERHEATING by {Math.Truncate(t.temp - max)} degrees Fahrenheit.");
-                EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-   <h1>MOTOR TEMPERATURE</h1>
-   <p>{s} motor temperature OVERHEATING by {Math.Truncate(t.temp - max)} degrees Fahrenheit.</p>
-</body>
-</html>");
+
                 pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
                 pushNotification.sendEmail(false);
 
@@ -375,13 +363,7 @@ namespace ControlRoomApplication.Controllers
             }
             logger.Info(s + " motor temperature stable.");
             EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature stable.");
-            EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-   <h1>MOTOR TEMPERATURE</h1>
-   <p>{s} motor temperature stable.</p>
-</body>
-</html>");
+
             pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature stable.");
             pushNotification.sendEmail(false);
 
@@ -433,13 +415,7 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info("Overriding " + sensor + " sensor.");
                 EmailFields.setText($"SENSOR OVERRIDES\r\nOverriding {sensor} sensor.");
-                EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-    <h1>SENSOR OVERRIDES</h1>
-    <p>Overriding {sensor} sensor.</p>
-</body>
-</html>");
+
                 pushNotification.send("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
                 pushNotification.sendEmail(false);
             }
@@ -447,13 +423,7 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info("Enabled " + sensor + " sensor.");
                 EmailFields.setText($"SENSOR OVERRIDES\r\nEnabled {sensor} sensor.");
-                EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-    <h1>SENSOR OVERRIDES</h1>
-    <p>Enabled {sensor} sensor.</p>
-</body>
-</html>");
+
                 pushNotification.send("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
             }
         }

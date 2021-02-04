@@ -47,17 +47,6 @@ namespace ControlRoomApplicationTest.CommunicationTests
             EmailFields.setSender("SystemTest@ycpradiotelescope.com");
             EmailFields.setSubject("Amazon SES Test");
             EmailFields.setText("AmazonSES Test (.NET)\r\nThis email was sent through AmazonSES using the AWS SDK for .NET.");
-            EmailFields.setHtml(@"<html>
-<head></head>
-<body>
-  <h1>Amazon SES Test (AWS SDK for .NET)</h1>
-  <p>This email was sent with
-    <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
-    <a href='https://aws.amazon.com/sdk-for-net/'>
-      AWS SDK for .NET</a>.</p>
-</body>
-</html>");
-
 
             User fakeUser = new User("Test", "User", "testradiotelescopeuser@ycp.edu", NotificationTypeEnum.ALL);
 
@@ -73,16 +62,6 @@ namespace ControlRoomApplicationTest.CommunicationTests
             EmailFields.setSender("SystemTest@ycpradiotelescope.com");
             EmailFields.setSubject("Amazon SES Test WITH ATTACHMENT");
             EmailFields.setText("AmazonSES Test (.NET) with Attachment\r\nThis email and its attachment were sent through AmazonSES using the AWS SDK for .NET.");
-            EmailFields.setHtml(@"<html>
-<head></head>
-<body>
-  <h1>Amazon SES Test (AWS SDK for .NET)</h1>
-  <p>This email and its attachment were sent with
-    <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
-    <a href='https://aws.amazon.com/sdk-for-net/'>
-      AWS SDK for .NET</a>.</p>
-</body>
-</html>");
 
             // If you want to actually get emails while testing, change the email address below to whatever one you want to receive at.
             // This was already done earlier.

@@ -16,12 +16,12 @@ namespace ControlRoomApplication.Controllers.Communications
 
         public static string AttachmentPath { get; set; }
 
-        public EmailFields(string sender, string subject, string text, string html)
+        public EmailFields(string sender, string subject, string text)
         {
             Sender = sender;
             Subject = subject;
             Text = text;
-            Html = html;
+            Html = generateHtml(subject, text);
         }
 
         public static void setSender(string sender)
@@ -36,9 +36,15 @@ namespace ControlRoomApplication.Controllers.Communications
         {
             Text = text;
         }
-        public static void setHtml(string html)
+        private static string generateHtml(string subject, string body)
         {
-            Html = html;
+            return $@"<html>
+<head></head>
+<body>
+    <h1>{subject}</h1>
+    <p>{body}</p>
+</body>
+</html>";
         }
         public static string getAttachmentPath()
         {

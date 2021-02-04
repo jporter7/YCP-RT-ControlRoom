@@ -12,14 +12,15 @@ namespace ControlRoomApplicationTest.CommunicationTests
             string sender = "test.email@test.email.com";
             string subject = "test";
             string text = "This is a test\n";
-            string html = @"<html>
+            string html = $@"<html>
 <head></head>
 <body>
-    <h1>This is a test</h1>
+    <h1>{subject}</h1>
+    <p>{text}</p>
 </body>
-</html";
+</html>";
 
-            EmailFields epc = new EmailFields(sender, subject, text, html);
+            EmailFields epc = new EmailFields(sender, subject, text);
 
             Assert.IsTrue(EmailFields.Sender == sender);
             Assert.IsTrue(EmailFields.Subject == subject);
@@ -55,17 +56,23 @@ namespace ControlRoomApplicationTest.CommunicationTests
         }
 
         [TestMethod]
-        public void TestSetHtml()
+        public void TestGenerateHtml()
         {
-            string html = @"<html>
+            string sender = "sender";
+            string subject = "subject";
+            string body = "body";
+
+            string expectedHtml = $@"<html>
 <head></head>
 <body>
-    <h1>This is a test</h1>
+    <h1>{subject}</h1>
+    <p>{body}</p>
 </body>
-</html";
-            EmailFields.setHtml(html);
+</html>";
 
-            Assert.IsTrue(EmailFields.Html == html);
+            EmailFields email = new EmailFields(sender, subject, body);
+
+            Assert.IsTrue(EmailFields.Html.Equals(expectedHtml));
         }
 
     }
