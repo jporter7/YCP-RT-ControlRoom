@@ -21,7 +21,7 @@ namespace ControlRoomApplication.Controllers.Communications
                 // If you want physical proof that this tests, change the below fields to your own credentials
                 // I've already proven it works, so I took mine out. I don't like getting constant test emails.
                 // Or I guess you could create an account for good ol' Test User, but that's unnecessary in my opinion.
-                admins.Add(new User("Patrick", "Nelson", "pnelson1@ycp.edu", NotificationTypeEnum.ALL));
+                admins.Add(new User("Test", "User", "testradiotelescopeuser@ycp.edu", NotificationTypeEnum.ALL));
             }
             else
             {

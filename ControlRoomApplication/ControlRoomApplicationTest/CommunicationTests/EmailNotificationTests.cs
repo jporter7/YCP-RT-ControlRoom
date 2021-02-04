@@ -58,7 +58,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
 
             // If you want to actually get emails while testing, change the email address below to whatever one you want to receive at.
             // This was already done earlier.
-            User fakeUser = new User("Test", "User", "pnelson1@ycp.edu", NotificationTypeEnum.ALL);
+            User fakeUser = new User("Test", "User", "testradiotelescopeuser@ycp.edu", NotificationTypeEnum.ALL);
 
             RFData junkdata = new RFData();
             junkdata.Id = 0;
