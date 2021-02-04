@@ -44,14 +44,14 @@ namespace ControlRoomApplicationTest.CommunicationTests
         [TestMethod]
         public void TestSendingEmail()
         {
-            EmailFields.setSender("SystemTest@ycpradiotelescope.com");
+            string sender = "SystemTest@ycpradiotelescope.com";
             EmailFields.setSubject("Amazon SES Test");
             EmailFields.setText("AmazonSES Test (.NET)\r\nThis email was sent through AmazonSES using the AWS SDK for .NET.");
 
             User fakeUser = new User("Test", "User", "testradiotelescopeuser@ycp.edu", NotificationTypeEnum.ALL);
 
-            Assert.IsTrue(pushNotification.sendEmail(true));
-            Assert.IsTrue(pushNotification.SendToAppointmentUser(fakeUser));
+            Assert.IsTrue(EmailNotifications.sendToAllAdmins("test subject", "test body", sender, true));
+            //Assert.IsTrue(EmailNotifications.sendToUser(fakeUser));
         }
 
         [TestMethod]
@@ -77,9 +77,8 @@ namespace ControlRoomApplicationTest.CommunicationTests
             JunkRFData.Add(junkdata);
 
             DataToCSV.ExportToCSV(JunkRFData, testpath);
-            EmailFields.setAttachmentPath($"{testpath}.csv");
 
-            Assert.IsTrue(pushNotification.SendToAppointmentUser(fakeUser, EmailFields.getAttachmentPath()));
+            Assert.IsTrue(EmailNotifications.sendToUser(fakeUser, "test subject", "test body", $"{testpath}.csv"));
         }
 
         [TestCleanup]

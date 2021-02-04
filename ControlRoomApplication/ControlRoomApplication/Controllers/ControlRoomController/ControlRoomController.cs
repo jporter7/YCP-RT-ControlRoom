@@ -93,12 +93,9 @@ namespace ControlRoomApplication.Controllers
                     if (!ControlRoom.weatherStationOverride)
                     {
                         currentSensor.Status = SensorStatusEnum.ALARM;
-                        EmailFields.setSender("system@ycpradiotelescope.com");
-                        EmailFields.setSubject("WARNING: WEATHER STATION");
-                        EmailFields.setText($"WARNING:\r\nWind speeds are too high: {ControlRoom.WeatherStation.CurrentWindSpeedMPH}");
 
                         pushNotification.send("WARNING: WEATHER STATION", "Wind speeds are too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
-                        pushNotification.sendEmail(false);
+                        EmailNotifications.sendToAllAdmins("WARNING: WEATHER STATION", "Wind speeds are too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
                     }
                     DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
                     //ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
@@ -124,12 +121,9 @@ namespace ControlRoomApplication.Controllers
                     if (!ControlRoom.weatherStationOverride)
                     {
                         currentSensor.Status = SensorStatusEnum.WARNING;
-                        EmailFields.setSender("system@ycpradiotelescope.com");
-                        EmailFields.setSubject("WARNING: WEATHER STATION");
-                        EmailFields.setText($"WARNING:\r\nWind speeds are in Warning Range: {ControlRoom.WeatherStation.CurrentWindSpeedMPH}");
 
                         pushNotification.send("WARNING: WEATHER STATION", "Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
-                        pushNotification.sendEmail(false);
+                        EmailNotifications.sendToAllAdmins("WARNING: WEATHER STATION", "Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
                     }
                     DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
                 }
