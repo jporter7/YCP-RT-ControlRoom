@@ -200,9 +200,10 @@ namespace ControlRoomApplication.Controllers
         public override bool RequestStopAsyncAcceptingClientsAndJoin() {
             MCU.RequestStopAsyncAcceptingClientsAndJoin();
             keep_modbus_server_alive = false;
-            try {
-                PLCTCPListener.Stop();
+            try
+            {
                 PLC_Modbusserver.Dispose();
+                PLCTCPListener.Stop();
                 ClientManagmentThread.Join();
             } catch (Exception e) {
                 if ((e is ThreadStateException) || (e is ThreadStartException)) {
