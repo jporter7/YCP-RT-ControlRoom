@@ -144,6 +144,10 @@ namespace ControlRoomApplication.GUI
                 label21.Visible = false;
             }
 
+            //Initialize Color
+            celTempConvert.BackColor = System.Drawing.Color.DarkGray;
+            farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
+
             logger.Info("DiagnosticsForm Initalized");
         }
 
@@ -270,6 +274,7 @@ namespace ControlRoomApplication.GUI
             double insideTempCel = (insideTemp - 32) * (5.0 / 9);
             double outsideTempCel = (outsideTemp - 32) * (5.0 / 9);
 
+            //Celsius
             if (farenheit == false)
             {
                 InsideTempUnits.Text = "Celsius";
@@ -281,6 +286,7 @@ namespace ControlRoomApplication.GUI
                 fldElTemp.Text = Math.Round(ElMotTempCel, 2).ToString();
                 fldAzTemp.Text = Math.Round(AzMotTempCel, 2).ToString();
             }
+            //Farenheit
             else if (farenheit == true)
             {
                 InsideTempUnits.Text = "Farenheit";
@@ -292,10 +298,6 @@ namespace ControlRoomApplication.GUI
                 fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
                 fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
             }
-
-            // Temperature of motors
-            fldElTemp.Text = rtController.RadioTelescope.Micro_controler.tempData.elevationTemp.ToString();
-            fldAzTemp.Text = rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp.ToString();
 
             // Encoder Position in both degrees and motor ticks
             lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 3).ToString();
