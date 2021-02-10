@@ -305,9 +305,8 @@ namespace ControlRoomApplication.Main
                     logger.Info("ERROR killing RT controller at index " + i.ToString());
                 }
 
-                ProgramRTControllerList[0].RadioTelescope.SpectraCyberController.BringDown();
-                ProgramRTControllerList[0].RadioTelescope.PLCDriver.Bring_down();
-                ProgramPLCDriverList[0].RequestStopAsyncAcceptingClientsAndJoin();
+                ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
+                ProgramRTControllerList[i].RadioTelescope.PLCDriver.Bring_down();
             }
 
             // End logging
