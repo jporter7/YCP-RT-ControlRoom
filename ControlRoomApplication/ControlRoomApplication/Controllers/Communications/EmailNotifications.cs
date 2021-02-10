@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 using System.Net.Mime;
+using System.Threading;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Amazon;
 using ControlRoomApplication.Database;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers.Communications
 {
@@ -35,8 +37,7 @@ namespace ControlRoomApplication.Controllers.Communications
                     try
                     {
                         // All-admin notifications will always be sent from SYSTEM by default.
-                        // Commenting this out until thread bug is fixed
-                        // EmailNotifications.sendEmail(u, subject, body, sender);
+                        EmailNotifications.sendEmail(u, subject, body, sender);
                         success = true;
                     }
                     catch (Exception e)
@@ -49,13 +50,13 @@ namespace ControlRoomApplication.Controllers.Communications
             return success;
         }
 
-        public static bool sendToUser(User u, string subject, string body, string sender, string AttachmentPath = null)
+        public static Task<bool> sendToUser(User u, string subject, string body, string sender, string AttachmentPath = null)
         {
             bool success = false;
+
             try
             {
-                // Commenting this out until thread bug is fixed
-                //EmailNotifications.sendEmail(u, subject, body, sender, AttachmentPath);
+                EmailNotifications.sendEmail(u, subject, body, sender, AttachmentPath);
                 success = true;
             }
             catch (Exception e)
@@ -63,7 +64,8 @@ namespace ControlRoomApplication.Controllers.Communications
                 Console.WriteLine($"ERROR: Email could not send: {e}");
                 success = false;
             }
-            return success;
+
+            return Task.FromResult(success);
         }
 
         private static void sendEmail(User user, string subject, string body, string sender, string AttachPath = null)

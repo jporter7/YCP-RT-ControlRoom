@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Threading;
 using System.Text;
 using System.Threading.Tasks;
 using ControlRoomApplication.Controllers.Communications;
@@ -44,7 +44,24 @@ namespace ControlRoomApplicationTest.CommunicationTests
             string body = "AmazonSES Test (.NET)\r\nThis email was sent through AmazonSES using the AWS SDK for .NET.";
             User fakeUser = new User("Test", "User", "testradiotelescopeuser@ycp.edu", NotificationTypeEnum.ALL);
 
-            Assert.IsTrue(EmailNotifications.sendToUser(fakeUser, subject, body, sender));
+            // Execute task
+            Task<bool> task = EmailNotifications.sendToUser(fakeUser, subject, body, sender);
+
+            // Wait for main task to finish before continuing
+            task.Wait();
+
+            bool result = false;
+
+            // Get result (return value) from the task
+            Task getResult = task.ContinueWith(t =>
+             {
+                 result = t.Result;
+            });
+
+            // Wait until task's continuation is finished before assertion
+            getResult.Wait();
+            
+            Assert.IsTrue(result);
         }
 
         [TestMethod]
@@ -60,6 +77,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
             // This was already done earlier.
             User fakeUser = new User("Test", "User", "testradiotelescopeuser@ycp.edu", NotificationTypeEnum.ALL);
 
+            // Gather dummy data
             RFData junkdata = new RFData();
             junkdata.Id = 0;
             junkdata.appointment_id = 0;
@@ -71,7 +89,24 @@ namespace ControlRoomApplicationTest.CommunicationTests
 
             DataToCSV.ExportToCSV(JunkRFData, testpath);
 
-            Assert.IsTrue(EmailNotifications.sendToUser(fakeUser, subject, body, sender, $"{testpath}.csv"));
+            // Execute task
+            Task<bool> task = EmailNotifications.sendToUser(fakeUser, subject, body, sender, $"{testpath}.csv");
+
+            // Wait for main task to finish before continuing
+            task.Wait();
+
+            bool result = false;
+
+            // Get result (return value) from the task
+            Task getResult = task.ContinueWith(t =>
+             {
+                 result = t.Result;
+            });
+
+            // Wait until task's continuation is finished before assertion, otherwise the value may not be set
+            getResult.Wait();
+            
+            Assert.IsTrue(result);
         }
 
         [TestCleanup]
