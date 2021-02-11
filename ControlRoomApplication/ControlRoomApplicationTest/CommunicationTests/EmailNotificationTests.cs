@@ -33,7 +33,13 @@ namespace ControlRoomApplicationTest.CommunicationTests
             string subject = "Amazon SES Test";
             string body = "AmazonSES Test (.NET)\r\nThis email was sent through AmazonSES using the AWS SDK for .NET.";
 
-            Assert.IsTrue(EmailNotifications.sendToAllAdmins(subject, body, sender, true));
+            // Execute task
+            Task<bool> task = EmailNotifications.sendToAllAdmins(subject, body, sender, true);
+
+            // Wait for main task to finish before assertion
+            task.Wait();
+
+            Assert.IsTrue(task.Result);
         }
 
         [TestMethod]

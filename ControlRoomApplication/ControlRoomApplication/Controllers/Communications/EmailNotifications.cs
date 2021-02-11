@@ -14,7 +14,7 @@ namespace ControlRoomApplication.Controllers.Communications
 {
     public class EmailNotifications
     {
-        public static bool sendToAllAdmins(string subject, string body, string sender = "system@ycpradiotelescope.com", bool testflag = false)
+        public static Task<bool> sendToAllAdmins(string subject, string body, string sender = "system@ycpradiotelescope.com", bool testflag = false)
         {
             bool success = false;
             List<User> admins = new List<User>();
@@ -47,7 +47,7 @@ namespace ControlRoomApplication.Controllers.Communications
                     }
                 }
             }
-            return success;
+            return Task.FromResult(success);
         }
 
         public static Task<bool> sendToUser(User u, string subject, string body, string sender, string AttachmentPath = null)
