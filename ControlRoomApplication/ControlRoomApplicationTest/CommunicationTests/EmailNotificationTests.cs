@@ -47,21 +47,10 @@ namespace ControlRoomApplicationTest.CommunicationTests
             // Execute task
             Task<bool> task = EmailNotifications.sendToUser(fakeUser, subject, body, sender);
 
-            // Wait for main task to finish before continuing
+            // Wait for main task to finish before assertion
             task.Wait();
 
-            bool result = false;
-
-            // Get result (return value) from the task
-            Task getResult = task.ContinueWith(t =>
-             {
-                 result = t.Result;
-            });
-
-            // Wait until task's continuation is finished before assertion
-            getResult.Wait();
-            
-            Assert.IsTrue(result);
+            Assert.IsTrue(task.Result);
         }
 
         [TestMethod]
@@ -92,21 +81,10 @@ namespace ControlRoomApplicationTest.CommunicationTests
             // Execute task
             Task<bool> task = EmailNotifications.sendToUser(fakeUser, subject, body, sender, $"{testpath}.csv");
 
-            // Wait for main task to finish before continuing
+            // Wait for main task to finish before assertion
             task.Wait();
-
-            bool result = false;
-
-            // Get result (return value) from the task
-            Task getResult = task.ContinueWith(t =>
-             {
-                 result = t.Result;
-            });
-
-            // Wait until task's continuation is finished before assertion, otherwise the value may not be set
-            getResult.Wait();
             
-            Assert.IsTrue(result);
+            Assert.IsTrue(task.Result);
         }
 
         [TestCleanup]
