@@ -1,25 +1,22 @@
 ﻿using ControlRoomApplication.Controllers.Communications;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplicationTest.CommunicationTests
 {
     [TestClass]
     public class PushNotificationTest
     {
-
         [TestMethod]
-        public void TestPushNotificationFilePresence()
+        public void TestSendPushNotificationsToAllAdmins()
         {
-            Assert.IsTrue(pushNotification.sendToAllAdmins("TEST", "This should pass."));
-        }
+            // Execute task
+            Task<bool> task = pushNotification.sendToAllAdmins("TEST", "This should pass.");
 
-        [TestMethod]
-        public void TestSendPushNotification()
-        {
-            // If sendPush is false, set it to true
-            if (!pushNotification.getSendPush()) pushNotification.setSendPush(true);
+            // Wait for task to complete so result is up to date
+            task.Wait();
 
-            Assert.IsTrue(pushNotification.sendToAllAdmins("TEST", "This should pass."));
+            Assert.IsTrue(task.Result);
         }
     }
 }
