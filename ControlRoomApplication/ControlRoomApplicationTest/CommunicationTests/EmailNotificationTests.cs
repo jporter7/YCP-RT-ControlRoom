@@ -51,7 +51,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
             User fakeUser = new User("Test", "User", "testradiotelescopeuser@ycp.edu", NotificationTypeEnum.ALL);
 
             // Execute task
-            Task<bool> task = EmailNotifications.sendToUser(fakeUser, subject, body, sender);
+            Task<bool> task = EmailNotifications.sendToUser(fakeUser, subject, body, sender, null, true);
 
             // Wait for main task to finish before assertion
             task.Wait();
@@ -85,7 +85,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
             DataToCSV.ExportToCSV(JunkRFData, testpath);
 
             // Execute task
-            Task<bool> task = EmailNotifications.sendToUser(fakeUser, subject, body, sender, $"{testpath}.csv");
+            Task<bool> task = EmailNotifications.sendToUser(fakeUser, subject, body, sender, $"{testpath}.csv", true);
 
             // Wait for main task to finish before assertion
             task.Wait();
