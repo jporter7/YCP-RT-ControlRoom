@@ -18,7 +18,7 @@ namespace ControlRoomApplication.Controllers.Communications
         {
             bool success = false;
 
-            Task t = Task.Run(() =>
+            Thread t = new Thread(() =>
             {
         
                List<User> admins = new List<User>();
@@ -53,7 +53,11 @@ namespace ControlRoomApplication.Controllers.Communications
                }
             });
 
-            if (testflag) t.Wait();
+            t.Priority = ThreadPriority.Lowest;
+            t.Start();
+
+            // If it is a unit test, we want to wait for the thread to finish running before returning a value
+            if (testflag) t.Join();
 
             return Task.FromResult(success);
         }
@@ -62,7 +66,7 @@ namespace ControlRoomApplication.Controllers.Communications
         {
             bool success = false;
 
-            Task t = Task.Run(() =>
+            Thread t = new Thread(() =>
             {
                 try
                 {
@@ -76,7 +80,11 @@ namespace ControlRoomApplication.Controllers.Communications
                 }
             });
 
-            if (testflag) t.Wait();
+            t.Priority = ThreadPriority.Lowest;
+            t.Start();
+
+            // If it is a unit test, we want to wait for the thread to finish running before returning a value
+            if (testflag) t.Join();
 
             return Task.FromResult(success);
         }
