@@ -960,5 +960,10 @@ namespace ControlRoomApplication.Main
         {
 
         }
+
+        private void scanTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

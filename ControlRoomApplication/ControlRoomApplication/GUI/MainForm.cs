@@ -595,7 +595,7 @@ namespace ControlRoomApplication.Main
 
         private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+          
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -646,6 +646,9 @@ namespace ControlRoomApplication.Main
             finalSettings = !finalSettings;
             if (finalSettings == false)
             {
+
+                //Editing text to relflect state -- When the settings are being edited, the button will need to say 'finalize'
+                acceptSettings.Text = "Edit Settings";
                 if (comboBox2.Text != "Production Weather Station")
                 {
                     startButton.BackColor = System.Drawing.Color.LimeGreen;
@@ -664,6 +667,7 @@ namespace ControlRoomApplication.Main
                 LocalIPCombo.Enabled = false;
 
                 portGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                ProdcheckBox.Enabled = false;
                 txtPLCIP.Enabled = false;
                 txtMcuCOMPort.Enabled = false;
                 txtWSCOMPort.Enabled = false;
@@ -671,7 +675,12 @@ namespace ControlRoomApplication.Main
             }
             else if (finalSettings == true)
             {
+                // Editing Text to reflect state -- when finalized, you can click "edit settings"
+                acceptSettings.Text = "Finalize Settings";
+
                 startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                startButton.Enabled = false;
+                startButton.BackColor = System.Drawing.Color.LightGray;
                 loopBackBox.Enabled = true;
                 checkBox1.Enabled = true;
 
@@ -684,10 +693,11 @@ namespace ControlRoomApplication.Main
                 LocalIPCombo.Enabled = true;
 
                 portGroupbox.BackColor = System.Drawing.Color.Gray;
-                txtPLCIP.Enabled = false;
-                txtMcuCOMPort.Enabled = false;
-                txtWSCOMPort.Enabled = false;
-                txtPLCPort.Enabled = false;
+                ProdcheckBox.Enabled = true;
+                txtPLCIP.Enabled = true;
+                txtMcuCOMPort.Enabled = true;
+                txtWSCOMPort.Enabled = true;
+                txtPLCPort.Enabled = true;
             }
         }
 
@@ -701,7 +711,7 @@ namespace ControlRoomApplication.Main
 
         private void simulationSettingsGroupbox_Enter(object sender, EventArgs e)
         {
-
+            
         }
 
         private void portGroupbox_Enter(object sender, EventArgs e)
@@ -726,6 +736,24 @@ namespace ControlRoomApplication.Main
 
         }
 
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboEncoderType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboPLCType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

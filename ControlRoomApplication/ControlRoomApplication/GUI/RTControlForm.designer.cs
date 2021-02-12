@@ -483,8 +483,10 @@
             // controlScriptsCombo
             // 
             this.controlScriptsCombo.BackColor = System.Drawing.Color.DarkGray;
+            this.controlScriptsCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.controlScriptsCombo.FormattingEnabled = true;
             this.controlScriptsCombo.Items.AddRange(new object[] {
+            "Radio Telescope Control Scripts",
             "Stow Telescope",
             "Full Elevation",
             "Full 360 Clockwise Rotation",
@@ -496,11 +498,11 @@
             "Recover From Counter-Clockwise Hardstop",
             "Home Telescope",
             "Custom Azimuth Movement (Slip Ring Test)"});
+            this.controlScriptsCombo.SelectedIndex = 0;
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
             this.controlScriptsCombo.TabIndex = 23;
-            this.controlScriptsCombo.Text = "Radio Telescope Control Scripts";
             this.controlScriptsCombo.SelectedIndexChanged += new System.EventHandler(this.controlScriptsCombo_SelectedIndexChanged);
             // 
             // groupBox4
@@ -766,17 +768,19 @@
             // 
             this.integrationStepCombo.BackColor = System.Drawing.Color.DarkGray;
             this.integrationStepCombo.FormattingEnabled = true;
+            this.integrationStepCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.integrationStepCombo.Items.AddRange(new object[] {
+            "Int Step",
             "0.3",
             "0.5(S)/1.00(C) ",
             "1.00(S)/10.00(C)"});
+            this.integrationStepCombo.SelectedIndex = 0;
             this.integrationStepCombo.Location = new System.Drawing.Point(215, 56);
             this.integrationStepCombo.Margin = new System.Windows.Forms.Padding(2);
             this.integrationStepCombo.MaxDropDownItems = 6;
             this.integrationStepCombo.Name = "integrationStepCombo";
             this.integrationStepCombo.Size = new System.Drawing.Size(79, 21);
             this.integrationStepCombo.TabIndex = 44;
-            this.integrationStepCombo.Text = "Int Step";
             this.integrationStepCombo.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label10
@@ -827,20 +831,21 @@
             // 
             this.DCGain.BackColor = System.Drawing.Color.DarkGray;
             this.DCGain.FormattingEnabled = true;
+            this.DCGain.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DCGain.Items.AddRange(new object[] {
+            "Gain",
             "X1",
             "X5",
             "X10",
             "X20",
             "X50",
             "X60"});
+            this.DCGain.SelectedIndex = 0;
             this.DCGain.Location = new System.Drawing.Point(4, 56);
             this.DCGain.Margin = new System.Windows.Forms.Padding(2);
             this.DCGain.MaxDropDownItems = 6;
-            this.DCGain.Name = "DCGain";
             this.DCGain.Size = new System.Drawing.Size(57, 21);
             this.DCGain.TabIndex = 39;
-            this.DCGain.Text = "Gain";
             // 
             // stopScanButton
             // 
@@ -927,16 +932,19 @@
             // 
             this.scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
             this.scanTypeComboBox.FormattingEnabled = true;
+            this.scanTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.scanTypeComboBox.Items.AddRange(new object[] {
+            "Scan Type",
             "Continuum",
             "Spectral"});
+            this.scanTypeComboBox.SelectedIndex = 0;
             this.scanTypeComboBox.Location = new System.Drawing.Point(4, 18);
             this.scanTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.scanTypeComboBox.MaxDropDownItems = 2;
             this.scanTypeComboBox.Name = "scanTypeComboBox";
             this.scanTypeComboBox.Size = new System.Drawing.Size(83, 21);
             this.scanTypeComboBox.TabIndex = 25;
-            this.scanTypeComboBox.Text = "Scan Type";
+            this.scanTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.scanTypeComboBox_SelectedIndexChanged);
             // 
             // FreeControlForm
             // 
