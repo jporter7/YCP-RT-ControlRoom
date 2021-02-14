@@ -1,4 +1,6 @@
-﻿namespace ControlRoomApplication.Main
+﻿using System;
+
+namespace ControlRoomApplication.Main
 {
     partial class FreeControlForm
     {
@@ -70,7 +72,7 @@
             this.manualControlButton = new System.Windows.Forms.Button();
             this.immediateRadioButton = new System.Windows.Forms.RadioButton();
             this.ControledButtonRadio = new System.Windows.Forms.RadioButton();
-            this.speedComboBox = new System.Windows.Forms.ComboBox();
+            this.speedTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.subJogButton = new System.Windows.Forms.Button();
@@ -381,6 +383,7 @@
             // 
             // statusTextBox
             // 
+            this.statusTextBox.ReadOnly = true;
             this.statusTextBox.Location = new System.Drawing.Point(143, 164);
             this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.statusTextBox.Name = "statusTextBox";
@@ -542,7 +545,7 @@
             this.manualGroupBox.Controls.Add(this.manualControlButton);
             this.manualGroupBox.Controls.Add(this.immediateRadioButton);
             this.manualGroupBox.Controls.Add(this.ControledButtonRadio);
-            this.manualGroupBox.Controls.Add(this.speedComboBox);
+            this.manualGroupBox.Controls.Add(this.speedTextBox);
             this.manualGroupBox.Controls.Add(this.label2);
             this.manualGroupBox.Controls.Add(this.label1);
             this.manualGroupBox.Controls.Add(this.subJogButton);
@@ -587,9 +590,9 @@
             this.label3.Location = new System.Drawing.Point(6, 147);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 13);
+            this.label3.Size = new System.Drawing.Size(76, 13);
             this.label3.TabIndex = 26;
-            this.label3.Text = "Speed";
+            this.label3.Text = "Speed (RPMs)";
             this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // manualControlButton
@@ -632,18 +635,15 @@
             this.ControledButtonRadio.Text = "Controlled Stop";
             this.ControledButtonRadio.UseVisualStyleBackColor = true;
             // 
-            // speedComboBox
+            // speedTextBox
             // 
-            this.speedComboBox.FormattingEnabled = true;
-            this.speedComboBox.Items.AddRange(new object[] {
-            "0.1 RPM",
-            "2 RPM"});
-            this.speedComboBox.Location = new System.Drawing.Point(9, 162);
-            this.speedComboBox.Margin = new System.Windows.Forms.Padding(2);
-            this.speedComboBox.Name = "speedComboBox";
-            this.speedComboBox.Size = new System.Drawing.Size(121, 21);
-            this.speedComboBox.TabIndex = 10;
-            this.speedComboBox.SelectedIndexChanged += new System.EventHandler(this.speedComboBox_SelectedIndexChanged);
+            this.speedTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.speedTextBox.Location = new System.Drawing.Point(9, 162);
+            this.speedTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.speedTextBox.Name = "speedTextBox";
+            this.speedTextBox.Size = new System.Drawing.Size(121, 20);
+            this.speedTextBox.TabIndex = 10;
+           
             // 
             // label2
             // 
@@ -767,8 +767,8 @@
             // integrationStepCombo
             // 
             this.integrationStepCombo.BackColor = System.Drawing.Color.DarkGray;
-            this.integrationStepCombo.FormattingEnabled = true;
             this.integrationStepCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.integrationStepCombo.FormattingEnabled = true;
             this.integrationStepCombo.Items.AddRange(new object[] {
             "Int Step",
             "0.3",
@@ -787,12 +787,12 @@
             // 
             this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(4, 41);
+            this.label10.Location = new System.Drawing.Point(0, 41);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(44, 13);
+            this.label10.Size = new System.Drawing.Size(66, 13);
             this.label10.TabIndex = 43;
-            this.label10.Text = "DCGain";
+            this.label10.Text = "DCGain (dB)";
             // 
             // IFGainVal
             // 
@@ -802,6 +802,7 @@
             this.IFGainVal.Name = "IFGainVal";
             this.IFGainVal.Size = new System.Drawing.Size(44, 20);
             this.IFGainVal.TabIndex = 42;
+            this.IFGainVal.TextChanged += new System.EventHandler(this.IFGainVal_TextChanged);
             // 
             // lblIFGain
             // 
@@ -810,9 +811,10 @@
             this.lblIFGain.Location = new System.Drawing.Point(74, 43);
             this.lblIFGain.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblIFGain.Name = "lblIFGain";
-            this.lblIFGain.Size = new System.Drawing.Size(38, 13);
+            this.lblIFGain.Size = new System.Drawing.Size(60, 13);
             this.lblIFGain.TabIndex = 41;
-            this.lblIFGain.Text = "IFGain";
+            this.lblIFGain.Text = "IFGain (dB)";
+            this.lblIFGain.Click += new System.EventHandler(this.lblIFGain_Click);
             // 
             // finalizeSettingsButton
             // 
@@ -830,11 +832,11 @@
             // DCGain
             // 
             this.DCGain.BackColor = System.Drawing.Color.DarkGray;
-            this.DCGain.FormattingEnabled = true;
             this.DCGain.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.DCGain.FormattingEnabled = true;
             this.DCGain.Items.AddRange(new object[] {
             "Gain",
-            "X1",
+            "x1",
             "X5",
             "X10",
             "X20",
@@ -844,8 +846,10 @@
             this.DCGain.Location = new System.Drawing.Point(4, 56);
             this.DCGain.Margin = new System.Windows.Forms.Padding(2);
             this.DCGain.MaxDropDownItems = 6;
+            this.DCGain.Name = "DCGain";
             this.DCGain.Size = new System.Drawing.Size(57, 21);
             this.DCGain.TabIndex = 39;
+            this.DCGain.SelectedIndexChanged += new System.EventHandler(this.DCGain_SelectedIndexChanged);
             // 
             // stopScanButton
             // 
@@ -883,6 +887,7 @@
             this.frequency.Name = "frequency";
             this.frequency.Size = new System.Drawing.Size(76, 20);
             this.frequency.TabIndex = 35;
+            this.frequency.TextChanged += new System.EventHandler(this.frequency_TextChanged);
             // 
             // lblFrequency
             // 
@@ -891,9 +896,10 @@
             this.lblFrequency.Location = new System.Drawing.Point(155, 0);
             this.lblFrequency.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFrequency.Name = "lblFrequency";
-            this.lblFrequency.Size = new System.Drawing.Size(57, 13);
+            this.lblFrequency.Size = new System.Drawing.Size(79, 13);
             this.lblFrequency.TabIndex = 34;
-            this.lblFrequency.Text = "Frequency";
+            this.lblFrequency.Text = "Frequency (Hz)";
+            this.lblFrequency.Click += new System.EventHandler(this.lblFrequency_Click);
             // 
             // label9
             // 
@@ -915,6 +921,7 @@
             this.offsetVoltage.Name = "offsetVoltage";
             this.offsetVoltage.Size = new System.Drawing.Size(44, 20);
             this.offsetVoltage.TabIndex = 27;
+            this.offsetVoltage.TextChanged += new System.EventHandler(this.offsetVoltage_TextChanged);
             // 
             // label12
             // 
@@ -931,8 +938,8 @@
             // scanTypeComboBox
             // 
             this.scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
-            this.scanTypeComboBox.FormattingEnabled = true;
             this.scanTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.scanTypeComboBox.FormattingEnabled = true;
             this.scanTypeComboBox.Items.AddRange(new object[] {
             "Scan Type",
             "Continuum",
@@ -978,6 +985,7 @@
 
         }
 
+      
         #endregion
 
         private System.Windows.Forms.Button PosDecButton;
@@ -1016,7 +1024,7 @@
         private System.Windows.Forms.Button plusElaButton;
         private System.Windows.Forms.Button subElaButton;
         private System.Windows.Forms.Button plusJogButton;
-        private System.Windows.Forms.ComboBox speedComboBox;
+        private System.Windows.Forms.TextBox speedTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton immediateRadioButton;
         private System.Windows.Forms.RadioButton ControledButtonRadio;

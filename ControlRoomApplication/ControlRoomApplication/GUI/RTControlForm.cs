@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic;
+using ControlRoomApplication.Validation;
 
 namespace ControlRoomApplication.Main
 {
@@ -38,6 +39,7 @@ namespace ControlRoomApplication.Main
         public SpectraCyberDCGainEnum DCGainInput;
         public SpectraCyberIntegrationTimeEnum IntTimeInput;
         public SpectraCyberBandwidthEnum BandwidthInput;
+        public bool acceptSettings = false;
 
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
@@ -100,7 +102,7 @@ namespace ControlRoomApplication.Main
             subElaButton.Enabled = false;
             ControledButtonRadio.Enabled = false;
             immediateRadioButton.Enabled = false;
-            speedComboBox.Enabled = false;
+            speedTextBox.Enabled = false;
 
             //Initialize Start and Stop Scan buttons as disabled
             spectraEditActive = true;
@@ -488,32 +490,12 @@ namespace ControlRoomApplication.Main
             subElaButton.Enabled = manual_save_state;
             ControledButtonRadio.Enabled = manual_save_state;
             immediateRadioButton.Enabled = manual_save_state;
-            speedComboBox.Enabled = manual_save_state;
+            speedTextBox.Enabled = manual_save_state;
 
             editButton.Enabled = !manual_save_state;
         }
 
-        private void speedComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            {
-                if (speedComboBox.Text == "2 RPM")
-                {
-                    logger.Info("Speed set to 2 RPM");
-                   // speed = 333333;
-                }
-                 else if(speedComboBox.Text == "0.1 RPM")
-                {
-                    logger.Info("Speed set to 0.1 RPM");
-                   // speed = 16667;
-                }
-
-                else
-                {
-                    logger.Info("Invalid Speed Selected");
-                    throw new Exception();
-                }
-            }
-        }
+   
         //Run Script Button Functionality
         //Case Depends on which script is currently selected 
         private void runControlScript_Click(object sender, EventArgs e)
@@ -527,7 +509,7 @@ namespace ControlRoomApplication.Main
 
             switch (caseSwitch)
             {
-                case 0:
+                case 1:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -535,7 +517,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Stow Script selected (index 0 of control script combo)
                     break;
-                case 1:
+                case 2:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -543,7 +525,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Full Elevation selected (index 1 of control script combo)
                     break;
-                case 2:
+                case 3:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -551,7 +533,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Full 360 CW selected (index 2 of control script combo)
                     break;
-                case 3:
+                case 4:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -559,7 +541,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Full 360 CCW  selected (index 3 of control script combo)
                     break;
-                case 4:
+                case 5:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -567,7 +549,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Thermal Calibration selected (index 4 of control script combo)
                     break;
-                case 5:
+                case 6:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -575,7 +557,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Snow Dump selected (index 5 of control script combo)
                     break;
-                case 6:
+                case 7:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -583,7 +565,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Recover from Limit Switch (index 6 of control script combo)
                     break;
-                case 7:
+                case 8:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -591,7 +573,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Recover from Clockwise Hardstop (index 7 of control script combo)
                     break;
-                case 8:
+                case 9:
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
@@ -599,7 +581,7 @@ namespace ControlRoomApplication.Main
                     });
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
                     break;
-                case 9:
+                case 10:
                     thread = new Thread(() =>
                     {
                         tele.PLCDriver.Home();
@@ -607,7 +589,7 @@ namespace ControlRoomApplication.Main
                     //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
                     break;
 
-                case 10:
+                case 11:
                     thread = new Thread(() =>
                     {
                         double azimuthPos = 0;
@@ -651,21 +633,40 @@ namespace ControlRoomApplication.Main
         //Control Script combo box enables run button when a script has been selected
         private void controlScriptsCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (controlScriptsCombo.SelectedIndex >= 0)
+            if (controlScriptsCombo.SelectedIndex > 0)
             {
                 runControlScriptButton.Enabled = true;
                 runControlScriptButton.BackColor = System.Drawing.Color.LimeGreen;
+            }
+            if(controlScriptsCombo.SelectedIndex == 0)
+            {
+                runControlScriptButton.Enabled = false;
+                runControlScriptButton.BackColor = System.Drawing.Color.Gray;
             }
 
         }
 
         private void subJogButton_Down( object sender , MouseEventArgs e ) {
-            double speed = Convert.ToDouble( speedComboBox.Text );
-            logger.Info( "Jog PosButton MouseDown" );
-            // UpdateText("Moving at " + comboBox1.Text);
+            if (Validator.ValidateSpeed(speedTextBox.Text))
+            {
+                double speed = Convert.ToDouble(speedTextBox.Text);
+                if (Validator.ValidateSpeed(speed))
+                {
+                    logger.Info("Jog PosButton MouseDown");
+                    // UpdateText("Moving at " + comboBox1.Text);
 
-            // Start CW Jog
-            rtController.StartRadioTelescopeAzimuthJog( speed , false );
+                    // Start CW Jog
+                    rtController.StartRadioTelescopeAzimuthJog(speed, false);
+                }
+                else
+                {
+                    MessageBox.Show("Speed is not in valid range, 0.0-2.0 RPMs. Please try again");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Invalid speed. Must be in RPMs between 0.0 and 2.0");
+            }
         }
 
         private void subJogButton_Up( object sender , MouseEventArgs e ) {
@@ -676,13 +677,29 @@ namespace ControlRoomApplication.Main
             ExecuteCorrectStop();
         }
 
-        private void plusJogButton_Down( object sender , MouseEventArgs e ) {
-            double speed = Convert.ToDouble( speedComboBox.Text );
-            logger.Info( "Jog PosButton MouseDown" );
-            // UpdateText("Moving at " + comboBox1.Text);
+        private void plusJogButton_Down(object sender, MouseEventArgs e)
+        {
+            if (Validator.ValidateSpeed(speedTextBox.Text))
+            {
+                double speed = Convert.ToDouble(speedTextBox.Text);
+                if (Validator.ValidateSpeed(speed))
+                {
 
-            // Start CW Jog
-            rtController.StartRadioTelescopeAzimuthJog( speed , true );
+                    logger.Info("Jog PosButton MouseDown");
+                    // UpdateText("Moving at " + comboBox1.Text);
+
+                    // Start CW Jog
+                    rtController.StartRadioTelescopeAzimuthJog(speed, true);
+                }
+                else
+                {
+                    MessageBox.Show("Speed is not in valid range, 0.0-2.0 RPMs. Please try again");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Invalid speed. Must be in RPMs between 0.0 and 2.0");
+            }
         }
 
         private void plusJogButton_UP( object sender , MouseEventArgs e ) {
@@ -751,12 +768,27 @@ namespace ControlRoomApplication.Main
         }
 
         private void plusElaButton_Down(object sender, MouseEventArgs e ){
-            double speed = Convert.ToDouble( speedComboBox.Text);
-            logger.Info("Jog PosButton MouseDown");
-            // UpdateText("Moving at " + comboBox1.Text);
+            if (Validator.ValidateSpeed(speedTextBox.Text))
+            {
+                double speed = Convert.ToDouble(speedTextBox.Text);
+                if (Validator.ValidateSpeed(speed))
+                {
 
-            // Start CW Jog
-            rtController.StartRadioTelescopeElevationJog(speed, true);
+                    logger.Info("Jog PosButton MouseDown");
+                    // UpdateText("Moving at " + comboBox1.Text);
+
+                    // Start CW Jog
+                    rtController.StartRadioTelescopeElevationJog(speed, true);
+                }
+                else
+                {
+                    MessageBox.Show("Speed is not in valid range, 0.0-2.0 RPMs. Please try again");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Invalid speed. Must be in RPMs between 0.0 and 2.0");
+            }
         }
 
         private void plusElaButton_Up( object sender , MouseEventArgs e ) {
@@ -768,12 +800,27 @@ namespace ControlRoomApplication.Main
         }
 
         private void subElaButton_Down(object sender, MouseEventArgs e ){
-            double speed = Convert.ToDouble( speedComboBox.Text);
-            logger.Info("Jog PosButton MouseDown");
-            //UpdateText("Moving at " + speedComboBox.Text);
+            if (Validator.ValidateSpeed(speedTextBox.Text))
+            {
+                double speed = Convert.ToDouble(speedTextBox.Text);
+                if (Validator.ValidateSpeed(speed))
+                {
 
-            // Start CW Jog
-            rtController.StartRadioTelescopeElevationJog( speed, false);
+                    logger.Info("Jog PosButton MouseDown");
+                    // UpdateText("Moving at " + comboBox1.Text);
+
+                    // Start CW Jog
+                    rtController.StartRadioTelescopeElevationJog(speed, false);
+                }
+                else
+                {
+                    MessageBox.Show("Speed is not in valid range, 0.0-2.0 RPMs. Please try again");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Invalid speed. Must be in RPMs between 0.0 and 2.0");
+            }
         }
 
         private void subElaButton_Up( object sender , MouseEventArgs e ) {
@@ -796,124 +843,167 @@ namespace ControlRoomApplication.Main
 
         private void finalizeSettings_Click(object sender, EventArgs e)
         {
-            logger.Info("[SpectraCyberController] Finalize settings button has been clicked");
-
-            if (spectraEditActive)
+            bool validDropdowns = false;
+            bool validFrequency, validIFGain, validOffsetVoltage;
+            validFrequency = Validator.ValidateFrequency(frequency.Text);
+            validIFGain = Validator.ValidateIFGain(IFGainVal.Text);
+            validOffsetVoltage = Validator.ValidateOffsetVoltage(offsetVoltage.Text);
+            if (scanTypeComboBox.SelectedIndex != 0 && integrationStepCombo.SelectedIndex != 0 && DCGain.SelectedIndex != 0)
             {
-                scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
-                scanTypeComboBox.Enabled = false;
-                integrationStepCombo.BackColor = System.Drawing.Color.DarkGray;
-                integrationStepCombo.Enabled = false;
-                offsetVoltage.BackColor = System.Drawing.Color.DarkGray;
-                offsetVoltage.Enabled = false;
-                frequency.BackColor = System.Drawing.Color.DarkGray;
-                frequency.Enabled = false;
-                DCGain.BackColor = System.Drawing.Color.DarkGray;
-                DCGain.Enabled = false;
-                IFGainVal.BackColor = System.Drawing.Color.DarkGray;
-                IFGainVal.Enabled = false;
-
-                startScanButton.BackColor = System.Drawing.Color.LimeGreen;
-                startScanButton.Enabled = true;
-
-                spectraEditActive = false;
-
-                int caseSwitch = DCGain.SelectedIndex;
-
-                switch (caseSwitch)
-                {
-                    case 0:
-                        DCGainInput = SpectraCyberDCGainEnum.X1;
-                        break;
-                    case 1:
-                        DCGainInput = SpectraCyberDCGainEnum.X5;
-                        break;
-                    case 2:
-                        DCGainInput = SpectraCyberDCGainEnum.X10;
-                        break;
-                    case 3:
-                        DCGainInput = SpectraCyberDCGainEnum.X20;
-                        break;
-                    case 4:
-                        DCGainInput = SpectraCyberDCGainEnum.X50;
-                        break;
-                    case 5:
-                        DCGainInput = SpectraCyberDCGainEnum.X60;
-                        break;
-                }
-
-                caseSwitch = integrationStepCombo.SelectedIndex;
-
-                switch (caseSwitch)
-                {
-                    case 0:
-                        IntTimeInput = SpectraCyberIntegrationTimeEnum.SHORT_TIME_SPAN;
-                        break;
-                    case 1:
-                        IntTimeInput = SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN;
-                        break;
-                    case 2:
-                        IntTimeInput = SpectraCyberIntegrationTimeEnum.LONG_TIME_SPAN;
-                        break;
-                }
-
+                validDropdowns = true;
             }
-            else
+
+            if (!validFrequency)
             {
-                scanTypeComboBox.BackColor = System.Drawing.Color.White;
-                scanTypeComboBox.Enabled = true;
-                integrationStepCombo.BackColor = System.Drawing.Color.White;
-                integrationStepCombo.Enabled = true;
-                offsetVoltage.BackColor = System.Drawing.Color.White;
-                offsetVoltage.Enabled = true;
-                frequency.BackColor = System.Drawing.Color.White;
-                frequency.Enabled = true;
-                DCGain.BackColor = System.Drawing.Color.White;
-                DCGain.Enabled = true;
-                IFGainVal.BackColor = System.Drawing.Color.White;
-                IFGainVal.Enabled = true;
+                MessageBox.Show("Invalid Frequency. Enter a value greater than 0 Hz");
+            }
+            if (!validIFGain)
+            {
+                MessageBox.Show("Invalid IFGain. Enter a value between 10.00 and 25.75 decibles.");
+            }
+            if (!validOffsetVoltage)
+            {
+                MessageBox.Show("Invalid Offset Voltage. Enter a value between 0 and 4.095 volts");
+            }
+            if (!validDropdowns)
+            {
+                MessageBox.Show("One or more dropdowns have not been changed from their default values. Make sure to choose a dropdown option for each!");
+            }
+            if (validOffsetVoltage && validIFGain && validFrequency && validDropdowns)
+            {
+                acceptSettings = !acceptSettings;
+                if (acceptSettings)
+                {
+                    this.finalizeSettingsButton.Text = "Edit Settings";
+                }
+                else
+                {
+                    this.finalizeSettingsButton.Text = "Finalize Settings";
+                }
+                logger.Info("[SpectraCyberController] Finalize settings button has been clicked");
 
-                startScanButton.BackColor = System.Drawing.Color.DarkGray;
-                startScanButton.Enabled = false;
 
-                spectraEditActive = true;
+                if (spectraEditActive)
+                {
+                    scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
+                    scanTypeComboBox.Enabled = false;
+                    integrationStepCombo.BackColor = System.Drawing.Color.DarkGray;
+                    integrationStepCombo.Enabled = false;
+                    offsetVoltage.BackColor = System.Drawing.Color.DarkGray;
+                    offsetVoltage.Enabled = false;
+                    frequency.BackColor = System.Drawing.Color.DarkGray;
+                    frequency.Enabled = false;
+                    DCGain.BackColor = System.Drawing.Color.DarkGray;
+                    DCGain.Enabled = false;
+                    IFGainVal.BackColor = System.Drawing.Color.DarkGray;
+                    IFGainVal.Enabled = false;
+
+                    startScanButton.BackColor = System.Drawing.Color.LimeGreen;
+                    startScanButton.Enabled = true;
+
+                    spectraEditActive = false;
+
+                    int caseSwitch = DCGain.SelectedIndex;
+
+                    switch (caseSwitch)
+                    {
+                        case 1:
+                            DCGainInput = SpectraCyberDCGainEnum.X1;
+                            break;
+                        case 2:
+                            DCGainInput = SpectraCyberDCGainEnum.X5;
+                            break;
+                        case 3:
+                            DCGainInput = SpectraCyberDCGainEnum.X10;
+                            break;
+                        case 4:
+                            DCGainInput = SpectraCyberDCGainEnum.X20;
+                            break;
+                        case 5:
+                            DCGainInput = SpectraCyberDCGainEnum.X50;
+                            break;
+                        case 6:
+                            DCGainInput = SpectraCyberDCGainEnum.X60;
+                            break;
+                    }
+
+                    caseSwitch = integrationStepCombo.SelectedIndex;
+
+                    switch (caseSwitch)
+                    {
+                        case 1:
+                            IntTimeInput = SpectraCyberIntegrationTimeEnum.SHORT_TIME_SPAN;
+                            break;
+                        case 2:
+                            IntTimeInput = SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN;
+                            break;
+                        case 3:
+                            IntTimeInput = SpectraCyberIntegrationTimeEnum.LONG_TIME_SPAN;
+                            break;
+                    }
+
+                }
+                else
+                {
+                    scanTypeComboBox.BackColor = System.Drawing.Color.White;
+                    scanTypeComboBox.Enabled = true;
+                    integrationStepCombo.BackColor = System.Drawing.Color.White;
+                    integrationStepCombo.Enabled = true;
+                    offsetVoltage.BackColor = System.Drawing.Color.White;
+                    offsetVoltage.Enabled = true;
+                    frequency.BackColor = System.Drawing.Color.White;
+                    frequency.Enabled = true;
+                    DCGain.BackColor = System.Drawing.Color.White;
+                    DCGain.Enabled = true;
+                    IFGainVal.BackColor = System.Drawing.Color.White;
+                    IFGainVal.Enabled = true;
+
+                    startScanButton.BackColor = System.Drawing.Color.DarkGray;
+                    startScanButton.Enabled = false;
+
+                    spectraEditActive = true;
+                }
             }
         }
 
         private void startScan_Click(object sender, EventArgs e)
         {
             logger.Info("[SpectraCyberController] Start Scan button has been clicked");
-            int caseSwitch = scanTypeComboBox.SelectedIndex;
+            
+                int caseSwitch = scanTypeComboBox.SelectedIndex;
 
-            switch (caseSwitch)
-            {
-                case 0:
-                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-                    rtController.RadioTelescope.SpectraCyberController.SetFrequency(Convert.ToDouble(frequency.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetContinuumIntegrationTime(IntTimeInput);
-                    rtController.RadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetContGain(DCGainInput);
-                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
-                    break;
-                case 1:
-                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
-                    rtController.RadioTelescope.SpectraCyberController.SetFrequency(Convert.ToDouble(frequency.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(IntTimeInput);
-                    rtController.RadioTelescope.SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
-                    rtController.RadioTelescope.SpectraCyberController.SetSpecGain(DCGainInput);
-                    rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
-                    break;
-            }
-       
-            startScanButton.Enabled = false;
-            startScanButton.BackColor = System.Drawing.Color.DarkGray;
+                switch (caseSwitch)
+                {
+                    case 1:
+                        rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+                        rtController.RadioTelescope.SpectraCyberController.SetFrequency(Convert.ToDouble(frequency.Text));
+                        rtController.RadioTelescope.SpectraCyberController.SetContinuumIntegrationTime(IntTimeInput);
+                        rtController.RadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                        rtController.RadioTelescope.SpectraCyberController.SetContGain(DCGainInput);
+                        rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
+                        break;
+                    case 2:
+                        rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
+                        rtController.RadioTelescope.SpectraCyberController.SetFrequency(Convert.ToDouble(frequency.Text));
+                        rtController.RadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(IntTimeInput);
+                        rtController.RadioTelescope.SpectraCyberController.SetSpectralOffsetVoltage(Convert.ToDouble(offsetVoltage.Text));
+                        rtController.RadioTelescope.SpectraCyberController.SetSpecGain(DCGainInput);
+                        rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
+                        break;
+                }
 
-            stopScanButton.Enabled = true;
-            stopScanButton.BackColor = System.Drawing.Color.Red;
+                startScanButton.Enabled = false;
+                startScanButton.BackColor = System.Drawing.Color.DarkGray;
 
-             rtController.RadioTelescope.SpectraCyberController.StartScan(CurrentAppointment);
-          //  controlRoom.RTControllerManagementThreads.Find(t => t.RTController.RadioTelescope.Id == rtId).StartReadingData(CurrentAppointment);
-            logger.Info("[SpectraCyberController] Scan has started");
+                stopScanButton.Enabled = true;
+                stopScanButton.BackColor = System.Drawing.Color.Red;
+
+                rtController.RadioTelescope.SpectraCyberController.StartScan(CurrentAppointment);
+                //  controlRoom.RTControllerManagementThreads.Find(t => t.RTController.RadioTelescope.Id == rtId).StartReadingData(CurrentAppointment);
+                logger.Info("[SpectraCyberController] Scan has started");
+            
+
+         
         }
 
         private void stopScan_Click(object sender, EventArgs e)
@@ -958,10 +1048,62 @@ namespace ControlRoomApplication.Main
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (integrationStepCombo.SelectedIndex == 0)
+            {
+                //error message
+            }
+           
         }
 
         private void scanTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (scanTypeComboBox.SelectedIndex == 0)
+            {
+                // error message
+            }
+           
+        }
+
+
+        private void DCGain_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (DCGain.SelectedIndex == 0)
+            {
+                // error message
+            }
+            
+        }
+
+        private void frequency_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void offsetVoltage_TextChanged(object sender, EventArgs e)
+        {
+            double volts = double.Parse(offsetVoltage.Text);
+            if( volts < 0 || volts > 4.095)
+            {
+                // error message
+            }
+        }
+
+        private void IFGainVal_TextChanged(object sender, EventArgs e)
+        {
+            double gainVal = double.Parse(IFGainVal.Text);
+            if(gainVal < 10.00 || gainVal > 25.75)
+            {
+                // error message
+            }
+        }
+
+        private void lblFrequency_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblIFGain_Click(object sender, EventArgs e)
         {
 
         }

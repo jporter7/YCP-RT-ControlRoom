@@ -15,5 +15,21 @@ namespace ControlRoomApplication.Constants
         public static readonly Orientation THERMAL_CALIBRATION_ORIENTATION = new Orientation(200, 20);
 
         public static readonly double THERMAL_CALIBRATION_OFFSET = 0.01;
+
+
+        // constants used for user input validation
+        public const int MAX_PORT_VALUE = 65535;
+
+        public const int MIN_PORT_VALUE = 1; // 0 is reserved!
+
+        public const double MAX_SPEED_RPM = 2.00;
+
+        public const double MIN_SPEED_RPM = 0.00;
+
+        //private const
+
+
+
+
     }
 }
