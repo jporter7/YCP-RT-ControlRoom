@@ -352,7 +352,8 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         public void TestGetAllAdminUsers()
         {
             List<User> AdminUsers = new List<User>();
-            AdminUsers = DatabaseOperations.GetAllAdminUsers();
+
+            AdminUsers = DatabaseOperations.GetAllAdminUsers(true);
             Assert.IsTrue(AdminUsers.Count > 0);
             Assert.IsTrue(AdminUsers.All(user => user.UR._User_Role == UserRoleEnum.ADMIN));
         }
