@@ -324,7 +324,7 @@ namespace ControlRoomApplication.Database
         /// <summary>
         /// Returns a list of all Admin Users
         /// </summary>
-        public static List<User> GetAllAdminUsers()
+        public static List<User> GetAllAdminUsers(bool testflag = false)
         {
             List<User> AdminUsers = new List<User>();
 
@@ -332,7 +332,7 @@ namespace ControlRoomApplication.Database
             {
                 AdminUsers = Context.Users.SqlQuery("SELECT * FROM user U INNER JOIN user_role UR ON U.id = UR.user_id WHERE UR.role = 'ADMIN'").ToList<User>();
             }
-            if(AdminUsers.Count() == 0)
+            if(AdminUsers.Count() == 0 && !testflag)
             {
                 User dummy = CreateDummyUser();
                 AdminUsers.Add(dummy);
