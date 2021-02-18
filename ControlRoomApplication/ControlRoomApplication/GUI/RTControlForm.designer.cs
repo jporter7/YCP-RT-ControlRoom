@@ -802,7 +802,7 @@ namespace ControlRoomApplication.Main
             this.IFGainVal.Name = "IFGainVal";
             this.IFGainVal.Size = new System.Drawing.Size(44, 20);
             this.IFGainVal.TabIndex = 42;
-            this.IFGainVal.TextChanged += new System.EventHandler(this.IFGainVal_TextChanged);
+           
             // 
             // lblIFGain
             // 
@@ -887,7 +887,7 @@ namespace ControlRoomApplication.Main
             this.frequency.Name = "frequency";
             this.frequency.Size = new System.Drawing.Size(76, 20);
             this.frequency.TabIndex = 35;
-            this.frequency.TextChanged += new System.EventHandler(this.frequency_TextChanged);
+          
             // 
             // lblFrequency
             // 
@@ -921,7 +921,7 @@ namespace ControlRoomApplication.Main
             this.offsetVoltage.Name = "offsetVoltage";
             this.offsetVoltage.Size = new System.Drawing.Size(44, 20);
             this.offsetVoltage.TabIndex = 27;
-            this.offsetVoltage.TextChanged += new System.EventHandler(this.offsetVoltage_TextChanged);
+          
             // 
             // label12
             // 

@@ -1074,30 +1074,6 @@ namespace ControlRoomApplication.Main
             
         }
 
-        private void frequency_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-
-        private void offsetVoltage_TextChanged(object sender, EventArgs e)
-        {
-            double volts = double.Parse(offsetVoltage.Text);
-            if( volts < 0 || volts > 4.095)
-            {
-                // error message
-            }
-        }
-
-        private void IFGainVal_TextChanged(object sender, EventArgs e)
-        {
-            double gainVal = double.Parse(IFGainVal.Text);
-            if(gainVal < 10.00 || gainVal > 25.75)
-            {
-                // error message
-            }
-        }
-
         private void lblFrequency_Click(object sender, EventArgs e)
         {
 

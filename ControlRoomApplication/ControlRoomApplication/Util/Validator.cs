@@ -35,8 +35,7 @@ namespace ControlRoomApplication.Validation {
             int.TryParse(text, out port);
             // luckily, since port 0 is reserved, we don't need to check if
             // port would be 0 from the parse failing. It handles both cases!
-            return (port <= MiscellaneousConstants.MAX_PORT_VALUE
-                && port >= MiscellaneousConstants.MIN_PORT_VALUE);
+            return ValidatePort(port);
         }
 
 
@@ -52,6 +51,11 @@ namespace ControlRoomApplication.Validation {
             try {
                address = IPAddress.Parse(ip);
             }catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (ArgumentNullException e)
             {
                 Console.WriteLine(e.Message);
                 return false;
@@ -76,7 +80,8 @@ namespace ControlRoomApplication.Validation {
         /// Helper method to validate via a text box
         /// </summary>
         /// <param name="text"> user text to validate </param>
-        /// <returns> returns true, if the textbox value is a valid double. False otherwise</returns>
+        /// <returns> returns true, if the textbox speed value is a valid 
+        /// double AND is in the expected range. False otherwise</returns>
         public static bool ValidateSpeed(string text)
         {
             double speed;
@@ -89,16 +94,31 @@ namespace ControlRoomApplication.Validation {
                 Console.WriteLine(e.Message);
                 return false;
             }
-            return (speed <= MiscellaneousConstants.MAX_SPEED_RPM
-                && speed >= MiscellaneousConstants.MIN_SPEED_RPM);
+            catch (ArgumentNullException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return ValidateSpeed(speed);
         }
 
-
+        /// <summary>
+        /// Validating the voltage that the user entered is withing the acceptable range
+        /// </summary>
+        /// <param name="volts"> Valueinput by user, in Volts </param>
+        /// <returns>true, if in the expected range, false otherwise</returns>
         public static bool ValidateOffsetVoltage(double volts)
         {
             return (volts >= 0 && volts <= 4.095);
         }
 
+        /// <summary>
+        /// Helper method to validate offset voltage via a string (Windows Form textbox will return as a string)
+        /// Also used to validate the voltage that the user entered is withing the acceptable range
+        /// </summary>
+        /// <param name="text"> the textnox from the windows form, 
+        /// or any string of text that contains a voltage value</param>
+        /// <returns> true, if the voltage is a valid double AND is in the expected range. False otherwise. </returns>
         public static bool ValidateOffsetVoltage(string text)
         {
             double volts;
@@ -111,9 +131,20 @@ namespace ControlRoomApplication.Validation {
                 Console.WriteLine(e.Message);
                 return false;
             }
-            return (volts >= 0 && volts <= 4.095);
+            catch (ArgumentNullException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return ValidateOffsetVoltage(volts);
         }
 
+        /// <summary>
+        /// Method to validate the IFGain user input in the RTControl Form. 
+        /// Useful when input is a textbox, i.e. from a Windows Form.
+        /// </summary>
+        /// <param name="text">The textbox, or any string of text to be validated for IFGain </param>
+        /// <returns>true if the value is a valid double AND the IFGain is in the expected range </returns>
         public static bool ValidateIFGain(string text)
         {
             double decibles;
@@ -126,14 +157,33 @@ namespace ControlRoomApplication.Validation {
                 Console.WriteLine(e.Message);
                 return false;
             }
-            return (decibles >= 10.00 && decibles <= 25.75);
+            catch (ArgumentNullException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return ValidateIFGain(decibles);
         }
 
+        /// <summary>
+        /// Method to validate decibles are in the expected range
+        /// given a valid double. Mainly used for IFGain user input in the RTControl Form
+        /// </summary>
+        /// <param name="decibles"> Decibles entered by the user </param>
+        /// <returns> True, if the decibles are in the expected range. False otherwise </returns>
         public static bool ValidateIFGain(double decibles)
         {
             return (decibles >= 10.00 && decibles <= 25.75);
         }
 
+        /// <summary>
+        /// Method to validate frequency from a string of text. Will attempt to parse
+        /// the double out of the string, then validate the double is within the expected frequency range.
+        /// </summary>
+        /// <param name="text"> String of text entered by user, or any string of text to be
+        /// validated for frequency </param>
+        /// <returns>If unable to parse, or the double parsed is not in the expected
+        /// range, it will return false. True otherwise</returns>
         public static bool ValidateFrequency(string text)
         {
             double hertz;
@@ -146,9 +196,19 @@ namespace ControlRoomApplication.Validation {
                 Console.WriteLine(e.Message);
                 return false;
             }
-            return (hertz >= 0.0);
+            catch (ArgumentNullException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return ValidateFrequency(hertz);
         }
 
+        /// <summary>
+        /// Method to validate frequency entered by user, or any value of frequency
+        /// </summary>
+        /// <param name="hertz"> frequency, in hertz, as a double value </param>
+        /// <returns> True, if the frequency is within the accepted range. False otherwise </returns>
         public static bool ValidateFrequency(double hertz)
         {
             return (hertz >= 0.0);
