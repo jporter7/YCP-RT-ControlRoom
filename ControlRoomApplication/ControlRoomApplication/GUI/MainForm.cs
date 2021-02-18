@@ -657,6 +657,7 @@ namespace ControlRoomApplication.Main
         {
             // Begin User Validation of input IP and port numbers
             bool MCUPortValid, MCUIPValid, PLCPortValid, WCOMPortValid;
+            string errorString = null;
             MCUPortValid = Validator.ValidatePort(txtMcuCOMPort.Text);
             PLCPortValid = Validator.ValidatePort(txtPLCPort.Text);
             WCOMPortValid = Validator.ValidatePort(txtWSCOMPort.Text);
@@ -665,19 +666,23 @@ namespace ControlRoomApplication.Main
             // check each case (i.e. textbox) to make sure every value is valid
             if (!MCUPortValid)
             {
-                MessageBox.Show("MCU Port Invalid. Enter a valid port.");
+                errorString = String.Concat(errorString, "MCU Port Invalid. Enter a valid port.\n\n");
             }
             if (!PLCPortValid)
             {
-                MessageBox.Show("PLC Port Invalid. Enter a valid port.");
+                errorString = String.Concat(errorString, "PLC Port Invalid. Enter a valid port.\n\n");
             }
             if (!WCOMPortValid)
             {
-                MessageBox.Show("WeatherCOM Port Invalid. Enter a valid port");
+                errorString = String.Concat(errorString, "WeatherCOM Port Invalid. Enter a valid port.\n\n");
             }
             if (!MCUIPValid)
             {
-                MessageBox.Show("Invalid MCU IP Address. Check your formatting and try again.");
+                errorString = String.Concat(errorString, "Invalid MCU IP Address. Check your formatting and try again.\n");
+            }
+            if (errorString != null)
+            {
+                MessageBox.Show(errorString);
             }
 
             // Only allow the "StartRT" code to execute if all values are acceptable.

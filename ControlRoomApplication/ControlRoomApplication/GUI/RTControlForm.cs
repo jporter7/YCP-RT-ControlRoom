@@ -1,18 +1,15 @@
-﻿using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Database;
-using ControlRoomApplication.Entities;
-using ControlRoomApplication.GUI;
-using System.ComponentModel;
-//using ControlRoomApplication.GUI;
+﻿//using ControlRoomApplication.GUI;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Windows;
 using System.Windows.Forms;
-using System.Threading.Tasks;
-using Microsoft.VisualBasic;
+using ControlRoomApplication.Controllers;
+using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities;
 using ControlRoomApplication.Validation;
+using Microsoft.VisualBasic;
 
 namespace ControlRoomApplication.Main
 {
@@ -848,6 +845,7 @@ namespace ControlRoomApplication.Main
             validFrequency = Validator.ValidateFrequency(frequency.Text);
             validIFGain = Validator.ValidateIFGain(IFGainVal.Text);
             validOffsetVoltage = Validator.ValidateOffsetVoltage(offsetVoltage.Text);
+            string errorString = null;
             if (scanTypeComboBox.SelectedIndex != 0 && integrationStepCombo.SelectedIndex != 0 && DCGain.SelectedIndex != 0)
             {
                 validDropdowns = true;
@@ -855,19 +853,24 @@ namespace ControlRoomApplication.Main
 
             if (!validFrequency)
             {
-                MessageBox.Show("Invalid Frequency. Enter a value greater than 0 Hz");
+                errorString = String.Concat(errorString, "Invalid Frequency. Enter a value greater than 0 Hz\n\n");
             }
             if (!validIFGain)
             {
-                MessageBox.Show("Invalid IFGain. Enter a value between 10.00 and 25.75 decibles.");
+                errorString = String.Concat(errorString, "Invalid IFGain. Enter a value between 10.00 and 25.75 decibles.\n\n");
             }
             if (!validOffsetVoltage)
             {
-                MessageBox.Show("Invalid Offset Voltage. Enter a value between 0 and 4.095 volts");
+                errorString = String.Concat(errorString, "Invalid Offset Voltage. Enter a value between 0 and 4.095 volts\n\n");
+
             }
             if (!validDropdowns)
             {
-                MessageBox.Show("One or more dropdowns have not been changed from their default values. Make sure to choose a dropdown option for each!");
+                errorString = String.Concat(errorString, "One or more dropdowns have not been changed from their default values. Make sure to choose a dropdown option for each!\n");
+            }
+            if (errorString != null)
+            {
+                MessageBox.Show(errorString);
             }
             if (validOffsetVoltage && validIFGain && validFrequency && validDropdowns)
             {
