@@ -937,13 +937,16 @@
             // 
             this.diagnosticScriptCombo.BackColor = System.Drawing.Color.DarkGray;
             this.diagnosticScriptCombo.FormattingEnabled = true;
+            this.diagnosticScriptCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.diagnosticScriptCombo.Items.AddRange(new object[] {
+            "Select a Script",
             "Hit Azimuth Counter Clockwise Limit Switch",
             "Hit Azimuth Clockwise Limit Switch",
             "Hit Elevation Lower Limit Switch",
             "Hit Elevation Upper Limit Switch",
             "Hit Clockwise",
             "Hit Counter Clockwise Hardstop"});
+            this.diagnosticScriptCombo.SelectedIndex = 0;
             this.diagnosticScriptCombo.Location = new System.Drawing.Point(6, 22);
             this.diagnosticScriptCombo.Name = "diagnosticScriptCombo";
             this.diagnosticScriptCombo.Size = new System.Drawing.Size(180, 21);

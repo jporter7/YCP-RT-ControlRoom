@@ -1,4 +1,6 @@
-﻿namespace ControlRoomApplication.Main
+﻿using System;
+
+namespace ControlRoomApplication.Main
 {
     partial class FreeControlForm
     {
@@ -70,13 +72,14 @@
             this.manualControlButton = new System.Windows.Forms.Button();
             this.immediateRadioButton = new System.Windows.Forms.RadioButton();
             this.ControledButtonRadio = new System.Windows.Forms.RadioButton();
-            this.speedComboBox = new System.Windows.Forms.ComboBox();
+            this.speedTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.subJogButton = new System.Windows.Forms.Button();
             this.plusElaButton = new System.Windows.Forms.Button();
             this.subElaButton = new System.Windows.Forms.Button();
             this.plusJogButton = new System.Windows.Forms.Button();
+            this.speedTrackBar = new System.Windows.Forms.TrackBar();
             this.button1 = new System.Windows.Forms.Button();
             this.spectraCyberGroupBox = new System.Windows.Forms.GroupBox();
             this.integrationStepCombo = new System.Windows.Forms.ComboBox();
@@ -93,12 +96,16 @@
             this.offsetVoltage = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.scanTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.IFGainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.frequencyToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.offsetVoltageToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.RAIncGroupbox.SuspendLayout();
             this.overRideGroupbox.SuspendLayout();
             this.decIncGroupbox.SuspendLayout();
             this.freeControlGroupbox.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.manualGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.speedTrackBar)).BeginInit();
             this.spectraCyberGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -384,6 +391,7 @@
             this.statusTextBox.Location = new System.Drawing.Point(143, 164);
             this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.statusTextBox.Name = "statusTextBox";
+            this.statusTextBox.ReadOnly = true;
             this.statusTextBox.Size = new System.Drawing.Size(102, 20);
             this.statusTextBox.TabIndex = 15;
             // 
@@ -483,8 +491,10 @@
             // controlScriptsCombo
             // 
             this.controlScriptsCombo.BackColor = System.Drawing.Color.DarkGray;
+            this.controlScriptsCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.controlScriptsCombo.FormattingEnabled = true;
             this.controlScriptsCombo.Items.AddRange(new object[] {
+            "Radio Telescope Control Scripts",
             "Stow Telescope",
             "Full Elevation",
             "Full 360 Clockwise Rotation",
@@ -496,11 +506,11 @@
             "Recover From Counter-Clockwise Hardstop",
             "Home Telescope",
             "Custom Azimuth Movement (Slip Ring Test)"});
+            this.controlScriptsCombo.SelectedIndex = 0;
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
             this.controlScriptsCombo.TabIndex = 23;
-            this.controlScriptsCombo.Text = "Radio Telescope Control Scripts";
             this.controlScriptsCombo.SelectedIndexChanged += new System.EventHandler(this.controlScriptsCombo_SelectedIndexChanged);
             // 
             // groupBox4
@@ -534,13 +544,14 @@
             // manualGroupBox
             // 
             this.manualGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+            this.manualGroupBox.Controls.Add(this.speedTrackBar);
             this.manualGroupBox.Controls.Add(this.label4);
             this.manualGroupBox.Controls.Add(this.label5);
             this.manualGroupBox.Controls.Add(this.label3);
             this.manualGroupBox.Controls.Add(this.manualControlButton);
             this.manualGroupBox.Controls.Add(this.immediateRadioButton);
             this.manualGroupBox.Controls.Add(this.ControledButtonRadio);
-            this.manualGroupBox.Controls.Add(this.speedComboBox);
+            this.manualGroupBox.Controls.Add(this.speedTextBox);
             this.manualGroupBox.Controls.Add(this.label2);
             this.manualGroupBox.Controls.Add(this.label1);
             this.manualGroupBox.Controls.Add(this.subJogButton);
@@ -585,9 +596,9 @@
             this.label3.Location = new System.Drawing.Point(6, 147);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(38, 13);
+            this.label3.Size = new System.Drawing.Size(76, 13);
             this.label3.TabIndex = 26;
-            this.label3.Text = "Speed";
+            this.label3.Text = "Speed (RPMs)";
             this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // manualControlButton
@@ -595,7 +606,7 @@
             this.manualControlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.manualControlButton.BackColor = System.Drawing.Color.OrangeRed;
             this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.manualControlButton.Location = new System.Drawing.Point(125, 17);
+            this.manualControlButton.Location = new System.Drawing.Point(15, 17);
             this.manualControlButton.Margin = new System.Windows.Forms.Padding(2);
             this.manualControlButton.Name = "manualControlButton";
             this.manualControlButton.Size = new System.Drawing.Size(150, 28);
@@ -630,18 +641,15 @@
             this.ControledButtonRadio.Text = "Controlled Stop";
             this.ControledButtonRadio.UseVisualStyleBackColor = true;
             // 
-            // speedComboBox
+            // speedTextBox
             // 
-            this.speedComboBox.FormattingEnabled = true;
-            this.speedComboBox.Items.AddRange(new object[] {
-            "0.1 RPM",
-            "2 RPM"});
-            this.speedComboBox.Location = new System.Drawing.Point(9, 162);
-            this.speedComboBox.Margin = new System.Windows.Forms.Padding(2);
-            this.speedComboBox.Name = "speedComboBox";
-            this.speedComboBox.Size = new System.Drawing.Size(121, 21);
-            this.speedComboBox.TabIndex = 10;
-            this.speedComboBox.SelectedIndexChanged += new System.EventHandler(this.speedComboBox_SelectedIndexChanged);
+            this.speedTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.speedTextBox.Location = new System.Drawing.Point(9, 162);
+            this.speedTextBox.Margin = new System.Windows.Forms.Padding(2);
+            this.speedTextBox.Name = "speedTextBox";
+            this.speedTextBox.Size = new System.Drawing.Size(69, 20);
+            this.speedTextBox.TabIndex = 10;
+            this.speedTextBox.ReadOnly = true;
             // 
             // label2
             // 
@@ -666,7 +674,7 @@
             this.subJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.subJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.subJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subJogButton.Location = new System.Drawing.Point(150, 104);
+            this.subJogButton.Location = new System.Drawing.Point(150, 54);
             this.subJogButton.Margin = new System.Windows.Forms.Padding(2);
             this.subJogButton.Name = "subJogButton";
             this.subJogButton.Size = new System.Drawing.Size(40, 40);
@@ -681,7 +689,7 @@
             this.plusElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.plusElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusElaButton.Location = new System.Drawing.Point(190, 59);
+            this.plusElaButton.Location = new System.Drawing.Point(190, 10);
             this.plusElaButton.Margin = new System.Windows.Forms.Padding(2);
             this.plusElaButton.Name = "plusElaButton";
             this.plusElaButton.Size = new System.Drawing.Size(40, 40);
@@ -696,7 +704,7 @@
             this.subElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.subElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.subElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subElaButton.Location = new System.Drawing.Point(190, 148);
+            this.subElaButton.Location = new System.Drawing.Point(190, 100);
             this.subElaButton.Margin = new System.Windows.Forms.Padding(2);
             this.subElaButton.Name = "subElaButton";
             this.subElaButton.Size = new System.Drawing.Size(40, 40);
@@ -711,7 +719,7 @@
             this.plusJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.plusJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusJogButton.Location = new System.Drawing.Point(230, 104);
+            this.plusJogButton.Location = new System.Drawing.Point(230, 54);
             this.plusJogButton.Margin = new System.Windows.Forms.Padding(2);
             this.plusJogButton.Name = "plusJogButton";
             this.plusJogButton.Size = new System.Drawing.Size(40, 40);
@@ -720,6 +728,16 @@
             this.plusJogButton.UseVisualStyleBackColor = false;
             this.plusJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_Down);
             this.plusJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_UP);
+            // 
+            // speedTrackBar
+            // 
+            this.speedTrackBar.Location = new System.Drawing.Point(108, 145);
+            this.speedTrackBar.Maximum = 20;
+            this.speedTrackBar.Name = "speedTrackBar";
+            this.speedTrackBar.Size = new System.Drawing.Size(150, 45);
+            this.speedTrackBar.SmallChange = 3;
+            this.speedTrackBar.TabIndex = 20;
+            this.speedTrackBar.Scroll += new System.EventHandler(this.speedTrackBar_Scroll);
             // 
             // button1
             // 
@@ -765,30 +783,32 @@
             // integrationStepCombo
             // 
             this.integrationStepCombo.BackColor = System.Drawing.Color.DarkGray;
+            this.integrationStepCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.integrationStepCombo.FormattingEnabled = true;
             this.integrationStepCombo.Items.AddRange(new object[] {
+            "Int Step",
             "0.3",
             "0.5(S)/1.00(C) ",
             "1.00(S)/10.00(C)"});
+            this.integrationStepCombo.SelectedIndex = 0;
             this.integrationStepCombo.Location = new System.Drawing.Point(215, 56);
             this.integrationStepCombo.Margin = new System.Windows.Forms.Padding(2);
             this.integrationStepCombo.MaxDropDownItems = 6;
             this.integrationStepCombo.Name = "integrationStepCombo";
             this.integrationStepCombo.Size = new System.Drawing.Size(79, 21);
             this.integrationStepCombo.TabIndex = 44;
-            this.integrationStepCombo.Text = "Int Step";
             this.integrationStepCombo.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label10
             // 
             this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(4, 41);
+            this.label10.Location = new System.Drawing.Point(0, 41);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(44, 13);
+            this.label10.Size = new System.Drawing.Size(66, 13);
             this.label10.TabIndex = 43;
-            this.label10.Text = "DCGain";
+            this.label10.Text = "DCGain (dB)";
             // 
             // IFGainVal
             // 
@@ -798,6 +818,7 @@
             this.IFGainVal.Name = "IFGainVal";
             this.IFGainVal.Size = new System.Drawing.Size(44, 20);
             this.IFGainVal.TabIndex = 42;
+            this.IFGainVal.TextChanged += new System.EventHandler(this.IFGainVal_TextChanged);
             // 
             // lblIFGain
             // 
@@ -806,9 +827,11 @@
             this.lblIFGain.Location = new System.Drawing.Point(74, 43);
             this.lblIFGain.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblIFGain.Name = "lblIFGain";
-            this.lblIFGain.Size = new System.Drawing.Size(38, 13);
+            this.lblIFGain.Size = new System.Drawing.Size(60, 13);
             this.lblIFGain.TabIndex = 41;
-            this.lblIFGain.Text = "IFGain";
+            this.lblIFGain.Text = "IFGain (dB)";
+            this.lblIFGain.Click += new System.EventHandler(this.lblIFGain_Click);
+            this.lblIFGain.MouseHover += new System.EventHandler(this.lblIFGain_MouseHover);
             // 
             // finalizeSettingsButton
             // 
@@ -826,21 +849,24 @@
             // DCGain
             // 
             this.DCGain.BackColor = System.Drawing.Color.DarkGray;
+            this.DCGain.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.DCGain.FormattingEnabled = true;
             this.DCGain.Items.AddRange(new object[] {
-            "X1",
+            "Gain",
+            "x1",
             "X5",
             "X10",
             "X20",
             "X50",
             "X60"});
+            this.DCGain.SelectedIndex = 0;
             this.DCGain.Location = new System.Drawing.Point(4, 56);
             this.DCGain.Margin = new System.Windows.Forms.Padding(2);
             this.DCGain.MaxDropDownItems = 6;
             this.DCGain.Name = "DCGain";
             this.DCGain.Size = new System.Drawing.Size(57, 21);
             this.DCGain.TabIndex = 39;
-            this.DCGain.Text = "Gain";
+            this.DCGain.SelectedIndexChanged += new System.EventHandler(this.DCGain_SelectedIndexChanged);
             // 
             // stopScanButton
             // 
@@ -878,6 +904,7 @@
             this.frequency.Name = "frequency";
             this.frequency.Size = new System.Drawing.Size(76, 20);
             this.frequency.TabIndex = 35;
+            this.frequency.TextChanged += new System.EventHandler(this.frequency_TextChanged);
             // 
             // lblFrequency
             // 
@@ -886,9 +913,11 @@
             this.lblFrequency.Location = new System.Drawing.Point(155, 0);
             this.lblFrequency.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFrequency.Name = "lblFrequency";
-            this.lblFrequency.Size = new System.Drawing.Size(57, 13);
+            this.lblFrequency.Size = new System.Drawing.Size(79, 13);
             this.lblFrequency.TabIndex = 34;
-            this.lblFrequency.Text = "Frequency";
+            this.lblFrequency.Text = "Frequency (Hz)";
+            this.lblFrequency.Click += new System.EventHandler(this.lblFrequency_Click);
+            this.lblFrequency.MouseHover += new System.EventHandler(this.lblFrequency_MouseHover);
             // 
             // label9
             // 
@@ -910,6 +939,7 @@
             this.offsetVoltage.Name = "offsetVoltage";
             this.offsetVoltage.Size = new System.Drawing.Size(44, 20);
             this.offsetVoltage.TabIndex = 27;
+            this.offsetVoltage.TextChanged += new System.EventHandler(this.offsetVoltage_TextChanged);
             // 
             // label12
             // 
@@ -922,21 +952,25 @@
             this.label12.TabIndex = 26;
             this.label12.Text = "Offset Voltage";
             this.label12.Click += new System.EventHandler(this.label12_Click);
+            this.label12.MouseHover += new System.EventHandler(this.label12_MouseHover);
             // 
             // scanTypeComboBox
             // 
             this.scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
+            this.scanTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.scanTypeComboBox.FormattingEnabled = true;
             this.scanTypeComboBox.Items.AddRange(new object[] {
+            "Scan Type",
             "Continuum",
             "Spectral"});
+            this.scanTypeComboBox.SelectedIndex = 0;
             this.scanTypeComboBox.Location = new System.Drawing.Point(4, 18);
             this.scanTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.scanTypeComboBox.MaxDropDownItems = 2;
             this.scanTypeComboBox.Name = "scanTypeComboBox";
             this.scanTypeComboBox.Size = new System.Drawing.Size(83, 21);
             this.scanTypeComboBox.TabIndex = 25;
-            this.scanTypeComboBox.Text = "Scan Type";
+            this.scanTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.scanTypeComboBox_SelectedIndexChanged);
             // 
             // FreeControlForm
             // 
@@ -964,12 +998,14 @@
             this.groupBox4.ResumeLayout(false);
             this.manualGroupBox.ResumeLayout(false);
             this.manualGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.speedTrackBar)).EndInit();
             this.spectraCyberGroupBox.ResumeLayout(false);
             this.spectraCyberGroupBox.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
+      
         #endregion
 
         private System.Windows.Forms.Button PosDecButton;
@@ -1008,7 +1044,7 @@
         private System.Windows.Forms.Button plusElaButton;
         private System.Windows.Forms.Button subElaButton;
         private System.Windows.Forms.Button plusJogButton;
-        private System.Windows.Forms.ComboBox speedComboBox;
+        private System.Windows.Forms.TextBox speedTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton immediateRadioButton;
         private System.Windows.Forms.RadioButton ControledButtonRadio;
@@ -1036,5 +1072,11 @@
         private System.Windows.Forms.TextBox IFGainVal;
         private System.Windows.Forms.Label lblIFGain;
         private System.Windows.Forms.ComboBox integrationStepCombo;
+        private System.Windows.Forms.ToolTip IFGainToolTip;
+        private System.Windows.Forms.ToolTip offsetVoltageToolTip;
+        private System.Windows.Forms.ToolTip frequencyToolTip;
+        private System.Windows.Forms.TrackBar speedTrackBar;
+    
+
     }
 }
