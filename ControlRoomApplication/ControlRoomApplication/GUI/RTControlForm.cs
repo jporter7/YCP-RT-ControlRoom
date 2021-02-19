@@ -37,6 +37,9 @@ namespace ControlRoomApplication.Main
         public SpectraCyberIntegrationTimeEnum IntTimeInput;
         public SpectraCyberBandwidthEnum BandwidthInput;
         public bool acceptSettings = false;
+        public bool frequencyValid = false;
+        public bool offsetVoltValid = false;
+        public bool IFGainValid = false;
 
         public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
         {
@@ -100,6 +103,7 @@ namespace ControlRoomApplication.Main
             ControledButtonRadio.Enabled = false;
             immediateRadioButton.Enabled = false;
             speedTextBox.Enabled = false;
+            speedTrackBar.Enabled = false;
 
             //Initialize Start and Stop Scan buttons as disabled
             spectraEditActive = true;
@@ -107,6 +111,9 @@ namespace ControlRoomApplication.Main
             startScanButton.Enabled = false;
             stopScanButton.BackColor = System.Drawing.Color.DarkGray;
             stopScanButton.Enabled = false;
+
+            // finalize settings should be initially disabled, until values have been checked
+            finalizeSettingsButton.Enabled = false;
 
             this.FormClosing += FreeControlForm_Closing;
 
@@ -488,6 +495,7 @@ namespace ControlRoomApplication.Main
             ControledButtonRadio.Enabled = manual_save_state;
             immediateRadioButton.Enabled = manual_save_state;
             speedTextBox.Enabled = manual_save_state;
+            speedTrackBar.Enabled = manual_save_state;
 
             editButton.Enabled = !manual_save_state;
         }
@@ -644,9 +652,9 @@ namespace ControlRoomApplication.Main
         }
 
         private void subJogButton_Down( object sender , MouseEventArgs e ) {
-            if (Validator.ValidateSpeed(speedTextBox.Text))
+            if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
-                double speed = Convert.ToDouble(speedTextBox.Text);
+                double speed = Convert.ToDouble(speedTextBox.Text)/10;
                 if (Validator.ValidateSpeed(speed))
                 {
                     logger.Info("Jog PosButton MouseDown");
@@ -676,9 +684,10 @@ namespace ControlRoomApplication.Main
 
         private void plusJogButton_Down(object sender, MouseEventArgs e)
         {
-            if (Validator.ValidateSpeed(speedTextBox.Text))
+            if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
-                double speed = Convert.ToDouble(speedTextBox.Text);
+                double speed = Convert.ToDouble(speedTextBox.Text) / 10;
+               
                 if (Validator.ValidateSpeed(speed))
                 {
 
@@ -765,9 +774,9 @@ namespace ControlRoomApplication.Main
         }
 
         private void plusElaButton_Down(object sender, MouseEventArgs e ){
-            if (Validator.ValidateSpeed(speedTextBox.Text))
+            if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
-                double speed = Convert.ToDouble(speedTextBox.Text);
+                double speed = Convert.ToDouble(speedTextBox.Text) / 10;
                 if (Validator.ValidateSpeed(speed))
                 {
 
@@ -797,9 +806,9 @@ namespace ControlRoomApplication.Main
         }
 
         private void subElaButton_Down(object sender, MouseEventArgs e ){
-            if (Validator.ValidateSpeed(speedTextBox.Text))
+            if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
-                double speed = Convert.ToDouble(speedTextBox.Text);
+                double speed = Convert.ToDouble(speedTextBox.Text) / 10;
                 if (Validator.ValidateSpeed(speed))
                 {
 
@@ -840,40 +849,6 @@ namespace ControlRoomApplication.Main
 
         private void finalizeSettings_Click(object sender, EventArgs e)
         {
-            bool validDropdowns = false;
-            bool validFrequency, validIFGain, validOffsetVoltage;
-            validFrequency = Validator.ValidateFrequency(frequency.Text);
-            validIFGain = Validator.ValidateIFGain(IFGainVal.Text);
-            validOffsetVoltage = Validator.ValidateOffsetVoltage(offsetVoltage.Text);
-            string errorString = null;
-            if (scanTypeComboBox.SelectedIndex != 0 && integrationStepCombo.SelectedIndex != 0 && DCGain.SelectedIndex != 0)
-            {
-                validDropdowns = true;
-            }
-
-            if (!validFrequency)
-            {
-                errorString = String.Concat(errorString, "Invalid Frequency. Enter a value greater than 0 Hz\n\n");
-            }
-            if (!validIFGain)
-            {
-                errorString = String.Concat(errorString, "Invalid IFGain. Enter a value between 10.00 and 25.75 decibles.\n\n");
-            }
-            if (!validOffsetVoltage)
-            {
-                errorString = String.Concat(errorString, "Invalid Offset Voltage. Enter a value between 0 and 4.095 volts\n\n");
-
-            }
-            if (!validDropdowns)
-            {
-                errorString = String.Concat(errorString, "One or more dropdowns have not been changed from their default values. Make sure to choose a dropdown option for each!\n");
-            }
-            if (errorString != null)
-            {
-                MessageBox.Show(errorString);
-            }
-            if (validOffsetVoltage && validIFGain && validFrequency && validDropdowns)
-            {
                 acceptSettings = !acceptSettings;
                 if (acceptSettings)
                 {
@@ -966,7 +941,6 @@ namespace ControlRoomApplication.Main
 
                     spectraEditActive = true;
                 }
-            }
         }
 
         private void startScan_Click(object sender, EventArgs e)
@@ -1053,18 +1027,26 @@ namespace ControlRoomApplication.Main
         {
             if (integrationStepCombo.SelectedIndex == 0)
             {
-                //error message
+                finalizeSettingsButton.Enabled = false;
             }
-           
+            if (allScanInputsValid())
+            {
+                finalizeSettingsButton.Enabled = true;
+            }
+
         }
 
         private void scanTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (scanTypeComboBox.SelectedIndex == 0)
             {
-                // error message
+                finalizeSettingsButton.Enabled = false;
             }
-           
+            if (allScanInputsValid())
+            {
+                finalizeSettingsButton.Enabled = true;
+            }
+
         }
 
 
@@ -1072,8 +1054,13 @@ namespace ControlRoomApplication.Main
         {
             if (DCGain.SelectedIndex == 0)
             {
-                // error message
+                finalizeSettingsButton.Enabled = false;
             }
+            if (allScanInputsValid())
+            {
+                finalizeSettingsButton.Enabled = true;
+            }
+           
             
         }
 
@@ -1085,6 +1072,100 @@ namespace ControlRoomApplication.Main
         private void lblIFGain_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void lblIFGain_MouseHover(object sender, EventArgs e)
+        {
+            //this.IFGainToolTip.Show("IFGain must be between\n " +
+                //"10.00 and 25.75 decibles.", lblIFGain);
+        }
+
+        private void lblFrequency_MouseHover(object sender, EventArgs e)
+        {
+            //this.frequencyToolTip.Show("Frequency must be a non-negative\n " +
+                //"value, in hertz (>= 0 Hz)", lblFrequency);
+        }
+
+        private void label12_MouseHover(object sender, EventArgs e)
+        {
+            //this.offsetVoltageToolTip.Show("Offset voltage must be\n " +
+                //"between 0 - 4.095 Volts", label12);
+        }
+
+        private void frequency_TextChanged(object sender, EventArgs e)
+        {
+            frequencyValid = Validator.ValidateFrequency(frequency.Text);
+            if (!frequencyValid)
+            {
+                finalizeSettingsButton.Enabled = false;
+                frequency.BackColor = System.Drawing.Color.Yellow;
+                this.frequencyToolTip.Show("Frequency must be a non-negative\n " +
+                "value, in hertz (>= 0 Hz)", lblFrequency);
+            }
+            else
+            {
+                frequency.BackColor = System.Drawing.Color.White;
+                this.frequencyToolTip.Hide(lblFrequency);
+            }
+            if(allScanInputsValid())
+            {
+                finalizeSettingsButton.Enabled = true;
+            }
+        }
+
+        private void offsetVoltage_TextChanged(object sender, EventArgs e)
+        {
+            offsetVoltValid = Validator.ValidateOffsetVoltage(offsetVoltage.Text);
+            if (!offsetVoltValid)
+            {
+                finalizeSettingsButton.Enabled = false;
+                offsetVoltage.BackColor = System.Drawing.Color.Yellow;
+                this.offsetVoltageToolTip.Show("Offset voltage must be\n " +
+                "between 0 - 4.095 Volts", label12);
+            }
+            else
+            {
+                offsetVoltage.BackColor = System.Drawing.Color.White;
+                this.offsetVoltageToolTip.Hide(label12);
+            }
+            if (allScanInputsValid())
+            {
+                finalizeSettingsButton.Enabled = true;
+            }
+        }
+
+        private void IFGainVal_TextChanged(object sender, EventArgs e)
+        {
+            IFGainValid = Validator.ValidateIFGain(IFGainVal.Text);
+            if (!IFGainValid)
+            {
+                finalizeSettingsButton.Enabled = false;
+                IFGainVal.BackColor = System.Drawing.Color.Yellow;
+                this.IFGainToolTip.Show("IFGain must be between\n " +
+                "10.00 and 25.75 decibles.", lblIFGain);
+            }
+            else
+            {
+                IFGainVal.BackColor = System.Drawing.Color.White;
+                this.IFGainToolTip.Hide(lblIFGain);
+            }
+            if (allScanInputsValid())
+            {
+                finalizeSettingsButton.Enabled = true;
+            }
+        }
+
+        private void speedTrackBar_Scroll(object sender, EventArgs e)
+        {
+            double actualSpeed = (double)speedTrackBar.Value / 10;
+            speedTextBox.Text = actualSpeed.ToString();
+        }
+
+        private bool allScanInputsValid()
+        {
+            return (scanTypeComboBox.SelectedIndex != 0 && integrationStepCombo.SelectedIndex != 0 &&
+                DCGain.SelectedIndex != 0 && offsetVoltValid && IFGainValid && frequencyValid);
+          
         }
     }
 }

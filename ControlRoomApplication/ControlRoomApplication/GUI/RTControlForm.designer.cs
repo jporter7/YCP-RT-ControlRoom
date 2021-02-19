@@ -79,6 +79,7 @@ namespace ControlRoomApplication.Main
             this.plusElaButton = new System.Windows.Forms.Button();
             this.subElaButton = new System.Windows.Forms.Button();
             this.plusJogButton = new System.Windows.Forms.Button();
+            this.speedTrackBar = new System.Windows.Forms.TrackBar();
             this.button1 = new System.Windows.Forms.Button();
             this.spectraCyberGroupBox = new System.Windows.Forms.GroupBox();
             this.integrationStepCombo = new System.Windows.Forms.ComboBox();
@@ -95,12 +96,16 @@ namespace ControlRoomApplication.Main
             this.offsetVoltage = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.scanTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.IFGainToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.frequencyToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.offsetVoltageToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.RAIncGroupbox.SuspendLayout();
             this.overRideGroupbox.SuspendLayout();
             this.decIncGroupbox.SuspendLayout();
             this.freeControlGroupbox.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.manualGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.speedTrackBar)).BeginInit();
             this.spectraCyberGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -383,10 +388,10 @@ namespace ControlRoomApplication.Main
             // 
             // statusTextBox
             // 
-            this.statusTextBox.ReadOnly = true;
             this.statusTextBox.Location = new System.Drawing.Point(143, 164);
             this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.statusTextBox.Name = "statusTextBox";
+            this.statusTextBox.ReadOnly = true;
             this.statusTextBox.Size = new System.Drawing.Size(102, 20);
             this.statusTextBox.TabIndex = 15;
             // 
@@ -539,6 +544,7 @@ namespace ControlRoomApplication.Main
             // manualGroupBox
             // 
             this.manualGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+            this.manualGroupBox.Controls.Add(this.speedTrackBar);
             this.manualGroupBox.Controls.Add(this.label4);
             this.manualGroupBox.Controls.Add(this.label5);
             this.manualGroupBox.Controls.Add(this.label3);
@@ -600,7 +606,7 @@ namespace ControlRoomApplication.Main
             this.manualControlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.manualControlButton.BackColor = System.Drawing.Color.OrangeRed;
             this.manualControlButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.manualControlButton.Location = new System.Drawing.Point(125, 17);
+            this.manualControlButton.Location = new System.Drawing.Point(15, 17);
             this.manualControlButton.Margin = new System.Windows.Forms.Padding(2);
             this.manualControlButton.Name = "manualControlButton";
             this.manualControlButton.Size = new System.Drawing.Size(150, 28);
@@ -641,9 +647,9 @@ namespace ControlRoomApplication.Main
             this.speedTextBox.Location = new System.Drawing.Point(9, 162);
             this.speedTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.speedTextBox.Name = "speedTextBox";
-            this.speedTextBox.Size = new System.Drawing.Size(121, 20);
+            this.speedTextBox.Size = new System.Drawing.Size(69, 20);
             this.speedTextBox.TabIndex = 10;
-           
+            this.speedTextBox.ReadOnly = true;
             // 
             // label2
             // 
@@ -668,7 +674,7 @@ namespace ControlRoomApplication.Main
             this.subJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.subJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.subJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subJogButton.Location = new System.Drawing.Point(150, 104);
+            this.subJogButton.Location = new System.Drawing.Point(150, 54);
             this.subJogButton.Margin = new System.Windows.Forms.Padding(2);
             this.subJogButton.Name = "subJogButton";
             this.subJogButton.Size = new System.Drawing.Size(40, 40);
@@ -683,7 +689,7 @@ namespace ControlRoomApplication.Main
             this.plusElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.plusElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusElaButton.Location = new System.Drawing.Point(190, 59);
+            this.plusElaButton.Location = new System.Drawing.Point(190, 10);
             this.plusElaButton.Margin = new System.Windows.Forms.Padding(2);
             this.plusElaButton.Name = "plusElaButton";
             this.plusElaButton.Size = new System.Drawing.Size(40, 40);
@@ -698,7 +704,7 @@ namespace ControlRoomApplication.Main
             this.subElaButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.subElaButton.BackColor = System.Drawing.Color.DarkGray;
             this.subElaButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subElaButton.Location = new System.Drawing.Point(190, 148);
+            this.subElaButton.Location = new System.Drawing.Point(190, 100);
             this.subElaButton.Margin = new System.Windows.Forms.Padding(2);
             this.subElaButton.Name = "subElaButton";
             this.subElaButton.Size = new System.Drawing.Size(40, 40);
@@ -713,7 +719,7 @@ namespace ControlRoomApplication.Main
             this.plusJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.plusJogButton.BackColor = System.Drawing.Color.DarkGray;
             this.plusJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusJogButton.Location = new System.Drawing.Point(230, 104);
+            this.plusJogButton.Location = new System.Drawing.Point(230, 54);
             this.plusJogButton.Margin = new System.Windows.Forms.Padding(2);
             this.plusJogButton.Name = "plusJogButton";
             this.plusJogButton.Size = new System.Drawing.Size(40, 40);
@@ -722,6 +728,16 @@ namespace ControlRoomApplication.Main
             this.plusJogButton.UseVisualStyleBackColor = false;
             this.plusJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_Down);
             this.plusJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_UP);
+            // 
+            // speedTrackBar
+            // 
+            this.speedTrackBar.Location = new System.Drawing.Point(108, 145);
+            this.speedTrackBar.Maximum = 20;
+            this.speedTrackBar.Name = "speedTrackBar";
+            this.speedTrackBar.Size = new System.Drawing.Size(150, 45);
+            this.speedTrackBar.SmallChange = 3;
+            this.speedTrackBar.TabIndex = 20;
+            this.speedTrackBar.Scroll += new System.EventHandler(this.speedTrackBar_Scroll);
             // 
             // button1
             // 
@@ -802,7 +818,7 @@ namespace ControlRoomApplication.Main
             this.IFGainVal.Name = "IFGainVal";
             this.IFGainVal.Size = new System.Drawing.Size(44, 20);
             this.IFGainVal.TabIndex = 42;
-           
+            this.IFGainVal.TextChanged += new System.EventHandler(this.IFGainVal_TextChanged);
             // 
             // lblIFGain
             // 
@@ -815,6 +831,7 @@ namespace ControlRoomApplication.Main
             this.lblIFGain.TabIndex = 41;
             this.lblIFGain.Text = "IFGain (dB)";
             this.lblIFGain.Click += new System.EventHandler(this.lblIFGain_Click);
+            this.lblIFGain.MouseHover += new System.EventHandler(this.lblIFGain_MouseHover);
             // 
             // finalizeSettingsButton
             // 
@@ -887,7 +904,7 @@ namespace ControlRoomApplication.Main
             this.frequency.Name = "frequency";
             this.frequency.Size = new System.Drawing.Size(76, 20);
             this.frequency.TabIndex = 35;
-          
+            this.frequency.TextChanged += new System.EventHandler(this.frequency_TextChanged);
             // 
             // lblFrequency
             // 
@@ -900,6 +917,7 @@ namespace ControlRoomApplication.Main
             this.lblFrequency.TabIndex = 34;
             this.lblFrequency.Text = "Frequency (Hz)";
             this.lblFrequency.Click += new System.EventHandler(this.lblFrequency_Click);
+            this.lblFrequency.MouseHover += new System.EventHandler(this.lblFrequency_MouseHover);
             // 
             // label9
             // 
@@ -921,7 +939,7 @@ namespace ControlRoomApplication.Main
             this.offsetVoltage.Name = "offsetVoltage";
             this.offsetVoltage.Size = new System.Drawing.Size(44, 20);
             this.offsetVoltage.TabIndex = 27;
-          
+            this.offsetVoltage.TextChanged += new System.EventHandler(this.offsetVoltage_TextChanged);
             // 
             // label12
             // 
@@ -934,6 +952,7 @@ namespace ControlRoomApplication.Main
             this.label12.TabIndex = 26;
             this.label12.Text = "Offset Voltage";
             this.label12.Click += new System.EventHandler(this.label12_Click);
+            this.label12.MouseHover += new System.EventHandler(this.label12_MouseHover);
             // 
             // scanTypeComboBox
             // 
@@ -979,6 +998,7 @@ namespace ControlRoomApplication.Main
             this.groupBox4.ResumeLayout(false);
             this.manualGroupBox.ResumeLayout(false);
             this.manualGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.speedTrackBar)).EndInit();
             this.spectraCyberGroupBox.ResumeLayout(false);
             this.spectraCyberGroupBox.PerformLayout();
             this.ResumeLayout(false);
@@ -1052,5 +1072,11 @@ namespace ControlRoomApplication.Main
         private System.Windows.Forms.TextBox IFGainVal;
         private System.Windows.Forms.Label lblIFGain;
         private System.Windows.Forms.ComboBox integrationStepCombo;
+        private System.Windows.Forms.ToolTip IFGainToolTip;
+        private System.Windows.Forms.ToolTip offsetVoltageToolTip;
+        private System.Windows.Forms.ToolTip frequencyToolTip;
+        private System.Windows.Forms.TrackBar speedTrackBar;
+    
+
     }
 }

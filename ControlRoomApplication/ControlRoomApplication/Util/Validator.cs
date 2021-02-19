@@ -103,6 +103,32 @@ namespace ControlRoomApplication.Validation {
         }
 
         /// <summary>
+        /// used to check ONLY if the text is a valid double
+        /// Does NOT account for the speed being in the expected range (use ValidateSpeed(string text) for that)
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static bool ValidateSpeedTextOnly(string text)
+        {
+            double speed;
+            try
+            {
+                speed = Double.Parse(text);
+            }
+            catch (FormatException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            catch (ArgumentNullException e)
+            {
+                Console.WriteLine(e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Validating the voltage that the user entered is withing the acceptable range
         /// </summary>
         /// <param name="volts"> Valueinput by user, in Volts </param>

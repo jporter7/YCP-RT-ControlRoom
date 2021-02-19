@@ -38,6 +38,12 @@ namespace ControlRoomApplication.Main
         public bool finalSettings = true;
         public LoggerQueue log = new LoggerQueue();
 
+        // Booleans for user validation of input forms
+        public bool MCUIPValid = false;
+        public bool MCUPortValid = false;
+        public bool PLCPortValid = false;
+        public bool WCOMPortValid = false;
+
         enum TempSensorType
         {
             Production,
@@ -99,7 +105,7 @@ namespace ControlRoomApplication.Main
             // Initialize Button Settings 
             startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
             createWSButton.Enabled = true;
-            acceptSettings.Enabled = true;
+            acceptSettings.Enabled = false;
             startButton.BackColor = System.Drawing.Color.Gainsboro;
             startButton.Enabled = false;
             shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
@@ -609,17 +615,30 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void comboBox2_Click(object sender, EventArgs e)
         {
+
         }
 
         private void txtPLCPort_TextChanged(object sender, EventArgs e)
         {
+            PLCPortValid = Validator.ValidatePort(txtPLCPort.Text);
+            if (!PLCPortValid)
+            {
+                acceptSettings.Enabled = false;
+                txtPLCPort.BackColor = System.Drawing.Color.Yellow;
+                this.PLCPortToolTip.Show("Enter a valid port number\n" +
+                    " between 1 and 65536", label3);
+            }
+            else
+            {
+                txtPLCPort.BackColor = System.Drawing.Color.White;
+                this.PLCPortToolTip.Hide(label3);
+            }
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            {
+                acceptSettings.Enabled = true;
+            }
 
         }
 
@@ -630,21 +649,64 @@ namespace ControlRoomApplication.Main
 
         private void txtPLCIP_TextChanged(object sender, EventArgs e)
         {
-
+            MCUIPValid = Validator.ValidateIPAddress(txtPLCIP.Text);
+            if (!MCUIPValid)
+            {
+                acceptSettings.Enabled = false;
+                txtPLCIP.BackColor = System.Drawing.Color.Yellow;
+                this.MCUIPToolTip.Show("Enter a valid IP Address\n" +
+                    " (xxx.xxx.xxx.xxx)", label4);
+            }
+            else
+            {
+                txtPLCIP.BackColor = System.Drawing.Color.White;
+                this.MCUIPToolTip.Hide(label4);
+            }
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            {
+                acceptSettings.Enabled = true;
+            }
         }
 
-        private void label3_Click(object sender, EventArgs e)
+        private void label2_MouseHover(object sender, EventArgs e)
         {
-
+            //this.WCOMPortToolTip.Show("Enter a valid port number, between 1 and 65536", label2);
+        }
+        private void label3_MouseHover(object sender, EventArgs e)
+        {
+            //this.PLCPortToolTip.Show("Enter a valid port number, between 1 and 65536", label3);
         }
 
-        private void label4_Click(object sender, EventArgs e)
+        private void label4_MouseHover(object sender, EventArgs e)
         {
+            //this.MCUIPToolTip.Show("Enter a valid IP Address (xxx.xxx.xxx.xxx)", label4);
+        }
 
+        private void label5_MouseHover(object sender, EventArgs e)
+        {
+            //this.MCUPortToolTip.Show("Enter a valid port number, between 1 and 65536", label5);
         }
 
         private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
+            WCOMPortValid = Validator.ValidatePort(txtWSCOMPort.Text);
+            if (!WCOMPortValid)
+            {
+                acceptSettings.Enabled = false;
+                txtWSCOMPort.BackColor = System.Drawing.Color.Yellow;
+                this.WCOMPortToolTip.Show("Enter a valid port number\n" +
+                    " between 1 and 65536", label2);
+            }
+            else
+            {
+                txtWSCOMPort.BackColor = System.Drawing.Color.White;
+                this.WCOMPortToolTip.Hide(label2);
+                
+            }
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            {
+                acceptSettings.Enabled = true;
+            }
 
         }
 
@@ -655,39 +717,6 @@ namespace ControlRoomApplication.Main
 
         private void acceptSettings_Click(object sender, EventArgs e)
         {
-            // Begin User Validation of input IP and port numbers
-            bool MCUPortValid, MCUIPValid, PLCPortValid, WCOMPortValid;
-            string errorString = null;
-            MCUPortValid = Validator.ValidatePort(txtMcuCOMPort.Text);
-            PLCPortValid = Validator.ValidatePort(txtPLCPort.Text);
-            WCOMPortValid = Validator.ValidatePort(txtWSCOMPort.Text);
-            MCUIPValid = Validator.ValidateIPAddress(txtPLCIP.Text);
-
-            // check each case (i.e. textbox) to make sure every value is valid
-            if (!MCUPortValid)
-            {
-                errorString = String.Concat(errorString, "MCU Port Invalid. Enter a valid port.\n\n");
-            }
-            if (!PLCPortValid)
-            {
-                errorString = String.Concat(errorString, "PLC Port Invalid. Enter a valid port.\n\n");
-            }
-            if (!WCOMPortValid)
-            {
-                errorString = String.Concat(errorString, "WeatherCOM Port Invalid. Enter a valid port.\n\n");
-            }
-            if (!MCUIPValid)
-            {
-                errorString = String.Concat(errorString, "Invalid MCU IP Address. Check your formatting and try again.\n");
-            }
-            if (errorString != null)
-            {
-                MessageBox.Show(errorString);
-            }
-
-            // Only allow the "StartRT" code to execute if all values are acceptable.
-            if (MCUPortValid && PLCPortValid && WCOMPortValid && MCUIPValid)
-            {
                 finalSettings = !finalSettings;
                 if (finalSettings == false)
                 {
@@ -744,7 +773,7 @@ namespace ControlRoomApplication.Main
                     txtWSCOMPort.Enabled = true;
                     txtPLCPort.Enabled = true;
                 }
-            }
+ 
         }
 
         //Help button clicked ( user interface documentation PDF)
@@ -779,7 +808,23 @@ namespace ControlRoomApplication.Main
 
         private void txtMcuCOMPort_TextChanged(object sender, EventArgs e)
         {
-
+            MCUPortValid = Validator.ValidatePort(txtMcuCOMPort.Text);
+            if (!MCUPortValid)
+            {
+                acceptSettings.Enabled = false;
+                txtMcuCOMPort.BackColor = System.Drawing.Color.Yellow;
+                this.MCUIPToolTip.Show("Enter a valid port number\n" +
+                    "between 1 and 65536", label5);
+            }
+            else
+            {
+                txtMcuCOMPort.BackColor = System.Drawing.Color.White;
+                this.MCUIPToolTip.Hide(label5);
+            }
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            {
+                acceptSettings.Enabled = true;
+            }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -801,5 +846,7 @@ namespace ControlRoomApplication.Main
         {
 
         }
+
+      
     }
 }

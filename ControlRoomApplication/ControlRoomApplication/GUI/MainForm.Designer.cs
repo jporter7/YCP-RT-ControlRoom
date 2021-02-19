@@ -33,6 +33,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.startButton = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.shutdownButton = new System.Windows.Forms.Button();
@@ -61,6 +62,10 @@
             this.startRTGroupbox = new System.Windows.Forms.GroupBox();
             this.helpButton = new System.Windows.Forms.Button();
             this.ProdcheckBox = new System.Windows.Forms.CheckBox();
+            this.MCUIPToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.MCUPortToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.PLCPortToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.WCOMPortToolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.simulationSettingsGroupbox.SuspendLayout();
             this.portGroupbox.SuspendLayout();
@@ -138,7 +143,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Production SpectraCyber",
-            "Simulated SpectraCyber"}); 
+            "Simulated SpectraCyber"});
             this.comboBox1.SelectedIndex = 1;
             this.comboBox1.Location = new System.Drawing.Point(260, 30);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
@@ -165,13 +170,12 @@
             this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboBox2.BackColor = System.Drawing.Color.WhiteSmoke;
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-           
             this.comboBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
             "Production Weather Station",
             "Simulated Weather Station",
-            "Test Weather Station"}); 
+            "Test Weather Station"});
             this.comboBox2.SelectedIndex = 1;
             this.comboBox2.Location = new System.Drawing.Point(5, 76);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
@@ -234,7 +238,6 @@
             this.comboEncoderType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.comboEncoderType.BackColor = System.Drawing.Color.WhiteSmoke;
             this.comboEncoderType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            
             this.comboEncoderType.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comboEncoderType.FormattingEnabled = true;
             this.comboEncoderType.Items.AddRange(new object[] {
@@ -331,7 +334,8 @@
             this.label2.Size = new System.Drawing.Size(211, 18);
             this.label2.TabIndex = 17;
             this.label2.Text = "Weather station COM port:";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
+            this.WCOMPortToolTip.SetToolTip(this.label2, "WSCOMBox");
+            this.label2.Click += new System.EventHandler(this.label2_MouseHover);
             // 
             // txtWSCOMPort
             // 
@@ -354,7 +358,8 @@
             this.label3.Size = new System.Drawing.Size(85, 18);
             this.label3.TabIndex = 19;
             this.label3.Text = " PLC port:";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
+            this.PLCPortToolTip.SetToolTip(this.label3, "PLCPortBox");
+            this.label3.MouseHover += new System.EventHandler(this.label3_MouseHover);
             // 
             // label4
             // 
@@ -365,7 +370,8 @@
             this.label4.Size = new System.Drawing.Size(137, 18);
             this.label4.TabIndex = 20;
             this.label4.Text = "MCU IP Address:";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
+            this.MCUIPToolTip.SetToolTip(this.label4, "MCUIPBox");
+            this.label4.MouseHover += new System.EventHandler(this.label4_MouseHover);
             // 
             // portGroupbox
             // 
@@ -406,6 +412,7 @@
             this.label5.Size = new System.Drawing.Size(93, 18);
             this.label5.TabIndex = 21;
             this.label5.Text = "MCU Port: ";
+            this.label5.Click += new System.EventHandler(this.label5_MouseHover);
             // 
             // createWSButton
             // 
@@ -476,7 +483,23 @@
             this.ProdcheckBox.Text = "Default Vals \r\n(for production)";
             this.ProdcheckBox.UseVisualStyleBackColor = true;
             this.ProdcheckBox.CheckedChanged += new System.EventHandler(this.ProdcheckBox_CheckedChanged);
-            // 
+            //
+            // MCUIP ToolTip
+            //
+            this.MCUIPToolTip.SetToolTip(label4, "Enter a valid IP Address (in the form xxx.xxx.xxx.xxx)");
+            //
+            // PLC Port ToolTip
+            //
+            this.PLCPortToolTip.SetToolTip(label3, "Enter a valid port number, between 1 and 65536");
+            //
+            // MCU Port ToolTip
+            //
+            this.MCUPortToolTip.SetToolTip(label5, "Enter a valid port number, between 1 and 65536");
+            //
+            // WCOMPort ToolTip
+            //
+            this.WCOMPortToolTip.SetToolTip(label2,"Enter a valid port number, between 1 and 65536");
+            //
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -540,9 +563,14 @@
         private System.Windows.Forms.GroupBox startRTGroupbox;
         private System.Windows.Forms.Button helpButton;
         private System.Windows.Forms.CheckBox ProdcheckBox;
+        private System.Windows.Forms.ToolTip MCUIPToolTip;
+        private System.Windows.Forms.ToolTip MCUPortToolTip;
+        private System.Windows.Forms.ToolTip PLCPortToolTip;
+        private System.Windows.Forms.ToolTip WCOMPortToolTip;
 
-       
-        
+
+
+
 
 
 
@@ -567,7 +595,7 @@
         //    {
         //        return false;
         //    }
-           
+
         //}
 
         //private bool IsEmpty (System.Windows.Forms.TextBox text)

@@ -36,7 +36,11 @@ namespace ControlRoomApplication.ValidationTests {
             private string invalidSpeed3 = "";
             private string invalidSpeed4 = "3.0";
 
-
+            // speed TEXT ONLY values for testing
+            private string validTextSpeed1 = "2.0";
+            private string validTextSpeed2 = "20.0";
+            private string invalidTextSpeed1 = "hello";
+            private string invalidTextSpeed2 = "saSDASDS";
 
             // IFGain values for testing
             private double validIFGain1 = 10.50;
@@ -105,6 +109,17 @@ namespace ControlRoomApplication.ValidationTests {
             Assert.IsFalse(Validator.ValidateSpeed(invalidSpeed2));
             Assert.IsFalse(Validator.ValidateSpeed(invalidSpeed3));
             Assert.IsFalse(Validator.ValidateSpeed(invalidSpeed4));
+        }
+
+        [TestMethod]
+        public void TestSpeedTextOnly()
+        {
+            Assert.IsTrue(Validator.ValidateSpeedTextOnly(validTextSpeed1));
+            Assert.IsTrue(Validator.ValidateSpeedTextOnly(validTextSpeed2));
+            Assert.IsFalse(Validator.ValidateSpeedTextOnly(invalidTextSpeed1));
+            Assert.IsFalse(Validator.ValidateSpeedTextOnly(invalidTextSpeed1));
+
+
         }
 
         [TestMethod]
