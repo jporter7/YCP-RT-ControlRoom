@@ -534,6 +534,9 @@ namespace ControlRoomApplication.Controllers
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            // temporarily set spectracyber mode to continuum
+            Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+
             // read data
             SpectraCyberResponse response = Parent.SpectraCyberController.DoSpectraCyberScan();
 
@@ -558,6 +561,9 @@ namespace ControlRoomApplication.Controllers
 
             // check against weather station reading
             double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
+
+            // Set SpectraCyber mode back to UNKNOWN
+            Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
 
             // return true if working correctly, false if not
             if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
