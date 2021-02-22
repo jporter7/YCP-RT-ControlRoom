@@ -229,6 +229,32 @@ namespace ControlRoomApplication.Database
             }
         }
 
+        //Update telescope to online 
+        public static void UpdateTelescope(RadioTelescope radioTelescope)
+        {
+          
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                // Update radio telescope
+
+                    radioTelescope.Location.Id = radioTelescope.location_id;
+                    Context.Location.AddOrUpdate(radioTelescope.Location);
+
+                    radioTelescope.CurrentOrientation.Id = radioTelescope.current_orientation_id;
+                    Context.Orientations.AddOrUpdate(radioTelescope.CurrentOrientation);
+
+                    radioTelescope.CalibrationOrientation.Id = radioTelescope.calibration_orientation_id;
+                    Context.Orientations.AddOrUpdate(radioTelescope.CalibrationOrientation);
+
+                    Context.RadioTelescope.AddOrUpdate(radioTelescope);
+                    SaveContext(Context);
+
+                }
+            
+
+        }
+
+
         /// <summary>
         /// Returns the list of Appointments from the database.
         /// </summary>

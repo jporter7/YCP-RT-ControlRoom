@@ -135,12 +135,14 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Start Telescope Button Clicked");
 
+            var RT = DatabaseOperations.FetchFirstRadioTelescope();
+
             // This will tell us whether or not the RT is safe to start.
             // It may not be safe to start if, for example, there are
             // validation errors, or no Telescope is found in the DB
             bool runRt = false;
 
-            if (DatabaseOperations.FetchFirstRadioTelescope() == null)
+            if (RT == null)
             {
                 DialogResult result = MessageBox.Show(
                     "No Radio Telescope found in the database. Would you like to create one?",
@@ -151,6 +153,13 @@ namespace ControlRoomApplication.Main
                 {
                     runRt = true;
                 }
+            }
+            else if(RT.online == 1)
+            {
+                DialogResult result = MessageBox.Show(
+                   $"Telescope {RT.Id} is already running",
+                   "Telescope is running",
+                   MessageBoxButtons.OK);
             }
             else runRt = true;
 
@@ -270,6 +279,8 @@ namespace ControlRoomApplication.Main
                     }
 
                     AddConfigurationToDataGrid();
+
+            
                 }
             }
 
@@ -294,7 +305,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
-            logger.Info("Shut Down Telescope Button Clicked");
+              logger.Info("Shut Down Telescope Button Clicked");
             if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
                 logger.Info("Successfully shut down weather monitoring routine.");
@@ -316,6 +327,10 @@ namespace ControlRoomApplication.Main
                     logger.Info("ERROR killing RT controller at index " + i.ToString());
                 }
 
+                //Turn off Telescope in database
+                ProgramRTControllerList[i].RadioTelescope.online = 0;
+                DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
+
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
                 ProgramRTControllerList[i].RadioTelescope.PLCDriver.Bring_down();
             }
@@ -323,6 +338,17 @@ namespace ControlRoomApplication.Main
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            for (int i = 0; i < ProgramRTControllerList.Count; i++)
+            {
+                //Turn off Telescope in database
+                ProgramRTControllerList[i].RadioTelescope.online = 0;
+                DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
+            }
+
         }
         private void textBox3_Focus(object sender, EventArgs e)
         {
@@ -393,6 +419,10 @@ namespace ControlRoomApplication.Main
 
                 newRT.Id = DatabaseOperations.FetchFirstRadioTelescope().Id;
             }
+
+            //Turn telescope on in databse 
+            newRT.online = 1;
+            DatabaseOperations.UpdateTelescope(newRT);
 
             // These settings are not stored in the database, so they are new every time
             abstractPLCDriver.SetParent(newRT);
