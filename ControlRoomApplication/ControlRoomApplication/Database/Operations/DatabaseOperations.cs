@@ -358,7 +358,7 @@ namespace ControlRoomApplication.Database
             {
                 AdminUsers = Context.Users.SqlQuery("SELECT * FROM user U INNER JOIN user_role UR ON U.id = UR.user_id WHERE UR.role = 'ADMIN'").ToList<User>();
             }
-            if(AdminUsers.Count() == 0 && !testflag)
+            if(AdminUsers.Count() == 0 && testflag)
             {
                 User dummy = CreateDummyUser();
                 AdminUsers.Add(dummy);
