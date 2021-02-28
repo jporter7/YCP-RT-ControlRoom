@@ -844,6 +844,38 @@ namespace ControlRoomApplication.Database
                 return telescopes[telescopes.Count - 1];
             }
         }
+        
+
+        /// <summary>
+        /// Function to retrieve a RT Instance in the database by a given ID
+        /// </summary>
+        /// <param name="id">ID of RadioTelescope inside the DB</param>
+        /// <returns> RadioTelescope found in the database with the associated ID
+        /// Null, if the specified RT does not exist. </returns>
+        public static RadioTelescope FetchRadioTelescopeByID(int id)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var telescope = Context.RadioTelescope.
+                    Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .Where(t => t.Id == id).FirstOrDefault();
+
+                if(telescope == null)
+                {
+                    logger.Info("The Radio Telescope with ID " + id + " could not be found.");
+                    return null;
+                }
+                else
+                {
+                    return telescope;
+                }
+            }
+
+            
+        }
+
 
     }
 }
