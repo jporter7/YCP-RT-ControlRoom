@@ -839,9 +839,13 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                var telescopes = Context.RadioTelescope.Include(t => t.Location).ToList<RadioTelescope>();
+                var telescopes = Context.RadioTelescope
+                    .Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .ToList<RadioTelescope>();
 
-                foreach(RadioTelescope rt in telescopes)
+                foreach (RadioTelescope rt in telescopes)
                 {
                     logger.Info("Retrieved Radio Telescope from the database");
                     return rt;
