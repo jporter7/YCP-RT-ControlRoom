@@ -514,7 +514,7 @@ namespace ControlRoomApplication.Controllers
         public void KillCommunicationThreadAndWait()
         {
             KillCommunicationThreadFlag = true;
-            CommunicationThread.Join();
+            if(CommunicationThread.IsAlive) CommunicationThread.Join();
         }
 
         protected override bool KillHeartbeatComponent()
