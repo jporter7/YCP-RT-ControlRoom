@@ -447,11 +447,11 @@ namespace ControlRoomApplication.Main
         {
             switch (comboBox1.SelectedIndex)
             {
-                case 1:
+                case 0:
                     logger.Info("Building SpectraCyber");
                     return new SpectraCyberController(new SpectraCyber());
 
-                case 2:
+                case 1:
                 default:
                     logger.Info("Building SpectraCyberSimulator");
                     return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
