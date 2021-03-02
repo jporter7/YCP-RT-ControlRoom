@@ -654,7 +654,7 @@ namespace ControlRoomApplication.Main
         private void subJogButton_Down( object sender , MouseEventArgs e ) {
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
-                double speed = Convert.ToDouble(speedTextBox.Text)/10;
+                double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
                     logger.Info("Jog PosButton MouseDown");
@@ -686,7 +686,7 @@ namespace ControlRoomApplication.Main
         {
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
-                double speed = Convert.ToDouble(speedTextBox.Text) / 10;
+                double speed = Convert.ToDouble(speedTextBox.Text);
                
                 if (Validator.ValidateSpeed(speed))
                 {
@@ -776,7 +776,7 @@ namespace ControlRoomApplication.Main
         private void plusElaButton_Down(object sender, MouseEventArgs e ){
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
-                double speed = Convert.ToDouble(speedTextBox.Text) / 10;
+                double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
 
@@ -808,7 +808,7 @@ namespace ControlRoomApplication.Main
         private void subElaButton_Down(object sender, MouseEventArgs e ){
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
-                double speed = Convert.ToDouble(speedTextBox.Text) / 10;
+                double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
 
