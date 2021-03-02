@@ -844,10 +844,13 @@ namespace ControlRoomApplication.GUI
                     currAZ = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
                     currEL = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
 
-                    this.Invoke((MethodInvoker)delegate
+                    if (IsHandleCreated)
                     {
-                        updateButtons();
-                    });
+                        this.BeginInvoke((MethodInvoker)delegate
+                        {
+                            updateButtons();
+                        });
+                    }
 
                 }
                 Thread.Sleep(1000);

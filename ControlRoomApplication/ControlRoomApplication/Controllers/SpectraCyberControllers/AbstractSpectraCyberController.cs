@@ -513,11 +513,8 @@ namespace ControlRoomApplication.Controllers
         // Implicitly kills the processing thread and waits for it to join before returning
         public void KillCommunicationThreadAndWait()
         {
-            CommunicationMutex.WaitOne();
             KillCommunicationThreadFlag = true;
-            CommunicationMutex.ReleaseMutex();
-
-            CommunicationThread.Join();
+            if(CommunicationThread.IsAlive) CommunicationThread.Join();
         }
 
         protected override bool KillHeartbeatComponent()

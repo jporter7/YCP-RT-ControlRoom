@@ -316,7 +316,6 @@ namespace ControlRoomApplication.Controllers
         /// <returns>override bool</returns>
         public bool checkTemp(Temperature t)
         {
-            EmailFields.setSender("system@ycpradiotelescope.com");
             // get maximum temperature threshold
             double max;
 
@@ -335,22 +334,14 @@ namespace ControlRoomApplication.Controllers
                 b = overrides.overrideElevatMotTemp;
                 max = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
             }
-
-            EmailFields.setSubject("MOTOR TEMPERATURE");
+            
             // Check temperatures
             if (t.temp < SimulationConstants.STABLE_MOTOR_TEMP)
             {
                 logger.Info(s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
-                EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature BELOW stable temperature by {Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp)} degrees Fahrenheit.");
-                EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-   <h1>MOTOR TEMPERATURE</h1>
-   <p>{s} motor temperature BELOW stable temperature by {Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp)} degrees Fahrenheit.</p>
-</body>
-</html>");
-                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
-                pushNotification.sendEmail(false);
+
+                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
                 // Only overrides if switch is true
                 if (!b) return false;
                 else return true;
@@ -358,32 +349,18 @@ namespace ControlRoomApplication.Controllers
             else if (t.temp > max)
             {
                 logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
-                EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature OVERHEATING by {Math.Truncate(t.temp - max)} degrees Fahrenheit.");
-                EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-   <h1>MOTOR TEMPERATURE</h1>
-   <p>{s} motor temperature OVERHEATING by {Math.Truncate(t.temp - max)} degrees Fahrenheit.</p>
-</body>
-</html>");
-                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
-                pushNotification.sendEmail(false);
+
+                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
 
                 // Only overrides if switch is true
                 if (!b) return false;
                 else return true;
             }
             logger.Info(s + " motor temperature stable.");
-            EmailFields.setText($"MOTOR TEMPERATURE\r\n{s} motor temperature stable.");
-            EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-   <h1>MOTOR TEMPERATURE</h1>
-   <p>{s} motor temperature stable.</p>
-</body>
-</html>");
-            pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature stable.");
-            pushNotification.sendEmail(false);
+
+            pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
+            EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
 
             return true;
         }
@@ -426,35 +403,19 @@ namespace ControlRoomApplication.Controllers
                 RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, Convert.ToUInt16(set));
             }
 
-            EmailFields.setSender("system@ycpradiotelescope.com");
-            EmailFields.setSubject("SENSOR ORVERRIDES");
-
             if (set)
             {
                 logger.Info("Overriding " + sensor + " sensor.");
-                EmailFields.setText($"SENSOR OVERRIDES\r\nOverriding {sensor} sensor.");
-                EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-    <h1>SENSOR OVERRIDES</h1>
-    <p>Overriding {sensor} sensor.</p>
-</body>
-</html>");
-                pushNotification.send("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
-                pushNotification.sendEmail(false);
+
+                pushNotification.sendToAllAdmins("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
+                EmailNotifications.sendToAllAdmins("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
             }
             else
             {
                 logger.Info("Enabled " + sensor + " sensor.");
-                EmailFields.setText($"SENSOR OVERRIDES\r\nEnabled {sensor} sensor.");
-                EmailFields.setHtml($@"<html>
-<head></head>
-<body>
-    <h1>SENSOR OVERRIDES</h1>
-    <p>Enabled {sensor} sensor.</p>
-</body>
-</html>");
-                pushNotification.send("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
+
+                pushNotification.sendToAllAdmins("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
+                EmailNotifications.sendToAllAdmins("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
             }
         }
     }
