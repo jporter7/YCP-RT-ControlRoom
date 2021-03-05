@@ -157,9 +157,16 @@ namespace ControlRoomApplication.Main
             else if(RT.online == 1)
             {
                 DialogResult result = MessageBox.Show(
-                   $"Telescope {RT.Id} is already running",
-                   "Telescope is running",
-                   MessageBoxButtons.OK);
+                    $"Telescope {RT.Id} is already in use, or the program crashed. Would you like to override this check and run the telescope anyway?",
+                    "Telescope in use",
+                    MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                {
+                    RT.online = 0;
+                    runRt = true;
+                    DatabaseOperations.UpdateTelescope(RT);
+                }
             }
             else runRt = true;
 
