@@ -1054,7 +1054,7 @@ namespace ControlRoomApplication.Controllers {
             if((incoming.Move_Priority > RunningCommand.Move_Priority)&& !RunningCommand.completed) {
                 return incoming;
             }
-            Console.WriteLine( "running: {0} ||| {1}     incomming: {2} ||| {3}", RunningCommand.ComandType.ToString(), RunningCommand.Move_Priority , incoming.ComandType.ToString(),incoming.Move_Priority );
+            Console.WriteLine( "running: {0} ||| {1}     incoming: {2} ||| {3}", RunningCommand.ComandType.ToString(), RunningCommand.Move_Priority , incoming.ComandType.ToString(),incoming.Move_Priority );
             PreviousCommand = RunningCommand;
             if(RunningCommand.ComandType == MCUcomandType.JOG) {
                 if(incoming.ComandType == MCUcomandType.CLEAR_LAST_MOVE || incoming.ComandType == MCUcomandType.IMIDEAT_STOP || incoming.ComandType == MCUcomandType.JOG) {
