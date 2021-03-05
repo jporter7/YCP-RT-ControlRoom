@@ -229,6 +229,32 @@ namespace ControlRoomApplication.Database
             }
         }
 
+        //Update telescope to online 
+        public static void UpdateTelescope(RadioTelescope radioTelescope)
+        {
+          
+                using (RTDbContext Context = InitializeDatabaseContext())
+                {
+                // Update radio telescope
+
+                    radioTelescope.Location.Id = radioTelescope.location_id;
+                    Context.Location.AddOrUpdate(radioTelescope.Location);
+
+                    radioTelescope.CurrentOrientation.Id = radioTelescope.current_orientation_id;
+                    Context.Orientations.AddOrUpdate(radioTelescope.CurrentOrientation);
+
+                    radioTelescope.CalibrationOrientation.Id = radioTelescope.calibration_orientation_id;
+                    Context.Orientations.AddOrUpdate(radioTelescope.CalibrationOrientation);
+
+                    Context.RadioTelescope.AddOrUpdate(radioTelescope);
+                    SaveContext(Context);
+
+                }
+            
+
+        }
+
+
         /// <summary>
         /// Returns the list of Appointments from the database.
         /// </summary>
@@ -324,7 +350,7 @@ namespace ControlRoomApplication.Database
         /// <summary>
         /// Returns a list of all Admin Users
         /// </summary>
-        public static List<User> GetAllAdminUsers()
+        public static List<User> GetAllAdminUsers(bool testflag = false)
         {
             List<User> AdminUsers = new List<User>();
 
@@ -332,7 +358,7 @@ namespace ControlRoomApplication.Database
             {
                 AdminUsers = Context.Users.SqlQuery("SELECT * FROM user U INNER JOIN user_role UR ON U.id = UR.user_id WHERE UR.role = 'ADMIN'").ToList<User>();
             }
-            if(AdminUsers.Count() == 0)
+            if(AdminUsers.Count() == 0 && testflag)
             {
                 User dummy = CreateDummyUser();
                 AdminUsers.Add(dummy);
@@ -813,9 +839,13 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                var telescopes = Context.RadioTelescope.Include(t => t.Location).ToList<RadioTelescope>();
+                var telescopes = Context.RadioTelescope
+                    .Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .ToList<RadioTelescope>();
 
-                foreach(RadioTelescope rt in telescopes)
+                foreach (RadioTelescope rt in telescopes)
                 {
                     logger.Info("Retrieved Radio Telescope from the database");
                     return rt;

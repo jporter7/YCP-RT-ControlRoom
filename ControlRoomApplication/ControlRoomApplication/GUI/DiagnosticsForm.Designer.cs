@@ -348,9 +348,9 @@
             this.fldAzTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fldAzTemp.Location = new System.Drawing.Point(212, 7);
             this.fldAzTemp.Name = "fldAzTemp";
-            this.fldAzTemp.Size = new System.Drawing.Size(24, 18);
+            this.fldAzTemp.Size = new System.Drawing.Size(18, 18);
             this.fldAzTemp.TabIndex = 18;
-            this.fldAzTemp.Text = "50";
+            this.fldAzTemp.Text = "--";
             // 
             // fldElTemp
             // 
@@ -358,9 +358,9 @@
             this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fldElTemp.Location = new System.Drawing.Point(212, 34);
             this.fldElTemp.Name = "fldElTemp";
-            this.fldElTemp.Size = new System.Drawing.Size(24, 18);
+            this.fldElTemp.Size = new System.Drawing.Size(18, 18);
             this.fldElTemp.TabIndex = 19;
-            this.fldElTemp.Text = "50";
+            this.fldElTemp.Text = "--";
             // 
             // btnTest
             // 
@@ -937,13 +937,16 @@
             // 
             this.diagnosticScriptCombo.BackColor = System.Drawing.Color.DarkGray;
             this.diagnosticScriptCombo.FormattingEnabled = true;
+            this.diagnosticScriptCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.diagnosticScriptCombo.Items.AddRange(new object[] {
+            "Select a Script",
             "Hit Azimuth Counter Clockwise Limit Switch",
             "Hit Azimuth Clockwise Limit Switch",
             "Hit Elevation Lower Limit Switch",
             "Hit Elevation Upper Limit Switch",
             "Hit Clockwise",
             "Hit Counter Clockwise Hardstop"});
+            this.diagnosticScriptCombo.SelectedIndex = 0;
             this.diagnosticScriptCombo.Location = new System.Drawing.Point(6, 22);
             this.diagnosticScriptCombo.Name = "diagnosticScriptCombo";
             this.diagnosticScriptCombo.Size = new System.Drawing.Size(180, 21);

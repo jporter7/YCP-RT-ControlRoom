@@ -340,7 +340,7 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info(s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
 
-                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
                 EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
                 // Only overrides if switch is true
                 if (!b) return false;
@@ -350,7 +350,7 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
 
-                pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
                 EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
 
                 // Only overrides if switch is true
@@ -359,7 +359,7 @@ namespace ControlRoomApplication.Controllers
             }
             logger.Info(s + " motor temperature stable.");
 
-            pushNotification.send("MOTOR TEMPERATURE", s + " motor temperature stable.");
+            pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
             EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
 
             return true;
@@ -407,14 +407,14 @@ namespace ControlRoomApplication.Controllers
             {
                 logger.Info("Overriding " + sensor + " sensor.");
 
-                pushNotification.send("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
+                pushNotification.sendToAllAdmins("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
                 EmailNotifications.sendToAllAdmins("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
             }
             else
             {
                 logger.Info("Enabled " + sensor + " sensor.");
 
-                pushNotification.send("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
+                pushNotification.sendToAllAdmins("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
                 EmailNotifications.sendToAllAdmins("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
             }
         }

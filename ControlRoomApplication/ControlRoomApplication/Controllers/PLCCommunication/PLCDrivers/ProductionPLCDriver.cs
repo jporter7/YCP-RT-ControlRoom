@@ -264,14 +264,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("Azimuth CCW Limit Switch Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Azimuth CCW limit switch hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
                             }
                             else
                             {
                                 logger.Info("Azimuth CCW Limit Switch Not Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
                             }
                         }
@@ -285,14 +285,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("Azimuth_Home_One Sensor Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
                             }
                             else
                             {
                                 logger.Info("Azimuth_Home_One Sensor Not Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
                             }
                         }
@@ -306,14 +306,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("Azimuth_Home_Two Sensor Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
                             }
                             else
                             {
                                 logger.Info("Azimuth_Home_Two Sensor Not Hit");;
 
-                                pushNotification.send("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
                             }
                         }
@@ -328,14 +328,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("Azimuth CW Limit Switch Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Azimuth CW limit switch hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
                             }
                             else
                             {
                                 logger.Info("Azimuth CW Limit Switch Not Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
                             }
                         }
@@ -350,14 +350,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("Elevation Lower Limit Switch Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Elevation lower limit switch hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                             }
                             else
                             {
                                 logger.Info("Elevation Lower Limit Switch Not Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
                             }
                         }
@@ -371,14 +371,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("Elevation Home Sensor Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Elevation home sensor hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
                             }
                             else
                             {
                                 logger.Info("Elevation Home Sensor Not Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Elevation home sensor NOT hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
                             }
                         }
@@ -393,14 +393,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("Elevation Upper Limit Switch Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Elevation upper limit switch hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
                             }
                             else
                             {
                                 logger.Info("Elevation Upper Limit Switch Not Hit");
 
-                                pushNotification.send("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
                             }
                         }
@@ -414,14 +414,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("gate opened");
 
-                                pushNotification.send("GATE ACTIVITY", "Gate has been opened.");
+                                pushNotification.sendToAllAdmins("GATE ACTIVITY", "Gate has been opened.");
                                 EmailNotifications.sendToAllAdmins("GATE ACTIVITY", "Gate has been opened.");
                             }
                             else
                             {
                                 logger.Info("gate closed");
 
-                                pushNotification.send("GATE ACTIVITY", "Gate has been closed.");
+                                pushNotification.sendToAllAdmins("GATE ACTIVITY", "Gate has been closed.");
                                 EmailNotifications.sendToAllAdmins("GATE ACTIVITY", "Gate has been closed.");
                             }
                         }
@@ -435,14 +435,14 @@ namespace ControlRoomApplication.Controllers
                             {
                                 logger.Info("Estop Hit");
 
-                                pushNotification.send("E-STOP ACTIVITY", "E-stop has been hit.");
+                                pushNotification.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been hit.");
                                 EmailNotifications.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been hit.");
                             }
                             else
                             {
                                 logger.Info("Estop released");
 
-                                pushNotification.send("E-STOP ACTIVITY", "E-stop has been released.");
+                                pushNotification.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been released.");
                                 EmailNotifications.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been released.");
                             }
                         }
@@ -534,6 +534,9 @@ namespace ControlRoomApplication.Controllers
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            // temporarily set spectracyber mode to continuum
+            Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+
             // read data
             SpectraCyberResponse response = Parent.SpectraCyberController.DoSpectraCyberScan();
 
@@ -558,6 +561,9 @@ namespace ControlRoomApplication.Controllers
 
             // check against weather station reading
             double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
+
+            // Set SpectraCyber mode back to UNKNOWN
+            Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
 
             // return true if working correctly, false if not
             if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)

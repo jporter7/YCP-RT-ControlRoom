@@ -15,6 +15,7 @@ using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Entities.WeatherStation;
 using log4net.Appender;
 using ControlRoomApplication.Documentation;
+using ControlRoomApplication.Validation;
 
 namespace ControlRoomApplication.Main
 {
@@ -37,6 +38,12 @@ namespace ControlRoomApplication.Main
         public bool finalSettings = true;
         public LoggerQueue log = new LoggerQueue();
 
+        // Booleans for user validation of input forms
+        public bool MCUIPValid = false;
+        public bool MCUPortValid = false;
+        public bool PLCPortValid = false;
+        public bool WCOMPortValid = false;
+
         enum TempSensorType
         {
             Production,
@@ -51,19 +58,19 @@ namespace ControlRoomApplication.Main
 
         enum PLCType
         {
-            Production, 
+            Production,
             Scale,
             Simulation,
             Test
 
         }
-        
+
         enum MicrocontrollerType
         {
             Production,
             Simulation
         }
-        
+
 
         /// <summary>
         /// Constructor for the main GUI form. Initializes the GUI form by calling the
@@ -79,7 +86,7 @@ namespace ControlRoomApplication.Main
             System.Array.Copy(ipHostInfo.AddressList, ipHostInfo.AddressList.Length / 2, v4_list, 0, ipHostInfo.AddressList.Length / 2);
             this.LocalIPCombo.Items.AddRange(v4_list);
 
-            
+
             logger.Info("<--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 5;
             dataGridView1.Columns[0].HeaderText = "ID";
@@ -98,7 +105,7 @@ namespace ControlRoomApplication.Main
             // Initialize Button Settings 
             startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
             createWSButton.Enabled = true;
-            acceptSettings.Enabled = true;
+            acceptSettings.Enabled = false;
             startButton.BackColor = System.Drawing.Color.Gainsboro;
             startButton.Enabled = false;
             shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
@@ -106,8 +113,8 @@ namespace ControlRoomApplication.Main
             loopBackBox.Enabled = true;
             checkBox1.Enabled = true;
 
-      
-            
+
+
 
             logger.Info("MainForm Initalized");
         }
@@ -128,12 +135,14 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Start Telescope Button Clicked");
 
+            var RT = DatabaseOperations.FetchFirstRadioTelescope();
+
             // This will tell us whether or not the RT is safe to start.
             // It may not be safe to start if, for example, there are
             // validation errors, or no Telescope is found in the DB
             bool runRt = false;
 
-            if (DatabaseOperations.FetchFirstRadioTelescope() == null)
+            if (RT == null)
             {
                 DialogResult result = MessageBox.Show(
                     "No Radio Telescope found in the database. Would you like to create one?",
@@ -145,9 +154,17 @@ namespace ControlRoomApplication.Main
                     runRt = true;
                 }
             }
+            else if(RT.online == 1)
+            {
+                DialogResult result = MessageBox.Show(
+                   $"Telescope {RT.Id} is already running",
+                   "Telescope is running",
+                   MessageBoxButtons.OK);
+            }
             else runRt = true;
 
-            if(runRt) { 
+            if (runRt)
+            {
                 shutdownButton.BackColor = System.Drawing.Color.Red;
                 shutdownButton.Enabled = true;
                 simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
@@ -262,8 +279,13 @@ namespace ControlRoomApplication.Main
                     }
 
                     AddConfigurationToDataGrid();
+
+            
                 }
             }
+
+
+
         }
 
         /// <summary>
@@ -272,7 +294,7 @@ namespace ControlRoomApplication.Main
         private void AddConfigurationToDataGrid()
         {
             logger.Info("Adding Configuration To DataGrid");
-            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text,txtMcuCOMPort.Text, txtWSCOMPort.Text };
+            string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text, txtMcuCOMPort.Text, txtWSCOMPort.Text };
 
             dataGridView1.Rows.Add(row);
             dataGridView1.Update();
@@ -283,7 +305,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
-            logger.Info("Shut Down Telescope Button Clicked");
+              logger.Info("Shut Down Telescope Button Clicked");
             if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
                 logger.Info("Successfully shut down weather monitoring routine.");
@@ -305,6 +327,10 @@ namespace ControlRoomApplication.Main
                     logger.Info("ERROR killing RT controller at index " + i.ToString());
                 }
 
+                //Turn off Telescope in database
+                ProgramRTControllerList[i].RadioTelescope.online = 0;
+                DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
+
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
                 ProgramRTControllerList[i].RadioTelescope.PLCDriver.Bring_down();
             }
@@ -312,6 +338,17 @@ namespace ControlRoomApplication.Main
             // End logging
             logger.Info("<--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            for (int i = 0; i < ProgramRTControllerList.Count; i++)
+            {
+                //Turn off Telescope in database
+                ProgramRTControllerList[i].RadioTelescope.online = 0;
+                DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
+            }
+
         }
         private void textBox3_Focus(object sender, EventArgs e)
         {
@@ -345,11 +382,13 @@ namespace ControlRoomApplication.Main
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             logger.Info("dataGridView1_CellContent Clicked");
-            try {
+            try
+            {
                 DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id, this);
                 diagnosticForm.Show();
             }
-            catch {
+            catch
+            {
 
             }
         }
@@ -358,13 +397,13 @@ namespace ControlRoomApplication.Main
         /// Builds a radio telescope instance based off of the input from the GUI form.
         /// </summary>
         /// <returns> A radio telescope instance representing the configuration chosen. </returns>
-        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver , AbstractMicrocontroller ctrler , AbstractEncoderReader encoder )
+        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver, AbstractMicrocontroller ctrler, AbstractEncoderReader encoder)
         {
             logger.Info("Building RadioTelescope");
 
             // If no Telescope is present in the database, create a new one
             RadioTelescope newRT = DatabaseOperations.FetchFirstRadioTelescope();
-            if(newRT == null)
+            if (newRT == null)
             {
                 // Create Radio Telescope
                 newRT = new RadioTelescope();
@@ -380,6 +419,10 @@ namespace ControlRoomApplication.Main
 
                 newRT.Id = DatabaseOperations.FetchFirstRadioTelescope().Id;
             }
+
+            //Turn telescope on in databse 
+            newRT.online = 1;
+            DatabaseOperations.UpdateTelescope(newRT);
 
             // These settings are not stored in the database, so they are new every time
             abstractPLCDriver.SetParent(newRT);
@@ -433,33 +476,34 @@ namespace ControlRoomApplication.Main
 
                 case 3:
                     logger.Info("Building TestPLCDriver");
-                    return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text),false);
-
+                    return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text), false);
                 case 2:
                 default:
                     logger.Info("Building SimulationPLCDriver");
-                    return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text),false , false );
+                    return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text), false, false);
             }
         }
 
-        public AbstractEncoderReader build_encoder( AbstractPLCDriver plc )
+        public AbstractEncoderReader build_encoder(AbstractPLCDriver plc)
         {
-            return new SimulatedEncoder(plc , LocalIPCombo.Text , 1602 );
+            return new SimulatedEncoder(plc, LocalIPCombo.Text, 1602);
         }
 
-        public AbstractMicrocontroller build_CTRL() {
-            switch(comboMicrocontrollerBox.SelectedIndex) {
+        public AbstractMicrocontroller build_CTRL()
+        {
+            switch (comboMicrocontrollerBox.SelectedIndex)
+            {
                 case 0:
-                    logger.Info( "Building ProductionPLCDriver" );
-                    return new MicroControlerControler( LocalIPCombo.Text , 1600);
+                    logger.Info("Building ProductionPLCDriver");
+                    return new MicroControlerControler(LocalIPCombo.Text, 1600);
 
                 case 1:
-                    logger.Info( "Building ScaleModelPLCDriver" );
-                    return new SimulatedMicrocontroller( -20,100,true );
+                    logger.Info("Building ScaleModelPLCDriver");
+                    return new SimulatedMicrocontroller(-20, 100, true);
 
                 default:
-                    logger.Info( "Building SimulationPLCDriver" );
-                    return new SimulatedMicrocontroller( SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
+                    logger.Info("Building SimulationPLCDriver");
+                    return new SimulatedMicrocontroller(SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
             }
         }
 
@@ -473,7 +517,7 @@ namespace ControlRoomApplication.Main
 
             logger.Info("Selected Microcontroller Type: ");
 
-            if (comboMicrocontrollerBox.SelectedIndex == (int)MicrocontrollerType.Production)
+            if (comboMicrocontrollerBox.SelectedIndex - 1 == (int)MicrocontrollerType.Production)
             {
                 isSimulated = false;
             }
@@ -554,7 +598,7 @@ namespace ControlRoomApplication.Main
 
         private void loopBackBox_CheckedChanged(object sender, EventArgs e)
         {
-           
+
             if (loopBackBox.Checked)
             {
                 ProdcheckBox.Checked = false;
@@ -567,22 +611,25 @@ namespace ControlRoomApplication.Main
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
-            this.txtPLCPort.Text = ((int)(8082 + ProgramPLCDriverList.Count*3)).ToString();
+            this.txtPLCPort.Text = ((int)(8082 + ProgramPLCDriverList.Count * 3)).ToString();
         }
 
-        private void ProdcheckBox_CheckedChanged( object sender , EventArgs e ) {
-            if(ProdcheckBox.Checked) {
+        private void ProdcheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ProdcheckBox.Checked)
+            {
                 loopBackBox.Checked = false;
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
                 this.txtMcuCOMPort.Text = "502"; //default MCU Port
                 this.txtPLCIP.Text = "192.168.0.50";//default IP address
-                if(LocalIPCombo.FindStringExact( "192.168.0.70" ) == -1) {
-                    this.LocalIPCombo.Items.Add( IPAddress.Parse( "192.168.0.70" ) );
+                if (LocalIPCombo.FindStringExact("192.168.0.70") == -1)
+                {
+                    this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
                 }
-                this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact( "192.168.0.70" );
+                this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("192.168.0.70");
             }
             this.txtPLCPort.Text = "502";
-            this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact( "Production PLC" );
+            this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Production PLC");
         }
 
         private void createWSButton_Click(object sender, EventArgs e)
@@ -597,16 +644,30 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void label2_Click(object sender, EventArgs e)
+        private void comboBox2_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void comboBox2_Click(object sender, EventArgs e) { 
-}
-
         private void txtPLCPort_TextChanged(object sender, EventArgs e)
         {
+            PLCPortValid = Validator.ValidatePort(txtPLCPort.Text);
+            if (!PLCPortValid)
+            {
+                acceptSettings.Enabled = false;
+                txtPLCPort.BackColor = System.Drawing.Color.Yellow;
+                this.PLCPortToolTip.Show("Enter a valid port number\n" +
+                    " between 1 and 65536", label3);
+            }
+            else
+            {
+                txtPLCPort.BackColor = System.Drawing.Color.White;
+                this.PLCPortToolTip.Hide(label3);
+            }
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            {
+                acceptSettings.Enabled = true;
+            }
 
         }
 
@@ -617,21 +678,64 @@ namespace ControlRoomApplication.Main
 
         private void txtPLCIP_TextChanged(object sender, EventArgs e)
         {
-
+            MCUIPValid = Validator.ValidateIPAddress(txtPLCIP.Text);
+            if (!MCUIPValid)
+            {
+                acceptSettings.Enabled = false;
+                txtPLCIP.BackColor = System.Drawing.Color.Yellow;
+                this.MCUIPToolTip.Show("Enter a valid IP Address\n" +
+                    " (xxx.xxx.xxx.xxx)", label4);
+            }
+            else
+            {
+                txtPLCIP.BackColor = System.Drawing.Color.White;
+                this.MCUIPToolTip.Hide(label4);
+            }
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            {
+                acceptSettings.Enabled = true;
+            }
         }
 
-        private void label3_Click(object sender, EventArgs e)
+        private void label2_MouseHover(object sender, EventArgs e)
         {
-
+            //this.WCOMPortToolTip.Show("Enter a valid port number, between 1 and 65536", label2);
+        }
+        private void label3_MouseHover(object sender, EventArgs e)
+        {
+            //this.PLCPortToolTip.Show("Enter a valid port number, between 1 and 65536", label3);
         }
 
-        private void label4_Click(object sender, EventArgs e)
+        private void label4_MouseHover(object sender, EventArgs e)
         {
+            //this.MCUIPToolTip.Show("Enter a valid IP Address (xxx.xxx.xxx.xxx)", label4);
+        }
 
+        private void label5_MouseHover(object sender, EventArgs e)
+        {
+            //this.MCUPortToolTip.Show("Enter a valid port number, between 1 and 65536", label5);
         }
 
         private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
+            WCOMPortValid = Validator.ValidatePort(txtWSCOMPort.Text);
+            if (!WCOMPortValid)
+            {
+                acceptSettings.Enabled = false;
+                txtWSCOMPort.BackColor = System.Drawing.Color.Yellow;
+                this.WCOMPortToolTip.Show("Enter a valid port number\n" +
+                    " between 1 and 65536", label2);
+            }
+            else
+            {
+                txtWSCOMPort.BackColor = System.Drawing.Color.White;
+                this.WCOMPortToolTip.Hide(label2);
+                
+            }
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            {
+                acceptSettings.Enabled = true;
+            }
 
         }
 
@@ -642,59 +746,70 @@ namespace ControlRoomApplication.Main
 
         private void acceptSettings_Click(object sender, EventArgs e)
         {
-            finalSettings = !finalSettings;
-            if (finalSettings == false)
-            {
-                if (comboBox2.Text != "Production Weather Station")
+                finalSettings = !finalSettings;
+                if (finalSettings == false)
                 {
-                    startButton.BackColor = System.Drawing.Color.LimeGreen;
-                    startButton.Enabled = true;
+
+                    //Editing text to relflect state -- When the settings are being edited, the button will need to say 'finalize'
+                    acceptSettings.Text = "Edit Settings";
+                    if (comboBox2.Text != "Production Weather Station")
+                    {
+                        startButton.BackColor = System.Drawing.Color.LimeGreen;
+                        startButton.Enabled = true;
+                    }
+                    startRTGroupbox.BackColor = System.Drawing.Color.Gray;
+                    loopBackBox.Enabled = false;
+                    checkBox1.Enabled = false;
+
+                    simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                    comboMicrocontrollerBox.Enabled = false;
+                    comboBox2.Enabled = false;
+                    comboBox1.Enabled = false;
+                    comboEncoderType.Enabled = false;
+                    comboPLCType.Enabled = false;
+                    LocalIPCombo.Enabled = false;
+
+                    portGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                    ProdcheckBox.Enabled = false;
+                    txtPLCIP.Enabled = false;
+                    txtMcuCOMPort.Enabled = false;
+                    txtWSCOMPort.Enabled = false;
+                    txtPLCPort.Enabled = false;
                 }
-                startRTGroupbox.BackColor = System.Drawing.Color.Gray;
-                loopBackBox.Enabled = false;
-                checkBox1.Enabled = false;
+                else if (finalSettings == true)
+                {
+                    // Editing Text to reflect state -- when finalized, you can click "edit settings"
+                    acceptSettings.Text = "Finalize Settings";
 
-                simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
-                comboMicrocontrollerBox.Enabled = false;
-                comboBox2.Enabled = false;
-                comboBox1.Enabled = false;
-                comboEncoderType.Enabled = false;
-                comboPLCType.Enabled = false;
-                LocalIPCombo.Enabled = false;
+                    startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                    startButton.Enabled = false;
+                    startButton.BackColor = System.Drawing.Color.LightGray;
+                    loopBackBox.Enabled = true;
+                    checkBox1.Enabled = true;
 
-                portGroupbox.BackColor = System.Drawing.Color.DarkGray;
-                txtPLCIP.Enabled = false;
-                txtMcuCOMPort.Enabled = false;
-                txtWSCOMPort.Enabled = false;
-                txtPLCPort.Enabled = false;
-            }
-            else if (finalSettings == true)
-            {
-                startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
-                loopBackBox.Enabled = true;
-                checkBox1.Enabled = true;
+                    simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
+                    comboMicrocontrollerBox.Enabled = true;
+                    comboBox2.Enabled = true;
+                    comboBox1.Enabled = true;
+                    comboEncoderType.Enabled = true;
+                    comboPLCType.Enabled = true;
+                    LocalIPCombo.Enabled = true;
 
-                simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
-                comboMicrocontrollerBox.Enabled = true;
-                comboBox2.Enabled = true;
-                comboBox1.Enabled = true;
-                comboEncoderType.Enabled = true;
-                comboPLCType.Enabled = true;
-                LocalIPCombo.Enabled = true;
-
-                portGroupbox.BackColor = System.Drawing.Color.Gray;
-                txtPLCIP.Enabled = false;
-                txtMcuCOMPort.Enabled = false;
-                txtWSCOMPort.Enabled = false;
-                txtPLCPort.Enabled = false;
-            }
+                    portGroupbox.BackColor = System.Drawing.Color.Gray;
+                    ProdcheckBox.Enabled = true;
+                    txtPLCIP.Enabled = true;
+                    txtMcuCOMPort.Enabled = true;
+                    txtWSCOMPort.Enabled = true;
+                    txtPLCPort.Enabled = true;
+                }
+ 
         }
 
         //Help button clicked ( user interface documentation PDF)
         private void helpButton_click(object sender, EventArgs e)
         {
             string filename = Directory.GetCurrentDirectory() + "\\" + "UIDoc.pdf";
-            if(File.Exists(filename))
+            if (File.Exists(filename))
                 System.Diagnostics.Process.Start(filename);
         }
 
@@ -722,9 +837,45 @@ namespace ControlRoomApplication.Main
 
         private void txtMcuCOMPort_TextChanged(object sender, EventArgs e)
         {
+            MCUPortValid = Validator.ValidatePort(txtMcuCOMPort.Text);
+            if (!MCUPortValid)
+            {
+                acceptSettings.Enabled = false;
+                txtMcuCOMPort.BackColor = System.Drawing.Color.Yellow;
+                this.MCUIPToolTip.Show("Enter a valid port number\n" +
+                    "between 1 and 65536", label5);
+            }
+            else
+            {
+                txtMcuCOMPort.BackColor = System.Drawing.Color.White;
+                this.MCUIPToolTip.Hide(label5);
+            }
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            {
+                acceptSettings.Enabled = true;
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
         }
 
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
+        }
+
+        private void comboEncoderType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboPLCType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+      
     }
 }

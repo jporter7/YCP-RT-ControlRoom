@@ -352,7 +352,8 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         public void TestGetAllAdminUsers()
         {
             List<User> AdminUsers = new List<User>();
-            AdminUsers = DatabaseOperations.GetAllAdminUsers();
+
+            AdminUsers = DatabaseOperations.GetAllAdminUsers(true);
             Assert.IsTrue(AdminUsers.Count > 0);
             Assert.IsTrue(AdminUsers.All(user => user.UR._User_Role == UserRoleEnum.ADMIN));
         }
@@ -376,6 +377,58 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.AddRadioTelescope(telescope);
 
             RadioTelescope retrievedTele = DatabaseOperations.FetchLastRadioTelescope();
+
+            // online
+            Assert.IsTrue(telescope.online == retrievedTele.online);
+
+            // type
+            Assert.IsTrue(telescope.teleType == retrievedTele.teleType);
+
+            // location
+            Assert.IsTrue(telescope.Location.Latitude == retrievedTele.Location.Latitude);
+            Assert.IsTrue(telescope.Location.Longitude == retrievedTele.Location.Longitude);
+            Assert.IsTrue(telescope.Location.Altitude == retrievedTele.Location.Altitude);
+            Assert.IsTrue(telescope.Location.Name == retrievedTele.Location.Name);
+
+            // current orientation (not yet implemented)
+            Assert.IsTrue(telescope.CurrentOrientation.Azimuth == retrievedTele.CurrentOrientation.Azimuth);
+            Assert.IsTrue(telescope.CurrentOrientation.Elevation == retrievedTele.CurrentOrientation.Elevation);
+
+            // calibration orientation (not yet implemented)
+            Assert.IsTrue(telescope.CalibrationOrientation.Azimuth == retrievedTele.CalibrationOrientation.Azimuth);
+            Assert.IsTrue(telescope.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
+        }
+
+        [TestMethod]
+        public void TestUpdateTelescope()
+        {
+            RadioTelescope telescope = new RadioTelescope();
+
+            // saved in the database
+            telescope.online = 0;
+            telescope.CurrentOrientation = new Orientation(0, 0);
+            telescope.CalibrationOrientation = new Orientation(0, 0);
+            telescope.Location = new Location(0, 0, 0, "");
+            telescope._TeleType = RadioTelescopeTypeEnum.NONE;
+            DatabaseOperations.AddRadioTelescope(telescope);
+            RadioTelescope retrievedTele = DatabaseOperations.FetchLastRadioTelescope();
+
+
+            // not saved in the database
+            telescope.SpectraCyberController = new SpectraCyberController(new SpectraCyber());
+            telescope.PLCDriver = new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false);
+
+            // saved in the database
+            telescope.Id = retrievedTele.Id;
+            telescope.online = 1;
+            telescope.CurrentOrientation = new Orientation(25, 25);
+            telescope.CalibrationOrientation = new Orientation(30, 30);
+            telescope.Location = new Location(1, 2, 3, "test");
+            telescope._TeleType = RadioTelescopeTypeEnum.SLIP_RING;
+
+            DatabaseOperations.UpdateTelescope(telescope);
+
+            retrievedTele = DatabaseOperations.FetchLastRadioTelescope();
 
             // online
             Assert.IsTrue(telescope.online == retrievedTele.online);
