@@ -858,9 +858,9 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// This function is only intended to be used for testing.
+        /// Method used to retrieve the last RadioTelescope found in the database
         /// </summary>
-        /// <returns>last RadioTelescope found in the database</returns>
+        /// <returns>last RadioTelescope instance found in the database</returns>
         public static RadioTelescope FetchLastRadioTelescope()
         {
             using (RTDbContext Context = InitializeDatabaseContext())
