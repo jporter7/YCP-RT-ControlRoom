@@ -56,7 +56,6 @@ namespace ControlRoomApplication.Entities
             {
                 return null;
             }
-          
             Console.WriteLine("The Selected ID is " + RTConfig.telescopeID + "\n");
             Console.WriteLine("The newTelescope flag was set to "+ RTConfig.newTelescope + "\n");
 
