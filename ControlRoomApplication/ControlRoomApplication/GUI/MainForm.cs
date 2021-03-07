@@ -142,12 +142,21 @@ namespace ControlRoomApplication.Main
 
             // retrirve contents of JSON file
             RadioTelescopeConfig RTConfig = RadioTelescopeConfig.DeserializeRTConfig();
+
             // this will be null if an error occurs in parsing JSON from the file, if the expected types do not match, i.e. a string
             // was given where an integer was expected, or if any of the inputs were null.
             if (RTConfig == null)
             {
-                MessageBox.Show("An error occured while parsing the RTConfig JSON file. Please check the RadioTelescopeConfig.json" +
-                    "to ensure it follows correct formatting, and that the correct data types were used.", "Error Parsing JSON", MessageBoxButtons.OK);
+                DialogResult result =  MessageBox.Show("An error occured while parsing the RTConfig JSON file. Would you like to recreate the JSON" +
+                    "file?", "Error Parsing JSON", MessageBoxButtons.YesNo);
+                // If yes, recreate the file and remind the user to set the ID and change the flag back to false
+                if(result == DialogResult.Yes)
+                {
+                    RadioTelescopeConfig.CreateAndWriteToNewJSONFile(RadioTelescopeConfig.DEFAULT_JSON_CONTENTS);
+                    MessageBox.Show("JSON file successfully recreated! Do not forget to specify the ID of telescope you want to run inside the file, " +
+                        "and set the newTelescope flag to false.",
+                        "JSON File Sucessfully Created", MessageBoxButtons.OK);
+                }
             }
             // retrieve RT by specified ID, if newTelescope flag set to false (meaning the user is trying to run a pre-existing telescope)
             else if (!RadioTelescopeConfig.IsTelescopeNew(RTConfig))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,7 +17,8 @@ namespace ControlRoomApplication.Entities
     /// </summary>
     public class RadioTelescopeConfig
     {
-        private static string filename = "RadioTelescopeConfig.json";
+        private static string FILE_NAME = "RadioTelescopeConfig.json";
+        public static string DEFAULT_JSON_CONTENTS = "{\"telescopeID\":0,\"newTelescope\":true}";
         public int telescopeID;
         public bool newTelescope;
 
@@ -37,7 +39,7 @@ namespace ControlRoomApplication.Entities
         public static RadioTelescopeConfig DeserializeRTConfig()
         {
            
-            string fileContents = File.ReadAllText(filename);
+            string fileContents = File.ReadAllText(FILE_NAME);
             RadioTelescopeConfig RTConfig;
 
             // check to make sure JSON file contains valid JSON
@@ -46,9 +48,11 @@ namespace ControlRoomApplication.Entities
                 JObject.Parse(fileContents);
                 RTConfig = JsonConvert.DeserializeObject<RadioTelescopeConfig>(fileContents);
             }
+            // file is either corrupted or contains invalid JSON. Create a new file if this is the case using the default contents
             catch(JsonReaderException e)
             {
                 Console.WriteLine(e);
+                RadioTelescopeConfig.CreateAndWriteToNewJSONFile(DEFAULT_JSON_CONTENTS);
                 return null;
             }
             // also check to ensure the value was not null after parsing (if the user entered no value)
@@ -56,8 +60,6 @@ namespace ControlRoomApplication.Entities
             {
                 return null;
             }
-            Console.WriteLine("The Selected ID is " + RTConfig.telescopeID + "\n");
-            Console.WriteLine("The newTelescope flag was set to "+ RTConfig.newTelescope + "\n");
 
             return RTConfig;
         }
@@ -67,10 +69,10 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         /// <param name="RTConfig"></param>
         public static void SerializeRTConfig(RadioTelescopeConfig RTConfig)
-        {
+        { 
             string toJson = JsonConvert.SerializeObject(RTConfig);
-            File.WriteAllText(filename, toJson);
-         
+            RadioTelescopeConfig.CreateAndWriteToNewJSONFile(toJson);
+ 
         }
 
 
@@ -84,6 +86,20 @@ namespace ControlRoomApplication.Entities
         public static bool IsTelescopeNew(RadioTelescopeConfig RTConfig)
         {
             return RTConfig.newTelescope == true;
+        }
+
+        /// <summary>
+        /// Helper method to write to the JSON file, and create it if it does not exist.
+        /// </summary>
+        /// <param name="fileContents">JSON Contents you wish to write to the JSON file</param>
+        public static void CreateAndWriteToNewJSONFile(string fileContents)
+        {
+            // create the file if it does not exist, and write to it.
+            using (FileStream fs = File.Create(FILE_NAME))
+            {
+                byte[] contentsToBytes = new UTF8Encoding(true).GetBytes(fileContents);
+                fs.Write(contentsToBytes, 0, contentsToBytes.Length);
+            }
         }
     }
 }
