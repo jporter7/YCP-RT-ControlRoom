@@ -38,8 +38,15 @@ namespace ControlRoomApplication.Entities
         /// <returns>null, if any errors occur in parsing or creating a new RT instance. Otherwise, it will return an instance of an RT</returns>
         public static RadioTelescopeConfig DeserializeRTConfig()
         {
-           
-            string fileContents = File.ReadAllText(FILE_NAME);
+            string fileContents;
+            try
+            {
+                fileContents = File.ReadAllText(FILE_NAME);
+            }catch(FileNotFoundException e)
+            {
+                CreateAndWriteToNewJSONFile(DEFAULT_JSON_CONTENTS);
+                fileContents = File.ReadAllText(FILE_NAME);
+            }
             RadioTelescopeConfig RTConfig;
 
             // check to make sure JSON file contains valid JSON
