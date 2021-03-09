@@ -43,21 +43,24 @@ namespace ControlRoomApplication.Controllers
             return new Orientation(Horizontal.X, Horizontal.Y);
         }
 
-        public Coordinate OrientationToCoordinate(Orientation horizantal, DateTime datetime)
+        public Coordinate OrientationToCoordinate(Orientation currHorizontal, DateTime datetime)
         {
-            if (horizantal == null)
+            // We don't want to modify the current orientation, so we must create a new instance
+            Orientation horizontal = (Orientation)currHorizontal.Clone();
+
+            if (horizontal == null)
             {
                 throw new ArgumentException("Orientation cannot be null");
             }
 
             // Since AASharp considers south zero, flip the orientation 180 degrees
-            horizantal.Azimuth += 180;
-            if (horizantal.Azimuth > 360)
+            horizontal.Azimuth += 180;
+            if (horizontal.Azimuth > 360)
             {
-                horizantal.Azimuth -= 360;
+                horizontal.Azimuth -= 360;
             }
             
-            AAS2DCoordinate equatorial = AASCoordinateTransformation.Horizontal2Equatorial(horizantal.Azimuth, horizantal.Elevation, Location.Latitude);
+            AAS2DCoordinate equatorial = AASCoordinateTransformation.Horizontal2Equatorial(horizontal.Azimuth, horizontal.Elevation, Location.Latitude);
 
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
             double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
