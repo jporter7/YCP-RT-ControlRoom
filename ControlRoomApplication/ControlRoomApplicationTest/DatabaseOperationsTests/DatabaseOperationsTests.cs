@@ -377,6 +377,8 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             DatabaseOperations.AddRadioTelescope(telescope);
 
             RadioTelescope retrievedTele = DatabaseOperations.FetchLastRadioTelescope();
+            RadioTelescope teleByID = DatabaseOperations.FetchRadioTelescopeByID(retrievedTele.Id);
+
 
             // online
             Assert.IsTrue(telescope.online == retrievedTele.online);
@@ -397,6 +399,24 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             // calibration orientation (not yet implemented)
             Assert.IsTrue(telescope.CalibrationOrientation.Azimuth == retrievedTele.CalibrationOrientation.Azimuth);
             Assert.IsTrue(telescope.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
+
+            // test FetchByID
+                // we will never have this many telescopes, just ensuring null operation performed correctly
+            Assert.IsTrue(DatabaseOperations.FetchRadioTelescopeByID(32323232) == null);
+
+            Assert.IsFalse(teleByID == null);
+            Assert.IsFalse(teleByID.Location == null);
+            Assert.IsFalse(teleByID.CalibrationOrientation == null);
+            Assert.IsFalse(teleByID.CurrentOrientation == null);
+            Assert.IsTrue(teleByID.Id == retrievedTele.Id);
+            Assert.IsTrue(teleByID.Location.Latitude == retrievedTele.Location.Latitude);
+            Assert.IsTrue(teleByID.Location.Longitude == retrievedTele.Location.Longitude);
+            Assert.IsTrue(teleByID.Location.Altitude == retrievedTele.Location.Altitude);
+            Assert.IsTrue(teleByID.Location.Name == retrievedTele.Location.Name);
+            Assert.IsTrue(teleByID.CurrentOrientation.Azimuth == retrievedTele.CurrentOrientation.Azimuth);
+            Assert.IsTrue(teleByID.CurrentOrientation.Elevation == retrievedTele.CurrentOrientation.Elevation);
+            Assert.IsTrue(teleByID.CalibrationOrientation.Azimuth == retrievedTele.CalibrationOrientation.Azimuth);
+            Assert.IsTrue(teleByID.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
         }
 
         [TestMethod]

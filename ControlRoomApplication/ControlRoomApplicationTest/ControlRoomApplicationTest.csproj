@@ -105,6 +105,7 @@
     <Compile Include="EntitiesTests\SpectraCyberIntegratioinTimeEnumTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberResponseTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberTest.cs" />
+    <Compile Include="EntitiesTests\RadioTelescopeConfigTest.cs" />
     <Compile Include="EntityControllersTests\AbstractPLCDriverTest.cs" />
     <Compile Include="EntityControllersTests\ControlRoomControllerTest.cs" />
     <Compile Include="EntityControllersTests\CoordinateCalculationControllerTest.cs" />

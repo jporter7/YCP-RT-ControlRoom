@@ -283,25 +283,25 @@ namespace ControlRoomApplication.Controllers
             Temperature currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
             bool EL = checkTemp(currEL);
 
-            bool currentAZOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
+            bool currentAZOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
 
-            bool currentELOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
+            bool currentELOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
 
             // Loop through every one second to get new temperatures. If the temperature has changed, notify the user
             while (true)
             {
                 // Only updates the info if the temperature has changed
-                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp || currentAZOveride != DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZ_MOTOR_TEMP)) {
+                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp || currentAZOveride != DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR)) {
                     currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
                     AZ = checkTemp(currAZ);
-                    currentAZOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
+                    currentAZOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
                 }
 
-                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp || currentELOveride != DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEV_MOTOR_TEMP))
+                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp || currentELOveride != DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
                 {
                     currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
                     EL = checkTemp(currEL);
-                    currentELOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
+                    currentELOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
                 }
 
                 // Determines if the temperature is acceptable for both motors

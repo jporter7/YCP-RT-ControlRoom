@@ -135,18 +135,75 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Start Telescope Button Clicked");
 
-            var RT = DatabaseOperations.FetchFirstRadioTelescope();
-
             // This will tell us whether or not the RT is safe to start.
             // It may not be safe to start if, for example, there are
             // validation errors, or no Telescope is found in the DB
             bool runRt = false;
 
-            if (RT == null)
+            // retrirve contents of JSON file
+            RadioTelescopeConfig RTConfig = RadioTelescopeConfig.DeserializeRTConfig();
+
+            // this will be null if an error occurs in parsing JSON from the file, if the expected types do not match, i.e. a string
+            // was given where an integer was expected, or if any of the inputs were null.
+            if (RTConfig == null)
+            {
+                DialogResult result =  MessageBox.Show("An error occured while parsing the RTConfig JSON file. Would you like to recreate the JSON " +
+                    "file?", "Error Parsing JSON", MessageBoxButtons.YesNo);
+                // If yes, recreate the file and remind the user to set the ID and change the flag back to false
+                if(result == DialogResult.Yes)
+                {
+                    RadioTelescopeConfig.CreateAndWriteToNewJSONFile(RadioTelescopeConfig.DEFAULT_JSON_CONTENTS);
+                    MessageBox.Show("JSON file successfully recreated! Do not forget to specify the ID of telescope you want to run inside the file, " +
+                        "and set the newTelescope flag to false.",
+                        "JSON File Sucessfully Created", MessageBoxButtons.OK);
+                }
+            }
+            // retrieve RT by specified ID, if newTelescope flag set to false (meaning the user is trying to run a pre-existing telescope)
+            else if (!RTConfig.newTelescope)
+            {
+                RadioTelescope RT = DatabaseOperations.FetchRadioTelescopeByID(RTConfig.telescopeID);
+                if (RT == null)
+                {
+                    DialogResult result = MessageBox.Show("The ID of " + RTConfig.telescopeID + 
+                        " was not found in the database. Would you like to create a new one?", "No Telescope found", MessageBoxButtons.YesNoCancel);
+                    if(result == DialogResult.Yes)
+                    {
+                        runRt = true;
+                    }
+                }
+                // we cannot run a second telescope if the selected one is already running.
+                else if (RT.online == 1)
+                {
+                    DialogResult result = MessageBox.Show(
+                        $"Telescope {RT.Id} is already in use, or the program crashed. Would you like to override this check and run the telescope anyway?",
+                        "Telescope in use",
+                        MessageBoxButtons.YesNo);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        RT.online = 0;
+                        runRt = true;
+                        DatabaseOperations.UpdateTelescope(RT);
+                    }
+                }
+                // else the telescope entered by the user is valid and is currently not running. Start it up
+                else
+                {
+                    Console.WriteLine("The Selected RT with id " + RTConfig.telescopeID + " was not null, and is not running. Starting telescope "+RTConfig.telescopeID);
+                    current_rt_id = RTConfig.telescopeID;
+                    runRt = true;
+
+                }
+
+            }
+            // else the user is trying to create a new telescope. Discard the RadioTelescope ID from the file, and ask
+            // the user to confirm they would like to create a new one.
+            else
             {
                 DialogResult result = MessageBox.Show(
-                    "No Radio Telescope found in the database. Would you like to create one?",
-                    "No Telescope Found",
+                    "The new telescope flag was set to true in the RTConfig File. Please confirm you like to create " +
+                    "a new telescope, or go back and input the ID of an existing telescope in the database.",
+                    "New Telescope Flag Set to True",
                     MessageBoxButtons.YesNoCancel);
 
                 if (result == DialogResult.Yes)
@@ -154,21 +211,7 @@ namespace ControlRoomApplication.Main
                     runRt = true;
                 }
             }
-            else if(RT.online == 1)
-            {
-                DialogResult result = MessageBox.Show(
-                    $"Telescope {RT.Id} is already in use, or the program crashed. Would you like to override this check and run the telescope anyway?",
-                    "Telescope in use",
-                    MessageBoxButtons.YesNo);
-
-                if (result == DialogResult.Yes)
-                {
-                    RT.online = 0;
-                    runRt = true;
-                    DatabaseOperations.UpdateTelescope(RT);
-                }
-            }
-            else runRt = true;
+            
 
             if (runRt)
             {
@@ -408,12 +451,10 @@ namespace ControlRoomApplication.Main
         {
             logger.Info("Building RadioTelescope");
 
-            // If no Telescope is present in the database, create a new one
-            RadioTelescope newRT = DatabaseOperations.FetchFirstRadioTelescope();
-            if (newRT == null)
+            // if this is set to 0, it has not been updated with an existing ID from the database. Therefore, we must create one.
+            if (current_rt_id == 0)
             {
-                // Create Radio Telescope
-                newRT = new RadioTelescope();
+                RadioTelescope newRT = new RadioTelescope();
                 newRT.Location = new Location(0, 0, 0, "");
                 newRT.CalibrationOrientation = new Entities.Orientation(0, 90);
                 newRT.CurrentOrientation = new Entities.Orientation(0, 0);
@@ -424,26 +465,49 @@ namespace ControlRoomApplication.Main
 
                 DatabaseOperations.AddRadioTelescope(newRT);
 
-                newRT.Id = DatabaseOperations.FetchFirstRadioTelescope().Id;
+                newRT.Id = DatabaseOperations.FetchLastRadioTelescope().Id;
+
+                //Turn telescope on in database 
+                newRT.online = 1;
+                DatabaseOperations.UpdateTelescope(newRT);
+
+                // These settings are not stored in the database, so they are new every time
+                abstractPLCDriver.SetParent(newRT);
+                newRT.PLCDriver = abstractPLCDriver;
+                newRT.PLCDriver.setTelescopeType(newRT._TeleType);
+                newRT.SpectraCyberController = BuildSpectraCyber();
+                newRT.Micro_controler = ctrler;
+                newRT.Encoders = encoder;
+                logger.Info("New RadioTelescope built successfully");
+
+                current_rt_id = newRT.Id;
+
+                // update the JSON config file to reflect the newly created telescope
+                RadioTelescopeConfig.SerializeRTConfig(new RadioTelescopeConfig(newRT.Id, false));
+
+                return newRT;
+            }
+            else
+            // else there has been a specified RT instance we are retrieving from the database. Do that and build that specific telescope here
+            {
+                RadioTelescope existingRT = DatabaseOperations.FetchRadioTelescopeByID(current_rt_id);
+
+                // Turn on telescope in database
+                existingRT.online = 1;
+
+                // These settings are not stored in the database, so they are new every time
+                abstractPLCDriver.SetParent(existingRT);
+                existingRT.PLCDriver = abstractPLCDriver;
+                existingRT.PLCDriver.setTelescopeType(existingRT._TeleType);
+                existingRT.SpectraCyberController = BuildSpectraCyber();
+                existingRT.Micro_controler = ctrler;
+                existingRT.Encoders = encoder;
+                logger.Info("Existing RadioTelescope with ID " +current_rt_id+ " retrieved and built successfully");
+
+                return existingRT;
+
             }
 
-            //Turn telescope on in databse 
-            newRT.online = 1;
-            DatabaseOperations.UpdateTelescope(newRT);
-
-            // These settings are not stored in the database, so they are new every time
-            abstractPLCDriver.SetParent(newRT);
-            newRT.PLCDriver = abstractPLCDriver;
-            newRT.PLCDriver.setTelescopeType(newRT._TeleType);
-            newRT.SpectraCyberController = BuildSpectraCyber();
-            newRT.Micro_controler = ctrler;
-            newRT.Encoders = encoder;
-            logger.Info("New RadioTelescope built successfully");
-
-            // 
-            current_rt_id = newRT.Id;
-
-            return newRT;
         }
 
         /// <summary>
