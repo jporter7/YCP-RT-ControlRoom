@@ -66,6 +66,7 @@ namespace ControlRoomApplication.Main
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.runControlScriptButton = new System.Windows.Forms.Button();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
+            this.speedTrackBar = new System.Windows.Forms.TrackBar();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -79,7 +80,6 @@ namespace ControlRoomApplication.Main
             this.plusElaButton = new System.Windows.Forms.Button();
             this.subElaButton = new System.Windows.Forms.Button();
             this.plusJogButton = new System.Windows.Forms.Button();
-            this.speedTrackBar = new System.Windows.Forms.TrackBar();
             this.button1 = new System.Windows.Forms.Button();
             this.spectraCyberGroupBox = new System.Windows.Forms.GroupBox();
             this.integrationStepCombo = new System.Windows.Forms.ComboBox();
@@ -506,7 +506,6 @@ namespace ControlRoomApplication.Main
             "Recover From Counter-Clockwise Hardstop",
             "Home Telescope",
             "Custom Azimuth Movement (Slip Ring Test)"});
-            this.controlScriptsCombo.SelectedIndex = 0;
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
@@ -567,6 +566,16 @@ namespace ControlRoomApplication.Main
             this.manualGroupBox.TabStop = false;
             this.manualGroupBox.Text = "Manual Control";
             this.manualGroupBox.Enter += new System.EventHandler(this.manualGroupBox_Enter);
+            // 
+            // speedTrackBar
+            // 
+            this.speedTrackBar.Location = new System.Drawing.Point(108, 145);
+            this.speedTrackBar.Maximum = 20;
+            this.speedTrackBar.Name = "speedTrackBar";
+            this.speedTrackBar.Size = new System.Drawing.Size(150, 45);
+            this.speedTrackBar.SmallChange = 3;
+            this.speedTrackBar.TabIndex = 20;
+            this.speedTrackBar.Scroll += new System.EventHandler(this.speedTrackBar_Scroll);
             // 
             // label4
             // 
@@ -647,9 +656,9 @@ namespace ControlRoomApplication.Main
             this.speedTextBox.Location = new System.Drawing.Point(9, 162);
             this.speedTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.speedTextBox.Name = "speedTextBox";
+            this.speedTextBox.ReadOnly = true;
             this.speedTextBox.Size = new System.Drawing.Size(69, 20);
             this.speedTextBox.TabIndex = 10;
-            this.speedTextBox.ReadOnly = true;
             // 
             // label2
             // 
@@ -667,7 +676,7 @@ namespace ControlRoomApplication.Main
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 8;
-            this.label1.Text = "Current Elavation: ";
+            this.label1.Text = "Current Elevation: ";
             // 
             // subJogButton
             // 
@@ -729,16 +738,6 @@ namespace ControlRoomApplication.Main
             this.plusJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_Down);
             this.plusJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_UP);
             // 
-            // speedTrackBar
-            // 
-            this.speedTrackBar.Location = new System.Drawing.Point(108, 145);
-            this.speedTrackBar.Maximum = 20;
-            this.speedTrackBar.Name = "speedTrackBar";
-            this.speedTrackBar.Size = new System.Drawing.Size(150, 45);
-            this.speedTrackBar.SmallChange = 3;
-            this.speedTrackBar.TabIndex = 20;
-            this.speedTrackBar.Scroll += new System.EventHandler(this.speedTrackBar_Scroll);
-            // 
             // button1
             // 
             this.button1.BackColor = System.Drawing.Color.Gainsboro;
@@ -757,6 +756,7 @@ namespace ControlRoomApplication.Main
             // spectraCyberGroupBox
             // 
             this.spectraCyberGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+            this.spectraCyberGroupBox.Controls.Add(this.label12);
             this.spectraCyberGroupBox.Controls.Add(this.integrationStepCombo);
             this.spectraCyberGroupBox.Controls.Add(this.label10);
             this.spectraCyberGroupBox.Controls.Add(this.IFGainVal);
@@ -769,7 +769,6 @@ namespace ControlRoomApplication.Main
             this.spectraCyberGroupBox.Controls.Add(this.lblFrequency);
             this.spectraCyberGroupBox.Controls.Add(this.label9);
             this.spectraCyberGroupBox.Controls.Add(this.offsetVoltage);
-            this.spectraCyberGroupBox.Controls.Add(this.label12);
             this.spectraCyberGroupBox.Controls.Add(this.scanTypeComboBox);
             this.spectraCyberGroupBox.Location = new System.Drawing.Point(296, 111);
             this.spectraCyberGroupBox.Margin = new System.Windows.Forms.Padding(2);
@@ -790,7 +789,6 @@ namespace ControlRoomApplication.Main
             "0.3",
             "0.5(S)/1.00(C) ",
             "1.00(S)/10.00(C)"});
-            this.integrationStepCombo.SelectedIndex = 0;
             this.integrationStepCombo.Location = new System.Drawing.Point(215, 56);
             this.integrationStepCombo.Margin = new System.Windows.Forms.Padding(2);
             this.integrationStepCombo.MaxDropDownItems = 6;
@@ -859,7 +857,6 @@ namespace ControlRoomApplication.Main
             "X20",
             "X50",
             "X60"});
-            this.DCGain.SelectedIndex = 0;
             this.DCGain.Location = new System.Drawing.Point(4, 56);
             this.DCGain.Margin = new System.Windows.Forms.Padding(2);
             this.DCGain.MaxDropDownItems = 6;
@@ -963,7 +960,6 @@ namespace ControlRoomApplication.Main
             "Scan Type",
             "Continuum",
             "Spectral"});
-            this.scanTypeComboBox.SelectedIndex = 0;
             this.scanTypeComboBox.Location = new System.Drawing.Point(4, 18);
             this.scanTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.scanTypeComboBox.MaxDropDownItems = 2;

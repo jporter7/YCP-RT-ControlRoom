@@ -79,5 +79,57 @@ namespace ControlRoomApplicationTest.EntitiesTests
 
             Assert.IsFalse(orientation_1.Equals(orientation_2));
         }
+
+        [TestMethod]
+        public void TestOrientationValid()
+        {
+            const int SAFE_VAL = 50;
+
+            // Valid (low edge azimuth)
+            Orientation orientation = new Orientation(-5, SAFE_VAL);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Valid (high edge azimuth)
+            orientation = new Orientation(365, SAFE_VAL);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Invalid (low azimuth)
+            orientation = new Orientation(-6, SAFE_VAL);
+            Assert.IsFalse(orientation.orientationValid());
+
+            // Invalid (high azimuth)
+            orientation = new Orientation(366, SAFE_VAL);
+            Assert.IsFalse(orientation.orientationValid());
+
+            // Valid (low edge elevation)
+            orientation = new Orientation(SAFE_VAL, -15);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Valid (high edge elevation)
+            orientation = new Orientation(SAFE_VAL, 93);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Invalid (low elevation)
+            orientation = new Orientation(SAFE_VAL, -16);
+            Assert.IsFalse(orientation.orientationValid());
+
+            // Invalid (high elevation)
+            orientation = new Orientation(SAFE_VAL, 94);
+            Assert.IsFalse(orientation.orientationValid());
+        }
+
+        [TestMethod]
+        public void TestCloneOrientation()
+        {
+            // Create initial orientation
+            Orientation initial = new Orientation(123, 456);
+
+            // Clone initial orientation
+            Orientation cloned = (Orientation)initial.Clone();
+
+            // Verify cloned orientation's azimuth and elevation are the same
+            Assert.AreEqual(initial.Azimuth, cloned.Azimuth);
+            Assert.AreEqual(initial.Elevation, cloned.Elevation);
+        }
     }
 }

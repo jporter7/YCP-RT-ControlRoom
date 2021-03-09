@@ -181,9 +181,8 @@ namespace ControlRoomApplication.Main
 
                     if (result == DialogResult.Yes)
                     {
-                        RT.online = 0;
                         runRt = true;
-                        DatabaseOperations.UpdateTelescope(RT);
+                        current_rt_id = RTConfig.telescopeID;
                     }
                 }
                 // else the telescope entered by the user is valid and is currently not running. Start it up
@@ -494,6 +493,7 @@ namespace ControlRoomApplication.Main
 
                 // Turn on telescope in database
                 existingRT.online = 1;
+                DatabaseOperations.UpdateTelescope(existingRT);
 
                 // These settings are not stored in the database, so they are new every time
                 abstractPLCDriver.SetParent(existingRT);
