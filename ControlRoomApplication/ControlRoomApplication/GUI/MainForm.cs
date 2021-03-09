@@ -494,6 +494,7 @@ namespace ControlRoomApplication.Main
 
                 // Turn on telescope in database
                 existingRT.online = 1;
+                DatabaseOperations.UpdateTelescope(existingRT);
 
                 // These settings are not stored in the database, so they are new every time
                 abstractPLCDriver.SetParent(existingRT);
