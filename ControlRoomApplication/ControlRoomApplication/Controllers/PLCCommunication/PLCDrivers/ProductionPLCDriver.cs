@@ -960,6 +960,14 @@ namespace ControlRoomApplication.Controllers
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
         public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+            if(IsSimulation)
+            {
+                CurrentSimOrientation = new Orientation(
+                    ConversionHelper.StepsToDegrees(positionTranslationAZ, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(positionTranslationEL, MotorConstants.GEARING_RATIO_ELEVATION)
+                );
+            }
+
             return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
         }
 
@@ -1000,7 +1008,7 @@ namespace ControlRoomApplication.Controllers
             logger.Info("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
             // Set the simulation's current position
-            CurrentSimOrientation = target_orientation;
+            if(IsSimulation) CurrentSimOrientation = target_orientation;
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
             return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL );
