@@ -31,6 +31,13 @@ namespace ControlRoomApplication.Controllers
         private int temp =0;
         private MCUManager MCU;
         private RadioTelescopeTypeEnum telescopeType = RadioTelescopeTypeEnum.NONE;
+
+        // Used for the Unity simulation to keep track of its position
+        // This is ONLY TEMPORARY until we can find the simulation source code and fix
+        // this bug the correct way
+        private bool IsSimulation;
+        private Orientation CurrentSimOrientation;
+
         /// <summary>
         /// set this ONLY if using test driver, removes timouts and delays
         /// </summary>
@@ -45,8 +52,14 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        /// <param name="isSimulation">This wil tell us whether we are running a simulation or not.</param>
+        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool isSimulation = false) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
+            if (isSimulation)
+            {
+                IsSimulation = isSimulation;
+                CurrentSimOrientation = new Orientation();
+            }
 
             limitSwitchData = new Simulators.Hardware.LimitSwitchData();
             homeSensorData = new Simulators.Hardware.HomeSensorData();
@@ -883,7 +896,9 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override Orientation read_Position(){
-            return MCU.read_Position();
+
+            if (IsSimulation) return CurrentSimOrientation;
+            else return MCU.read_Position();
         }
 
         public ushort[] readModbusReregs(ushort start, ushort length) {
@@ -983,6 +998,9 @@ namespace ControlRoomApplication.Controllers
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
             logger.Info("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
             logger.Info("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
+
+            // Set the simulation's current position
+            CurrentSimOrientation = target_orientation;
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
             return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL );

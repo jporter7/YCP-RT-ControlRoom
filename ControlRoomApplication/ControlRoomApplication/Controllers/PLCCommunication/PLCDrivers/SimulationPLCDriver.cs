@@ -27,7 +27,7 @@ namespace ControlRoomApplication.Controllers
         {
             SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, is_Test);
             Thread.Sleep(1000);//wait for server in simMcu to come up
-            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port, true);
             if(startPLC) {
                 driver.StartAsyncAcceptingClients();
             }
