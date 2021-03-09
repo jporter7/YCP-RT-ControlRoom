@@ -756,6 +756,7 @@ namespace ControlRoomApplication.Main
             // spectraCyberGroupBox
             // 
             this.spectraCyberGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+            this.spectraCyberGroupBox.Controls.Add(this.label12);
             this.spectraCyberGroupBox.Controls.Add(this.integrationStepCombo);
             this.spectraCyberGroupBox.Controls.Add(this.label10);
             this.spectraCyberGroupBox.Controls.Add(this.IFGainVal);
@@ -768,7 +769,6 @@ namespace ControlRoomApplication.Main
             this.spectraCyberGroupBox.Controls.Add(this.lblFrequency);
             this.spectraCyberGroupBox.Controls.Add(this.label9);
             this.spectraCyberGroupBox.Controls.Add(this.offsetVoltage);
-            this.spectraCyberGroupBox.Controls.Add(this.label12);
             this.spectraCyberGroupBox.Controls.Add(this.scanTypeComboBox);
             this.spectraCyberGroupBox.Location = new System.Drawing.Point(296, 111);
             this.spectraCyberGroupBox.Margin = new System.Windows.Forms.Padding(2);
