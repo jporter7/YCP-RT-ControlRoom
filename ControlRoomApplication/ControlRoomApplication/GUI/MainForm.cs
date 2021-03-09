@@ -181,9 +181,8 @@ namespace ControlRoomApplication.Main
 
                     if (result == DialogResult.Yes)
                     {
-                        RT.online = 0;
                         runRt = true;
-                        DatabaseOperations.UpdateTelescope(RT);
+                        current_rt_id = RTConfig.telescopeID;
                     }
                 }
                 // else the telescope entered by the user is valid and is currently not running. Start it up
