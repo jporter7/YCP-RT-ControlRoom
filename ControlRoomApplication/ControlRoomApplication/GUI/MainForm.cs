@@ -147,7 +147,7 @@ namespace ControlRoomApplication.Main
             // was given where an integer was expected, or if any of the inputs were null.
             if (RTConfig == null)
             {
-                DialogResult result =  MessageBox.Show("An error occured while parsing the RTConfig JSON file. Would you like to recreate the JSON" +
+                DialogResult result =  MessageBox.Show("An error occured while parsing the RTConfig JSON file. Would you like to recreate the JSON " +
                     "file?", "Error Parsing JSON", MessageBoxButtons.YesNo);
                 // If yes, recreate the file and remind the user to set the ID and change the flag back to false
                 if(result == DialogResult.Yes)
@@ -159,7 +159,7 @@ namespace ControlRoomApplication.Main
                 }
             }
             // retrieve RT by specified ID, if newTelescope flag set to false (meaning the user is trying to run a pre-existing telescope)
-            else if (!RadioTelescopeConfig.IsTelescopeNew(RTConfig))
+            else if (!RTConfig.newTelescope)
             {
                 RadioTelescope RT = DatabaseOperations.FetchRadioTelescopeByID(RTConfig.telescopeID);
                 if (RT == null)
