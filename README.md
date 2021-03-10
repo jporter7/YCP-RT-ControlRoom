@@ -33,6 +33,10 @@ Package Settings:
 	contact a system administrator for a copy of the AWSConstants file for access to the AWS Server’s data,
 	and the pushNotifications file for sending push notifications. The pushNotifications file belongs in
 	"ControlRoomApplication\ControlRoomApplication\Controllers\Communications\pushNotification.cs".
+	AWSConstants belongs in the Constants folder. You may have to manually add the package to the files
+	that use it. The LOCAL_DATABASE_STRING constant will have to be modified to include the password you
+	set for MySQL.
+
 
 MySQL Set Up:
 
