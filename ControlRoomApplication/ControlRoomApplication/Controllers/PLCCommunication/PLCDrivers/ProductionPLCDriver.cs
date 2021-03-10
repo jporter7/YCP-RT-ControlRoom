@@ -1030,41 +1030,56 @@ namespace ControlRoomApplication.Controllers
             int EL_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
             int AZ_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
 
-            bool ZeroOne = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME] );  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
-            bool ZeroTwo = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );//active between -1 to 10   and 359 to 370
-                                                                                                                                                 // comented out for testing
-            PLCEvents.OverrideLimitHandlers( ( object sender , limitEventArgs e ) => {
-                logger.Debug( "limit hit durring homing, default handler disabled" );
-            });
-            if(ZeroOne & ZeroTwo) {//very close to 0 degrees 
-                //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0, PRIORITY ).GetAwaiter().GetResult();
-                if (limitSwitchData.Azimuth_CW_Limit) {// we were actually at 360 and need to go back towards 0
-                    JogOffLimitSwitches().GetAwaiter().GetResult();
-                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0 , PRIORITY ).GetAwaiter().GetResult();
+            // We only want to perform this movement if the telescope has hard stops, because the range of motion is 0-375. That gives
+            // us 15 degrees of overlap, so we want to make sure we aren't hitting a limit switch
+            if (telescopeType == RadioTelescopeTypeEnum.HARD_STOPS)
+            {
+                bool ZeroOne = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
+                bool ZeroTwo = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY]);//active between -1 to 10   and 359 to 370
+                                                                                                                                                   // comented out for testing
+                PLCEvents.OverrideLimitHandlers((object sender, limitEventArgs e) =>
+                {
+                    logger.Debug("limit hit durring homing, default handler disabled");
+                });
+                if (ZeroOne & ZeroTwo)
+                {//very close to 0 degrees 
+                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    if (limitSwitchData.Azimuth_CW_Limit)
+                    {// we were actually at 360 and need to go back towards 0
+                        JogOffLimitSwitches().GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    }
                 }
-            } else if(ZeroOne & !ZeroTwo) {//350 to 360 or -10 to 0
-                //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
-                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( -20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 , PRIORITY ).GetAwaiter().GetResult();
-                if (limitSwitchData.Azimuth_CCW_Limit) {// we were actually less than 0 and need to go back past 0
-                    JogOffLimitSwitches().GetAwaiter().GetResult();
-                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps( 25, MotorConstants.GEARING_RATIO_AZIMUTH), 0 , PRIORITY ).GetAwaiter().GetResult();
+                else if (ZeroOne & !ZeroTwo)
+                {//350 to 360 or -10 to 0
+                 //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(-20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    if (limitSwitchData.Azimuth_CCW_Limit)
+                    {// we were actually less than 0 and need to go back past 0
+                        JogOffLimitSwitches().GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(25, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    }
                 }
-            } else if(!ZeroOne & ZeroTwo) {//0 to 10   or 360 to 370
-                //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                MCU.MoveAndWaitForCompletion( AZ_Speed , EL_Speed , 50 , ConversionHelper.DegreesToSteps( 20 , MotorConstants.GEARING_RATIO_AZIMUTH ) , 0 , PRIORITY ).GetAwaiter().GetResult();
-                if (limitSwitchData.Azimuth_CW_Limit) {// we were actually at 360 and need to go back towards 0
-                    JogOffLimitSwitches().GetAwaiter().GetResult();
-                    MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0 , PRIORITY ).GetAwaiter().GetResult();
+                else if (!ZeroOne & ZeroTwo)
+                {//0 to 10   or 360 to 370
+                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    if (limitSwitchData.Azimuth_CW_Limit)
+                    {// we were actually at 360 and need to go back towards 0
+                        JogOffLimitSwitches().GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    }
                 }
-            } else {
-                //we know our position is valid and can imedeatly perform a cw home
+                else
+                {
+                    //we know our position is valid and can imedeatly perform a cw home
+                }
+
+                PLCEvents.ResetOverrides();
             }
-            
 
-            bool ELHome = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME] );
-
-            PLCEvents.ResetOverrides();
+            bool ELHome = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME]);
             MCU.HomeBothAxyes( true , ELHome , 0.25 , PRIORITY ).Wait();
 
             return true;
