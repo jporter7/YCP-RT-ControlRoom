@@ -1025,15 +1025,15 @@ namespace ControlRoomApplication.Controllers
             //this method will also likley undego signifigant change once the hardeware configuration is locked down
             int PRIORITY = 2;
 
-            int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.1 ) , MotorConstants.GEARING_RATIO_ELEVATION );
-            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.1 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
-            int EL_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
-            int AZ_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
-
             // We only want to perform this movement if the telescope has hard stops, because the range of motion is 0-375. That gives
             // us 15 degrees of overlap, so we want to make sure we aren't hitting a limit switch
             if (telescopeType == RadioTelescopeTypeEnum.HARD_STOPS)
             {
+                int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.1), MotorConstants.GEARING_RATIO_ELEVATION);
+                int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.1), MotorConstants.GEARING_RATIO_AZIMUTH);
+                int EL_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
+                int AZ_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
+
                 bool ZeroOne = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
                 bool ZeroTwo = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY]);//active between -1 to 10   and 359 to 370
                                                                                                                                                    // comented out for testing
