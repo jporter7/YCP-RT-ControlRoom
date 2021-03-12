@@ -604,19 +604,14 @@ namespace ControlRoomApplication.Main
                         string[] values;
                         Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
 
-                        // Notify the user if they do not have the type set to SLIP_RING
-                        if(rtController.RadioTelescope._TeleType != RadioTelescopeTypeEnum.SLIP_RING)
-                        {
-                            typeInfo = "\n\nThe Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
-                            " This script is best run with a telescope type of SLIP_RING.";
-                        }
-
-
                         // Get validated user input for azimuth position
                         do
                         {
-                            input = Interaction.InputBox("Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
-                                " and elevation between -15 and 93 degrees. Format the entry as a comma-separated list in the format " +
+                            input = Interaction.InputBox("The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
+                            " This script is best run with a telescope type of SLIP_RING.\n\n" +
+                            "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
+                                " and elevation between "+ Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES+ " and "+ Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
+                                " degrees. Format the entry as a comma-separated list in the format " +
                                 "azimuth, elevation. Ex: 55,80" + typeInfo,
                                 "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
                             values = input.Split(',');
@@ -637,9 +632,6 @@ namespace ControlRoomApplication.Main
                         if (!input.Equals(""))
                         {
                             tele.PLCDriver.CustomOrientationMove(azimuthPos, elevationPos);
-                            currentOrientation = rtController.GetCurrentOrientation();
-                            Console.WriteLine("Azimuth Entered: " + azimuthPos.ToString());
-                            Console.WriteLine("Elevation Entered: " + elevationPos.ToString());
 
                         }
                         else 
