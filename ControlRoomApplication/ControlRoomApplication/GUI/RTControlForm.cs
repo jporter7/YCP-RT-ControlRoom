@@ -620,14 +620,18 @@ namespace ControlRoomApplication.Main
                                 "azimuth, elevation. Ex: 55,80" + typeInfo,
                                 "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
                             values = input.Split(',');
-                            //elevationPos = Double.Parse(values[1]);
-
+                        
+                            if (values.Length == 2 && !input.Equals(""))
+                            {
+                                Double.TryParse(values[0], out azimuthPos);
+                                Double.TryParse(values[1], out elevationPos);
+                               
+                            }
 
                             // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
                         }
-                        while ((!Double.TryParse(values[0], out azimuthPos) || azimuthPos > 360 || azimuthPos < 0) || 
-                            ((!Double.TryParse(values[1], out elevationPos) || elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES  || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES)) 
-                            && !input.Equals("") && values.Length <= 2);
+                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES) 
+                            && (!input.Equals("") && values.Length <= 2));
 
                         // Only run script if cancel button was not hit
                         if (!input.Equals(""))
