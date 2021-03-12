@@ -505,7 +505,8 @@ namespace ControlRoomApplication.Main
             "Recover From Clockwise Hardstop",
             "Recover From Counter-Clockwise Hardstop",
             "Home Telescope",
-            "Custom Azimuth Movement (Slip Ring Test)"});
+            "Custom Orientation Movement"});
+            this.controlScriptsCombo.SelectedIndex = 0;
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
