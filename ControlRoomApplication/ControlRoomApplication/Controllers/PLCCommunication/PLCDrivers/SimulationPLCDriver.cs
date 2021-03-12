@@ -229,9 +229,9 @@ namespace ControlRoomApplication.Controllers
             driver.setTelescopeType(type);
         }
 
-        public override Task<bool> CustomAzimuthMove(double azimuthPos)
+        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
         {
-            return driver.CustomAzimuthMove(azimuthPos);
+            return driver.CustomOrientationMove(azimuthPos, elevationPos);
         }
     }
 }

@@ -618,19 +618,24 @@ namespace ControlRoomApplication.Main
                             input = Interaction.InputBox("Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
                                 " and elevation between -15 and 93 degrees. Format the entry as a comma-separated list in the format " +
                                 "azimuth, elevation. Ex: 55,80" + typeInfo,
-                                "Azimuth Orientation", currentOrientation.Azimuth.ToString()+","+currentOrientation.Elevation.ToString());
-                             values = input.Split(',');
-                    
-                        // check to make sure the entered values are valid, that there are not too many values entered
-                        } while ((!Double.TryParse(values[0], out azimuthPos) || azimuthPos > 360 || azimuthPos < 0) && ((!Double.TryParse(values[1], out elevationPos) || 
-                        elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos < Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES)) && !input.Equals("")
-                        && values.Length <= 2);
+                                "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
+                            values = input.Split(',');
+                            //elevationPos = Double.Parse(values[1]);
+
+
+                            // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
+                        }
+                        while ((!Double.TryParse(values[0], out azimuthPos) || azimuthPos > 360 || azimuthPos < 0) || 
+                            ((!Double.TryParse(values[1], out elevationPos) || elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES  || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES)) 
+                            && !input.Equals("") && values.Length <= 2);
 
                         // Only run script if cancel button was not hit
                         if (!input.Equals(""))
                         {
-                            tele.PLCDriver.CustomAzimuthMove(azimuthPos);
+                            tele.PLCDriver.CustomOrientationMove(azimuthPos, elevationPos);
                             currentOrientation = rtController.GetCurrentOrientation();
+                            Console.WriteLine("Azimuth Entered: " + azimuthPos.ToString());
+                            Console.WriteLine("Elevation Entered: " + elevationPos.ToString());
 
                         }
                         else 

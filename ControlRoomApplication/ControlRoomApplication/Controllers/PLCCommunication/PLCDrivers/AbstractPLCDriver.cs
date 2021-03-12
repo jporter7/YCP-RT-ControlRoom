@@ -92,7 +92,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract Task<bool> FullElevationMove();
 
-        public abstract Task<bool> CustomAzimuthMove(double azimuthPos);
+        public abstract Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos);
 
         public abstract Task<bool> Full_360_CCW_Rotation();
 

@@ -790,6 +790,7 @@ namespace ControlRoomApplication.Main
             "0.3",
             "0.5(S)/1.00(C) ",
             "1.00(S)/10.00(C)"});
+            this.integrationStepCombo.SelectedIndex = 0;
             this.integrationStepCombo.Location = new System.Drawing.Point(215, 56);
             this.integrationStepCombo.Margin = new System.Windows.Forms.Padding(2);
             this.integrationStepCombo.MaxDropDownItems = 6;
@@ -858,6 +859,7 @@ namespace ControlRoomApplication.Main
             "X20",
             "X50",
             "X60"});
+            this.DCGain.SelectedIndex = 0;
             this.DCGain.Location = new System.Drawing.Point(4, 56);
             this.DCGain.Margin = new System.Windows.Forms.Padding(2);
             this.DCGain.MaxDropDownItems = 6;
@@ -961,6 +963,7 @@ namespace ControlRoomApplication.Main
             "Scan Type",
             "Continuum",
             "Spectral"});
+            this.scanTypeComboBox.SelectedIndex = 0;
             this.scanTypeComboBox.Location = new System.Drawing.Point(4, 18);
             this.scanTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.scanTypeComboBox.MaxDropDownItems = 2;
