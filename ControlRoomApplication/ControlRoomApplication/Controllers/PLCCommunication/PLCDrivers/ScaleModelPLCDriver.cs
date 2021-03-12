@@ -430,7 +430,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> CustomAzimuthMove(double azimuthPos)
+        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
         {
             throw new NotImplementedException();
         }

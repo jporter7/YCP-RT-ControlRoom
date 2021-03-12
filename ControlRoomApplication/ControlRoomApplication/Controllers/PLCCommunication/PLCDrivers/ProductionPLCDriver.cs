@@ -751,12 +751,16 @@ namespace ControlRoomApplication.Controllers
             return Move_to_orientation(currentPos, elFinish);
         }
         
-        // This is only used to test the slip ring
-        public override Task<bool> CustomAzimuthMove(double azimuthPos)
+        /// <summary>
+        /// Custom Orientaion Movement script. Used to move telescope to a specific orientation
+        /// </summary>
+        /// <param name="azimuthPos"></param>
+        /// <returns></returns>
+        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
         {
             Orientation currentPos = read_Position();
 
-            Orientation movement = new Orientation(azimuthPos, currentPos.Elevation);
+            Orientation movement = new Orientation(azimuthPos, elevationPos);
 
             // Move to desired azimuth coordinate
             return Move_to_orientation(movement, currentPos);
