@@ -600,7 +600,6 @@ namespace ControlRoomApplication.Main
                         double azimuthPos = 0;
                         double elevationPos = 0;    
                         string input = "";
-                        string typeInfo = "";
                         string[] values;
                         Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
 
@@ -612,7 +611,7 @@ namespace ControlRoomApplication.Main
                             "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
                                 " and elevation between "+ Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES+ " and "+ Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
                                 " degrees. Format the entry as a comma-separated list in the format " +
-                                "azimuth, elevation. Ex: 55,80" + typeInfo,
+                                "azimuth, elevation. Ex: 55,80",
                                 "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
                             values = input.Split(',');
                         
