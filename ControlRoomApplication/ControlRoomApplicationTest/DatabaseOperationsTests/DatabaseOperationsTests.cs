@@ -420,6 +420,65 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         }
 
         [TestMethod]
+        public void TestAddAndRetrieveTemperature()
+        {
+            List<Temperature> temp = new List <Temperature>();
+            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+
+            //Generate current time
+            long dateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            //Generate Temperature
+            Temperature t1 =  Temperature.Generate(dateTime, 0.0, loc1);
+
+            temp.Add(t1);
+
+            DatabaseOperations.AddSensorData(temp);
+            List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime-1, dateTime+1, loc1);
+
+            Assert.AreEqual(tempReturn.Count, 1);
+
+            //Test only temp
+            Assert.AreEqual(temp[tempReturn.Count-1].location_ID, tempReturn[tempReturn.Count-1].location_ID);
+            Assert.AreEqual(temp[tempReturn.Count - 1].temp, tempReturn[tempReturn.Count - 1].temp);
+            Assert.AreEqual(temp[tempReturn.Count - 1].TimeCapturedUTC, tempReturn[tempReturn.Count - 1].TimeCapturedUTC);
+
+        }
+
+        [TestMethod]
+        public void TestAddAndRetrieveTemperatures()
+        {
+            List<Temperature> temp = new List<Temperature>();
+            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+
+            //Generate current time
+            long dateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            //Make 2 new temperatures
+            Temperature t1 = Temperature.Generate(dateTime, 500.0, loc1);
+            Temperature t2 = Temperature.Generate(dateTime, 999.0, loc1);
+
+            temp.Add(t1);
+            temp.Add(t2);
+
+            DatabaseOperations.AddSensorData(temp);
+            List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime - 1, dateTime + 1, loc1);
+
+            Assert.AreEqual(tempReturn.Count, 2);
+
+            //Test first temp
+            Assert.AreEqual(temp[tempReturn.Count - 1].location_ID, tempReturn[tempReturn.Count - 1].location_ID);
+            Assert.AreEqual(temp[tempReturn.Count - 1].temp, tempReturn[tempReturn.Count - 1].temp);
+            Assert.AreEqual(temp[tempReturn.Count - 1].TimeCapturedUTC, tempReturn[tempReturn.Count - 1].TimeCapturedUTC);
+
+            //Test second temp
+            Assert.AreEqual(temp[tempReturn.Count - 2].location_ID, tempReturn[tempReturn.Count - 2].location_ID);
+            Assert.AreEqual(temp[tempReturn.Count - 2].temp, tempReturn[tempReturn.Count - 2].temp);
+            Assert.AreEqual(temp[tempReturn.Count - 2].TimeCapturedUTC, tempReturn[tempReturn.Count - 2].TimeCapturedUTC);
+
+        }
+
+        [TestMethod]
         public void TestUpdateTelescope()
         {
             RadioTelescope telescope = new RadioTelescope();
