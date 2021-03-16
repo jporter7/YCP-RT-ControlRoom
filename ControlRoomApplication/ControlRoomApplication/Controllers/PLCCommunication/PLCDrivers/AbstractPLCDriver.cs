@@ -10,6 +10,7 @@ using ControlRoomApplication.Simulators.Hardware;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Controllers.PLCCommunication;
+using System.Collections.Generic;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -164,5 +165,16 @@ namespace ControlRoomApplication.Controllers
         public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
 
         public abstract void setTelescopeType(RadioTelescopeTypeEnum type);
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// </summary>
+        public abstract void ResetMCUErrors();
+
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public abstract List<MCUConstants.MCUOutputRegs> CheckMCUErrors();
     }
 }

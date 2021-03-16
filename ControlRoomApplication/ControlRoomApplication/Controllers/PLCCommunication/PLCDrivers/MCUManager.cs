@@ -506,6 +506,34 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// </summary>
+        public void ResetMCUErrors()
+        {
+            Send_Generic_Command_And_Track(new MCUcomand(MESSAGE_CONTENTS_RESET_ERRORS, MCUcomandType.RESET_ERRORS, 0) { completed = true }).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Checks the MCU registers for any errors
+        /// </summary>
+        /// <returns>Returns all errors that were found.</returns>
+        public List<MCUConstants.MCUOutputRegs> CheckMCUErrors()
+        {
+            var data = TryReadRegs(0, 15).GetAwaiter().GetResult();
+            List<MCUConstants.MCUOutputRegs> errors = new List<MCUConstants.MCUOutputRegs>();
+
+            // Azimuth motor error
+            if (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1)
+                errors.Add(MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW);
+
+            // Elevation motor error
+            if (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1)
+                errors.Add(MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW);
+
+            return errors;
+        }
+
 
         private async Task<bool> Override_And_Stop_Motion( int priority ) {
             var data = TryReadRegs( 0 , 15 ).GetAwaiter().GetResult();

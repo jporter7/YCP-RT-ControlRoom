@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
@@ -431,6 +432,24 @@ namespace ControlRoomApplication.Controllers {
         }
 
         public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// This has not been implemented on the scale model.
+        /// </summary>
+        public override void ResetMCUErrors()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public override List<MCUConstants.MCUOutputRegs> CheckMCUErrors()
         {
             throw new NotImplementedException();
         }
