@@ -640,6 +640,20 @@ namespace ControlRoomApplication.Main
                     });
                     // Custom azimuth position. This is only used to test the slip ring implementation
                     break;
+
+                case 12:
+                    thread = new Thread(() =>
+                    {
+                        // Convert list of enums to a string separated by a new line, so each error appears on its own line
+                        String errors = string.Join("\n", tele.PLCDriver.CheckMCUErrors().Select(s => s.ToString()).ToArray());
+                        MessageBox.Show("The following errors are currently present on the MCU:\n\n" + errors + "\n\nClick OK to reset them.", "Reset MCU Errors");
+                        
+                        tele.PLCDriver.ResetMCUErrors();
+                    });
+
+                    // This is a TEMPORARY script to reset the MCU errors. When this is tested and determined to be fully working,
+                    // a proper implementation on the UI will be necessary, and then this commit may be reverted.
+                    break;
                 default:
 
                     //Script cannot be run
