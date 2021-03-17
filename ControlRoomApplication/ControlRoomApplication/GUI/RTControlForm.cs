@@ -600,28 +600,45 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         double azimuthPos = 0;
+                        double elevationPos = 0;    
                         string input = "";
-                        string warning = "";
-
-                        // Notify the user if they do not have the type set to SLIP_RING
-                        if(rtController.RadioTelescope._TeleType != RadioTelescopeTypeEnum.SLIP_RING)
-                        {
-                            warning = "\n\nWarning: The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
-                            " This script is best run with a telescope type of SLIP_RING.";
-                        }
-
+                        string[] values;
+                        Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
 
                         // Get validated user input for azimuth position
                         do
                         {
-                            input = Interaction.InputBox("Please type an azimuth orientation between 0 and 360 degrees." + warning,
-                                "Azimuth Orientation", "0");
+                            input = Interaction.InputBox("The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
+                            " This script is best run with a telescope type of SLIP_RING.\n\n" +
+                            "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
+                                " and elevation between "+ Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES+ " and "+ Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
+                                " degrees. Format the entry as a comma-separated list in the format " +
+                                "azimuth, elevation. Ex: 55,80",
+                                "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
+                            values = input.Split(',');
+                        
+                            if (values.Length == 2 && !input.Equals(""))
+                            {
+                                Double.TryParse(values[0], out azimuthPos);
+                                Double.TryParse(values[1], out elevationPos);
+                               
+                            }
 
-                        } while ((!Double.TryParse(input, out azimuthPos) || azimuthPos > 360 || azimuthPos < 0) && !input.Equals(""));
+                            // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
+                        }
+                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES) 
+                            && (!input.Equals("") && values.Length <= 2));
 
                         // Only run script if cancel button was not hit
-                        if (!input.Equals("")) tele.PLCDriver.CustomAzimuthMove(azimuthPos);
-                        else MessageBox.Show("Custom azimuth movement script cancelled.", "Script Cancelled");
+                        if (!input.Equals(""))
+                        {
+                            tele.PLCDriver.CustomOrientationMove(azimuthPos, elevationPos);
+
+                        }
+                        else 
+                        {
+                            MessageBox.Show("Custom Orientation script cancelled.", "Script Cancelled");
+                        }
                     });
                     // Custom azimuth position. This is only used to test the slip ring implementation
                     break;
