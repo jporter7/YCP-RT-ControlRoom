@@ -4,6 +4,8 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Main
 {
@@ -32,12 +34,12 @@ namespace ControlRoomApplication.Main
             // comboBox1.Text = "0.1 RPM";
             speed = 0.1;
 
-            logger.Info("Edit Script Form Initalized");
+            logger.Info(Utilities.GetTimeStamp() + ": Edit Script Form Initalized");
         }
 
         private void ManualControlForm_FormClosing(Object sender, FormClosingEventArgs e)
         {
-            logger.Info("Edit Script Form Closing");
+            logger.Info(Utilities.GetTimeStamp() + ": Edit Script Form Closing");
             timer1.Enabled = false;
         }
 
@@ -48,7 +50,7 @@ namespace ControlRoomApplication.Main
 
         private void NegButton_MouseDown(object sender, MouseEventArgs e)
         {
-           // logger.Info("Jog NegButton MouseDown");
+           // logger.Info(Utilities.GetTimeStamp() + ": Jog NegButton MouseDown");
             //UpdateText("Moving at -" + comboBox1.Text);
 
             // Start CCW Jog
@@ -57,7 +59,7 @@ namespace ControlRoomApplication.Main
 
         private void NegButton_MouseUp(object sender, MouseEventArgs e)
         {
-           // logger.Info("Jog NegButton MouseUp");
+           // logger.Info(Utilities.GetTimeStamp() + ": Jog NegButton MouseUp");
             UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             // Stop Move
@@ -93,7 +95,7 @@ namespace ControlRoomApplication.Main
 
       //  private void PosButton_MouseDown(object sender, MouseEventArgs e)
       ////  {
-      //      logger.Info("Jog PosButton MouseDown");
+      //      logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
       //     // UpdateText("Moving at " + comboBox1.Text);
 
 //      // Start CW Jog
@@ -102,7 +104,7 @@ namespace ControlRoomApplication.Main
 
 //  private void PosButton_MouseUp(object sender, MouseEventArgs e)
 //{
-//  logger.Info("Jog PosButton MouseUp");
+//  logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
 //  UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
 // Stop Move
@@ -113,18 +115,18 @@ namespace ControlRoomApplication.Main
 // {
 // if(comboBox1.Text == "2 RPM")
 // {
-//     logger.Info("Speed set to 2 RPM");
+//     logger.Info(Utilities.GetTimeStamp() + ": Speed set to 2 RPM");
 //     speed = 333333;
 // }
 //// else if(comboBox1.Text == "0.1 RPM")
 // {
-//     logger.Info("Speed set to 0.1 RPM");
+//     logger.Info(Utilities.GetTimeStamp() + ": Speed set to 0.1 RPM");
 //     speed = 16667;
 // }
 
 //else
 //{
-//    logger.Info("Invalid Speed Selected");
+//    logger.Info(Utilities.GetTimeStamp() + ": Invalid Speed Selected");
 //    throw new Exception();
 //}
 ///
@@ -133,24 +135,24 @@ namespace ControlRoomApplication.Main
 //{
 //   // //if (ControledButtonRadio.Checked)
 //   // {
-//   //     logger.Info("Executed Controlled Stop");
+//   //     logger.Info(Utilities.GetTimeStamp() + ": Executed Controlled Stop");
 //   //     rt_controller.ExecuteRadioTelescopeControlledStop();
 //   // }
 //   //// else if (radioButton2.Checked)
 //   // {
-//   //     logger.Info("Executed Immediate Stop");
+//   //     logger.Info(Utilities.GetTimeStamp() + ": Executed Immediate Stop");
 //   //     rt_controller.ExecuteRadioTelescopeImmediateStop();
 //   // }
 //    //else
 //    //{
-//    //    logger.Info("Invalid Stop Selected");
+//    //    logger.Info(Utilities.GetTimeStamp() + ": Invalid Stop Selected");
 //    //    throw new Exception();
 //    //}
 //}
 
 //private void button1_Click(object sender, EventArgs e)
 //{//
-//  //  logger.Info("Move Relative Button Clicked");
+//  //  logger.Info(Utilities.GetTimeStamp() + ": Move Relative Button Clicked");
 //    //int pos = (int)numericUpDown1.Value * (int)((166 + (2.0 / 3.0)) * 200);
 //    //int pos = ConversionHelper.DegreesToSteps( (int)numericUpDown1.Value , MotorConstants.GEARING_RATIO_AZIMUTH );
 //   // rt_controller.ExecuteMoveRelativeAzimuth(RadioTelescopeAxisEnum.AZIMUTH,speed, pos);

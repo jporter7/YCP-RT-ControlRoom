@@ -16,6 +16,7 @@ using ControlRoomApplication.Entities.WeatherStation;
 using log4net.Appender;
 using ControlRoomApplication.Documentation;
 using ControlRoomApplication.Validation;
+using ControlRoomApplication.Util;
 
 namespace ControlRoomApplication.Main
 {
@@ -87,7 +88,7 @@ namespace ControlRoomApplication.Main
             this.LocalIPCombo.Items.AddRange(v4_list);
 
 
-            logger.Info("<--------------- Control Room Application Started --------------->");
+            logger.Info(Utilities.GetTimeStamp() + ": <--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 5;
             dataGridView1.Columns[0].HeaderText = "ID";
             dataGridView1.Columns[1].HeaderText = "PLC IP";
@@ -116,7 +117,7 @@ namespace ControlRoomApplication.Main
 
 
 
-            logger.Info("MainForm Initalized");
+            logger.Info(Utilities.GetTimeStamp() + ": MainForm Initalized");
         }
 
         public void DoAppend(log4net.Core.LoggingEvent loggingEvent)
@@ -133,7 +134,7 @@ namespace ControlRoomApplication.Main
         /// <param name="e"> The eventargs from the button being clicked on the GUI. </param>
         private void startButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Start Telescope Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Start Telescope Button Clicked");
 
             // This will tell us whether or not the RT is safe to start.
             // It may not be safe to start if, for example, there are
@@ -238,17 +239,17 @@ namespace ControlRoomApplication.Main
 
                     if (checkBox1.Checked)
                     {
-                        logger.Info("Populating Local Database");
+                        logger.Info(Utilities.GetTimeStamp() + ": Populating Local Database");
                         //     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
                         Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).start_time.ToString());
-                        logger.Info("Disabling ManualControl and FreeControl");
+                        logger.Info(Utilities.GetTimeStamp() + ": Disabling ManualControl and FreeControl");
                         //ManualControl.Enabled = false;
                         FreeControl.Enabled = false;
                         // createWSButton.Enabled = false;
                     }
                     else
                     {
-                        logger.Info("Enabling ManualControl and FreeControl");
+                        logger.Info(Utilities.GetTimeStamp() + ": Enabling ManualControl and FreeControl");
                         // ManualControl.Enabled = true;
                         FreeControl.Enabled = true;
 
@@ -257,7 +258,7 @@ namespace ControlRoomApplication.Main
                     // If the main control room controller hasn't been initialized, initialize it.
                     if (MainControlRoomController == null)
                     {
-                        logger.Info("Initializing ControlRoomController");
+                        logger.Info(Utilities.GetTimeStamp() + ": Initializing ControlRoomController");
                         if (lastCreatedProductionWeatherStation == null)
                             MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
                         else
@@ -278,30 +279,30 @@ namespace ControlRoomApplication.Main
                     ProgramPLCDriverList.Add(APLCDriver);
 
                     // Start plc server and attempt to connect to it.
-                    logger.Info("Starting plc server and attempting to connect to it");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting plc server and attempting to connect to it");
                     ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
                     //ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();//////####################################
 
-                    logger.Info("Adding RadioTelescope Controller");
+                    logger.Info(Utilities.GetTimeStamp() + ": Adding RadioTelescope Controller");
                     MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
                     ARadioTelescope.SetParent(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
 
                     // linking radio telescope controller to tcp listener
                     MainControlRoomController.ControlRoom.mobileControlServer.rtController = ARadioTelescope.GetParent();
 
-                    logger.Info("Starting Weather Monitoring Routine");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting Weather Monitoring Routine");
                     MainControlRoomController.StartWeatherMonitoringRoutine();
 
-                    logger.Info("Starting Spectra Cyber Controller");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting Spectra Cyber Controller");
                     ARadioTelescope.SpectraCyberController.BringUp();
 
-                    logger.Info("Setting Default Values for Spectra Cyber Controller");
+                    logger.Info(Utilities.GetTimeStamp() + ": Setting Default Values for Spectra Cyber Controller");
                     ARadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
                     ARadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
                     ARadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(2.0);
 
                     // Start RT controller's threaded management
-                    logger.Info("Starting RT controller's threaded management");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting RT controller's threaded management");
                     RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[MainControlRoomController.ControlRoom.RTControllerManagementThreads.Count - 1];
 
                     // add telescope to database
@@ -310,21 +311,21 @@ namespace ControlRoomApplication.Main
                     int RT_ID = ManagementThread.RadioTelescopeID;
                     List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
 
-                    logger.Info("Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
                     foreach (Appointment appt in AllAppointments)
                     {
-                        logger.Info("\t[" + appt.Id + "] " + appt.start_time.ToString() + " -> " + appt.end_time.ToString());
+                        logger.Info(Utilities.GetTimeStamp() + ": \t[" + appt.Id + "] " + appt.start_time.ToString() + " -> " + appt.end_time.ToString());
                     }
 
                     if (ManagementThread.Start())
                     {
-                        logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+                        logger.Info(Utilities.GetTimeStamp() + ": Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
 
                         ProgramRTControllerList[ProgramRTControllerList.Count - 1].ConfigureRadioTelescope(.06, .06, 300, 300);
                     }
                     else
                     {
-                        logger.Info("ERROR starting RT controller management thread [" + RT_ID.ToString() + "]");
+                        logger.Info(Utilities.GetTimeStamp() + ": ERROR starting RT controller management thread [" + RT_ID.ToString() + "]");
                     }
 
                     AddConfigurationToDataGrid();
@@ -342,7 +343,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void AddConfigurationToDataGrid()
         {
-            logger.Info("Adding Configuration To DataGrid");
+            logger.Info(Utilities.GetTimeStamp() + ": Adding Configuration To DataGrid");
             string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text, txtMcuCOMPort.Text, txtWSCOMPort.Text };
 
             dataGridView1.Rows.Add(row);
@@ -354,14 +355,14 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
-              logger.Info("Shut Down Telescope Button Clicked");
+              logger.Info(Utilities.GetTimeStamp() + ": Shut Down Telescope Button Clicked");
             if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
-                logger.Info("Successfully shut down weather monitoring routine.");
+                logger.Info(Utilities.GetTimeStamp() + ": Successfully shut down weather monitoring routine.");
             }
             else
             {
-                logger.Info("ERROR shutting down weather monitoring routine!");
+                logger.Info(Utilities.GetTimeStamp() + ": ERROR shutting down weather monitoring routine!");
             }
 
             // Loop through the list of telescope controllers and call their respective bring down sequences.
@@ -369,11 +370,11 @@ namespace ControlRoomApplication.Main
             {
                 if (MainControlRoomController.RemoveRadioTelescopeControllerAt(0, false))
                 {
-                    logger.Info("Successfully brought down RT controller at index " + i.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": Successfully brought down RT controller at index " + i.ToString());
                 }
                 else
                 {
-                    logger.Info("ERROR killing RT controller at index " + i.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": ERROR killing RT controller at index " + i.ToString());
                 }
 
                 //Turn off Telescope in database
@@ -385,7 +386,7 @@ namespace ControlRoomApplication.Main
             }
 
             // End logging
-            logger.Info("<--------------- Control Room Application Terminated --------------->");
+            logger.Info(Utilities.GetTimeStamp() + ": <--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
         }
 
@@ -401,7 +402,7 @@ namespace ControlRoomApplication.Main
         }
         private void textBox3_Focus(object sender, EventArgs e)
         {
-            logger.Info("textBox3_Focus Event");
+            logger.Info(Utilities.GetTimeStamp() + ": textBox3_Focus Event");
             txtWSCOMPort.Text = "";
         }
 
@@ -411,7 +412,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void textBox2_Focus(object sender, EventArgs e)
         {
-            logger.Info("textBox2_Focus Event");
+            logger.Info(Utilities.GetTimeStamp() + ": textBox2_Focus Event");
             txtPLCIP.Text = "";
         }
 
@@ -420,7 +421,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void textBox1_Focus(object sender, EventArgs e)
         {
-            logger.Info("textBox1_Focus Event");
+            logger.Info(Utilities.GetTimeStamp() + ": textBox1_Focus Event");
             txtPLCPort.Text = "";
         }
 
@@ -430,7 +431,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            logger.Info("dataGridView1_CellContent Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": dataGridView1_CellContent Clicked");
             try
             {
                 DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id, this);
@@ -448,7 +449,7 @@ namespace ControlRoomApplication.Main
         /// <returns> A radio telescope instance representing the configuration chosen. </returns>
         public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver, AbstractMicrocontroller ctrler, AbstractEncoderReader encoder)
         {
-            logger.Info("Building RadioTelescope");
+            logger.Info(Utilities.GetTimeStamp() + ": Building RadioTelescope");
 
             // if this is set to 0, it has not been updated with an existing ID from the database. Therefore, we must create one.
             if (current_rt_id == 0)
@@ -477,7 +478,7 @@ namespace ControlRoomApplication.Main
                 newRT.SpectraCyberController = BuildSpectraCyber();
                 newRT.Micro_controler = ctrler;
                 newRT.Encoders = encoder;
-                logger.Info("New RadioTelescope built successfully");
+                logger.Info(Utilities.GetTimeStamp() + ": New RadioTelescope built successfully");
 
                 current_rt_id = newRT.Id;
 
@@ -502,7 +503,7 @@ namespace ControlRoomApplication.Main
                 existingRT.SpectraCyberController = BuildSpectraCyber();
                 existingRT.Micro_controler = ctrler;
                 existingRT.Encoders = encoder;
-                logger.Info("Existing RadioTelescope with ID " +current_rt_id+ " retrieved and built successfully");
+                logger.Info(Utilities.GetTimeStamp() + ": Existing RadioTelescope with ID " +current_rt_id+ " retrieved and built successfully");
 
                 return existingRT;
 
@@ -519,12 +520,12 @@ namespace ControlRoomApplication.Main
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building SpectraCyber");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SpectraCyber");
                     return new SpectraCyberController(new SpectraCyber());
 
                 case 1:
                 default:
-                    logger.Info("Building SpectraCyberSimulator");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SpectraCyberSimulator");
                     return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             }
         }
@@ -538,19 +539,19 @@ namespace ControlRoomApplication.Main
             switch (comboPLCType.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building ProductionPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ProductionPLCDriver");
                     return new ProductionPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text));
 
                 case 1:
-                    logger.Info("Building ScaleModelPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ScaleModelPLCDriver");
                     return new ScaleModelPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text));
 
                 case 3:
-                    logger.Info("Building TestPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building TestPLCDriver");
                     return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text), false);
                 case 2:
                 default:
-                    logger.Info("Building SimulationPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SimulationPLCDriver");
                     return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text), false, false);
             }
         }
@@ -565,15 +566,15 @@ namespace ControlRoomApplication.Main
             switch (comboMicrocontrollerBox.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building ProductionPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ProductionPLCDriver");
                     return new MicroControlerControler(LocalIPCombo.Text, 1600);
 
                 case 1:
-                    logger.Info("Building ScaleModelPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ScaleModelPLCDriver");
                     return new SimulatedMicrocontroller(-20, 100, true);
 
                 default:
-                    logger.Info("Building SimulationPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SimulationPLCDriver");
                     return new SimulatedMicrocontroller(SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
             }
         }
@@ -586,7 +587,7 @@ namespace ControlRoomApplication.Main
         {
             bool isSimulated = false;
 
-            logger.Info("Selected Microcontroller Type: ");
+            logger.Info(Utilities.GetTimeStamp() + ": Selected Microcontroller Type: ");
 
             if (comboMicrocontrollerBox.SelectedIndex - 1 == (int)MicrocontrollerType.Production)
             {
@@ -613,16 +614,16 @@ namespace ControlRoomApplication.Main
             switch (comboBox2.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building ProductionWeatherStation");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ProductionWeatherStation");
                     return new WeatherStation(1000, int.Parse(txtWSCOMPort.Text));
 
                 case 2:
-                    logger.Error("The test weather station is not yet supported.");
+                    logger.Error(Utilities.GetTimeStamp() + ": The test weather station is not yet supported.");
                     throw new NotImplementedException("The test weather station is not yet supported.");
 
                 case 1:
                 default:
-                    logger.Info("Building SimulationWeatherStation");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SimulationWeatherStation");
                     return new SimulationWeatherStation(1000);
             }
         }
@@ -634,7 +635,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void FreeControl_Click(object sender, EventArgs e)
         {
-            logger.Info("Free Control Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Free Control Button Clicked");
             int rtIDforControl = AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id;
             FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl);
             // Create free control thread
@@ -651,7 +652,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         //private void ManualControl_Click(object sender, EventArgs e)
         //{
-        //    logger.Info("Manual Control Button Clicked");
+        //    logger.Info(Utilities.GetTimeStamp() + ": Manual Control Button Clicked");
         //    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope( .1 , .1 , 0 , 0 );
         //    ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
         //    // Create free control thread

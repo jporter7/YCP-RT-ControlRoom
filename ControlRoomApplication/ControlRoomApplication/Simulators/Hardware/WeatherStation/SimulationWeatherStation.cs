@@ -7,6 +7,9 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
 {
     public class SimulationWeatherStation : AbstractWeatherStation
     {
+        private static readonly log4net.ILog logger =
+           log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private Random Rand;
         private DateTime lastRefreshTime;
 
@@ -29,9 +32,10 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             KeepReloadWeatherDataThreadAlive = false;
         }
 
+
         private void ReloadData()
         {
-            // if date and time difference from the last time is more than 60 seconds
+            // if date and time difference from the last time is more than 30 seconds
             if ((DateTime.Now - lastRefreshTime).TotalSeconds >= 30)
             {
                 // redo all the data
