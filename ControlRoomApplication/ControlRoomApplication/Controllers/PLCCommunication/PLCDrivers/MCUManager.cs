@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers {
     //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
@@ -518,18 +519,43 @@ namespace ControlRoomApplication.Controllers {
         /// Checks the MCU registers for any errors
         /// </summary>
         /// <returns>Returns all errors that were found.</returns>
-        public List<MCUConstants.MCUOutputRegs> CheckMCUErrors()
+        public List<Tuple<MCUStutusBitsMSW, MCUOutputRegs>> CheckMCUErrors()
         {
             var data = TryReadRegs(0, 15).GetAwaiter().GetResult();
-            List<MCUConstants.MCUOutputRegs> errors = new List<MCUConstants.MCUOutputRegs>();
 
-            // Azimuth motor error
-            if (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1)
-                errors.Add(MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW);
+            // We will be storing the values in pairs so we can see which status bit has which error
+            List<Tuple<MCUStutusBitsMSW, MCUOutputRegs>> errors = new List<Tuple<MCUStutusBitsMSW, MCUOutputRegs>>();
 
-            // Elevation motor error
-            if (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1)
-                errors.Add(MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW);
+            // Loop through every MCU output register and check for errors
+            for(int i = 0; i <= 17; i++)
+            {
+                // If the register contains an error, add it to the output list
+                // We are skipping register 8 because it is reserved
+
+                // Home invalid errors
+                if (i != 8 && ((data[i] >> (int)MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUStutusBitsMSW, MCUOutputRegs>(MCUStutusBitsMSW.Home_Invalid_Error, (MCUOutputRegs)i));
+
+                // Profile invalid errors
+                if (i != 8 && ((data[i] >> (int)MCUStutusBitsMSW.Profile_Invalid) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUStutusBitsMSW, MCUOutputRegs>(MCUStutusBitsMSW.Profile_Invalid, (MCUOutputRegs)i));
+
+                // Position invalid errors
+                if (i != 8 && ((data[i] >> (int)MCUStutusBitsMSW.Position_Invalid) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUStutusBitsMSW, MCUOutputRegs>(MCUStutusBitsMSW.Position_Invalid, (MCUOutputRegs)i));
+
+                // Input error
+                if (i != 8 && ((data[i] >> (int)MCUStutusBitsMSW.Input_Error) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUStutusBitsMSW, MCUOutputRegs>(MCUStutusBitsMSW.Input_Error, (MCUOutputRegs)i));
+
+                // Command errors
+                if (i != 8 && ((data[i] >> (int)MCUStutusBitsMSW.Command_Error) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUStutusBitsMSW, MCUOutputRegs>(MCUStutusBitsMSW.Command_Error, (MCUOutputRegs)i));
+
+                // Configuration error
+                if (i != 8 && ((data[i] >> (int)MCUStutusBitsMSW.Configuration_Error) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUStutusBitsMSW, MCUOutputRegs>(MCUStutusBitsMSW.Configuration_Error, (MCUOutputRegs)i));
+            }
 
             return errors;
         }
