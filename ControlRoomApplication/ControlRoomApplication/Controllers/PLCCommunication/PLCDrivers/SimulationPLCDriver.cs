@@ -248,7 +248,7 @@ namespace ControlRoomApplication.Controllers
         /// This will check for any errors present in the MCU's registers.
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
-        public override List<Tuple<MCUStutusBitsMSW, MCUOutputRegs>> CheckMCUErrors()
+        public override List<Tuple<MCUStatusBitsMSW, MCUOutputRegs>> CheckMCUErrors()
         {
             return driver.CheckMCUErrors();
         }

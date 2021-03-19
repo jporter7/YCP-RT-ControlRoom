@@ -246,8 +246,8 @@ namespace ControlRoomApplication.Controllers
             var Tel = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.ELEVATION );
 
             Taz.Wait();
-            bool azFin = Taz.Result[(int)MCUConstants.MCUStutusBitsMSW.Move_Complete];
-            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStutusBitsMSW.Move_Complete];
+            bool azFin = Taz.Result[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
+            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
             if(axis == RadioTelescopeAxisEnum.BOTH) {
                 return elFin && azFin;
             } else if(axis == RadioTelescopeAxisEnum.AZIMUTH) {

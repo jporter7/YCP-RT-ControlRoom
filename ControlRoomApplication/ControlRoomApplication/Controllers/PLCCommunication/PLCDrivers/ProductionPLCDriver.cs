@@ -914,7 +914,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
-        /// see <see cref="MCUConstants.MCUStutusBitsMSW"/> for description of each bit
+        /// see <see cref="MCUConstants.MCUStatusBitsMSW"/> for description of each bit
         /// </summary>
         public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
             ushort start = 0;
@@ -1215,7 +1215,7 @@ namespace ControlRoomApplication.Controllers
         /// This will check for any errors present in the MCU's registers.
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
-        public override List<Tuple<MCUStutusBitsMSW, MCUOutputRegs>> CheckMCUErrors()
+        public override List<Tuple<MCUStatusBitsMSW, MCUOutputRegs>> CheckMCUErrors()
         {
             return MCU.CheckMCUErrors();
         }

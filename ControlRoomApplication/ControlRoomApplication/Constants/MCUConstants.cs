@@ -23,7 +23,7 @@
         /// </summary>
         public enum MCUOutputRegs : ushort {
             /// <summary>
-            /// most signifigant word (16 bits) of the az axsys status <see cref="MCUStutusBitsMSW"/> for description of eacs bit
+            /// most signifigant word (16 bits) of the az axsys status <see cref="MCUStatusBitsMSW"/> for description of eacs bit
             /// </summary>
             AZ_Status_Bist_MSW = 0,
             /// <summary>
@@ -61,7 +61,7 @@
             /// </summary>
             Network_Conectivity = 9,
             /// <summary>
-            /// most signifigant word (16 bits) of the EL axsys status <see cref="MCUStutusBitsMSW"/> for description of eacs bit
+            /// most signifigant word (16 bits) of the EL axsys status <see cref="MCUStatusBitsMSW"/> for description of eacs bit
             /// </summary>
             EL_Status_Bist_MSW = 10,
             /// <summary>
@@ -102,7 +102,7 @@
         /// <summary>
         /// desciptions taken from anf1-anf2-motion-controller-user-manual.pdf  page 76 - 78
         /// </summary>
-        public enum MCUStutusBitsMSW : int {
+        public enum MCUStatusBitsMSW : int {
             /// <summary>
             /// Set when the ANF1/2 axis is outputting pulses for clockwise motion
             /// </summary>

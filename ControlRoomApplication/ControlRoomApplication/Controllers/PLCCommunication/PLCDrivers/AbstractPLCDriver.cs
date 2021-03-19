@@ -159,7 +159,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
-        /// see <see cref="MCUConstants.MCUStutusBitsMSW"/> for description of each bit
+        /// see <see cref="MCUConstants.MCUStatusBitsMSW"/> for description of each bit
         /// </summary>
         /// <param name="axis"></param>
         /// <returns></returns>
@@ -176,6 +176,6 @@ namespace ControlRoomApplication.Controllers
         /// This will check for any errors present in the MCU's registers.
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
-        public abstract List<Tuple<MCUStutusBitsMSW, MCUOutputRegs>> CheckMCUErrors();
+        public abstract List<Tuple<MCUStatusBitsMSW, MCUOutputRegs>> CheckMCUErrors();
     }
 }
