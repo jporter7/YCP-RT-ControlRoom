@@ -14,6 +14,7 @@ using ControlRoomApplication.Entities.Configuration;
 using ControlRoomApplication.Controllers.Communications;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using System.Collections.Generic;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -1214,7 +1215,7 @@ namespace ControlRoomApplication.Controllers
         /// This will check for any errors present in the MCU's registers.
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
-        public override List<MCUConstants.MCUOutputRegs> CheckMCUErrors()
+        public override List<Tuple<MCUStutusBitsMSW, MCUOutputRegs>> CheckMCUErrors()
         {
             return MCU.CheckMCUErrors();
         }

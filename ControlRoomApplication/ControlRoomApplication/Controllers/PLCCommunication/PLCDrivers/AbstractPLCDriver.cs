@@ -11,6 +11,7 @@ using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using System.Collections.Generic;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -175,6 +176,6 @@ namespace ControlRoomApplication.Controllers
         /// This will check for any errors present in the MCU's registers.
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
-        public abstract List<MCUConstants.MCUOutputRegs> CheckMCUErrors();
+        public abstract List<Tuple<MCUStutusBitsMSW, MCUOutputRegs>> CheckMCUErrors();
     }
 }
