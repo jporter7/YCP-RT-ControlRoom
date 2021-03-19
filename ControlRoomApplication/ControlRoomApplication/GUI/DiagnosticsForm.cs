@@ -411,17 +411,18 @@ namespace ControlRoomApplication.GUI
 
             if(!errors.Equals(""))
             {
-                lblMCUStatusText.ForeColor = Color.Red;
-                lblMCUStatusText.Text = "Contains Errors";
+                lblMCUStatus.ForeColor = Color.Red;
+                lblMCUStatus.Text = "Contains Errors";
 
-                // Display errors
-                lblMCUErrors.Text = errors;
             }
             else
             {
-                lblMCUStatusText.ForeColor = Color.Green;
-                lblMCUStatusText.Text = "Running";
+                lblMCUStatus.ForeColor = Color.Green;
+                lblMCUStatus.Text = "Running";
             }
+
+            // Display errors
+            lblMCUErrors.Text = errors;
 
             // Console Log Output Update
             consoleLogBox.Text = mainF.log.loggerQueue;

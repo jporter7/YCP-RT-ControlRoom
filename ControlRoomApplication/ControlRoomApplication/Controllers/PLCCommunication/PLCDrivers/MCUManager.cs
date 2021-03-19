@@ -527,34 +527,30 @@ namespace ControlRoomApplication.Controllers {
             List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> errors = new List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>>();
 
             // Loop through every MCU output register and check for errors
-            for(int i = 0; i <= 17; i++)
+            for(int i = 0; i <= 11; i++)
             {
                 // If the register contains an error, add it to the output list
-                // We are skipping register 8 because it is reserved
+                // We are only interested in output registers 0, 1, 10 and 11, which contain the
+                // azimuth and elevation motor errors
 
                 // Home invalid errors
-                if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1)
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1)
                     errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Home_Invalid_Error));
 
                 // Profile invalid errors
-                if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Profile_Invalid) & 0b1) == 1)
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Profile_Invalid) & 0b1) == 1)
                     errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Profile_Invalid));
 
-
-                // Position invalid errors
-                if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Position_Invalid) & 0b1) == 1)
-                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Position_Invalid));
-
                 // Input error
-                if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Input_Error) & 0b1) == 1)
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Input_Error) & 0b1) == 1)
                     errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Input_Error));
 
                 // Command errors
-                if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Command_Error) & 0b1) == 1)
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Command_Error) & 0b1) == 1)
                     errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Command_Error));
 
                 // Configuration error
-                if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Configuration_Error) & 0b1) == 1)
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Configuration_Error) & 0b1) == 1)
                     errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Configuration_Error));
             }
 
