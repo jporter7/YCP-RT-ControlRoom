@@ -519,12 +519,12 @@ namespace ControlRoomApplication.Controllers {
         /// Checks the MCU registers for any errors
         /// </summary>
         /// <returns>Returns all errors that were found.</returns>
-        public List<Tuple<MCUStatusBitsMSW, MCUOutputRegs>> CheckMCUErrors()
+        public List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
         {
             var data = TryReadRegs(0, 15).GetAwaiter().GetResult();
 
             // We will be storing the values in pairs so we can see which status bit has which error
-            List<Tuple<MCUStatusBitsMSW, MCUOutputRegs>> errors = new List<Tuple<MCUStatusBitsMSW, MCUOutputRegs>>();
+            List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> errors = new List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>>();
 
             // Loop through every MCU output register and check for errors
             for(int i = 0; i <= 17; i++)
@@ -534,28 +534,28 @@ namespace ControlRoomApplication.Controllers {
 
                 // Home invalid errors
                 if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1)
-                    errors.Add(new Tuple<MCUStatusBitsMSW, MCUOutputRegs>(MCUStatusBitsMSW.Home_Invalid_Error, (MCUOutputRegs)i));
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Home_Invalid_Error));
 
                 // Profile invalid errors
                 if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Profile_Invalid) & 0b1) == 1)
-                    errors.Add(new Tuple<MCUStatusBitsMSW, MCUOutputRegs>(MCUStatusBitsMSW.Profile_Invalid, (MCUOutputRegs)i));
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Profile_Invalid));
 
 
                 // Position invalid errors
                 if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Position_Invalid) & 0b1) == 1)
-                    errors.Add(new Tuple<MCUStatusBitsMSW, MCUOutputRegs>(MCUStatusBitsMSW.Position_Invalid, (MCUOutputRegs)i));
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Position_Invalid));
 
                 // Input error
                 if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Input_Error) & 0b1) == 1)
-                    errors.Add(new Tuple<MCUStatusBitsMSW, MCUOutputRegs>(MCUStatusBitsMSW.Input_Error, (MCUOutputRegs)i));
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Input_Error));
 
                 // Command errors
                 if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Command_Error) & 0b1) == 1)
-                    errors.Add(new Tuple<MCUStatusBitsMSW, MCUOutputRegs>(MCUStatusBitsMSW.Command_Error, (MCUOutputRegs)i));
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Command_Error));
 
                 // Configuration error
                 if (i != 8 && ((data[i] >> (int)MCUStatusBitsMSW.Configuration_Error) & 0b1) == 1)
-                    errors.Add(new Tuple<MCUStatusBitsMSW, MCUOutputRegs>(MCUStatusBitsMSW.Configuration_Error, (MCUOutputRegs)i));
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Configuration_Error));
             }
 
             return errors;

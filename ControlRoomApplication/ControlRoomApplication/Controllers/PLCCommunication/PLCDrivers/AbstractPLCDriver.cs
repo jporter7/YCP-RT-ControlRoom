@@ -176,6 +176,6 @@ namespace ControlRoomApplication.Controllers
         /// This will check for any errors present in the MCU's registers.
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
-        public abstract List<Tuple<MCUStatusBitsMSW, MCUOutputRegs>> CheckMCUErrors();
+        public abstract List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors();
     }
 }
