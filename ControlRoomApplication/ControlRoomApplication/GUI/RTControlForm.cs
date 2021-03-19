@@ -645,10 +645,18 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         // Convert list of enums to a string separated by a new line, so each error appears on its own line
-                        String errors = string.Join("\n", tele.PLCDriver.CheckMCUErrors().Select(s => s.ToString()).ToArray());
-                        MessageBox.Show("The following errors are currently present on the MCU:\n\n" + errors + "\n\nClick OK to reset them.", "Reset MCU Errors");
-                        
-                        tele.PLCDriver.ResetMCUErrors();
+                        String errors = string.Join("\n", tele.PLCDriver.CheckMCUErrors().
+                            Select(s => 
+                                s.Item1.ToString() + ": " + s.Item2.ToString()
+                            ).ToArray());
+
+                        if (!errors.Equals(""))
+                        {
+                            MessageBox.Show("The following errors are currently present on the MCU:\n\n" + errors + "\n\nClick OK to reset them.", "Reset MCU Errors");
+                            tele.PLCDriver.ResetMCUErrors();
+                        }
+                        else MessageBox.Show("No MCU errors are currently present.", "Reset MCU Errors");
+
                     });
 
                     // This is a TEMPORARY script to reset the MCU errors. When this is tested and determined to be fully working,
