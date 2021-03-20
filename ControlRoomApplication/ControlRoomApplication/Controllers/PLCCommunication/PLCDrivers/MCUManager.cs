@@ -12,6 +12,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers {
     //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
@@ -499,11 +500,61 @@ namespace ControlRoomApplication.Controllers {
 
         private void checkForAndResetErrors() {
             var data = TryReadRegs( 0 , 15 ).GetAwaiter().GetResult();
-            bool azCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
-            bool elCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
+            bool azCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
+            bool elCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
             if(elCmdErr || azCmdErr) {
                 Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS , 0 ) { completed = true } ).GetAwaiter().GetResult();
             }
+        }
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// </summary>
+        public void ResetMCUErrors()
+        {
+            Send_Generic_Command_And_Track(new MCUcomand(MESSAGE_CONTENTS_RESET_ERRORS, MCUcomandType.RESET_ERRORS, 0) { completed = true }).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Checks the MCU registers for any errors
+        /// </summary>
+        /// <returns>Returns all errors that were found.</returns>
+        public List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
+        {
+            var data = TryReadRegs(0, 15).GetAwaiter().GetResult();
+
+            // We will be storing the values in pairs so we can see which status bit has which error
+            List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> errors = new List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>>();
+
+            // Loop through every MCU output register and check for errors
+            for(int i = 0; i <= 11; i++)
+            {
+                // If the register contains an error, add it to the output list
+                // We are only interested in output registers 0, 1, 10 and 11, which contain the
+                // azimuth and elevation motor errors
+
+                // Home invalid errors
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Home_Invalid_Error));
+
+                // Profile invalid errors
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Profile_Invalid) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Profile_Invalid));
+
+                // Input error
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Input_Error) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Input_Error));
+
+                // Command errors
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Command_Error) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Command_Error));
+
+                // Configuration error
+                if ((i == 0 || i == 1 || i == 10 || i == 11) && ((data[i] >> (int)MCUStatusBitsMSW.Configuration_Error) & 0b1) == 1)
+                    errors.Add(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>((MCUOutputRegs)i, MCUStatusBitsMSW.Configuration_Error));
+            }
+
+            return errors;
         }
 
 
@@ -629,10 +680,10 @@ namespace ControlRoomApplication.Controllers {
 
         public bool Is_Moing(ushort[] data) {
             try {
-                bool azMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CCW_Motion) & 0b1) == 1) ||
-                                (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CW_Motion) & 0b1) == 1);
-                bool elMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CCW_Motion) & 0b1) == 1) ||
-                                (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CW_Motion) & 0b1) == 1);
+                bool azMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
+                                (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
+                bool elMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
+                                (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
                 return azMoving || elMoving;
             } catch {
                 return false;
@@ -642,16 +693,16 @@ namespace ControlRoomApplication.Controllers {
         public bool Is_Moing_Per_Axis( ushort[] data ,bool Is_AZ) {
             if(Is_AZ) {
                 try {
-                    bool azMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CCW_Motion) & 0b1) == 1) ||
-                                    (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CW_Motion) & 0b1) == 1);
+                    bool azMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
+                                    (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
                     return azMoving;
                 } catch {
                     return false;
                 }
             } else {
                 try {
-                    bool elMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CCW_Motion) & 0b1) == 1) ||
-                                    (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.CW_Motion) & 0b1) == 1);
+                    bool elMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
+                                    (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
                     return elMoving;
                 } catch {
                     return false;
@@ -828,10 +879,10 @@ namespace ControlRoomApplication.Controllers {
                 if(positionHistory.Count > positionHistory.Size - 2) {
                     var movement = positionHistory.GetAbsolutePosChange();
                     if(movement.AZ_Encoder <50 && movement.EL_Encoder < 50) {//if the telescope has been still for 7 seconds
-                        bool AZCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
-                        bool AZHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-                        bool ELCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
-                        bool ELHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
+                        bool AZCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
+                        bool AZHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
+                        bool ELCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
+                        bool ELHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
                         if (Math.Abs(mCUpositon.AZ_Steps) > 4 || Math.Abs(mCUpositon.EL_Steps) > 4) {//and the pozition is not 0 then homeing has failed
                             consecutiveSucsefullMoves = 0;
                             consecutiveErrors++;
@@ -912,8 +963,8 @@ namespace ControlRoomApplication.Controllers {
                 var datatask = TryReadRegs( 0 , 12 );
                  Task.Delay( 50 ).Wait();
                 var data = datatask.GetAwaiter().GetResult();
-                bool azErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
-                bool elErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Command_Error) & 0b1) == 1;
+                bool azErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
+                bool elErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
                 if(elErr || azErr) {//TODO:add more checks to this 
                     ThisMove.completed = true;
                     ThisMove.ComandError = new Exception( "MCU command error bit was set" );
@@ -924,8 +975,8 @@ namespace ControlRoomApplication.Controllers {
                     ThisMove.Dispose();
                     return false;
                 }
-                bool azFin = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Move_Complete) & 0b1) == 1;
-                bool elFin = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStutusBitsMSW.Move_Complete) & 0b1) == 1;
+                bool azFin = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
+                bool elFin = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
                 bool isMoving = Is_Moing( data );
                 if(azFin && elFin && !isMoving) {
                     //TODO:check that position is correct and there arent any errors

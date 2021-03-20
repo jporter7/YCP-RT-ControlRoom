@@ -13,6 +13,8 @@ using System.Diagnostics;
 using ControlRoomApplication.Entities.Configuration;
 using ControlRoomApplication.Controllers.Communications;
 using ControlRoomApplication.Controllers.PLCCommunication;
+using System.Collections.Generic;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -912,7 +914,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
-        /// see <see cref="MCUConstants.MCUStutusBitsMSW"/> for description of each bit
+        /// see <see cref="MCUConstants.MCUStatusBitsMSW"/> for description of each bit
         /// </summary>
         public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
             ushort start = 0;
@@ -1214,6 +1216,23 @@ namespace ControlRoomApplication.Controllers
 
             // Also set the MCU's telescope type
             MCU.setTelescopeType(type);
+        }
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// </summary>
+        public override void ResetMCUErrors()
+        {
+            MCU.ResetMCUErrors();
+        }
+
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
+        {
+            return MCU.CheckMCUErrors();
         }
     }
 }

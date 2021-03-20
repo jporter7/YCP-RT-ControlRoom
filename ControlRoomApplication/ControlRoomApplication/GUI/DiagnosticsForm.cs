@@ -15,6 +15,7 @@ using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Controllers.Communications;
 using System.Threading;
 using System.ComponentModel;
+using System.Linq;
 
 namespace ControlRoomApplication.GUI
 {
@@ -399,6 +400,29 @@ namespace ControlRoomApplication.GUI
             {
                 graphClear = true;
             }
+
+            // Update MCU error status
+
+            // First retrieve errors
+            String errors = string.Join("\n", rtController.RadioTelescope.PLCDriver.CheckMCUErrors().
+                Select(s =>
+                    s.Item1.ToString() + ": " + s.Item2.ToString()
+                ).ToArray());
+
+            if(!errors.Equals(""))
+            {
+                lblMCUStatus.ForeColor = Color.Red;
+                lblMCUStatus.Text = "Contains Errors";
+
+            }
+            else
+            {
+                lblMCUStatus.ForeColor = Color.Green;
+                lblMCUStatus.Text = "Running";
+            }
+
+            // Display errors
+            lblMCUErrors.Text = errors;
 
             // Console Log Output Update
             consoleLogBox.Text = mainF.log.loggerQueue;
@@ -955,6 +979,11 @@ namespace ControlRoomApplication.GUI
                 ElevationProximityOveride2.Text = "ENABLED";
                 ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
             }
+        }
+
+        private void btnResetMcuErrors_Click(object sender, EventArgs e)
+        {
+            rtController.RadioTelescope.PLCDriver.ResetMCUErrors();
         }
     }
 }
