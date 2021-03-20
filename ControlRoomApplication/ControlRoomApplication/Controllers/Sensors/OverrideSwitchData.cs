@@ -61,14 +61,12 @@ namespace ControlRoomApplication.Controllers.Sensors
         public void setElProx0Override(bool doOverride)
         {
             overrideElevatProx0 = doOverride;
-            RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, Convert.ToUInt16(doOverride));
             DatabaseOperations.SetOverrideForSensor(SensorItemEnum.EL_PROXIMITY_0, doOverride);
         }
 
         public void setElProx90Override(bool doOverride)
         {
             overrideElevatProx90 = doOverride;
-            RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, Convert.ToUInt16(doOverride));
             DatabaseOperations.SetOverrideForSensor(SensorItemEnum.EL_PROXIMITY_90, doOverride);
         }
 

@@ -132,13 +132,11 @@ namespace ControlRoomApplication.Controllers
                 //JogOffLimitSwitches().GetAwaiter().GetResult();
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
-                            if(getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT) == 0)
-                                MCU.SendSingleAxisJog( true , true , 0.25 , 0 ).Wait();
+                            MCU.SendSingleAxisJog( true , true , 0.25 , 0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            if(getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT) == 0)
-                                MCU.SendSingleAxisJog( true , false , 0.25,0 ).Wait();
+                            MCU.SendSingleAxisJog( true , false , 0.25,0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
@@ -1126,7 +1124,7 @@ namespace ControlRoomApplication.Controllers
                int AZstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_AZIMUTH );
                var timeoutMS = MCUManager.estimateTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
                var timeout = new CancellationTokenSource( timeoutMS );
-                if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit && getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT) == 0) {
+                if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
                     MCU.Send_Jog_command(0.2, true , 0, false, PRIORITY );
                    while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
@@ -1137,7 +1135,7 @@ namespace ControlRoomApplication.Controllers
                    }
                    Cancel_move();
                    return false;
-               } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit && getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT) == 0) {
+               } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit) {
                     MCU.Send_Jog_command(0.2, false , 0, false, PRIORITY );
                    while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
