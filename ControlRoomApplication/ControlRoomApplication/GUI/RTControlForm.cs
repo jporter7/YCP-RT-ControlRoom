@@ -694,6 +694,8 @@ namespace ControlRoomApplication.Main
         }
 
         private void subJogButton_Up( object sender , MouseEventArgs e ) {
+            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
+
             // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //Stop Move
@@ -727,6 +729,8 @@ namespace ControlRoomApplication.Main
         }
 
         private void plusJogButton_UP( object sender , MouseEventArgs e ) {
+            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
+
             // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //  Stop Move
@@ -815,6 +819,7 @@ namespace ControlRoomApplication.Main
         }
 
         private void plusElaButton_Up( object sender , MouseEventArgs e ) {
+            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
             // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //  Stop Move
@@ -846,6 +851,8 @@ namespace ControlRoomApplication.Main
         }
 
         private void subElaButton_Up( object sender , MouseEventArgs e ) {
+             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
+
             // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //  Stop Move
@@ -1181,6 +1188,11 @@ namespace ControlRoomApplication.Main
             return (scanTypeComboBox.SelectedIndex != 0 && integrationStepCombo.SelectedIndex != 0 &&
                 DCGain.SelectedIndex != 0 && offsetVoltValid && IFGainValid && frequencyValid);
           
+        }
+
+        private void plusJogButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -39,9 +39,6 @@ namespace ControlRoomApplication.Controllers
 
         bool safeTel = false;
 
-
-
-
         public Orientation NextObjectiveOrientation
         {
             get
@@ -173,14 +170,13 @@ namespace ControlRoomApplication.Controllers
         private void SpinRoutine()
         {
             bool KeepAlive = KeepThreadAlive;
-            //Appointment OldAppointment = new Appointment();
-
 
             while (KeepAlive)
             {
-                //Appointment NextAppointment = WaitForNextAppointment();
                 NextAppointment = WaitForNextAppointment();
-                if (NextAppointment != OldAppointment)
+
+                //Compares the ID of each appointment to see if they have changed
+                if (NextAppointment != null && NextAppointment.Equals(OldAppointment))
                 {
                     logger.Info(Utilities.GetTimeStamp() + ": Waiting for next Appointment");
                 }
@@ -240,7 +236,7 @@ namespace ControlRoomApplication.Controllers
                         ManagementMutex.ReleaseMutex();
                     }
 
-                    if (NextAppointment != OldAppointment)
+                    if (NextAppointment != null && NextAppointment.Equals(OldAppointment))
                     {
                         logger.Info(Utilities.GetTimeStamp() + ": Appointment does not have an orientation associated with it.");
 
@@ -291,8 +287,7 @@ namespace ControlRoomApplication.Controllers
                           // Wait more
                       }
                       */
-
-            if (NextAppointment != OldAppointment)
+            if (NextAppointment != null && NextAppointment.Equals(OldAppointment))
             {
                 logger.Info(Utilities.GetTimeStamp() + ": The next appointment is now within the correct timeframe.");
             }
