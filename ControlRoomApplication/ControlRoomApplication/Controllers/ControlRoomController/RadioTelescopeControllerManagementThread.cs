@@ -7,6 +7,8 @@ using System.Net;
 using ControlRoomApplication.Controllers.Communications;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -31,6 +33,11 @@ namespace ControlRoomApplication.Controllers
         private bool OverallSensorStatus;
 
         private bool endAppt = false;
+
+        Appointment OldAppointment = new Appointment();
+        Appointment NextAppointment = new Appointment();
+
+        bool safeTel = false;
 
         public Orientation NextObjectiveOrientation
         {
@@ -163,21 +170,27 @@ namespace ControlRoomApplication.Controllers
         private void SpinRoutine()
         {
             bool KeepAlive = KeepThreadAlive;
-            
+
             while (KeepAlive)
             {
-                logger.Info("Waiting for next Appointment");
-                Appointment NextAppointment = WaitForNextAppointment();
+                NextAppointment = WaitForNextAppointment();
+
+                //Compares the ID of each appointment to see if they have changed
+                if (NextAppointment != null && NextAppointment.Equals(OldAppointment))
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": Waiting for next Appointment");
+                }
+
 
                 if (NextAppointment != null)
                 {
-                    logger.Info("Starting appointment...");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting appointment...");
                     endAppt = false;
 
                     // Calibrate telescope
                     if (NextAppointment._Type != AppointmentTypeEnum.FREE_CONTROL)
                     {
-                        logger.Info("Themal Calibrating RadioTelescope");
+                        logger.Info(Utilities.GetTimeStamp() + ": Themal Calibrating RadioTelescope");
                         RTController.ThermalCalibrateRadioTelescope();
                     }
 
@@ -211,22 +224,28 @@ namespace ControlRoomApplication.Controllers
                         }
                     }
 
-                    logger.Info("Appointment completed.");
+                    logger.Info(Utilities.GetTimeStamp() + ": Appointment completed.");
                 }
                 else
                 {
                     if (InterruptAppointmentFlag)
                     {
-                        logger.Info("Appointment interrupted in loading routine.");
+                        logger.Info(Utilities.GetTimeStamp() + ": Appointment interrupted in loading routine.");
                         ManagementMutex.WaitOne();
                         InterruptAppointmentFlag = false;
                         ManagementMutex.ReleaseMutex();
                     }
 
-                    logger.Info("Appointment does not have an orientation associated with it.");
+                    if (NextAppointment != null && NextAppointment.Equals(OldAppointment))
+                    {
+                        logger.Info(Utilities.GetTimeStamp() + ": Appointment does not have an orientation associated with it.");
+
+                    }
                 }
 
                 KeepAlive = KeepThreadAlive;
+
+                OldAppointment = NextAppointment;
 
                 Thread.Sleep(100);
             }
@@ -254,21 +273,24 @@ namespace ControlRoomApplication.Controllers
                 // Delay between checking database for new appointments
                 Thread.Sleep(100);
 
-                logger.Info("Waiting for the next appointment to be within 1 minutes.");
+                logger.Info(Utilities.GetTimeStamp() + ": Waiting for the next appointment to be within 1 minutes.");
             }
 
-            
-  /*          while ((diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
+
+            /*          while ((diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
+                      {
+                          if (InterruptAppointmentFlag || (!KeepThreadAlive))
+                          {
+                              return null;
+                          }
+
+                          // Wait more
+                      }
+                      */
+            if (NextAppointment != null && NextAppointment.Equals(OldAppointment))
             {
-                if (InterruptAppointmentFlag || (!KeepThreadAlive))
-                {
-                    return null;
-                }
-
-                // Wait more
+                logger.Info(Utilities.GetTimeStamp() + ": The next appointment is now within the correct timeframe.");
             }
-            */
-            logger.Info("The next appointment is now within the correct timeframe.");
             AppointmentToDisplay = NextAppointment;
             return NextAppointment;
         }
@@ -288,7 +310,7 @@ namespace ControlRoomApplication.Controllers
             SNSMessage.sendMessage(NextAppointment.User, MessageTypeEnum.APPOINTMENT_STARTED);
          
 
-            logger.Info("Appointment _Type: " + NextAppointment._Type);
+            logger.Info(Utilities.GetTimeStamp() + ": Appointment _Type: " + NextAppointment._Type);
 
             // Loop through each second or minute of the appointment (depending on appt type)
             TimeSpan length = NextAppointment.end_time - NextAppointment.start_time;
@@ -308,7 +330,7 @@ namespace ControlRoomApplication.Controllers
                     {
                         if (InterruptAppointmentFlag)
                         {
-                            logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
+                            logger.Info(Utilities.GetTimeStamp() + ": Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                             break;
                         }
 
@@ -329,12 +351,12 @@ namespace ControlRoomApplication.Controllers
                     // method calling this!
                     if (NextObjectiveOrientation.Elevation < 0)
                     {
-                        logger.Warn("Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                        logger.Warn(Utilities.GetTimeStamp() + ": Invalid Appt: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                         InterruptAppointmentFlag = true;
                         break;
                     }
 
-                        logger.Info("Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
+                        logger.Info(Utilities.GetTimeStamp() + ": Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
                         RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
 
                         if (InterruptAppointmentFlag)
@@ -343,14 +365,14 @@ namespace ControlRoomApplication.Controllers
                         }
 
                          //currentOrientation = RTController.GetCurrentOrientation();
-                         //logger.Info("Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                         //logger.Info(Utilities.GetTimeStamp() + ": Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
                          Thread.Sleep(100);
 
                         NextObjectiveOrientation = null;
                     }
                 } else
                 {
-                    logger.Info("Telescope stopped movement.");
+                    logger.Info(Utilities.GetTimeStamp() + ": Telescope stopped movement.");
                     i--;
                 }
             }
@@ -360,7 +382,7 @@ namespace ControlRoomApplication.Controllers
 
             if (InterruptAppointmentFlag)
             {
-                logger.Info("Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
+                logger.Info(Utilities.GetTimeStamp() + ": Interrupted appointment [" + NextAppointment.Id.ToString() + "] at " + DateTime.Now.ToString());
                 NextAppointment._Status = AppointmentStatusEnum.CANCELED;
                 DatabaseOperations.UpdateAppointment(NextAppointment);
                 NextObjectiveOrientation = null;
@@ -413,7 +435,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public void EndAppointment()
         {
-            logger.Info("Ending Appointment");
+            logger.Info(Utilities.GetTimeStamp() + ": Ending Appointment");
             endAppt = true;
             RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90));
         }
@@ -423,7 +445,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public void StartReadingData(Appointment appt)
         {
-            logger.Info("Starting Reading of RFData");
+            logger.Info(Utilities.GetTimeStamp() + ": Starting Reading of RFData");
             RTController.RadioTelescope.SpectraCyberController.SetApptConfig(appt);
             RTController.RadioTelescope.SpectraCyberController.StartScan(appt);
         }
@@ -433,7 +455,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         private void StopReadingRFData()
         {
-            logger.Info("Stoping Reading of RTData");
+            logger.Info(Utilities.GetTimeStamp() + ": Stoping Reading of RTData");
             RTController.RadioTelescope.SpectraCyberController.StopScan();
             RTController.RadioTelescope.SpectraCyberController.RemoveActiveAppointmentID();
             RTController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
@@ -474,7 +496,8 @@ namespace ControlRoomApplication.Controllers
                     {
                         // if not, return false
                         // we should not be operating the telescope
-                        logger.Fatal("Telescope in DANGER due to fatal sensors");
+                        logger.Fatal(Utilities.GetTimeStamp() + ": Telescope in DANGER due to fatal sensors");
+                        safeTel = false;
                         RTController.ExecuteRadioTelescopeImmediateStop();
                         OverallSensorStatus = false;
                         return false;
@@ -482,8 +505,12 @@ namespace ControlRoomApplication.Controllers
                 }
             }
 
+            if(safeTel == false)
+            {
+                logger.Info(Utilities.GetTimeStamp() + ": Telescope in safe state.");
+                safeTel = true;
+            }
             OverallSensorStatus = true;
-            logger.Info("Telescope in safe state.");
             return true;
         }
 

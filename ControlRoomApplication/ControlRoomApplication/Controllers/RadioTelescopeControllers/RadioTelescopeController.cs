@@ -7,6 +7,8 @@ using System.Threading;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Communications;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -344,7 +346,7 @@ namespace ControlRoomApplication.Controllers
             // Check temperatures
             if (t.temp < SimulationConstants.STABLE_MOTOR_TEMP)
             {
-                logger.Info(s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                logger.Info(Utilities.GetTimeStamp() + ": "+ s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
 
                 pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
                 EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
@@ -354,7 +356,7 @@ namespace ControlRoomApplication.Controllers
             }
             else if (t.temp > max)
             {
-                logger.Info(s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
 
                 pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
                 EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
@@ -363,7 +365,7 @@ namespace ControlRoomApplication.Controllers
                 if (!b) return false;
                 else return true;
             }
-            logger.Info(s + " motor temperature stable.");
+            logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature stable.");
 
             pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
             EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
@@ -389,14 +391,14 @@ namespace ControlRoomApplication.Controllers
 
             if (set)
             {
-                logger.Info("Overriding " + sensor + " sensor.");
+                logger.Info(Utilities.GetTimeStamp() + ": Overriding " + sensor + " sensor.");
 
                 pushNotification.sendToAllAdmins("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
                 EmailNotifications.sendToAllAdmins("SENSOR OVERRIDES", "Overriding " + sensor + " sensor.");
             }
             else
             {
-                logger.Info("Enabled " + sensor + " sensor.");
+                logger.Info(Utilities.GetTimeStamp() + ": Enabled " + sensor + " sensor.");
 
                 pushNotification.sendToAllAdmins("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
                 EmailNotifications.sendToAllAdmins("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");

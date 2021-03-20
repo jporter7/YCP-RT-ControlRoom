@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
 {
@@ -63,7 +65,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                     double EL = respobj.EL / (2048.0);
                     return new Orientation( AZ , EL );
                 } catch(Exception e) {
-                    logger.Info("parsing exception: {0}", e);
+                    logger.Info(Utilities.GetTimeStamp() + ": parsing exception: {0}", e);
                     return null;
                 } finally {
                     stream.Close();
@@ -71,11 +73,11 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
                 }
                 // Close everything.
             } catch(ArgumentNullException e) {
-                logger.Info("ArgumentNullException: {0}", e);
+                logger.Info(Utilities.GetTimeStamp() + ": ArgumentNullException: {0}", e);
                 return null;
             } catch(SocketException e) {
                 //conection refused
-                logger.Info("SocketException: {0}", e);
+                logger.Info(Utilities.GetTimeStamp() + ": SocketException: {0}", e);
                 return null;
             }
 

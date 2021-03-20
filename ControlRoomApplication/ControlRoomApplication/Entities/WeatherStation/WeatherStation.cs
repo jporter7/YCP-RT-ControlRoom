@@ -7,6 +7,8 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Sensors;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Entities.WeatherStation
 {
@@ -102,13 +104,13 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
             if (OpenCommPort_V((short)commPort, 19200) != 0)
             {
-                logger.Error("OpenCommPort unsuccessful!");
+                logger.Error(Utilities.GetTimeStamp() + ": OpenCommPort unsuccessful!");
                     throw new ExternalException();
             }
 
             if (InitStation_V() == COM_ERROR)
             {
-                logger.Error("Initialize Station unsuccessful!");
+                logger.Error(Utilities.GetTimeStamp() + ": Initialize Station unsuccessful!");
                 throw new ExternalException();
             }
 
@@ -116,7 +118,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
           //      logger.Info( "failed to collect data from weather station. will attempt again." );
           //  }
 
-            logger.Info("Initialize Concrete Weather Station successful!");
+            logger.Info(Utilities.GetTimeStamp() + ": Initialize Concrete Weather Station successful!");
         }
 
         private void ReloadWeatherDataRoutine()
@@ -138,13 +140,11 @@ namespace ControlRoomApplication.Entities.WeatherStation
                     data.monthlyRain = GetMonthlyRain_V();
                     data.heatIndex = GetHeatIndex_V();
 
-                    logger.Info("Weather Data update successful");
-
                     DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
                 }
                 else
                 {
-                    logger.Info("Weather Data update failed");
+                    logger.Info(Utilities.GetTimeStamp() + ": Weather Data update failed");
                 }
 
                 Thread.Sleep(1000);
