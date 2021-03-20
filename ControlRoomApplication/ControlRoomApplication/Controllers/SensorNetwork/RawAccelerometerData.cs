@@ -18,16 +18,16 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <summary>
         /// Accelerometer x-axis data.
         /// </summary>
-        public int x { get; set; }
+        public int X { get; set; }
 
         /// <summary>
         /// Accelerometer y-axis data.
         /// </summary>
-        public int y { get; set; }
+        public int Y { get; set; }
 
         /// <summary>
         /// Accelerometer z-axis data.
         /// </summary>
-        public int z { get; set; }
+        public int Z { get; set; }
     }
 }
