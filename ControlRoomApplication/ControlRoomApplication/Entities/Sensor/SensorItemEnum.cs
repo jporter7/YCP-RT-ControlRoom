@@ -14,6 +14,8 @@ namespace ControlRoomApplication.Entities
         AZIMUTH_MOTOR,
         ELEVATION_MOTOR,
         WEATHER_STATION,
+        EL_PROXIMITY_0,
+        EL_PROXIMITY_90,
 
         // specific
         AZ_MOTOR_TEMP,

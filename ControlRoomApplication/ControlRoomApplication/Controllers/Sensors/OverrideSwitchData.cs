@@ -10,7 +10,7 @@ using ControlRoomApplication.Entities;
 namespace ControlRoomApplication.Controllers.Sensors
 {
     /// <summary>
-    /// A public struct to store the override switch data for
+    /// A public class to store the override switch data for
     /// use on DiagnosticsForm.cs and AbstractPLCDriver.cs
     /// This DOES NOT include weather station sensors.
     /// </summary>
@@ -18,50 +18,69 @@ namespace ControlRoomApplication.Controllers.Sensors
     {
         // Uses PLC
         public bool overrideGate { get; set; }
+        public bool overrideElevatProx0 { get; set; }
+        public bool overrideElevatProx90 { get; set; }
 
-        public bool overrideAzimuthProx1 { get; set; }
-        public bool overrideAzimuthProx2 { get; set; }
+        // No longer used
+        public bool overrideAzimuthProx0 { get; set; }
+        public bool overrideAzimuthProx375 { get; set; }
 
-
-        public bool overrideElevatProx1 { get; set; }
-        public bool overrideElevatProx2 { get; set; }
-
-        // Does not use PLC
+        // Sensor Network
         public bool overrideAzimuthMotTemp { get; set; }
-
         public bool overrideElevatMotTemp { get; set; }
 
-        public OverrideSwitchData()
+        // Parent so we can set PLC values
+        private RadioTelescope RadioTelescope { get; }
+
+        public OverrideSwitchData(RadioTelescope radioTelescope)
         {
+            RadioTelescope = radioTelescope;
+
+            // PLC
             overrideGate = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
+            overrideElevatProx0 = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.EL_PROXIMITY_0);
+            overrideElevatProx90 = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.EL_PROXIMITY_90);
 
-            // Azimuth overrides are no longer needed because we are using the slip ring
-            overrideAzimuthProx1 = true;//DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.PROXIMITY);
-            overrideAzimuthProx2 = true;//DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.PROXIMITY);
-
-            overrideElevatProx1 = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.PROXIMITY);
-            overrideElevatProx2 = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.PROXIMITY);
-
+            // Sensor Network
             overrideAzimuthMotTemp = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
             overrideElevatMotTemp = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+
+            // Azimuth overrides are no longer needed because we are using the slip ring
+            overrideAzimuthProx0 = true;
+            overrideAzimuthProx375 = true;
         }
 
+        // PLC
         public void setGatesOverride(bool doOverride)
         {
-            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.GATE, doOverride);
             overrideGate = doOverride;
+            RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(doOverride));
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.GATE, doOverride);
         }
 
+        public void setElProx0Override(bool doOverride)
+        {
+            overrideElevatProx0 = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.EL_PROXIMITY_0, doOverride);
+        }
+
+        public void setElProx90Override(bool doOverride)
+        {
+            overrideElevatProx90 = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.EL_PROXIMITY_90, doOverride);
+        }
+
+        // Sensor Network
         public void setAzimuthMotTemp(bool doOverride)
         {
-            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR, doOverride);
             overrideAzimuthMotTemp = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR, doOverride);
         }
 
         public void setElevationMotTemp(bool doOverride)
         {
-            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR, doOverride);
             overrideElevatMotTemp = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR, doOverride);
         }
     }
 }

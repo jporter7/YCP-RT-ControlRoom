@@ -1119,6 +1119,7 @@ namespace ControlRoomApplication.Controllers
 
         public override async Task<bool> JogOffLimitSwitches() {
             int PRIORITY = 0;
+
             var AZTAsk = Task.Run( () => {
                int AZstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_AZIMUTH );
                var timeoutMS = MCUManager.estimateTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));

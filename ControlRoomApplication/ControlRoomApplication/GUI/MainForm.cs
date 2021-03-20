@@ -329,7 +329,10 @@ namespace ControlRoomApplication.Main
 
                     AddConfigurationToDataGrid();
 
-            
+                    // Set PLC override bits because they may be different than what's in the database
+                    bool gateOvr = ProgramRTControllerList[ProgramRTControllerList.Count - 1].overrides.overrideGate;
+
+                    APLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(gateOvr));
                 }
             }
 
@@ -459,8 +462,8 @@ namespace ControlRoomApplication.Main
                 newRT.CurrentOrientation = new Entities.Orientation(0, 0);
 
                 // This is the TELESCOPE TYPE
-                // It is only set to HARD_STOPS right now because that is what we are using for testing
-                newRT._TeleType = RadioTelescopeTypeEnum.HARD_STOPS;
+                // It is now set to SLIP_RING because we finally removed the hard stops. Isn't that exciting?!
+                newRT._TeleType = RadioTelescopeTypeEnum.SLIP_RING;
 
                 DatabaseOperations.AddRadioTelescope(newRT);
 
