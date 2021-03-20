@@ -529,5 +529,11 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.IsTrue(telescope.CalibrationOrientation.Azimuth == retrievedTele.CalibrationOrientation.Azimuth);
             Assert.IsTrue(telescope.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
         }
+
+        [TestMethod]
+        public void TestAddAndRetrieveSensorNetworkConfig()
+        {
+
+        }
     }
 }

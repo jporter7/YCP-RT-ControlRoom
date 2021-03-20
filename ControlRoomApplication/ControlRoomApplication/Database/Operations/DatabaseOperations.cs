@@ -833,7 +833,7 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// Adds the radio telescope
+        /// Retrieves the lowest 'ID' radio telescope from the database
         /// </summary>
         public static RadioTelescope FetchFirstRadioTelescope()
         {
@@ -906,6 +906,19 @@ namespace ControlRoomApplication.Database
             
         }
 
+        /// <summary>
+        /// Adds a new Sensor Network Configuration to the database
+        /// </summary>
+        public static void AddSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.SensorNetworkConfig.Add(config);
+                SaveContext(Context);
+
+                logger.Info("Added new Sensor Network Configuration for radio telescope ID ");
+            }
+        }
 
     }
 }

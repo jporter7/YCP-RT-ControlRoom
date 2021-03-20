@@ -216,6 +216,9 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCEvents.cs" />
+    <Compile Include="Controllers\SensorNetwork\RawAccelerometerData.cs" />
+    <Compile Include="Controllers\SensorNetwork\SensorNetworkConstants.cs" />
+    <Compile Include="Controllers\SensorNetwork\SensorNetworkStatusEnum.cs" />
     <Compile Include="Controllers\Sensors\MiscPlcInput.cs" />
     <Compile Include="Controllers\Sensors\OverrideSwitchData.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />
@@ -240,6 +243,7 @@
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeTypeEnum.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeConfig.cs" />
+    <Compile Include="Entities\SensorNetworkConfig\SensorNetworkConfig.cs" />
     <Compile Include="Entities\Sensor\Sensor.cs" />
     <Compile Include="Entities\Sensor\SensorItemEnum.cs" />
     <Compile Include="Entities\Sensor\SensorStatus.cs" />
