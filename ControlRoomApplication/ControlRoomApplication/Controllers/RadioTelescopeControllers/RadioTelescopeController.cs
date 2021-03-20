@@ -35,7 +35,7 @@ namespace ControlRoomApplication.Controllers
             RadioTelescope = radioTelescope;
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
 
-            overrides = new OverrideSwitchData();
+            overrides = new OverrideSwitchData(radioTelescope);
 
             tempM = new Thread(tempMonitor);
             tempM.Start();
@@ -248,8 +248,8 @@ namespace ControlRoomApplication.Controllers
             var Tel = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.ELEVATION );
 
             Taz.Wait();
-            bool azFin = Taz.Result[(int)MCUConstants.MCUStutusBitsMSW.Move_Complete];
-            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStutusBitsMSW.Move_Complete];
+            bool azFin = Taz.Result[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
+            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
             if(axis == RadioTelescopeAxisEnum.BOTH) {
                 return elFin && azFin;
             } else if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
@@ -285,25 +285,25 @@ namespace ControlRoomApplication.Controllers
             Temperature currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
             bool EL = checkTemp(currEL);
 
-            bool currentAZOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
+            bool currentAZOveride = overrides.overrideAzimuthMotTemp;
 
-            bool currentELOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+            bool currentELOveride = overrides.overrideElevatMotTemp;
 
             // Loop through every one second to get new temperatures. If the temperature has changed, notify the user
             while (true)
             {
                 // Only updates the info if the temperature has changed
-                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp || currentAZOveride != DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR)) {
+                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp || currentAZOveride != overrides.overrideAzimuthMotTemp) {
                     currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
                     AZ = checkTemp(currAZ);
-                    currentAZOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
+                    currentAZOveride = overrides.overrideAzimuthMotTemp;
                 }
 
-                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp || currentELOveride != DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
+                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp || currentELOveride != overrides.overrideElevatMotTemp)
                 {
                     currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
                     EL = checkTemp(currEL);
-                    currentELOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+                    currentELOveride = overrides.overrideElevatMotTemp;
                 }
 
                 // Determines if the temperature is acceptable for both motors
@@ -383,33 +383,11 @@ namespace ControlRoomApplication.Controllers
         /// <param name="set"></param>
         public void setOverride(String sensor, bool set)
         {
-            if (sensor.Equals("azimuth motor temperature")) overrides.overrideAzimuthMotTemp = set;
-            else if (sensor.Equals("elevation motor temperature")) overrides.overrideElevatMotTemp = set;
-            else if (sensor.Equals("main gate"))
-            {
-                overrides.overrideGate = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(set));
-            }
-            else if (sensor.Equals("elevation proximity (2)")) {
-                overrides.overrideElevatProx2 = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, Convert.ToUInt16(set));
-            }
-            else if (sensor.Equals("elevation proximity (1)"))
-            {
-                overrides.overrideElevatProx1 = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, Convert.ToUInt16(set));
-            }
-            else if (sensor.Equals("azimuth proximity (2)"))
-            {
-                overrides.overrideAzimuthProx2 = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT, Convert.ToUInt16(set));
-
-            }
-            else if (sensor.Equals("azimuth proximity (1)"))
-            {
-                overrides.overrideAzimuthProx1 = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, Convert.ToUInt16(set));
-            }
+            if      (sensor.Equals("azimuth motor temperature"))    overrides.setAzimuthMotTemp(set);
+            else if (sensor.Equals("elevation motor temperature"))  overrides.setElevationMotTemp(set);
+            else if (sensor.Equals("main gate"))                    overrides.setGatesOverride(set);
+            else if (sensor.Equals("elevation proximity (1)"))      overrides.setElProx0Override(set);
+            else if (sensor.Equals("elevation proximity (2)"))      overrides.setElProx90Override(set);
 
             if (set)
             {

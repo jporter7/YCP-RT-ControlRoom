@@ -301,11 +301,11 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         }
 
         [TestMethod]
-        public void TestSwitchOverrideForSensor()
+        public void TestSetOverrideForSensor()
         {
             bool before = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
 
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.GATE);
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.GATE, !before);
 
             bool after = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
 

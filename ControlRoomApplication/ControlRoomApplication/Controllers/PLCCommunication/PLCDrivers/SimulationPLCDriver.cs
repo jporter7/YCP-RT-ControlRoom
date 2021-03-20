@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -232,6 +234,23 @@ namespace ControlRoomApplication.Controllers
         public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
         {
             return driver.CustomOrientationMove(azimuthPos, elevationPos);
+        }
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// </summary>
+        public override void ResetMCUErrors()
+        {
+            driver.ResetMCUErrors();
+        }
+
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
+        {
+            return driver.CheckMCUErrors();
         }
     }
 }

@@ -459,14 +459,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         public void test_temperature_check()
         {
             // make sure neither override is set
-           if (DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR))
-           {
-                DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-           }
-           if (DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
-           {
-               DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
-            }
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR, false);
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR, false);
 
             // Enable motor temperature sensors
             TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = false;

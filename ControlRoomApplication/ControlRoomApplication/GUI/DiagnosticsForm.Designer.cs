@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -185,6 +185,11 @@
             this.OffsetVoltageVal = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.consoleLogBox = new System.Windows.Forms.TextBox();
+            this.grpMcuStatus = new System.Windows.Forms.GroupBox();
+            this.btnResetMcuErrors = new System.Windows.Forms.Button();
+            this.lblMCUErrors = new System.Windows.Forms.Label();
+            this.lblMCUStatusText = new System.Windows.Forms.Label();
+            this.lblMCUStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -214,6 +219,7 @@
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spectraCyberScanChart)).BeginInit();
             this.tabPage5.SuspendLayout();
+            this.grpMcuStatus.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
@@ -222,14 +228,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(3, 6);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -336,7 +342,7 @@
             // 
             this.lblElevationTemp.AutoSize = true;
             this.lblElevationTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElevationTemp.Location = new System.Drawing.Point(11, 31);
+            this.lblElevationTemp.Location = new System.Drawing.Point(11, 26);
             this.lblElevationTemp.Name = "lblElevationTemp";
             this.lblElevationTemp.Size = new System.Drawing.Size(121, 16);
             this.lblElevationTemp.TabIndex = 15;
@@ -356,7 +362,7 @@
             // 
             this.fldElTemp.AutoSize = true;
             this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldElTemp.Location = new System.Drawing.Point(212, 34);
+            this.fldElTemp.Location = new System.Drawing.Point(212, 29);
             this.fldElTemp.Name = "fldElTemp";
             this.fldElTemp.Size = new System.Drawing.Size(18, 18);
             this.fldElTemp.TabIndex = 19;
@@ -388,7 +394,7 @@
             // 
             this.lblElLimStatus2.AutoSize = true;
             this.lblElLimStatus2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElLimStatus2.Location = new System.Drawing.Point(223, 293);
+            this.lblElLimStatus2.Location = new System.Drawing.Point(223, 330);
             this.lblElLimStatus2.Name = "lblElLimStatus2";
             this.lblElLimStatus2.Size = new System.Drawing.Size(56, 15);
             this.lblElLimStatus2.TabIndex = 17;
@@ -398,7 +404,7 @@
             // 
             this.lblElLimStatus1.AutoSize = true;
             this.lblElLimStatus1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElLimStatus1.Location = new System.Drawing.Point(223, 241);
+            this.lblElLimStatus1.Location = new System.Drawing.Point(223, 264);
             this.lblElLimStatus1.Name = "lblElLimStatus1";
             this.lblElLimStatus1.Size = new System.Drawing.Size(56, 15);
             this.lblElLimStatus1.TabIndex = 16;
@@ -428,7 +434,7 @@
             // 
             this.lblElLimit2.AutoSize = true;
             this.lblElLimit2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElLimit2.Location = new System.Drawing.Point(9, 293);
+            this.lblElLimit2.Location = new System.Drawing.Point(9, 330);
             this.lblElLimit2.Name = "lblElLimit2";
             this.lblElLimit2.Size = new System.Drawing.Size(160, 15);
             this.lblElLimit2.TabIndex = 13;
@@ -438,7 +444,7 @@
             // 
             this.lblElLimit1.AutoSize = true;
             this.lblElLimit1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElLimit1.Location = new System.Drawing.Point(9, 241);
+            this.lblElLimit1.Location = new System.Drawing.Point(9, 264);
             this.lblElLimit1.Name = "lblElLimit1";
             this.lblElLimit1.Size = new System.Drawing.Size(160, 15);
             this.lblElLimit1.TabIndex = 12;
@@ -865,7 +871,7 @@
             this.tabControl1.Location = new System.Drawing.Point(2, 11);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(653, 437);
+            this.tabControl1.Size = new System.Drawing.Size(653, 531);
             this.tabControl1.TabIndex = 74;
             // 
             // tabPage1
@@ -881,7 +887,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(645, 411);
+            this.tabPage1.Size = new System.Drawing.Size(645, 505);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Appointment Control";
             // 
@@ -903,7 +909,7 @@
             this.groupBox9.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox9.Controls.Add(this.btnTest);
             this.groupBox9.Controls.Add(this.selectDemo);
-            this.groupBox9.Location = new System.Drawing.Point(416, 339);
+            this.groupBox9.Location = new System.Drawing.Point(416, 388);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(210, 66);
             this.groupBox9.TabIndex = 77;
@@ -936,8 +942,8 @@
             // diagnosticScriptCombo
             // 
             this.diagnosticScriptCombo.BackColor = System.Drawing.Color.DarkGray;
-            this.diagnosticScriptCombo.FormattingEnabled = true;
             this.diagnosticScriptCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.diagnosticScriptCombo.FormattingEnabled = true;
             this.diagnosticScriptCombo.Items.AddRange(new object[] {
             "Select a Script",
             "Hit Azimuth Counter Clockwise Limit Switch",
@@ -946,7 +952,6 @@
             "Hit Elevation Upper Limit Switch",
             "Hit Clockwise",
             "Hit Counter Clockwise Hardstop"});
-            this.diagnosticScriptCombo.SelectedIndex = 0;
             this.diagnosticScriptCombo.Location = new System.Drawing.Point(6, 22);
             this.diagnosticScriptCombo.Name = "diagnosticScriptCombo";
             this.diagnosticScriptCombo.Size = new System.Drawing.Size(180, 21);
@@ -962,7 +967,7 @@
             this.groupBox3.Controls.Add(this.label13);
             this.groupBox3.Controls.Add(this.textBox4);
             this.groupBox3.Controls.Add(this.label18);
-            this.groupBox3.Location = new System.Drawing.Point(416, 197);
+            this.groupBox3.Location = new System.Drawing.Point(416, 246);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(210, 133);
             this.groupBox3.TabIndex = 75;
@@ -973,9 +978,9 @@
             // 
             this.groupBox2.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox2.Controls.Add(this.splitContainer2);
-            this.groupBox2.Location = new System.Drawing.Point(6, 197);
+            this.groupBox2.Location = new System.Drawing.Point(6, 246);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(393, 210);
+            this.groupBox2.Size = new System.Drawing.Size(393, 208);
             this.groupBox2.TabIndex = 74;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Encoder Simulation";
@@ -1041,6 +1046,7 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.Gray;
+            this.tabPage2.Controls.Add(this.grpMcuStatus);
             this.tabPage2.Controls.Add(this.groupBox14);
             this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Controls.Add(this.groupBox5);
@@ -1048,7 +1054,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(645, 411);
+            this.tabPage2.Size = new System.Drawing.Size(645, 505);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Sensor Data";
             // 
@@ -1097,7 +1103,7 @@
             this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox6.Size = new System.Drawing.Size(324, 140);
+            this.groupBox6.Size = new System.Drawing.Size(324, 123);
             this.groupBox6.TabIndex = 38;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Motor Sensor Data";
@@ -1127,14 +1133,14 @@
             this.splitContainer1.Panel2.Controls.Add(this.fldAzTemp);
             this.splitContainer1.Panel2.Controls.Add(this.lblElevationTemp);
             this.splitContainer1.Size = new System.Drawing.Size(333, 123);
-            this.splitContainer1.SplitterDistance = 54;
+            this.splitContainer1.SplitterDistance = 48;
             this.splitContainer1.TabIndex = 20;
             // 
             // label32
             // 
             this.label32.AutoSize = true;
             this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.Location = new System.Drawing.Point(262, 32);
+            this.label32.Location = new System.Drawing.Point(247, 27);
             this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(47, 13);
@@ -1145,7 +1151,7 @@
             // 
             this.label34.AutoSize = true;
             this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label34.Location = new System.Drawing.Point(262, 10);
+            this.label34.Location = new System.Drawing.Point(247, 10);
             this.label34.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(47, 13);
@@ -1167,7 +1173,7 @@
             // 
             this.lblCurrentElOrientation.AutoSize = true;
             this.lblCurrentElOrientation.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCurrentElOrientation.Location = new System.Drawing.Point(9, 30);
+            this.lblCurrentElOrientation.Location = new System.Drawing.Point(9, 25);
             this.lblCurrentElOrientation.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCurrentElOrientation.Name = "lblCurrentElOrientation";
             this.lblCurrentElOrientation.Size = new System.Drawing.Size(134, 16);
@@ -1178,7 +1184,7 @@
             // 
             this.label25.AutoSize = true;
             this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(208, 32);
+            this.label25.Location = new System.Drawing.Point(208, 27);
             this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(28, 18);
@@ -1200,7 +1206,7 @@
             // 
             this.AZTempUnitLabel.AutoSize = true;
             this.AZTempUnitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AZTempUnitLabel.Location = new System.Drawing.Point(262, 12);
+            this.AZTempUnitLabel.Location = new System.Drawing.Point(247, 12);
             this.AZTempUnitLabel.Name = "AZTempUnitLabel";
             this.AZTempUnitLabel.Size = new System.Drawing.Size(51, 13);
             this.AZTempUnitLabel.TabIndex = 32;
@@ -1210,7 +1216,7 @@
             // 
             this.ElTempUnitLabel.AutoSize = true;
             this.ElTempUnitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ElTempUnitLabel.Location = new System.Drawing.Point(262, 34);
+            this.ElTempUnitLabel.Location = new System.Drawing.Point(247, 33);
             this.ElTempUnitLabel.Name = "ElTempUnitLabel";
             this.ElTempUnitLabel.Size = new System.Drawing.Size(51, 13);
             this.ElTempUnitLabel.TabIndex = 31;
@@ -1469,7 +1475,7 @@
             this.groupBox4.Controls.Add(this.lblAzLimit2);
             this.groupBox4.Location = new System.Drawing.Point(6, 3);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(295, 405);
+            this.groupBox4.Size = new System.Drawing.Size(295, 497);
             this.groupBox4.TabIndex = 36;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Sensor Data";
@@ -1478,7 +1484,7 @@
             // 
             this.lbGateStat.AutoSize = true;
             this.lbGateStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbGateStat.Location = new System.Drawing.Point(223, 363);
+            this.lbGateStat.Location = new System.Drawing.Point(223, 438);
             this.lbGateStat.Name = "lbGateStat";
             this.lbGateStat.Size = new System.Drawing.Size(56, 15);
             this.lbGateStat.TabIndex = 21;
@@ -1488,7 +1494,7 @@
             // 
             this.lbEstopStat.AutoSize = true;
             this.lbEstopStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbEstopStat.Location = new System.Drawing.Point(223, 333);
+            this.lbEstopStat.Location = new System.Drawing.Point(223, 393);
             this.lbEstopStat.Name = "lbEstopStat";
             this.lbEstopStat.Size = new System.Drawing.Size(56, 15);
             this.lbEstopStat.TabIndex = 20;
@@ -1498,7 +1504,7 @@
             // 
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label31.Location = new System.Drawing.Point(9, 363);
+            this.label31.Location = new System.Drawing.Point(9, 438);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(37, 15);
             this.label31.TabIndex = 19;
@@ -1508,7 +1514,7 @@
             // 
             this.label30.AutoSize = true;
             this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label30.Location = new System.Drawing.Point(9, 333);
+            this.label30.Location = new System.Drawing.Point(9, 393);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(43, 15);
             this.label30.TabIndex = 18;
@@ -1524,7 +1530,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(645, 411);
+            this.tabPage3.Size = new System.Drawing.Size(645, 505);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Sensor Overrides";
             // 
@@ -1537,7 +1543,7 @@
             this.groupBox13.Controls.Add(this.label28);
             this.groupBox13.Location = new System.Drawing.Point(3, 233);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(338, 157);
+            this.groupBox13.Size = new System.Drawing.Size(338, 228);
             this.groupBox13.TabIndex = 29;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Motor Temperature Sensors";
@@ -1546,7 +1552,7 @@
             // 
             this.ElMotTempSensOverride.BackColor = System.Drawing.Color.Yellow;
             this.ElMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElMotTempSensOverride.Location = new System.Drawing.Point(227, 78);
+            this.ElMotTempSensOverride.Location = new System.Drawing.Point(227, 135);
             this.ElMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.ElMotTempSensOverride.Name = "ElMotTempSensOverride";
             this.ElMotTempSensOverride.Size = new System.Drawing.Size(91, 23);
@@ -1559,7 +1565,7 @@
             // 
             this.label29.AutoSize = true;
             this.label29.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label29.Location = new System.Drawing.Point(9, 78);
+            this.label29.Location = new System.Drawing.Point(9, 135);
             this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(214, 13);
@@ -1570,7 +1576,7 @@
             // 
             this.AzMotTempSensOverride.BackColor = System.Drawing.Color.Yellow;
             this.AzMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.AzMotTempSensOverride.Location = new System.Drawing.Point(229, 23);
+            this.AzMotTempSensOverride.Location = new System.Drawing.Point(229, 53);
             this.AzMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.AzMotTempSensOverride.Name = "AzMotTempSensOverride";
             this.AzMotTempSensOverride.Size = new System.Drawing.Size(89, 23);
@@ -1583,7 +1589,7 @@
             // 
             this.label28.AutoSize = true;
             this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.Location = new System.Drawing.Point(9, 31);
+            this.label28.Location = new System.Drawing.Point(9, 61);
             this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(205, 13);
@@ -1640,7 +1646,7 @@
             this.groupBox10.Location = new System.Drawing.Point(347, 24);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox10.Size = new System.Drawing.Size(293, 366);
+            this.groupBox10.Size = new System.Drawing.Size(293, 437);
             this.groupBox10.TabIndex = 0;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = " Proximity Sensors";
@@ -1673,7 +1679,7 @@
             // 
             this.ORAzimuthSens2.BackColor = System.Drawing.Color.Yellow;
             this.ORAzimuthSens2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ORAzimuthSens2.Location = new System.Drawing.Point(194, 271);
+            this.ORAzimuthSens2.Location = new System.Drawing.Point(194, 311);
             this.ORAzimuthSens2.Name = "ORAzimuthSens2";
             this.ORAzimuthSens2.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens2.TabIndex = 12;
@@ -1685,7 +1691,7 @@
             // 
             this.ORAzimuthSens1.BackColor = System.Drawing.Color.Yellow;
             this.ORAzimuthSens1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ORAzimuthSens1.Location = new System.Drawing.Point(194, 190);
+            this.ORAzimuthSens1.Location = new System.Drawing.Point(194, 230);
             this.ORAzimuthSens1.Name = "ORAzimuthSens1";
             this.ORAzimuthSens1.Size = new System.Drawing.Size(90, 23);
             this.ORAzimuthSens1.TabIndex = 11;
@@ -1708,7 +1714,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(9, 190);
+            this.label4.Location = new System.Drawing.Point(9, 230);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(150, 13);
@@ -1720,7 +1726,7 @@
             // 
             this.label21.AutoSize = true;
             this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(11, 271);
+            this.label21.Location = new System.Drawing.Point(11, 311);
             this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(153, 13);
@@ -1796,7 +1802,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(645, 411);
+            this.tabPage4.Size = new System.Drawing.Size(645, 505);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "RFData";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1805,7 +1811,7 @@
             // 
             this.lblModeType.AutoSize = true;
             this.lblModeType.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblModeType.Location = new System.Drawing.Point(155, 297);
+            this.lblModeType.Location = new System.Drawing.Point(155, 333);
             this.lblModeType.Name = "lblModeType";
             this.lblModeType.Size = new System.Drawing.Size(128, 15);
             this.lblModeType.TabIndex = 19;
@@ -1815,7 +1821,7 @@
             // 
             this.spectraModeTypeVal.AutoSize = true;
             this.spectraModeTypeVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.spectraModeTypeVal.Location = new System.Drawing.Point(369, 297);
+            this.spectraModeTypeVal.Location = new System.Drawing.Point(369, 333);
             this.spectraModeTypeVal.Name = "spectraModeTypeVal";
             this.spectraModeTypeVal.Size = new System.Drawing.Size(35, 15);
             this.spectraModeTypeVal.TabIndex = 20;
@@ -1825,7 +1831,7 @@
             // 
             this.lblFrequency.AutoSize = true;
             this.lblFrequency.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFrequency.Location = new System.Drawing.Point(300, 333);
+            this.lblFrequency.Location = new System.Drawing.Point(300, 369);
             this.lblFrequency.Name = "lblFrequency";
             this.lblFrequency.Size = new System.Drawing.Size(73, 15);
             this.lblFrequency.TabIndex = 17;
@@ -1835,7 +1841,7 @@
             // 
             this.frequencyVal.AutoSize = true;
             this.frequencyVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.frequencyVal.Location = new System.Drawing.Point(514, 333);
+            this.frequencyVal.Location = new System.Drawing.Point(514, 369);
             this.frequencyVal.Name = "frequencyVal";
             this.frequencyVal.Size = new System.Drawing.Size(35, 15);
             this.frequencyVal.TabIndex = 18;
@@ -1843,19 +1849,19 @@
             // 
             // spectraCyberScanChart
             // 
-            chartArea1.AxisX.Title = "Time";
-            chartArea1.AxisY.Title = "RF Data";
-            chartArea1.Name = "ChartArea1";
-            this.spectraCyberScanChart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.spectraCyberScanChart.Legends.Add(legend1);
+            chartArea2.AxisX.Title = "Time";
+            chartArea2.AxisY.Title = "RF Data";
+            chartArea2.Name = "ChartArea1";
+            this.spectraCyberScanChart.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.spectraCyberScanChart.Legends.Add(legend2);
             this.spectraCyberScanChart.Location = new System.Drawing.Point(36, 0);
             this.spectraCyberScanChart.Name = "spectraCyberScanChart";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.Legend = "Legend1";
-            series1.Name = "Data/Time";
-            this.spectraCyberScanChart.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series2.Legend = "Legend1";
+            series2.Name = "Data/Time";
+            this.spectraCyberScanChart.Series.Add(series2);
             this.spectraCyberScanChart.Size = new System.Drawing.Size(571, 279);
             this.spectraCyberScanChart.TabIndex = 16;
             this.spectraCyberScanChart.Text = "spectraCyberScanChart";
@@ -1864,7 +1870,7 @@
             // 
             this.lblIntegrationStep.AutoSize = true;
             this.lblIntegrationStep.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblIntegrationStep.Location = new System.Drawing.Point(300, 363);
+            this.lblIntegrationStep.Location = new System.Drawing.Point(300, 399);
             this.lblIntegrationStep.Name = "lblIntegrationStep";
             this.lblIntegrationStep.Size = new System.Drawing.Size(105, 15);
             this.lblIntegrationStep.TabIndex = 14;
@@ -1874,7 +1880,7 @@
             // 
             this.IntegrationStepVal.AutoSize = true;
             this.IntegrationStepVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IntegrationStepVal.Location = new System.Drawing.Point(514, 363);
+            this.IntegrationStepVal.Location = new System.Drawing.Point(514, 399);
             this.IntegrationStepVal.Name = "IntegrationStepVal";
             this.IntegrationStepVal.Size = new System.Drawing.Size(35, 15);
             this.IntegrationStepVal.TabIndex = 15;
@@ -1884,7 +1890,7 @@
             // 
             this.lblDCGain.AutoSize = true;
             this.lblDCGain.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDCGain.Location = new System.Drawing.Point(6, 389);
+            this.lblDCGain.Location = new System.Drawing.Point(6, 425);
             this.lblDCGain.Name = "lblDCGain";
             this.lblDCGain.Size = new System.Drawing.Size(56, 15);
             this.lblDCGain.TabIndex = 12;
@@ -1894,7 +1900,7 @@
             // 
             this.DCGainVal.AutoSize = true;
             this.DCGainVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DCGainVal.Location = new System.Drawing.Point(220, 389);
+            this.DCGainVal.Location = new System.Drawing.Point(220, 425);
             this.DCGainVal.Name = "DCGainVal";
             this.DCGainVal.Size = new System.Drawing.Size(35, 15);
             this.DCGainVal.TabIndex = 13;
@@ -1904,7 +1910,7 @@
             // 
             this.lblIFGain.AutoSize = true;
             this.lblIFGain.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblIFGain.Location = new System.Drawing.Point(6, 363);
+            this.lblIFGain.Location = new System.Drawing.Point(6, 399);
             this.lblIFGain.Name = "lblIFGain";
             this.lblIFGain.Size = new System.Drawing.Size(53, 15);
             this.lblIFGain.TabIndex = 10;
@@ -1915,7 +1921,7 @@
             // 
             this.IFGainVal.AutoSize = true;
             this.IFGainVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IFGainVal.Location = new System.Drawing.Point(220, 363);
+            this.IFGainVal.Location = new System.Drawing.Point(220, 399);
             this.IFGainVal.Name = "IFGainVal";
             this.IFGainVal.Size = new System.Drawing.Size(35, 15);
             this.IFGainVal.TabIndex = 11;
@@ -1926,7 +1932,7 @@
             // 
             this.lblBandwidth.AutoSize = true;
             this.lblBandwidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBandwidth.Location = new System.Drawing.Point(6, 333);
+            this.lblBandwidth.Location = new System.Drawing.Point(6, 369);
             this.lblBandwidth.Name = "lblBandwidth";
             this.lblBandwidth.Size = new System.Drawing.Size(74, 15);
             this.lblBandwidth.TabIndex = 8;
@@ -1936,7 +1942,7 @@
             // 
             this.BandwidthVal.AutoSize = true;
             this.BandwidthVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BandwidthVal.Location = new System.Drawing.Point(220, 333);
+            this.BandwidthVal.Location = new System.Drawing.Point(220, 369);
             this.BandwidthVal.Name = "BandwidthVal";
             this.BandwidthVal.Size = new System.Drawing.Size(35, 15);
             this.BandwidthVal.TabIndex = 9;
@@ -1946,7 +1952,7 @@
             // 
             this.lblOffsetVoltage.AutoSize = true;
             this.lblOffsetVoltage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOffsetVoltage.Location = new System.Drawing.Point(300, 389);
+            this.lblOffsetVoltage.Location = new System.Drawing.Point(300, 425);
             this.lblOffsetVoltage.Name = "lblOffsetVoltage";
             this.lblOffsetVoltage.Size = new System.Drawing.Size(92, 15);
             this.lblOffsetVoltage.TabIndex = 6;
@@ -1956,7 +1962,7 @@
             // 
             this.OffsetVoltageVal.AutoSize = true;
             this.OffsetVoltageVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OffsetVoltageVal.Location = new System.Drawing.Point(514, 389);
+            this.OffsetVoltageVal.Location = new System.Drawing.Point(514, 425);
             this.OffsetVoltageVal.Name = "OffsetVoltageVal";
             this.OffsetVoltageVal.Size = new System.Drawing.Size(35, 15);
             this.OffsetVoltageVal.TabIndex = 7;
@@ -1968,7 +1974,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(645, 411);
+            this.tabPage5.Size = new System.Drawing.Size(645, 505);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Console Log";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1982,14 +1988,72 @@
             this.consoleLogBox.Multiline = true;
             this.consoleLogBox.Name = "consoleLogBox";
             this.consoleLogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.consoleLogBox.Size = new System.Drawing.Size(631, 400);
+            this.consoleLogBox.Size = new System.Drawing.Size(631, 494);
             this.consoleLogBox.TabIndex = 0;
+            // 
+            // grpMcuStatus
+            // 
+            this.grpMcuStatus.BackColor = System.Drawing.Color.Gainsboro;
+            this.grpMcuStatus.Controls.Add(this.lblMCUStatus);
+            this.grpMcuStatus.Controls.Add(this.lblMCUStatusText);
+            this.grpMcuStatus.Controls.Add(this.lblMCUErrors);
+            this.grpMcuStatus.Controls.Add(this.btnResetMcuErrors);
+            this.grpMcuStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grpMcuStatus.Location = new System.Drawing.Point(314, 394);
+            this.grpMcuStatus.Margin = new System.Windows.Forms.Padding(2);
+            this.grpMcuStatus.Name = "grpMcuStatus";
+            this.grpMcuStatus.Padding = new System.Windows.Forms.Padding(2);
+            this.grpMcuStatus.Size = new System.Drawing.Size(324, 106);
+            this.grpMcuStatus.TabIndex = 38;
+            this.grpMcuStatus.TabStop = false;
+            this.grpMcuStatus.Text = "Motor Controller Status";
+            // 
+            // btnResetMcuErrors
+            // 
+            this.btnResetMcuErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnResetMcuErrors.Location = new System.Drawing.Point(210, 78);
+            this.btnResetMcuErrors.Name = "btnResetMcuErrors";
+            this.btnResetMcuErrors.Size = new System.Drawing.Size(110, 23);
+            this.btnResetMcuErrors.TabIndex = 0;
+            this.btnResetMcuErrors.Text = "Reset MCU Errors";
+            this.btnResetMcuErrors.UseVisualStyleBackColor = true;
+            this.btnResetMcuErrors.Click += new System.EventHandler(this.btnResetMcuErrors_Click);
+            // 
+            // lblMCUErrors
+            // 
+            this.lblMCUErrors.AutoSize = true;
+            this.lblMCUErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMCUErrors.Location = new System.Drawing.Point(17, 24);
+            this.lblMCUErrors.Name = "lblMCUErrors";
+            this.lblMCUErrors.Size = new System.Drawing.Size(0, 13);
+            this.lblMCUErrors.TabIndex = 75;
+            // 
+            // lblMCUStatusText
+            // 
+            this.lblMCUStatusText.AutoSize = true;
+            this.lblMCUStatusText.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMCUStatusText.Location = new System.Drawing.Point(6, 81);
+            this.lblMCUStatusText.Name = "lblMCUStatusText";
+            this.lblMCUStatusText.Size = new System.Drawing.Size(92, 16);
+            this.lblMCUStatusText.TabIndex = 33;
+            this.lblMCUStatusText.Text = "MCU Status:";
+            // 
+            // lblMCUStatus
+            // 
+            this.lblMCUStatus.AutoSize = true;
+            this.lblMCUStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMCUStatus.ForeColor = System.Drawing.Color.Black;
+            this.lblMCUStatus.Location = new System.Drawing.Point(95, 81);
+            this.lblMCUStatus.Name = "lblMCUStatus";
+            this.lblMCUStatus.Size = new System.Drawing.Size(34, 16);
+            this.lblMCUStatus.TabIndex = 76;
+            this.lblMCUStatus.Text = "N/A";
             // 
             // DiagnosticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(655, 446);
+            this.ClientSize = new System.Drawing.Size(655, 547);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label15);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -2042,6 +2106,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.spectraCyberScanChart)).EndInit();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
+            this.grpMcuStatus.ResumeLayout(false);
+            this.grpMcuStatus.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2201,5 +2267,10 @@
         private System.Windows.Forms.Label frequencyVal;
         private System.Windows.Forms.Label lblModeType;
         private System.Windows.Forms.Label spectraModeTypeVal;
+        private System.Windows.Forms.GroupBox grpMcuStatus;
+        private System.Windows.Forms.Button btnResetMcuErrors;
+        private System.Windows.Forms.Label lblMCUErrors;
+        private System.Windows.Forms.Label lblMCUStatusText;
+        private System.Windows.Forms.Label lblMCUStatus;
     }
 }

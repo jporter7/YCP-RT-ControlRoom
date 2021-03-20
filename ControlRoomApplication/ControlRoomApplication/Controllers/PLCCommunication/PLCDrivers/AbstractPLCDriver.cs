@@ -10,6 +10,8 @@ using ControlRoomApplication.Simulators.Hardware;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Controllers.PLCCommunication;
+using System.Collections.Generic;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -157,12 +159,23 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
-        /// see <see cref="MCUConstants.MCUStutusBitsMSW"/> for description of each bit
+        /// see <see cref="MCUConstants.MCUStatusBitsMSW"/> for description of each bit
         /// </summary>
         /// <param name="axis"></param>
         /// <returns></returns>
         public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
 
         public abstract void setTelescopeType(RadioTelescopeTypeEnum type);
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// </summary>
+        public abstract void ResetMCUErrors();
+
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public abstract List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors();
     }
 }
