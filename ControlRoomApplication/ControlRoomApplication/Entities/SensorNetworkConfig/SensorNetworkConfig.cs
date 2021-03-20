@@ -200,6 +200,30 @@ namespace ControlRoomApplication.Entities
             }
 
         }
+
+        /// <summary>
+        /// This will be used to convert the current sensor initialization to a byte array that we
+        /// can send to the Sensor Network. It will convert each init to its own byte that will 
+        /// be either 1 or 0.
+        /// 0 = not initialized;
+        /// 1 = initialized
+        /// </summary>
+        public byte[] ConvertSensorInitToBytes()
+        {
+            byte[] init = new byte[] {
+                ElevationTemp1Init ?                (byte)1 : (byte)0,
+                ElevationTemp2Init ?                (byte)1 : (byte)0,
+                AzimuthTemp1Init ?                  (byte)1 : (byte)0,
+                AzimuthTemp2Init ?                  (byte)1 : (byte)0,
+                ElevationEncoderInit ?              (byte)1 : (byte)0,
+                AzimuthEncoderInit ?                (byte)1 : (byte)0,
+                AzimuthAccelerometerInit ?          (byte)1 : (byte)0,
+                ElevationAccelerometerInit ?        (byte)1 : (byte)0,
+                CounterbalanceAccelerometerInit ?   (byte)1 : (byte)0
+            };
+
+            return init;
+        }
     }
     
 
