@@ -283,25 +283,25 @@ namespace ControlRoomApplication.Controllers
             Temperature currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
             bool EL = checkTemp(currEL);
 
-            bool currentAZOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
+            bool currentAZOveride = overrides.overrideAzimuthMotTemp;
 
-            bool currentELOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+            bool currentELOveride = overrides.overrideElevatMotTemp;
 
             // Loop through every one second to get new temperatures. If the temperature has changed, notify the user
             while (true)
             {
                 // Only updates the info if the temperature has changed
-                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp || currentAZOveride != DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR)) {
+                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp || currentAZOveride != overrides.overrideAzimuthMotTemp) {
                     currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
                     AZ = checkTemp(currAZ);
-                    currentAZOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
+                    currentAZOveride = overrides.overrideAzimuthMotTemp;
                 }
 
-                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp || currentELOveride != DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
+                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp || currentELOveride != overrides.overrideElevatMotTemp)
                 {
                     currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
                     EL = checkTemp(currEL);
-                    currentELOveride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+                    currentELOveride = overrides.overrideElevatMotTemp;
                 }
 
                 // Determines if the temperature is acceptable for both motors
@@ -381,11 +381,11 @@ namespace ControlRoomApplication.Controllers
         /// <param name="set"></param>
         public void setOverride(String sensor, bool set)
         {
-            if (sensor.Equals("azimuth motor temperature")) overrides.overrideAzimuthMotTemp = set;
-            else if (sensor.Equals("elevation motor temperature")) overrides.overrideElevatMotTemp = set;
+            if (sensor.Equals("azimuth motor temperature")) overrides.setAzimuthMotTemp(set);
+            else if (sensor.Equals("elevation motor temperature")) overrides.setElevationMotTemp(set);
             else if (sensor.Equals("main gate"))
             {
-                overrides.overrideGate = set;
+                overrides.setGatesOverride(set);
                 RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(set));
             }
             else if (sensor.Equals("elevation proximity (2)")) {

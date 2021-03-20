@@ -168,48 +168,46 @@ namespace ControlRoomApplication.Controllers
             {
                 // false = ENABLED; true = OVERRIDING
                 // If "OVR" is contained in the data, will return true
+                bool doOverride = data.Contains("OVR");
 
                 // Non-PLC Overrides
                 if (data.Contains("WEATHER_STATION"))
                 {
                     controlRoom.weatherStationOverride = data.Contains("OVR");
                     rtController.setOverride("weather station", data.Contains("OVR"));
-                    DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.WEATHER_STATION);
+                    DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, doOverride);
                 }
                 else if (data.Contains("AZIMUTH_MOT_TEMP"))
                 {
-                    rtController.setOverride("azimuth motor temperature", data.Contains("OVR"));
-                    DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
+                    rtController.setOverride("azimuth motor temperature", doOverride);
                 }
                 else if (data.Contains("ELEVATION_MOT_TEMP"))
                 {
-                    rtController.setOverride("elevation motor temperature", data.Contains("OVR"));
-                    DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
+                    rtController.setOverride("elevation motor temperature", doOverride);
                 }
 
                 // PLC Overrides
                 else if (data.Contains("MAIN_GATE"))
                 {
-                    rtController.setOverride("main gate", data.Contains("OVR"));
-                    DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.GATE);
+                    rtController.setOverride("main gate", doOverride);
                 }
 
                 // May be removed with slip ring
                 else if (data.Contains("AZIMUTH_LIMIT_10"))
                 {
-                    rtController.setOverride("azimuth proximity (1)", data.Contains("OVR"));
+                    rtController.setOverride("azimuth proximity (1)", doOverride);
                 }
                 else if (data.Contains("AZIMUTH_LIMIT_375"))
                 {
-                    rtController.setOverride("azimuth proximity (2)", data.Contains("OVR"));
+                    rtController.setOverride("azimuth proximity (2)", doOverride);
                 }
                 else if (data.Contains("ELEVATION_LIMIT_0"))
                 {
-                    rtController.setOverride("elevation proximity (1)", data.Contains("OVR"));
+                    rtController.setOverride("elevation proximity (1)", doOverride);
                 }
                 else if (data.Contains("ELEVATION_LIMIT_90"))
                 {
-                    rtController.setOverride("elevation proximity (2)", data.Contains("OVR"));
+                    rtController.setOverride("elevation proximity (2)", doOverride);
                 }
                 else return false;
 
