@@ -44,6 +44,11 @@ namespace ControlRoomApplication.Main
         public bool MCUPortValid = false;
         public bool PLCPortValid = false;
         public bool WCOMPortValid = false;
+        public bool SensorNetworkServerIPBool = false;
+        public bool SensorNetworkServerPortBool = false;
+        public bool SensorNetworkClientIPBool = false;
+        public bool SensorNetworkClientPortBool = false;
+
 
         enum TempSensorType
         {
@@ -114,6 +119,21 @@ namespace ControlRoomApplication.Main
             loopBackBox.Enabled = true;
             checkBox1.Enabled = true;
 
+            comboSensorNetworkBox.SelectedIndex = 1;
+            comboBox1.SelectedIndex = 1;
+            comboBox2.SelectedIndex = 1;
+            comboPLCType.SelectedIndex = 2;
+            LocalIPCombo.SelectedIndex = 0;
+
+            sensorNetworkServerIPAddress.Text = "IP Address";
+            sensorNetworkServerPort.Text = "Port";
+            sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Gray;
+            sensorNetworkServerPort.ForeColor = System.Drawing.Color.Gray;
+
+            sensorNetworkClientIPAddress.Text = "IP Address";
+            sensorNetworkClientPort.Text = "Port";
+            sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Gray;
+            sensorNetworkClientPort.ForeColor = System.Drawing.Color.Gray;
 
 
 
@@ -218,10 +238,9 @@ namespace ControlRoomApplication.Main
                 shutdownButton.BackColor = System.Drawing.Color.Red;
                 shutdownButton.Enabled = true;
                 simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
-                comboMicrocontrollerBox.Enabled = true;
+                comboSensorNetworkBox.Enabled = true;
                 comboBox2.Enabled = true;
                 comboBox1.Enabled = true;
-                comboEncoderType.Enabled = true;
                 comboPLCType.Enabled = true;
                 LocalIPCombo.Enabled = true;
 
@@ -563,7 +582,7 @@ namespace ControlRoomApplication.Main
 
         public AbstractMicrocontroller build_CTRL()
         {
-            switch (comboMicrocontrollerBox.SelectedIndex)
+            switch (comboSensorNetworkBox.SelectedIndex)
             {
                 case 0:
                     logger.Info(Utilities.GetTimeStamp() + ": Building ProductionPLCDriver");
@@ -589,7 +608,7 @@ namespace ControlRoomApplication.Main
 
             logger.Info(Utilities.GetTimeStamp() + ": Selected Microcontroller Type: ");
 
-            if (comboMicrocontrollerBox.SelectedIndex - 1 == (int)MicrocontrollerType.Production)
+            if (comboSensorNetworkBox.SelectedIndex - 1 == (int)MicrocontrollerType.Production)
             {
                 isSimulated = false;
             }
@@ -677,6 +696,20 @@ namespace ControlRoomApplication.Main
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
                 this.txtMcuCOMPort.Text = ((int)(8083 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
+
+                this.sensorNetworkServerIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkClientIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
+
+                this.sensorNetworkServerPort.Text = "1600";
+                this.sensorNetworkClientPort.Text = "1680";
+                this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
+
+
+
+
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("127.0.0.1"));
@@ -684,6 +717,7 @@ namespace ControlRoomApplication.Main
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
             this.txtPLCPort.Text = ((int)(8082 + ProgramPLCDriverList.Count * 3)).ToString();
+
         }
 
         private void ProdcheckBox_CheckedChanged(object sender, EventArgs e)
@@ -711,7 +745,7 @@ namespace ControlRoomApplication.Main
             lastCreatedProductionWeatherStation = BuildWeatherStation();
         }
 
-        private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboSensorNetworkBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
@@ -736,7 +770,7 @@ namespace ControlRoomApplication.Main
                 txtPLCPort.BackColor = System.Drawing.Color.White;
                 this.PLCPortToolTip.Hide(label3);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -763,7 +797,7 @@ namespace ControlRoomApplication.Main
                 txtPLCIP.BackColor = System.Drawing.Color.White;
                 this.MCUIPToolTip.Hide(label4);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -804,7 +838,7 @@ namespace ControlRoomApplication.Main
                 this.WCOMPortToolTip.Hide(label2);
                 
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -834,10 +868,9 @@ namespace ControlRoomApplication.Main
                     checkBox1.Enabled = false;
 
                     simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
-                    comboMicrocontrollerBox.Enabled = false;
+                    comboSensorNetworkBox.Enabled = false;
                     comboBox2.Enabled = false;
                     comboBox1.Enabled = false;
-                    comboEncoderType.Enabled = false;
                     comboPLCType.Enabled = false;
                     LocalIPCombo.Enabled = false;
 
@@ -847,7 +880,13 @@ namespace ControlRoomApplication.Main
                     txtMcuCOMPort.Enabled = false;
                     txtWSCOMPort.Enabled = false;
                     txtPLCPort.Enabled = false;
-                }
+
+                    sensorNetworkServerIPAddress.Enabled = false;
+                    sensorNetworkServerPort.Enabled = false;
+                    sensorNetworkClientIPAddress.Enabled = false;
+                    sensorNetworkClientPort.Enabled = false;
+
+            }
                 else if (finalSettings == true)
                 {
                     // Editing Text to reflect state -- when finalized, you can click "edit settings"
@@ -860,10 +899,9 @@ namespace ControlRoomApplication.Main
                     checkBox1.Enabled = true;
 
                     simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
-                    comboMicrocontrollerBox.Enabled = true;
+                    comboSensorNetworkBox.Enabled = true;
                     comboBox2.Enabled = true;
                     comboBox1.Enabled = true;
-                    comboEncoderType.Enabled = true;
                     comboPLCType.Enabled = true;
                     LocalIPCombo.Enabled = true;
 
@@ -873,7 +911,12 @@ namespace ControlRoomApplication.Main
                     txtMcuCOMPort.Enabled = true;
                     txtWSCOMPort.Enabled = true;
                     txtPLCPort.Enabled = true;
-                }
+
+                    sensorNetworkServerIPAddress.Enabled = true;
+                    sensorNetworkServerPort.Enabled = true;
+                    sensorNetworkClientIPAddress.Enabled = true;
+                    sensorNetworkClientPort.Enabled = true;
+            }
  
         }
 
@@ -922,7 +965,7 @@ namespace ControlRoomApplication.Main
                 txtMcuCOMPort.BackColor = System.Drawing.Color.White;
                 this.MCUIPToolTip.Hide(label5);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -948,6 +991,207 @@ namespace ControlRoomApplication.Main
 
         }
 
-      
+        private void sensorNetworkServerIPAddress_TextChanged(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerIPAddress.Text != "IP Address")
+            {
+                SensorNetworkServerIPBool = Validator.ValidateIPAddress(sensorNetworkServerIPAddress.Text);
+                if (!SensorNetworkServerIPBool)
+                {
+                    acceptSettings.Enabled = false;
+                    sensorNetworkServerIPAddress.BackColor = System.Drawing.Color.Yellow;
+                    this.MCUIPToolTip.Show("Enter a valid IP Address\n" +
+                        " (xxx.xxx.xxx.xxx)", label6);
+                }
+                else
+                {
+                    sensorNetworkServerIPAddress.BackColor = System.Drawing.Color.White;
+                    this.MCUIPToolTip.Hide(label6);
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else
+            {
+                sensorNetworkServerIPAddress.BackColor = System.Drawing.Color.LightGray;
+                this.MCUIPToolTip.Hide(label6);
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void sensorNetworkServerIPAddress_Enter(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerIPAddress.Text == "IP Address")
+            {
+                sensorNetworkServerIPAddress.Text = "";
+                sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void sensorNetworkServerIPAddress_Leave(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerIPAddress.Text == "")
+            {
+                sensorNetworkServerIPAddress.Text = "IP Address";
+                sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        private void sensorNetworkClientIPAddress_TextChanged(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientIPAddress.Text != "IP Address")
+            {
+                SensorNetworkClientIPBool = Validator.ValidateIPAddress(sensorNetworkClientIPAddress.Text);
+                if (!SensorNetworkClientIPBool)
+                {
+                    acceptSettings.Enabled = false;
+                    sensorNetworkClientIPAddress.BackColor = System.Drawing.Color.Yellow;
+                    this.MCUIPToolTip.Show("Enter a valid IP Address\n" +
+                        " (xxx.xxx.xxx.xxx)", label7);
+                }
+                else
+                {
+                    sensorNetworkClientIPAddress.BackColor = System.Drawing.Color.White;
+                    this.MCUIPToolTip.Hide(label7);
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else
+            {
+                sensorNetworkClientIPAddress.BackColor = System.Drawing.Color.LightGray;
+                this.MCUIPToolTip.Hide(label7);
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void sensorNetworkClientIPAddress_Enter(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientIPAddress.Text == "IP Address")
+            {
+                sensorNetworkClientIPAddress.Text = "";
+                sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void sensorNetworkClientIPAddress_Leave(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientIPAddress.Text == "")
+            {
+                sensorNetworkClientIPAddress.Text = "IP Address";
+                sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        private void sensorNetworkServerPort_TextChanged(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerPort.Text != "Port")
+            {
+                SensorNetworkServerPortBool = Validator.ValidatePort(sensorNetworkServerPort.Text);
+                if (!SensorNetworkServerPortBool)
+                {
+                    acceptSettings.Enabled = false;
+                    sensorNetworkServerPort.BackColor = System.Drawing.Color.Yellow;
+                    this.WCOMPortToolTip.Show("Enter a valid port number\n" +
+                        " between 1 and 65536", label6);
+                }
+                else
+                {
+                    sensorNetworkServerPort.BackColor = System.Drawing.Color.White;
+                    this.WCOMPortToolTip.Hide(label6);
+
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else 
+            {
+                sensorNetworkServerPort.BackColor = System.Drawing.Color.LightGray;
+                this.WCOMPortToolTip.Hide(label6);
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void sensorNetworkServerPort_Enter(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerPort.Text == "Port")
+            {
+                sensorNetworkServerPort.Text = "";
+                sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void sensorNetworkServerPort_Leave(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerPort.Text == "")
+            {
+                sensorNetworkServerPort.Text = "Port";
+                sensorNetworkServerPort.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        private void sensorNetworkClientPort_TextChanged(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientPort.Text != "Port")
+            {
+                SensorNetworkClientPortBool = Validator.ValidatePort(sensorNetworkClientPort.Text);
+                if (!SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = false;
+                    sensorNetworkClientPort.BackColor = System.Drawing.Color.Yellow;
+                    this.WCOMPortToolTip.Show("Enter a valid port number\n" +
+                        " between 1 and 65536", label7);
+                }
+                else
+                {
+                    sensorNetworkClientPort.BackColor = System.Drawing.Color.White;
+                    this.WCOMPortToolTip.Hide(label7);
+
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else
+            {
+                sensorNetworkClientPort.BackColor = System.Drawing.Color.LightGray;
+                this.WCOMPortToolTip.Hide(label7);
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void sensorNetworkClientPort_Enter(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientPort.Text == "Port")
+            {
+                sensorNetworkClientPort.Text = "";
+                sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void sensorNetworkClientPort_Leave(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientPort.Text == "")
+            {
+                sensorNetworkClientPort.Text = "Port";
+                sensorNetworkClientPort.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        private void WCOMPortToolTip_Popup(object sender, PopupEventArgs e)
+        {
+
+        }
     }
 }
