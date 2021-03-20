@@ -734,19 +734,21 @@ namespace ControlRoomApplication.GUI
                 WSOverride.Text = "OVERRIDING";
                 WSOverride.BackColor = System.Drawing.Color.Red;
                 mainF.setWSOverride(true);
-                rtController.setOverride("weather station", true);
+                DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, true);
 
+                // We are only calling this to send the push notification and email, it does not actually set the override
+                rtController.setOverride("weather station", true);
             }
             else
             {
                 WSOverride.Text = "ENABLED";
                 WSOverride.BackColor = System.Drawing.Color.LimeGreen;
                 mainF.setWSOverride(false);
+                DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, false);
+
+                // We are only calling this to send the push notification and email, it does not actually set the override
                 rtController.setOverride("weather station", false);
             }
-
-            // Change value in database
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.WEATHER_STATION);
         }
 
         private void MGOverride_Click(object sender, EventArgs e)
@@ -763,9 +765,6 @@ namespace ControlRoomApplication.GUI
                 MGOverride.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("main gate", false);
             }
-
-            // Change value in database
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.GATE);
         }
 
         private void lblElEncoderDegrees_Click(object sender, EventArgs e)
@@ -794,9 +793,6 @@ namespace ControlRoomApplication.GUI
 
                 rtController.setOverride("azimuth motor temperature", false);
             }
-
-            // Change value in database
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
         }
 
         private void ElMotTempSensOverride_Click(object sender, EventArgs e)
@@ -815,9 +811,6 @@ namespace ControlRoomApplication.GUI
 
                 rtController.setOverride("elevation motor temperature", false);
             }
-
-            // Change value in database
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
         }
 
         private void buttonWS_Click(object sender, EventArgs e)

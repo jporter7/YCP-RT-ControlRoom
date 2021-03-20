@@ -775,9 +775,9 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// Updates the current override to the opposite of the given sensor name
+        /// Updates the current override to whatever is provided
         /// </summary>
-        public static void SwitchOverrideForSensor(SensorItemEnum item)
+        public static void SetOverrideForSensor(SensorItemEnum item, bool doOverride)
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
@@ -789,7 +789,7 @@ namespace ControlRoomApplication.Database
                 }
 
                 Override current = overrides[0];
-                current.Overridden = current.Overridden == 1 ? Convert.ToSByte(0) : Convert.ToSByte(1);
+                current.Overridden = Convert.ToSByte(doOverride);
 
                 Context.Override.AddOrUpdate(current);
 
