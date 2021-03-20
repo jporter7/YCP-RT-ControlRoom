@@ -135,7 +135,9 @@ namespace ControlRoomApplication.GUI
             bool currWS = controlRoom.weatherStationOverride;
             bool currAZ = rtController.overrides.overrideAzimuthMotTemp;
             bool currEL = rtController.overrides.overrideElevatMotTemp;
-            updateButtons(currMain, currWS, currAZ, currEL);
+            bool currElProx0 = rtController.overrides.overrideElevatProx0;
+            bool currElProx90 = rtController.overrides.overrideElevatProx90;
+            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90);
             
             updateOverride = new BackgroundWorker();
             updateOverride.DoWork += new DoWorkEventHandler(checkOverrideVars);
@@ -648,13 +650,13 @@ namespace ControlRoomApplication.GUI
 
         private void ElevationProximityOverideButton1_Click(object sender, EventArgs e)
         {
-            if (!rtController.overrides.overrideElevatProx1)
+            if (!rtController.overrides.overrideElevatProx0)
             {
                 ElevationProximityOveride1.Text = "OVERRIDING";
                 ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("elevation proximity (1)", true);
             }
-            else if (rtController.overrides.overrideElevatProx1)
+            else if (rtController.overrides.overrideElevatProx0)
             {
                 ElevationProximityOveride1.Text = "ENABLED";
                 ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
@@ -664,7 +666,7 @@ namespace ControlRoomApplication.GUI
 
         private void ElevationProximityOverideButton2_Click(object sender, EventArgs e)
         {
-            if (!rtController.overrides.overrideElevatProx2)
+            if (!rtController.overrides.overrideElevatProx90)
             {
                 ElevationProximityOveride2.Text = "OVERRIDING";
                 ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
@@ -847,7 +849,9 @@ namespace ControlRoomApplication.GUI
             bool currWS = controlRoom.weatherStationOverride;
             bool currAZ = rtController.overrides.overrideAzimuthMotTemp;
             bool currEL = rtController.overrides.overrideElevatMotTemp;
-            bool newMain, newWS, newAZ, newEL;
+            bool currElProx0 = rtController.overrides.overrideElevatProx0;
+            bool currElProx90 = rtController.overrides.overrideElevatProx90;
+            bool newMain, newWS, newAZ, newEL, newElProx0, newElProx90;
 
 
             while (true)
@@ -856,19 +860,28 @@ namespace ControlRoomApplication.GUI
                 newWS = controlRoom.weatherStationOverride;
                 newAZ = rtController.overrides.overrideAzimuthMotTemp;
                 newEL = rtController.overrides.overrideElevatMotTemp;
+                newElProx0 = rtController.overrides.overrideElevatProx0;
+                newElProx90 = rtController.overrides.overrideElevatProx90;
 
-                if (currWS != newWS || currMain != newMain || currAZ != newAZ || currEL != newEL)
+                if (currWS != newWS || 
+                    currMain != newMain || 
+                    currAZ != newAZ || 
+                    currEL != newEL ||
+                    currElProx0 != newElProx0 ||
+                    currElProx90 != newElProx90)
                 {
                     currMain = newMain;
                     currWS = newWS;
                     currAZ = newAZ;
                     currEL = newEL;
+                    currElProx0 = newElProx0;
+                    currElProx90 = newElProx90;
 
                     if (IsHandleCreated)
                     {
                         this.BeginInvoke((MethodInvoker)delegate
                         {
-                            updateButtons(currMain, currWS, currAZ, currEL);
+                            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90);
                         });
                     }
 
@@ -878,7 +891,7 @@ namespace ControlRoomApplication.GUI
         }
 
         // Loads the override buttons
-        public void updateButtons(bool currMain, bool currWS, bool currAZ, bool currEL)
+        public void updateButtons(bool currMain, bool currWS, bool currAZ, bool currEL, bool currElProx0, bool currElProx90)
         {
             // Weather Station Override
             if(currWS)
@@ -953,7 +966,7 @@ namespace ControlRoomApplication.GUI
             }
 
             // Elevation Limit Switch 0 Degrees Override
-            if(rtController.overrides.overrideElevatProx1)
+            if(currElProx0)
             {
                 ElevationProximityOveride1.Text = "OVERRIDING";
                 ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
@@ -965,7 +978,7 @@ namespace ControlRoomApplication.GUI
             }
 
             // Elevation Limit Switch 90 Degrees Override
-            if (rtController.overrides.overrideElevatProx2)
+            if (currElProx90)
             {
                 ElevationProximityOveride2.Text = "OVERRIDING";
                 ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;

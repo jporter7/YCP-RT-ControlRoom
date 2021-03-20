@@ -329,7 +329,15 @@ namespace ControlRoomApplication.Main
 
                     AddConfigurationToDataGrid();
 
-            
+                    // Set PLC overrides because they may be different than what's in the database
+                    bool gateOvr = ProgramRTControllerList[ProgramRTControllerList.Count - 1].overrides.overrideGate;
+                    bool el0Ovr = ProgramRTControllerList[ProgramRTControllerList.Count - 1].overrides.overrideElevatProx0;
+                    bool el90Ovr = ProgramRTControllerList[ProgramRTControllerList.Count - 1].overrides.overrideElevatProx90;
+
+                    APLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(gateOvr));
+                    APLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, Convert.ToUInt16(el0Ovr));
+                    APLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, Convert.ToUInt16(el90Ovr));
+
                 }
             }
 

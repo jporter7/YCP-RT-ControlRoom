@@ -33,7 +33,7 @@ namespace ControlRoomApplication.Controllers
             RadioTelescope = radioTelescope;
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
 
-            overrides = new OverrideSwitchData();
+            overrides = new OverrideSwitchData(radioTelescope);
 
             tempM = new Thread(tempMonitor);
             tempM.Start();
@@ -381,33 +381,11 @@ namespace ControlRoomApplication.Controllers
         /// <param name="set"></param>
         public void setOverride(String sensor, bool set)
         {
-            if (sensor.Equals("azimuth motor temperature")) overrides.setAzimuthMotTemp(set);
-            else if (sensor.Equals("elevation motor temperature")) overrides.setElevationMotTemp(set);
-            else if (sensor.Equals("main gate"))
-            {
-                overrides.setGatesOverride(set);
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(set));
-            }
-            else if (sensor.Equals("elevation proximity (2)")) {
-                overrides.overrideElevatProx2 = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT, Convert.ToUInt16(set));
-            }
-            else if (sensor.Equals("elevation proximity (1)"))
-            {
-                overrides.overrideElevatProx1 = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT, Convert.ToUInt16(set));
-            }
-            else if (sensor.Equals("azimuth proximity (2)"))
-            {
-                overrides.overrideAzimuthProx2 = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT, Convert.ToUInt16(set));
-
-            }
-            else if (sensor.Equals("azimuth proximity (1)"))
-            {
-                overrides.overrideAzimuthProx1 = set;
-                RadioTelescope.PLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT, Convert.ToUInt16(set));
-            }
+            if      (sensor.Equals("azimuth motor temperature"))    overrides.setAzimuthMotTemp(set);
+            else if (sensor.Equals("elevation motor temperature"))  overrides.setElevationMotTemp(set);
+            else if (sensor.Equals("main gate"))                    overrides.setGatesOverride(set);
+            else if (sensor.Equals("elevation proximity (1)"))      overrides.setElProx0Override(set);
+            else if (sensor.Equals("elevation proximity (2)"))      overrides.setElProx90Override(set);
 
             if (set)
             {
