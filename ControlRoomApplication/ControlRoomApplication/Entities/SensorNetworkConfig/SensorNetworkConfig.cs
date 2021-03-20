@@ -1,6 +1,7 @@
 ﻿using ControlRoomApplication.Controllers.SensorNetwork;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace ControlRoomApplication.Entities
     /// room is closed and then reopened, such as initialization information.
     /// </summary>
     [Table("sensor_network_config")]
-    public class SensorNetworkConfig
+    public class SensorNetworkConfig : IEquatable<SensorNetworkConfig>
     {
         /// <summary>
         /// Constructor to initialize a new SensorNetworkConfig for a RadioTelescope with default values.
@@ -39,6 +40,31 @@ namespace ControlRoomApplication.Entities
             ElevationEncoderInit = true;
         }
 
+        /// <summary>
+        /// This constructor takes no parameters and sets all values to equivalents of 0.
+        /// It is only used for the Entity-MySql communication.
+        /// </summary>
+        public SensorNetworkConfig()
+        {
+            TelescopeId = 0;
+            TimeoutDataRetrieval = 0;
+            TimeoutInitialization = 0;
+
+            // Initialize all sensors to be disabled
+            ElevationTemp1Init = false;
+            ElevationTemp2Init = false;
+            AzimuthTemp1Init = false;
+            AzimuthTemp2Init = false;
+            AzimuthAccelerometerInit = false;
+            ElevationAccelerometerInit = false;
+            CounterbalanceAccelerometerInit = false;
+            AzimuthEncoderInit = false;
+            ElevationEncoderInit = false;
+        }
+
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         /// <summary>
         /// The Radio Telescope ID that this configuration is for. This should not be
@@ -139,6 +165,41 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         [Column("timeout_initialization")]
         public int TimeoutInitialization { get; set; }
+
+        /// <summary>
+        /// This will check if two SensorNetworkConfigs are identical or not
+        /// </summary>
+        /// <param name="other">The SensorNetworkConfig to compare against</param>
+        /// <returns></returns>
+        public bool Equals(SensorNetworkConfig other)
+        {
+            // First do null checking
+            if (this == null && other == null) return true;
+            else if (this == null) return false;
+            else if (other == null) return false;
+
+            else if (
+                this.TelescopeId == other.TelescopeId &&
+                this.ElevationTemp1Init == other.ElevationTemp1Init &&
+                this.ElevationTemp2Init == other.ElevationTemp2Init &&
+                this.AzimuthTemp1Init == other.AzimuthTemp1Init &&
+                this.AzimuthTemp2Init == other.AzimuthTemp2Init &&
+                this.AzimuthAccelerometerInit == other.AzimuthAccelerometerInit &&
+                this.ElevationAccelerometerInit == other.ElevationAccelerometerInit &&
+                this.CounterbalanceAccelerometerInit == other.CounterbalanceAccelerometerInit &&
+                this.AzimuthEncoderInit == other.AzimuthEncoderInit &&
+                this.ElevationEncoderInit == other.ElevationEncoderInit &&
+                this.TimeoutDataRetrieval == other.TimeoutDataRetrieval &&
+                this.TimeoutInitialization == other.TimeoutInitialization)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
     }
     
 

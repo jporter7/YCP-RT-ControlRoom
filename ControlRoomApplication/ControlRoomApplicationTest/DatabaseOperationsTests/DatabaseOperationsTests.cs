@@ -533,7 +533,49 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveSensorNetworkConfig()
         {
+            int telescopeId = 5;
 
+            // Create new SensorNetworkConfig with a telescope ID of 5
+            SensorNetworkConfig original = new SensorNetworkConfig(telescopeId);
+
+            original.TimeoutDataRetrieval = 5;
+            original.TimeoutInitialization = 5;
+
+            DatabaseOperations.AddSensorNetworkConfig(original);
+
+            var retrieved = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
+
+            Assert.IsTrue(original.Equals(retrieved));
+        }
+
+        [TestMethod]
+        public void TestUpdateSensorNetworkConfig()
+        {
+            int telescopeId = 6;
+            SensorNetworkConfig original = new SensorNetworkConfig(telescopeId);
+
+            // Save original config
+            DatabaseOperations.AddSensorNetworkConfig(original);
+
+            // Change values so the updated one is different
+            original.ElevationTemp1Init = false;
+            original.ElevationTemp2Init = false;
+            original.AzimuthTemp1Init = false;
+            original.AzimuthTemp2Init = false;
+            original.ElevationAccelerometerInit = false;
+            original.AzimuthAccelerometerInit = false;
+            original.CounterbalanceAccelerometerInit = false;
+            original.ElevationEncoderInit = false;
+            original.AzimuthEncoderInit = false;
+            original.TimeoutDataRetrieval = 5;
+            original.TimeoutInitialization = 5;
+
+            // Update config
+            DatabaseOperations.UpdateSensorNetworkConfig(original);
+
+            var retrieved = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
+
+            Assert.IsTrue(original.Equals(retrieved));
         }
     }
 }

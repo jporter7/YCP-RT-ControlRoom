@@ -913,10 +913,72 @@ namespace ControlRoomApplication.Database
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                Context.SensorNetworkConfig.Add(config);
-                SaveContext(Context);
+                // First see if the config already exists (if Add was called by accident)
+                var testConf = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
 
-                logger.Info("Added new Sensor Network Configuration for radio telescope ID ");
+                // if it exists, forward the config to UpdateSensorNetworkConfig
+                if (testConf != null)
+                {
+                    UpdateSensorNetworkConfig(config);
+                }
+                else
+                {
+                    Context.SensorNetworkConfig.Add(config);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + $": Created Sensor Network Configuration for Radio Telescope {config.TelescopeId}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns a SensorNetworkConfig based on the RadioTelescope.Id provided.
+        /// </summary>
+        /// <param name="telescopeId">ID of the Radio Telescope the SensorNetworkConfig is related to</param>
+        /// <returns>SensorNetworkConfig pertaining to a Radio Telescope; if none is found, null</returns>
+        public static SensorNetworkConfig RetrieveSensorNetworkConfigByTelescopeId(int telescopeId)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var config = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == telescopeId).FirstOrDefault();
+
+                if (config == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The Sensor Network Configuration for Telescope ID " + telescopeId + " could not be found.");
+                    return null;
+                }
+                else
+                {
+                    return config;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This will update the sensor network configuration for a specific Telescope
+        /// </summary>
+        /// <param name="config">The SensorNetworkConfig to be updated</param>
+        public static void UpdateSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var outdated = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
+
+                if (outdated == null)
+                {
+                    throw new ArgumentNullException($"No configuration found with a telescope of ID {config.TelescopeId}");
+                }
+                else
+                {
+                    config.Id = outdated.Id;
+                    Context.SensorNetworkConfig.AddOrUpdate(config);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + ": Updated Sensor Network Configuration for Telescope ID " + config.TelescopeId);
+                }
             }
         }
 
