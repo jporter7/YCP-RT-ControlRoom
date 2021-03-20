@@ -132,11 +132,13 @@ namespace ControlRoomApplication.Controllers
                 //JogOffLimitSwitches().GetAwaiter().GetResult();
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
-                            MCU.SendSingleAxisJog( true , true , 0.25 , 0 ).Wait();
+                            if(getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT) == 0)
+                                MCU.SendSingleAxisJog( true , true , 0.25 , 0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.SendSingleAxisJog( true , false , 0.25,0 ).Wait();
+                            if(getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT) == 0)
+                                MCU.SendSingleAxisJog( true , false , 0.25,0 ).Wait();
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
