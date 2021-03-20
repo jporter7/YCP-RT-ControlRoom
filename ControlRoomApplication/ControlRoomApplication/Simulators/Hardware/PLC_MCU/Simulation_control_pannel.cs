@@ -8,6 +8,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
     class Simulation_control_pannel {
@@ -98,11 +100,11 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                     PLCTCPClient = new TcpClient( this.PLC_ip , this.PLC_port );
                     PLCModbusMaster = ModbusIpMaster.CreateIp( PLCTCPClient );
                 } catch {//no server setup on control room yet 
-                    logger.Info("________________PLC sim awaiting control room");
+                    logger.Info(Utilities.GetTimeStamp() + ": ________________PLC sim awaiting control room");
 
                     //Thread.Sleep(1000);
                 }
-                logger.Info("________________PLC sim running");
+                logger.Info(Utilities.GetTimeStamp() + ": ________________PLC sim running");
                 PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK , new ushort[] { BoolToInt( true ) } );
                 while(runsimulator) {
                     if(isTest) {
@@ -241,13 +243,12 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             for(int v = 0; v < data.Length; v++) {
                 outstr += Convert.ToString( data[v] , 16 ).PadLeft( 5 ) + ",";
             }
-            logger.Info(outstr);
+            Console.WriteLine(outstr);
             jogging = false;
             if((data[0] & 0xf000) == 0x8000) {//if not configured dont move
 
                 isconfigured = true;
             } else if(!isconfigured) {
-                logger.Info( "!!!!!!!!!!!!!!!!!!!!COMNFIGURE" );
                 return true;
             }
 
@@ -295,7 +296,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 Console.WriteLine( "also moving to at ({0} , {1}) at ({2} , {3}) steps per second" , distAZ , distEL , AZ_speed , EL_speed );
                 return true;
             } else {
-                Console.WriteLine( "watau stupid dat aint a comand");
+                Console.WriteLine( "Invalid telescope movement command");
             }
             return false;
         }
@@ -307,7 +308,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 outstr += Convert.ToString( data[v] , 16 ).PadLeft( 5 ) + ",";
             }
             Console.WriteLine(outstr);
-            if(data[1] == 0x0403)//move cmd
+            if (data[1] == 0x0403)//move cmd
             {
                 distAZ = (data[6] << 16) + data[7];
                 distEL = (data[12] << 16) + data[13];

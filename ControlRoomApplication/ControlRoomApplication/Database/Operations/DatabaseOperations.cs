@@ -12,6 +12,8 @@ using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Main;
 using System.Reflection;
 using System.Data.Entity.Core.Objects;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Database
 {
@@ -178,7 +180,7 @@ namespace ControlRoomApplication.Database
             }
             else
             {
-                logger.Error("Cannot populate a non-local database!");
+                logger.Error(Utilities.GetTimeStamp() + ": Cannot populate a non-local database!");
             }
         }
 
@@ -602,7 +604,7 @@ namespace ControlRoomApplication.Database
             Appointment appointment = null;
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                //logger.Debug("Retrieving list of appointments.");
+                //logger.Debug(Utilities.GetTimeStamp() + ": Retrieving list of appointments.");
                 List<Appointment> appointments = GetListOfAppointmentsForRadioTelescope(radioTelescopeId);
 
                 if (appointments.Count > 0)
@@ -613,7 +615,7 @@ namespace ControlRoomApplication.Database
                 }
                 else
                 {
-                    //logger.Debug("No appointments found");
+                    //logger.Debug(Utilities.GetTimeStamp() + ": No appointments found");
                 }
             }
             
@@ -734,8 +736,6 @@ namespace ControlRoomApplication.Database
            {
                Context.Weather.Add(weather);
                SaveContext(Context);
-
-               logger.Info("Added weather data to database");
            }
         }
 
@@ -749,7 +749,7 @@ namespace ControlRoomApplication.Database
                Context.SensorStatus.Add(sensors);
                SaveContext(Context);
 
-               //logger.Info("Added sensor status data to database");
+               //logger.Info(Utilities.GetTimeStamp() + ": Added sensor status data to database");
            }
         }
 
@@ -828,7 +828,7 @@ namespace ControlRoomApplication.Database
                 Context.RadioTelescope.Add(telescope);
                 SaveContext(Context);
 
-                logger.Info("Added radio telescope to database");
+                logger.Info(Utilities.GetTimeStamp() + ": Added radio telescope to database");
             }
         }
 
@@ -847,11 +847,11 @@ namespace ControlRoomApplication.Database
 
                 foreach (RadioTelescope rt in telescopes)
                 {
-                    logger.Info("Retrieved Radio Telescope from the database");
+                    logger.Info(Utilities.GetTimeStamp() + ": Retrieved Radio Telescope from the database");
                     return rt;
                 }
 
-                logger.Info("No Radio Telescope found in the database");
+                logger.Info(Utilities.GetTimeStamp() + ": No Radio Telescope found in the database");
                 return null;
                 
             }
@@ -894,7 +894,7 @@ namespace ControlRoomApplication.Database
 
                 if(telescope == null)
                 {
-                    logger.Info("The Radio Telescope with ID " + id + " could not be found.");
+                    logger.Info(Utilities.GetTimeStamp() + ": The Radio Telescope with ID " + id + " could not be found.");
                     return null;
                 }
                 else

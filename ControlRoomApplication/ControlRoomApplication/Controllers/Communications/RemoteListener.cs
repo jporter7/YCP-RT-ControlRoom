@@ -8,6 +8,8 @@ using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Communications.Encryption;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -25,7 +27,7 @@ namespace ControlRoomApplication.Controllers
 
         public RemoteListener(int port, ControlRoom control)
         {
-            logger.Debug("Setting up remote listener");
+            logger.Debug(Utilities.GetTimeStamp() + ": Setting up remote listener");
             server = new TcpListener(port);
 
             controlRoom = control;
@@ -49,12 +51,12 @@ namespace ControlRoomApplication.Controllers
             // Enter the listening loop.
             while (KeepTCPMonitoringThreadAlive)
             {
-                logger.Debug("Waiting for a connection... ");
+                logger.Debug(Utilities.GetTimeStamp() + ": Waiting for a connection... ");
 
                 // Perform a blocking call to accept requests.
                 // You could also user server.AcceptSocket() here.
                 TcpClient client = server.AcceptTcpClient();
-                logger.Debug("TCP Client connected!");
+                logger.Debug(Utilities.GetTimeStamp() + ": TCP Client connected!");
 
                 data = null;
 
@@ -71,7 +73,7 @@ namespace ControlRoomApplication.Controllers
                     //data = AES.Decrypt(bytes); // use this line if incoming data is encrypted
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i); // use this line if incoming data is in plaintext
 
-                    logger.Debug("Received: " + data);
+                    logger.Debug(Utilities.GetTimeStamp() + ": Received: " + data);
 
                     // Process the data sent by the client.
                     data = data.ToUpper();
@@ -81,7 +83,7 @@ namespace ControlRoomApplication.Controllers
                     // if processing the data fails, report an error message
                     if (!processMessage(data))
                     {
-                        logger.Error("Processing data from tcp connection failed!");
+                        logger.Error(Utilities.GetTimeStamp() + ": Processing data from tcp connection failed!");
 
                         // send back a failure response
                         myWriteBuffer = Encoding.ASCII.GetBytes("FAILURE");
@@ -103,7 +105,7 @@ namespace ControlRoomApplication.Controllers
 
         public bool RequestToKillTCPMonitoringRoutine()
         {
-            logger.Info("Killing TCP Monitoring Routine");
+            logger.Info(Utilities.GetTimeStamp() + ": Killing TCP Monitoring Routine");
 
             KeepTCPMonitoringThreadAlive = false;
 
@@ -152,8 +154,8 @@ namespace ControlRoomApplication.Controllers
                 else
                     return false;
 
-                logger.Debug("Azimuth " + azimuth);
-                logger.Debug("Elevation " + elevation);
+                logger.Debug(Utilities.GetTimeStamp() + ": Azimuth " + azimuth);
+                logger.Debug(Utilities.GetTimeStamp() + ": Elevation " + elevation);
 
                 Orientation movingTo = new Orientation(azimuth, elevation);
 
@@ -229,7 +231,7 @@ namespace ControlRoomApplication.Controllers
                 else
                     return false;
 
-                logger.Debug("Script " + script);
+                logger.Debug(Utilities.GetTimeStamp() + ": Script " + script);
 
                 if (script.Contains("DUMP"))
                 {

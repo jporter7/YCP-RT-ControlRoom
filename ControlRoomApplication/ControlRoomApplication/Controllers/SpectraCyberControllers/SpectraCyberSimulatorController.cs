@@ -2,6 +2,8 @@
 using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -29,12 +31,12 @@ namespace ControlRoomApplication.Controllers
             {
                 if (e is ArgumentNullException)
                 {
-                    logger.Info("[SpectraCyberSimulatorController] Failed creating communication thread.");
+                    logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberSimulatorController] Failed creating communication thread.");
                     return false;
                 }
                 else if (e is ThreadStartException || e is OutOfMemoryException)
                 {
-                    logger.Info("[SpectraCyberSimulatorController] Failed starting communication thread.");
+                    logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberSimulatorController] Failed starting communication thread.");
                     return false;
                 }
                 else
@@ -44,7 +46,7 @@ namespace ControlRoomApplication.Controllers
                 }
             }
 
-            logger.Info("[SpectraCyberSimulatorController] Successfully started SpectraCyber communication and communication thread.");
+            logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberSimulatorController] Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
 
@@ -52,7 +54,7 @@ namespace ControlRoomApplication.Controllers
         {
             KillCommunicationThreadAndWait();
 
-            logger.Info("[SpectraCyberSimulatorController] Successfully killed SpectraCyber communication and communication thread.");
+            logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberSimulatorController] Successfully killed SpectraCyber communication and communication thread.");
             return true;
         }
 

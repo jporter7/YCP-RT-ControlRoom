@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
 {
@@ -57,7 +59,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler
             IPAddress ipAddress = ipHostInfo.AddressList[ipHostInfo.AddressList.Length-1];
             ipAddress= IPAddress.Parse( local_adress );
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
-            logger.Info("this ip " + localEndPoint);
+            logger.Info(Utilities.GetTimeStamp() + ": this ip " + localEndPoint);
             // Create a TCP/IP socket.  
             Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 

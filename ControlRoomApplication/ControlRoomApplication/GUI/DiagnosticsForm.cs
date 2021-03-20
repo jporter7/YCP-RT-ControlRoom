@@ -15,6 +15,7 @@ using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Controllers.Communications;
 using System.Threading;
 using System.ComponentModel;
+using ControlRoomApplication.Util;
 using System.Linq;
 
 namespace ControlRoomApplication.GUI
@@ -156,7 +157,7 @@ namespace ControlRoomApplication.GUI
             celTempConvert.BackColor = System.Drawing.Color.DarkGray;
             farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
 
-            logger.Info("DiagnosticsForm Initalized");
+            logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
 
         private void SetCurrentWeatherData()
@@ -566,7 +567,7 @@ namespace ControlRoomApplication.GUI
 
         private void editDiagScriptsButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Edit Scripts Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Edit Scripts Button Clicked");
             int caseSwitch = diagnosticScriptCombo.SelectedIndex;
 
             switch (caseSwitch)

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers.Communications.Encryption
 {
@@ -94,7 +96,7 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
             }
             catch
             {
-                logger.Info("Encryption error: Invalid byte array for decryption.");
+                logger.Info(Utilities.GetTimeStamp() + ": Encryption error: Invalid byte array for decryption.");
                 return "Error: Invalid byte array for decryption.";
             }
 
@@ -174,13 +176,13 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
                 key = File.ReadAllBytes("AESKey.bin");
                 if (key.Length != 32)
                 {
-                    logger.Info("Encryption error: AESKey.bin does not contain 32 bytes.");
+                    logger.Info(Utilities.GetTimeStamp() + ": Encryption error: AESKey.bin does not contain 32 bytes.");
                     return null;
                 }
             }
             catch
             {
-                logger.Info("Encryption error: Missing AESKey.bin.");
+                logger.Info(Utilities.GetTimeStamp() + ": Encryption error: Missing AESKey.bin.");
                 return null;
             }
 
@@ -197,13 +199,13 @@ namespace ControlRoomApplication.Controllers.Communications.Encryption
                 iv = File.ReadAllBytes("IV.bin");
                 if (iv.Length != 16)
                 {
-                    logger.Info("Encryption error: IV.bin does not contain 16 bytes.");
+                    logger.Info(Utilities.GetTimeStamp() + ": Encryption error: IV.bin does not contain 16 bytes.");
                     return null;
                 }
             }
             catch
             {
-                logger.Info("Encryption error: Missing IV.bin.");
+                logger.Info(Utilities.GetTimeStamp() + ": Encryption error: Missing IV.bin.");
                 return null;
             }
 

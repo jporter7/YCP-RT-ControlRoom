@@ -13,6 +13,7 @@ using System.Diagnostics;
 using ControlRoomApplication.Entities.Configuration;
 using ControlRoomApplication.Controllers.Communications;
 using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Util;
 using System.Collections.Generic;
 using static ControlRoomApplication.Constants.MCUConstants;
 
@@ -76,7 +77,7 @@ namespace ControlRoomApplication.Controllers
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
                 {
-                    logger.Info("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": [AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
                     return;
                 }
                 else { throw e; }// Unexpected exception
@@ -89,7 +90,7 @@ namespace ControlRoomApplication.Controllers
             {
                 if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException))
                 {
-                    logger.Info("[AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": [AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
                     return;
                 }
             }
@@ -180,7 +181,7 @@ namespace ControlRoomApplication.Controllers
                 ClientManagmentThread.Start();
             } catch (Exception e) {
                 if ((e is ThreadStateException) || (e is OutOfMemoryException)) {
-                    logger.Error("failed to start prodi=uction plc and mcu threads err:____    {0}", e);
+                    logger.Error(Utilities.GetTimeStamp() + ": failed to start prodi=uction plc and mcu threads err:____    {0}", e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -204,7 +205,7 @@ namespace ControlRoomApplication.Controllers
                 Task.Delay( 50 ).Wait();
                 if(PLC_alive) {
                     timout.Dispose();
-                    logger.Info("sucsefully conected to the PLC");
+                    logger.Info(Utilities.GetTimeStamp() + ": sucsefully conected to the PLC");
                     return;
                 }
             }
@@ -241,7 +242,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="e"></param>
         private void Server_Read_handler(object sender, ModbusSlaveRequestEventArgs e) {
             if (is_test) {
-                logger.Info("PLC Red data from the the control room");
+                logger.Info(Utilities.GetTimeStamp() + ": PLC Red data from the the control room");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             // Console.WriteLine(e.Message);
@@ -266,7 +267,7 @@ namespace ControlRoomApplication.Controllers
         private void Server_Written_to_handler(object sender, DataStoreEventArgs e) {
             //e.Data.B //array representing data   
             if (is_test) {
-                logger.Info("recived message from PLC");
+                logger.Info(Utilities.GetTimeStamp() + ": recived message from PLC");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             switch (e.StartAddress) {
@@ -277,14 +278,14 @@ namespace ControlRoomApplication.Controllers
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_0_LIMIT , limitSwitchData.Azimuth_CCW_Limit );
                             if (limitSwitchData.Azimuth_CCW_Limit)
                             {
-                                logger.Info("Azimuth CCW Limit Switch Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CCW Limit Switch Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
                             }
                             else
                             {
-                                logger.Info("Azimuth CCW Limit Switch Not Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CCW Limit Switch Not Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
@@ -298,14 +299,14 @@ namespace ControlRoomApplication.Controllers
                         if(previous != homeSensorData.Azimuth_Home_One) {
                             if (homeSensorData.Azimuth_Home_One)
                             {
-                                logger.Info("Azimuth_Home_One Sensor Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_One Sensor Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
                             }
                             else
                             {
-                                logger.Info("Azimuth_Home_One Sensor Not Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_One Sensor Not Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
@@ -319,14 +320,14 @@ namespace ControlRoomApplication.Controllers
                         if(previous != homeSensorData.Azimuth_Home_Two) {
                             if (homeSensorData.Azimuth_Home_Two)
                             {
-                                logger.Info("Azimuth_Home_Two Sensor Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_Two Sensor Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
                             }
                             else
                             {
-                                logger.Info("Azimuth_Home_Two Sensor Not Hit");;
+                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_Two Sensor Not Hit");;
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
@@ -341,14 +342,14 @@ namespace ControlRoomApplication.Controllers
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_375_LIMIT , limitSwitchData.Azimuth_CW_Limit );
                             if (limitSwitchData.Azimuth_CW_Limit)
                             {
-                                logger.Info("Azimuth CW Limit Switch Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CW Limit Switch Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
                             }
                             else
                             {
-                                logger.Info("Azimuth CW Limit Switch Not Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CW Limit Switch Not Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
@@ -363,14 +364,14 @@ namespace ControlRoomApplication.Controllers
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.EL_10_LIMIT , limitSwitchData.Elevation_Lower_Limit );
                             if (limitSwitchData.Elevation_Lower_Limit)
                             {
-                                logger.Info("Elevation Lower Limit Switch Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Lower Limit Switch Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                             }
                             else
                             {
-                                logger.Info("Elevation Lower Limit Switch Not Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Lower Limit Switch Not Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
@@ -384,14 +385,14 @@ namespace ControlRoomApplication.Controllers
                         if(previous != homeSensorData.Elevation_Home) {
                             if (homeSensorData.Elevation_Home)
                             {
-                                logger.Info("Elevation Home Sensor Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Home Sensor Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
                             }
                             else
                             {
-                                logger.Info("Elevation Home Sensor Not Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Home Sensor Not Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
@@ -406,14 +407,14 @@ namespace ControlRoomApplication.Controllers
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.EL_90_LIMIT , limitSwitchData.Elevation_Upper_Limit );
                             if (limitSwitchData.Elevation_Upper_Limit)
                             {
-                                logger.Info("Elevation Upper Limit Switch Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Upper Limit Switch Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
                             }
                             else
                             {
-                                logger.Info("Elevation Upper Limit Switch Not Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Upper Limit Switch Not Hit");
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
@@ -427,14 +428,14 @@ namespace ControlRoomApplication.Controllers
                         if(previous != plcInput.Gate_Sensor) {
                             if (plcInput.Gate_Sensor)
                             {
-                                logger.Info("gate opened");
+                                logger.Info(Utilities.GetTimeStamp() + ": gate opened");
 
                                 pushNotification.sendToAllAdmins("GATE ACTIVITY", "Gate has been opened.");
                                 EmailNotifications.sendToAllAdmins("GATE ACTIVITY", "Gate has been opened.");
                             }
                             else
                             {
-                                logger.Info("gate closed");
+                                logger.Info(Utilities.GetTimeStamp() + ": gate closed");
 
                                 pushNotification.sendToAllAdmins("GATE ACTIVITY", "Gate has been closed.");
                                 EmailNotifications.sendToAllAdmins("GATE ACTIVITY", "Gate has been closed.");
@@ -448,14 +449,14 @@ namespace ControlRoomApplication.Controllers
                         if(previous != plcInput.Estop) {
                             if (plcInput.Estop)
                             {
-                                logger.Info("Estop Hit");
+                                logger.Info(Utilities.GetTimeStamp() + ": Estop Hit");
 
                                 pushNotification.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been hit.");
                                 EmailNotifications.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been hit.");
                             }
                             else
                             {
-                                logger.Info("Estop released");
+                                logger.Info(Utilities.GetTimeStamp() + ": Estop released");
 
                                 pushNotification.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been released.");
                                 EmailNotifications.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been released.");
@@ -999,7 +1000,7 @@ namespace ControlRoomApplication.Controllers
             }
             else if(telescopeType == RadioTelescopeTypeEnum.NONE)
             {
-                logger.Info("ERROR: Invalid Telescope Type!");
+                logger.Info(Utilities.GetTimeStamp() + ": ERROR: Invalid Telescope Type!");
                 return Task.FromResult(false);
             }
 
@@ -1010,8 +1011,8 @@ namespace ControlRoomApplication.Controllers
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.6 ), MotorConstants.GEARING_RATIO_AZIMUTH);
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
-            logger.Info("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
-            logger.Info("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
+            logger.Info(Utilities.GetTimeStamp() + ": degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
+            logger.Info(Utilities.GetTimeStamp() + ": degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
             // Set the simulation's current position
             if(IsSimulation) CurrentSimOrientation = target_orientation;
