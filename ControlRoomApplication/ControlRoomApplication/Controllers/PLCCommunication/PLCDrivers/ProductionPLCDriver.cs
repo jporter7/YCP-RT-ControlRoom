@@ -1119,11 +1119,12 @@ namespace ControlRoomApplication.Controllers
 
         public override async Task<bool> JogOffLimitSwitches() {
             int PRIORITY = 0;
+
             var AZTAsk = Task.Run( () => {
                int AZstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_AZIMUTH );
                var timeoutMS = MCUManager.estimateTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
                var timeout = new CancellationTokenSource( timeoutMS );
-                if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
+                if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit && getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT) == 0) {
                     MCU.Send_Jog_command(0.2, true , 0, false, PRIORITY );
                    while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
@@ -1134,7 +1135,7 @@ namespace ControlRoomApplication.Controllers
                    }
                    Cancel_move();
                    return false;
-               } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit) {
+               } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit && getregvalue((ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT) == 0) {
                     MCU.Send_Jog_command(0.2, false , 0, false, PRIORITY );
                    while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();

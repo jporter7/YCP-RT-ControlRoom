@@ -22,8 +22,8 @@ namespace ControlRoomApplication.Controllers.Sensors
         public bool overrideElevatProx90 { get; set; }
 
         // No longer used
-        public bool overrideAzimuthProx1 { get; set; }
-        public bool overrideAzimuthProx2 { get; set; }
+        public bool overrideAzimuthProx0 { get; set; }
+        public bool overrideAzimuthProx375 { get; set; }
 
         // Sensor Network
         public bool overrideAzimuthMotTemp { get; set; }
@@ -46,8 +46,8 @@ namespace ControlRoomApplication.Controllers.Sensors
             overrideElevatMotTemp = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
 
             // Azimuth overrides are no longer needed because we are using the slip ring
-            overrideAzimuthProx1 = true;
-            overrideAzimuthProx2 = true;
+            overrideAzimuthProx0 = true;
+            overrideAzimuthProx375 = true;
         }
 
         // PLC

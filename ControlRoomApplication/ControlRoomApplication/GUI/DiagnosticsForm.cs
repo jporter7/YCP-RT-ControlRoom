@@ -618,13 +618,13 @@ namespace ControlRoomApplication.GUI
 
         private void ORAzimuthSens1_Click(object sender, EventArgs e)
         {
-            if (!rtController.overrides.overrideAzimuthProx1)
+            if (!rtController.overrides.overrideAzimuthProx0)
             {
                 ORAzimuthSens1.Text = "OVERRIDING";
                 ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("azimuth proximity (1)", true);
             }
-            else if (rtController.overrides.overrideAzimuthProx1)
+            else if (rtController.overrides.overrideAzimuthProx0)
             {
                 ORAzimuthSens1.Text = "ENABLED";
                 ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
@@ -634,13 +634,13 @@ namespace ControlRoomApplication.GUI
 
         private void ORAzimuthSens2_Click(object sender, EventArgs e)
         {
-            if (!rtController.overrides.overrideAzimuthProx2)
+            if (!rtController.overrides.overrideAzimuthProx375)
             {
                 ORAzimuthSens2.Text = "OVERRIDING";
                 ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("azimuth proximity (2)", true);
             }
-            else if (rtController.overrides.overrideAzimuthProx2)
+            else if (rtController.overrides.overrideAzimuthProx375)
             {
                 ORAzimuthSens2.Text = "ENABLED";
                 ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
@@ -942,7 +942,7 @@ namespace ControlRoomApplication.GUI
             }
 
             // Azimuth Limit Switch -10 Degrees Override
-            if(rtController.overrides.overrideAzimuthProx1)
+            if(rtController.overrides.overrideAzimuthProx0)
             {
                 ORAzimuthSens1.Text = "OVERRIDING";
                 ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
@@ -954,7 +954,7 @@ namespace ControlRoomApplication.GUI
             }
 
             // Azimuth Limit Switch -375 Degrees Override
-            if(rtController.overrides.overrideAzimuthProx2)
+            if(rtController.overrides.overrideAzimuthProx375)
             {
                 ORAzimuthSens2.Text = "OVERRIDING";
                 ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
