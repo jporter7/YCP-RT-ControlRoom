@@ -131,10 +131,10 @@ namespace ControlRoomApplication.GUI
             runDiagScriptsButton.Enabled = false;
 
             // Updates the override buttons so they reflect what the actual override values are
-            bool currMain = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
-            bool currWS = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.WEATHER_STATION);
-            bool currAZ = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-            bool currEL = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+            bool currMain = rtController.overrides.overrideGate;
+            bool currWS = controlRoom.weatherStationOverride;
+            bool currAZ = rtController.overrides.overrideAzimuthMotTemp;
+            bool currEL = rtController.overrides.overrideElevatMotTemp;
             updateButtons(currMain, currWS, currAZ, currEL);
             
             updateOverride = new BackgroundWorker();
@@ -734,7 +734,6 @@ namespace ControlRoomApplication.GUI
                 WSOverride.Text = "OVERRIDING";
                 WSOverride.BackColor = System.Drawing.Color.Red;
                 mainF.setWSOverride(true);
-                DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, true);
 
                 // We are only calling this to send the push notification and email, it does not actually set the override
                 rtController.setOverride("weather station", true);
@@ -744,7 +743,6 @@ namespace ControlRoomApplication.GUI
                 WSOverride.Text = "ENABLED";
                 WSOverride.BackColor = System.Drawing.Color.LimeGreen;
                 mainF.setWSOverride(false);
-                DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, false);
 
                 // We are only calling this to send the push notification and email, it does not actually set the override
                 rtController.setOverride("weather station", false);
@@ -845,19 +843,19 @@ namespace ControlRoomApplication.GUI
         private void checkOverrideVars(object sender, DoWorkEventArgs e)
         {
             // Current overrides
-            bool currMain = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
-            bool currWS = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.WEATHER_STATION);
-            bool currAZ = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-            bool currEL = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+            bool currMain = rtController.overrides.overrideGate;
+            bool currWS = controlRoom.weatherStationOverride;
+            bool currAZ = rtController.overrides.overrideAzimuthMotTemp;
+            bool currEL = rtController.overrides.overrideElevatMotTemp;
             bool newMain, newWS, newAZ, newEL;
 
 
             while (true)
             {
-                newMain = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
-                newWS = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.WEATHER_STATION);
-                newAZ = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-                newEL = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+                newMain = rtController.overrides.overrideGate;
+                newWS = controlRoom.weatherStationOverride;
+                newAZ = rtController.overrides.overrideAzimuthMotTemp;
+                newEL = rtController.overrides.overrideElevatMotTemp;
 
                 if (currWS != newWS || currMain != newMain || currAZ != newAZ || currEL != newEL)
                 {

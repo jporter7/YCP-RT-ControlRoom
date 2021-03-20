@@ -899,6 +899,7 @@ namespace ControlRoomApplication.Main
         public void setWSOverride(bool WSO)
         {
             MainControlRoomController.ControlRoom.weatherStationOverride = WSO;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, WSO);
         }
 
         public bool getWSOverride()
