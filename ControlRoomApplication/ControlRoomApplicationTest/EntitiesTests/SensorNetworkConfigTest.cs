@@ -40,6 +40,29 @@ namespace ControlRoomApplicationTest.EntitiesTests
         }
 
         [TestMethod]
+        public void TestEmptyInitialization()
+        {
+            SensorNetworkConfig config = new SensorNetworkConfig();
+
+            // All values should be an equivalent of 0
+
+            Assert.AreEqual(config.TelescopeId, 0);
+            
+            Assert.AreEqual(config.TimeoutDataRetrieval, 0);
+            Assert.AreEqual(config.TimeoutInitialization, 0);
+            
+            Assert.AreEqual(config.ElevationTemp1Init, false);
+            Assert.AreEqual(config.ElevationTemp2Init, false);
+            Assert.AreEqual(config.AzimuthTemp1Init, false);
+            Assert.AreEqual(config.AzimuthTemp2Init, false);
+            Assert.AreEqual(config.ElevationAccelerometerInit, false);
+            Assert.AreEqual(config.AzimuthAccelerometerInit, false);
+            Assert.AreEqual(config.CounterbalanceAccelerometerInit, false);
+            Assert.AreEqual(config.ElevationEncoderInit, false);
+            Assert.AreEqual(config.AzimuthEncoderInit, false);
+        }
+
+        [TestMethod]
         public void TestEquals_Identical_Equal()
         {
             int telescopeId = 5;
