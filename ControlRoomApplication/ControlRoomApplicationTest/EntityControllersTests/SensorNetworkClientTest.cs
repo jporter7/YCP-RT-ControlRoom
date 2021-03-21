@@ -23,9 +23,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         SensorNetworkClient client;
 
         [TestInitialize]
-        public void SetUp()
+        public void Initialize()
         {
             client = new SensorNetworkClient(IpAddress, Port, TelescopeId);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DatabaseOperations.DeleteSensorNetworkConfig(client.config);
         }
 
         [TestMethod]

@@ -611,5 +611,15 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
             Assert.IsTrue(result == null);
         }
+
+        [TestMethod]
+        public void TestDeleteSensorNetworkConfig_TelescopeDoesntExist_ShouldThrowInvalidOperationException()
+        {
+            SensorNetworkConfig invalidConfig = new SensorNetworkConfig(9000);
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+                DatabaseOperations.DeleteSensorNetworkConfig(invalidConfig)
+            );
+        }
     }
 }
