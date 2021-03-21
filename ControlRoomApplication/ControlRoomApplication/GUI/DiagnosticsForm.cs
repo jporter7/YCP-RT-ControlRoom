@@ -144,18 +144,11 @@ namespace ControlRoomApplication.GUI
             updateOverride.DoWork += new DoWorkEventHandler(checkOverrideVars);
             updateOverride.RunWorkerAsync();
 
-            // Set azimuth limit switch overrides to hidden if slip ring is the telescope type
-            if(rtController.RadioTelescope._TeleType == RadioTelescopeTypeEnum.SLIP_RING)
-            {
-                ORAzimuthSens1.Visible = false;
-                ORAzimuthSens2.Visible = false;
-                label4.Visible = false;
-                label21.Visible = false;
-            }
-
             //Initialize Color
             celTempConvert.BackColor = System.Drawing.Color.DarkGray;
             farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
+
+            initChange.Text = "";
 
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
@@ -617,50 +610,19 @@ namespace ControlRoomApplication.GUI
                 System.Diagnostics.Process.Start(filename);
         }
 
-        private void ORAzimuthSens1_Click(object sender, EventArgs e)
-        {
-            if (!rtController.overrides.overrideAzimuthProx0)
-            {
-                ORAzimuthSens1.Text = "OVERRIDING";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
-                rtController.setOverride("azimuth proximity (1)", true);
-            }
-            else if (rtController.overrides.overrideAzimuthProx0)
-            {
-                ORAzimuthSens1.Text = "ENABLED";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
-                rtController.setOverride("azimuth proximity (1)", false);
-            }
-        }
-
-        private void ORAzimuthSens2_Click(object sender, EventArgs e)
-        {
-            if (!rtController.overrides.overrideAzimuthProx375)
-            {
-                ORAzimuthSens2.Text = "OVERRIDING";
-                ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
-                rtController.setOverride("azimuth proximity (2)", true);
-            }
-            else if (rtController.overrides.overrideAzimuthProx375)
-            {
-                ORAzimuthSens2.Text = "ENABLED";
-                ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
-                rtController.setOverride("azimuth proximity (2)", false);
-            }
-        }
 
         private void ElevationProximityOverideButton1_Click(object sender, EventArgs e)
         {
             if (!rtController.overrides.overrideElevatProx0)
             {
-                ElevationProximityOveride1.Text = "OVERRIDING";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+                AzimuthMotorAccelerometerOverride.Text = "OVERRIDING";
+                AzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("elevation proximity (1)", true);
             }
             else if (rtController.overrides.overrideElevatProx0)
             {
-                ElevationProximityOveride1.Text = "ENABLED";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+                AzimuthMotorAccelerometerOverride.Text = "ENABLED";
+                AzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("elevation proximity (1)", false);
             }
         }
@@ -669,14 +631,14 @@ namespace ControlRoomApplication.GUI
         {
             if (!rtController.overrides.overrideElevatProx90)
             {
-                ElevationProximityOveride2.Text = "OVERRIDING";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
+                ElevationMotorAccelerometerOverride.Text = "OVERRIDING";
+                ElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("elevation proximity (2)", true);
             }
             else
             {
-                ElevationProximityOveride2.Text = "ENABLED";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
+                ElevationMotorAccelerometerOverride.Text = "ENABLED";
+                ElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("elevation proximity (2)", false);
             }
         }
@@ -942,52 +904,28 @@ namespace ControlRoomApplication.GUI
                 ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
             }
 
-            // Azimuth Limit Switch -10 Degrees Override
-            if(rtController.overrides.overrideAzimuthProx0)
-            {
-                ORAzimuthSens1.Text = "OVERRIDING";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
-            }
-            else
-            {
-                ORAzimuthSens1.Text = "ENABLED";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
-            }
-
-            // Azimuth Limit Switch -375 Degrees Override
-            if(rtController.overrides.overrideAzimuthProx375)
-            {
-                ORAzimuthSens2.Text = "OVERRIDING";
-                ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
-            }
-            else
-            {
-                ORAzimuthSens2.Text = "ENABLED";
-                ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
-            }
-
             // Elevation Limit Switch 0 Degrees Override
             if(currElProx0)
             {
-                ElevationProximityOveride1.Text = "OVERRIDING";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+                AzimuthMotorAccelerometerOverride.Text = "OVERRIDING";
+                AzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
             }
             else
             {
-                ElevationProximityOveride1.Text = "ENABLED";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+                AzimuthMotorAccelerometerOverride.Text = "ENABLED";
+                AzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
             }
 
             // Elevation Limit Switch 90 Degrees Override
             if (currElProx90)
             {
-                ElevationProximityOveride2.Text = "OVERRIDING";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
+                ElevationMotorAccelerometerOverride.Text = "OVERRIDING";
+                ElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
             }
             else
             {
-                ElevationProximityOveride2.Text = "ENABLED";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
+                ElevationMotorAccelerometerOverride.Text = "ENABLED";
+                ElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
             }
         }
 
