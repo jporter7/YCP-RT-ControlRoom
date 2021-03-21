@@ -62,6 +62,10 @@ namespace ControlRoomApplication.Entities
             ElevationEncoderInit = false;
         }
 
+        /// <summary>
+        /// Database-generated id value. This has a uniqueness constraint (meaning that the Id in one SensorNetworkConfig
+        /// cannot be equal to the Id of another).
+        /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
