@@ -211,7 +211,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             var bytes = config.GetSensorInitAsBytes();
 
             // All bytes in the array should be 1
-            for (int i = 0; i < bytes.Length; i++) Assert.IsTrue(bytes[i] == 1);
+            Assert.IsTrue(bytes.All(singleByte => singleByte == 1));
         }
 
         [TestMethod]
@@ -231,8 +231,8 @@ namespace ControlRoomApplicationTest.EntitiesTests
 
             var bytes = config.GetSensorInitAsBytes();
 
-            // All bytes in the array should be 1
-            for (int i = 0; i < bytes.Length; i++) Assert.IsTrue(bytes[i] == 0);
+            // All bytes in the array should be 0
+            Assert.IsTrue(bytes.All(singleByte => singleByte == 0));
         }
     }
 }
