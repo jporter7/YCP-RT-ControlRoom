@@ -615,14 +615,14 @@ namespace ControlRoomApplication.GUI
         {
             if (!rtController.overrides.overrideElevatProx0)
             {
-                AzimuthMotorAccelerometerOverride.Text = "OVERRIDING";
-                AzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+                ElivationLimitSwitch0.Text = "OVERRIDING";
+                ElivationLimitSwitch0.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("elevation proximity (1)", true);
             }
             else if (rtController.overrides.overrideElevatProx0)
             {
-                AzimuthMotorAccelerometerOverride.Text = "ENABLED";
-                AzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+                ElivationLimitSwitch0.Text = "ENABLED";
+                ElivationLimitSwitch0.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("elevation proximity (1)", false);
             }
         }
@@ -631,14 +631,14 @@ namespace ControlRoomApplication.GUI
         {
             if (!rtController.overrides.overrideElevatProx90)
             {
-                ElevationMotorAccelerometerOverride.Text = "OVERRIDING";
-                ElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+                ElevationLimitSwitch90.Text = "OVERRIDING";
+                ElevationLimitSwitch90.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("elevation proximity (2)", true);
             }
             else
             {
-                ElevationMotorAccelerometerOverride.Text = "ENABLED";
-                ElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+                ElevationLimitSwitch90.Text = "ENABLED";
+                ElevationLimitSwitch90.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("elevation proximity (2)", false);
             }
         }
@@ -907,25 +907,25 @@ namespace ControlRoomApplication.GUI
             // Elevation Limit Switch 0 Degrees Override
             if(currElProx0)
             {
-                AzimuthMotorAccelerometerOverride.Text = "OVERRIDING";
-                AzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+                ElivationLimitSwitch0.Text = "OVERRIDING";
+                ElivationLimitSwitch0.BackColor = System.Drawing.Color.Red;
             }
             else
             {
-                AzimuthMotorAccelerometerOverride.Text = "ENABLED";
-                AzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+                ElivationLimitSwitch0.Text = "ENABLED";
+                ElivationLimitSwitch0.BackColor = System.Drawing.Color.LimeGreen;
             }
 
             // Elevation Limit Switch 90 Degrees Override
             if (currElProx90)
             {
-                ElevationMotorAccelerometerOverride.Text = "OVERRIDING";
-                ElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+                ElevationLimitSwitch90.Text = "OVERRIDING";
+                ElevationLimitSwitch90.BackColor = System.Drawing.Color.Red;
             }
             else
             {
-                ElevationMotorAccelerometerOverride.Text = "ENABLED";
-                ElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+                ElevationLimitSwitch90.Text = "ENABLED";
+                ElevationLimitSwitch90.BackColor = System.Drawing.Color.LimeGreen;
             }
         }
 
