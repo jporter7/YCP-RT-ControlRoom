@@ -1,5 +1,6 @@
 ﻿using ControlRoomApplication.Controllers.SensorNetwork;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,49 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public void Cleanup()
         {
             DatabaseOperations.DeleteSensorNetworkConfig(client.config);
+        }
+
+        [TestMethod]
+        public void TestSensorNetworkClient_Initialization_PopulatesFields()
+        {
+            // Used to access private fields of a class for testing
+            PrivateObject privClient = new PrivateObject(client);
+
+            Assert.IsTrue(((string)privClient.GetFieldOrProperty("IPAddress")).Equals(IpAddress));
+            Assert.IsTrue((int)privClient.GetFieldOrProperty("Port") == Port);
+        }
+
+        [TestMethod]
+        public void TestSensorNetworkClient_InitializationNewTelescope_CreatesNewConfig()
+        {
+            int newTelescopeId = 10;
+
+            // Config should not exist
+            var retrievedConfig = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(newTelescopeId);
+            Assert.IsNull(retrievedConfig);
+
+            // Create new client, which will create a new config for the telescope ID if it doesn't exist
+            SensorNetworkClient newClient = new SensorNetworkClient(IpAddress, Port, newTelescopeId);
+
+            // Config should now exist and be equal to the one in the client
+            retrievedConfig = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(newTelescopeId);
+            Assert.IsTrue(retrievedConfig.Equals(newClient.config));
+
+            // Delete config after use
+            DatabaseOperations.DeleteSensorNetworkConfig(retrievedConfig);
+        }
+
+        [TestMethod]
+        public void TestSensorNetworkClient_InitializationExistingTelescope_LoadsExistingConfig()
+        {
+            // Config should exist
+            var retrievedConfig = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(TelescopeId);
+
+            // Create new client which will pull an existing config
+            SensorNetworkClient existingClient = new SensorNetworkClient(IpAddress, Port, TelescopeId);
+
+            // Config should exist and be equal to the one in the client
+            Assert.IsTrue(retrievedConfig.Equals(existingClient.config));
         }
 
         [TestMethod]
