@@ -73,7 +73,9 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
                 success = true; // Successfully sent the message without any errors
             }
-            catch(SocketException)
+
+            // Reaching this exception will set the SensorNetworkServer's status to InitializationSendingFailed
+            catch (SocketException)
             {
                 logger.Info(Utilities.GetTimeStamp() + $": There was an error sending data to the Sensor Network at {IPAddress}:{Port}; " +
                     $"the address:port may be busy or no server was found. Please verify the address:port is available and restart the " +
