@@ -40,5 +40,11 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// and a new SensorNetworkConfig is created.
         /// </summary>
         public const int DefaultInitializationTimeout = 7; // in seconds
+
+        /// <summary>
+        /// This is the total number of sensors that is a part of the Sensor Network. This is used to determine
+        /// the byte size of the initialization.
+        /// </summary>
+        public const int SensorNetworkSensorCount = 9;
     }
 }
