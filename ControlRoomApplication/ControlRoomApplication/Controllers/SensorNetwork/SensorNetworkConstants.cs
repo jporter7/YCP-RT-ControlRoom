@@ -40,12 +40,5 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// and a new SensorNetworkConfig is created.
         /// </summary>
         public const int DefaultInitializationTimeout = 7; // in seconds
-
-        /// <summary>
-        /// This is the value of a 9-bit unsigned integer of all ones.
-        /// Our initialization is stored in 9 bits, and we want them to all be 
-        /// initialized by default.
-        /// </summary>
-        public const int AllSensorsInitialized = 511;
     }
 }
