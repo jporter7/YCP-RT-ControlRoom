@@ -108,6 +108,7 @@ namespace ControlRoomApplication.Main
             ((System.ComponentModel.ISupportInitialize)(this.speedTrackBar)).BeginInit();
             this.spectraCyberGroupBox.SuspendLayout();
             this.SuspendLayout();
+            
             // 
             // PosDecButton
             // 

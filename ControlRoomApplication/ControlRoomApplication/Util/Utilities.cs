@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Net;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Util;
-
+using System.Windows.Forms;
 
 namespace ControlRoomApplication.Util
 {
@@ -41,6 +41,21 @@ namespace ControlRoomApplication.Util
             string dateTime = (DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " " + timeZone);
 
             return dateTime;
+        }
+
+        public static void WriteToGUIFromThread<T>(T writeTo, Action codeBlock) where T:Form
+        {
+            if (writeTo.InvokeRequired)
+            {
+                IAsyncResult result = writeTo.BeginInvoke(new MethodInvoker(delegate ()
+                {
+                    codeBlock();
+                }));
+            }
+            else if (writeTo.IsHandleCreated)
+            {
+                codeBlock();
+            }
         }
 
 

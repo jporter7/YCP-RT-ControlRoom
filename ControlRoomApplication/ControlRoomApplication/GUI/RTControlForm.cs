@@ -10,6 +10,7 @@ using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Validation;
 using Microsoft.VisualBasic;
+using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
 
 
@@ -42,8 +43,9 @@ namespace ControlRoomApplication.Main
         public bool frequencyValid = false;
         public bool offsetVoltValid = false;
         public bool IFGainValid = false;
+        RTControlFormData formData;
 
-        public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
+        public FreeControlForm(ControlRoom new_controlRoom, int new_rtId, RTControlFormData controlFormData)
         {
             InitializeComponent();
             // Set ControlRoom
@@ -56,6 +58,14 @@ namespace ControlRoomApplication.Main
             // Set increment
             Increment = 1;
             UpdateIncrementButtons();
+
+            // set form data object
+            formData = controlFormData;
+            
+            
+            
+
+
 
             ControlRoomUser = DatabaseOperations.GetControlRoomUser();
 
@@ -243,6 +253,20 @@ namespace ControlRoomApplication.Main
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
             SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
             SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
+
+            WriteToGUIFromThread(this, () =>
+            {
+               // set form data
+                controlScriptsCombo.SelectedIndex = formData.controlScriptIndex;
+                scanTypeComboBox.SelectedIndex = formData.spectraCyberScanIndex;
+                frequency.Text = formData.frequency;
+                DCGain.SelectedIndex = formData.DCGainIndex;
+                integrationStepCombo.SelectedIndex = formData.integrationStepIndex;
+                speedTextBox.Text = formData.speed.ToString();
+                offsetVoltage.Text = formData.offsetVoltage;
+
+            });
+            
         }
 
         delegate void SetTargetRATextCallback(string text);
@@ -667,6 +691,8 @@ namespace ControlRoomApplication.Main
                 runControlScriptButton.Enabled = false;
                 runControlScriptButton.BackColor = System.Drawing.Color.Gray;
             }
+            
+            formData.controlScriptIndex = controlScriptsCombo.SelectedIndex;
 
         }
 
@@ -1055,6 +1081,7 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
+            formData.integrationStepIndex = integrationStepCombo.SelectedIndex;
 
         }
 
@@ -1068,7 +1095,7 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
-
+            formData.spectraCyberScanIndex = scanTypeComboBox.SelectedIndex;
         }
 
 
@@ -1082,7 +1109,7 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
-           
+            formData.DCGainIndex = DCGain.SelectedIndex;
             
         }
 
@@ -1133,6 +1160,7 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
+            formData.frequency = frequency.Text;
         }
 
         private void offsetVoltage_TextChanged(object sender, EventArgs e)
@@ -1154,6 +1182,7 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
+            formData.offsetVoltage = offsetVoltage.Text;
         }
 
         private void IFGainVal_TextChanged(object sender, EventArgs e)
@@ -1175,12 +1204,14 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
+            formData.IFGain = IFGainVal.Text;
         }
 
         private void speedTrackBar_Scroll(object sender, EventArgs e)
         {
             double actualSpeed = (double)speedTrackBar.Value / 10;
             speedTextBox.Text = actualSpeed.ToString();
+            formData.speed = Double.Parse(speedTextBox.Text);
         }
 
         private bool allScanInputsValid()
