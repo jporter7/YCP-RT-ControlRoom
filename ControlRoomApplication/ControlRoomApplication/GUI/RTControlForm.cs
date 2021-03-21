@@ -78,8 +78,6 @@ namespace ControlRoomApplication.Main
             manual_save_state = formData.manualControlEnabled;
             save_state = formData.freeControlEnabled;
 
-
-
             ControlRoomUser = DatabaseOperations.GetControlRoomUser();
 
             // Add free control appt
