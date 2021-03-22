@@ -16,6 +16,7 @@ using ControlRoomApplication.Entities.WeatherStation;
 using log4net.Appender;
 using ControlRoomApplication.Documentation;
 using ControlRoomApplication.Validation;
+using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
 
 namespace ControlRoomApplication.Main
@@ -44,7 +45,10 @@ namespace ControlRoomApplication.Main
         public bool MCUPortValid = false;
         public bool PLCPortValid = false;
         public bool WCOMPortValid = false;
-
+        
+        // form
+        RTControlFormData formData;
+        
         enum TempSensorType
         {
             Production,
@@ -114,7 +118,8 @@ namespace ControlRoomApplication.Main
             loopBackBox.Enabled = true;
             checkBox1.Enabled = true;
 
-
+            // initialize formData struct
+            formData = new RTControlFormData();
 
 
             logger.Info(Utilities.GetTimeStamp() + ": MainForm Initalized");
@@ -640,7 +645,7 @@ namespace ControlRoomApplication.Main
         {
             logger.Info(Utilities.GetTimeStamp() + ": Free Control Button Clicked");
             int rtIDforControl = AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id;
-            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl);
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl, formData);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {

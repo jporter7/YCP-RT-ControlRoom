@@ -133,7 +133,7 @@ namespace ControlRoomApplication.Main
 
 //private void ExecuteCorrectStop()
 //{
-//   // //if (ControledButtonRadio.Checked)
+//   // //if (ControlledButtonRadio.Checked)
 //   // {
 //   //     logger.Info(Utilities.GetTimeStamp() + ": Executed Controlled Stop");
 //   //     rt_controller.ExecuteRadioTelescopeControlledStop();
