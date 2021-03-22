@@ -355,10 +355,10 @@ namespace ControlRoomApplication.Controllers {
                         var Distance = estimateDistanceToStop( RunningCommand );
                         var expected = new Orientation( current.Azimuth + Distance.Azimuth , current.Elevation + Distance.Elevation );
                         if((expected.Azimuth > 360 || expected.Azimuth < 0) && Math.Abs( Distance.Azimuth ) > 0.1) {
-                            Controled_stop(0);
+                            ControlledStop(0);
                         }
                         if((expected.Elevation > 90 || expected.Elevation < 0) && Math.Abs( Distance.Elevation ) > 0.1) {
-                            Controled_stop(0);
+                            ControlledStop(0);
                         }
                     }
                 } catch { }
@@ -482,7 +482,7 @@ namespace ControlRoomApplication.Controllers {
         /// attempts to bring the Telescope to a controlled stop certian moves like Homeing are un affected by this
         /// </summary>
         /// <returns></returns>
-        public bool Controled_stop( int priority ) {
+        public bool ControlledStop( int priority ) {
             if(RunningCommand.CommandType == MCUCommandType.JOG) {
                 Cancel_move( priority );
             } else {
@@ -567,10 +567,10 @@ namespace ControlRoomApplication.Controllers {
                 } else if(RunningCommand.CommandType == MCUCommandType.RELATIVE_MOVE) {
                     Cancel_move( priority );
                     Task.Delay( 100 ).Wait();
-                    Controled_stop( priority );
+                    ControlledStop( priority );
                     WatTillStopped().Wait();
                 } else {
-                    Immediade_stop( priority );
+                    ImmediateStop( priority );
                 }
             }
             return true;
@@ -723,7 +723,7 @@ namespace ControlRoomApplication.Controllers {
             ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
 
-            Immediade_stop( priority );
+            ImmediateStop( priority );
             Task.Delay( 50 ).Wait();
             checkForAndResetErrors();
             Task.Delay( 50 ).Wait();
@@ -850,7 +850,7 @@ namespace ControlRoomApplication.Controllers {
             }
             Cancel_move( priority );
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
-            Controled_stop( priority );
+            ControlledStop( priority );
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
             var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.RELATIVE_MOVE , priority ) {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 

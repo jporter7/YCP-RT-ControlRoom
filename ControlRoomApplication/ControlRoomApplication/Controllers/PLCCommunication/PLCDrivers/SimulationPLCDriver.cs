@@ -171,9 +171,9 @@ namespace ControlRoomApplication.Controllers
             return driver.ControlledStop();
         }
 
-        public override bool Immediade_stop()
+        public override bool ImmediateStop()
         {
-            return driver.Immediade_stop();
+            return driver.ImmediateStop();
         }
 
         public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)

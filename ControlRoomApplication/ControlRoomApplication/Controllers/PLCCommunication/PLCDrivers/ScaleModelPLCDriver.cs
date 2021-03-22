@@ -245,7 +245,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Immediade_stop() {
+        public override bool ImmediateStop() {
             return true;
 
         }
