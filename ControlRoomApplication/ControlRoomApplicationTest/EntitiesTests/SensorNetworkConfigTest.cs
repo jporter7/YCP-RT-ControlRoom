@@ -202,5 +202,37 @@ namespace ControlRoomApplicationTest.EntitiesTests
 
             Assert.IsFalse(config.Equals(other));
         }
+
+        [TestMethod]
+        public void TestConvertSensorInitToBytes_AllTrue_AllBytesOne()
+        {
+            SensorNetworkConfig config = new SensorNetworkConfig(5);
+
+            var bytes = config.ConvertSensorInitToBytes();
+
+            // All bytes in the array should be 1
+            for (int i = 0; i < bytes.Length; i++) Assert.IsTrue(bytes[i] == 1);
+        }
+
+        [TestMethod]
+        public void TestConvertSensorInitToBytes_AllTrue_AllBytesZero()
+        {
+            SensorNetworkConfig config = new SensorNetworkConfig(5);
+
+            config.ElevationTemp1Init = false;
+            config.ElevationTemp2Init = false;
+            config.AzimuthTemp1Init = false;
+            config.AzimuthTemp2Init = false;
+            config.ElevationAccelerometerInit = false;
+            config.AzimuthAccelerometerInit = false;
+            config.CounterbalanceAccelerometerInit = false;
+            config.ElevationEncoderInit = false;
+            config.AzimuthEncoderInit = false;
+
+            var bytes = config.ConvertSensorInitToBytes();
+
+            // All bytes in the array should be 1
+            for (int i = 0; i < bytes.Length; i++) Assert.IsTrue(bytes[i] == 0);
+        }
     }
 }
