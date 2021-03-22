@@ -40,8 +40,16 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         TimedOutDataRetrieval,
 
         /// <summary>
-        /// This is set if it takes too long to complete initialization.
+        /// This is set if the Sensor Network takes too long to start sending data after the SensorNetworkClient
+        /// successfully sends the initialization.
         /// </summary>
-        TimedOutInitialization
+        TimedOutInitialization,
+
+        /// <summary>
+        /// This is set if the SensorNetworkClient fails to send the initialization to the Sensor Network. This can
+        /// happen if the Sensor Network is not on, not plugged in (via eithernet), or the user may have typed the
+        /// incorrect Client IP address/Port.
+        /// </summary>
+        InitializationSendingFailed
     }
 }

@@ -27,7 +27,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         [TestInitialize]
         public void BuildUp()
-        { 
+        {
             NumAppointments = DatabaseOperations.GetTotalAppointmentCount();
             NumRTInstances = DatabaseOperations.GetTotalRTCount();
             NumRFData = DatabaseOperations.GetTotalRFDataCount();
@@ -80,14 +80,14 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         }
 
- /*       [TestMethod]
-        public void TestPopulateLocalDatabase()
-        { 
-            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
-            var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(45 * NumRTInstances, appt_count);
-        }
-*/
+        /*       [TestMethod]
+               public void TestPopulateLocalDatabase()
+               { 
+                   DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
+                   var appt_count = DatabaseOperations.GetTotalAppointmentCount();
+                   Assert.AreEqual(45 * NumRTInstances, appt_count);
+               }
+       */
         [TestMethod]
         public void TestGetListOfAppointmentsForRadioTelescope()
         {
@@ -206,7 +206,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt._Status = AppointmentStatusEnum.IN_PROGRESS;
 
             DatabaseOperations.UpdateAppointment(appt);
-            
+
             // update appt
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
             var testStatus = appt._Status;
@@ -401,7 +401,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.IsTrue(telescope.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
 
             // test FetchByID
-                // we will never have this many telescopes, just ensuring null operation performed correctly
+            // we will never have this many telescopes, just ensuring null operation performed correctly
             Assert.IsTrue(DatabaseOperations.FetchRadioTelescopeByID(32323232) == null);
 
             Assert.IsFalse(teleByID == null);
@@ -422,24 +422,24 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveTemperature()
         {
-            List<Temperature> temp = new List <Temperature>();
+            List<Temperature> temp = new List<Temperature>();
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
             long dateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             //Generate Temperature
-            Temperature t1 =  Temperature.Generate(dateTime, 0.0, loc1);
+            Temperature t1 = Temperature.Generate(dateTime, 0.0, loc1);
 
             temp.Add(t1);
 
             DatabaseOperations.AddSensorData(temp);
-            List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime-1, dateTime+1, loc1);
+            List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime - 1, dateTime + 1, loc1);
 
             Assert.AreEqual(tempReturn.Count, 1);
 
             //Test only temp
-            Assert.AreEqual(temp[tempReturn.Count-1].location_ID, tempReturn[tempReturn.Count-1].location_ID);
+            Assert.AreEqual(temp[tempReturn.Count - 1].location_ID, tempReturn[tempReturn.Count - 1].location_ID);
             Assert.AreEqual(temp[tempReturn.Count - 1].temp, tempReturn[tempReturn.Count - 1].temp);
             Assert.AreEqual(temp[tempReturn.Count - 1].TimeCapturedUTC, tempReturn[tempReturn.Count - 1].TimeCapturedUTC);
 
@@ -531,7 +531,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         }
 
         [TestMethod]
-        public void TestAddAndRetrieveSensorNetworkConfig()
+        public void TestAddAndRetrieveSensorNetworkConfig_Valid_CreatesConfig()
         {
             int telescopeId = 5;
 
@@ -546,12 +546,15 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             var retrieved = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
 
             Assert.IsTrue(original.Equals(retrieved));
+
+            // Delete config
+            DatabaseOperations.DeleteSensorNetworkConfig(original);
         }
 
         [TestMethod]
-        public void TestUpdateSensorNetworkConfig()
+        public void TestUpdateSensorNetworkConfig_ChangeAllFields_UpdatesConfig()
         {
-            int telescopeId = 6;
+            int telescopeId = 5;
             SensorNetworkConfig original = new SensorNetworkConfig(telescopeId);
 
             // Save original config
@@ -576,6 +579,47 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             var retrieved = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
 
             Assert.IsTrue(original.Equals(retrieved));
+
+            // Delete config
+            DatabaseOperations.DeleteSensorNetworkConfig(original);
+        }
+
+        [TestMethod]
+        public void TestUpdateSensorNetworkConfig_TelescopeDoesntExist_ShouldThrowInvalidOperationException()
+        {
+            SensorNetworkConfig invalidConfig = new SensorNetworkConfig(9000);
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+                DatabaseOperations.UpdateSensorNetworkConfig(invalidConfig)
+            );
+        }
+
+        [TestMethod]
+        public void TestDeleteSensorNetworkConfig_ConfigExists_DeletesConfig()
+        {
+            int telescopeId = 10;
+            SensorNetworkConfig config = new SensorNetworkConfig(telescopeId);
+
+            // Save config
+            DatabaseOperations.AddSensorNetworkConfig(config);
+
+            // Delete config
+            DatabaseOperations.DeleteSensorNetworkConfig(config);
+
+            // Attempt to find config
+            SensorNetworkConfig result = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
+
+            Assert.IsTrue(result == null);
+        }
+
+        [TestMethod]
+        public void TestDeleteSensorNetworkConfig_TelescopeDoesntExist_ShouldThrowInvalidOperationException()
+        {
+            SensorNetworkConfig invalidConfig = new SensorNetworkConfig(9000);
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+                DatabaseOperations.DeleteSensorNetworkConfig(invalidConfig)
+            );
         }
     }
 }

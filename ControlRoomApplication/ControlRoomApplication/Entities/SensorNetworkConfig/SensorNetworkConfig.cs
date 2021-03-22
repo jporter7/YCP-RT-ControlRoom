@@ -212,7 +212,7 @@ namespace ControlRoomApplication.Entities
         /// 0 = not initialized;
         /// 1 = initialized
         /// </summary>
-        public byte[] ConvertSensorInitToBytes()
+        public byte[] GetSensorInitAsBytes()
         {
             byte[] init = new byte[] {
                 ElevationTemp1Init ?                (byte)1 : (byte)0,

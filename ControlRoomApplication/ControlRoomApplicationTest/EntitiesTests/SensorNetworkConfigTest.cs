@@ -40,6 +40,29 @@ namespace ControlRoomApplicationTest.EntitiesTests
         }
 
         [TestMethod]
+        public void TestEmptyInitialization()
+        {
+            SensorNetworkConfig config = new SensorNetworkConfig();
+
+            // All values should be an equivalent of 0
+
+            Assert.AreEqual(config.TelescopeId, 0);
+            
+            Assert.AreEqual(config.TimeoutDataRetrieval, 0);
+            Assert.AreEqual(config.TimeoutInitialization, 0);
+            
+            Assert.AreEqual(config.ElevationTemp1Init, false);
+            Assert.AreEqual(config.ElevationTemp2Init, false);
+            Assert.AreEqual(config.AzimuthTemp1Init, false);
+            Assert.AreEqual(config.AzimuthTemp2Init, false);
+            Assert.AreEqual(config.ElevationAccelerometerInit, false);
+            Assert.AreEqual(config.AzimuthAccelerometerInit, false);
+            Assert.AreEqual(config.CounterbalanceAccelerometerInit, false);
+            Assert.AreEqual(config.ElevationEncoderInit, false);
+            Assert.AreEqual(config.AzimuthEncoderInit, false);
+        }
+
+        [TestMethod]
         public void TestEquals_Identical_Equal()
         {
             int telescopeId = 5;
@@ -204,18 +227,18 @@ namespace ControlRoomApplicationTest.EntitiesTests
         }
 
         [TestMethod]
-        public void TestConvertSensorInitToBytes_AllTrue_AllBytesOne()
+        public void TestGetSensorInitAsBytes_AllTrue_AllBytesOne()
         {
             SensorNetworkConfig config = new SensorNetworkConfig(5);
 
-            var bytes = config.ConvertSensorInitToBytes();
+            var bytes = config.GetSensorInitAsBytes();
 
             // All bytes in the array should be 1
-            for (int i = 0; i < bytes.Length; i++) Assert.IsTrue(bytes[i] == 1);
+            Assert.IsTrue(bytes.All(singleByte => singleByte == 1));
         }
 
         [TestMethod]
-        public void TestConvertSensorInitToBytes_AllTrue_AllBytesZero()
+        public void TestGetSensorInitAsBytes_AllTrue_AllBytesZero()
         {
             SensorNetworkConfig config = new SensorNetworkConfig(5);
 
@@ -229,10 +252,10 @@ namespace ControlRoomApplicationTest.EntitiesTests
             config.ElevationEncoderInit = false;
             config.AzimuthEncoderInit = false;
 
-            var bytes = config.ConvertSensorInitToBytes();
+            var bytes = config.GetSensorInitAsBytes();
 
-            // All bytes in the array should be 1
-            for (int i = 0; i < bytes.Length; i++) Assert.IsTrue(bytes[i] == 0);
+            // All bytes in the array should be 0
+            Assert.IsTrue(bytes.All(singleByte => singleByte == 0));
         }
     }
 }
