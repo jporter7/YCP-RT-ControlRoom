@@ -49,7 +49,9 @@ namespace ControlRoomApplication.GUI.Data
 			this.speed = 0;
 			this.controlledStopBool = true;
 			this.immediateStopBool = false;
-
+			this.manualControlEnabled = false;
+			this.freeControlEnabled = false;
+			this.scanEnabled = false;
 
 		}
 

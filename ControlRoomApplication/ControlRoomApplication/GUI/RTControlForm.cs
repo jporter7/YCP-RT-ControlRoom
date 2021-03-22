@@ -527,18 +527,18 @@ namespace ControlRoomApplication.Main
                 RAIncGroupbox.BackColor = System.Drawing.Color.Gray;
             }
 
-            PosDecButton.Enabled = !save_state;
-            NegDecButton.Enabled = !save_state;
-            PosRAButton.Enabled = !save_state;
-            NegRAButton.Enabled = !save_state;
-            oneForthButton.Enabled = !save_state;
-            oneForthButtonDec.Enabled = !save_state;
-            oneButton.Enabled = !save_state;
-            oneButtonDec.Enabled = !save_state;
-            fiveButton.Enabled = !save_state;
-            fiveButtonDec.Enabled = !save_state;
-            tenButton.Enabled = !save_state;
-            tenButtonDec.Enabled = !save_state;
+            PosDecButton.Enabled = save_state;
+            NegDecButton.Enabled = save_state;
+            PosRAButton.Enabled = save_state;
+            NegRAButton.Enabled = save_state;
+            oneForthButton.Enabled = save_state;
+            oneForthButtonDec.Enabled = save_state;
+            oneButton.Enabled = save_state;
+            oneButtonDec.Enabled = save_state;
+            fiveButton.Enabled = save_state;
+            fiveButtonDec.Enabled = save_state;
+            tenButton.Enabled = save_state;
+            tenButtonDec.Enabled = save_state;
             TargetRATextBox.ReadOnly = save_state;
             TargetDecTextBox.ReadOnly = save_state;
 
