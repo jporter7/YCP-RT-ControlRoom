@@ -478,6 +478,73 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         }
 
+        //Acceleration
+        [TestMethod]
+        public void TestAddAndRetrieveAcceleration()
+        {
+            List<Acceleration> acc = new List<Acceleration>();
+            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+
+            //Generate current time
+            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            //Generate Acceleration
+            Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
+
+            acc.Add(a1);
+
+            DatabaseOperations.AddSensorData(acc);
+            List<Acceleration> accReturn = DatabaseOperations.GetACCData(dateTime1 - 1, dateTime1 + 1, loc1);
+
+            Assert.AreEqual(accReturn.Count, 1);
+
+            //Test only acc
+            Assert.AreEqual(acc[accReturn.Count - 1].location_ID, accReturn[accReturn.Count - 1].location_ID);
+            Assert.AreEqual(acc[accReturn.Count - 1].x, accReturn[accReturn.Count - 1].x);
+            Assert.AreEqual(acc[accReturn.Count - 1].y, accReturn[accReturn.Count - 1].y);
+            Assert.AreEqual(acc[accReturn.Count - 1].z, accReturn[accReturn.Count - 1].z);
+            Assert.AreEqual(acc[accReturn.Count - 1].TimeCaptured, accReturn[accReturn.Count - 1].TimeCaptured);
+
+        }
+
+        [TestMethod]
+        public void TestAddAndRetrieveAccelerations()
+        {
+            List<Acceleration> acc = new List<Acceleration>();
+            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+
+            //Generate current time
+            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            //Make 2 new Accelerations
+            Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
+            Acceleration a2 = Acceleration.Generate(dateTime1, 2, 2, 2, loc1);
+
+            acc.Add(a1);
+            acc.Add(a2);
+
+
+            DatabaseOperations.AddSensorData(acc);
+            List<Acceleration> accReturn = DatabaseOperations.GetACCData(dateTime1 - 1, dateTime1 + 1, loc1);
+
+            Assert.AreEqual(accReturn.Count, 2);
+
+            //Test first acc
+            Assert.AreEqual(acc[accReturn.Count - 1].location_ID, accReturn[accReturn.Count - 1].location_ID);
+            Assert.AreEqual(acc[accReturn.Count - 1].x, accReturn[accReturn.Count - 1].x);
+            Assert.AreEqual(acc[accReturn.Count - 1].y, accReturn[accReturn.Count - 1].y);
+            Assert.AreEqual(acc[accReturn.Count - 1].z, accReturn[accReturn.Count - 1].z);
+            Assert.AreEqual(acc[accReturn.Count - 1].TimeCaptured, accReturn[accReturn.Count - 1].TimeCaptured);
+
+            //Test second acc
+            Assert.AreEqual(acc[accReturn.Count - 2].location_ID, accReturn[accReturn.Count - 2].location_ID);
+            Assert.AreEqual(acc[accReturn.Count - 2].x, accReturn[accReturn.Count - 2].x);
+            Assert.AreEqual(acc[accReturn.Count - 2].y, accReturn[accReturn.Count - 2].y);
+            Assert.AreEqual(acc[accReturn.Count - 2].z, accReturn[accReturn.Count - 2].z);
+            Assert.AreEqual(acc[accReturn.Count - 2].TimeCaptured, accReturn[accReturn.Count - 2].TimeCaptured);
+
+        }
+
         [TestMethod]
         public void TestUpdateTelescope()
         {
