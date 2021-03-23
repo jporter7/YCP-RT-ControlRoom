@@ -160,9 +160,9 @@
             this.label11 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.Encoders = new System.Windows.Forms.GroupBox();
+            this.ElecationAbsoluteEncoder_lbl = new System.Windows.Forms.Label();
             this.btnElevationAbsoluteEncoder = new System.Windows.Forms.Button();
             this.btnAzimuthAbsoluteEncoder = new System.Windows.Forms.Button();
-            this.ElecationAbsoluteEncoder_lbl = new System.Windows.Forms.Label();
             this.AzimuthAbsoluteEncoder_lbl = new System.Windows.Forms.Label();
             this.SensorNetworkSensorInitialization = new System.Windows.Forms.GroupBox();
             this.initChange = new System.Windows.Forms.Label();
@@ -975,7 +975,7 @@
             // label45
             // 
             this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(262, 24);
+            this.label45.Location = new System.Drawing.Point(262, 38);
             this.label45.Name = "label45";
             this.label45.Size = new System.Drawing.Size(14, 13);
             this.label45.TabIndex = 52;
@@ -994,7 +994,7 @@
             // 
             this.label46.AutoSize = true;
             this.label46.ForeColor = System.Drawing.Color.Blue;
-            this.label46.Location = new System.Drawing.Point(193, -3);
+            this.label46.Location = new System.Drawing.Point(193, 11);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(67, 13);
             this.label46.TabIndex = 47;
@@ -1003,7 +1003,7 @@
             // label48
             // 
             this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(262, 46);
+            this.label48.Location = new System.Drawing.Point(262, 60);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(14, 13);
             this.label48.TabIndex = 51;
@@ -1020,7 +1020,7 @@
             // 
             this.label50.AutoSize = true;
             this.label50.ForeColor = System.Drawing.Color.Red;
-            this.label50.Location = new System.Drawing.Point(192, 41);
+            this.label50.Location = new System.Drawing.Point(192, 55);
             this.label50.Name = "label50";
             this.label50.Size = new System.Drawing.Size(67, 13);
             this.label50.TabIndex = 48;
@@ -1038,7 +1038,7 @@
             // label49
             // 
             this.label49.AutoSize = true;
-            this.label49.Location = new System.Drawing.Point(262, 2);
+            this.label49.Location = new System.Drawing.Point(262, 16);
             this.label49.Name = "label49";
             this.label49.Size = new System.Drawing.Size(14, 13);
             this.label49.TabIndex = 50;
@@ -1055,7 +1055,7 @@
             // 
             this.label47.AutoSize = true;
             this.label47.ForeColor = System.Drawing.Color.Green;
-            this.label47.Location = new System.Drawing.Point(192, 19);
+            this.label47.Location = new System.Drawing.Point(192, 33);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(67, 13);
             this.label47.TabIndex = 49;
@@ -1703,6 +1703,17 @@
             this.Encoders.TabStop = false;
             this.Encoders.Text = "Encoders";
             // 
+            // ElecationAbsoluteEncoder_lbl
+            // 
+            this.ElecationAbsoluteEncoder_lbl.AutoSize = true;
+            this.ElecationAbsoluteEncoder_lbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ElecationAbsoluteEncoder_lbl.Location = new System.Drawing.Point(9, 68);
+            this.ElecationAbsoluteEncoder_lbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.ElecationAbsoluteEncoder_lbl.Name = "ElecationAbsoluteEncoder_lbl";
+            this.ElecationAbsoluteEncoder_lbl.Size = new System.Drawing.Size(164, 13);
+            this.ElecationAbsoluteEncoder_lbl.TabIndex = 10;
+            this.ElecationAbsoluteEncoder_lbl.Text = "Elevation Absolute Encoder";
+            // 
             // btnElevationAbsoluteEncoder
             // 
             this.btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.Yellow;
@@ -1726,17 +1737,6 @@
             this.btnAzimuthAbsoluteEncoder.Text = "NOT LOADED";
             this.btnAzimuthAbsoluteEncoder.UseVisualStyleBackColor = false;
             this.btnAzimuthAbsoluteEncoder.Click += new System.EventHandler(this.btnAzimuthAbsoluteEncoder_Click);
-            // 
-            // ElecationAbsoluteEncoder_lbl
-            // 
-            this.ElecationAbsoluteEncoder_lbl.AutoSize = true;
-            this.ElecationAbsoluteEncoder_lbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ElecationAbsoluteEncoder_lbl.Location = new System.Drawing.Point(9, 68);
-            this.ElecationAbsoluteEncoder_lbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.ElecationAbsoluteEncoder_lbl.Name = "ElecationAbsoluteEncoder_lbl";
-            this.ElecationAbsoluteEncoder_lbl.Size = new System.Drawing.Size(164, 13);
-            this.ElecationAbsoluteEncoder_lbl.TabIndex = 10;
-            this.ElecationAbsoluteEncoder_lbl.Text = "Elevation Absolute Encoder";
             // 
             // AzimuthAbsoluteEncoder_lbl
             // 
