@@ -138,7 +138,13 @@ namespace ControlRoomApplication.GUI
             bool currEL = rtController.overrides.overrideElevatMotTemp;
             bool currElProx0 = rtController.overrides.overrideElevatProx0;
             bool currElProx90 = rtController.overrides.overrideElevatProx90;
-            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90);
+            bool currAzimuthAbsEncoder = rtController.overrides.overrideAzimuthAbsEncoder;
+            bool currElevationAbsEncoder = rtController.overrides.overrideElevationAbsEncoder;
+            bool currAzimuthAccelerometer = rtController.overrides.overrideAzimuthAccelerometer;
+            bool currElevationAccelerometer = rtController.overrides.overrideElevationAccelerometer;
+            bool currCounterbalanceAccelerometer = rtController.overrides.overrideCounterbalanceAccelerometer;
+            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90, 
+                currAzimuthAbsEncoder, currElevationAbsEncoder, currAzimuthAccelerometer, currElevationAccelerometer, currCounterbalanceAccelerometer);
             
             updateOverride = new BackgroundWorker();
             updateOverride.DoWork += new DoWorkEventHandler(checkOverrideVars);
@@ -148,7 +154,7 @@ namespace ControlRoomApplication.GUI
             celTempConvert.BackColor = System.Drawing.Color.DarkGray;
             farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
 
-            initChange.Text = "";
+            ElecationAbsoluteEncoder_lbl.Text = "";
 
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
@@ -310,24 +316,10 @@ namespace ControlRoomApplication.GUI
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
             // Proximity and Limit Switches
-
-            // Tell the user azimuth limits are not present if the telescope type is set to SLIP_RING
-            if (rtController.RadioTelescope._TeleType == RadioTelescopeTypeEnum.SLIP_RING)
-            {
-                lblAzLimStatus1.Text = "N/A";
-                lblAzLimStatus2.Text = "N/A";
-            }
-            else
-            {
-                lblAzLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CCW_Limit.ToString();
-                lblAzLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CW_Limit.ToString();
-            }
-
             lblElLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Lower_Limit.ToString();
             lblElLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Upper_Limit.ToString();
 
             lblAzHomeStatus1.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_One.ToString();
-            lblAzHomeStatus2.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_Two.ToString();
             lblELHomeStatus.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Elevation_Home.ToString();
 
             lbEstopStat.Text = rtController.RadioTelescope.PLCDriver.plcInput.Estop.ToString();
@@ -814,7 +806,14 @@ namespace ControlRoomApplication.GUI
             bool currEL = rtController.overrides.overrideElevatMotTemp;
             bool currElProx0 = rtController.overrides.overrideElevatProx0;
             bool currElProx90 = rtController.overrides.overrideElevatProx90;
-            bool newMain, newWS, newAZ, newEL, newElProx0, newElProx90;
+            bool currAzimuthAbsEncoder = rtController.overrides.overrideAzimuthAbsEncoder;
+            bool currElevationAbsEncoder = rtController.overrides.overrideElevationAbsEncoder;
+            bool currAzimuthAccelerometer = rtController.overrides.overrideAzimuthAccelerometer;
+            bool currElevationAccelerometer = rtController.overrides.overrideElevationAccelerometer;
+            bool currCounterbalanceAccelerometer = rtController.overrides.overrideCounterbalanceAccelerometer;
+
+            bool newMain, newWS, newAZ, newEL, newElProx0, newElProx90, 
+                newAzimuthAbsEncoder, newElevationAbsEncoder, newAzimuthAccelerometer, newElevationAccelerometer, newCounterbalanceAccelerometer;
 
 
             while (true)
@@ -825,13 +824,23 @@ namespace ControlRoomApplication.GUI
                 newEL = rtController.overrides.overrideElevatMotTemp;
                 newElProx0 = rtController.overrides.overrideElevatProx0;
                 newElProx90 = rtController.overrides.overrideElevatProx90;
+                newAzimuthAbsEncoder = rtController.overrides.overrideAzimuthAbsEncoder;
+                newElevationAbsEncoder = rtController.overrides.overrideElevationAbsEncoder;
+                newAzimuthAccelerometer = rtController.overrides.overrideAzimuthAccelerometer;
+                newElevationAccelerometer = rtController.overrides.overrideElevationAccelerometer;
+                newCounterbalanceAccelerometer = rtController.overrides.overrideCounterbalanceAccelerometer;
 
                 if (currWS != newWS || 
                     currMain != newMain || 
                     currAZ != newAZ || 
                     currEL != newEL ||
                     currElProx0 != newElProx0 ||
-                    currElProx90 != newElProx90)
+                    currElProx90 != newElProx90 ||
+                    currAzimuthAbsEncoder != newAzimuthAbsEncoder ||
+                    currElevationAbsEncoder != newElevationAbsEncoder ||
+                    currAzimuthAccelerometer != newAzimuthAccelerometer ||
+                    currElevationAccelerometer != newElevationAccelerometer ||
+                    currCounterbalanceAccelerometer != newCounterbalanceAccelerometer)
                 {
                     currMain = newMain;
                     currWS = newWS;
@@ -839,12 +848,18 @@ namespace ControlRoomApplication.GUI
                     currEL = newEL;
                     currElProx0 = newElProx0;
                     currElProx90 = newElProx90;
+                    currAzimuthAbsEncoder = newAzimuthAbsEncoder;
+                    currElevationAbsEncoder = newElevationAbsEncoder;
+                    currAzimuthAccelerometer = newAzimuthAccelerometer;
+                    currElevationAccelerometer = newElevationAccelerometer;
+                    currCounterbalanceAccelerometer = newCounterbalanceAccelerometer;
 
                     if (IsHandleCreated)
                     {
                         this.BeginInvoke((MethodInvoker)delegate
                         {
-                            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90);
+                            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90, 
+                                currAzimuthAbsEncoder, currElevationAbsEncoder, currAzimuthAccelerometer, currElevationAccelerometer, currCounterbalanceAccelerometer);
                         });
                     }
 
@@ -854,7 +869,8 @@ namespace ControlRoomApplication.GUI
         }
 
         // Loads the override buttons
-        public void updateButtons(bool currMain, bool currWS, bool currAZ, bool currEL, bool currElProx0, bool currElProx90)
+        public void updateButtons(bool currMain, bool currWS, bool currAZ, bool currEL, bool currElProx0, bool currElProx90,
+            bool azimuthAbsEncoder, bool elevationAbsEncoder, bool azimuthAccelerometer, bool elevationAccelerometer, bool counterbalanceAccelerometer)
         {
             // Weather Station Override
             if(currWS)
@@ -927,11 +943,173 @@ namespace ControlRoomApplication.GUI
                 ElevationLimitSwitch90.Text = "ENABLED";
                 ElevationLimitSwitch90.BackColor = System.Drawing.Color.LimeGreen;
             }
+
+            // Azimuth ABS Encoder Override
+            if (azimuthAbsEncoder)
+            {
+                btnAzimuthAbsoluteEncoder.Text = "OVERRIDING";
+                btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnAzimuthAbsoluteEncoder.Text = "ENABLED";
+                btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Elevation ABS Encoder Override
+            if (elevationAbsEncoder)
+            {
+                btnElevationAbsoluteEncoder.Text = "OVERRIDING";
+                btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnElevationAbsoluteEncoder.Text = "ENABLED";
+                btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Azimuth Accelerometer Override
+            if (azimuthAccelerometer)
+            {
+                btnAzimuthMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnAzimuthMotorAccelerometerOverride.Text = "ENABLED";
+                btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Elevation Accelerometer Override
+            if (elevationAccelerometer)
+            {
+                btnElevationMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnElevationMotorAccelerometerOverride.Text = "ENABLED";
+                btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Counterbalce Accelerometer Override
+            if (counterbalanceAccelerometer)
+            {
+                btnCounterbalanceMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnCounterbalanceMotorAccelerometerOverride.Text = "ENABLED";
+                btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+            }
         }
 
         private void btnResetMcuErrors_Click(object sender, EventArgs e)
         {
             rtController.RadioTelescope.PLCDriver.ResetMCUErrors();
         }
+
+        private void lblAzLimStatus1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label41_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void btnAzimuthAbsoluteEncoder_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideAzimuthAbsEncoder)
+            {
+                btnAzimuthAbsoluteEncoder.Text = "OVERRIDING";
+                btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("azimuth absolute encoder", true);
+            }
+            else if (rtController.overrides.overrideAzimuthAbsEncoder)
+            {
+                btnAzimuthAbsoluteEncoder.Text = "ENABLED";
+                btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.LimeGreen;
+
+                rtController.setOverride("azimuth absolute encoder", false);
+            }
+        }
+
+        private void btnElevationAbsoluteEncoder_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideElevationAbsEncoder)
+            {
+                btnElevationAbsoluteEncoder.Text = "OVERRIDING";
+                btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("elevation absolute encoder", true);
+            }
+            else if (rtController.overrides.overrideElevationAbsEncoder)
+            {
+                btnElevationAbsoluteEncoder.Text = "ENABLED";
+                btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.LimeGreen;
+
+                rtController.setOverride("elevation absolute encoder", false);
+            }
+        }
+
+        private void btnAzimuthMotorAccelerometerOverride_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideAzimuthAccelerometer)
+            {
+                btnAzimuthMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("azimuth motor accelerometer", true);
+            }
+            else if (rtController.overrides.overrideAzimuthAccelerometer)
+            {
+                btnAzimuthMotorAccelerometerOverride.Text = "ENABLED";
+                btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+
+                rtController.setOverride("azimuth motor accelerometer", false);
+            }
+        }
+
+        private void btnElevationMotorAccelerometerOverride_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideElevationAccelerometer)
+            {
+                btnElevationMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("elevation motor accelerometer", true);
+            }
+            else if (rtController.overrides.overrideElevationAccelerometer)
+            {
+                btnElevationMotorAccelerometerOverride.Text = "ENABLED";
+                btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+
+                rtController.setOverride("elevation motor accelerometer", false);
+            }
+        }
+
+        private void btnCounterbalanceMotorAccelerometerOverride_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideCounterbalanceAccelerometer)
+            {
+                btnCounterbalanceMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("counterbalance accelerometer", true);
+            }
+            else if (rtController.overrides.overrideCounterbalanceAccelerometer)
+            {
+                btnCounterbalanceMotorAccelerometerOverride.Text = "ENABLED";
+                btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+                
+                rtController.setOverride("counterbalance accelerometer", false);
+            }
+        }
+
     }
 }
