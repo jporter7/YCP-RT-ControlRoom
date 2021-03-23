@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities {
     [Table( "Acceleration" )]
-    public class Acceleration {
+    public class Acceleration : IEquatable<Acceleration>
+    {
         public Acceleration() {
 
         }
@@ -41,10 +42,9 @@ namespace ControlRoomApplication.Entities {
 
 
 
-        public static Acceleration Generate( long UTCtics , double acc , double x , double y , double z , SensorLocationEnum loc ) {
+        public static Acceleration Generate( long UTCtics , double x , double y , double z , SensorLocationEnum loc ) {
             Acceleration acx = new Acceleration();
             acx.TimeCaptured = UTCtics;// Constants.TIME.UnixEpoch.AddMilliseconds( UTCtics );
-            acx.acc = acc;
             acx.x = x;
             acx.y = y;
             acx.z = z;
@@ -52,6 +52,14 @@ namespace ControlRoomApplication.Entities {
             return acx;
         }
 
+        public bool Equals(Acceleration other)
+        {
+            if (x != other.x || y != other.y || z != other.z || location_ID != other.location_ID)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
 

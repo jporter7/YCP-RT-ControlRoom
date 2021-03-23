@@ -89,6 +89,7 @@
     <Compile Include="CommunicationTests\PushNotificationTest.cs" />
     <Compile Include="CommunicationTests\AESTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
+    <Compile Include="EntitiesTests\AccelerationTest.cs" />
     <Compile Include="EntitiesTests\TemperatureTest.cs" />
     <Compile Include="EntitiesTests\SensorNetworkConfigTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />

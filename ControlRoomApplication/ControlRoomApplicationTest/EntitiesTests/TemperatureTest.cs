@@ -9,9 +9,6 @@ namespace ControlRoomApplicationTest.EntitiesTests
     {
         // Class being tested
         private Temperature Temperature;
-        private int longitude = 100;
-        private int latitude = 34;
-        private int altitude = 40;
 
         [TestInitialize]
         public void BuildUp()
@@ -21,6 +18,29 @@ namespace ControlRoomApplicationTest.EntitiesTests
 
         [TestMethod]
         public void TestGettersAndSetters()
+        {
+            // Initialize appointment entity
+            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+            SensorLocationEnum loc2 = SensorLocationEnum.EL_MOTOR;
+
+            //Generate current time
+            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long dateTime2 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            //Generate Temperature
+            Temperature t1 = Temperature.Generate(dateTime1, 0.0, loc1);
+
+            t1.TimeCapturedUTC = dateTime2;
+            Assert.AreEqual(t1.TimeCapturedUTC, dateTime2);
+            t1.temp = 100.0;
+            Assert.AreEqual(t1.temp, 100.0);
+            t1.location_ID =1;
+            Assert.AreEqual(t1.location_ID, 1);
+
+        }
+
+        [TestMethod]
+        public void TestEquals()
         {
             // Initialize appointment entity
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
