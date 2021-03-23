@@ -35,7 +35,7 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// stores the data that is to be sent to the mcu
         /// </summary>
-        public ushort[] comandData;
+        public ushort[] commandData;
         /// <summary>
         /// high level information about the comands general purpose
         /// </summary>
@@ -69,7 +69,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="CMDType"></param>
         public MCUCommand( ushort[] data, MCUCommandType CMDType, int priority ) {
             CommandType = CMDType;
-            comandData = data;
+            commandData = data;
             issued = DateTime.Now;
             Move_Priority = priority;
         }
@@ -85,7 +85,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="ElSpeed"></param>
         public MCUCommand( ushort[] data , MCUCommandType CMDType, int priority , bool AZCW,bool ELCW,int AZSpeed,int ElSpeed ) {
             CommandType = CMDType;
-            comandData = data;
+            commandData = data;
             issued = DateTime.Now;
             AZ_CW = AZCW;
             EL_CW = ELCW;
@@ -563,12 +563,12 @@ namespace ControlRoomApplication.Controllers {
             if(Is_Moing( data )) {
                 if(RunningCommand.CommandType == MCUCommandType.JOG) {
                     Cancel_move( priority );
-                    WatTillStopped().Wait();
+                    WaitUntilStopped().Wait();
                 } else if(RunningCommand.CommandType == MCUCommandType.RELATIVE_MOVE) {
                     Cancel_move( priority );
                     Task.Delay( 100 ).Wait();
                     ControlledStop( priority );
-                    WatTillStopped().Wait();
+                    WaitUntilStopped().Wait();
                 } else {
                     ImmediateStop( priority );
                 }
@@ -577,7 +577,7 @@ namespace ControlRoomApplication.Controllers {
         }
 
         private async Task<bool> Wait_For_Stop_Motion( MCUCommand comand) {
-            WatTillStopped().Wait();
+            WaitUntilStopped().Wait();
             comand.completed = true;
             return true;
         }
@@ -586,7 +586,7 @@ namespace ControlRoomApplication.Controllers {
         /// this function assums that you have alread told both Axisi to stop moving otherwise it will timeout
         /// </summary>
         /// <returns>false if the telescope was still running at the end of the timeout</returns>
-        private async Task<bool> WatTillStopped() {
+        private async Task<bool> WaitUntilStopped() {
             try {
                 int mS_To_Decelerate = estimateStopTime( PreviousCommand );
                 var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
@@ -642,7 +642,7 @@ namespace ControlRoomApplication.Controllers {
         /// this function assums that you have alread told both Axisi to stop moving otherwise it will timeout
         /// </summary>
         /// <returns>false if the telescope was still running at the end of the timeout</returns>
-        private async Task<bool> WatTillStoppedPerAxis(bool is_AZ) {
+        private async Task<bool> WaitUntilStoppedPerAxis(bool is_AZ) {
             if(is_AZ) {
                 try {
                     int mS_To_Decelerate = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
@@ -1074,7 +1074,7 @@ namespace ControlRoomApplication.Controllers {
                 booth = (RunningCommand.AZ_CW != AZClockwise) && (RunningCommand.EL_CW != ELPositive);
                 if(booth) {//if both axis need to change direction
                     Cancel_move( priority );
-                    WatTillStopped().GetAwaiter().GetResult();
+                    WaitUntilStopped().GetAwaiter().GetResult();
                 } else if(RunningCommand.EL_CW != ELPositive) {//if only elevation needs to change direction
                     for(int j = 0; j <= data3.Length - 11; j++) {
                         data3[j + 10] = MESSAGE_CONTENTS_CLEAR_MOVE[j + 10];//replace elevation portion of move with controled stop
@@ -1082,7 +1082,7 @@ namespace ControlRoomApplication.Controllers {
                     _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } ).GetAwaiter().GetResult();
-                    WatTillStoppedPerAxis( true ).GetAwaiter().GetResult();
+                    WaitUntilStoppedPerAxis( true ).GetAwaiter().GetResult();
                 } else if(RunningCommand.AZ_CW != AZClockwise) {//only Azimuth needs to change direction
                     for(int j = 0; j <= data3.Length - 1; j++) {
                         data3[j] = MESSAGE_CONTENTS_CLEAR_MOVE[j];//replace Azimuth portion of move with controled stop
@@ -1090,7 +1090,7 @@ namespace ControlRoomApplication.Controllers {
                     _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } ).GetAwaiter().GetResult();
-                    WatTillStoppedPerAxis( false ).GetAwaiter().GetResult();
+                    WaitUntilStoppedPerAxis( false ).GetAwaiter().GetResult();
                 }
             }
 
@@ -1113,7 +1113,7 @@ namespace ControlRoomApplication.Controllers {
                         RunningCommand?.timeout?.Cancel();
                     } catch { }
                     RunningCommand = incoming;
-                    TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.comandData ).Wait();
+                    TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData ).Wait();
                     return incoming;
                 }
                 incoming.CommandError = new Exception( "MCU was running a JOG move which could not be overriden" );
@@ -1124,7 +1124,7 @@ namespace ControlRoomApplication.Controllers {
                         RunningCommand?.timeout?.Cancel();
                     } catch { }
                     RunningCommand = incoming;
-                    TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.comandData ).Wait();
+                    TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData ).Wait();
                     return incoming;
                 }
                 incoming.CommandError = new Exception( "MCU was running a home move which could not be overriden" );
@@ -1134,7 +1134,7 @@ namespace ControlRoomApplication.Controllers {
                 RunningCommand?.timeout?.Cancel();
             } catch { }
             RunningCommand = incoming;
-            TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.comandData ).Wait();
+            TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData ).Wait();
             return incoming;
         }
 
