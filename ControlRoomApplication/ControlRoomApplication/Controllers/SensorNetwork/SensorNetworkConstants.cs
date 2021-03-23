@@ -43,7 +43,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
         /// <summary>
         /// This is the total number of sensors that is a part of the Sensor Network. This is used to determine
-        /// the byte size of the initialization.
+        /// the byte size of the initialization. The size for transit would be 9 minus the 2 redundant temperature
+        /// sensors, which is 7.
         /// </summary>
         public const int SensorNetworkSensorCount = 9;
     }

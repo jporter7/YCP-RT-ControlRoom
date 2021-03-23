@@ -45,6 +45,14 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// happen if the Sensor Network is not on, not plugged in (via eithernet), or the user may have typed the
         /// incorrect Client IP address/Port.
         /// </summary>
-        InitializationSendingFailed
+        InitializationSendingFailed,
+
+        /// <summary>
+        /// This is used if the SensorNetworkServer fails to start for any reason. Reasons could be that the IP address
+        /// is already taken, or there is some other error with the network. The server doesn't depend on making a connection
+        /// (it waits until something connects to it), so as long as the IP address is valid and reachable, this status should
+        /// not occur.
+        /// </summary>
+        ErrorStartingServer
     }
 }
