@@ -148,7 +148,7 @@ namespace ControlRoomApplication.GUI
             celTempConvert.BackColor = System.Drawing.Color.DarkGray;
             farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
 
-            initChange.Text = "";
+            ElecationAbsoluteEncoder_lbl.Text = "";
 
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
@@ -310,24 +310,10 @@ namespace ControlRoomApplication.GUI
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
             // Proximity and Limit Switches
-
-            // Tell the user azimuth limits are not present if the telescope type is set to SLIP_RING
-            if (rtController.RadioTelescope._TeleType == RadioTelescopeTypeEnum.SLIP_RING)
-            {
-                lblAzLimStatus1.Text = "N/A";
-                lblAzLimStatus2.Text = "N/A";
-            }
-            else
-            {
-                lblAzLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CCW_Limit.ToString();
-                lblAzLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CW_Limit.ToString();
-            }
-
             lblElLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Lower_Limit.ToString();
             lblElLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Upper_Limit.ToString();
 
             lblAzHomeStatus1.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_One.ToString();
-            lblAzHomeStatus2.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_Two.ToString();
             lblELHomeStatus.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Elevation_Home.ToString();
 
             lbEstopStat.Text = rtController.RadioTelescope.PLCDriver.plcInput.Estop.ToString();
@@ -932,6 +918,16 @@ namespace ControlRoomApplication.GUI
         private void btnResetMcuErrors_Click(object sender, EventArgs e)
         {
             rtController.RadioTelescope.PLCDriver.ResetMCUErrors();
+        }
+
+        private void lblAzLimStatus1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label41_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
