@@ -388,6 +388,12 @@ namespace ControlRoomApplication.Controllers
             else if (sensor.Equals("main gate"))                    overrides.setGatesOverride(set);
             else if (sensor.Equals("elevation proximity (1)"))      overrides.setElProx0Override(set);
             else if (sensor.Equals("elevation proximity (2)"))      overrides.setElProx90Override(set);
+            else if (sensor.Equals("azimuth absolute encoder")) overrides.setAzimuthAbsEncoder(set);
+            else if (sensor.Equals("elevation absolute encoder")) overrides.setElevationAbsEncoder(set);
+            else if (sensor.Equals("azimuth motor accelerometer")) overrides.setAzimuthAccelerometer(set);
+            else if (sensor.Equals("elevation motor accelerometer")) overrides.setElevationAccelerometer(set);
+            else if (sensor.Equals("counterbalance accelerometer")) overrides.setCounterbalanceAccelerometer(set);
+
 
             if (set)
             {

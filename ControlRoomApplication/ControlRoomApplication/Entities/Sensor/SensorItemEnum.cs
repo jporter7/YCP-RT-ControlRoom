@@ -26,6 +26,8 @@ namespace ControlRoomApplication.Entities
         ELEV_MOTOR_CURRENT,
         COUNTER_BALANCE_VIBRATION,
         WIND,
-        RAIN_AMOUNT
+        RAIN_AMOUNT,
+        ELEVATION_ABS_ENCODER,
+        AZIMUTH_ABS_ENCODER
     }
 }
