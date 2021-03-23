@@ -30,11 +30,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         ReceivingData,
 
         /// <summary>
-        /// This is a temporary value that will be set whenever the Sensor Network sends an error code.
-        /// </summary>
-        Error,
-
-        /// <summary>
         /// This is set if it takes too long to receive a data packet.
         /// </summary>
         TimedOutDataRetrieval,
