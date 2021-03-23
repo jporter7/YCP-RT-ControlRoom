@@ -221,7 +221,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeControlledStop()
         {
-            return RadioTelescope.PLCDriver.Controled_stop(); // NO MOVE
+            return RadioTelescope.PLCDriver.ControlledStop(); // NO MOVE
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeImmediateStop()
         {
-            return RadioTelescope.PLCDriver.Immediade_stop(); // NO MOVE
+            return RadioTelescope.PLCDriver.ImmediateStop(); // NO MOVE
         }
 
 

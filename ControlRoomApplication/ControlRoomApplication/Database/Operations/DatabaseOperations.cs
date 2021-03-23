@@ -969,7 +969,7 @@ namespace ControlRoomApplication.Database
 
                 if (outdated == null)
                 {
-                    throw new ArgumentNullException($"No configuration found with a telescope of ID {config.TelescopeId}");
+                    throw new InvalidOperationException($"Cannot update config; no config found with a telescope of ID {config.TelescopeId}");
                 }
                 else
                 {
@@ -978,6 +978,33 @@ namespace ControlRoomApplication.Database
                     SaveContext(Context);
 
                     logger.Info(Utilities.GetTimeStamp() + ": Updated Sensor Network Configuration for Telescope ID " + config.TelescopeId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method used to delete a SensorNetworkConfig. This is not currently being
+        /// used in any production code, only for unit tests.
+        /// </summary>
+        /// <param name="config">The SensorNetworkConfig to be deleted.</param>
+        public static void DeleteSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var toDelete = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
+
+                if (toDelete == null)
+                {
+                    throw new InvalidOperationException($"Cannot delete config; no config found with a telescope of ID {config.TelescopeId}");
+                }
+                else
+                {
+                    Context.SensorNetworkConfig.Attach(toDelete);
+                    Context.SensorNetworkConfig.Remove(toDelete);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + ": Deleted Sensor Network Configuration for Telescope ID " + config.TelescopeId);
                 }
             }
         }

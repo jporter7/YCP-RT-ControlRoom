@@ -113,6 +113,7 @@
     <Compile Include="EntityControllersTests\RadioTelescopeControllerManagementThreadTest.cs" />
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCClientAndDriverTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkClientTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberSimulatorControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberTestControllerTest.cs" />

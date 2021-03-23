@@ -944,12 +944,12 @@ namespace ControlRoomApplication.Controllers
         /// send a hold move command to the MCu
         /// </summary>
         /// <returns></returns>
-        public override bool Controled_stop(  ) {
-            return MCU.Controled_stop(2);
+        public override bool ControlledStop(  ) {
+            return MCU.ControlledStop(2);
         }
 
-        public override bool Immediade_stop() {
-            return MCU.Immediade_stop(2);
+        public override bool ImmediateStop() {
+            return MCU.ImmediateStop(2);
         }
 
         // Is called when the PLC and/or MCU is shutdown, stows the telescope

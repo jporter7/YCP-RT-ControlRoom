@@ -17,11 +17,11 @@ using static ControlRoomApplication.Constants.MCUConstants;
 namespace ControlRoomApplication.Controllers {
     //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
     // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
-    // so the best thing to do would be to split up the AZ and EL components of MCUcomand and then have 2 inststances for running command one for AZ one for EL
+    // so the best thing to do would be to split up the AZ and EL components of MCUCommand and then have 2 inststances for running command one for AZ one for EL
     /// <summary>
     /// used to keep track of what comand the MCU is running
     /// </summary>
-    public class MCUcomand : IDisposable{
+    public class MCUCommand : IDisposable{
         /// <summary>
         /// similar to priority to keep certian moves from overriding others, 0 is highest
         /// </summary>
@@ -39,7 +39,7 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// high level information about the comands general purpose
         /// </summary>
-        public MCUcomandType ComandType;
+        public MCUCommandType CommandType;
         /// <summary>
         /// time at which the comand was sent to the MCU
         /// </summary>
@@ -51,7 +51,7 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// this will be set when returnd to the calling function if the move could not be run for some reason
         /// </summary>
-        public Exception ComandError;
+        public Exception CommandError;
         /// <summary>
         /// these variables set so that different parts of the MCUManager can calculate how parts of the operation will take
         /// </summary>
@@ -67,8 +67,8 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <param name="data"></param>
         /// <param name="CMDType"></param>
-        public MCUcomand( ushort[] data, MCUcomandType CMDType, int priority ) {
-            ComandType = CMDType;
+        public MCUCommand( ushort[] data, MCUCommandType CMDType, int priority ) {
+            CommandType = CMDType;
             comandData = data;
             issued = DateTime.Now;
             Move_Priority = priority;
@@ -83,8 +83,8 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="ELCW"></param>
         /// <param name="AZSpeed"></param>
         /// <param name="ElSpeed"></param>
-        public MCUcomand( ushort[] data , MCUcomandType CMDType, int priority , bool AZCW,bool ELCW,int AZSpeed,int ElSpeed ) {
-            ComandType = CMDType;
+        public MCUCommand( ushort[] data , MCUCommandType CMDType, int priority , bool AZCW,bool ELCW,int AZSpeed,int ElSpeed ) {
+            CommandType = CMDType;
             comandData = data;
             issued = DateTime.Now;
             AZ_CW = AZCW;
@@ -101,13 +101,13 @@ namespace ControlRoomApplication.Controllers {
             } catch { }
         }
     }
-    public enum MCUcomandType {
+    public enum MCUCommandType {
         JOG,
-        RELETIVE_MOVE,
+        RELATIVE_MOVE,
         CONFIGURE,
         CLEAR_LAST_MOVE,
         HOLD_MOVE,
-        IMIDEAT_STOP,
+        IMMEDIATE_STOP,
         RESET_ERRORS,
         HOME
     }
@@ -254,8 +254,8 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// this value should not be changed from outside the MCU class
         /// </summary>
-        public MCUcomand RunningCommand= new MCUcomand(new ushort[20],MCUcomandType.CLEAR_LAST_MOVE,99) { completed = true };
-        private MCUcomand PreviousCommand = new MCUcomand( new ushort[20] , MCUcomandType.CLEAR_LAST_MOVE,99 ) { completed = true };
+        public MCUCommand RunningCommand= new MCUCommand(new ushort[20],MCUCommandType.CLEAR_LAST_MOVE,99) { completed = true };
+        private MCUCommand PreviousCommand = new MCUCommand( new ushort[20] , MCUCommandType.CLEAR_LAST_MOVE,99 ) { completed = true };
         private int consecutiveErrors = 0;
         private int consecutiveSucsefullMoves = 0;
         private int MCU_port;
@@ -338,7 +338,7 @@ namespace ControlRoomApplication.Controllers {
                 if(((network_status >> 13) & 1) == 1) {
                     logger.Warn( "MCU network disconected, reseting errors" );
                     checkForAndResetErrors();
-                    //Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS ) ).GetAwaiter().GetResult();
+                    //Send_Generic_Command_And_Track( new MCUCommand( MESSAGE_CONTENTS_RESET_ERRORS , MCUCommandType.RESET_ERRORS ) ).GetAwaiter().GetResult();
                 }
                 Task.Delay( 250 ).Wait();
             }
@@ -355,10 +355,10 @@ namespace ControlRoomApplication.Controllers {
                         var Distance = estimateDistanceToStop( RunningCommand );
                         var expected = new Orientation( current.Azimuth + Distance.Azimuth , current.Elevation + Distance.Elevation );
                         if((expected.Azimuth > 360 || expected.Azimuth < 0) && Math.Abs( Distance.Azimuth ) > 0.1) {
-                            Controled_stop(0);
+                            ControlledStop(0);
                         }
                         if((expected.Elevation > 90 || expected.Elevation < 0) && Math.Abs( Distance.Elevation ) > 0.1) {
-                            Controled_stop(0);
+                            ControlledStop(0);
                         }
                     }
                 } catch { }
@@ -472,7 +472,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns></returns>
         public bool Cancel_move(int priority) {
-            var cmd = new MCUcomand( MESSAGE_CONTENTS_CLEAR_MOVE , MCUcomandType.CLEAR_LAST_MOVE,priority ) { completed = false };
+            var cmd = new MCUCommand( MESSAGE_CONTENTS_CLEAR_MOVE , MCUCommandType.CLEAR_LAST_MOVE,priority ) { completed = false };
             Send_Generic_Command_And_Track( cmd ).GetAwaiter().GetResult();
             Wait_For_Stop_Motion( cmd );
             return true;
@@ -482,19 +482,19 @@ namespace ControlRoomApplication.Controllers {
         /// attempts to bring the Telescope to a controlled stop certian moves like Homeing are un affected by this
         /// </summary>
         /// <returns></returns>
-        public bool Controled_stop( int priority ) {
-            if(RunningCommand.ComandType == MCUcomandType.JOG) {
+        public bool ControlledStop( int priority ) {
+            if(RunningCommand.CommandType == MCUCommandType.JOG) {
                 Cancel_move( priority );
             } else {
-                var cmd = new MCUcomand( MESSAGE_CONTENTS_HOLD_MOVE , MCUcomandType.HOLD_MOVE , priority ) { completed = false };
+                var cmd = new MCUCommand( MESSAGE_CONTENTS_HOLD_MOVE , MCUCommandType.HOLD_MOVE , priority ) { completed = false };
                 Send_Generic_Command_And_Track( cmd ).GetAwaiter().GetResult();
                 Wait_For_Stop_Motion( cmd );
             }
             return true;
         }
 
-        public bool Immediade_stop( int priority ) {
-            Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_IMMEDIATE_STOP , MCUcomandType.IMIDEAT_STOP , priority ) { completed = true } ).GetAwaiter().GetResult();
+        public bool ImmediateStop( int priority ) {
+            Send_Generic_Command_And_Track( new MCUCommand( MESSAGE_CONTENTS_IMMEDIATE_STOP , MCUCommandType.IMMEDIATE_STOP , priority ) { completed = true } ).GetAwaiter().GetResult();
             return true;
         }
 
@@ -503,7 +503,7 @@ namespace ControlRoomApplication.Controllers {
             bool azCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
             bool elCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
             if(elCmdErr || azCmdErr) {
-                Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS , 0 ) { completed = true } ).GetAwaiter().GetResult();
+                Send_Generic_Command_And_Track( new MCUCommand( MESSAGE_CONTENTS_RESET_ERRORS , MCUCommandType.RESET_ERRORS , 0 ) { completed = true } ).GetAwaiter().GetResult();
             }
         }
 
@@ -512,7 +512,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         public void ResetMCUErrors()
         {
-            Send_Generic_Command_And_Track(new MCUcomand(MESSAGE_CONTENTS_RESET_ERRORS, MCUcomandType.RESET_ERRORS, 0) { completed = true }).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track(new MCUCommand(MESSAGE_CONTENTS_RESET_ERRORS, MCUCommandType.RESET_ERRORS, 0) { completed = true }).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -561,22 +561,22 @@ namespace ControlRoomApplication.Controllers {
         private async Task<bool> Override_And_Stop_Motion( int priority ) {
             var data = TryReadRegs( 0 , 15 ).GetAwaiter().GetResult();
             if(Is_Moing( data )) {
-                if(RunningCommand.ComandType == MCUcomandType.JOG) {
+                if(RunningCommand.CommandType == MCUCommandType.JOG) {
                     Cancel_move( priority );
                     WatTillStopped().Wait();
-                } else if(RunningCommand.ComandType == MCUcomandType.RELETIVE_MOVE) {
+                } else if(RunningCommand.CommandType == MCUCommandType.RELATIVE_MOVE) {
                     Cancel_move( priority );
                     Task.Delay( 100 ).Wait();
-                    Controled_stop( priority );
+                    ControlledStop( priority );
                     WatTillStopped().Wait();
                 } else {
-                    Immediade_stop( priority );
+                    ImmediateStop( priority );
                 }
             }
             return true;
         }
 
-        private async Task<bool> Wait_For_Stop_Motion( MCUcomand comand) {
+        private async Task<bool> Wait_For_Stop_Motion( MCUCommand comand) {
             WatTillStopped().Wait();
             comand.completed = true;
             return true;
@@ -604,7 +604,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        private int estimateStopTime( MCUcomand CMD ) {
+        private int estimateStopTime( MCUCommand CMD ) {
             int mS_To_DecelerateAZ = (int)1.25 * (CMD.AZ_Programed_Speed - AZStartSpeed) / CMD.AZ_ACC;
             int mS_To_DecelerateEL = (int)1.25 * (CMD.EL_Programed_Speed - AZStartSpeed) / CMD.EL_ACC;
             int mS_To_Decelerate;
@@ -616,7 +616,7 @@ namespace ControlRoomApplication.Controllers {
             return mS_To_Decelerate;
         }
 
-        private Orientation estimateDistanceToStop( MCUcomand CMD ) {
+        private Orientation estimateDistanceToStop( MCUCommand CMD ) {
             int StepsAZ = 0, StepsEL = 0;
             if(CMD.AZ_Programed_Speed > 0) {
                 int mS_To_DecelerateAZ = (int)((1.25 * (CMD.AZ_Programed_Speed - AZStartSpeed) / (double)CMD.AZ_ACC) / 1000.0);
@@ -723,11 +723,11 @@ namespace ControlRoomApplication.Controllers {
             ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
 
-            Immediade_stop( priority );
+            ImmediateStop( priority );
             Task.Delay( 50 ).Wait();
             checkForAndResetErrors();
             Task.Delay( 50 ).Wait();
-            Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.CONFIGURE , priority ) { completed = true} ).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.CONFIGURE , priority ) { completed = true} ).GetAwaiter().GetResult();
             Task.Delay( 100 ).Wait();
             //TODO: check for configuration Errors
             return true;
@@ -850,9 +850,9 @@ namespace ControlRoomApplication.Controllers {
             }
             Cancel_move( priority );
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
-            Controled_stop( priority );
+            ControlledStop( priority );
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
-            var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( data , MCUcomandType.RELETIVE_MOVE , priority ) {
+            var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.RELATIVE_MOVE , priority ) {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
             } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();
@@ -947,7 +947,7 @@ namespace ControlRoomApplication.Controllers {
             TimeToMove = ( int)(TimeToMove * 1.2);
             TimeToMove += 100;
 
-            var ThisMove = Send_Generic_Command_And_Track( new MCUcomand( CMDdata , MCUcomandType.RELETIVE_MOVE, priority, positionTranslationAZ > 0, positionTranslationEL > 0, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } ).GetAwaiter().GetResult();
+            var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, priority, positionTranslationAZ > 0, positionTranslationEL > 0, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();//wait for comand to be read
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
@@ -967,10 +967,10 @@ namespace ControlRoomApplication.Controllers {
                 bool elErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
                 if(elErr || azErr) {//TODO:add more checks to this 
                     ThisMove.completed = true;
-                    ThisMove.ComandError = new Exception( "MCU command error bit was set" );
+                    ThisMove.CommandError = new Exception( "MCU command error bit was set" );
                     consecutiveSucsefullMoves = 0;
                     consecutiveErrors++;
-                    Send_Generic_Command_And_Track( new MCUcomand( MESSAGE_CONTENTS_RESET_ERRORS , MCUcomandType.RESET_ERRORS,0 ) ).Wait();
+                    Send_Generic_Command_And_Track( new MCUCommand( MESSAGE_CONTENTS_RESET_ERRORS , MCUCommandType.RESET_ERRORS,0 ) ).Wait();
                     PLCEvents.DurringOverrideRemoveSecondary( handle );
                     ThisMove.Dispose();
                     return false;
@@ -993,12 +993,12 @@ namespace ControlRoomApplication.Controllers {
             var data2  = TryReadRegs( 0 , 12 ).GetAwaiter().GetResult();
             if(Is_Moing( data2 )) {
                 ThisMove.completed = true;
-                ThisMove.ComandError = new Exception( "Move did not complete in the expected time" );
+                ThisMove.CommandError = new Exception( "Move did not complete in the expected time" );
                 consecutiveSucsefullMoves = 0;
                 consecutiveErrors++;
             }else if(WasLimitCancled) {
                 ThisMove.completed = true;
-                ThisMove.ComandError = new Exception( "Move ended when a limit switch was hit" );
+                ThisMove.CommandError = new Exception( "Move ended when a limit switch was hit" );
                 consecutiveSucsefullMoves = 0;
                 consecutiveErrors++;
             }
@@ -1067,7 +1067,7 @@ namespace ControlRoomApplication.Controllers {
                 ELstepSpeed = 0;
             }
             bool booth = false;
-            if(RunningCommand.ComandType == MCUcomandType.JOG) {
+            if(RunningCommand.CommandType == MCUCommandType.JOG) {
                 //if telescope is already joging changing direction requires stopping first
                 ushort[] data3 = new ushort[20];
                 data2.CopyTo( data3 , 0 );
@@ -1079,7 +1079,7 @@ namespace ControlRoomApplication.Controllers {
                     for(int j = 0; j <= data3.Length - 11; j++) {
                         data3[j + 10] = MESSAGE_CONTENTS_CLEAR_MOVE[j + 10];//replace elevation portion of move with controled stop
                     }
-                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
+                    _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } ).GetAwaiter().GetResult();
                     WatTillStoppedPerAxis( true ).GetAwaiter().GetResult();
@@ -1087,28 +1087,28 @@ namespace ControlRoomApplication.Controllers {
                     for(int j = 0; j <= data3.Length - 1; j++) {
                         data3[j] = MESSAGE_CONTENTS_CLEAR_MOVE[j];//replace Azimuth portion of move with controled stop
                     }
-                    _ = Send_Generic_Command_And_Track( new MCUcomand( data3 , MCUcomandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
+                    _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } ).GetAwaiter().GetResult();
                     WatTillStoppedPerAxis( false ).GetAwaiter().GetResult();
                 }
             }
 
-            _ = Send_Generic_Command_And_Track( new MCUcomand( data2 , MCUcomandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
+            _ = Send_Generic_Command_And_Track( new MCUCommand( data2 , MCUCommandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
                 EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                 AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
             } ).GetAwaiter().GetResult();
             return true;
         }
 
-        private async Task<MCUcomand> Send_Generic_Command_And_Track( MCUcomand incoming ) {//TODO: implament priority 
+        private async Task<MCUCommand> Send_Generic_Command_And_Track( MCUCommand incoming ) {//TODO: implament priority 
             if((incoming.Move_Priority > RunningCommand.Move_Priority)&& !RunningCommand.completed) {
                 return incoming;
             }
-            Console.WriteLine( "running: {0} ||| {1}     incoming: {2} ||| {3}", RunningCommand.ComandType.ToString(), RunningCommand.Move_Priority , incoming.ComandType.ToString(),incoming.Move_Priority );
+            Console.WriteLine( "running: {0} ||| {1}     incoming: {2} ||| {3}", RunningCommand.CommandType.ToString(), RunningCommand.Move_Priority , incoming.CommandType.ToString(),incoming.Move_Priority );
             PreviousCommand = RunningCommand;
-            if(RunningCommand.ComandType == MCUcomandType.JOG) {
-                if(incoming.ComandType == MCUcomandType.CLEAR_LAST_MOVE || incoming.ComandType == MCUcomandType.IMIDEAT_STOP || incoming.ComandType == MCUcomandType.JOG) {
+            if(RunningCommand.CommandType == MCUCommandType.JOG) {
+                if(incoming.CommandType == MCUCommandType.CLEAR_LAST_MOVE || incoming.CommandType == MCUCommandType.IMMEDIATE_STOP || incoming.CommandType == MCUCommandType.JOG) {
                     try {
                         RunningCommand?.timeout?.Cancel();
                     } catch { }
@@ -1116,10 +1116,10 @@ namespace ControlRoomApplication.Controllers {
                     TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.comandData ).Wait();
                     return incoming;
                 }
-                incoming.ComandError = new Exception( "MCU was running a JOG move which could not be overriden" );
+                incoming.CommandError = new Exception( "MCU was running a JOG move which could not be overriden" );
                 return incoming;
-            } else if((RunningCommand.ComandType == MCUcomandType.HOME && !RunningCommand.completed)) {
-                if( incoming.ComandType == MCUcomandType.IMIDEAT_STOP) {
+            } else if((RunningCommand.CommandType == MCUCommandType.HOME && !RunningCommand.completed)) {
+                if( incoming.CommandType == MCUCommandType.IMMEDIATE_STOP) {
                     try {
                         RunningCommand?.timeout?.Cancel();
                     } catch { }
@@ -1127,7 +1127,7 @@ namespace ControlRoomApplication.Controllers {
                     TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.comandData ).Wait();
                     return incoming;
                 }
-                incoming.ComandError = new Exception( "MCU was running a home move which could not be overriden" );
+                incoming.CommandError = new Exception( "MCU was running a home move which could not be overriden" );
                 return incoming;
             }
             try {
