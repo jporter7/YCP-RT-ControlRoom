@@ -906,6 +906,31 @@ namespace ControlRoomApplication.Database
             
         }
 
+        /// <summary>
+        /// Routine to retrieve the time interval for dumping snow off of the dish (in minutes) from the database
+        /// </summary>
+        public static int FetchSnowDumpTime()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var threshold = Context.WeatherThreshold.
+                    Include(t => t.SnowDumpTime).FirstOrDefault();
+               
+
+                if(threshold == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The WeatherThreshold data could not be found.");
+                    return -1;
+                }
+                else
+                {
+                    return threshold.SnowDumpTime;
+                }
+               
+            }
+            
+        }
+
 
     }
 }
