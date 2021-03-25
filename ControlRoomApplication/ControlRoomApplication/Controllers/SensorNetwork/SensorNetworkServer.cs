@@ -133,18 +133,18 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This should be true as long as the SensorMonitoringThread is running, and set to false if that thread
         /// is to be terminated.
         /// </summary>
-        private bool CurrentlyRunning;
+        private bool CurrentlyRunning { get; set; }
         
         /// <summary>
         /// This thread should always be running and waiting or collecting some kind of data from the Sensor Network unless
         /// the CurrentlyRunning value (above) is set to false.
         /// </summary>
-        private Thread SensorMonitoringThread;
+        private Thread SensorMonitoringThread { get; }
 
         /// <summary>
         /// This will help us detect if the SensorNetworkServer has stopped receiving data.
         /// </summary>
-        private System.Timers.Timer Timeout;
+        private System.Timers.Timer Timeout { get; }
 
         /// <summary>
         /// This starts the SensorMonitoringRoutine. Immediately after connecting, initialization will begin.
