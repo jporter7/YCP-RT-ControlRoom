@@ -147,21 +147,32 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         private System.Timers.Timer Timeout { get; }
 
         /// <summary>
-        /// This starts the SensorMonitoringRoutine. Immediately after connecting, initialization will begin.
+        /// This starts the SensorMonitoringRoutine. Calling this will immediately begin initialization.
         /// </summary>
         /// <returns>If started successfully, return true. Else, return false.</returns>
-        public bool StartSensorMonitoringRoutine()
+        public void StartSensorMonitoringRoutine()
         {
-            return false;
+            Server.Start();
+            CurrentlyRunning = true;
+            Status = SensorNetworkStatusEnum.Initializing;
+            Timeout.Interval = SensorNetworkConstants.DefaultInitializationTimeout;
+            Timeout.Start();
+            SensorMonitoringThread.Start();
         }
 
         /// <summary>
         /// This ends the SensorMonitoringRoutine. This should only be executed when "Shutdown RT" is clicked.
         /// </summary>
         /// <returns>If ended successfully, return true. Else, return false.</returns>
-        public bool EndSensorMonitoringRoutine()
+        public void EndSensorMonitoringRoutine()
         {
-            return false;
+            Server.Stop();
+            CurrentlyRunning = false;
+            Timeout.Stop();
+            Timeout.Dispose();
+            SensorMonitoringThread.Join();
+
+            // TODO: Call bringdown for the simulation sensor network if it is initialized
         }
 
         /// <summary>
@@ -202,6 +213,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             }
             else
             {
+                Status = SensorNetworkStatusEnum.ReceivingData;
+
                 // Bytes 1-3 of the data contain the overall size of the packet
                 UInt32 expectedDataSize = (UInt32)(data[1] << 24 | data[2] << 16 | data[3] << 8 | data[4]);
 
@@ -311,7 +324,45 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// </summary>
         private void SensorMonitoringRoutine()
         {
+            TcpClient localClient;
+            NetworkStream stream;
 
+            byte[] receivedData = new byte[SensorNetworkConstants.MaxPacketSize];
+
+            while(CurrentlyRunning)
+            {
+                try
+                {
+                    localClient = Server.AcceptTcpClient();
+                    stream = localClient.GetStream();
+                    
+                    int receivedDataSize;
+
+                    while ((receivedDataSize = stream.Read(receivedData, 0, receivedData.Length)) != 0 && CurrentlyRunning)
+                    {
+                        // If the status is initializing, we want the timer to keep going. Else, we are currently receiving data, and
+                        // want to stop the timer as soon as we get something.
+                        if (Timeout.Enabled && Status != SensorNetworkStatusEnum.Initializing) Timeout.Stop();
+
+                        InterpretData(receivedData, receivedDataSize);
+
+                        // We only want to start the timeout if we are currently receiving data. The reason is because, the timeout
+                        // status will overwrite any preexisting status errors.
+                        if (Status == SensorNetworkStatusEnum.ReceivingData) Timeout.Start();
+                    }
+
+                    localClient.Close();
+                    localClient.Dispose();
+                    stream.Close();
+                    stream.Dispose();
+                }
+                catch
+                {
+                    Timeout.Stop();
+                    Status = SensorNetworkStatusEnum.ErrorStartingServer;
+                    logger.Error($"{Utilities.GetTimeStamp()}: There was an error starting the server; please check that the IP address is available.");
+                }
+            }
         }
 
         /// <summary>

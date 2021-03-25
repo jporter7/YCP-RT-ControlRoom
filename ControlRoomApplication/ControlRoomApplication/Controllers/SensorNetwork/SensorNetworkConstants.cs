@@ -54,5 +54,11 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// to get a nice load of sensor data. The number doesn't come from anything, it's just the number we chose.
         /// </summary>
         public const int TransitIdSuccess = 129;
+
+        /// <summary>
+        /// This is the max packet size the Sensor Network is able to send. We aren't really sure why it cuts off
+        /// at 2048, but for this reason, this is the size that we will create our main "monitor" byte array.
+        /// </summary>
+        public const int MaxPacketSize = 2048;
     }
 }

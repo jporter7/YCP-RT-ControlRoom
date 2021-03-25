@@ -582,5 +582,61 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             Assert.AreEqual(SensorNetworkStatusEnum.UnknownError, Server.Status);
         }
+
+        [TestMethod]
+        public void TestStartSensorMonitoringRoutine_RoutineStarts_AllValuesSet()
+        {
+            PrivateObject privServer = new PrivateObject(Server);
+
+            Server.StartSensorMonitoringRoutine();
+
+            // Retrieve any private fields
+            TcpListener resultServer = (TcpListener)privServer.GetFieldOrProperty("Server");
+            bool resultCurrentlyRunning = (bool)privServer.GetFieldOrProperty("CurrentlyRunning");
+            System.Timers.Timer resultTimer = (System.Timers.Timer)privServer.GetFieldOrProperty("Timeout");
+            Thread resultMonitorThread = (Thread)privServer.GetFieldOrProperty("SensorMonitoringThread");
+
+            // Verify all fields are as we expect them to be.
+            Assert.IsTrue(resultServer.Server.IsBound);
+
+            Assert.IsTrue(resultCurrentlyRunning);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.Initializing, Server.Status);
+
+            Assert.AreEqual(SensorNetworkConstants.DefaultInitializationTimeout, resultTimer.Interval);
+            Assert.IsTrue(resultTimer.Enabled);
+
+            Assert.IsTrue(resultMonitorThread.IsAlive);
+
+            // Stop the monitoring routine. We aren't testing this, so no asserts are being checked here
+            Server.EndSensorMonitoringRoutine();
+        }
+
+        [TestMethod]
+        public void TestEndSensorMonitoringRoutine_RoutineEnds_AllValuesSet()
+        {
+            PrivateObject privServer = new PrivateObject(Server);
+
+            // Now this is the one we will not have any asserts for, because we are not testing it in this function
+            Server.StartSensorMonitoringRoutine();
+
+            Server.EndSensorMonitoringRoutine();
+
+            // Retrieve any private fields
+            TcpListener resultServer = (TcpListener)privServer.GetFieldOrProperty("Server");
+            bool resultCurrentlyRunning = (bool)privServer.GetFieldOrProperty("CurrentlyRunning");
+            System.Timers.Timer resultTimer = (System.Timers.Timer)privServer.GetFieldOrProperty("Timeout");
+            Thread resultMonitorThread = (Thread)privServer.GetFieldOrProperty("SensorMonitoringThread");
+
+            // Verify everything is brought down correctly (fields are as we expect them to be)
+            Assert.IsFalse(resultServer.Server.IsBound);
+
+            Assert.IsFalse(resultCurrentlyRunning);
+
+            Assert.IsFalse(resultMonitorThread.IsAlive);
+
+            // Unfortunately, there is no good way to check if an object has been disposed, so we will just
+            // have to assume that the Timeout object is being disposed properly.
+        }
     }
 }
