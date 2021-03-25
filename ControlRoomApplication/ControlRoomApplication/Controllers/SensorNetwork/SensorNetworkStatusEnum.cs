@@ -48,12 +48,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         InitializationSendingFailed,
 
         /// <summary>
-        /// This is used if the SensorNetworkServer fails to start for any reason. Reasons could be that the IP address
-        /// is already taken, or there is some other error with the network. The server doesn't depend on making a connection
-        /// (it waits until something connects to it), so as long as the IP address is valid and reachable, this status should
-        /// not occur.
+        /// This is used if the SensorNetworkServer fails while running for any reason. Reasons could be that the IP address
+        /// is already taken, or the Ethernet cable was unplugged. The server doesn't depend on initially making a connection
+        /// (it waits until something connects to it), so as long as the IP address is valid and reachable at all times, this
+        /// error should not occur.
         /// </summary>
-        ErrorStartingServer,
+        ServerError,
         
         /// <summary>
         /// This should never be reached, but if it is, then some troubleshooting needs to happen. The only way this can be set is

@@ -359,8 +359,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 catch
                 {
                     Timeout.Stop();
-                    Status = SensorNetworkStatusEnum.ErrorStartingServer;
-                    logger.Error($"{Utilities.GetTimeStamp()}: There was an error starting the server; please check that the IP address is available.");
+                    Status = SensorNetworkStatusEnum.ServerError;
+                    logger.Error($"{Utilities.GetTimeStamp()}: An error occurred while running the server; please check that the connection is available.");
                 }
             }
         }
