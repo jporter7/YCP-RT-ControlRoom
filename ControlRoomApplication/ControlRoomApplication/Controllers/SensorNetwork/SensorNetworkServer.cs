@@ -142,7 +142,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This thread should always be running and waiting or collecting some kind of data from the Sensor Network unless
         /// the CurrentlyRunning value (above) is set to false.
         /// </summary>
-        private Thread SensorMonitoringThread { get; }
+        private Thread SensorMonitoringThread { get; set; }
 
         /// <summary>
         /// This will help us detect if the SensorNetworkServer has stopped receiving data.
@@ -166,14 +166,14 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <summary>
         /// This ends the SensorMonitoringRoutine. This should only be executed when "Shutdown RT" is clicked.
         /// </summary>
+        /// <param name="rebooting">This will tell the function if we are rebooting, or shutting down indefinitely.</param>
         /// <returns>If ended successfully, return true. Else, return false.</returns>
-        public void EndSensorMonitoringRoutine()
+        public void EndSensorMonitoringRoutine(bool rebooting = false)
         {
-            CurrentlyRunning = false;
-            Status = SensorNetworkStatusEnum.None;
-            if (Timeout.Enabled) Timeout.Stop();
-            Timeout.Dispose();
             Server.Stop();
+            CurrentlyRunning = false;
+
+            if (Timeout.Enabled) Timeout.Stop();
 
             // The stream will only be null if the sensor monitoring thread has not been called
             if (Stream != null)
@@ -183,6 +183,17 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             }
 
             SensorMonitoringThread.Join();
+            
+            if (!rebooting)
+            { // We want to keep using the timer if we are rebooting, not destroy it.
+                Status = SensorNetworkStatusEnum.None;
+                Timeout.Dispose();
+            }
+            else
+            {
+                Status = SensorNetworkStatusEnum.Rebooting;
+                SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
+            }
 
             // TODO: Call bringdown for the simulation sensor network if it is initialized
         }
@@ -192,9 +203,17 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// user has selected on the GUI.
         /// </summary>
         /// <returns></returns>
-        public bool RebootSensorNetwork()
+        public void RebootSensorNetwork()
         {
-            return false;
+            logger.Error($"{Utilities.GetTimeStamp()}: Rebooting Sensor Network. This may take a few seconds...");
+
+            EndSensorMonitoringRoutine(true); // Must pass through true because we are rebooting
+
+            // This is to let the Sensor Network time out, triggering a reboot. We're adding 50ms on to this to make
+            // sure it REALLY times out.
+            Thread.Sleep(SensorNetworkConstants.WatchDogTimeout + 50);
+
+            StartSensorMonitoringRoutine();
         }
 
         /// <summary>

@@ -54,7 +54,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// error should not occur.
         /// </summary>
         ServerError,
-        
+
+        /// <summary>
+        /// This status is set whenever a reboot is called. This will be overwritten very quickly by initialization as soon as the
+        /// sensor network starts back up.
+        /// </summary>
+        Rebooting,
+
         /// <summary>
         /// This should never be reached, but if it is, then some troubleshooting needs to happen. The only way this can be set is
         /// if the timer is elapsed and the status is not ReceivingData or Initializing.

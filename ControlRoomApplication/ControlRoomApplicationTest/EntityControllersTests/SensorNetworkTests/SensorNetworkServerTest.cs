@@ -634,8 +634,43 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             Assert.IsFalse(resultMonitorThread.IsAlive);
 
+            Assert.AreEqual(SensorNetworkStatusEnum.None, Server.Status);
+
             // Unfortunately, there is no good way to check if an object has been disposed, so we will just
             // have to assume that the Timeout object is being disposed properly.
+
+            Assert.IsFalse(resultTimer.Enabled);
+        }
+
+        [TestMethod]
+        public void TestEndSensorMonitoringRoutine_RebootingFlagTrue_AllValuesSetWithRebootingStatus()
+        {
+            PrivateObject privServer = new PrivateObject(Server);
+
+            // Now this is the one we will not have any asserts for, because we are not testing it in this function
+            Server.StartSensorMonitoringRoutine();
+
+            Server.EndSensorMonitoringRoutine(true); // true represents it is "rebooting"
+
+            // Retrieve any private fields
+            TcpListener resultServer = (TcpListener)privServer.GetFieldOrProperty("Server");
+            bool resultCurrentlyRunning = (bool)privServer.GetFieldOrProperty("CurrentlyRunning");
+            System.Timers.Timer resultTimer = (System.Timers.Timer)privServer.GetFieldOrProperty("Timeout");
+            Thread resultMonitorThread = (Thread)privServer.GetFieldOrProperty("SensorMonitoringThread");
+
+            // Verify everything is brought down correctly (fields are as we expect them to be)
+            Assert.IsFalse(resultServer.Server.IsBound);
+
+            Assert.IsFalse(resultCurrentlyRunning);
+
+            Assert.IsFalse(resultMonitorThread.IsAlive);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.Rebooting, Server.Status);
+
+            // Unfortunately, there is no good way to check if an object has been disposed, so we will just
+            // have to assume that the Timeout object is being disposed properly.
+
+            Assert.IsFalse(resultTimer.Enabled);
         }
 
         [TestMethod]
@@ -774,6 +809,75 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             stream.Dispose();
             sendToServer.Close();
             sendToServer.Dispose();
+        }
+
+        [TestMethod]
+        public void TestRebootSensorNetwork_Reboots_AllFieldsSet()
+        {// These fields should be the same as the ones set in StartSensorMonitoringRoutine()
+            PrivateObject privServer = new PrivateObject(Server);
+            Server.StartSensorMonitoringRoutine();
+
+            Server.RebootSensorNetwork();
+
+            // Retrieve any private fields
+            TcpListener resultServer = (TcpListener)privServer.GetFieldOrProperty("Server");
+            bool resultCurrentlyRunning = (bool)privServer.GetFieldOrProperty("CurrentlyRunning");
+            System.Timers.Timer resultTimer = (System.Timers.Timer)privServer.GetFieldOrProperty("Timeout");
+            Thread resultMonitorThread = (Thread)privServer.GetFieldOrProperty("SensorMonitoringThread");
+
+            // Verify all fields are as we expect them to be.
+            Assert.IsTrue(resultServer.Server.IsBound);
+
+            Assert.IsTrue(resultCurrentlyRunning);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.Initializing, Server.Status);
+
+            Assert.AreEqual(SensorNetworkConstants.DefaultInitializationTimeout, resultTimer.Interval);
+            Assert.IsTrue(resultTimer.Enabled);
+
+            Assert.IsTrue(resultMonitorThread.IsAlive);
+
+            // Stop the monitoring routine. We aren't testing this, so no asserts are being checked here
+            Server.EndSensorMonitoringRoutine();
+        }
+
+        [TestMethod]
+        public void TestRebootSensorNetwork_Reboots_CanStillReceivePackets()
+        {// These fields should be the same as the ones set in StartSensorMonitoringRoutine()
+            PrivateObject privServer = new PrivateObject(Server);
+            Server.StartSensorMonitoringRoutine();
+
+            Server.RebootSensorNetwork();
+
+            // Prepare packets and client to send. We want two packets so we can alternate
+            // between them and verify data is being changed.
+            byte[] OnlyElEnc50 = File.ReadAllBytes($"{TestPacketDirectory}OnlyElEnc50.snp");
+            byte[] OnlyElEnc25 = File.ReadAllBytes($"{TestPacketDirectory}OnlyElEnc25.snp");
+            TcpClient sendToServer = new TcpClient(ServerIpAddress.ToString(), ServerPort);
+            NetworkStream stream = sendToServer.GetStream();
+
+            // First packet
+            stream.Write(OnlyElEnc50, 0, OnlyElEnc50.Length);
+            stream.Flush();
+
+            Thread.Sleep(25); // wait for data to be received
+
+            Assert.AreEqual(50, Server.CurrentAbsoluteOrientation.Elevation, 0.17);
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, Server.Status);
+
+            Thread.Sleep(500);
+
+            // Second packet
+            stream.Write(OnlyElEnc25, 0, OnlyElEnc25.Length);
+            stream.Flush();
+
+            Thread.Sleep(25); // wait for data to be received
+
+            Assert.AreEqual(25, Server.CurrentAbsoluteOrientation.Elevation, 0.17);
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, Server.Status);
+
+            // Stop the monitoring routine. We aren't testing this, so no asserts are being checked here
+            Server.EndSensorMonitoringRoutine();
         }
     }
 }
