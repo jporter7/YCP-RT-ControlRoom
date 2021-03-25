@@ -87,5 +87,61 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
             Assert.AreEqual(expected[1].z, result[1].z);
             Assert.AreEqual(expected[1].location_ID, result[1].location_ID);
         }
+
+        [TestMethod]
+        public void TestGetTemperatureFromBytes_BytesToTemperature_ReturnsTemperature()
+        {
+            // The byte size for one temperature is 2 bytes
+            byte[] oneTemperature = new byte[2];
+
+            // This will create temperature value of 1, because the temperature is divided by 16
+            oneTemperature[0] = 0;
+            oneTemperature[1] = 16;
+
+            // Skipping the timestamp because we aren't concerned with that in this test
+            Temperature[] expected = new Temperature[1];
+            expected[0] = Temperature.Generate(0, 1, SensorLocationEnum.COUNTERBALANCE);
+
+            // This is only used for the counter, becuase it needs a variable to be passed by reference
+            int i = 0;
+
+            var result = PacketDecodingTools.GetTemperatureFromBytes(ref i, oneTemperature, 1, SensorLocationEnum.COUNTERBALANCE);
+
+            Assert.AreEqual(1, result.Length); // Only expecting one result
+
+            Assert.AreEqual(expected[0].temp, result[0].temp);
+            Assert.AreEqual(expected[0].location_ID, result[0].location_ID);
+        }
+
+        [TestMethod]
+        public void TestGetTemperatureFromBytes_BytesToMultipleTemperatures_ReturnsMultipleTemperatures()
+        {
+            // The byte size for one temperature is 2 bytes
+            byte[] twoTemperature = new byte[4];
+
+            // This will create temperature value of 1, because the temperature is divided by 16
+            twoTemperature[0] = 0;
+            twoTemperature[1] = 16;
+            twoTemperature[2] = 0;
+            twoTemperature[3] = 16;
+
+            // Skipping the timestamp because we aren't concerned with that in this test
+            Temperature[] expected = new Temperature[2];
+            expected[0] = Temperature.Generate(0, 1, SensorLocationEnum.COUNTERBALANCE);
+            expected[1] = Temperature.Generate(0, 1, SensorLocationEnum.COUNTERBALANCE);
+
+            // This is only used for the counter, becuase it needs a variable to be passed by reference
+            int i = 0;
+
+            var result = PacketDecodingTools.GetTemperatureFromBytes(ref i, twoTemperature, 2, SensorLocationEnum.COUNTERBALANCE);
+
+            Assert.AreEqual(2, result.Length); // Expecting two results
+
+            Assert.AreEqual(expected[0].temp, result[0].temp);
+            Assert.AreEqual(expected[0].location_ID, result[0].location_ID);
+
+            Assert.AreEqual(expected[1].temp, result[1].temp);
+            Assert.AreEqual(expected[1].location_ID, result[1].location_ID);
+        }
     }
 }
