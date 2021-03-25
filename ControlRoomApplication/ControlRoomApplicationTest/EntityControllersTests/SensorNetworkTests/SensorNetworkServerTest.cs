@@ -81,7 +81,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Verify timer is correct
             Assert.IsNotNull(resultTimer);
-            Assert.AreEqual(resultTimer.Interval, Server.InitializationClient.config.TimeoutInitialization);
             Assert.IsFalse(resultTimer.AutoReset);
         }
 
@@ -576,7 +575,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             PrivateObject privServer = new PrivateObject(Server);
 
-            Server.Status = SensorNetworkStatusEnum.ErrorStartingServer;
+            Server.Status = SensorNetworkStatusEnum.ServerError;
 
             privServer.Invoke("TimedOut", new Object(), null);
 
@@ -637,6 +636,144 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Unfortunately, there is no good way to check if an object has been disposed, so we will just
             // have to assume that the Timeout object is being disposed properly.
+        }
+
+        [TestMethod]
+        public void TestSensorMonitoringRoutine_InitializationTimeout_StatusInitializationTimeout()
+        {
+            Server.StartSensorMonitoringRoutine();
+            
+            Thread.Sleep(SensorNetworkConstants.DefaultInitializationTimeout + 250);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.TimedOutInitialization, Server.Status);
+
+            Server.EndSensorMonitoringRoutine();
+        }
+
+        [TestMethod]
+        public void TestSensorMonitoringRoutine_ReceivesFourPackets_StatusRetrievingData()
+        {
+            Server.StartSensorMonitoringRoutine();
+
+            // Prepare packets and client to send. We want two packets so we can alternate
+            // between them and verify data is being changed.
+            byte[] OnlyElEnc50 = File.ReadAllBytes($"{TestPacketDirectory}OnlyElEnc50.snp");
+            byte[] OnlyElEnc25 = File.ReadAllBytes($"{TestPacketDirectory}OnlyElEnc25.snp");
+            TcpClient sendToServer = new TcpClient(ServerIpAddress.ToString(), ServerPort);
+            NetworkStream stream = sendToServer.GetStream();
+
+            // First packet
+            stream.Write(OnlyElEnc50, 0, OnlyElEnc50.Length);
+            stream.Flush();
+
+            Thread.Sleep(25); // wait for data to be received
+
+            Assert.AreEqual(50, Server.CurrentAbsoluteOrientation.Elevation, 0.17);
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, Server.Status);
+
+            Thread.Sleep(500);
+
+            // Second packet
+            stream.Write(OnlyElEnc25, 0, OnlyElEnc25.Length);
+            stream.Flush();
+
+            Thread.Sleep(25); // wait for data to be received
+
+            Assert.AreEqual(25, Server.CurrentAbsoluteOrientation.Elevation, 0.17);
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, Server.Status);
+
+            Thread.Sleep(500);
+
+            // Third packet
+            stream.Write(OnlyElEnc50, 0, OnlyElEnc50.Length);
+            stream.Flush();
+
+            Thread.Sleep(25); // wait for data to be received
+
+            Assert.AreEqual(50, Server.CurrentAbsoluteOrientation.Elevation, 0.17);
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, Server.Status);
+
+            Thread.Sleep(500);
+
+            // Last packet
+            stream.Write(OnlyElEnc25, 0, OnlyElEnc25.Length);
+            stream.Flush();
+
+            Thread.Sleep(25); // wait for data to be received
+
+            Assert.AreEqual(25, Server.CurrentAbsoluteOrientation.Elevation, 0.17);
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, Server.Status);
+
+            // End everything
+            Server.EndSensorMonitoringRoutine();
+            stream.Close();
+            stream.Dispose();
+            sendToServer.Close();
+            sendToServer.Dispose();
+        }
+
+        [TestMethod]
+        public void TestSensorMonitoringRoutine_DataRetrievalTimeout_StatusDataRetrievalTimeout()
+        {
+            Server.StartSensorMonitoringRoutine();
+
+            // Prepare a single packet and client to send
+            byte[] OnlyElEnc = File.ReadAllBytes($"{TestPacketDirectory}OnlyElEnc50.snp");
+            TcpClient sendToServer = new TcpClient(ServerIpAddress.ToString(), ServerPort);
+            NetworkStream stream = sendToServer.GetStream();
+
+            // Send data to the Server
+            stream.Write(OnlyElEnc, 0, OnlyElEnc.Length);
+            stream.Flush();
+
+            // Wait for the data timeout, because it is waiting for a second packet now
+            Thread.Sleep(SensorNetworkConstants.DefaultDataRetrievalTimeout + 250);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.TimedOutDataRetrieval, Server.Status);
+
+            // End everything
+            Server.EndSensorMonitoringRoutine();
+            stream.Close();
+            stream.Dispose();
+            sendToServer.Close();
+            sendToServer.Dispose();
+        }
+
+        [TestMethod]
+        public void TestSensorMonitoringRoutine_TimesOutThenReceivesPacket_StatusRetrievingData()
+        {
+            Server.StartSensorMonitoringRoutine();
+
+            // Prepare a single packet and client to send
+            byte[] OnlyElEnc = File.ReadAllBytes($"{TestPacketDirectory}OnlyElEnc50.snp");
+            byte[] OnlyElEnc25 = File.ReadAllBytes($"{TestPacketDirectory}OnlyElEnc25.snp");
+            TcpClient sendToServer = new TcpClient(ServerIpAddress.ToString(), ServerPort);
+            NetworkStream stream = sendToServer.GetStream();
+
+            // Send data to the Server
+            stream.Write(OnlyElEnc, 0, OnlyElEnc.Length);
+            stream.Flush();
+
+            // Wait for the data timeout, because it is waiting for a second packet now
+            Thread.Sleep(SensorNetworkConstants.DefaultDataRetrievalTimeout + 250);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.TimedOutDataRetrieval, Server.Status);
+
+            // Now let's send another packet, which should change the status back to ReceivingData
+            stream.Write(OnlyElEnc25, 0, OnlyElEnc25.Length);
+            stream.Flush();
+
+            Thread.Sleep(25); // wait for data to be received
+
+            Assert.AreEqual(25, Server.CurrentAbsoluteOrientation.Elevation, 0.17);
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, Server.Status);
+
+            // End everything
+            Server.EndSensorMonitoringRoutine();
+            stream.Close();
+            stream.Dispose();
+            sendToServer.Close();
+            sendToServer.Dispose();
         }
     }
 }

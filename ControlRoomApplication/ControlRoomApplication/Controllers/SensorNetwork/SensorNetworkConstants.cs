@@ -33,13 +33,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This is the default data retrieval timeout when the user has run the telescope for the first time,
         /// and a new SensorNetworkConfig is created.
         /// </summary>
-        public const int DefaultDataRetrievalTimeout = 1; // in seconds
+        public const int DefaultDataRetrievalTimeout = 1000; // in milliseconds
 
         /// <summary>
         /// This is the default initialization timeout when the user has run the telescope for the first time,
         /// and a new SensorNetworkConfig is created.
         /// </summary>
-        public const int DefaultInitializationTimeout = 7; // in seconds
+        public const int DefaultInitializationTimeout = 7000; // in milliseconds
 
         /// <summary>
         /// This is the total number of sensors that is a part of the Sensor Network. This is used to determine

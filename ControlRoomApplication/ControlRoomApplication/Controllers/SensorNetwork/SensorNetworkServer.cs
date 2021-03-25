@@ -72,7 +72,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
             // Initialize the timeout timer but don't start it yet
             Timeout = new System.Timers.Timer();
-            Timeout.Interval = InitializationClient.config.TimeoutInitialization;
             Timeout.Elapsed += TimedOut; // TimedOut is the function at the bottom that executes when this elapses
             Timeout.AutoReset = false;
         }
@@ -127,7 +126,11 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// </summary>
         public SensorNetworkStatusEnum Status { get; set; }
 
+        /// <summary>
+        /// These two objects are used together to receive data, and should be destroyed together as well.
+        /// </summary>
         private TcpListener Server;
+        NetworkStream Stream;
 
         /// <summary>
         /// This should be true as long as the SensorMonitoringThread is running, and set to false if that thread
@@ -155,7 +158,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             Server.Start();
             CurrentlyRunning = true;
             Status = SensorNetworkStatusEnum.Initializing;
-            Timeout.Interval = SensorNetworkConstants.DefaultInitializationTimeout;
+            Timeout.Interval = InitializationClient.config.TimeoutInitialization;
             Timeout.Start();
             SensorMonitoringThread.Start();
         }
@@ -166,10 +169,19 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <returns>If ended successfully, return true. Else, return false.</returns>
         public void EndSensorMonitoringRoutine()
         {
-            Server.Stop();
             CurrentlyRunning = false;
-            Timeout.Stop();
+            Status = SensorNetworkStatusEnum.None;
+            if (Timeout.Enabled) Timeout.Stop();
             Timeout.Dispose();
+            Server.Stop();
+
+            // The stream will only be null if the sensor monitoring thread has not been called
+            if (Stream != null)
+            {
+                Stream.Close();
+                Stream.Dispose();
+            }
+
             SensorMonitoringThread.Join();
 
             // TODO: Call bringdown for the simulation sensor network if it is initialized
@@ -325,7 +337,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         private void SensorMonitoringRoutine()
         {
             TcpClient localClient;
-            NetworkStream stream;
 
             byte[] receivedData = new byte[SensorNetworkConstants.MaxPacketSize];
 
@@ -334,33 +345,41 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 try
                 {
                     localClient = Server.AcceptTcpClient();
-                    stream = localClient.GetStream();
-                    
-                    int receivedDataSize;
+                    Stream = localClient.GetStream();
 
-                    while ((receivedDataSize = stream.Read(receivedData, 0, receivedData.Length)) != 0 && CurrentlyRunning)
+                    logger.Error($"{Utilities.GetTimeStamp()}: Successfully connected to the Sensor Network!");
+
+                    int receivedDataSize;
+                    
+                    while ((receivedDataSize = Stream.Read(receivedData, 0, receivedData.Length)) != 0 && CurrentlyRunning)
                     {
                         // If the status is initializing, we want the timer to keep going. Else, we are currently receiving data, and
                         // want to stop the timer as soon as we get something.
-                        if (Timeout.Enabled && Status != SensorNetworkStatusEnum.Initializing) Timeout.Stop();
+                        if (Timeout.Enabled && Status == SensorNetworkStatusEnum.ReceivingData)
+                        {
+                            Timeout.Stop();
+                        }
 
                         InterpretData(receivedData, receivedDataSize);
 
                         // We only want to start the timeout if we are currently receiving data. The reason is because, the timeout
                         // status will overwrite any preexisting status errors.
-                        if (Status == SensorNetworkStatusEnum.ReceivingData) Timeout.Start();
+                        if (Status == SensorNetworkStatusEnum.ReceivingData)
+                        {
+                            Timeout.Interval = InitializationClient.config.TimeoutDataRetrieval;
+                            Timeout.Start();
+                        }
                     }
 
                     localClient.Close();
                     localClient.Dispose();
-                    stream.Close();
-                    stream.Dispose();
                 }
                 catch
                 {
                     Timeout.Stop();
                     Status = SensorNetworkStatusEnum.ServerError;
                     logger.Error($"{Utilities.GetTimeStamp()}: An error occurred while running the server; please check that the connection is available.");
+                    logger.Error($"{Utilities.GetTimeStamp()}: Trying to reconnect to the Sensor Network...");
                 }
             }
         }

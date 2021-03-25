@@ -135,6 +135,7 @@
     <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyAzTemp50C.snp" />
     <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyCbAccl123.snp" />
     <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElAccl123.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElEnc25.snp" />
     <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElEnc50.snp" />
     <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElTemp50C.snp" />
     <None Include="packages.config">
