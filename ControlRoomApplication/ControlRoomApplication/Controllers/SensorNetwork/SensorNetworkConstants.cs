@@ -59,6 +59,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This is the max packet size the Sensor Network is able to send. We aren't really sure why it cuts off
         /// at 2048, but for this reason, this is the size that we will create our main "monitor" byte array.
         /// </summary>
-        public const int MaxPacketSize = 2048;
+        public const int MaxPacketSize = 2048; // in bytes
+
+        /// <summary>
+        /// This is how long it takes for the sensor network to time out and reboot. Basically, if it loses connection
+        /// to the SensorNetworkServer for that amount of ms, it will trigger a reboot. This is useful to us for when we
+        /// want to tell it to restart.
+        /// </summary>
+        public const int WatchDogTimeout = 1500; // in milliseconds
     }
 }
