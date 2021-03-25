@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
@@ -544,6 +545,42 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             Assert.AreEqual(Server.CurrentAbsoluteOrientation.Elevation, 0);
             Assert.AreEqual(Server.CurrentAbsoluteOrientation.Azimuth, 0);
+        }
+
+        [TestMethod]
+        public void TestTimedOut_StatusReceivingData_SetsToTimedOutReceivingData()
+        {
+            PrivateObject privServer = new PrivateObject(Server);
+            
+            Server.Status = SensorNetworkStatusEnum.ReceivingData;
+
+            privServer.Invoke("TimedOut", new Object(), null);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.TimedOutDataRetrieval, Server.Status);
+        }
+
+        [TestMethod]
+        public void TestTimedOut_StatusInitializing_SetsToTimedOutInitialization()
+        {
+            PrivateObject privServer = new PrivateObject(Server);
+
+            Server.Status = SensorNetworkStatusEnum.Initializing;
+
+            privServer.Invoke("TimedOut", new Object(), null);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.TimedOutInitialization, Server.Status);
+        }
+
+        [TestMethod]
+        public void TestTimedOut_StatusNotInitializingOrReceivingData_SetsToUnknownError()
+        {
+            PrivateObject privServer = new PrivateObject(Server);
+
+            Server.Status = SensorNetworkStatusEnum.ErrorStartingServer;
+
+            privServer.Invoke("TimedOut", new Object(), null);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.UnknownError, Server.Status);
         }
     }
 }

@@ -53,6 +53,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// (it waits until something connects to it), so as long as the IP address is valid and reachable, this status should
         /// not occur.
         /// </summary>
-        ErrorStartingServer
+        ErrorStartingServer,
+        
+        /// <summary>
+        /// This should never be reached, but if it is, then some troubleshooting needs to happen. The only way this can be set is
+        /// if the timer is elapsed and the status is not ReceivingData or Initializing.
+        /// </summary>
+        UnknownError
     }
 }

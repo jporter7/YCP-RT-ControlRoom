@@ -59,13 +59,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
             CurrentCounterbalanceAccl = new Acceleration[1];
             CurrentCounterbalanceAccl[0] = new Acceleration();
-            
+
             // Initialize threads and additional processes, if applicable
             SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
             SensorMonitoringThread.Name = "SensorMonitorThread";
 
             // We only want to run the internal simulation if the user selected to run the Simulated Sensor Network
-            if(isSimulation)
+            if (isSimulation)
             {
                 // TODO: Initialize the SimulationSensorNetwork here
             }
@@ -80,12 +80,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <summary>
         /// The current elevation motor temperature received from the sensor network.
         /// </summary>
-        public Temperature[] CurrentElevationMotorTemp;
+        public Temperature[] CurrentElevationMotorTemp { get; set; }
 
         /// <summary>
         /// The current azimuth motor temperature received from the sensor network. 
         /// </summary>
-        public Temperature[] CurrentAzimuthMotorTemp;
+        public Temperature[] CurrentAzimuthMotorTemp { get; set; }
 
         /// <summary>
         /// The current orientation of the telescope based off of the absolute encoders. These
@@ -93,39 +93,39 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// function in the PLC and MCU, and will provide more accurate data regarding the telescope's
         /// position.
         /// </summary>
-        public Orientation CurrentAbsoluteOrientation;
+        public Orientation CurrentAbsoluteOrientation { get; set; }
 
         /// <summary>
         /// This tells us the current vibration coming from the azimuth motor. It is always received as
         /// an array to give us higher data accuracy.
         /// </summary>
-        public Acceleration[] CurrentElevationMotorAccl;
+        public Acceleration[] CurrentElevationMotorAccl { get; set; }
 
         /// <summary>
         /// This tells us the current vibration coming from the azimuth motor. It is always received as
         /// an array to give us higher data accuracy.
         /// </summary>
-        public Acceleration[] CurrentAzimuthMotorAccl;
+        public Acceleration[] CurrentAzimuthMotorAccl { get; set; }
 
         /// <summary>
         /// This tells us the current vibration coming from the counterbalance. It is always received as
         /// an array to give us higher data accuracy. This can also technically be used to calculate the
         /// telescope's elevation position.
         /// </summary>
-        public Acceleration[] CurrentCounterbalanceAccl;
+        public Acceleration[] CurrentCounterbalanceAccl { get; set; }
 
         /// <summary>
         /// This is used for sending initialization data to the Sensor Network, and is also used to
         /// access the configuration.
         /// </summary>
-        public SensorNetworkClient InitializationClient;
+        public SensorNetworkClient InitializationClient { get; }
 
         // TODO: Add SimulationSensorNetwork here
 
         /// <summary>
         /// This will be used to tell us what the SensorNetwork status using <seealso cref="SensorNetworkStatusEnum"/>.
         /// </summary>
-        public SensorNetworkStatusEnum Status;
+        public SensorNetworkStatusEnum Status { get; set; }
 
         private TcpListener Server;
 
@@ -192,9 +192,11 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 if (!InitializationClient.SendSensorInitialization())
                 {
                     Status = SensorNetworkStatusEnum.InitializationSendingFailed;
+                    if(Timeout.Enabled) Timeout.Stop();
                 }
                 else
                 {
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully sent sensor initialization to the Sensor Network.");
                     success = true;
                 }
             }
@@ -320,7 +322,20 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <param name="e">unused</param>
         private void TimedOut(Object source, ElapsedEventArgs e)
         {
+            if(Status == SensorNetworkStatusEnum.ReceivingData)
+            {
+                Status = SensorNetworkStatusEnum.TimedOutDataRetrieval;
+            }
+            else if(Status == SensorNetworkStatusEnum.Initializing)
+            {
+                Status = SensorNetworkStatusEnum.TimedOutInitialization;
+            }
+            else
+            {
+                Status = SensorNetworkStatusEnum.UnknownError;
+            }
 
+            logger.Error($"{Utilities.GetTimeStamp()}: Connection to the Sensor Network timed out! Status: {Status}");
         }
     }
 }
