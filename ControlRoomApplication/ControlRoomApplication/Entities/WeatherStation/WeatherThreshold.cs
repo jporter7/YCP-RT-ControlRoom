@@ -13,6 +13,11 @@ namespace ControlRoomApplication.Entities
             SnowDumpTime = snowDumpTime;
         }
 
+        public WeatherThreshold()
+        {
+
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
