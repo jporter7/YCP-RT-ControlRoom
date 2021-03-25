@@ -216,6 +216,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCEvents.cs" />
+    <Compile Include="Controllers\SensorNetwork\PacketDecodingTools.cs" />
     <Compile Include="Controllers\SensorNetwork\RawAccelerometerData.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkClient.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkConstants.cs" />

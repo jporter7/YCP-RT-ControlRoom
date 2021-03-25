@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This is based on the resolution of the digital data that the encoder gives. 
         /// The angle is related from 0-360 in digital counts from 0-2047.
         /// </summary>
-        public const int AzimuthEncoderScaling = 2047;
+        public const double AzimuthEncoderScaling = 2047;
         
         /// <summary>
         /// This is the approximate interval at which the SensorNetworkServer expects to receive
@@ -47,5 +47,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// sensors, which is 7.
         /// </summary>
         public const int SensorNetworkSensorCount = 9;
+
+
+        /// <summary>
+        /// If we receive this ID from the sensor network, it means that everything is going well, and we are about
+        /// to get a nice load of sensor data. The number doesn't come from anything, it's just the number we chose.
+        /// </summary>
+        public const int TransitIdSuccess = 129;
     }
 }

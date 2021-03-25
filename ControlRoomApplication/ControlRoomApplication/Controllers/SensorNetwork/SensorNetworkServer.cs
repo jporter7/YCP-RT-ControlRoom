@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Entities;
+using ControlRoomApplication.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,12 +43,22 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             InitializationClient = new SensorNetworkClient(clientIPAddress, clientPort, telescopeId);
 
             // Sensor data initialization
-            CurrentElevationMotorTemp = new Temperature();
-            CurrentAzimuthMotorTemp = new Temperature();
+            CurrentElevationMotorTemp = new Temperature[1];
+            CurrentElevationMotorTemp[0] = new Temperature();
+
+            CurrentAzimuthMotorTemp = new Temperature[1];
+            CurrentAzimuthMotorTemp[0] = new Temperature();
+
             CurrentAbsoluteOrientation = new Orientation();
-            CurrentElevationMotorAccl = new Acceleration[0];
-            CurrentAzimuthMotorAccl = new Acceleration[0];
-            CurrentCounterbalanceAccl = new Acceleration[0];
+
+            CurrentElevationMotorAccl = new Acceleration[1];
+            CurrentElevationMotorAccl[0] = new Acceleration();
+
+            CurrentAzimuthMotorAccl = new Acceleration[1];
+            CurrentAzimuthMotorAccl[0] = new Acceleration();
+
+            CurrentCounterbalanceAccl = new Acceleration[1];
+            CurrentCounterbalanceAccl[0] = new Acceleration();
             
             // Initialize threads and additional processes, if applicable
             SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
@@ -69,12 +80,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <summary>
         /// The current elevation motor temperature received from the sensor network.
         /// </summary>
-        public Temperature CurrentElevationMotorTemp;
+        public Temperature[] CurrentElevationMotorTemp;
 
         /// <summary>
         /// The current azimuth motor temperature received from the sensor network. 
         /// </summary>
-        public Temperature CurrentAzimuthMotorTemp;
+        public Temperature[] CurrentAzimuthMotorTemp;
 
         /// <summary>
         /// The current orientation of the telescope based off of the absolute encoders. These
@@ -163,9 +174,133 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             return false;
         }
 
-        private void InterpretData(byte[] data, int buffer)
+        /// <summary>
+        /// This is used internally by the SensorNetworkServer to tell what kind of data the Sensor Network
+        /// is sending. It may send data, in which case a transit ID will be present, or it may ask for
+        /// an initialization.
+        /// </summary>
+        /// <param name="data">The data we are interpreting.</param>
+        /// <param name="receivedDataSize">This will be used to tell if our data is complete.</param>
+        private bool InterpretData(byte[] data, int receivedDataSize)
         {
+            bool success = false;
 
+            if(Encoding.ASCII.GetString(data, 0, receivedDataSize).Equals("Send Sensor Configuration"))
+            { // Reaching here means that we've received a request for sensor initialization
+                
+                // If the init sending fails, set status to reflect that
+                if (!InitializationClient.SendSensorInitialization())
+                {
+                    Status = SensorNetworkStatusEnum.InitializationSendingFailed;
+                }
+                else
+                {
+                    success = true;
+                }
+            }
+            else
+            {
+                // Bytes 1-3 of the data contain the overall size of the packet
+                UInt32 expectedDataSize = (UInt32)(data[1] << 24 | data[2] << 16 | data[3] << 8 | data[4]);
+
+                // Check that the data we received is the same size as what we expect
+                if (expectedDataSize == receivedDataSize)
+                {
+                    // Byte 0 contains the transmit ID
+                    int receivedTransitId = data[0];
+
+                    // Verify that the first byte contains the "success" code (transit ID)
+                    if(receivedTransitId == SensorNetworkConstants.TransitIdSuccess)
+                    {
+                        // At this point, we may begin parsing the data
+
+                        // Acquire the sample sizes for each sensor
+                        UInt16 elAcclSize = (UInt16)(data[5] << 8 | data[6]);
+                        UInt16 azAcclSize = (UInt16)(data[7] << 8 | data[8]);
+                        UInt16 cbAcclSize = (UInt16)(data[9] << 8 | data[10]);
+                        UInt16 elTempSensorSize = (UInt16)(data[11] << 8 | data[12]);
+                        UInt16 azTempSensorSize = (UInt16)(data[13] << 8 | data[14]);
+                        UInt16 elEncoderSize = (UInt16)(data[15] << 8 | data[16]);
+                        UInt16 azEncoderSize = (UInt16)(data[17] << 8 | data[18]);
+
+                        // This is the index we start reading sensor data
+                        int k = 19;
+
+                        // If no data comes through for a sensor (i.e. the size is 0), then it will not be updated,
+                        // otherwise the UI value would temporarily be set to 0, which would be inaccurate
+
+                        // Accelerometer 1 (elevation)
+                        if (elAcclSize > 0)
+                        {
+                            CurrentElevationMotorAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
+                        }
+
+                        // Accelerometer 2 (azimuth)
+                        if (azAcclSize > 0)
+                        {
+                            CurrentAzimuthMotorAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
+                        }
+
+                        // Accelerometer 3 (counterbalance)
+                        if (cbAcclSize > 0)
+                        {
+                            CurrentCounterbalanceAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
+                        }
+
+                        // Elevation temperature
+                        if (elTempSensorSize > 0)
+                        {
+                            CurrentElevationMotorTemp = PacketDecodingTools.GetTemperatureFromBytes(ref k, data, elTempSensorSize, SensorLocationEnum.EL_MOTOR);
+                        }
+
+                        // Azimuth temperature
+                        if (azTempSensorSize > 0)
+                        {
+                            CurrentAzimuthMotorTemp = PacketDecodingTools.GetTemperatureFromBytes(ref k, data, azTempSensorSize, SensorLocationEnum.AZ_MOTOR);
+                        }
+
+                        // Elevation absolute encoder
+                        if (elEncoderSize > 0)
+                        {
+                            // This must be converted into degrees, because we are only receiving raw data from the
+                            // elevation encoder
+                            CurrentAbsoluteOrientation.Elevation = 
+                                0.25 * (data[k++] << 8 | data[k++]) - 20.375;
+                        }
+
+                        // Azimuth absolute encoder
+                        if (azEncoderSize > 0)
+                        {
+                            // This must be converted into degrees, because we are only receiving raw data from the
+                            // azimuth encoder
+                            CurrentAbsoluteOrientation.Azimuth = 
+                                360 / SensorNetworkConstants.AzimuthEncoderScaling * (data[k++] << 8 | data[k++]);
+                        }
+
+                        success = true;
+                    }
+
+                    // This may be replaced with different errors at some point (that have different transit IDs), 
+                    // though there are currently no plans for this. Right now, it is treated as an error overall:
+                    // We should NOT be receiving anything other than TransitIdSuccess.
+                    else
+                    {
+                        logger.Error($"{Utilities.GetTimeStamp()}: Transit ID error: Expected " +
+                            $"ID {SensorNetworkConstants.TransitIdSuccess}, received ID {receivedTransitId})");
+                    }
+                }
+                else
+                {
+                    // If this happens, that indicates a stability problem that likely has to do with the connection.
+                    // The most likely reason that this might happen is a faulty Ethernet cable. If it happens once
+                    // in a blue moon, I would not be too concerned.
+                    logger.Error($"{Utilities.GetTimeStamp()}: Error decoding packet: Packet was the incorrect size. " +
+                        $"(expected {expectedDataSize} bytes, received {receivedDataSize})");
+                }
+
+            }
+
+            return success;
         }
 
         /// <summary>
