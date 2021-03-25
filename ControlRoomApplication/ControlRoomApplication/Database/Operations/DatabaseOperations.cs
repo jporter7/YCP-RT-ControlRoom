@@ -907,14 +907,28 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
+        /// Adds a selected weather Threshold to the database
+        /// </summary>
+        /// <param name="weatherThreshold"></param>
+        public static void AddWeatherThreshold(WeatherThreshold weatherThreshold)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.WeatherThreshold.Add(weatherThreshold);
+                SaveContext(Context);
+
+                logger.Info(Utilities.GetTimeStamp() + ": Added WeatherThreshold to database");
+            }
+        }
+
+        /// <summary>
         /// Routine to retrieve the time interval for dumping snow off of the dish (in minutes) from the database
         /// </summary>
         public static int FetchSnowDumpTime()
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                var threshold = Context.WeatherThreshold.
-                    Include(t => t.SnowDumpTime).FirstOrDefault();
+                var threshold = Context.WeatherThreshold.FirstOrDefault();
                
 
                 if(threshold == null)
