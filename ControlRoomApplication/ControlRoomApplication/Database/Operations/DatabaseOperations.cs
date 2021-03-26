@@ -1004,6 +1004,9 @@ namespace ControlRoomApplication.Database
                     Context.SensorNetworkConfig.Remove(toDelete);
                     SaveContext(Context);
 
+                }
+            }
+        }
         /// <summary>
         /// Adds a selected weather Threshold to the database
         /// </summary>
