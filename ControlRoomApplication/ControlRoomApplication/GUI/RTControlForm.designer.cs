@@ -108,7 +108,6 @@ namespace ControlRoomApplication.Main
             ((System.ComponentModel.ISupportInitialize)(this.speedTrackBar)).BeginInit();
             this.spectraCyberGroupBox.SuspendLayout();
             this.SuspendLayout();
-            
             // 
             // PosDecButton
             // 
@@ -506,7 +505,8 @@ namespace ControlRoomApplication.Main
             "Recover From Clockwise Hardstop",
             "Recover From Counter-Clockwise Hardstop",
             "Home Telescope",
-            "Custom Orientation Movement"});
+            "Custom Orientation Movement",
+            "Endless Azimuth Rotation"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
