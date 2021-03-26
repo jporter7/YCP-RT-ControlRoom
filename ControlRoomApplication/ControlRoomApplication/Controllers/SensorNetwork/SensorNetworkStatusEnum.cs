@@ -30,11 +30,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         ReceivingData,
 
         /// <summary>
-        /// This is a temporary value that will be set whenever the Sensor Network sends an error code.
-        /// </summary>
-        Error,
-
-        /// <summary>
         /// This is set if it takes too long to receive a data packet.
         /// </summary>
         TimedOutDataRetrieval,
@@ -50,6 +45,26 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// happen if the Sensor Network is not on, not plugged in (via eithernet), or the user may have typed the
         /// incorrect Client IP address/Port.
         /// </summary>
-        InitializationSendingFailed
+        InitializationSendingFailed,
+
+        /// <summary>
+        /// This is used if the SensorNetworkServer fails while running for any reason. Reasons could be that the IP address
+        /// is already taken, or the Ethernet cable was unplugged. The server doesn't depend on initially making a connection
+        /// (it waits until something connects to it), so as long as the IP address is valid and reachable at all times, this
+        /// error should not occur.
+        /// </summary>
+        ServerError,
+
+        /// <summary>
+        /// This status is set whenever a reboot is called. This will be overwritten very quickly by initialization as soon as the
+        /// sensor network starts back up.
+        /// </summary>
+        Rebooting,
+
+        /// <summary>
+        /// This should never be reached, but if it is, then some troubleshooting needs to happen. The only way this can be set is
+        /// if the timer is elapsed and the status is not ReceivingData or Initializing.
+        /// </summary>
+        UnknownError
     }
 }
