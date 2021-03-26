@@ -718,6 +718,17 @@ namespace ControlRoomApplication.Main
                     });
                     // Custom azimuth position. This is only used to test the slip ring implementation
                     break;
+
+                case 12:
+                    thread = new Thread(() =>
+                    {
+                        rtController.StartRadioTelescopeAzimuthJog(1, true);
+                    });
+                    thread.Start();
+                    MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
+                    ExecuteCorrectStop();
+
+                    break;
                 default:
 
                     //Script cannot be run
