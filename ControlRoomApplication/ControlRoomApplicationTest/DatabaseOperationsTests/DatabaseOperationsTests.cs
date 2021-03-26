@@ -529,5 +529,15 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.IsTrue(telescope.CalibrationOrientation.Azimuth == retrievedTele.CalibrationOrientation.Azimuth);
             Assert.IsTrue(telescope.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
         }
+
+        [TestMethod]
+        public void testAddAndFetchWeatherStation()
+        {
+            WeatherThreshold testThreshold = new WeatherThreshold(10, 120);
+            DatabaseOperations.AddWeatherThreshold(testThreshold);
+            int time = DatabaseOperations.FetchWeatherThreshold().SnowDumpTime;
+            Assert.AreEqual(120, time);
+
+        }
     }
 }

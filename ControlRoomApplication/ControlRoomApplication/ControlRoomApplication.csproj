@@ -286,6 +286,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
+    <Compile Include="Entities\WeatherStation\WeatherThreshold.cs" />
     <Compile Include="Entities\WeatherStation\WeatherData.cs" />
     <Compile Include="Entities\WeatherStation\WeatherStation.cs" />
     <Compile Include="GUI\DiagnosticsForm.cs">
