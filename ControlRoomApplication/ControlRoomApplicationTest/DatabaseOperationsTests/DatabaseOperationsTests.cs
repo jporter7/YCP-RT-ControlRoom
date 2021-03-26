@@ -688,5 +688,15 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
                 DatabaseOperations.DeleteSensorNetworkConfig(invalidConfig)
             );
         }
+
+        [TestMethod]
+        public void testAddAndFetchWeatherStation()
+        {
+            WeatherThreshold testThreshold = new WeatherThreshold(10, 120);
+            DatabaseOperations.AddWeatherThreshold(testThreshold);
+            int time = DatabaseOperations.FetchWeatherThreshold().SnowDumpTime;
+            Assert.AreEqual(120, time);
+
+        }
     }
 }

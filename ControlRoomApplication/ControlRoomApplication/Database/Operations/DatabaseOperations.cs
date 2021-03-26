@@ -1004,10 +1004,45 @@ namespace ControlRoomApplication.Database
                     Context.SensorNetworkConfig.Remove(toDelete);
                     SaveContext(Context);
 
-                    logger.Info(Utilities.GetTimeStamp() + ": Deleted Sensor Network Configuration for Telescope ID " + config.TelescopeId);
-                }
+        /// <summary>
+        /// Adds a selected weather Threshold to the database
+        /// </summary>
+        /// <param name="weatherThreshold"></param>
+        public static void AddWeatherThreshold(WeatherThreshold weatherThreshold)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.WeatherThreshold.Add(weatherThreshold);
+                SaveContext(Context);
+
+                logger.Info(Utilities.GetTimeStamp() + ": Added WeatherThreshold to database");
             }
         }
+
+        /// <summary>
+        /// Routine to retrieve the time interval for dumping snow off of the dish (in minutes) from the database
+        /// </summary>
+        public static WeatherThreshold FetchWeatherThreshold()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var threshold = Context.WeatherThreshold.FirstOrDefault();
+               
+
+                if(threshold == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The WeatherThreshold data could not be found.");
+                    return null;
+                }
+                else
+                {
+                    return threshold;
+                }
+               
+            }
+            
+        }
+
 
     }
 }
