@@ -531,11 +531,11 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         }
 
         [TestMethod]
-        public void testAddAndFetchSnowDumpTime()
+        public void testAddAndFetchWeatherStation()
         {
             WeatherThreshold testThreshold = new WeatherThreshold(10, 120);
             DatabaseOperations.AddWeatherThreshold(testThreshold);
-            int time = DatabaseOperations.FetchSnowDumpTime();
+            int time = DatabaseOperations.FetchWeatherThreshold().SnowDumpTime;
             Assert.AreEqual(120, time);
 
         }

@@ -44,9 +44,6 @@ namespace ControlRoomApplication.Controllers
         // Snow dump timer
         private static System.Timers.Timer snowDumpTimer;
 
-        // Weather data for thermal calibration
-        private AbstractWeatherStation weatherStation;
-
         // Used for the Unity simulation to keep track of its position
         // This is ONLY TEMPORARY until we can find the simulation source code and fix
         // this bug the correct way
@@ -110,7 +107,7 @@ namespace ControlRoomApplication.Controllers
 
             previousSnowDumpAzimuth = 0;
 
-            snowDumpTimer = new System.Timers.Timer(DatabaseOperations.FetchSnowDumpTime() * 1000 * 60);
+            snowDumpTimer = new System.Timers.Timer(DatabaseOperations.FetchWeatherThreshold().SnowDumpTime * 1000 * 60);
             snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
             snowDumpTimer.AutoReset = true;
             snowDumpTimer.Enabled = true;
@@ -600,7 +597,7 @@ namespace ControlRoomApplication.Controllers
             double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
 
             // Check if we need to dump the snow off of the telescope
-            if (weatherStation.GetOutsideTemp() <= 40.00 && weatherStation.GetTotalRain() > 0.00)
+            if (Parent.WeatherStation.GetOutsideTemp() <= 40.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
             {
                 SnowDump();
             }
@@ -638,7 +635,7 @@ namespace ControlRoomApplication.Controllers
 
             Console.WriteLine("Time threshold reached. Running snow dump...");
             // Check if we need to dump the snow off of the telescope
-            if (weatherStation.GetOutsideTemp() <= 30.00 && weatherStation.GetTotalRain() > 0.00)
+            if (Parent.WeatherStation.GetOutsideTemp() <= 30.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
             {
                 SnowDump();
             }
