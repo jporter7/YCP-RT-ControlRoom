@@ -929,17 +929,16 @@ namespace ControlRoomApplication.Database
             using (RTDbContext Context = InitializeDatabaseContext())
             {
                 var threshold = Context.WeatherThreshold.FirstOrDefault();
-               
 
-                if(threshold == null)
+
+                if (threshold == null)
                 {
-                    logger.Info(Utilities.GetTimeStamp() + ": The WeatherThreshold data could not be found.");
-                    return null;
+                    logger.Info(Utilities.GetTimeStamp() + ": The WeatherThreshold data could not be found. Creating a new one with default values...");
+                    // default values of 0 windSpeed and 2 hours for snow dump time. If the table is empty, add it
+                    threshold = new WeatherThreshold(0, 120);
+                    AddWeatherThreshold(threshold);
                 }
-                else
-                {
-                    return threshold;
-                }
+                return threshold;
                
             }
             
