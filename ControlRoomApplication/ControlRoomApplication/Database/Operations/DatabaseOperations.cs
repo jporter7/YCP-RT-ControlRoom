@@ -934,8 +934,9 @@ namespace ControlRoomApplication.Database
                 if (threshold == null)
                 {
                     logger.Info(Utilities.GetTimeStamp() + ": The WeatherThreshold data could not be found. Creating a new one with default values...");
-                    // default values of 0 windSpeed and 2 hours for snow dump time
+                    // default values of 0 windSpeed and 2 hours for snow dump time. If the table is empty, add it
                     threshold = new WeatherThreshold(0, 120);
+                    AddWeatherThreshold(threshold);
                 }
                 return threshold;
                
