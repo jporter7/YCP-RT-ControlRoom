@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using ControlRoomApplication.Controllers.SensorNetwork.Simulation;
 
 namespace ControlRoomApplication.Controllers.SensorNetwork
 {
@@ -119,7 +120,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// </summary>
         public SensorNetworkClient InitializationClient { get; }
 
-        // TODO: Add SimulationSensorNetwork here
+        /// <summary>
+        /// This is the simulation sensor network, which will run whenever we are not using the hardware.
+        /// </summary>
+        private SimulationSensorNetwork SimulationSensorNetwork { get; }
 
         /// <summary>
         /// This will be used to tell us what the SensorNetwork status using <seealso cref="SensorNetworkStatusEnum"/>.
