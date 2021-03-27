@@ -275,13 +275,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         /// This will read fake data from the CSV files based off of the initialization. If the sensor is "initialized" (not null),
         /// then it will read in CSV data for it. Otherwise, it will stay null.
         /// </summary>
-        private void ReadFakeDataFromCSV()
+        private void ReadFakeDataFromCSV(string directory = SensorNetworkConstants.SimCSVDirectory)
         {
             if (ElevationTempData != null)
             {
                 double dbl;
 
-                var values = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestElTemp.csv")
+                var values = File.ReadAllLines(directory + "TestElTemp.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => double.TryParse(str, out dbl) ? dbl : 0));
 
@@ -292,7 +292,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 double dbl;
 
-                var values = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestAzTemp.csv")
+                var values = File.ReadAllLines(directory + "TestAzTemp.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => double.TryParse(str, out dbl) ? dbl : 0));
 
@@ -303,15 +303,15 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 int tempInt;
 
-                int[] xData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestAzAccX.csv")
+                int[] xData = File.ReadAllLines(directory + "TestAzAccX.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] yData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestAzAccY.csv")
+                int[] yData = File.ReadAllLines(directory + "TestAzAccY.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] zData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestAzAccZ.csv")
+                int[] zData = File.ReadAllLines(directory + "TestAzAccZ.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
@@ -335,15 +335,15 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 int tempInt;
 
-                int[] xData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestElAccX.csv")
+                int[] xData = File.ReadAllLines(directory + "TestElAccX.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] yData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestElAccY.csv")
+                int[] yData = File.ReadAllLines(directory + "TestElAccY.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] zData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestElAccZ.csv")
+                int[] zData = File.ReadAllLines(directory + "TestElAccZ.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
@@ -367,15 +367,15 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 int tempInt;
 
-                int[] xData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestCbAccX.csv")
+                int[] xData = File.ReadAllLines(directory + "TestCbAccX.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] yData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestCbAccY.csv")
+                int[] yData = File.ReadAllLines(directory + "TestCbAccY.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] zData = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestCbAccZ.csv")
+                int[] zData = File.ReadAllLines(directory + "TestCbAccZ.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
@@ -399,7 +399,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 double dbl;
 
-                var values = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestElEnc.csv")
+                var values = File.ReadAllLines(directory + "TestElEnc.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => double.TryParse(str, out dbl) ? dbl : 0));
 
@@ -410,7 +410,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 double dbl;
 
-                var values = File.ReadAllLines(SensorNetworkConstants.SimCSVDirectory + "TestAzEnc.csv")
+                var values = File.ReadAllLines(directory + "TestAzEnc.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => double.TryParse(str, out dbl) ? dbl : 0));
 
