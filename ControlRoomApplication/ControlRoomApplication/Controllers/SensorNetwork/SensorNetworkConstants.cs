@@ -67,5 +67,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// want to tell it to restart.
         /// </summary>
         public const int WatchDogTimeout = 1500; // in milliseconds
+
+        /// <summary>
+        /// This is where our simulation CSV files are located. These files can be swapped out with each other.
+        /// </summary>
+        public const string SimCSVDirectory = "../../../ControlRoomApplication/Controllers/SensorNetwork/Simulation/SimulationCSVData/";
     }
 }

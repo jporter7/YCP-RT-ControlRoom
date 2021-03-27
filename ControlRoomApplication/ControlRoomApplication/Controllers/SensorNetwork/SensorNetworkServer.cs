@@ -17,7 +17,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
     /// <summary>
     /// This is the central component of the Sensor Network on the Control Room end. This handles all the main communications
     /// with the main Sensor Network system, such as receiving data, setting statuses based on data it receives, and tells the
-    /// client when to send initialization data.
+    /// client when to send iniC:\YCP-RT-ControlRoom\ControlRoomApplication\ControlRoomApplication\Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cstialization data.
     /// </summary>
     public class SensorNetworkServer
     {
@@ -68,7 +68,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             // We only want to run the internal simulation if the user selected to run the Simulated Sensor Network
             if (isSimulation)
             {
-                // TODO: Initialize the SimulationSensorNetwork here
+                SimulationSensorNetwork = new SimulationSensorNetwork(serverIPAddress.ToString(), serverPort, IPAddress.Parse(clientIPAddress), clientPort);
+                SimulationSensorNetwork.StartSimulationSensorNetwork();
+            }
+            else
+            {
+                SimulationSensorNetwork = null;
             }
 
             // Initialize the timeout timer but don't start it yet
@@ -199,7 +204,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
             }
 
-            // TODO: Call bringdown for the simulation sensor network if it is initialized
+            if(SimulationSensorNetwork != null)
+            {
+                SimulationSensorNetwork.EndSimulationSensorNetwork();
+            }
         }
 
         /// <summary>
