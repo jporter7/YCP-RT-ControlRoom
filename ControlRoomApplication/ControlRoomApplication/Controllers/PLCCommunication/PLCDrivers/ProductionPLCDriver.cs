@@ -633,13 +633,15 @@ namespace ControlRoomApplication.Controllers
         private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
         {
 
-            Console.WriteLine("Time threshold reached. Running snow dump...");
             // Check if we need to dump the snow off of the telescope
             if (Parent.WeatherStation.GetOutsideTemp() <= 30.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
             {
+                Console.WriteLine("Time threshold reached. Running snow dump...");
+
                 SnowDump();
+
+                Console.WriteLine("Snow dump completed");
             }
-            Console.WriteLine("Snow dump completed");
         }
 
         /// <summary>
