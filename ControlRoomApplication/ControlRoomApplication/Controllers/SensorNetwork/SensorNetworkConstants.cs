@@ -71,6 +71,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <summary>
         /// This is where our simulation CSV files are located. These files can be swapped out with each other.
         /// </summary>
-        public const string SimCSVDirectory = "../../../ControlRoomApplication/Controllers/SensorNetwork/Simulation/SimulationCSVData/";
+        public const string SimCSVDirectory = "../../Controllers/SensorNetwork/Simulation/SimulationCSVData/";
     }
 }
