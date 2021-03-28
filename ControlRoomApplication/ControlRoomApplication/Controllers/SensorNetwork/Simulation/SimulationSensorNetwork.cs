@@ -27,12 +27,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         /// <param name="teensyClientPort">The Teensy's Client Port; this must be set equal to the SensorNetworkServer's Server Port.</param>
         /// <param name="teensyServerIP">The Teensy's Server IP; this must be set equal to the SensorNetworkServer's Client IP.</param>
         /// <param name="teensyServerPort">The Teensy's Server Port; this must be set equal to the SensorNetworkServer's Client Port.</param>
-        public SimulationSensorNetwork(string teensyClientIP, int teensyClientPort, IPAddress teensyServerIP, int teensyServerPort)
+        /// <param name="dataPath">The path to CSV data. By default, it looks for it in the SensorNetworkConstants.SimCSVDirectory location.</param>
+        public SimulationSensorNetwork(string teensyClientIP, int teensyClientPort, IPAddress teensyServerIP, int teensyServerPort, string dataPath = SensorNetworkConstants.SimCSVDirectory)
         {
+            Server = new TcpListener(teensyServerIP, teensyServerPort);
+
             ClientIP = teensyClientIP;
             ClientPort = teensyClientPort;
-            ServerIP = teensyServerIP;
-            ServerPort = teensyServerPort;
 
             SimulationSensorMonitoringThread = new Thread(() => { SimulationSensorMonitor(); });
 
@@ -45,21 +46,9 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             CounterbalanceAccData = new RawAccelerometerData[0];
             AzimuthEncoderData = new double[0];
             ElevationEncoderData = new double[0];
-
-            // Set indexes to 0
-            AzimuthTempDataIndex = 0;
-            ElevationTempDataIndex = 0;
-            AzimuthAccDataIndex = 0;
-            ElevationAccDataIndex = 0;
-            CounterbalanceAccDataIndex = 0;
-            AzimuthEncoderDataIndex = 0;
-            ElevationEncoderDataIndex = 0;
         }
 
         private TcpListener Server { get; set; }
-        private IPAddress ServerIP { get; set; }
-        private int ServerPort { get; set; }
-        private NetworkStream ServerStream { get; set; }
 
         private TcpClient Client { get; set; }
         private string ClientIP { get; set; }
@@ -70,28 +59,19 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
 
         private bool CurrentlyRunning { get; set; }
 
-        private bool Reboot { get; set; }
-
         private double[] AzimuthTempData { get; set; }
-        private int AzimuthTempDataIndex; // Indexes are so we know what part of the array to read from in the loop
 
         private double[] ElevationTempData { get; set; }
-        private int ElevationTempDataIndex;
 
         private RawAccelerometerData[] AzimuthAccData { get; set; }
-        private int AzimuthAccDataIndex;
 
         private RawAccelerometerData[] ElevationAccData { get; set; }
-        private int ElevationAccDataIndex;
 
         private RawAccelerometerData[] CounterbalanceAccData { get; set; }
-        private int CounterbalanceAccDataIndex;
 
         private double[] AzimuthEncoderData { get; set; }
-        private int AzimuthEncoderDataIndex;
 
         private double[] ElevationEncoderData { get; set; }
-        private int ElevationEncoderDataIndex;
 
         /// <summary>
         /// This is used to start the simulation Sensor Network. Calling this is equivalent to powering on the Teensy.
@@ -116,14 +96,151 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
 
         private void SimulationSensorMonitor()
         {
-            // Start the server that will expect the Sensor Configuration
-            Server = new TcpListener(ServerIP, ServerPort);
-            Server.Start();
+            // First, we want to connect to the SensorNetworkServer
+            WaitForAndConnectToServer();
 
+            // Next, we want to request initialization and receive it
+            byte[] receivedInit = RequestAndAcquireSensorInitialization();
+
+            // At this point, we have the initialization and can initialize the sensors
+            InitializeSensors(receivedInit);
+
+            // Now we can grab the CSV data for ONLY the initialized sensors...
+            ReadFakeDataFromCSV();
+
+            // Keep track of the indexes for each data array, because we are only extracting a small subsection of each one.
+            // We want to know what subsection we just got so we can get the next subsection in the next iteration
+            int elTempIdx = 0;
+            int azTempIdx = 0;
+            int elEncIdx = 0;
+            int azEncIdx = 0;
+            int elAccIdx = 0;
+            int azAccIdx = 0;
+            int cbAccIdx = 0;
+
+            // This will tell us if we are rebooting or not. We will only reboot if the connection is randomly terminated.
+            bool reboot = false;
+
+            // Now we enter the "super loop"
+            while (CurrentlyRunning)
+            {
+                // Convert subarrays to bytes
+                byte[] dataToSend = BuildSubArraysAndEncodeData(ref elTempIdx, ref azTempIdx, ref elEncIdx, ref azEncIdx, ref elAccIdx, ref azAccIdx, ref cbAccIdx);
+
+                // We have to check for CurrentlyRunning down here because we don't know when the connection is going to be terminated, and
+                // it could very well be in the middle of the loop.
+                if (CurrentlyRunning)
+                {
+                    try
+                    {
+                        // Send arrays
+                        ClientStream.Write(dataToSend, 0, dataToSend.Length);
+                        Thread.Sleep(SensorNetworkConstants.DataSendingInterval);
+                    }
+                    // This will be reached if the connection is unexpectedly terminated (like it is during sensor reinitialization)
+                    catch
+                    {
+                        CurrentlyRunning = false;
+                        reboot = true;
+                    }
+                }
+            }
+
+            // If the server disconnects, that triggers a reboot
+            if(reboot)
+            {
+                CurrentlyRunning = true;
+                Client.Dispose();
+                ClientStream.Dispose();
+                SimulationSensorMonitor();
+            }
+        }
+
+        /// <summary>
+        /// This will read into each data array and pull out a subarray based on the index value, and then encode those subarrays.
+        /// </summary>
+        /// <param name="azTempIdx">Azimuth temperature data array index that we are pulling from.</param>
+        /// <param name="elTempIdx">Elevation temperature data array index that we are pulling from.</param>
+        /// <param name="elEncIdx">Elevation encoder data array index that we are pulling from.</param>
+        /// <param name="azEncIdx">Azimuth encoder data array index that we are pulling from.</param>
+        /// <param name="elAccIdx">Elevation accelerometer data array index that we are pulling from.</param>
+        /// <param name="azAccIdx">Azimuth accelerometer data array index that we are pulling from.</param>
+        /// <param name="cbAccIdx">Counterbalance accelerometer data array index that we are pulling from.</param>
+        /// <returns></returns>
+        private byte[] BuildSubArraysAndEncodeData(ref int elTempIdx, ref int azTempIdx, ref int elEncIdx, ref int azEncIdx, ref int elAccIdx, ref int azAccIdx, ref int cbAccIdx)
+        {
+            // Select what index to go to next for each array. Each array will loop back around once it reaches its end.
+            if (AzimuthTempData != null && azTempIdx + 1 > AzimuthTempData.Length - 1) azTempIdx = 0;
+            if (ElevationTempData != null && elTempIdx + 1 > ElevationTempData.Length - 1) elTempIdx = 0;
+            if (ElevationEncoderData != null && elEncIdx + 1 > ElevationEncoderData.Length - 1) elEncIdx = 0;
+            if (AzimuthEncoderData != null && azEncIdx + 1 > AzimuthEncoderData.Length - 1) azEncIdx = 0;
+
+            // Accelerometers are pulling around 200 samples per iteration
+            if (ElevationAccData != null && elAccIdx + 100 > ElevationAccData.Length - 1) elAccIdx = 0;
+            if (AzimuthAccData != null && azAccIdx + 100 > AzimuthAccData.Length - 1) azAccIdx = 0;
+            if (CounterbalanceAccData != null && cbAccIdx + 100 > CounterbalanceAccData.Length - 1) cbAccIdx = 0;
+
+            // Initialize subarrays to be of size 0
+            double[] elTemps = new double[0];
+            double[] azTemps = new double[0];
+            RawAccelerometerData[] elAccl = new RawAccelerometerData[0];
+            RawAccelerometerData[] azAccl = new RawAccelerometerData[0];
+            RawAccelerometerData[] cbAccl = new RawAccelerometerData[0];
+            double[] elEnc = new double[0];
+            double[] azEnc = new double[0];
+
+            // If the sensors are initialized, give them their subarrays, while also updating the index so that
+            // this  knows what subarrays to go to next
+            if (ElevationTempData != null)
+            {
+                elTemps = new double[1];
+                Array.Copy(ElevationTempData, elTempIdx++, elTemps, 0, 1);
+            }
+            if (AzimuthTempData != null)
+            {
+                azTemps = new double[1];
+                Array.Copy(AzimuthTempData, azTempIdx++, azTemps, 0, 1);
+            }
+            if (ElevationEncoderData != null)
+            {
+                elEnc = new double[1];
+                Array.Copy(ElevationEncoderData, elEncIdx++, elEnc, 0, 1);
+            }
+            if (AzimuthEncoderData != null)
+            {
+                azEnc = new double[1];
+                Array.Copy(AzimuthEncoderData, azEncIdx++, azEnc, 0, 1);
+            }
+            if (AzimuthAccData != null)
+            {
+                azAccl = new RawAccelerometerData[100];
+                Array.Copy(AzimuthAccData, azAccIdx += 100, azAccl, 0, 100);
+            }
+            if (ElevationAccData != null)
+            {
+                elAccl = new RawAccelerometerData[100];
+                Array.Copy(ElevationAccData, elAccIdx += 100, elAccl, 0, 100);
+            }
+            if (CounterbalanceAccData != null)
+            {
+                cbAccl = new RawAccelerometerData[100];
+                Array.Copy(CounterbalanceAccData, cbAccIdx += 100, cbAccl, 0, 100);
+            }
+
+            // Finally, encode the subarrays and return the result
+            return PacketEncodingTools.ConvertDataArraysToBytes(elAccl, azAccl, cbAccl, elTemps, azTemps, elEnc, azEnc);
+        }
+
+        /// <summary>
+        /// This will wait for the SensorNetworkServer, and when it finds it, it will connect!
+        /// This code was directly lifted from how this functionality works in the Teensy's source code.
+        /// </summary>
+        private void WaitForAndConnectToServer()
+        {
             bool connected = false;
 
             // Wait for the SensorNetworkServer to be up
-            while(!connected)
+            while (!connected)
             {
                 try
                 {
@@ -136,6 +253,18 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
                     logger.Info($"{Utilities.GetTimeStamp()}: SimulationSensorNetwork is waiting for the SensorNetworkServer.");
                 }
             }
+        }
+
+        /// <summary>
+        /// This will send a request for sensor initialization to the SensorNetworkServer, where the
+        /// SensorNetworkServer will then respond with sensor initialization.
+        /// </summary>
+        /// <returns>The sensor initialization byte array.</returns>
+        private byte[] RequestAndAcquireSensorInitialization()
+        {
+            // Start the server that will expect the Sensor Configuration
+            Server.Start();
+            NetworkStream ServerStream;
 
             // Ask the SensorNetworkServer for its initialization
             byte[] askForInit = Encoding.ASCII.GetBytes("Send Sensor Configuration");
@@ -159,99 +288,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             localClient.Close();
             localClient.Dispose();
 
-            // At this point, we have the initialization and can initialize the sensors
-            InitializeSensors(receivedInit);
-
-            // Now we can grab the CSV data for the initialized sensors...
-            ReadFakeDataFromCSV();
-
-            // Now we enter the "super loop"
-            while(CurrentlyRunning)
-            {
-                // Select what index to go to next for each array. Each array will loop back around once it reaches its end.
-                if (AzimuthTempData != null && AzimuthTempDataIndex + 1 > AzimuthTempData.Length - 1) AzimuthTempDataIndex = 0;
-                if (ElevationTempData != null && ElevationTempDataIndex + 1 > ElevationTempData.Length - 1) ElevationTempDataIndex = 0;
-                if (ElevationEncoderData != null && ElevationEncoderDataIndex + 1 > ElevationEncoderData.Length - 1) ElevationEncoderDataIndex = 0;
-                if (AzimuthEncoderData != null && AzimuthEncoderDataIndex + 1 > AzimuthEncoderData.Length - 1) AzimuthEncoderDataIndex = 0;
-
-                // Accelerometers are pulling around 200 samples per iteration
-                if (ElevationAccData != null && ElevationAccDataIndex + 200 > ElevationAccData.Length - 1) ElevationAccDataIndex = 0;
-                if (AzimuthAccData != null && AzimuthAccDataIndex + 200 > AzimuthAccData.Length - 1) AzimuthAccDataIndex = 0;
-                if (CounterbalanceAccData != null && CounterbalanceAccDataIndex + 200 > CounterbalanceAccData.Length - 1) CounterbalanceAccDataIndex = 0;
-
-                // Initialize subarrays to be of size 0
-                double[] elTemps = new double[0];
-                double[] azTemps = new double[0];
-                RawAccelerometerData[] elAccl = new RawAccelerometerData[0];
-                RawAccelerometerData[] azAccl = new RawAccelerometerData[0];
-                RawAccelerometerData[] cbAccl = new RawAccelerometerData[0];
-                double[] elEnc = new double[0];
-                double[] azEnc = new double[0];
-
-                // If the sensors are initialized, give them their subarrays
-                if (ElevationTempData != null)
-                {
-                    elTemps = new double[1];
-                    Array.Copy(ElevationTempData, ElevationTempDataIndex++, elTemps, 0, 1);
-                }
-                if (AzimuthTempData != null)
-                {
-                    azTemps = new double[1];
-                    Array.Copy(AzimuthTempData, AzimuthTempDataIndex++, azTemps, 0, 1);
-                }
-                if (ElevationEncoderData != null)
-                {
-                    elEnc = new double[1];
-                    Array.Copy(ElevationEncoderData, ElevationEncoderDataIndex++, elEnc, 0, 1);
-                }
-                if (AzimuthEncoderData != null)
-                {
-                    azEnc = new double[1];
-                    Array.Copy(AzimuthEncoderData, AzimuthEncoderDataIndex++, azEnc, 0, 1);
-                }
-                if (AzimuthAccData != null)
-                {
-                    azAccl = new RawAccelerometerData[100];
-                    Array.Copy(AzimuthAccData, AzimuthAccDataIndex++, azAccl, 0, 100);
-                }
-                if (ElevationAccData != null)
-                {
-                    elAccl = new RawAccelerometerData[100];
-                    Array.Copy(ElevationAccData, ElevationAccDataIndex++, elAccl, 0, 100);
-                }
-                if (CounterbalanceAccData != null)
-                {
-                    cbAccl = new RawAccelerometerData[100];
-                    Array.Copy(CounterbalanceAccData, CounterbalanceAccDataIndex++, cbAccl, 0, 100);
-                }
-
-                // Convert subarrays to bytes
-                byte[] dataToSend = PacketEncodingTools.ConvertDataArraysToBytes(elAccl, azAccl, cbAccl, elTemps, azTemps, elEnc, azEnc);
-
-                try
-                {
-                    // Send arrays
-                    ClientStream.Write(dataToSend, 0, dataToSend.Length);
-                    Thread.Sleep(SensorNetworkConstants.DataSendingInterval);
-                }
-                // This may be reached if the connection is unexpectedly terminated (such as during sensor reinitialization)
-                catch
-                {
-                    CurrentlyRunning = false;
-                    Reboot = true;
-                }
-            }
-
-            // If the server disconnects, that triggers a reboot
-            if(Reboot)
-            {
-                CurrentlyRunning = true;
-                Client.Dispose();
-                ClientStream.Dispose();
-                Server.Stop();
-                Reboot = false;
-                SimulationSensorMonitor();
-            }
+            return receivedInit;
         }
 
         /// <summary>
