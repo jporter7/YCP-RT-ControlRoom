@@ -217,7 +217,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <returns></returns>
         public void RebootSensorNetwork()
         {
-            logger.Error($"{Utilities.GetTimeStamp()}: Rebooting Sensor Network. This may take a few seconds...");
+            logger.Info($"{Utilities.GetTimeStamp()}: Rebooting Sensor Network. This may take a few seconds...");
 
             EndSensorMonitoringRoutine(true); // Must pass through true because we are rebooting
 
@@ -378,7 +378,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     localClient = Server.AcceptTcpClient();
                     Stream = localClient.GetStream();
 
-                    logger.Error($"{Utilities.GetTimeStamp()}: Successfully connected to the Sensor Network!");
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully connected to the Sensor Network!");
 
                     int receivedDataSize;
                     
@@ -410,7 +410,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     Timeout.Stop();
                     Status = SensorNetworkStatusEnum.ServerError;
                     logger.Error($"{Utilities.GetTimeStamp()}: An error occurred while running the server; please check that the connection is available.");
-                    logger.Error($"{Utilities.GetTimeStamp()}: Trying to reconnect to the Sensor Network...");
+                    logger.Info($"{Utilities.GetTimeStamp()}: Trying to reconnect to the Sensor Network...");
                 }
             }
         }
