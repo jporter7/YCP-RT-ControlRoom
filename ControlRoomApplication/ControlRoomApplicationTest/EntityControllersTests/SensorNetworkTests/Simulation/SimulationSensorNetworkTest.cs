@@ -13,10 +13,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
     [TestClass]
     public class SimulationSensorNetworkTest
     {
+        string ClientIP = "127.0.0.1";
+        int ClientPort = 3000;
+
+        IPAddress ServerIP = IPAddress.Parse("127.0.0.2");
+        int ServerPort = 3001;
+
+        string DataPath = "../../EntityControllersTests/SensorNetworkTests/Simulation/TestCSVData/";
+
+        SimulationSensorNetwork SimSensorNetwork;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            SimSensorNetwork = new SimulationSensorNetwork(ClientIP, ClientPort, ServerIP, ServerPort, DataPath);
+        }
+
         [TestMethod]
         public void SimulationSensorNetwork_Constructor_ClientAndServerCorrect()
         {
-
+            
         }
     }
 }

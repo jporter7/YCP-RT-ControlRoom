@@ -46,6 +46,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             CounterbalanceAccData = new RawAccelerometerData[0];
             AzimuthEncoderData = new double[0];
             ElevationEncoderData = new double[0];
+
+            DataDirectory = dataPath;
         }
 
         private TcpListener Server { get; set; }
@@ -54,6 +56,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         private string ClientIP { get; set; }
         private int ClientPort { get; set; }
         private NetworkStream ClientStream { get; set; }
+
+        private string DataDirectory;
 
         private Thread SimulationSensorMonitoringThread { get; set; }
 
@@ -170,15 +174,31 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         private byte[] BuildSubArraysAndEncodeData(ref int elTempIdx, ref int azTempIdx, ref int elEncIdx, ref int azEncIdx, ref int elAccIdx, ref int azAccIdx, ref int cbAccIdx)
         {
             // Select what index to go to next for each array. Each array will loop back around once it reaches its end.
-            if (AzimuthTempData != null && azTempIdx + 1 > AzimuthTempData.Length - 1) azTempIdx = 0;
-            if (ElevationTempData != null && elTempIdx + 1 > ElevationTempData.Length - 1) elTempIdx = 0;
-            if (ElevationEncoderData != null && elEncIdx + 1 > ElevationEncoderData.Length - 1) elEncIdx = 0;
-            if (AzimuthEncoderData != null && azEncIdx + 1 > AzimuthEncoderData.Length - 1) azEncIdx = 0;
+            // We are looking at, for example "azTempIdx + 2" because one would only verify that the index is valid. To copy
+            // the subarray, we are reaching x indexes beyond that initial index. So, for the accelerometers, because we want 
+            // 100 samples, we must verify that the index + 100 exists, but we also want to verify that the index + 200 exists
+            // (and if the index + 200 exists, we know that the index + 100 must also exist)
+            if (AzimuthTempData != null && azTempIdx + 2 > AzimuthTempData.Length - 1) azTempIdx = 0;
+            else azTempIdx += 1;
+
+            if (ElevationTempData != null && elTempIdx + 2 > ElevationTempData.Length - 1) elTempIdx = 0;
+            else elTempIdx += 1;
+
+            if (ElevationEncoderData != null && elEncIdx + 2 > ElevationEncoderData.Length - 1) elEncIdx = 0;
+            else elEncIdx += 1;
+
+            if (AzimuthEncoderData != null && azEncIdx + 2 > AzimuthEncoderData.Length - 1) azEncIdx = 0;
+            else azEncIdx += 1;
 
             // Accelerometers are pulling around 200 samples per iteration
-            if (ElevationAccData != null && elAccIdx + 100 > ElevationAccData.Length - 1) elAccIdx = 0;
-            if (AzimuthAccData != null && azAccIdx + 100 > AzimuthAccData.Length - 1) azAccIdx = 0;
-            if (CounterbalanceAccData != null && cbAccIdx + 100 > CounterbalanceAccData.Length - 1) cbAccIdx = 0;
+            if (ElevationAccData != null && elAccIdx + 200 >= ElevationAccData.Length - 1) elAccIdx = 0;
+            else elAccIdx += 100;
+
+            if (AzimuthAccData != null && azAccIdx + 200 >= AzimuthAccData.Length - 1) azAccIdx = 0;
+            else azAccIdx += 100;
+
+            if (CounterbalanceAccData != null && cbAccIdx + 200 >= CounterbalanceAccData.Length - 1) cbAccIdx = 0;
+            else cbAccIdx += 100;
 
             // Initialize subarrays to be of size 0
             double[] elTemps = new double[0];
@@ -194,37 +214,37 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             if (ElevationTempData != null)
             {
                 elTemps = new double[1];
-                Array.Copy(ElevationTempData, elTempIdx++, elTemps, 0, 1);
+                Array.Copy(ElevationTempData, elTempIdx, elTemps, 0, 1);
             }
             if (AzimuthTempData != null)
             {
                 azTemps = new double[1];
-                Array.Copy(AzimuthTempData, azTempIdx++, azTemps, 0, 1);
+                Array.Copy(AzimuthTempData, azTempIdx, azTemps, 0, 1);
             }
             if (ElevationEncoderData != null)
             {
                 elEnc = new double[1];
-                Array.Copy(ElevationEncoderData, elEncIdx++, elEnc, 0, 1);
+                Array.Copy(ElevationEncoderData, elEncIdx, elEnc, 0, 1);
             }
             if (AzimuthEncoderData != null)
             {
                 azEnc = new double[1];
-                Array.Copy(AzimuthEncoderData, azEncIdx++, azEnc, 0, 1);
+                Array.Copy(AzimuthEncoderData, azEncIdx, azEnc, 0, 1);
             }
             if (AzimuthAccData != null)
             {
                 azAccl = new RawAccelerometerData[100];
-                Array.Copy(AzimuthAccData, azAccIdx += 100, azAccl, 0, 100);
+                Array.Copy(AzimuthAccData, azAccIdx, azAccl, 0, 100);
             }
             if (ElevationAccData != null)
             {
                 elAccl = new RawAccelerometerData[100];
-                Array.Copy(ElevationAccData, elAccIdx += 100, elAccl, 0, 100);
+                Array.Copy(ElevationAccData, elAccIdx, elAccl, 0, 100);
             }
             if (CounterbalanceAccData != null)
             {
                 cbAccl = new RawAccelerometerData[100];
-                Array.Copy(CounterbalanceAccData, cbAccIdx += 100, cbAccl, 0, 100);
+                Array.Copy(CounterbalanceAccData, cbAccIdx, cbAccl, 0, 100);
             }
 
             // Finally, encode the subarrays and return the result
@@ -312,13 +332,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         /// This will read fake data from the CSV files based off of the initialization. If the sensor is "initialized" (not null),
         /// then it will read in CSV data for it. Otherwise, it will stay null.
         /// </summary>
-        private void ReadFakeDataFromCSV(string directory = SensorNetworkConstants.SimCSVDirectory)
+        private void ReadFakeDataFromCSV()
         {
             if (ElevationTempData != null)
             {
                 double dbl;
 
-                var values = File.ReadAllLines(directory + "TestElTemp.csv")
+                var values = File.ReadAllLines(DataDirectory + "TestElTemp.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => double.TryParse(str, out dbl) ? dbl : 0));
 
@@ -329,7 +349,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 double dbl;
 
-                var values = File.ReadAllLines(directory + "TestAzTemp.csv")
+                var values = File.ReadAllLines(DataDirectory + "TestAzTemp.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => double.TryParse(str, out dbl) ? dbl : 0));
 
@@ -340,15 +360,15 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 int tempInt;
 
-                int[] xData = File.ReadAllLines(directory + "TestAzAccX.csv")
+                int[] xData = File.ReadAllLines(DataDirectory + "TestAzAccX.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] yData = File.ReadAllLines(directory + "TestAzAccY.csv")
+                int[] yData = File.ReadAllLines(DataDirectory + "TestAzAccY.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] zData = File.ReadAllLines(directory + "TestAzAccZ.csv")
+                int[] zData = File.ReadAllLines(DataDirectory + "TestAzAccZ.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
@@ -372,15 +392,15 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 int tempInt;
 
-                int[] xData = File.ReadAllLines(directory + "TestElAccX.csv")
+                int[] xData = File.ReadAllLines(DataDirectory + "TestElAccX.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] yData = File.ReadAllLines(directory + "TestElAccY.csv")
+                int[] yData = File.ReadAllLines(DataDirectory + "TestElAccY.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] zData = File.ReadAllLines(directory + "TestElAccZ.csv")
+                int[] zData = File.ReadAllLines(DataDirectory + "TestElAccZ.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
@@ -404,15 +424,15 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 int tempInt;
 
-                int[] xData = File.ReadAllLines(directory + "TestCbAccX.csv")
+                int[] xData = File.ReadAllLines(DataDirectory + "TestCbAccX.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] yData = File.ReadAllLines(directory + "TestCbAccY.csv")
+                int[] yData = File.ReadAllLines(DataDirectory + "TestCbAccY.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
-                int[] zData = File.ReadAllLines(directory + "TestCbAccZ.csv")
+                int[] zData = File.ReadAllLines(DataDirectory + "TestCbAccZ.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => int.TryParse(str, out tempInt) ? tempInt : 0)).ToArray();
 
@@ -436,7 +456,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 double dbl;
 
-                var values = File.ReadAllLines(directory + "TestElEnc.csv")
+                var values = File.ReadAllLines(DataDirectory + "TestElEnc.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => double.TryParse(str, out dbl) ? dbl : 0));
 
@@ -447,7 +467,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 double dbl;
 
-                var values = File.ReadAllLines(directory + "TestAzEnc.csv")
+                var values = File.ReadAllLines(DataDirectory + "TestAzEnc.csv")
                     .SelectMany(a => a.Split(',')
                     .Select(str => double.TryParse(str, out dbl) ? dbl : 0));
 
