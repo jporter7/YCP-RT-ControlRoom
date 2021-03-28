@@ -17,6 +17,8 @@ using System.Threading;
 using System.ComponentModel;
 using ControlRoomApplication.Util;
 using System.Linq;
+using System.Drawing.Printing;
+using ScottPlot;
 
 namespace ControlRoomApplication.GUI
 {
@@ -82,6 +84,10 @@ namespace ControlRoomApplication.GUI
         bool farenheit = true;
 
         private int rtId;
+
+
+        // Plots for accelerometer data
+        
 
         // This is being passed through so the Weather Station override bool can be modified
         private readonly MainForm mainF;
@@ -156,6 +162,7 @@ namespace ControlRoomApplication.GUI
 
             ElecationAbsoluteEncoder_lbl.Text = "";
 
+            
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
 
@@ -425,6 +432,109 @@ namespace ControlRoomApplication.GUI
                 consoleLogBox.SelectionStart = consoleLogBox.TextLength;
                 consoleLogBox.ScrollToCaret();
             }
+
+            // FFT Transformations
+            double[] eleAccelerometerX = new double[128];
+            double[] eleAccelerometerY = new double[128];
+            double[] eleAccelerometerZ = new double[128];
+
+            double[] azAccelerometerX = new double[128];
+            double[] azAccelerometerY = new double[128];
+            double[] azAccelerometerZ = new double[128];
+
+            double[] cbAccelerometerX = new double[128];
+            double[] cbAccelerometerY = new double[128];
+            double[] cbAccelerometerZ = new double[128];
+
+
+            Random rand = new Random();
+            for(int i = 0; i < eleAccelerometerX.Length; i++)
+            {
+                eleAccelerometerX[i] = rand.Next(0, 50);
+                eleAccelerometerY[i] = rand.Next(-50,-10);
+                eleAccelerometerZ[i] = rand.Next(100, 150);
+
+                azAccelerometerX[i] = rand.Next(-40, 10);
+                azAccelerometerY[i] = rand.Next(150,200);
+                azAccelerometerZ[i] = rand.Next(20, 80);
+
+                cbAccelerometerX[i] = rand.Next(-50, -10);
+                cbAccelerometerY[i] = rand.Next(10, 80);
+                cbAccelerometerZ[i] = rand.Next(90, 160);
+
+
+            }
+            // FFT transformations -- currently not in use
+            //double[] fftX = FftSharp.Transform.FFTpower(eleAccelerometerX);
+            //double[]fft
+            //double SAMPLE_RATE = 0.8;
+
+            // Create an array of frequencies for each point of the FFT
+            //double[] freqs = FftSharp.Transform.FFTfreq(SAMPLE_RATE , fftX.Length);
+
+            // Azimuth Accelerometer Chart /////////////////////////////////////////////
+            azimuthAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+            azimuthAccChart.ChartAreas[0].AxisX.Maximum= double.NaN;
+
+            for (int i = 0; i < eleAccelerometerX.Length; i++)
+            {
+                azimuthAccChart.Series["x"].Points.AddY(azAccelerometerX[i]);
+                azimuthAccChart.Series["y"].Points.AddY(azAccelerometerY[i]);
+                azimuthAccChart.Series["z"].Points.AddY(azAccelerometerZ[i]);
+
+
+                if (azimuthAccChart.Series["x"].Points.Count > 500)
+                {
+                    azimuthAccChart.Series["x"].Points.RemoveAt(0);
+                    azimuthAccChart.Series["y"].Points.RemoveAt(0);
+                    azimuthAccChart.Series["z"].Points.RemoveAt(0);
+                }
+                azimuthAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+
+            // Elevation Accelerometer Chart /////////////////////////////////////////////
+
+            elevationAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+            elevationAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
+
+            for (int i = 0; i < eleAccelerometerX.Length; i++)
+            {
+                elevationAccChart.Series["x"].Points.AddY(eleAccelerometerX[i]);
+                elevationAccChart.Series["y"].Points.AddY(eleAccelerometerY[i]);
+                elevationAccChart.Series["z"].Points.AddY(eleAccelerometerZ[i]);
+
+
+                if (elevationAccChart.Series["x"].Points.Count > 500)
+                {
+                    elevationAccChart.Series["x"].Points.RemoveAt(0);
+                    elevationAccChart.Series["y"].Points.RemoveAt(0);
+                    elevationAccChart.Series["z"].Points.RemoveAt(0);
+                }
+                elevationAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+
+            // CounterBalance Accelerometer Chart /////////////////////////////////////////////
+            counterBalanceAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+            counterBalanceAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
+
+            for (int i = 0; i < eleAccelerometerX.Length; i++)
+            {
+                counterBalanceAccChart.Series["x"].Points.AddY(cbAccelerometerX[i]);
+                counterBalanceAccChart.Series["y"].Points.AddY(cbAccelerometerY[i]);
+                counterBalanceAccChart.Series["z"].Points.AddY(cbAccelerometerZ[i]);
+
+
+                if (counterBalanceAccChart.Series["x"].Points.Count > 500)
+                {
+                    counterBalanceAccChart.Series["x"].Points.RemoveAt(0);
+                    counterBalanceAccChart.Series["y"].Points.RemoveAt(0);
+                    counterBalanceAccChart.Series["z"].Points.RemoveAt(0);
+                }
+                counterBalanceAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            ///////////////////////////////////////////////////////////////////////////////
         }
 
         private void DiagnosticsForm_Load(object sender, System.EventArgs e)
@@ -1110,6 +1220,5 @@ namespace ControlRoomApplication.GUI
                 rtController.setOverride("counterbalance accelerometer", false);
             }
         }
-
     }
 }
