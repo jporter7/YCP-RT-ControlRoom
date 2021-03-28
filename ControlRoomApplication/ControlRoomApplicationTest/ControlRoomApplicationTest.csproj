@@ -89,6 +89,9 @@
     <Compile Include="CommunicationTests\PushNotificationTest.cs" />
     <Compile Include="CommunicationTests\AESTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
+    <Compile Include="EntitiesTests\AccelerationTest.cs" />
+    <Compile Include="EntitiesTests\TemperatureTest.cs" />
+    <Compile Include="EntitiesTests\SensorNetworkConfigTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />
     <Compile Include="EntitiesTests\LocationTest.cs" />
     <Compile Include="EntitiesTests\CelestialBodyTest.cs" />
@@ -112,6 +115,9 @@
     <Compile Include="EntityControllersTests\RadioTelescopeControllerManagementThreadTest.cs" />
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCClientAndDriverTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkTests\PacketDecodingToolsTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkTests\SensorNetworkClientTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkTests\SensorNetworkServerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberSimulatorControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberTestControllerTest.cs" />
@@ -123,6 +129,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\AllData50.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyAzAccl123.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyAzEnc50.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyAzTemp50C.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyCbAccl123.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElAccl123.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElEnc25.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElEnc50.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElTemp50C.snp" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

@@ -27,7 +27,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         [TestInitialize]
         public void BuildUp()
-        { 
+        {
             NumAppointments = DatabaseOperations.GetTotalAppointmentCount();
             NumRTInstances = DatabaseOperations.GetTotalRTCount();
             NumRFData = DatabaseOperations.GetTotalRFDataCount();
@@ -80,14 +80,14 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         }
 
- /*       [TestMethod]
-        public void TestPopulateLocalDatabase()
-        { 
-            DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
-            var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-            Assert.AreEqual(45 * NumRTInstances, appt_count);
-        }
-*/
+        /*       [TestMethod]
+               public void TestPopulateLocalDatabase()
+               { 
+                   DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
+                   var appt_count = DatabaseOperations.GetTotalAppointmentCount();
+                   Assert.AreEqual(45 * NumRTInstances, appt_count);
+               }
+       */
         [TestMethod]
         public void TestGetListOfAppointmentsForRadioTelescope()
         {
@@ -206,7 +206,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             appt._Status = AppointmentStatusEnum.IN_PROGRESS;
 
             DatabaseOperations.UpdateAppointment(appt);
-            
+
             // update appt
             appt = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(appt.Telescope.Id).Find(x => x.Id == appt.Id);
             var testStatus = appt._Status;
@@ -401,7 +401,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.IsTrue(telescope.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
 
             // test FetchByID
-                // we will never have this many telescopes, just ensuring null operation performed correctly
+            // we will never have this many telescopes, just ensuring null operation performed correctly
             Assert.IsTrue(DatabaseOperations.FetchRadioTelescopeByID(32323232) == null);
 
             Assert.IsFalse(teleByID == null);
@@ -422,24 +422,24 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveTemperature()
         {
-            List<Temperature> temp = new List <Temperature>();
+            List<Temperature> temp = new List<Temperature>();
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
             long dateTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             //Generate Temperature
-            Temperature t1 =  Temperature.Generate(dateTime, 0.0, loc1);
+            Temperature t1 = Temperature.Generate(dateTime, 0.0, loc1);
 
             temp.Add(t1);
 
             DatabaseOperations.AddSensorData(temp);
-            List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime-1, dateTime+1, loc1);
+            List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime - 1, dateTime + 1, loc1);
 
             Assert.AreEqual(tempReturn.Count, 1);
 
             //Test only temp
-            Assert.AreEqual(temp[tempReturn.Count-1].location_ID, tempReturn[tempReturn.Count-1].location_ID);
+            Assert.AreEqual(temp[tempReturn.Count - 1].location_ID, tempReturn[tempReturn.Count - 1].location_ID);
             Assert.AreEqual(temp[tempReturn.Count - 1].temp, tempReturn[tempReturn.Count - 1].temp);
             Assert.AreEqual(temp[tempReturn.Count - 1].TimeCapturedUTC, tempReturn[tempReturn.Count - 1].TimeCapturedUTC);
 
@@ -475,6 +475,73 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.AreEqual(temp[tempReturn.Count - 2].location_ID, tempReturn[tempReturn.Count - 2].location_ID);
             Assert.AreEqual(temp[tempReturn.Count - 2].temp, tempReturn[tempReturn.Count - 2].temp);
             Assert.AreEqual(temp[tempReturn.Count - 2].TimeCapturedUTC, tempReturn[tempReturn.Count - 2].TimeCapturedUTC);
+
+        }
+
+        //Acceleration
+        [TestMethod]
+        public void TestAddAndRetrieveAcceleration()
+        {
+            List<Acceleration> acc = new List<Acceleration>();
+            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+
+            //Generate current time
+            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            //Generate Acceleration
+            Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
+
+            acc.Add(a1);
+
+            DatabaseOperations.AddSensorData(acc);
+            List<Acceleration> accReturn = DatabaseOperations.GetACCData(dateTime1 - 1, dateTime1 + 1, loc1);
+
+            Assert.AreEqual(accReturn.Count, 1);
+
+            //Test only acc
+            Assert.AreEqual(acc[accReturn.Count - 1].location_ID, accReturn[accReturn.Count - 1].location_ID);
+            Assert.AreEqual(acc[accReturn.Count - 1].x, accReturn[accReturn.Count - 1].x);
+            Assert.AreEqual(acc[accReturn.Count - 1].y, accReturn[accReturn.Count - 1].y);
+            Assert.AreEqual(acc[accReturn.Count - 1].z, accReturn[accReturn.Count - 1].z);
+            Assert.AreEqual(acc[accReturn.Count - 1].TimeCaptured, accReturn[accReturn.Count - 1].TimeCaptured);
+
+        }
+
+        [TestMethod]
+        public void TestAddAndRetrieveAccelerations()
+        {
+            List<Acceleration> acc = new List<Acceleration>();
+            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+
+            //Generate current time
+            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            //Make 2 new Accelerations
+            Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
+            Acceleration a2 = Acceleration.Generate(dateTime1, 2, 2, 2, loc1);
+
+            acc.Add(a1);
+            acc.Add(a2);
+
+
+            DatabaseOperations.AddSensorData(acc);
+            List<Acceleration> accReturn = DatabaseOperations.GetACCData(dateTime1 - 1, dateTime1 + 1, loc1);
+
+            Assert.AreEqual(accReturn.Count, 2);
+
+            //Test first acc
+            Assert.AreEqual(acc[accReturn.Count - 1].location_ID, accReturn[accReturn.Count - 1].location_ID);
+            Assert.AreEqual(acc[accReturn.Count - 1].x, accReturn[accReturn.Count - 1].x);
+            Assert.AreEqual(acc[accReturn.Count - 1].y, accReturn[accReturn.Count - 1].y);
+            Assert.AreEqual(acc[accReturn.Count - 1].z, accReturn[accReturn.Count - 1].z);
+            Assert.AreEqual(acc[accReturn.Count - 1].TimeCaptured, accReturn[accReturn.Count - 1].TimeCaptured);
+
+            //Test second acc
+            Assert.AreEqual(acc[accReturn.Count - 2].location_ID, accReturn[accReturn.Count - 2].location_ID);
+            Assert.AreEqual(acc[accReturn.Count - 2].x, accReturn[accReturn.Count - 2].x);
+            Assert.AreEqual(acc[accReturn.Count - 2].y, accReturn[accReturn.Count - 2].y);
+            Assert.AreEqual(acc[accReturn.Count - 2].z, accReturn[accReturn.Count - 2].z);
+            Assert.AreEqual(acc[accReturn.Count - 2].TimeCaptured, accReturn[accReturn.Count - 2].TimeCaptured);
 
         }
 
@@ -528,6 +595,98 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             // calibration orientation (not yet implemented)
             Assert.IsTrue(telescope.CalibrationOrientation.Azimuth == retrievedTele.CalibrationOrientation.Azimuth);
             Assert.IsTrue(telescope.CalibrationOrientation.Elevation == retrievedTele.CalibrationOrientation.Elevation);
+        }
+
+        [TestMethod]
+        public void TestAddAndRetrieveSensorNetworkConfig_Valid_CreatesConfig()
+        {
+            int telescopeId = 5;
+
+            // Create new SensorNetworkConfig with a telescope ID of 5
+            SensorNetworkConfig original = new SensorNetworkConfig(telescopeId);
+
+            original.TimeoutDataRetrieval = 5;
+            original.TimeoutInitialization = 5;
+
+            DatabaseOperations.AddSensorNetworkConfig(original);
+
+            var retrieved = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
+
+            Assert.IsTrue(original.Equals(retrieved));
+
+            // Delete config
+            DatabaseOperations.DeleteSensorNetworkConfig(original);
+        }
+
+        [TestMethod]
+        public void TestUpdateSensorNetworkConfig_ChangeAllFields_UpdatesConfig()
+        {
+            int telescopeId = 5;
+            SensorNetworkConfig original = new SensorNetworkConfig(telescopeId);
+
+            // Save original config
+            DatabaseOperations.AddSensorNetworkConfig(original);
+
+            // Change values so the updated one is different
+            original.ElevationTemp1Init = false;
+            original.ElevationTemp2Init = false;
+            original.AzimuthTemp1Init = false;
+            original.AzimuthTemp2Init = false;
+            original.ElevationAccelerometerInit = false;
+            original.AzimuthAccelerometerInit = false;
+            original.CounterbalanceAccelerometerInit = false;
+            original.ElevationEncoderInit = false;
+            original.AzimuthEncoderInit = false;
+            original.TimeoutDataRetrieval = 5;
+            original.TimeoutInitialization = 5;
+
+            // Update config
+            DatabaseOperations.UpdateSensorNetworkConfig(original);
+
+            var retrieved = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
+
+            Assert.IsTrue(original.Equals(retrieved));
+
+            // Delete config
+            DatabaseOperations.DeleteSensorNetworkConfig(original);
+        }
+
+        [TestMethod]
+        public void TestUpdateSensorNetworkConfig_TelescopeDoesntExist_ShouldThrowInvalidOperationException()
+        {
+            SensorNetworkConfig invalidConfig = new SensorNetworkConfig(9000);
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+                DatabaseOperations.UpdateSensorNetworkConfig(invalidConfig)
+            );
+        }
+
+        [TestMethod]
+        public void TestDeleteSensorNetworkConfig_ConfigExists_DeletesConfig()
+        {
+            int telescopeId = 10;
+            SensorNetworkConfig config = new SensorNetworkConfig(telescopeId);
+
+            // Save config
+            DatabaseOperations.AddSensorNetworkConfig(config);
+
+            // Delete config
+            DatabaseOperations.DeleteSensorNetworkConfig(config);
+
+            // Attempt to find config
+            SensorNetworkConfig result = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
+
+            Assert.IsTrue(result == null);
+        }
+
+        [TestMethod]
+        public void TestDeleteSensorNetworkConfig_TelescopeDoesntExist_ShouldThrowInvalidOperationException()
+        {
+            SensorNetworkConfig invalidConfig = new SensorNetworkConfig(9000);
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+                DatabaseOperations.DeleteSensorNetworkConfig(invalidConfig)
+            );
         }
 
         [TestMethod]

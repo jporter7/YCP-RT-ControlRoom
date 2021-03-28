@@ -9,7 +9,7 @@ namespace ControlRoomApplication.Entities {
         UNDEFINED = -1,
         AZ_MOTOR = 0,
         EL_MOTOR = 1,
-        END_OF_COUNTER_BALLENCE = 2,
+        COUNTERBALANCE = 2,
         MICRO_CTRL = 3,
         MICRO_CTRL_BOX = 4
         

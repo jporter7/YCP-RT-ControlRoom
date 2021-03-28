@@ -13,6 +13,6 @@ namespace ControlRoomApplication.Entities.Exceptions {
         /// <summary>
         /// this is the type of move that the MCU is currently running
         /// </summary>
-        public MCUcomandType RunningMoveType;
+        public MCUCommandType RunningMoveType;
     }
 }
