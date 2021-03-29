@@ -51,9 +51,6 @@ namespace ControlRoomApplication.Main
         public bool SensorNetworkClientIPBool = false;
         public bool SensorNetworkClientPortBool = false;
 
-        //Boolean for if the telescope is being simulated 
-        bool isSimulated = false;
-
 
 
         // form
@@ -296,10 +293,16 @@ namespace ControlRoomApplication.Main
                             MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
                     }
 
+                    bool isSensorNetworkServerSimulated = false;
+                    if(comboSensorNetworkBox.SelectedIndex == 1)
+                    {
+                        isSensorNetworkServerSimulated = true;
+                    }
+
                     //current_rt_id++;
                     AbstractPLCDriver APLCDriver = BuildPLCDriver();
                     SensorNetworkServer sensorNetworkServer = new SensorNetworkServer(IPAddress.Parse(sensorNetworkServerIPAddress.Text), int.Parse(sensorNetworkServerPort.Text),
-                    sensorNetworkClientIPAddress.Text, int.Parse(sensorNetworkClientPort.Text), RTConfig.telescopeID, isSimulated);
+                    sensorNetworkClientIPAddress.Text, int.Parse(sensorNetworkClientPort.Text), RTConfig.telescopeID, isSensorNetworkServerSimulated);
 
                     sensorNetworkServer.StartSensorMonitoringRoutine();
                     RadioTelescope ARadioTelescope = BuildRT(APLCDriver, sensorNetworkServer);
@@ -618,6 +621,7 @@ namespace ControlRoomApplication.Main
         /// <returns>  </returns>
         public bool IsMicrocontrollerSimulated()
         {
+            bool isSimulated = false;
 
             logger.Info(Utilities.GetTimeStamp() + ": Selected Microcontroller Type: ");
 
