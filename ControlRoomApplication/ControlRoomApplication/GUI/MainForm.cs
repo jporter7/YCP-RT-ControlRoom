@@ -52,7 +52,7 @@ namespace ControlRoomApplication.Main
         public bool SensorNetworkClientPortBool = false;
 
 
-
+        
         // form
         RTControlFormData formData;
         
@@ -138,6 +138,8 @@ namespace ControlRoomApplication.Main
             sensorNetworkServerPort.Text = "Port";
             sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Gray;
             sensorNetworkServerPort.ForeColor = System.Drawing.Color.Gray;
+            // initialize formData struct
+            formData = new RTControlFormData();
 
             sensorNetworkClientIPAddress.Text = "IP Address";
             sensorNetworkClientPort.Text = "Port";
