@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using System;
+using ControlRoomApplication.Controllers.SensorNetwork;
 
 namespace ControlRoomApplication.Entities
 {
@@ -110,6 +111,9 @@ namespace ControlRoomApplication.Entities
 
         [NotMapped]
         public AbstractEncoderReader Encoders { get; set; }
+
+        [NotMapped]
+        public SensorNetworkServer SensorNetworkServer { get; set; }
 
         [NotMapped]
         protected RadioTelescopeController Parent;

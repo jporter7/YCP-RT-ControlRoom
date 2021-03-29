@@ -126,8 +126,6 @@ namespace ControlRoomApplication.GUI
             //MCU_Statui.Columns[0].HeaderText = "Status name";
             //MCU_Statui.Columns[1].HeaderText = "value";
 
-            controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.BringUp();
-
             SetCurrentWeatherData();
             runDiagScriptsButton.Enabled = false;
 
@@ -234,17 +232,17 @@ namespace ControlRoomApplication.GUI
         {
             double currWindSpeed = controlRoom.WeatherStation.GetWindSpeed();//wind speed
 
-            double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
+            //double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
 
-            _azEncoderDegrees = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
-            _elEncoderDegrees = rtController.RadioTelescope.Encoders.GetCurentOrientation().Elevation;
+            _azEncoderDegrees = 0; // rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
+            _elEncoderDegrees = 0; // rtController.RadioTelescope.Encoders.GetCurentOrientation().Elevation;
 
             timer1.Interval = 200;
 
+            //TODO: Investigate if needed 
+            /*
             if (selectDemo.Checked == true)
             {
-                rtController.RadioTelescope.Micro_controler.setStableOrTesting(false);
-
                 // Simulating Encoder Sensors
                 TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
 
@@ -271,9 +269,10 @@ namespace ControlRoomApplication.GUI
 
 
             }
+            */
 
-            double ElMotTemp = rtController.RadioTelescope.Micro_controler.tempData.elevationTemp;
-            double AzMotTemp = rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp;
+            double ElMotTemp = 0; //rtController.RadioTelescope.Micro_controler.tempData.elevationTemp;
+            double AzMotTemp = 0; //rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp;
             float insideTemp = controlRoom.WeatherStation.GetInsideTemp();
             float outsideTemp = controlRoom.WeatherStation.GetOutsideTemp();
 
