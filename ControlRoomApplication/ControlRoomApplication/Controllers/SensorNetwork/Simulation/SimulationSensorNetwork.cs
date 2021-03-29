@@ -305,8 +305,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             ServerStream.Close();
             ServerStream.Dispose();
             Server.Stop();
-            localClient.Close();
-            localClient.Dispose();
 
             return receivedInit;
         }

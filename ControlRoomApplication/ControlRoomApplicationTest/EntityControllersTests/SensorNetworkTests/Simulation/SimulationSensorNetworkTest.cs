@@ -785,5 +785,114 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             Assert.IsNull(resultAzAcc);
             Assert.IsNull(resultElAcc);
         }
+
+        [TestMethod]
+        public void TestRequestAndAcquireSensorInitialization_SendNoConfiguration_AsksForConfiguration()
+        {
+            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+
+            byte[] expected = Encoding.ASCII.GetBytes("Send Sensor Configuration");
+            byte[] result = new byte[expected.Length];
+
+            // First create server that expects the "Send Sensor Configuration" message
+            Thread expectConfThread = new Thread(() =>
+            {
+                TcpListener confListen = new TcpListener(IPAddress.Parse(ClientIP), ClientPort);
+                confListen.Start();
+
+
+                NetworkStream confStream;
+                TcpClient localClient = confListen.AcceptTcpClient();
+
+                confStream = localClient.GetStream();
+                confStream.Read(result, 0, expected.Length);
+
+                confListen.Stop();
+                confStream.Close();
+                confStream.Dispose();
+            });
+            expectConfThread.Start();
+
+            // This method has a blocking method, so we must run it in a separate thread
+            Thread serverThread = new Thread(() => {
+                // Set up client on the simulation
+                privSim.Invoke("WaitForAndConnectToServer");
+
+                privSim.Invoke("RequestAndAcquireSensorInitialization");
+            });
+            serverThread.Start();
+
+            expectConfThread.Join();
+
+            // Stop the server in the simulation
+            ((TcpListener)privSim.GetFieldOrProperty("Server")).Stop();
+            serverThread.Join();
+
+            Assert.IsTrue(expected.SequenceEqual(result));
+        }
+
+        [TestMethod]
+        public void TestRequestAndAcquireSensorInitialization_SendsConfiguration_ReceiveCorrectBytes()
+        {
+            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+
+            byte[] expected = Encoding.ASCII.GetBytes("Send Sensor Configuration");
+            byte[] result = new byte[expected.Length];
+
+            // First create server that expects the "Send Sensor Configuration" message
+            Thread expectConfThread = new Thread(() =>
+            {
+
+                TcpListener confListen = new TcpListener(IPAddress.Parse(ClientIP), ClientPort);
+                confListen.Start();
+
+
+                NetworkStream confStream;
+                TcpClient localClient = confListen.AcceptTcpClient();
+
+                confStream = localClient.GetStream();
+                confStream.Read(result, 0, expected.Length);
+
+                confListen.Stop();
+                confStream.Close();
+                confStream.Dispose();
+            });
+            expectConfThread.Start();
+
+            // This method has a blocking method, so we must run it in a separate thread
+            Thread serverThread = new Thread(() => {
+
+                // Set up client on the simulation
+                privSim.Invoke("WaitForAndConnectToServer");
+
+                result = (byte[])privSim.Invoke("RequestAndAcquireSensorInitialization");
+            });
+            serverThread.Start();
+
+            expectConfThread.Join();
+
+            Assert.IsTrue(expected.SequenceEqual(result));
+            
+
+            // Create a client to send something to the server
+            // We are using the server IP and port because these must be the same
+            // between client/server in order to transmit data
+            TcpClient client = new TcpClient(ServerIP.ToString(), ServerPort);
+            NetworkStream stream = client.GetStream();
+
+            //byte[] expected = Encoding.ASCII.GetBytes("123456789");
+
+            //stream.Write(expected, 0, expected.Length);
+            stream.Flush();
+
+            // Dispose client and end thread
+            serverThread.Join();
+            stream.Close();
+            stream.Dispose();
+            client.Close();
+            client.Dispose();
+
+            //Assert.IsTrue(expected.SequenceEqual(result));
+        }
     }
 }
