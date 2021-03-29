@@ -72,7 +72,7 @@ namespace ControlRoomApplication.Main
             this.label3 = new System.Windows.Forms.Label();
             this.manualControlButton = new System.Windows.Forms.Button();
             this.immediateRadioButton = new System.Windows.Forms.RadioButton();
-            this.ControledButtonRadio = new System.Windows.Forms.RadioButton();
+            this.ControlledButtonRadio = new System.Windows.Forms.RadioButton();
             this.speedTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -505,7 +505,8 @@ namespace ControlRoomApplication.Main
             "Recover From Clockwise Hardstop",
             "Recover From Counter-Clockwise Hardstop",
             "Home Telescope",
-            "Custom Orientation Movement"});
+            "Custom Orientation Movement",
+            "Endless Azimuth Rotation"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
@@ -549,7 +550,7 @@ namespace ControlRoomApplication.Main
             this.manualGroupBox.Controls.Add(this.label3);
             this.manualGroupBox.Controls.Add(this.manualControlButton);
             this.manualGroupBox.Controls.Add(this.immediateRadioButton);
-            this.manualGroupBox.Controls.Add(this.ControledButtonRadio);
+            this.manualGroupBox.Controls.Add(this.ControlledButtonRadio);
             this.manualGroupBox.Controls.Add(this.speedTextBox);
             this.manualGroupBox.Controls.Add(this.label2);
             this.manualGroupBox.Controls.Add(this.label1);
@@ -636,19 +637,19 @@ namespace ControlRoomApplication.Main
             this.immediateRadioButton.Text = "Immediate Stop";
             this.immediateRadioButton.UseVisualStyleBackColor = true;
             // 
-            // ControledButtonRadio
+            // ControlledButtonRadio
             // 
-            this.ControledButtonRadio.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.ControledButtonRadio.AutoSize = true;
-            this.ControledButtonRadio.Checked = true;
-            this.ControledButtonRadio.Location = new System.Drawing.Point(9, 104);
-            this.ControledButtonRadio.Margin = new System.Windows.Forms.Padding(2);
-            this.ControledButtonRadio.Name = "ControledButtonRadio";
-            this.ControledButtonRadio.Size = new System.Drawing.Size(97, 17);
-            this.ControledButtonRadio.TabIndex = 23;
-            this.ControledButtonRadio.TabStop = true;
-            this.ControledButtonRadio.Text = "Controlled Stop";
-            this.ControledButtonRadio.UseVisualStyleBackColor = true;
+            this.ControlledButtonRadio.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ControlledButtonRadio.AutoSize = true;
+            this.ControlledButtonRadio.Checked = true;
+            this.ControlledButtonRadio.Location = new System.Drawing.Point(9, 104);
+            this.ControlledButtonRadio.Margin = new System.Windows.Forms.Padding(2);
+            this.ControlledButtonRadio.Name = "ControlledButtonRadio";
+            this.ControlledButtonRadio.Size = new System.Drawing.Size(97, 17);
+            this.ControlledButtonRadio.TabIndex = 23;
+            this.ControlledButtonRadio.TabStop = true;
+            this.ControlledButtonRadio.Text = "Controlled Stop";
+            this.ControlledButtonRadio.UseVisualStyleBackColor = true;
             // 
             // speedTextBox
             // 
@@ -1044,7 +1045,7 @@ namespace ControlRoomApplication.Main
         private System.Windows.Forms.TextBox speedTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton immediateRadioButton;
-        private System.Windows.Forms.RadioButton ControledButtonRadio;
+        private System.Windows.Forms.RadioButton ControlledButtonRadio;
         private System.Windows.Forms.Button manualControlButton;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;

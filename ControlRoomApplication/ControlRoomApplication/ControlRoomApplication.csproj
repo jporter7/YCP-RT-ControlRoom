@@ -293,6 +293,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
+    <Compile Include="Entities\WeatherStation\WeatherThreshold.cs" />
     <Compile Include="Entities\WeatherStation\WeatherData.cs" />
     <Compile Include="Entities\WeatherStation\WeatherStation.cs" />
     <Compile Include="GUI\DiagnosticsForm.cs">
@@ -325,6 +326,7 @@
     <Compile Include="GUI\ManualControl.Designer.cs">
       <DependentUpon>ManualControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\RTControlFormData.cs" />
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.cs" />
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.Designer.cs">
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
@@ -428,6 +430,9 @@
     <Analyzer Include="..\packages\AWSSDK.RDS.3.5.0\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.SimpleEmail.3.5.0.28\analyzers\dotnet\cs\AWSSDK.SimpleEmail.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.SimpleNotificationService.3.5.0\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -16,6 +16,8 @@ using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Util;
 using System.Collections.Generic;
 using static ControlRoomApplication.Constants.MCUConstants;
+using ControlRoomApplication.Database;
+using System.Timers;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -34,6 +36,13 @@ namespace ControlRoomApplication.Controllers
         private int temp =0;
         private MCUManager MCU;
         private RadioTelescopeTypeEnum telescopeType = RadioTelescopeTypeEnum.NONE;
+
+
+        // Previous snow dump azimuth -- we need to keep track of this in order to add 45 degrees each time we dump
+        private double previousSnowDumpAzimuth;
+
+        // Snow dump timer
+        private static System.Timers.Timer snowDumpTimer;
 
         // Used for the Unity simulation to keep track of its position
         // This is ONLY TEMPORARY until we can find the simulation source code and fix
@@ -95,6 +104,13 @@ namespace ControlRoomApplication.Controllers
                 }
             }
 
+
+            previousSnowDumpAzimuth = 0;
+
+            snowDumpTimer = new System.Timers.Timer(DatabaseOperations.FetchWeatherThreshold().SnowDumpTime * 1000 * 60);
+            snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
+            snowDumpTimer.AutoReset = true;
+            snowDumpTimer.Enabled = true;
         }
 
 
@@ -189,11 +205,11 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// Waits for the PLC to contact the controll room 
+        /// Waits for the PLC to contact the control room 
         /// </summary>
         /// <remarks>
-        /// the PLC is constantly trying to send data to the controll room if the control room is not present it will retry again until it sucsfully connects
-        /// this method will return a task that completes when that first contact occors or when it times out
+        /// the PLC is constantly trying to send data to the controll room if the control room is not present it will retry again until it sucessfully connects
+        /// this method will return a task that completes when that first contact occurs or when it times out
         /// </remarks>
         /// <param name="timeoutS"></param>
         /// <returns></returns>
@@ -233,6 +249,8 @@ namespace ControlRoomApplication.Controllers
 
         public override void Bring_down() {
             RequestStopAsyncAcceptingClientsAndJoin();
+            snowDumpTimer.Stop();
+            snowDumpTimer.Dispose();
         }
 
         /// <summary>
@@ -578,6 +596,12 @@ namespace ControlRoomApplication.Controllers
             // check against weather station reading
             double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
 
+            // Check if we need to dump the snow off of the telescope
+            if (Parent.WeatherStation.GetOutsideTemp() <= 40.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
+            {
+                SnowDump();
+            }
+
             // Set SpectraCyber mode back to UNKNOWN
             Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
 
@@ -594,8 +618,9 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override Task<bool> SnowDump()
         {
+            // insert snow dump movements here
             // default is azimuth of 0 and elevation of 0
-            Orientation dump = new Orientation();
+            Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
             Orientation current = read_Position();
 
             // move to dump snow
@@ -603,6 +628,20 @@ namespace ControlRoomApplication.Controllers
 
             // move back to initial orientation
             return Move_to_orientation(current, read_Position());
+        }
+
+        private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
+        {
+
+            // Check if we need to dump the snow off of the telescope
+            if (Parent.WeatherStation.GetOutsideTemp() <= 30.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
+            {
+                Console.WriteLine("Time threshold reached. Running snow dump...");
+
+                SnowDump();
+
+                Console.WriteLine("Snow dump completed");
+            }
         }
 
         /// <summary>
