@@ -419,6 +419,7 @@ namespace ControlRoomApplication.Main
 
                 //Turn off Telescope in database
                 ProgramRTControllerList[i].RadioTelescope.online = 0;
+                ProgramRTControllerList[i].RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
@@ -436,6 +437,7 @@ namespace ControlRoomApplication.Main
             {
                 //Turn off Telescope in database
                 ProgramRTControllerList[i].RadioTelescope.online = 0;
+                ProgramRTControllerList[i].RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
             }
 
