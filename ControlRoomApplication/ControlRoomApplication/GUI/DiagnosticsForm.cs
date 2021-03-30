@@ -487,8 +487,7 @@ namespace ControlRoomApplication.GUI
                 consoleLogBox.SelectionStart = consoleLogBox.TextLength;
                 consoleLogBox.ScrollToCaret();
             }
-
-
+            
             // FFT transformations -- currently not in use
             //double[] fftX = FftSharp.Transform.FFTpower(eleAccelerometerX);
             //double[]fft
