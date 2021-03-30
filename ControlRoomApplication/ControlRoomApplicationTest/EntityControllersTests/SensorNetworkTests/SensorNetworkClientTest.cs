@@ -43,6 +43,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             Assert.IsTrue(((string)privClient.GetFieldOrProperty("IPAddress")).Equals(IpAddress));
             Assert.IsTrue((int)privClient.GetFieldOrProperty("Port") == Port);
+            Assert.IsTrue(client.config.TelescopeId == TelescopeId);
         }
 
         [TestMethod]

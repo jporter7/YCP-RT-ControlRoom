@@ -86,11 +86,11 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
         public void Bring_down()
         {
             runsimulator = false;
-            MCU_Modbusserver.Dispose();
+            if(MCU_Modbusserver != null) MCU_Modbusserver.Dispose();
             PLC_emulator_thread.Join();
             PLCTCPClient.Dispose();
             PLCModbusMaster.Dispose();
-            MCU_emulator_thread.Join();
+            if(MCU_emulator_thread.IsAlive) MCU_emulator_thread.Join();
             MCU_TCPListener.Stop();
         }
 

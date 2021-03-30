@@ -19,7 +19,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This is based on the resolution of the digital data that the encoder gives. 
         /// The angle is related from 0-360 in digital counts from 0-2047.
         /// </summary>
-        public const int AzimuthEncoderScaling = 2047;
+        public const double AzimuthEncoderScaling = 2047;
         
         /// <summary>
         /// This is the approximate interval at which the SensorNetworkServer expects to receive
@@ -33,18 +33,44 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This is the default data retrieval timeout when the user has run the telescope for the first time,
         /// and a new SensorNetworkConfig is created.
         /// </summary>
-        public const int DefaultDataRetrievalTimeout = 1; // in seconds
+        public const int DefaultDataRetrievalTimeout = 1000; // in milliseconds
 
         /// <summary>
         /// This is the default initialization timeout when the user has run the telescope for the first time,
         /// and a new SensorNetworkConfig is created.
         /// </summary>
-        public const int DefaultInitializationTimeout = 7; // in seconds
+        public const int DefaultInitializationTimeout = 7000; // in milliseconds
 
         /// <summary>
         /// This is the total number of sensors that is a part of the Sensor Network. This is used to determine
-        /// the byte size of the initialization.
+        /// the byte size of the initialization. The size for transit would be 9 minus the 2 redundant temperature
+        /// sensors, which is 7.
         /// </summary>
         public const int SensorNetworkSensorCount = 9;
+
+
+        /// <summary>
+        /// If we receive this ID from the sensor network, it means that everything is going well, and we are about
+        /// to get a nice load of sensor data. The number doesn't come from anything, it's just the number we chose.
+        /// </summary>
+        public const int TransitIdSuccess = 129;
+
+        /// <summary>
+        /// This is the max packet size the Sensor Network is able to send. We aren't really sure why it cuts off
+        /// at 2048, but for this reason, this is the size that we will create our main "monitor" byte array.
+        /// </summary>
+        public const int MaxPacketSize = 2048; // in bytes
+
+        /// <summary>
+        /// This is how long it takes for the sensor network to time out and reboot. Basically, if it loses connection
+        /// to the SensorNetworkServer for that amount of ms, it will trigger a reboot. This is useful to us for when we
+        /// want to tell it to restart.
+        /// </summary>
+        public const int WatchDogTimeout = 1500; // in milliseconds
+
+        /// <summary>
+        /// This is where our simulation CSV files are located. These files can be swapped out with each other.
+        /// </summary>
+        public const string SimCSVDirectory = "../../Controllers/SensorNetwork/Simulation/SimulationCSVData/";
     }
 }

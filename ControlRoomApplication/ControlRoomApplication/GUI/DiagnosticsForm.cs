@@ -17,8 +17,8 @@ using System.Threading;
 using System.ComponentModel;
 using ControlRoomApplication.Util;
 using System.Linq;
+using ControlRoomApplication.Controllers.SensorNetwork;
 using System.Drawing.Printing;
-using ScottPlot;
 
 namespace ControlRoomApplication.GUI
 {
@@ -132,8 +132,6 @@ namespace ControlRoomApplication.GUI
             //MCU_Statui.Columns[0].HeaderText = "Status name";
             //MCU_Statui.Columns[1].HeaderText = "value";
 
-            controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.BringUp();
-
             SetCurrentWeatherData();
             runDiagScriptsButton.Enabled = false;
 
@@ -162,7 +160,8 @@ namespace ControlRoomApplication.GUI
 
             ElecationAbsoluteEncoder_lbl.Text = "";
 
-            
+            initChange.Text = "";
+
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
 
@@ -241,17 +240,19 @@ namespace ControlRoomApplication.GUI
         {
             double currWindSpeed = controlRoom.WeatherStation.GetWindSpeed();//wind speed
 
-            double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
+            //double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
 
-            _azEncoderDegrees = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
-            _elEncoderDegrees = rtController.RadioTelescope.Encoders.GetCurentOrientation().Elevation;
+            _azEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth;
+            _elEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation;
+            lblAzAbsPos.Text = Math.Round(_azEncoderDegrees, 2).ToString();
+            lblElAbsPos.Text = Math.Round(_elEncoderDegrees, 2).ToString();
 
             timer1.Interval = 200;
 
+            //TODO: Investigate if needed 
+            /*
             if (selectDemo.Checked == true)
             {
-                rtController.RadioTelescope.Micro_controler.setStableOrTesting(false);
-
                 // Simulating Encoder Sensors
                 TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
 
@@ -278,16 +279,26 @@ namespace ControlRoomApplication.GUI
 
 
             }
+            */
 
-            double ElMotTemp = rtController.RadioTelescope.Micro_controler.tempData.elevationTemp;
-            double AzMotTemp = rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp;
+            Temperature[] ElMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp;
+            Temperature[] AzMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp;
+
+            // these come in as celsius
+            double ElMotTemp = ElMotTemps[ElMotTemps.Length - 1].temp;
+            double AzMotTemp = AzMotTemps[AzMotTemps.Length - 1].temp;
+
             float insideTemp = controlRoom.WeatherStation.GetInsideTemp();
             float outsideTemp = controlRoom.WeatherStation.GetOutsideTemp();
 
-            double ElMotTempCel = (ElMotTemp - 32) * (5.0 / 9);
-            double AzMotTempCel = (AzMotTemp - 32) * (5.0 / 9);
             double insideTempCel = (insideTemp - 32) * (5.0 / 9);
             double outsideTempCel = (outsideTemp - 32) * (5.0 / 9);
+
+            // farenheit conversion
+            double ElMotTempFahrenheit = (ElMotTemp * (5.0 / 9)) + 32;
+            double AzMotTempFahrenheit = (AzMotTemp * (5.0 / 9)) + 32;
+
+
 
             //Celsius
             if (farenheit == false)
@@ -298,8 +309,8 @@ namespace ControlRoomApplication.GUI
                 ElTempUnitLabel.Text = "Celsius";
                 outsideTempLabel.Text = Math.Round(insideTempCel, 2).ToString();
                 insideTempLabel.Text = Math.Round(outsideTempCel, 2).ToString();
-                fldElTemp.Text = Math.Round(ElMotTempCel, 2).ToString();
-                fldAzTemp.Text = Math.Round(AzMotTempCel, 2).ToString();
+                fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
+                fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
             }
             //Farenheit
             else if (farenheit == true)
@@ -310,16 +321,16 @@ namespace ControlRoomApplication.GUI
                 ElTempUnitLabel.Text = "Farenheit";
                 outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
                 insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
-                fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
-                fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
+                fldElTemp.Text = Math.Round(ElMotTempFahrenheit, 2).ToString();
+                fldAzTemp.Text = Math.Round(AzMotTempFahrenheit, 2).ToString();
             }
 
             // Encoder Position in both degrees and motor ticks
-            lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 3).ToString();
+            lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 2).ToString();
             lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
 
             // lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
-            lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 3).ToString();
+            lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 2).ToString();
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
             // Proximity and Limit Switches
@@ -1219,6 +1230,11 @@ namespace ControlRoomApplication.GUI
                 
                 rtController.setOverride("counterbalance accelerometer", false);
             }
+        }
+
+        private void UpdateSensorInitiliazation_Click(object sender, EventArgs e)
+        {
+            rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
         }
     }
 }
