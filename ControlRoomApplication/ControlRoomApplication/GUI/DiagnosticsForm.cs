@@ -174,6 +174,8 @@ namespace ControlRoomApplication.GUI
             CounterbalanceAccelerometer.Checked = SensorNetworkConfig.CounterbalanceAccelerometerInit;
             ElevationEncoder.Checked = SensorNetworkConfig.ElevationEncoderInit;
             AzimuthEncoder.Checked = SensorNetworkConfig.AzimuthEncoderInit;
+            txtDataTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutDataRetrieval / 1000;
+            txtInitTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutInitialization / 1000;
 
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
@@ -616,7 +618,7 @@ namespace ControlRoomApplication.GUI
             ///////////////////////////////////////////////////////////////////////////////
 
             // Update the Sensor Network status
-            lblSNStatus.Text = "Sensor Network Status: " + rtController.RadioTelescope.SensorNetworkServer.Status.ToString();
+            lblSNStatus.Text = "Status:\n" + rtController.RadioTelescope.SensorNetworkServer.Status.ToString();
         }
 
         private void DiagnosticsForm_Load(object sender, System.EventArgs e)
@@ -1317,6 +1319,10 @@ namespace ControlRoomApplication.GUI
                 SensorNetworkConfig.CounterbalanceAccelerometerInit = CounterbalanceAccelerometer.Checked;
                 SensorNetworkConfig.ElevationEncoderInit = ElevationEncoder.Checked;
                 SensorNetworkConfig.AzimuthEncoderInit = AzimuthEncoder.Checked;
+
+                // Update initializations
+                SensorNetworkConfig.TimeoutDataRetrieval = (int)(double.Parse(txtDataTimeout.Text) * 1000);
+                SensorNetworkConfig.TimeoutInitialization = (int)(double.Parse(txtInitTimeout.Text) * 1000);
 
                 // Update the config in the DB
                 DatabaseOperations.UpdateSensorNetworkConfig(SensorNetworkConfig);
