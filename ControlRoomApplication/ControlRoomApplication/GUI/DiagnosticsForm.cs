@@ -82,7 +82,7 @@ namespace ControlRoomApplication.GUI
         bool _elUpperProxChange = false;
 
         // Alert Flags
-        bool farenheit = true;
+        bool fahrenheit = true;
 
         private int rtId;
 
@@ -307,14 +307,14 @@ namespace ControlRoomApplication.GUI
             double insideTempCel = (insideTemp - 32) * (5.0 / 9);
             double outsideTempCel = (outsideTemp - 32) * (5.0 / 9);
 
-            // farenheit conversion
+            // fahrenheit conversion
             double ElMotTempFahrenheit = (ElMotTemp * (5.0 / 9)) + 32;
             double AzMotTempFahrenheit = (AzMotTemp * (5.0 / 9)) + 32;
 
 
 
             //Celsius
-            if (farenheit == false)
+            if (fahrenheit == false)
             {
                 InsideTempUnits.Text = "Celsius";
                 outTempUnits.Text = "Celsius";
@@ -341,13 +341,13 @@ namespace ControlRoomApplication.GUI
                     fldAzTemp.Text = "--";
                 }
             }
-            //Farenheit
-            else if (farenheit == true)
+            //fahrenheit
+            else if (fahrenheit == true)
             {
-                InsideTempUnits.Text = "Farenheit";
-                outTempUnits.Text = "Farenheit";
-                AZTempUnitLabel.Text = "Farenheit";
-                ElTempUnitLabel.Text = "Farenheit";
+                InsideTempUnits.Text = "Fahrenheit";
+                outTempUnits.Text = "Fahrenheit";
+                AZTempUnitLabel.Text = "Fahrenheit";
+                ElTempUnitLabel.Text = "Fahrenheit";
                 outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
                 insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
 
@@ -853,9 +853,9 @@ namespace ControlRoomApplication.GUI
 
             
 
-            if (farenheit == true)
+            if (fahrenheit == true)
             {
-                farenheit = false;
+                fahrenheit = false;
                 celTempConvert.BackColor = System.Drawing.Color.LimeGreen;
                 farTempConvert.BackColor = System.Drawing.Color.DarkGray;
                 
@@ -867,9 +867,9 @@ namespace ControlRoomApplication.GUI
           
             
 
-            if (farenheit == false)
+            if (fahrenheit == false)
             {
-                farenheit = true;
+                fahrenheit = true;
                 celTempConvert.BackColor = System.Drawing.Color.DarkGray;
                 farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
             

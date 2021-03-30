@@ -29,22 +29,22 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series13 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series14 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series15 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series16 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series17 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series18 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series19 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series20 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea17 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series41 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series42 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series43 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea18 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series44 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series45 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series46 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea19 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series47 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series48 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series49 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea20 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend5 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series50 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -283,14 +283,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle5;
             this.dataGridView1.Location = new System.Drawing.Point(3, 6);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -467,7 +467,7 @@
             // lblAzEncoderDegrees
             // 
             this.lblAzEncoderDegrees.AutoSize = true;
-            this.lblAzEncoderDegrees.Location = new System.Drawing.Point(77, 29);
+            this.lblAzEncoderDegrees.Location = new System.Drawing.Point(61, 29);
             this.lblAzEncoderDegrees.Name = "lblAzEncoderDegrees";
             this.lblAzEncoderDegrees.Size = new System.Drawing.Size(13, 13);
             this.lblAzEncoderDegrees.TabIndex = 38;
@@ -485,7 +485,7 @@
             // lblAzEncoderTicks
             // 
             this.lblAzEncoderTicks.AutoSize = true;
-            this.lblAzEncoderTicks.Location = new System.Drawing.Point(77, 52);
+            this.lblAzEncoderTicks.Location = new System.Drawing.Point(61, 52);
             this.lblAzEncoderTicks.Name = "lblAzEncoderTicks";
             this.lblAzEncoderTicks.Size = new System.Drawing.Size(13, 13);
             this.lblAzEncoderTicks.TabIndex = 40;
@@ -676,7 +676,7 @@
             // lblElEncoderTicks
             // 
             this.lblElEncoderTicks.AutoSize = true;
-            this.lblElEncoderTicks.Location = new System.Drawing.Point(69, 59);
+            this.lblElEncoderTicks.Location = new System.Drawing.Point(61, 59);
             this.lblElEncoderTicks.Name = "lblElEncoderTicks";
             this.lblElEncoderTicks.Size = new System.Drawing.Size(13, 13);
             this.lblElEncoderTicks.TabIndex = 61;
@@ -694,7 +694,7 @@
             // lblElEncoderDegrees
             // 
             this.lblElEncoderDegrees.AutoSize = true;
-            this.lblElEncoderDegrees.Location = new System.Drawing.Point(68, 36);
+            this.lblElEncoderDegrees.Location = new System.Drawing.Point(60, 36);
             this.lblElEncoderDegrees.Name = "lblElEncoderDegrees";
             this.lblElEncoderDegrees.Size = new System.Drawing.Size(13, 13);
             this.lblElEncoderDegrees.TabIndex = 59;
@@ -1056,32 +1056,32 @@
             // counterBalanceAccChart
             // 
             this.counterBalanceAccChart.BackColor = System.Drawing.Color.Gainsboro;
-            chartArea5.AxisX.IsLabelAutoFit = false;
-            chartArea5.AxisX.LabelStyle.Enabled = false;
-            chartArea5.AxisX.MajorGrid.Enabled = false;
-            chartArea5.AxisY.MajorGrid.Enabled = false;
-            chartArea5.BackColor = System.Drawing.Color.Gainsboro;
-            chartArea5.Name = "ChartArea1";
-            this.counterBalanceAccChart.ChartAreas.Add(chartArea5);
+            chartArea17.AxisX.IsLabelAutoFit = false;
+            chartArea17.AxisX.LabelStyle.Enabled = false;
+            chartArea17.AxisX.MajorGrid.Enabled = false;
+            chartArea17.AxisY.MajorGrid.Enabled = false;
+            chartArea17.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea17.Name = "ChartArea1";
+            this.counterBalanceAccChart.ChartAreas.Add(chartArea17);
             this.counterBalanceAccChart.Location = new System.Drawing.Point(-20, 0);
             this.counterBalanceAccChart.Name = "counterBalanceAccChart";
-            series11.ChartArea = "ChartArea1";
-            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series11.Color = System.Drawing.Color.Blue;
-            series11.Name = "x";
-            series11.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            series11.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            series12.ChartArea = "ChartArea1";
-            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series12.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            series12.Name = "y";
-            series13.ChartArea = "ChartArea1";
-            series13.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series13.Color = System.Drawing.Color.Red;
-            series13.Name = "z";
-            this.counterBalanceAccChart.Series.Add(series11);
-            this.counterBalanceAccChart.Series.Add(series12);
-            this.counterBalanceAccChart.Series.Add(series13);
+            series41.ChartArea = "ChartArea1";
+            series41.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series41.Color = System.Drawing.Color.Blue;
+            series41.Name = "x";
+            series41.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series41.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series42.ChartArea = "ChartArea1";
+            series42.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series42.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series42.Name = "y";
+            series43.ChartArea = "ChartArea1";
+            series43.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series43.Color = System.Drawing.Color.Red;
+            series43.Name = "z";
+            this.counterBalanceAccChart.Series.Add(series41);
+            this.counterBalanceAccChart.Series.Add(series42);
+            this.counterBalanceAccChart.Series.Add(series43);
             this.counterBalanceAccChart.Size = new System.Drawing.Size(315, 98);
             this.counterBalanceAccChart.TabIndex = 0;
             this.counterBalanceAccChart.Text = "chart1";
@@ -1139,33 +1139,33 @@
             this.elevationAccChart.BackColor = System.Drawing.Color.Gainsboro;
             this.elevationAccChart.BorderlineColor = System.Drawing.Color.Gainsboro;
             this.elevationAccChart.BorderSkin.PageColor = System.Drawing.Color.Gainsboro;
-            chartArea6.AxisX.IsLabelAutoFit = false;
-            chartArea6.AxisX.LabelStyle.Enabled = false;
-            chartArea6.AxisX.MajorGrid.Enabled = false;
-            chartArea6.AxisY.IsLabelAutoFit = false;
-            chartArea6.AxisY.MajorGrid.Enabled = false;
-            chartArea6.BackColor = System.Drawing.Color.Gainsboro;
-            chartArea6.Name = "ChartArea1";
-            this.elevationAccChart.ChartAreas.Add(chartArea6);
+            chartArea18.AxisX.IsLabelAutoFit = false;
+            chartArea18.AxisX.LabelStyle.Enabled = false;
+            chartArea18.AxisX.MajorGrid.Enabled = false;
+            chartArea18.AxisY.IsLabelAutoFit = false;
+            chartArea18.AxisY.MajorGrid.Enabled = false;
+            chartArea18.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea18.Name = "ChartArea1";
+            this.elevationAccChart.ChartAreas.Add(chartArea18);
             this.elevationAccChart.Location = new System.Drawing.Point(-10, 0);
             this.elevationAccChart.Name = "elevationAccChart";
-            series14.ChartArea = "ChartArea1";
-            series14.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series14.Color = System.Drawing.Color.Blue;
-            series14.Name = "x";
-            series14.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            series14.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            series15.ChartArea = "ChartArea1";
-            series15.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series15.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            series15.Name = "y";
-            series16.ChartArea = "ChartArea1";
-            series16.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series16.Color = System.Drawing.Color.Red;
-            series16.Name = "z";
-            this.elevationAccChart.Series.Add(series14);
-            this.elevationAccChart.Series.Add(series15);
-            this.elevationAccChart.Series.Add(series16);
+            series44.ChartArea = "ChartArea1";
+            series44.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series44.Color = System.Drawing.Color.Blue;
+            series44.Name = "x";
+            series44.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series44.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series45.ChartArea = "ChartArea1";
+            series45.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series45.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series45.Name = "y";
+            series46.ChartArea = "ChartArea1";
+            series46.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series46.Color = System.Drawing.Color.Red;
+            series46.Name = "z";
+            this.elevationAccChart.Series.Add(series44);
+            this.elevationAccChart.Series.Add(series45);
+            this.elevationAccChart.Series.Add(series46);
             this.elevationAccChart.Size = new System.Drawing.Size(308, 101);
             this.elevationAccChart.TabIndex = 0;
             this.elevationAccChart.Text = "elevationAccChart";
@@ -1213,33 +1213,33 @@
             // 
             this.azimuthAccChart.BackColor = System.Drawing.Color.Gainsboro;
             this.azimuthAccChart.BorderlineColor = System.Drawing.Color.Gainsboro;
-            chartArea7.AxisX.IsLabelAutoFit = false;
-            chartArea7.AxisX.LabelStyle.Enabled = false;
-            chartArea7.AxisX.MajorGrid.Enabled = false;
-            chartArea7.AxisY.IsLabelAutoFit = false;
-            chartArea7.AxisY.MajorGrid.Enabled = false;
-            chartArea7.BackColor = System.Drawing.Color.Gainsboro;
-            chartArea7.Name = "ChartArea1";
-            this.azimuthAccChart.ChartAreas.Add(chartArea7);
+            chartArea19.AxisX.IsLabelAutoFit = false;
+            chartArea19.AxisX.LabelStyle.Enabled = false;
+            chartArea19.AxisX.MajorGrid.Enabled = false;
+            chartArea19.AxisY.IsLabelAutoFit = false;
+            chartArea19.AxisY.MajorGrid.Enabled = false;
+            chartArea19.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea19.Name = "ChartArea1";
+            this.azimuthAccChart.ChartAreas.Add(chartArea19);
             this.azimuthAccChart.Location = new System.Drawing.Point(-9, 0);
             this.azimuthAccChart.Name = "azimuthAccChart";
-            series17.ChartArea = "ChartArea1";
-            series17.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series17.Color = System.Drawing.Color.Blue;
-            series17.Name = "x";
-            series17.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            series17.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            series18.ChartArea = "ChartArea1";
-            series18.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series18.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            series18.Name = "y";
-            series19.ChartArea = "ChartArea1";
-            series19.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series19.Color = System.Drawing.Color.Red;
-            series19.Name = "z";
-            this.azimuthAccChart.Series.Add(series17);
-            this.azimuthAccChart.Series.Add(series18);
-            this.azimuthAccChart.Series.Add(series19);
+            series47.ChartArea = "ChartArea1";
+            series47.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series47.Color = System.Drawing.Color.Blue;
+            series47.Name = "x";
+            series47.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series47.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series48.ChartArea = "ChartArea1";
+            series48.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series48.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series48.Name = "y";
+            series49.ChartArea = "ChartArea1";
+            series49.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series49.Color = System.Drawing.Color.Red;
+            series49.Name = "z";
+            this.azimuthAccChart.Series.Add(series47);
+            this.azimuthAccChart.Series.Add(series48);
+            this.azimuthAccChart.Series.Add(series49);
             this.azimuthAccChart.Size = new System.Drawing.Size(308, 86);
             this.azimuthAccChart.TabIndex = 0;
             this.azimuthAccChart.Text = "chart1";
@@ -1464,7 +1464,7 @@
             this.farTempConvert.Name = "farTempConvert";
             this.farTempConvert.Size = new System.Drawing.Size(130, 23);
             this.farTempConvert.TabIndex = 1;
-            this.farTempConvert.Text = "Farenheit";
+            this.farTempConvert.Text = "fahrenheit";
             this.farTempConvert.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.farTempConvert.UseVisualStyleBackColor = false;
             this.farTempConvert.Click += new System.EventHandler(this.farTempConvert_Click);
@@ -1942,7 +1942,7 @@
             // 
             this.lblSNStatus.AutoSize = true;
             this.lblSNStatus.ForeColor = System.Drawing.Color.Black;
-            this.lblSNStatus.Location = new System.Drawing.Point(9, 238);
+            this.lblSNStatus.Location = new System.Drawing.Point(9, 233);
             this.lblSNStatus.Name = "lblSNStatus";
             this.lblSNStatus.Size = new System.Drawing.Size(119, 13);
             this.lblSNStatus.TabIndex = 10;
@@ -1950,11 +1950,11 @@
             // 
             // UpdateSensorInitiliazation
             // 
-            this.UpdateSensorInitiliazation.Location = new System.Drawing.Point(128, 257);
+            this.UpdateSensorInitiliazation.Location = new System.Drawing.Point(118, 257);
             this.UpdateSensorInitiliazation.Name = "UpdateSensorInitiliazation";
-            this.UpdateSensorInitiliazation.Size = new System.Drawing.Size(154, 23);
+            this.UpdateSensorInitiliazation.Size = new System.Drawing.Size(164, 23);
             this.UpdateSensorInitiliazation.TabIndex = 9;
-            this.UpdateSensorInitiliazation.Text = "Update Sensor Initiliazation";
+            this.UpdateSensorInitiliazation.Text = "Update Sensor Initialization";
             this.UpdateSensorInitiliazation.UseVisualStyleBackColor = true;
             this.UpdateSensorInitiliazation.Click += new System.EventHandler(this.UpdateSensorInitiliazation_Click);
             // 
@@ -2400,19 +2400,19 @@
             // 
             // spectraCyberScanChart
             // 
-            chartArea8.AxisX.Title = "Time";
-            chartArea8.AxisY.Title = "RF Data";
-            chartArea8.Name = "ChartArea1";
-            this.spectraCyberScanChart.ChartAreas.Add(chartArea8);
-            legend2.Name = "Legend1";
-            this.spectraCyberScanChart.Legends.Add(legend2);
+            chartArea20.AxisX.Title = "Time";
+            chartArea20.AxisY.Title = "RF Data";
+            chartArea20.Name = "ChartArea1";
+            this.spectraCyberScanChart.ChartAreas.Add(chartArea20);
+            legend5.Name = "Legend1";
+            this.spectraCyberScanChart.Legends.Add(legend5);
             this.spectraCyberScanChart.Location = new System.Drawing.Point(36, 0);
             this.spectraCyberScanChart.Name = "spectraCyberScanChart";
-            series20.ChartArea = "ChartArea1";
-            series20.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series20.Legend = "Legend1";
-            series20.Name = "Data/Time";
-            this.spectraCyberScanChart.Series.Add(series20);
+            series50.ChartArea = "ChartArea1";
+            series50.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series50.Legend = "Legend1";
+            series50.Name = "Data/Time";
+            this.spectraCyberScanChart.Series.Add(series50);
             this.spectraCyberScanChart.Size = new System.Drawing.Size(571, 279);
             this.spectraCyberScanChart.TabIndex = 16;
             this.spectraCyberScanChart.Text = "spectraCyberScanChart";
