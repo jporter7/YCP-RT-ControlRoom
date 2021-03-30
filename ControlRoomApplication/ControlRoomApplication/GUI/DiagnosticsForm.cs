@@ -155,6 +155,8 @@ namespace ControlRoomApplication.GUI
 
             ElecationAbsoluteEncoder_lbl.Text = "";
 
+            initChange.Text = "";
+
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
 
@@ -237,6 +239,8 @@ namespace ControlRoomApplication.GUI
 
             _azEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth;
             _elEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation;
+            lblAzAbsPos.Text = Math.Round(_azEncoderDegrees, 2).ToString();
+            lblElAbsPos.Text = Math.Round(_elEncoderDegrees, 2).ToString();
 
             timer1.Interval = 200;
 
@@ -317,11 +321,11 @@ namespace ControlRoomApplication.GUI
             }
 
             // Encoder Position in both degrees and motor ticks
-            lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 3).ToString();
+            lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 2).ToString();
             lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
 
             // lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
-            lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 3).ToString();
+            lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 2).ToString();
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
             // Proximity and Limit Switches
@@ -1120,5 +1124,9 @@ namespace ControlRoomApplication.GUI
             }
         }
 
+        private void UpdateSensorInitiliazation_Click(object sender, EventArgs e)
+        {
+            rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
+        }
     }
 }

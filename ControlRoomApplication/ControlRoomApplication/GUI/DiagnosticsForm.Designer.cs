@@ -29,10 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -134,8 +134,8 @@
             this.label34 = new System.Windows.Forms.Label();
             this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
             this.lblCurrentElOrientation = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
+            this.lblElAbsPos = new System.Windows.Forms.Label();
+            this.lblAzAbsPos = new System.Windows.Forms.Label();
             this.AZTempUnitLabel = new System.Windows.Forms.Label();
             this.ElTempUnitLabel = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -259,14 +259,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(3, 6);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -383,7 +383,7 @@
             // 
             this.fldAzTemp.AutoSize = true;
             this.fldAzTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldAzTemp.Location = new System.Drawing.Point(212, 7);
+            this.fldAzTemp.Location = new System.Drawing.Point(202, 7);
             this.fldAzTemp.Name = "fldAzTemp";
             this.fldAzTemp.Size = new System.Drawing.Size(18, 18);
             this.fldAzTemp.TabIndex = 18;
@@ -393,7 +393,7 @@
             // 
             this.fldElTemp.AutoSize = true;
             this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldElTemp.Location = new System.Drawing.Point(212, 29);
+            this.fldElTemp.Location = new System.Drawing.Point(202, 29);
             this.fldElTemp.Name = "fldElTemp";
             this.fldElTemp.Size = new System.Drawing.Size(18, 18);
             this.fldElTemp.TabIndex = 19;
@@ -1340,8 +1340,8 @@
             this.splitContainer1.Panel1.Controls.Add(this.label34);
             this.splitContainer1.Panel1.Controls.Add(this.lblCurrentAzOrientation);
             this.splitContainer1.Panel1.Controls.Add(this.lblCurrentElOrientation);
-            this.splitContainer1.Panel1.Controls.Add(this.label25);
-            this.splitContainer1.Panel1.Controls.Add(this.label26);
+            this.splitContainer1.Panel1.Controls.Add(this.lblElAbsPos);
+            this.splitContainer1.Panel1.Controls.Add(this.lblAzAbsPos);
             // 
             // splitContainer1.Panel2
             // 
@@ -1359,7 +1359,7 @@
             // 
             this.label32.AutoSize = true;
             this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.Location = new System.Drawing.Point(247, 27);
+            this.label32.Location = new System.Drawing.Point(257, 27);
             this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(47, 13);
@@ -1370,7 +1370,7 @@
             // 
             this.label34.AutoSize = true;
             this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label34.Location = new System.Drawing.Point(247, 10);
+            this.label34.Location = new System.Drawing.Point(257, 10);
             this.label34.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(47, 13);
@@ -1399,33 +1399,33 @@
             this.lblCurrentElOrientation.TabIndex = 8;
             this.lblCurrentElOrientation.Text = "Elevation Position: ";
             // 
-            // label25
+            // lblElAbsPos
             // 
-            this.label25.AutoSize = true;
-            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(208, 27);
-            this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(28, 18);
-            this.label25.TabIndex = 10;
-            this.label25.Text = "0.0";
+            this.lblElAbsPos.AutoSize = true;
+            this.lblElAbsPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblElAbsPos.Location = new System.Drawing.Point(198, 27);
+            this.lblElAbsPos.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblElAbsPos.Name = "lblElAbsPos";
+            this.lblElAbsPos.Size = new System.Drawing.Size(28, 18);
+            this.lblElAbsPos.TabIndex = 10;
+            this.lblElAbsPos.Text = "0.0";
             // 
-            // label26
+            // lblAzAbsPos
             // 
-            this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(208, 6);
-            this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(28, 18);
-            this.label26.TabIndex = 9;
-            this.label26.Text = "0.0";
+            this.lblAzAbsPos.AutoSize = true;
+            this.lblAzAbsPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAzAbsPos.Location = new System.Drawing.Point(198, 6);
+            this.lblAzAbsPos.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblAzAbsPos.Name = "lblAzAbsPos";
+            this.lblAzAbsPos.Size = new System.Drawing.Size(28, 18);
+            this.lblAzAbsPos.TabIndex = 9;
+            this.lblAzAbsPos.Text = "0.0";
             // 
             // AZTempUnitLabel
             // 
             this.AZTempUnitLabel.AutoSize = true;
             this.AZTempUnitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AZTempUnitLabel.Location = new System.Drawing.Point(247, 12);
+            this.AZTempUnitLabel.Location = new System.Drawing.Point(257, 12);
             this.AZTempUnitLabel.Name = "AZTempUnitLabel";
             this.AZTempUnitLabel.Size = new System.Drawing.Size(51, 13);
             this.AZTempUnitLabel.TabIndex = 32;
@@ -1435,7 +1435,7 @@
             // 
             this.ElTempUnitLabel.AutoSize = true;
             this.ElTempUnitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ElTempUnitLabel.Location = new System.Drawing.Point(247, 33);
+            this.ElTempUnitLabel.Location = new System.Drawing.Point(257, 33);
             this.ElTempUnitLabel.Name = "ElTempUnitLabel";
             this.ElTempUnitLabel.Size = new System.Drawing.Size(51, 13);
             this.ElTempUnitLabel.TabIndex = 31;
@@ -1777,9 +1777,9 @@
             this.initChange.ForeColor = System.Drawing.Color.Red;
             this.initChange.Location = new System.Drawing.Point(21, 231);
             this.initChange.Name = "initChange";
-            this.initChange.Size = new System.Drawing.Size(41, 13);
+            this.initChange.Size = new System.Drawing.Size(27, 13);
             this.initChange.TabIndex = 10;
-            this.initChange.Text = "label36";
+            this.initChange.Text = "helo";
             // 
             // UpdateSensorInitiliazation
             // 
@@ -1789,6 +1789,7 @@
             this.UpdateSensorInitiliazation.TabIndex = 9;
             this.UpdateSensorInitiliazation.Text = "Update Sensor Initiliazation";
             this.UpdateSensorInitiliazation.UseVisualStyleBackColor = true;
+            this.UpdateSensorInitiliazation.Click += new System.EventHandler(this.UpdateSensorInitiliazation_Click);
             // 
             // AzimuthEncoder
             // 
@@ -2232,19 +2233,19 @@
             // 
             // spectraCyberScanChart
             // 
-            chartArea1.AxisX.Title = "Time";
-            chartArea1.AxisY.Title = "RF Data";
-            chartArea1.Name = "ChartArea1";
-            this.spectraCyberScanChart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.spectraCyberScanChart.Legends.Add(legend1);
+            chartArea2.AxisX.Title = "Time";
+            chartArea2.AxisY.Title = "RF Data";
+            chartArea2.Name = "ChartArea1";
+            this.spectraCyberScanChart.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.spectraCyberScanChart.Legends.Add(legend2);
             this.spectraCyberScanChart.Location = new System.Drawing.Point(36, 0);
             this.spectraCyberScanChart.Name = "spectraCyberScanChart";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.Legend = "Legend1";
-            series1.Name = "Data/Time";
-            this.spectraCyberScanChart.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series2.Legend = "Legend1";
+            series2.Name = "Data/Time";
+            this.spectraCyberScanChart.Series.Add(series2);
             this.spectraCyberScanChart.Size = new System.Drawing.Size(571, 279);
             this.spectraCyberScanChart.TabIndex = 16;
             this.spectraCyberScanChart.Text = "spectraCyberScanChart";
@@ -2516,8 +2517,8 @@
         private System.Windows.Forms.Label rainRateLabel;
         private System.Windows.Forms.Label dailyRainfallLabel;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label lblElAbsPos;
+        private System.Windows.Forms.Label lblAzAbsPos;
         private System.Windows.Forms.Label lblCurrentAzOrientation;
         private System.Windows.Forms.Label lblCurrentElOrientation;
         private System.Windows.Forms.GroupBox groupBox8;
