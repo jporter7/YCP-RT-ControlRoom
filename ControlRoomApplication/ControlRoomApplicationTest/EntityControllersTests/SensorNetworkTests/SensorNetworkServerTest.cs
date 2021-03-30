@@ -491,6 +491,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             Assert.IsFalse(success);
 
+            // Verify the status is set to unknown error
+            Assert.AreEqual(Server.Status, SensorNetworkStatusEnum.TransitIdError);
+
             // Verify all of the values are as expected; converted values have a small margin of error
             Assert.AreEqual(Server.CurrentElevationMotorTemp[0].temp, 0);
             Assert.AreEqual(Server.CurrentAzimuthMotorTemp[0].temp, 0);
