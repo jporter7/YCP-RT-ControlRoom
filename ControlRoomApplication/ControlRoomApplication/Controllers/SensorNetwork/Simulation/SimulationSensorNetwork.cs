@@ -91,11 +91,14 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         /// </summary>
         public void EndSimulationSensorNetwork()
         {
-            CurrentlyRunning = false;
-            Client.Dispose();
-            ClientStream.Dispose();
-            Server.Stop();
-            SimulationSensorMonitoringThread.Join();
+            if (CurrentlyRunning)
+            {
+                CurrentlyRunning = false;
+                Client.Dispose();
+                ClientStream.Dispose();
+                Server.Stop();
+                SimulationSensorMonitoringThread.Join();
+            }
         }
 
         private void SimulationSensorMonitor()
@@ -267,6 +270,11 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
                     Client = new TcpClient(ClientIP, ClientPort);
                     ClientStream = Client.GetStream();
                     connected = true;
+                    
+                    // Ask the SensorNetworkServer for its initialization
+                    byte[] askForInit = Encoding.ASCII.GetBytes("Send Sensor Configuration");
+                    ClientStream.Write(askForInit, 0, askForInit.Length);
+                    ClientStream.Flush();
                 }
                 catch
                 {
@@ -285,11 +293,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             // Start the server that will expect the Sensor Configuration
             Server.Start();
             NetworkStream ServerStream;
-
-            // Ask the SensorNetworkServer for its initialization
-            byte[] askForInit = Encoding.ASCII.GetBytes("Send Sensor Configuration");
-            ClientStream.Write(askForInit, 0, askForInit.Length);
-            ClientStream.Flush();
 
             // Wait for the SensorNetworkClient to send the initialization
             TcpClient localClient;

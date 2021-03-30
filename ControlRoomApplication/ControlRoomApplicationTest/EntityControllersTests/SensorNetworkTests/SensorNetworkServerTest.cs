@@ -24,7 +24,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         int ClientPort = 3000;
         int ServerPort = 3001;
         int TelescopeId = 5;
-        bool IsSimulation = true;
+        bool IsSimulation = false;
         SensorNetworkServer Server;
         string TestPacketDirectory = "../../EntityControllersTests/SensorNetworkTests/SensorNetworkTestPackets/";
 
