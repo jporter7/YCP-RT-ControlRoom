@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using ControlRoomApplication.Controllers.SensorNetwork.Simulation;
 
 namespace ControlRoomApplication.Controllers.SensorNetwork
 {
@@ -16,7 +17,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
     /// <summary>
     /// This is the central component of the Sensor Network on the Control Room end. This handles all the main communications
     /// with the main Sensor Network system, such as receiving data, setting statuses based on data it receives, and tells the
-    /// client when to send initialization data.
+    /// client when to send iniC:\YCP-RT-ControlRoom\ControlRoomApplication\ControlRoomApplication\Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cstialization data.
     /// </summary>
     public class SensorNetworkServer
     {
@@ -67,7 +68,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             // We only want to run the internal simulation if the user selected to run the Simulated Sensor Network
             if (isSimulation)
             {
-                // TODO: Initialize the SimulationSensorNetwork here
+                SimulationSensorNetwork = new SimulationSensorNetwork(serverIPAddress.ToString(), serverPort, IPAddress.Parse(clientIPAddress), clientPort);
+                SimulationSensorNetwork.StartSimulationSensorNetwork();
+            }
+            else
+            {
+                SimulationSensorNetwork = null;
             }
 
             // Initialize the timeout timer but don't start it yet
@@ -119,7 +125,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// </summary>
         public SensorNetworkClient InitializationClient { get; }
 
-        // TODO: Add SimulationSensorNetwork here
+        /// <summary>
+        /// This is the simulation sensor network, which will run whenever we are not using the hardware.
+        /// </summary>
+        private SimulationSensorNetwork SimulationSensorNetwork { get; }
 
         /// <summary>
         /// This will be used to tell us what the SensorNetwork status using <seealso cref="SensorNetworkStatusEnum"/>.
@@ -195,7 +204,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
             }
 
-            // TODO: Call bringdown for the simulation sensor network if it is initialized
+            if(SimulationSensorNetwork != null)
+            {
+                SimulationSensorNetwork.EndSimulationSensorNetwork();
+            }
         }
 
         /// <summary>
@@ -205,7 +217,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <returns></returns>
         public void RebootSensorNetwork()
         {
-            logger.Error($"{Utilities.GetTimeStamp()}: Rebooting Sensor Network. This may take a few seconds...");
+            logger.Info($"{Utilities.GetTimeStamp()}: Rebooting Sensor Network. This may take a few seconds...");
 
             EndSensorMonitoringRoutine(true); // Must pass through true because we are rebooting
 
@@ -366,7 +378,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     localClient = Server.AcceptTcpClient();
                     Stream = localClient.GetStream();
 
-                    logger.Error($"{Utilities.GetTimeStamp()}: Successfully connected to the Sensor Network!");
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully connected to the Sensor Network!");
 
                     int receivedDataSize;
                     
@@ -398,7 +410,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     Timeout.Stop();
                     Status = SensorNetworkStatusEnum.ServerError;
                     logger.Error($"{Utilities.GetTimeStamp()}: An error occurred while running the server; please check that the connection is available.");
-                    logger.Error($"{Utilities.GetTimeStamp()}: Trying to reconnect to the Sensor Network...");
+                    logger.Info($"{Utilities.GetTimeStamp()}: Trying to reconnect to the Sensor Network...");
                 }
             }
         }

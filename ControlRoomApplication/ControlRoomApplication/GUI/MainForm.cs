@@ -146,8 +146,6 @@ namespace ControlRoomApplication.Main
             sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Gray;
             sensorNetworkClientPort.ForeColor = System.Drawing.Color.Gray;
 
-
-
             logger.Info(Utilities.GetTimeStamp() + ": MainForm Initalized");
         }
 
