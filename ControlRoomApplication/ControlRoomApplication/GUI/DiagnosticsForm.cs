@@ -18,6 +18,7 @@ using System.ComponentModel;
 using ControlRoomApplication.Util;
 using System.Linq;
 using ControlRoomApplication.Controllers.SensorNetwork;
+using System.Drawing.Printing;
 
 namespace ControlRoomApplication.GUI
 {
@@ -83,6 +84,10 @@ namespace ControlRoomApplication.GUI
         bool farenheit = true;
 
         private int rtId;
+
+
+        // Plots for accelerometer data
+        
 
         // This is being passed through so the Weather Station override bool can be modified
         private readonly MainForm mainF;
@@ -438,6 +443,82 @@ namespace ControlRoomApplication.GUI
                 consoleLogBox.SelectionStart = consoleLogBox.TextLength;
                 consoleLogBox.ScrollToCaret();
             }
+
+            
+            // FFT transformations -- currently not in use
+            //double[] fftX = FftSharp.Transform.FFTpower(eleAccelerometerX);
+            //double[]fft
+            //double SAMPLE_RATE = 0.8;
+
+            // Create an array of frequencies for each point of the FFT
+            //double[] freqs = FftSharp.Transform.FFTfreq(SAMPLE_RATE , fftX.Length);
+
+            // Azimuth Accelerometer Chart /////////////////////////////////////////////
+            Acceleration[] azimuthAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorAccl;
+            azimuthAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+            azimuthAccChart.ChartAreas[0].AxisX.Maximum= double.NaN;
+
+            for (int i = 0; i < azimuthAccel.Length; i++)
+            {
+                azimuthAccChart.Series["x"].Points.AddY(azimuthAccel[i].x);
+                azimuthAccChart.Series["y"].Points.AddY(azimuthAccel[i].y);
+                azimuthAccChart.Series["z"].Points.AddY(azimuthAccel[i].z);
+
+
+                if (azimuthAccChart.Series["x"].Points.Count > 500)
+                {
+                    azimuthAccChart.Series["x"].Points.RemoveAt(0);
+                    azimuthAccChart.Series["y"].Points.RemoveAt(0);
+                    azimuthAccChart.Series["z"].Points.RemoveAt(0);
+                }
+                azimuthAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+
+            // Elevation Accelerometer Chart /////////////////////////////////////////////
+            Acceleration[] eleAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorAccl;
+
+            elevationAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+            elevationAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
+
+            for (int i = 0; i < eleAccel.Length; i++)
+            {
+                elevationAccChart.Series["x"].Points.AddY(eleAccel[i].x);
+                elevationAccChart.Series["y"].Points.AddY(eleAccel[i].y);
+                elevationAccChart.Series["z"].Points.AddY(eleAccel[i].z);
+
+
+                if (elevationAccChart.Series["x"].Points.Count > 500)
+                {
+                    elevationAccChart.Series["x"].Points.RemoveAt(0);
+                    elevationAccChart.Series["y"].Points.RemoveAt(0);
+                    elevationAccChart.Series["z"].Points.RemoveAt(0);
+                }
+                elevationAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+
+            // CounterBalance Accelerometer Chart /////////////////////////////////////////////
+            Acceleration[] cbAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentCounterbalanceAccl;
+            counterBalanceAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+            counterBalanceAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
+
+            for (int i = 0; i < cbAccel.Length; i++)
+            {
+                counterBalanceAccChart.Series["x"].Points.AddY(cbAccel[i].x);
+                counterBalanceAccChart.Series["y"].Points.AddY(cbAccel[i].y);
+                counterBalanceAccChart.Series["z"].Points.AddY(cbAccel[i].z);
+
+
+                if (counterBalanceAccChart.Series["x"].Points.Count > 500)
+                {
+                    counterBalanceAccChart.Series["x"].Points.RemoveAt(0);
+                    counterBalanceAccChart.Series["y"].Points.RemoveAt(0);
+                    counterBalanceAccChart.Series["z"].Points.RemoveAt(0);
+                }
+                counterBalanceAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            ///////////////////////////////////////////////////////////////////////////////
         }
 
         private void DiagnosticsForm_Load(object sender, System.EventArgs e)

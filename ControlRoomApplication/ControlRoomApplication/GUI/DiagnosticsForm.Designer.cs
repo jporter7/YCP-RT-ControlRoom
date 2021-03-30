@@ -29,10 +29,24 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -100,13 +114,16 @@
             this.label46 = new System.Windows.Forms.Label();
             this.label48 = new System.Windows.Forms.Label();
             this.pnlCounterbalanceAccelerometer = new System.Windows.Forms.Panel();
+            this.counterBalanceAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label50 = new System.Windows.Forms.Label();
             this.label37 = new System.Windows.Forms.Label();
             this.label49 = new System.Windows.Forms.Label();
             this.pnlElevationMotorAccelerometer = new System.Windows.Forms.Panel();
+            this.elevationAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label47 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
             this.pnlAzimuthMotorAccelerometer = new System.Windows.Forms.Panel();
+            this.azimuthAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.grpSensorData = new System.Windows.Forms.GroupBox();
             this.lbGateStat = new System.Windows.Forms.Label();
             this.lbEstopStat = new System.Windows.Forms.Label();
@@ -231,6 +248,12 @@
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.grpAccelerometerSensorData.SuspendLayout();
+            this.pnlCounterbalanceAccelerometer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.counterBalanceAccChart)).BeginInit();
+            this.pnlElevationMotorAccelerometer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.elevationAccChart)).BeginInit();
+            this.pnlAzimuthMotorAccelerometer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.azimuthAccChart)).BeginInit();
             this.grpSensorData.SuspendLayout();
             this.grpMcuStatus.SuspendLayout();
             this.groupBox14.SuspendLayout();
@@ -975,7 +998,7 @@
             // label45
             // 
             this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(262, 38);
+            this.label45.Location = new System.Drawing.Point(172, 19);
             this.label45.Name = "label45";
             this.label45.Size = new System.Drawing.Size(14, 13);
             this.label45.TabIndex = 52;
@@ -984,26 +1007,26 @@
             // label38
             // 
             this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(6, 263);
+            this.label38.Location = new System.Drawing.Point(2, 263);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(153, 13);
-            this.label38.TabIndex = 5;
+            this.label38.TabIndex = 10;
             this.label38.Text = "Counterbalance Accelerometer";
             // 
             // label46
             // 
             this.label46.AutoSize = true;
             this.label46.ForeColor = System.Drawing.Color.Blue;
-            this.label46.Location = new System.Drawing.Point(193, 11);
+            this.label46.Location = new System.Drawing.Point(2, 16);
             this.label46.Name = "label46";
             this.label46.Size = new System.Drawing.Size(67, 13);
-            this.label46.TabIndex = 47;
+            this.label46.TabIndex = 100;
             this.label46.Text = "__________";
             // 
             // label48
             // 
             this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(262, 60);
+            this.label48.Location = new System.Drawing.Point(265, 19);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(14, 13);
             this.label48.TabIndex = 51;
@@ -1011,16 +1034,50 @@
             // 
             // pnlCounterbalanceAccelerometer
             // 
-            this.pnlCounterbalanceAccelerometer.Location = new System.Drawing.Point(6, 282);
+            this.pnlCounterbalanceAccelerometer.Controls.Add(this.counterBalanceAccChart);
+            this.pnlCounterbalanceAccelerometer.Location = new System.Drawing.Point(0, 279);
             this.pnlCounterbalanceAccelerometer.Name = "pnlCounterbalanceAccelerometer";
-            this.pnlCounterbalanceAccelerometer.Size = new System.Drawing.Size(267, 63);
+            this.pnlCounterbalanceAccelerometer.Size = new System.Drawing.Size(295, 96);
             this.pnlCounterbalanceAccelerometer.TabIndex = 4;
+            // 
+            // counterBalanceAccChart
+            // 
+            this.counterBalanceAccChart.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea1.AxisX.IsLabelAutoFit = false;
+            chartArea1.AxisX.LabelStyle.Enabled = false;
+            chartArea1.AxisX.MajorGrid.Enabled = false;
+            chartArea1.AxisY.MajorGrid.Enabled = false;
+            chartArea1.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea1.Name = "ChartArea1";
+            this.counterBalanceAccChart.ChartAreas.Add(chartArea1);
+            this.counterBalanceAccChart.Location = new System.Drawing.Point(-20, 0);
+            this.counterBalanceAccChart.Name = "counterBalanceAccChart";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Color = System.Drawing.Color.Blue;
+            series1.Name = "x";
+            series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series2.Name = "y";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Color = System.Drawing.Color.Red;
+            series3.Name = "z";
+            this.counterBalanceAccChart.Series.Add(series1);
+            this.counterBalanceAccChart.Series.Add(series2);
+            this.counterBalanceAccChart.Series.Add(series3);
+            this.counterBalanceAccChart.Size = new System.Drawing.Size(315, 98);
+            this.counterBalanceAccChart.TabIndex = 0;
+            this.counterBalanceAccChart.Text = "chart1";
             // 
             // label50
             // 
             this.label50.AutoSize = true;
             this.label50.ForeColor = System.Drawing.Color.Red;
-            this.label50.Location = new System.Drawing.Point(192, 55);
+            this.label50.Location = new System.Drawing.Point(192, 16);
             this.label50.Name = "label50";
             this.label50.Size = new System.Drawing.Size(67, 13);
             this.label50.TabIndex = 48;
@@ -1029,16 +1086,16 @@
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(6, 162);
+            this.label37.Location = new System.Drawing.Point(3, 140);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(152, 13);
-            this.label37.TabIndex = 3;
+            this.label37.TabIndex = 10;
             this.label37.Text = "Elevation Motor Accelerometer";
             // 
             // label49
             // 
             this.label49.AutoSize = true;
-            this.label49.Location = new System.Drawing.Point(262, 16);
+            this.label49.Location = new System.Drawing.Point(75, 19);
             this.label49.Name = "label49";
             this.label49.Size = new System.Drawing.Size(14, 13);
             this.label49.TabIndex = 50;
@@ -1046,16 +1103,53 @@
             // 
             // pnlElevationMotorAccelerometer
             // 
-            this.pnlElevationMotorAccelerometer.Location = new System.Drawing.Point(6, 181);
+            this.pnlElevationMotorAccelerometer.Controls.Add(this.elevationAccChart);
+            this.pnlElevationMotorAccelerometer.Location = new System.Drawing.Point(-3, 156);
             this.pnlElevationMotorAccelerometer.Name = "pnlElevationMotorAccelerometer";
-            this.pnlElevationMotorAccelerometer.Size = new System.Drawing.Size(267, 63);
+            this.pnlElevationMotorAccelerometer.Size = new System.Drawing.Size(298, 98);
             this.pnlElevationMotorAccelerometer.TabIndex = 2;
+            // 
+            // elevationAccChart
+            // 
+            this.elevationAccChart.BackColor = System.Drawing.Color.Gainsboro;
+            this.elevationAccChart.BorderlineColor = System.Drawing.Color.Gainsboro;
+            this.elevationAccChart.BorderSkin.PageColor = System.Drawing.Color.Gainsboro;
+            chartArea2.AxisX.IsLabelAutoFit = false;
+            chartArea2.AxisX.LabelStyle.Enabled = false;
+            chartArea2.AxisX.MajorGrid.Enabled = false;
+            chartArea2.AxisY.IsLabelAutoFit = false;
+            chartArea2.AxisY.MajorGrid.Enabled = false;
+            chartArea2.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea2.Name = "ChartArea1";
+            this.elevationAccChart.ChartAreas.Add(chartArea2);
+            this.elevationAccChart.Location = new System.Drawing.Point(-10, 0);
+            this.elevationAccChart.Name = "elevationAccChart";
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Color = System.Drawing.Color.Blue;
+            series4.Name = "x";
+            series4.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series4.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series5.Name = "y";
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Color = System.Drawing.Color.Red;
+            series6.Name = "z";
+            this.elevationAccChart.Series.Add(series4);
+            this.elevationAccChart.Series.Add(series5);
+            this.elevationAccChart.Series.Add(series6);
+            this.elevationAccChart.Size = new System.Drawing.Size(308, 101);
+            this.elevationAccChart.TabIndex = 0;
+            this.elevationAccChart.Text = "elevationAccChart";
             // 
             // label47
             // 
             this.label47.AutoSize = true;
             this.label47.ForeColor = System.Drawing.Color.Green;
-            this.label47.Location = new System.Drawing.Point(192, 33);
+            this.label47.Location = new System.Drawing.Point(99, 16);
             this.label47.Name = "label47";
             this.label47.Size = new System.Drawing.Size(67, 13);
             this.label47.TabIndex = 49;
@@ -1064,18 +1158,54 @@
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(6, 65);
+            this.label36.Location = new System.Drawing.Point(3, 34);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(145, 13);
-            this.label36.TabIndex = 1;
+            this.label36.TabIndex = 10;
             this.label36.Text = "Azimuth Motor Accelerometer";
             // 
             // pnlAzimuthMotorAccelerometer
             // 
-            this.pnlAzimuthMotorAccelerometer.Location = new System.Drawing.Point(6, 84);
+            this.pnlAzimuthMotorAccelerometer.Controls.Add(this.azimuthAccChart);
+            this.pnlAzimuthMotorAccelerometer.Location = new System.Drawing.Point(-4, 50);
             this.pnlAzimuthMotorAccelerometer.Name = "pnlAzimuthMotorAccelerometer";
-            this.pnlAzimuthMotorAccelerometer.Size = new System.Drawing.Size(267, 63);
+            this.pnlAzimuthMotorAccelerometer.Size = new System.Drawing.Size(299, 86);
             this.pnlAzimuthMotorAccelerometer.TabIndex = 0;
+            // 
+            // azimuthAccChart
+            // 
+            this.azimuthAccChart.BackColor = System.Drawing.Color.Gainsboro;
+            this.azimuthAccChart.BorderlineColor = System.Drawing.Color.Gainsboro;
+            chartArea3.AxisX.IsLabelAutoFit = false;
+            chartArea3.AxisX.LabelStyle.Enabled = false;
+            chartArea3.AxisX.MajorGrid.Enabled = false;
+            chartArea3.AxisY.IsLabelAutoFit = false;
+            chartArea3.AxisY.MajorGrid.Enabled = false;
+            chartArea3.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea3.Name = "ChartArea1";
+            this.azimuthAccChart.ChartAreas.Add(chartArea3);
+            this.azimuthAccChart.Location = new System.Drawing.Point(-9, 0);
+            this.azimuthAccChart.Name = "azimuthAccChart";
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series7.Color = System.Drawing.Color.Blue;
+            series7.Name = "x";
+            series7.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series7.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series8.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series8.Name = "y";
+            series9.ChartArea = "ChartArea1";
+            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series9.Color = System.Drawing.Color.Red;
+            series9.Name = "z";
+            this.azimuthAccChart.Series.Add(series7);
+            this.azimuthAccChart.Series.Add(series8);
+            this.azimuthAccChart.Series.Add(series9);
+            this.azimuthAccChart.Size = new System.Drawing.Size(308, 86);
+            this.azimuthAccChart.TabIndex = 0;
+            this.azimuthAccChart.Text = "chart1";
             // 
             // grpSensorData
             // 
@@ -2233,19 +2363,19 @@
             // 
             // spectraCyberScanChart
             // 
-            chartArea2.AxisX.Title = "Time";
-            chartArea2.AxisY.Title = "RF Data";
-            chartArea2.Name = "ChartArea1";
-            this.spectraCyberScanChart.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.spectraCyberScanChart.Legends.Add(legend2);
+            chartArea4.AxisX.Title = "Time";
+            chartArea4.AxisY.Title = "RF Data";
+            chartArea4.Name = "ChartArea1";
+            this.spectraCyberScanChart.ChartAreas.Add(chartArea4);
+            legend1.Name = "Legend1";
+            this.spectraCyberScanChart.Legends.Add(legend1);
             this.spectraCyberScanChart.Location = new System.Drawing.Point(36, 0);
             this.spectraCyberScanChart.Name = "spectraCyberScanChart";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series2.Legend = "Legend1";
-            series2.Name = "Data/Time";
-            this.spectraCyberScanChart.Series.Add(series2);
+            series10.ChartArea = "ChartArea1";
+            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series10.Legend = "Legend1";
+            series10.Name = "Data/Time";
+            this.spectraCyberScanChart.Series.Add(series10);
             this.spectraCyberScanChart.Size = new System.Drawing.Size(571, 279);
             this.spectraCyberScanChart.TabIndex = 16;
             this.spectraCyberScanChart.Text = "spectraCyberScanChart";
@@ -2408,6 +2538,12 @@
             this.tabPage2.ResumeLayout(false);
             this.grpAccelerometerSensorData.ResumeLayout(false);
             this.grpAccelerometerSensorData.PerformLayout();
+            this.pnlCounterbalanceAccelerometer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.counterBalanceAccChart)).EndInit();
+            this.pnlElevationMotorAccelerometer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.elevationAccChart)).EndInit();
+            this.pnlAzimuthMotorAccelerometer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.azimuthAccChart)).EndInit();
             this.grpSensorData.ResumeLayout(false);
             this.grpSensorData.PerformLayout();
             this.grpMcuStatus.ResumeLayout(false);
@@ -2633,5 +2769,8 @@
         private System.Windows.Forms.Label lblAzHomeStatus1;
         private System.Windows.Forms.Label lblAzLimit1;
         private System.Windows.Forms.Label lblAzLimit2;
+        private System.Windows.Forms.DataVisualization.Charting.Chart elevationAccChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart counterBalanceAccChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart azimuthAccChart;
     }
 }
