@@ -36,20 +36,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
-            int expectedArrLength = 0;
-
             // Gather data
             TcpListener resultListener = (TcpListener)privSim.GetFieldOrProperty("Server");
             string resultClientIP = (string)privSim.GetFieldOrProperty("ClientIP");
             int resultClientPort = (int)privSim.GetFieldOrProperty("ClientPort");
             string resultDataDirectory = (string)privSim.GetFieldOrProperty("DataDirectory");
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Verify server
             Assert.IsNotNull(resultListener);
@@ -62,15 +53,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             // Verify directory
             Assert.AreEqual(DataPath, resultDataDirectory);
-
-            // Verify all data arrays have a length of 0
-            Assert.AreEqual(expectedArrLength, resultElTemp.Length);
-            Assert.AreEqual(expectedArrLength, resultAzTemp.Length);
-            Assert.AreEqual(expectedArrLength, resultElAcc.Length);
-            Assert.AreEqual(expectedArrLength, resultAzAcc.Length);
-            Assert.AreEqual(expectedArrLength, resultCbAcc.Length);
-            Assert.AreEqual(expectedArrLength, resultElEnc.Length);
-            Assert.AreEqual(expectedArrLength, resultAzEnc.Length);
         }
 
         [TestMethod]

@@ -1305,9 +1305,6 @@ namespace ControlRoomApplication.GUI
 
         private void UpdateSensorInitiliazation_Click(object sender, EventArgs e)
         {
-            // Set status to rebooting
-            rtController.RadioTelescope.SensorNetworkServer.Status = SensorNetworkStatusEnum.Rebooting;
-
             // First set all the checkboxes equal to the sensor network config
             SensorNetworkConfig.AzimuthTemp1Init = AzimuthTemperature1.Checked;
             SensorNetworkConfig.AzimuthTemp2Init = AzimuthTemperature2.Checked;

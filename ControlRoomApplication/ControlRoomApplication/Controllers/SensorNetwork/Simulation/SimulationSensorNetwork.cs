@@ -327,10 +327,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             else AzimuthAccData = new RawAccelerometerData[0];
 
             if (init[7] == 0) ElevationAccData = null;
-            ElevationAccData = new RawAccelerometerData[0];
+            else ElevationAccData = new RawAccelerometerData[0];
 
             if (init[8] == 0) CounterbalanceAccData = null;
-            CounterbalanceAccData = new RawAccelerometerData[0];
+            else CounterbalanceAccData = new RawAccelerometerData[0];
         }
 
         /// <summary>
