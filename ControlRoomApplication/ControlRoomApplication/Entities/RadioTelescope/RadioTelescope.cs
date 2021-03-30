@@ -116,9 +116,6 @@ namespace ControlRoomApplication.Entities
         public AbstractEncoderReader Encoders { get; set; }
 
         [NotMapped]
-        public SensorNetworkServer SensorNetworkServer { get; set; }
-
-        [NotMapped]
         protected RadioTelescopeController Parent;
 
         public RadioTelescopeController GetParent()
