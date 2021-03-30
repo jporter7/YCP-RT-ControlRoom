@@ -104,6 +104,9 @@ namespace ControlRoomApplication.Entities
         public AbstractPLCDriver PLCDriver { get; set; }
 
         [NotMapped]
+        public SensorNetworkServer SensorNetworkServer { get; set; }
+
+        [NotMapped]
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
 
         [NotMapped]

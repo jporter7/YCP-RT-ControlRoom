@@ -17,6 +17,7 @@ using System.Threading;
 using System.ComponentModel;
 using ControlRoomApplication.Util;
 using System.Linq;
+using ControlRoomApplication.Controllers.SensorNetwork;
 
 namespace ControlRoomApplication.GUI
 {
@@ -234,8 +235,8 @@ namespace ControlRoomApplication.GUI
 
             //double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
 
-            _azEncoderDegrees = 0; // rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
-            _elEncoderDegrees = 0; // rtController.RadioTelescope.Encoders.GetCurentOrientation().Elevation;
+            _azEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth;
+            _elEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation;
 
             timer1.Interval = 200;
 
@@ -271,15 +272,24 @@ namespace ControlRoomApplication.GUI
             }
             */
 
-            double ElMotTemp = 0; //rtController.RadioTelescope.Micro_controler.tempData.elevationTemp;
-            double AzMotTemp = 0; //rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp;
+            Temperature[] ElMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp;
+            Temperature[] AzMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp;
+
+            // these come in as celsius
+            double ElMotTemp = ElMotTemps[ElMotTemps.Length - 1].temp;
+            double AzMotTemp = AzMotTemps[AzMotTemps.Length - 1].temp;
+
             float insideTemp = controlRoom.WeatherStation.GetInsideTemp();
             float outsideTemp = controlRoom.WeatherStation.GetOutsideTemp();
 
-            double ElMotTempCel = (ElMotTemp - 32) * (5.0 / 9);
-            double AzMotTempCel = (AzMotTemp - 32) * (5.0 / 9);
             double insideTempCel = (insideTemp - 32) * (5.0 / 9);
             double outsideTempCel = (outsideTemp - 32) * (5.0 / 9);
+
+            // farenheit conversion
+            double ElMotTempFahrenheit = (ElMotTemp * (5.0 / 9)) + 32;
+            double AzMotTempFahrenheit = (AzMotTemp * (5.0 / 9)) + 32;
+
+
 
             //Celsius
             if (farenheit == false)
@@ -290,8 +300,8 @@ namespace ControlRoomApplication.GUI
                 ElTempUnitLabel.Text = "Celsius";
                 outsideTempLabel.Text = Math.Round(insideTempCel, 2).ToString();
                 insideTempLabel.Text = Math.Round(outsideTempCel, 2).ToString();
-                fldElTemp.Text = Math.Round(ElMotTempCel, 2).ToString();
-                fldAzTemp.Text = Math.Round(AzMotTempCel, 2).ToString();
+                fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
+                fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
             }
             //Farenheit
             else if (farenheit == true)
@@ -302,8 +312,8 @@ namespace ControlRoomApplication.GUI
                 ElTempUnitLabel.Text = "Farenheit";
                 outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
                 insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
-                fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
-                fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
+                fldElTemp.Text = Math.Round(ElMotTempFahrenheit, 2).ToString();
+                fldAzTemp.Text = Math.Round(AzMotTempFahrenheit, 2).ToString();
             }
 
             // Encoder Position in both degrees and motor ticks
