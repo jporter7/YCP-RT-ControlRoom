@@ -19,6 +19,7 @@ using ControlRoomApplication.Util;
 using System.Linq;
 using ControlRoomApplication.Controllers.SensorNetwork;
 using System.Drawing.Printing;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplication.GUI
 {
@@ -1302,24 +1303,27 @@ namespace ControlRoomApplication.GUI
             }
         }
 
-        private void UpdateSensorInitiliazation_Click(object sender, EventArgs e)
+        private async void UpdateSensorInitiliazation_Click(object sender, EventArgs e)
         {
-            // First set all the checkboxes equal to the sensor network config
-            SensorNetworkConfig.AzimuthTemp1Init = AzimuthTemperature1.Checked;
-            SensorNetworkConfig.AzimuthTemp2Init = AzimuthTemperature2.Checked;
-            SensorNetworkConfig.ElevationTemp1Init = ElevationTemperature1.Checked;
-            SensorNetworkConfig.ElevationTemp2Init = ElevationTemperature2.Checked;
-            SensorNetworkConfig.AzimuthAccelerometerInit = AzimuthAccelerometer.Checked;
-            SensorNetworkConfig.ElevationAccelerometerInit = ElevationAccelerometer.Checked;
-            SensorNetworkConfig.CounterbalanceAccelerometerInit = CounterbalanceAccelerometer.Checked;
-            SensorNetworkConfig.ElevationEncoderInit = ElevationEncoder.Checked;
-            SensorNetworkConfig.AzimuthEncoderInit = AzimuthEncoder.Checked;
+            // This must be executed async so the status updates/timer keeps ticking
+            await Task.Run(() => { 
+                // First set all the checkboxes equal to the sensor network config
+                SensorNetworkConfig.AzimuthTemp1Init = AzimuthTemperature1.Checked;
+                SensorNetworkConfig.AzimuthTemp2Init = AzimuthTemperature2.Checked;
+                SensorNetworkConfig.ElevationTemp1Init = ElevationTemperature1.Checked;
+                SensorNetworkConfig.ElevationTemp2Init = ElevationTemperature2.Checked;
+                SensorNetworkConfig.AzimuthAccelerometerInit = AzimuthAccelerometer.Checked;
+                SensorNetworkConfig.ElevationAccelerometerInit = ElevationAccelerometer.Checked;
+                SensorNetworkConfig.CounterbalanceAccelerometerInit = CounterbalanceAccelerometer.Checked;
+                SensorNetworkConfig.ElevationEncoderInit = ElevationEncoder.Checked;
+                SensorNetworkConfig.AzimuthEncoderInit = AzimuthEncoder.Checked;
 
-            // Update the config in the DB
-            DatabaseOperations.UpdateSensorNetworkConfig(SensorNetworkConfig);
+                // Update the config in the DB
+                DatabaseOperations.UpdateSensorNetworkConfig(SensorNetworkConfig);
             
-            // reboot
-            rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
+                // reboot
+                rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
+            });
         }
     }
 }

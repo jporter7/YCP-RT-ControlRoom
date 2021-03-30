@@ -184,16 +184,16 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         public void EndSensorMonitoringRoutine(bool rebooting = false)
         {
             CurrentlyRunning = false;
-            Server.Stop();
-
-            if (Timeout.Enabled) Timeout.Stop();
-
             // The stream will only be null if the sensor monitoring thread has not been called
             if (Stream != null)
             {
                 Stream.Close();
                 Stream.Dispose();
             }
+
+            Server.Stop();
+
+            if (Timeout.Enabled) Timeout.Stop();
 
             SensorMonitoringThread.Join();
             
@@ -385,7 +385,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     logger.Info($"{Utilities.GetTimeStamp()}: Successfully connected to the Sensor Network!");
 
                     int receivedDataSize;
-                    
+
                     while ((receivedDataSize = Stream.Read(receivedData, 0, receivedData.Length)) != 0 && CurrentlyRunning)
                     {
                         // If the status is initializing, we want the timer to keep going. Else, we are currently receiving data, and
@@ -411,7 +411,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 }
                 catch
                 {
-                    if (!CurrentlyRunning) // If we're not currently running, then it means we voluntarily shut down the server
+                    if (CurrentlyRunning) // If we're not currently running, then it means we voluntarily shut down the server
                     {
                         Timeout.Stop();
                         Status = SensorNetworkStatusEnum.ServerError;
