@@ -534,6 +534,7 @@ namespace ControlRoomApplication.GUI
                     azimuthAccChart.Series["x"].Points.Clear();
                     azimuthAccChart.Series["y"].Points.Clear();
                     azimuthAccChart.Series["z"].Points.Clear();
+                    azimuthAccChart.Visible = false;
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
@@ -574,6 +575,7 @@ namespace ControlRoomApplication.GUI
                     elevationAccChart.Series["x"].Points.Clear();
                     elevationAccChart.Series["y"].Points.Clear();
                     elevationAccChart.Series["z"].Points.Clear();
+                    elevationAccChart.Visible = false;
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
@@ -613,6 +615,7 @@ namespace ControlRoomApplication.GUI
                     counterBalanceAccChart.Series["x"].Points.Clear();
                     counterBalanceAccChart.Series["y"].Points.Clear();
                     counterBalanceAccChart.Series["z"].Points.Clear();
+                    counterBalanceAccChart.Visible = false;
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
