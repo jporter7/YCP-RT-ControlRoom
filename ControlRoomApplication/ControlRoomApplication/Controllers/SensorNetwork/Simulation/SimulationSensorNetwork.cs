@@ -35,18 +35,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             ClientIP = teensyClientIP;
             ClientPort = teensyClientPort;
 
-            SimulationSensorMonitoringThread = new Thread(() => { SimulationSensorMonitor(); });
-
-            // Initialize all sensors to have a length of 0 so they are not null. We will be using
-            // whether or not they're null to tell if they have been initialized or not
-            AzimuthTempData = new double[0];
-            ElevationTempData = new double[0];
-            AzimuthAccData = new RawAccelerometerData[0];
-            ElevationAccData = new RawAccelerometerData[0];
-            CounterbalanceAccData = new RawAccelerometerData[0];
-            AzimuthEncoderData = new double[0];
-            ElevationEncoderData = new double[0];
-
             DataDirectory = dataPath;
         }
 
@@ -83,6 +71,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         public void StartSimulationSensorNetwork()
         {
             CurrentlyRunning = true;
+            SimulationSensorMonitoringThread = new Thread(() => { SimulationSensorMonitor(); });
             SimulationSensorMonitoringThread.Start();
         }
 
@@ -319,14 +308,29 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         private void InitializeSensors(byte[] init)
         {
             if (init[0] == 0) ElevationTempData = null;
+            else ElevationTempData = new double[0];
+
             // Skip [1] because that is a redundant temp sensor; the SensorNetworkServer should not know about the change
+
             if (init[2] == 0) AzimuthTempData = null;
+            else AzimuthTempData = new double[0];
+
             // Skip [3] because that is a redundant temp sensor; the SensorNetworkServer should not know about the change
+
             if (init[4] == 0) ElevationEncoderData = null;
+            else ElevationEncoderData = new double[0];
+
             if (init[5] == 0) AzimuthEncoderData = null;
+            else AzimuthEncoderData = new double[0];
+
             if (init[6] == 0) AzimuthAccData = null;
+            else AzimuthAccData = new RawAccelerometerData[0];
+
             if (init[7] == 0) ElevationAccData = null;
+            ElevationAccData = new RawAccelerometerData[0];
+
             if (init[8] == 0) CounterbalanceAccData = null;
+            CounterbalanceAccData = new RawAccelerometerData[0];
         }
 
         /// <summary>

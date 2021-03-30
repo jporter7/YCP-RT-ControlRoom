@@ -69,7 +69,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             if (isSimulation)
             {
                 SimulationSensorNetwork = new SimulationSensorNetwork(serverIPAddress.ToString(), serverPort, IPAddress.Parse(clientIPAddress), clientPort);
-                SimulationSensorNetwork.StartSimulationSensorNetwork();
             }
             else
             {
@@ -170,6 +169,11 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             Timeout.Interval = InitializationClient.config.TimeoutInitialization;
             Timeout.Start();
             SensorMonitoringThread.Start();
+
+            if (SimulationSensorNetwork != null)
+            {
+                SimulationSensorNetwork.StartSimulationSensorNetwork();
+            }
         }
 
         /// <summary>
@@ -179,8 +183,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <returns>If ended successfully, return true. Else, return false.</returns>
         public void EndSensorMonitoringRoutine(bool rebooting = false)
         {
-            Server.Stop();
             CurrentlyRunning = false;
+            Server.Stop();
 
             if (Timeout.Enabled) Timeout.Stop();
 
@@ -204,7 +208,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
             }
 
-            if(SimulationSensorNetwork != null)
+            if (SimulationSensorNetwork != null)
             {
                 SimulationSensorNetwork.EndSimulationSensorNetwork();
             }
@@ -407,10 +411,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 }
                 catch
                 {
-                    Timeout.Stop();
-                    Status = SensorNetworkStatusEnum.ServerError;
-                    logger.Error($"{Utilities.GetTimeStamp()}: An error occurred while running the server; please check that the connection is available.");
-                    logger.Info($"{Utilities.GetTimeStamp()}: Trying to reconnect to the Sensor Network...");
+                    if (!CurrentlyRunning) // If we're not currently running, then it means we voluntarily shut down the server
+                    {
+                        Timeout.Stop();
+                        Status = SensorNetworkStatusEnum.ServerError;
+                        logger.Error($"{Utilities.GetTimeStamp()}: An error occurred while running the server; please check that the connection is available.");
+                        logger.Info($"{Utilities.GetTimeStamp()}: Trying to reconnect to the Sensor Network...");
+                    }
                 }
             }
         }

@@ -45,8 +45,6 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -114,15 +112,18 @@
             this.label46 = new System.Windows.Forms.Label();
             this.label48 = new System.Windows.Forms.Label();
             this.pnlCounterbalanceAccelerometer = new System.Windows.Forms.Panel();
+            this.lblCbDisabled = new System.Windows.Forms.Label();
             this.counterBalanceAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label50 = new System.Windows.Forms.Label();
             this.label37 = new System.Windows.Forms.Label();
             this.label49 = new System.Windows.Forms.Label();
             this.pnlElevationMotorAccelerometer = new System.Windows.Forms.Panel();
+            this.lblElDisabled = new System.Windows.Forms.Label();
             this.elevationAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label47 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
             this.pnlAzimuthMotorAccelerometer = new System.Windows.Forms.Panel();
+            this.lblAzDisabled = new System.Windows.Forms.Label();
             this.azimuthAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.grpSensorData = new System.Windows.Forms.GroupBox();
             this.lbGateStat = new System.Windows.Forms.Label();
@@ -182,7 +183,7 @@
             this.btnAzimuthAbsoluteEncoder = new System.Windows.Forms.Button();
             this.AzimuthAbsoluteEncoder_lbl = new System.Windows.Forms.Label();
             this.SensorNetworkSensorInitialization = new System.Windows.Forms.GroupBox();
-            this.initChange = new System.Windows.Forms.Label();
+            this.lblSNStatus = new System.Windows.Forms.Label();
             this.UpdateSensorInitiliazation = new System.Windows.Forms.Button();
             this.AzimuthEncoder = new System.Windows.Forms.CheckBox();
             this.ElevationEncoder = new System.Windows.Forms.CheckBox();
@@ -282,14 +283,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridView1.Location = new System.Drawing.Point(3, 6);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -1034,11 +1035,23 @@
             // 
             // pnlCounterbalanceAccelerometer
             // 
+            this.pnlCounterbalanceAccelerometer.Controls.Add(this.lblCbDisabled);
             this.pnlCounterbalanceAccelerometer.Controls.Add(this.counterBalanceAccChart);
             this.pnlCounterbalanceAccelerometer.Location = new System.Drawing.Point(0, 279);
             this.pnlCounterbalanceAccelerometer.Name = "pnlCounterbalanceAccelerometer";
             this.pnlCounterbalanceAccelerometer.Size = new System.Drawing.Size(295, 96);
             this.pnlCounterbalanceAccelerometer.TabIndex = 4;
+            // 
+            // lblCbDisabled
+            // 
+            this.lblCbDisabled.AutoSize = true;
+            this.lblCbDisabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCbDisabled.Location = new System.Drawing.Point(17, 41);
+            this.lblCbDisabled.Name = "lblCbDisabled";
+            this.lblCbDisabled.Size = new System.Drawing.Size(75, 18);
+            this.lblCbDisabled.TabIndex = 33;
+            this.lblCbDisabled.Text = "CB Status";
+            this.lblCbDisabled.Visible = false;
             // 
             // counterBalanceAccChart
             // 
@@ -1103,11 +1116,23 @@
             // 
             // pnlElevationMotorAccelerometer
             // 
+            this.pnlElevationMotorAccelerometer.Controls.Add(this.lblElDisabled);
             this.pnlElevationMotorAccelerometer.Controls.Add(this.elevationAccChart);
             this.pnlElevationMotorAccelerometer.Location = new System.Drawing.Point(-3, 156);
             this.pnlElevationMotorAccelerometer.Name = "pnlElevationMotorAccelerometer";
             this.pnlElevationMotorAccelerometer.Size = new System.Drawing.Size(298, 98);
             this.pnlElevationMotorAccelerometer.TabIndex = 2;
+            // 
+            // lblElDisabled
+            // 
+            this.lblElDisabled.AutoSize = true;
+            this.lblElDisabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblElDisabled.Location = new System.Drawing.Point(20, 43);
+            this.lblElDisabled.Name = "lblElDisabled";
+            this.lblElDisabled.Size = new System.Drawing.Size(72, 18);
+            this.lblElDisabled.TabIndex = 32;
+            this.lblElDisabled.Text = "EL Status";
+            this.lblElDisabled.Visible = false;
             // 
             // elevationAccChart
             // 
@@ -1166,11 +1191,23 @@
             // 
             // pnlAzimuthMotorAccelerometer
             // 
+            this.pnlAzimuthMotorAccelerometer.Controls.Add(this.lblAzDisabled);
             this.pnlAzimuthMotorAccelerometer.Controls.Add(this.azimuthAccChart);
             this.pnlAzimuthMotorAccelerometer.Location = new System.Drawing.Point(-4, 50);
             this.pnlAzimuthMotorAccelerometer.Name = "pnlAzimuthMotorAccelerometer";
             this.pnlAzimuthMotorAccelerometer.Size = new System.Drawing.Size(299, 86);
             this.pnlAzimuthMotorAccelerometer.TabIndex = 0;
+            // 
+            // lblAzDisabled
+            // 
+            this.lblAzDisabled.AutoSize = true;
+            this.lblAzDisabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAzDisabled.Location = new System.Drawing.Point(21, 35);
+            this.lblAzDisabled.Name = "lblAzDisabled";
+            this.lblAzDisabled.Size = new System.Drawing.Size(72, 18);
+            this.lblAzDisabled.TabIndex = 31;
+            this.lblAzDisabled.Text = "AZ Status";
+            this.lblAzDisabled.Visible = false;
             // 
             // azimuthAccChart
             // 
@@ -1882,7 +1919,7 @@
             // SensorNetworkSensorInitialization
             // 
             this.SensorNetworkSensorInitialization.BackColor = System.Drawing.Color.Gainsboro;
-            this.SensorNetworkSensorInitialization.Controls.Add(this.initChange);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.lblSNStatus);
             this.SensorNetworkSensorInitialization.Controls.Add(this.UpdateSensorInitiliazation);
             this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthEncoder);
             this.SensorNetworkSensorInitialization.Controls.Add(this.ElevationEncoder);
@@ -1901,15 +1938,15 @@
             this.SensorNetworkSensorInitialization.TabStop = false;
             this.SensorNetworkSensorInitialization.Text = "Sensor Network Sensor Initialization";
             // 
-            // initChange
+            // lblSNStatus
             // 
-            this.initChange.AutoSize = true;
-            this.initChange.ForeColor = System.Drawing.Color.Red;
-            this.initChange.Location = new System.Drawing.Point(21, 231);
-            this.initChange.Name = "initChange";
-            this.initChange.Size = new System.Drawing.Size(27, 13);
-            this.initChange.TabIndex = 10;
-            this.initChange.Text = "helo";
+            this.lblSNStatus.AutoSize = true;
+            this.lblSNStatus.ForeColor = System.Drawing.Color.Black;
+            this.lblSNStatus.Location = new System.Drawing.Point(9, 238);
+            this.lblSNStatus.Name = "lblSNStatus";
+            this.lblSNStatus.Size = new System.Drawing.Size(119, 13);
+            this.lblSNStatus.TabIndex = 10;
+            this.lblSNStatus.Text = "Sensor Network Status:";
             // 
             // UpdateSensorInitiliazation
             // 
@@ -2539,10 +2576,13 @@
             this.grpAccelerometerSensorData.ResumeLayout(false);
             this.grpAccelerometerSensorData.PerformLayout();
             this.pnlCounterbalanceAccelerometer.ResumeLayout(false);
+            this.pnlCounterbalanceAccelerometer.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.counterBalanceAccChart)).EndInit();
             this.pnlElevationMotorAccelerometer.ResumeLayout(false);
+            this.pnlElevationMotorAccelerometer.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.elevationAccChart)).EndInit();
             this.pnlAzimuthMotorAccelerometer.ResumeLayout(false);
+            this.pnlAzimuthMotorAccelerometer.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.azimuthAccChart)).EndInit();
             this.grpSensorData.ResumeLayout(false);
             this.grpSensorData.PerformLayout();
@@ -2737,7 +2777,7 @@
         private System.Windows.Forms.Button btnAzimuthAbsoluteEncoder;
         private System.Windows.Forms.Label ElecationAbsoluteEncoder_lbl;
         private System.Windows.Forms.Label AzimuthAbsoluteEncoder_lbl;
-        private System.Windows.Forms.Label initChange;
+        private System.Windows.Forms.Label lblSNStatus;
         private System.Windows.Forms.GroupBox grpMcuStatus;
         private System.Windows.Forms.Label lblMCUStatus;
         private System.Windows.Forms.Label lblMCUStatusText;
@@ -2772,5 +2812,8 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart elevationAccChart;
         private System.Windows.Forms.DataVisualization.Charting.Chart counterBalanceAccChart;
         private System.Windows.Forms.DataVisualization.Charting.Chart azimuthAccChart;
+        private System.Windows.Forms.Label lblCbDisabled;
+        private System.Windows.Forms.Label lblElDisabled;
+        private System.Windows.Forms.Label lblAzDisabled;
     }
 }

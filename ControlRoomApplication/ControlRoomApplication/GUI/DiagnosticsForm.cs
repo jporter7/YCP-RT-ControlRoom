@@ -86,7 +86,8 @@ namespace ControlRoomApplication.GUI
         private int rtId;
 
 
-        // Plots for accelerometer data
+        // Config file for the sensor network server to use
+        SensorNetworkConfig SensorNetworkConfig;
         
 
         // This is being passed through so the Weather Station override bool can be modified
@@ -158,9 +159,20 @@ namespace ControlRoomApplication.GUI
             celTempConvert.BackColor = System.Drawing.Color.DarkGray;
             farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
 
-            ElecationAbsoluteEncoder_lbl.Text = "";
+            lblSNStatus.Text = "";
 
-            initChange.Text = "";
+            // Set sensor initialization checkboxes to reflect what is stored in the database
+            SensorNetworkConfig = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
+
+            AzimuthTemperature1.Checked = SensorNetworkConfig.AzimuthTemp1Init;
+            AzimuthTemperature2.Checked = SensorNetworkConfig.AzimuthTemp2Init;
+            ElevationTemperature1.Checked = SensorNetworkConfig.ElevationTemp1Init;
+            ElevationTemperature2.Checked = SensorNetworkConfig.ElevationTemp2Init;
+            AzimuthAccelerometer.Checked = SensorNetworkConfig.AzimuthAccelerometerInit;
+            ElevationAccelerometer.Checked = SensorNetworkConfig.ElevationAccelerometerInit;
+            CounterbalanceAccelerometer.Checked = SensorNetworkConfig.CounterbalanceAccelerometerInit;
+            ElevationEncoder.Checked = SensorNetworkConfig.ElevationEncoderInit;
+            AzimuthEncoder.Checked = SensorNetworkConfig.AzimuthEncoderInit;
 
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
@@ -309,8 +321,24 @@ namespace ControlRoomApplication.GUI
                 ElTempUnitLabel.Text = "Celsius";
                 outsideTempLabel.Text = Math.Round(insideTempCel, 2).ToString();
                 insideTempLabel.Text = Math.Round(outsideTempCel, 2).ToString();
-                fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
-                fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
+
+                if (SensorNetworkConfig.ElevationTemp1Init)
+                {
+                    fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
+                }
+                else
+                {
+                    fldElTemp.Text = "--";
+                }
+
+                if (SensorNetworkConfig.AzimuthTemp1Init)
+                {
+                    fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
+                }
+                else
+                {
+                    fldAzTemp.Text = "--";
+                }
             }
             //Farenheit
             else if (farenheit == true)
@@ -321,8 +349,24 @@ namespace ControlRoomApplication.GUI
                 ElTempUnitLabel.Text = "Farenheit";
                 outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
                 insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
-                fldElTemp.Text = Math.Round(ElMotTempFahrenheit, 2).ToString();
-                fldAzTemp.Text = Math.Round(AzMotTempFahrenheit, 2).ToString();
+
+                if (SensorNetworkConfig.ElevationTemp1Init)
+                {
+                    fldElTemp.Text = Math.Round(ElMotTempFahrenheit, 2).ToString();
+                }
+                else
+                {
+                    fldElTemp.Text = "--";
+                }
+
+                if (SensorNetworkConfig.AzimuthTemp1Init)
+                {
+                    fldAzTemp.Text = Math.Round(AzMotTempFahrenheit, 2).ToString();
+                }
+                else
+                {
+                    fldAzTemp.Text = "--";
+                }
             }
 
             // Encoder Position in both degrees and motor ticks
@@ -444,7 +488,7 @@ namespace ControlRoomApplication.GUI
                 consoleLogBox.ScrollToCaret();
             }
 
-            
+
             // FFT transformations -- currently not in use
             //double[] fftX = FftSharp.Transform.FFTpower(eleAccelerometerX);
             //double[]fft
@@ -454,71 +498,125 @@ namespace ControlRoomApplication.GUI
             //double[] freqs = FftSharp.Transform.FFTfreq(SAMPLE_RATE , fftX.Length);
 
             // Azimuth Accelerometer Chart /////////////////////////////////////////////
-            Acceleration[] azimuthAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorAccl;
-            azimuthAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
-            azimuthAccChart.ChartAreas[0].AxisX.Maximum= double.NaN;
-
-            for (int i = 0; i < azimuthAccel.Length; i++)
+            if (SensorNetworkConfig.AzimuthAccelerometerInit)
             {
-                azimuthAccChart.Series["x"].Points.AddY(azimuthAccel[i].x);
-                azimuthAccChart.Series["y"].Points.AddY(azimuthAccel[i].y);
-                azimuthAccChart.Series["z"].Points.AddY(azimuthAccel[i].z);
+                lblAzDisabled.Visible = false;
+                Acceleration[] azimuthAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorAccl;
+                azimuthAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+                azimuthAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-
-                if (azimuthAccChart.Series["x"].Points.Count > 500)
+                for (int i = 0; i < azimuthAccel.Length; i++)
                 {
-                    azimuthAccChart.Series["x"].Points.RemoveAt(0);
-                    azimuthAccChart.Series["y"].Points.RemoveAt(0);
-                    azimuthAccChart.Series["z"].Points.RemoveAt(0);
+                    azimuthAccChart.Series["x"].Points.AddY(azimuthAccel[i].x);
+                    azimuthAccChart.Series["y"].Points.AddY(azimuthAccel[i].y);
+                    azimuthAccChart.Series["z"].Points.AddY(azimuthAccel[i].z);
+
+
+                    if (azimuthAccChart.Series["x"].Points.Count > 500)
+                    {
+                        azimuthAccChart.Series["x"].Points.RemoveAt(0);
+                        azimuthAccChart.Series["y"].Points.RemoveAt(0);
+                        azimuthAccChart.Series["z"].Points.RemoveAt(0);
+                    }
+                    azimuthAccChart.ChartAreas[0].RecalculateAxesScale();
                 }
-                azimuthAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            else
+            {
+                // This all only needs to be executed once when it is reached. This if statement
+                // blocks these five lines from being executed during every single tick
+                if (!lblAzDisabled.Visible)
+                {
+                    lblAzDisabled.Visible = true;
+                    lblAzDisabled.Text = "Azimuth Motor Accelerometer Disabled";
+                    azimuthAccChart.Series["x"].Points.Clear();
+                    azimuthAccChart.Series["y"].Points.Clear();
+                    azimuthAccChart.Series["z"].Points.Clear();
+                }
             }
             ///////////////////////////////////////////////////////////////////////////////
 
             // Elevation Accelerometer Chart /////////////////////////////////////////////
-            Acceleration[] eleAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorAccl;
-
-            elevationAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
-            elevationAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
-
-            for (int i = 0; i < eleAccel.Length; i++)
+            if (SensorNetworkConfig.ElevationAccelerometerInit)
             {
-                elevationAccChart.Series["x"].Points.AddY(eleAccel[i].x);
-                elevationAccChart.Series["y"].Points.AddY(eleAccel[i].y);
-                elevationAccChart.Series["z"].Points.AddY(eleAccel[i].z);
+                lblElDisabled.Visible = false;
+                Acceleration[] eleAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorAccl;
 
+                elevationAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+                elevationAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-                if (elevationAccChart.Series["x"].Points.Count > 500)
+                for (int i = 0; i < eleAccel.Length; i++)
                 {
-                    elevationAccChart.Series["x"].Points.RemoveAt(0);
-                    elevationAccChart.Series["y"].Points.RemoveAt(0);
-                    elevationAccChart.Series["z"].Points.RemoveAt(0);
+                    elevationAccChart.Series["x"].Points.AddY(eleAccel[i].x);
+                    elevationAccChart.Series["y"].Points.AddY(eleAccel[i].y);
+                    elevationAccChart.Series["z"].Points.AddY(eleAccel[i].z);
+
+
+                    if (elevationAccChart.Series["x"].Points.Count > 500)
+                    {
+                        elevationAccChart.Series["x"].Points.RemoveAt(0);
+                        elevationAccChart.Series["y"].Points.RemoveAt(0);
+                        elevationAccChart.Series["z"].Points.RemoveAt(0);
+                    }
+                    elevationAccChart.ChartAreas[0].RecalculateAxesScale();
                 }
-                elevationAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            else
+            {
+                // This all only needs to be executed once when it is reached. This if statement
+                // blocks these five lines from being executed during every single tick
+                if (!lblElDisabled.Visible)
+                {
+                    lblElDisabled.Visible = true;
+                    lblElDisabled.Text = "Elevation Motor Accelerometer Disabled";
+                    elevationAccChart.Series["x"].Points.Clear();
+                    elevationAccChart.Series["y"].Points.Clear();
+                    elevationAccChart.Series["z"].Points.Clear();
+                }
             }
             ///////////////////////////////////////////////////////////////////////////////
 
             // CounterBalance Accelerometer Chart /////////////////////////////////////////////
-            Acceleration[] cbAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentCounterbalanceAccl;
-            counterBalanceAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
-            counterBalanceAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
-
-            for (int i = 0; i < cbAccel.Length; i++)
+            if (SensorNetworkConfig.CounterbalanceAccelerometerInit)
             {
-                counterBalanceAccChart.Series["x"].Points.AddY(cbAccel[i].x);
-                counterBalanceAccChart.Series["y"].Points.AddY(cbAccel[i].y);
-                counterBalanceAccChart.Series["z"].Points.AddY(cbAccel[i].z);
+                lblCbDisabled.Visible = false;
+                Acceleration[] cbAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentCounterbalanceAccl;
+                counterBalanceAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+                counterBalanceAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-
-                if (counterBalanceAccChart.Series["x"].Points.Count > 500)
+                for (int i = 0; i < cbAccel.Length; i++)
                 {
-                    counterBalanceAccChart.Series["x"].Points.RemoveAt(0);
-                    counterBalanceAccChart.Series["y"].Points.RemoveAt(0);
-                    counterBalanceAccChart.Series["z"].Points.RemoveAt(0);
+                    counterBalanceAccChart.Series["x"].Points.AddY(cbAccel[i].x);
+                    counterBalanceAccChart.Series["y"].Points.AddY(cbAccel[i].y);
+                    counterBalanceAccChart.Series["z"].Points.AddY(cbAccel[i].z);
+
+
+                    if (counterBalanceAccChart.Series["x"].Points.Count > 500)
+                    {
+                        counterBalanceAccChart.Series["x"].Points.RemoveAt(0);
+                        counterBalanceAccChart.Series["y"].Points.RemoveAt(0);
+                        counterBalanceAccChart.Series["z"].Points.RemoveAt(0);
+                    }
+                    counterBalanceAccChart.ChartAreas[0].RecalculateAxesScale();
                 }
-                counterBalanceAccChart.ChartAreas[0].RecalculateAxesScale();
+            }
+            else
+            {
+                // This all only needs to be executed once when it is reached. This if statement
+                // blocks these five lines from being executed during every single tick
+                if (!lblCbDisabled.Visible)
+                {
+                    lblCbDisabled.Visible = true;
+                    lblCbDisabled.Text = "Counterbalance Accelerometer Disabled";
+                    counterBalanceAccChart.Series["x"].Points.Clear();
+                    counterBalanceAccChart.Series["y"].Points.Clear();
+                    counterBalanceAccChart.Series["z"].Points.Clear();
+                }
             }
             ///////////////////////////////////////////////////////////////////////////////
+
+            // Update the Sensor Network status
+            lblSNStatus.Text = "Sensor Network Status: " + rtController.RadioTelescope.SensorNetworkServer.Status.ToString();
         }
 
         private void DiagnosticsForm_Load(object sender, System.EventArgs e)
@@ -1207,6 +1305,24 @@ namespace ControlRoomApplication.GUI
 
         private void UpdateSensorInitiliazation_Click(object sender, EventArgs e)
         {
+            // Set status to rebooting
+            rtController.RadioTelescope.SensorNetworkServer.Status = SensorNetworkStatusEnum.Rebooting;
+
+            // First set all the checkboxes equal to the sensor network config
+            SensorNetworkConfig.AzimuthTemp1Init = AzimuthTemperature1.Checked;
+            SensorNetworkConfig.AzimuthTemp2Init = AzimuthTemperature2.Checked;
+            SensorNetworkConfig.ElevationTemp1Init = ElevationTemperature1.Checked;
+            SensorNetworkConfig.ElevationTemp2Init = ElevationTemperature2.Checked;
+            SensorNetworkConfig.AzimuthAccelerometerInit = AzimuthAccelerometer.Checked;
+            SensorNetworkConfig.ElevationAccelerometerInit = ElevationAccelerometer.Checked;
+            SensorNetworkConfig.CounterbalanceAccelerometerInit = CounterbalanceAccelerometer.Checked;
+            SensorNetworkConfig.ElevationEncoderInit = ElevationEncoder.Checked;
+            SensorNetworkConfig.AzimuthEncoderInit = AzimuthEncoder.Checked;
+
+            // Update the config in the DB
+            DatabaseOperations.UpdateSensorNetworkConfig(SensorNetworkConfig);
+            
+            // reboot
             rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
         }
     }
