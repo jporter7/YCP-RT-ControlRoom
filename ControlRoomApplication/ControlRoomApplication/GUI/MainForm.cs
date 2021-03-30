@@ -16,7 +16,9 @@ using ControlRoomApplication.Entities.WeatherStation;
 using log4net.Appender;
 using ControlRoomApplication.Documentation;
 using ControlRoomApplication.Validation;
+using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
+using ControlRoomApplication.Controllers.SensorNetwork;
 
 namespace ControlRoomApplication.Main
 {
@@ -49,6 +51,11 @@ namespace ControlRoomApplication.Main
         public bool SensorNetworkClientIPBool = false;
         public bool SensorNetworkClientPortBool = false;
 
+
+        
+        // form
+        RTControlFormData formData;
+        
 
         enum TempSensorType
         {
@@ -126,16 +133,18 @@ namespace ControlRoomApplication.Main
             LocalIPCombo.SelectedIndex = 0;
 
             sensorNetworkServerIPAddress.Text = "IP Address";
+            // initialize formData struct
+            formData = new RTControlFormData();
             sensorNetworkServerPort.Text = "Port";
             sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Gray;
             sensorNetworkServerPort.ForeColor = System.Drawing.Color.Gray;
+            // initialize formData struct
+            formData = new RTControlFormData();
 
             sensorNetworkClientIPAddress.Text = "IP Address";
             sensorNetworkClientPort.Text = "Port";
             sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Gray;
             sensorNetworkClientPort.ForeColor = System.Drawing.Color.Gray;
-
-
 
             logger.Info(Utilities.GetTimeStamp() + ": MainForm Initalized");
         }
@@ -284,12 +293,19 @@ namespace ControlRoomApplication.Main
                             MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
                     }
 
+                    bool isSensorNetworkServerSimulated = false;
+                    if(comboSensorNetworkBox.SelectedIndex == 1)
+                    {
+                        isSensorNetworkServerSimulated = true;
+                    }
+
                     //current_rt_id++;
                     AbstractPLCDriver APLCDriver = BuildPLCDriver();
-                    AbstractMicrocontroller ctrler = build_CTRL();
-                    ctrler.BringUp();
-                    AbstractEncoderReader encoder = build_encoder(APLCDriver);
-                    RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder);
+                    SensorNetworkServer sensorNetworkServer = new SensorNetworkServer(IPAddress.Parse(sensorNetworkServerIPAddress.Text), int.Parse(sensorNetworkServerPort.Text),
+                    sensorNetworkClientIPAddress.Text, int.Parse(sensorNetworkClientPort.Text), RTConfig.telescopeID, isSensorNetworkServerSimulated);
+
+                    sensorNetworkServer.StartSensorMonitoringRoutine();
+                    RadioTelescope ARadioTelescope = BuildRT(APLCDriver, sensorNetworkServer);
                     ARadioTelescope.WeatherStation = MainControlRoomController.ControlRoom.WeatherStation;
 
                     // Add the RT/PLC driver pair and the RT controller to their respective lists
@@ -401,6 +417,7 @@ namespace ControlRoomApplication.Main
 
                 //Turn off Telescope in database
                 ProgramRTControllerList[i].RadioTelescope.online = 0;
+                ProgramRTControllerList[i].RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
@@ -418,6 +435,7 @@ namespace ControlRoomApplication.Main
             {
                 //Turn off Telescope in database
                 ProgramRTControllerList[i].RadioTelescope.online = 0;
+                ProgramRTControllerList[i].RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
             }
 
@@ -469,7 +487,7 @@ namespace ControlRoomApplication.Main
         /// Builds a radio telescope instance based off of the input from the GUI form.
         /// </summary>
         /// <returns> A radio telescope instance representing the configuration chosen. </returns>
-        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver, AbstractMicrocontroller ctrler, AbstractEncoderReader encoder)
+        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver, SensorNetworkServer sns)
         {
             logger.Info(Utilities.GetTimeStamp() + ": Building RadioTelescope");
 
@@ -498,8 +516,7 @@ namespace ControlRoomApplication.Main
                 newRT.PLCDriver = abstractPLCDriver;
                 newRT.PLCDriver.setTelescopeType(newRT._TeleType);
                 newRT.SpectraCyberController = BuildSpectraCyber();
-                newRT.Micro_controler = ctrler;
-                newRT.Encoders = encoder;
+                newRT.SensorNetworkServer = sns;
                 logger.Info(Utilities.GetTimeStamp() + ": New RadioTelescope built successfully");
 
                 current_rt_id = newRT.Id;
@@ -523,8 +540,7 @@ namespace ControlRoomApplication.Main
                 existingRT.PLCDriver = abstractPLCDriver;
                 existingRT.PLCDriver.setTelescopeType(existingRT._TeleType);
                 existingRT.SpectraCyberController = BuildSpectraCyber();
-                existingRT.Micro_controler = ctrler;
-                existingRT.Encoders = encoder;
+                existingRT.SensorNetworkServer = sns;
                 logger.Info(Utilities.GetTimeStamp() + ": Existing RadioTelescope with ID " +current_rt_id+ " retrieved and built successfully");
 
                 return existingRT;
@@ -659,7 +675,7 @@ namespace ControlRoomApplication.Main
         {
             logger.Info(Utilities.GetTimeStamp() + ": Free Control Button Clicked");
             int rtIDforControl = AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id;
-            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl);
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl, formData);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {
@@ -710,7 +726,7 @@ namespace ControlRoomApplication.Main
                 this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
                 this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
 
-
+                comboSensorNetworkBox.SelectedIndex = 1;
 
 
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
@@ -736,6 +752,7 @@ namespace ControlRoomApplication.Main
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("192.168.0.70");
+                comboSensorNetworkBox.SelectedIndex = 0;
             }
             this.txtPLCPort.Text = "502";
             this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Production PLC");

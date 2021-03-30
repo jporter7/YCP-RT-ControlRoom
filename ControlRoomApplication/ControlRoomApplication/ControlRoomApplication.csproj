@@ -217,11 +217,13 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCEvents.cs" />
     <Compile Include="Controllers\SensorNetwork\PacketDecodingTools.cs" />
-    <Compile Include="Controllers\SensorNetwork\RawAccelerometerData.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkClient.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkConstants.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkServer.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkStatusEnum.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\PacketEncodingTools.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\RawAccelerometerData.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cs" />
     <Compile Include="Controllers\Sensors\MiscPlcInput.cs" />
     <Compile Include="Controllers\Sensors\OverrideSwitchData.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />
@@ -293,6 +295,7 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
+    <Compile Include="Entities\WeatherStation\WeatherThreshold.cs" />
     <Compile Include="Entities\WeatherStation\WeatherData.cs" />
     <Compile Include="Entities\WeatherStation\WeatherStation.cs" />
     <Compile Include="GUI\DiagnosticsForm.cs">
@@ -325,6 +328,7 @@
     <Compile Include="GUI\ManualControl.Designer.cs">
       <DependentUpon>ManualControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\RTControlFormData.cs" />
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.cs" />
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.Designer.cs">
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
@@ -363,6 +367,19 @@
       <SubType>Designer</SubType>
     </None>
     <None Include=".travis.yml" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzAccX.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzAccY.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzAccZ.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzEnc.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzTemp.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestCbAccX.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestCbAccY.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestCbAccZ.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElAccX.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElAccY.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElAccZ.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElEnc.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElTemp.csv" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -428,6 +445,9 @@
     <Analyzer Include="..\packages\AWSSDK.RDS.3.5.0\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.SimpleEmail.3.5.0.28\analyzers\dotnet\cs\AWSSDK.SimpleEmail.CodeAnalysis.dll" />
     <Analyzer Include="..\packages\AWSSDK.SimpleNotificationService.3.5.0\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -127,8 +127,6 @@ namespace ControlRoomApplication.GUI
             //MCU_Statui.Columns[0].HeaderText = "Status name";
             //MCU_Statui.Columns[1].HeaderText = "value";
 
-            controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.BringUp();
-
             SetCurrentWeatherData();
             runDiagScriptsButton.Enabled = false;
 
@@ -235,17 +233,17 @@ namespace ControlRoomApplication.GUI
         {
             double currWindSpeed = controlRoom.WeatherStation.GetWindSpeed();//wind speed
 
-            double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
+            //double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
 
             _azEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth;
             _elEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation;
 
             timer1.Interval = 200;
 
+            //TODO: Investigate if needed 
+            /*
             if (selectDemo.Checked == true)
             {
-                rtController.RadioTelescope.Micro_controler.setStableOrTesting(false);
-
                 // Simulating Encoder Sensors
                 TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
 
@@ -272,6 +270,7 @@ namespace ControlRoomApplication.GUI
 
 
             }
+            */
 
             Temperature[] ElMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp;
             Temperature[] AzMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp;
