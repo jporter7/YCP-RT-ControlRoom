@@ -323,7 +323,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                             // This must be converted into degrees, because we are only receiving raw data from the
                             // elevation encoder
                             CurrentAbsoluteOrientation.Elevation = 
-                                0.25 * (data[k++] << 8 | data[k++]) - 20.375;
+                                0.25 * (short)(data[k++] << 8 | data[k++]) - 20.375;
                         }
 
                         // Azimuth absolute encoder
@@ -332,7 +332,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                             // This must be converted into degrees, because we are only receiving raw data from the
                             // azimuth encoder
                             CurrentAbsoluteOrientation.Azimuth = 
-                                360 / SensorNetworkConstants.AzimuthEncoderScaling * (data[k++] << 8 | data[k++]);
+                                360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[k++] << 8 | data[k++]);
                         }
 
                         success = true;

@@ -30,9 +30,9 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             {
                 acceleration[j] = Acceleration.Generate(
                     DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    data[currPointer++] << 8 | data[currPointer++],
-                    data[currPointer++] << 8 | data[currPointer++],
-                    data[currPointer++] << 8 | data[currPointer++],
+                    (short)(data[currPointer++] << 8 | data[currPointer++]),
+                    (short)(data[currPointer++] << 8 | data[currPointer++]),
+                    (short)(data[currPointer++] << 8 | data[currPointer++]),
                     sensor
                 );
             }
@@ -57,7 +57,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             {
                 temperature[j] = Temperature.Generate(
                     DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    (data[currPointer++] << 8 | data[currPointer++]) / 16, // Converting to Celsius by default because we receive raw data
+                    (double)((short)((data[currPointer++] << 8 | data[currPointer++]))) / 16, // Converting to Celsius by default because we receive raw data
                     sensor
                 );
             }
