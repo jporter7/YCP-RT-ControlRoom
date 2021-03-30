@@ -557,8 +557,8 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// This is a script that is called when we want to check the current thermal calibration of the telescope
         /// Moves to point to the tree, reads in data, gets data from weather station, and compares
-        /// Postcondition: return true if the telescope data IS within 0.001 degrees Farenheit
-        ///                return false if the telescope data IS NOT within 0.001 degrees Farenheit
+        /// Postcondition: return true if the telescope data IS within 0.001 degrees fahrenheit
+        ///                return false if the telescope data IS NOT within 0.001 degrees fahrenheit
         /// </summary>
         public override Task<bool> Thermal_Calibrate() {
             Orientation current = read_Position();
@@ -590,7 +590,7 @@ namespace ControlRoomApplication.Controllers
             double speedConstant = 299792458;
             double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
 
-            // convert to farenheit
+            // convert to fahrenheit
             temperature = temperature * (9 / 5) - 459.67;
 
             // check against weather station reading
