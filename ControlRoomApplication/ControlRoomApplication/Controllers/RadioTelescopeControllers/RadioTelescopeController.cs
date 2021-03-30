@@ -77,7 +77,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public Orientation GetAbsoluteOrientation()
         {
-            return RadioTelescope.Encoders.GetCurentOrientation();
+            return RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation;
         }
 
         /// <summary>

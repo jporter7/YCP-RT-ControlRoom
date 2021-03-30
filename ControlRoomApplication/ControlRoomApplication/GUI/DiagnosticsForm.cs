@@ -444,37 +444,7 @@ namespace ControlRoomApplication.GUI
                 consoleLogBox.ScrollToCaret();
             }
 
-            // FFT Transformations
-            double[] eleAccelerometerX = new double[128];
-            double[] eleAccelerometerY = new double[128];
-            double[] eleAccelerometerZ = new double[128];
-
-            double[] azAccelerometerX = new double[128];
-            double[] azAccelerometerY = new double[128];
-            double[] azAccelerometerZ = new double[128];
-
-            double[] cbAccelerometerX = new double[128];
-            double[] cbAccelerometerY = new double[128];
-            double[] cbAccelerometerZ = new double[128];
-
-
-            Random rand = new Random();
-            for(int i = 0; i < eleAccelerometerX.Length; i++)
-            {
-                eleAccelerometerX[i] = rand.Next(0, 50);
-                eleAccelerometerY[i] = rand.Next(-50,-10);
-                eleAccelerometerZ[i] = rand.Next(100, 150);
-
-                azAccelerometerX[i] = rand.Next(-40, 10);
-                azAccelerometerY[i] = rand.Next(150,200);
-                azAccelerometerZ[i] = rand.Next(20, 80);
-
-                cbAccelerometerX[i] = rand.Next(-50, -10);
-                cbAccelerometerY[i] = rand.Next(10, 80);
-                cbAccelerometerZ[i] = rand.Next(90, 160);
-
-
-            }
+            
             // FFT transformations -- currently not in use
             //double[] fftX = FftSharp.Transform.FFTpower(eleAccelerometerX);
             //double[]fft
@@ -484,14 +454,15 @@ namespace ControlRoomApplication.GUI
             //double[] freqs = FftSharp.Transform.FFTfreq(SAMPLE_RATE , fftX.Length);
 
             // Azimuth Accelerometer Chart /////////////////////////////////////////////
+            Acceleration[] azimuthAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorAccl;
             azimuthAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
             azimuthAccChart.ChartAreas[0].AxisX.Maximum= double.NaN;
 
-            for (int i = 0; i < eleAccelerometerX.Length; i++)
+            for (int i = 0; i < azimuthAccel.Length; i++)
             {
-                azimuthAccChart.Series["x"].Points.AddY(azAccelerometerX[i]);
-                azimuthAccChart.Series["y"].Points.AddY(azAccelerometerY[i]);
-                azimuthAccChart.Series["z"].Points.AddY(azAccelerometerZ[i]);
+                azimuthAccChart.Series["x"].Points.AddY(azimuthAccel[i].x);
+                azimuthAccChart.Series["y"].Points.AddY(azimuthAccel[i].y);
+                azimuthAccChart.Series["z"].Points.AddY(azimuthAccel[i].z);
 
 
                 if (azimuthAccChart.Series["x"].Points.Count > 500)
@@ -505,15 +476,16 @@ namespace ControlRoomApplication.GUI
             ///////////////////////////////////////////////////////////////////////////////
 
             // Elevation Accelerometer Chart /////////////////////////////////////////////
+            Acceleration[] eleAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorAccl;
 
             elevationAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
             elevationAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-            for (int i = 0; i < eleAccelerometerX.Length; i++)
+            for (int i = 0; i < eleAccel.Length; i++)
             {
-                elevationAccChart.Series["x"].Points.AddY(eleAccelerometerX[i]);
-                elevationAccChart.Series["y"].Points.AddY(eleAccelerometerY[i]);
-                elevationAccChart.Series["z"].Points.AddY(eleAccelerometerZ[i]);
+                elevationAccChart.Series["x"].Points.AddY(eleAccel[i].x);
+                elevationAccChart.Series["y"].Points.AddY(eleAccel[i].y);
+                elevationAccChart.Series["z"].Points.AddY(eleAccel[i].z);
 
 
                 if (elevationAccChart.Series["x"].Points.Count > 500)
@@ -527,14 +499,15 @@ namespace ControlRoomApplication.GUI
             ///////////////////////////////////////////////////////////////////////////////
 
             // CounterBalance Accelerometer Chart /////////////////////////////////////////////
+            Acceleration[] cbAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentCounterbalanceAccl;
             counterBalanceAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
             counterBalanceAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-            for (int i = 0; i < eleAccelerometerX.Length; i++)
+            for (int i = 0; i < cbAccel.Length; i++)
             {
-                counterBalanceAccChart.Series["x"].Points.AddY(cbAccelerometerX[i]);
-                counterBalanceAccChart.Series["y"].Points.AddY(cbAccelerometerY[i]);
-                counterBalanceAccChart.Series["z"].Points.AddY(cbAccelerometerZ[i]);
+                counterBalanceAccChart.Series["x"].Points.AddY(cbAccel[i].x);
+                counterBalanceAccChart.Series["y"].Points.AddY(cbAccel[i].y);
+                counterBalanceAccChart.Series["z"].Points.AddY(cbAccel[i].z);
 
 
                 if (counterBalanceAccChart.Series["x"].Points.Count > 500)
