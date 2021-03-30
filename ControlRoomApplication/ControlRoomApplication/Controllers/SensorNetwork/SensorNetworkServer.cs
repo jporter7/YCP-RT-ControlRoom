@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using ControlRoomApplication.Controllers.SensorNetwork.Simulation;
+using ControlRoomApplication.Controllers.Communications;
 
 namespace ControlRoomApplication.Controllers.SensorNetwork
 {
@@ -251,6 +252,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 {
                     Status = SensorNetworkStatusEnum.InitializationSendingFailed;
                     if(Timeout.Enabled) Timeout.Stop();
+
+                    pushNotification.sendToAllAdmins("Sensor Network Error", $"Status: {Status}");
                 }
                 else
                 {
@@ -351,15 +354,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                             $"ID {SensorNetworkConstants.TransitIdSuccess}, received ID {receivedTransitId})");
                     }
                 }
-                else
-                {
-                    // If this happens, that indicates a stability problem that likely has to do with the connection.
-                    // The most likely reason that this might happen is a faulty Ethernet cable. If it happens once
-                    // in a blue moon, I would not be too concerned.
-                    logger.Error($"{Utilities.GetTimeStamp()}: Error decoding packet: Packet was the incorrect size. " +
-                        $"(expected {expectedDataSize} bytes, received {receivedDataSize})");
-                }
-
             }
 
             return success;
@@ -417,6 +411,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         Status = SensorNetworkStatusEnum.ServerError;
                         logger.Error($"{Utilities.GetTimeStamp()}: An error occurred while running the server; please check that the connection is available.");
                         logger.Info($"{Utilities.GetTimeStamp()}: Trying to reconnect to the Sensor Network...");
+
+                        pushNotification.sendToAllAdmins("Sensor Network Error", $"Status: {Status}");
                     }
                 }
             }
@@ -444,6 +440,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             }
 
             logger.Error($"{Utilities.GetTimeStamp()}: Connection to the Sensor Network timed out! Status: {Status}");
+
+            pushNotification.sendToAllAdmins("Sensor Network Timeout", $"Status: {Status}");
         }
     }
 }

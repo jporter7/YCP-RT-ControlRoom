@@ -571,7 +571,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         }
 
         [TestMethod]
-        public void TestTimedOut_StatusNotInitializingOrReceivingData_SetsToUnknownError()
+        public void TestTimedOut_StatusNotInitializingOrReceivingData_SetsToServerError()
         {
             PrivateObject privServer = new PrivateObject(Server);
 
