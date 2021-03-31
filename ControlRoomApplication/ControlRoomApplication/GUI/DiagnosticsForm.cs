@@ -20,6 +20,7 @@ using System.Linq;
 using ControlRoomApplication.Controllers.SensorNetwork;
 using System.Drawing.Printing;
 using System.Threading.Tasks;
+using ControlRoomApplication.Validation;
 
 namespace ControlRoomApplication.GUI
 {
@@ -83,6 +84,10 @@ namespace ControlRoomApplication.GUI
 
         // Alert Flags
         bool fahrenheit = true;
+
+        // Validation for sensor timeouts
+        bool DataTimeoutValid;
+        bool InitTimeoutValid;
 
         private int rtId;
 
@@ -176,6 +181,10 @@ namespace ControlRoomApplication.GUI
             AzimuthEncoder.Checked = SensorNetworkConfig.AzimuthEncoderInit;
             txtDataTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutDataRetrieval / 1000;
             txtInitTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutInitialization / 1000;
+
+            // Set default values for timeout validation
+            DataTimeoutValid = true;
+            InitTimeoutValid = true;
 
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
@@ -534,7 +543,6 @@ namespace ControlRoomApplication.GUI
                     azimuthAccChart.Series["x"].Points.Clear();
                     azimuthAccChart.Series["y"].Points.Clear();
                     azimuthAccChart.Series["z"].Points.Clear();
-                    azimuthAccChart.Visible = false;
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
@@ -575,7 +583,6 @@ namespace ControlRoomApplication.GUI
                     elevationAccChart.Series["x"].Points.Clear();
                     elevationAccChart.Series["y"].Points.Clear();
                     elevationAccChart.Series["z"].Points.Clear();
-                    elevationAccChart.Visible = false;
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
@@ -615,7 +622,6 @@ namespace ControlRoomApplication.GUI
                     counterBalanceAccChart.Series["x"].Points.Clear();
                     counterBalanceAccChart.Series["y"].Points.Clear();
                     counterBalanceAccChart.Series["z"].Points.Clear();
-                    counterBalanceAccChart.Visible = false;
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
@@ -1333,6 +1339,56 @@ namespace ControlRoomApplication.GUI
                 // reboot
                 rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
             });
+        }
+
+        private void txtDataTimeout_TextChanged(object sender, EventArgs e)
+        {
+            DataTimeoutValid = false;
+
+            if(Validator.IsDouble(txtDataTimeout.Text))
+            {
+                DataTimeoutValid = Validator.IsBetween(double.Parse(txtDataTimeout.Text), 0, null);
+            }
+
+            if(DataTimeoutValid)
+            {
+                txtDataTimeout.BackColor = Color.White;
+                DataTimeoutValidation.Hide(lblDataTimeout);
+
+                // If the other tooltip is not in error, the button may be clicked
+                if (InitTimeoutValid) UpdateSensorInitiliazation.Enabled = true;
+            }
+            else
+            {
+                txtDataTimeout.BackColor = Color.Yellow;
+                DataTimeoutValidation.Show("Must be a positive double value.", lblDataTimeout, 2000);
+                UpdateSensorInitiliazation.Enabled = false;
+            }
+        }
+
+        private void txtInitTimeout_TextChanged(object sender, EventArgs e)
+        {
+            InitTimeoutValid = false;
+
+            if (Validator.IsDouble(txtInitTimeout.Text))
+            {
+                InitTimeoutValid = Validator.IsBetween(double.Parse(txtInitTimeout.Text), 0, null);
+            }
+
+            if (InitTimeoutValid)
+            {
+                txtInitTimeout.BackColor = Color.White;
+                InitTimeoutValidation.Hide(lblInitTimeout);
+
+                // If the other tooltip is not in error, the button may be clicked
+                if (DataTimeoutValid) UpdateSensorInitiliazation.Enabled = true;
+            }
+            else
+            {
+                txtInitTimeout.BackColor = Color.Yellow;
+                InitTimeoutValidation.Show("Must be a positive double value.", lblInitTimeout, 2000);
+                UpdateSensorInitiliazation.Enabled = false;
+            }
         }
     }
 }
