@@ -477,7 +477,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         }
 
         [TestMethod]
-        public void TestInterpretData_WrongTransitId_Fail()
+        public void TestInterpretData_WrongTransitId_StatusTransitIdError()
         {
             byte[] AnyPacket = File.ReadAllBytes($"{TestPacketDirectory}OnlyCbAccl123.snp");
 
