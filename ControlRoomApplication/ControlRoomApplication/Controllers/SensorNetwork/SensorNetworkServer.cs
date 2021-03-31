@@ -246,6 +246,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
             if(Encoding.ASCII.GetString(data, 0, receivedDataSize).Equals("Send Sensor Configuration"))
             { // Reaching here means that we've received a request for sensor initialization
+                Status = SensorNetworkStatusEnum.Initializing;
                 
                 // If the init sending fails, set status to reflect that
                 if (!InitializationClient.SendSensorInitialization())
