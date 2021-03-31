@@ -20,6 +20,7 @@ using System.Linq;
 using ControlRoomApplication.Controllers.SensorNetwork;
 using System.Drawing.Printing;
 using System.Threading.Tasks;
+using ControlRoomApplication.Validation;
 
 namespace ControlRoomApplication.GUI
 {
@@ -83,6 +84,10 @@ namespace ControlRoomApplication.GUI
 
         // Alert Flags
         bool fahrenheit = true;
+
+        // Validation for sensor timeouts
+        bool DataTimeoutValid;
+        bool InitTimeoutValid;
 
         private int rtId;
 
@@ -174,6 +179,12 @@ namespace ControlRoomApplication.GUI
             CounterbalanceAccelerometer.Checked = SensorNetworkConfig.CounterbalanceAccelerometerInit;
             ElevationEncoder.Checked = SensorNetworkConfig.ElevationEncoderInit;
             AzimuthEncoder.Checked = SensorNetworkConfig.AzimuthEncoderInit;
+            txtDataTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutDataRetrieval / 1000;
+            txtInitTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutInitialization / 1000;
+
+            // Set default values for timeout validation
+            DataTimeoutValid = true;
+            InitTimeoutValid = true;
 
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
@@ -616,7 +627,7 @@ namespace ControlRoomApplication.GUI
             ///////////////////////////////////////////////////////////////////////////////
 
             // Update the Sensor Network status
-            lblSNStatus.Text = "Sensor Network Status: " + rtController.RadioTelescope.SensorNetworkServer.Status.ToString();
+            lblSNStatus.Text = "Status:\n" + rtController.RadioTelescope.SensorNetworkServer.Status.ToString();
         }
 
         private void DiagnosticsForm_Load(object sender, System.EventArgs e)
@@ -1318,12 +1329,66 @@ namespace ControlRoomApplication.GUI
                 SensorNetworkConfig.ElevationEncoderInit = ElevationEncoder.Checked;
                 SensorNetworkConfig.AzimuthEncoderInit = AzimuthEncoder.Checked;
 
+                // Update initializations
+                SensorNetworkConfig.TimeoutDataRetrieval = (int)(double.Parse(txtDataTimeout.Text) * 1000);
+                SensorNetworkConfig.TimeoutInitialization = (int)(double.Parse(txtInitTimeout.Text) * 1000);
+
                 // Update the config in the DB
                 DatabaseOperations.UpdateSensorNetworkConfig(SensorNetworkConfig);
             
                 // reboot
                 rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
             });
+        }
+
+        private void txtDataTimeout_TextChanged(object sender, EventArgs e)
+        {
+            DataTimeoutValid = false;
+
+            if(Validator.IsDouble(txtDataTimeout.Text))
+            {
+                DataTimeoutValid = Validator.IsBetween(double.Parse(txtDataTimeout.Text), 0, null);
+            }
+
+            if(DataTimeoutValid)
+            {
+                txtDataTimeout.BackColor = Color.White;
+                DataTimeoutValidation.Hide(lblDataTimeout);
+
+                // If the other tooltip is not in error, the button may be clicked
+                if (InitTimeoutValid) UpdateSensorInitiliazation.Enabled = true;
+            }
+            else
+            {
+                txtDataTimeout.BackColor = Color.Yellow;
+                DataTimeoutValidation.Show("Must be a positive double value.", lblDataTimeout, 2000);
+                UpdateSensorInitiliazation.Enabled = false;
+            }
+        }
+
+        private void txtInitTimeout_TextChanged(object sender, EventArgs e)
+        {
+            InitTimeoutValid = false;
+
+            if (Validator.IsDouble(txtInitTimeout.Text))
+            {
+                InitTimeoutValid = Validator.IsBetween(double.Parse(txtInitTimeout.Text), 0, null);
+            }
+
+            if (InitTimeoutValid)
+            {
+                txtInitTimeout.BackColor = Color.White;
+                InitTimeoutValidation.Hide(lblInitTimeout);
+
+                // If the other tooltip is not in error, the button may be clicked
+                if (DataTimeoutValid) UpdateSensorInitiliazation.Enabled = true;
+            }
+            else
+            {
+                txtInitTimeout.BackColor = Color.Yellow;
+                InitTimeoutValidation.Show("Must be a positive double value.", lblInitTimeout, 2000);
+                UpdateSensorInitiliazation.Enabled = false;
+            }
         }
     }
 }

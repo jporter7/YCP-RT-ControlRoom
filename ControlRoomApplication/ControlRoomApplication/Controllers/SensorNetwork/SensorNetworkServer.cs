@@ -350,8 +350,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     // We should NOT be receiving anything other than TransitIdSuccess.
                     else
                     {
-                        logger.Error($"{Utilities.GetTimeStamp()}: Transit ID error: Expected " +
-                            $"ID {SensorNetworkConstants.TransitIdSuccess}, received ID {receivedTransitId})");
+                        if (Status != SensorNetworkStatusEnum.TransitIdError)
+                        {
+                            logger.Error($"{Utilities.GetTimeStamp()}: Transit ID error: Expected " +
+                                $"ID {SensorNetworkConstants.TransitIdSuccess}, received ID {receivedTransitId})");
+
+                            Status = SensorNetworkStatusEnum.TransitIdError;
+                        }
                     }
                 }
             }

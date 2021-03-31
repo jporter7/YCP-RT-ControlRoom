@@ -183,6 +183,10 @@
             this.btnAzimuthAbsoluteEncoder = new System.Windows.Forms.Button();
             this.AzimuthAbsoluteEncoder_lbl = new System.Windows.Forms.Label();
             this.SensorNetworkSensorInitialization = new System.Windows.Forms.GroupBox();
+            this.lblInitTimeout = new System.Windows.Forms.Label();
+            this.lblDataTimeout = new System.Windows.Forms.Label();
+            this.txtDataTimeout = new System.Windows.Forms.TextBox();
+            this.txtInitTimeout = new System.Windows.Forms.TextBox();
             this.lblSNStatus = new System.Windows.Forms.Label();
             this.UpdateSensorInitiliazation = new System.Windows.Forms.Button();
             this.AzimuthEncoder = new System.Windows.Forms.CheckBox();
@@ -235,6 +239,8 @@
             this.OffsetVoltageVal = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.consoleLogBox = new System.Windows.Forms.TextBox();
+            this.DataTimeoutValidation = new System.Windows.Forms.ToolTip(this.components);
+            this.InitTimeoutValidation = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -1464,7 +1470,7 @@
             this.farTempConvert.Name = "farTempConvert";
             this.farTempConvert.Size = new System.Drawing.Size(130, 23);
             this.farTempConvert.TabIndex = 1;
-            this.farTempConvert.Text = "fahrenheit";
+            this.farTempConvert.Text = "Fahrenheit";
             this.farTempConvert.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.farTempConvert.UseVisualStyleBackColor = false;
             this.farTempConvert.Click += new System.EventHandler(this.farTempConvert_Click);
@@ -1919,6 +1925,10 @@
             // SensorNetworkSensorInitialization
             // 
             this.SensorNetworkSensorInitialization.BackColor = System.Drawing.Color.Gainsboro;
+            this.SensorNetworkSensorInitialization.Controls.Add(this.lblInitTimeout);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.lblDataTimeout);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.txtDataTimeout);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.txtInitTimeout);
             this.SensorNetworkSensorInitialization.Controls.Add(this.lblSNStatus);
             this.SensorNetworkSensorInitialization.Controls.Add(this.UpdateSensorInitiliazation);
             this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthEncoder);
@@ -1938,15 +1948,51 @@
             this.SensorNetworkSensorInitialization.TabStop = false;
             this.SensorNetworkSensorInitialization.Text = "Sensor Network Sensor Initialization";
             // 
+            // lblInitTimeout
+            // 
+            this.lblInitTimeout.AutoSize = true;
+            this.lblInitTimeout.ForeColor = System.Drawing.Color.Black;
+            this.lblInitTimeout.Location = new System.Drawing.Point(69, 237);
+            this.lblInitTimeout.Name = "lblInitTimeout";
+            this.lblInitTimeout.Size = new System.Drawing.Size(154, 13);
+            this.lblInitTimeout.TabIndex = 78;
+            this.lblInitTimeout.Text = "Initialization Timeout (seconds):";
+            // 
+            // lblDataTimeout
+            // 
+            this.lblDataTimeout.AutoSize = true;
+            this.lblDataTimeout.ForeColor = System.Drawing.Color.Black;
+            this.lblDataTimeout.Location = new System.Drawing.Point(55, 217);
+            this.lblDataTimeout.Name = "lblDataTimeout";
+            this.lblDataTimeout.Size = new System.Drawing.Size(168, 13);
+            this.lblDataTimeout.TabIndex = 77;
+            this.lblDataTimeout.Text = "Data Retrieval Timeout (seconds):";
+            // 
+            // txtDataTimeout
+            // 
+            this.txtDataTimeout.Location = new System.Drawing.Point(237, 214);
+            this.txtDataTimeout.Name = "txtDataTimeout";
+            this.txtDataTimeout.Size = new System.Drawing.Size(44, 20);
+            this.txtDataTimeout.TabIndex = 76;
+            this.txtDataTimeout.TextChanged += new System.EventHandler(this.txtDataTimeout_TextChanged);
+            // 
+            // txtInitTimeout
+            // 
+            this.txtInitTimeout.Location = new System.Drawing.Point(237, 235);
+            this.txtInitTimeout.Name = "txtInitTimeout";
+            this.txtInitTimeout.Size = new System.Drawing.Size(44, 20);
+            this.txtInitTimeout.TabIndex = 75;
+            this.txtInitTimeout.TextChanged += new System.EventHandler(this.txtInitTimeout_TextChanged);
+            // 
             // lblSNStatus
             // 
             this.lblSNStatus.AutoSize = true;
             this.lblSNStatus.ForeColor = System.Drawing.Color.Black;
-            this.lblSNStatus.Location = new System.Drawing.Point(9, 233);
+            this.lblSNStatus.Location = new System.Drawing.Point(5, 257);
             this.lblSNStatus.Name = "lblSNStatus";
-            this.lblSNStatus.Size = new System.Drawing.Size(119, 13);
+            this.lblSNStatus.Size = new System.Drawing.Size(40, 13);
             this.lblSNStatus.TabIndex = 10;
-            this.lblSNStatus.Text = "Sensor Network Status:";
+            this.lblSNStatus.Text = "Status:";
             // 
             // UpdateSensorInitiliazation
             // 
@@ -1962,7 +2008,7 @@
             // 
             this.AzimuthEncoder.AutoSize = true;
             this.AzimuthEncoder.ForeColor = System.Drawing.Color.Red;
-            this.AzimuthEncoder.Location = new System.Drawing.Point(5, 44);
+            this.AzimuthEncoder.Location = new System.Drawing.Point(5, 39);
             this.AzimuthEncoder.Name = "AzimuthEncoder";
             this.AzimuthEncoder.Size = new System.Drawing.Size(106, 17);
             this.AzimuthEncoder.TabIndex = 8;
@@ -1983,7 +2029,7 @@
             // CounterbalanceAccelerometer
             // 
             this.CounterbalanceAccelerometer.AutoSize = true;
-            this.CounterbalanceAccelerometer.Location = new System.Drawing.Point(5, 204);
+            this.CounterbalanceAccelerometer.Location = new System.Drawing.Point(5, 164);
             this.CounterbalanceAccelerometer.Name = "CounterbalanceAccelerometer";
             this.CounterbalanceAccelerometer.Size = new System.Drawing.Size(172, 17);
             this.CounterbalanceAccelerometer.TabIndex = 6;
@@ -1993,7 +2039,7 @@
             // ElevationAccelerometer
             // 
             this.ElevationAccelerometer.AutoSize = true;
-            this.ElevationAccelerometer.Location = new System.Drawing.Point(5, 181);
+            this.ElevationAccelerometer.Location = new System.Drawing.Point(5, 146);
             this.ElevationAccelerometer.Name = "ElevationAccelerometer";
             this.ElevationAccelerometer.Size = new System.Drawing.Size(141, 17);
             this.ElevationAccelerometer.TabIndex = 5;
@@ -2003,7 +2049,7 @@
             // AzimuthAccelerometer
             // 
             this.AzimuthAccelerometer.AutoSize = true;
-            this.AzimuthAccelerometer.Location = new System.Drawing.Point(5, 158);
+            this.AzimuthAccelerometer.Location = new System.Drawing.Point(5, 128);
             this.AzimuthAccelerometer.Name = "AzimuthAccelerometer";
             this.AzimuthAccelerometer.Size = new System.Drawing.Size(134, 17);
             this.AzimuthAccelerometer.TabIndex = 4;
@@ -2013,7 +2059,7 @@
             // AzimuthTemperature2
             // 
             this.AzimuthTemperature2.AutoSize = true;
-            this.AzimuthTemperature2.Location = new System.Drawing.Point(5, 135);
+            this.AzimuthTemperature2.Location = new System.Drawing.Point(5, 110);
             this.AzimuthTemperature2.Name = "AzimuthTemperature2";
             this.AzimuthTemperature2.Size = new System.Drawing.Size(135, 17);
             this.AzimuthTemperature2.TabIndex = 3;
@@ -2023,7 +2069,7 @@
             // AzimuthTemperature1
             // 
             this.AzimuthTemperature1.AutoSize = true;
-            this.AzimuthTemperature1.Location = new System.Drawing.Point(5, 112);
+            this.AzimuthTemperature1.Location = new System.Drawing.Point(5, 92);
             this.AzimuthTemperature1.Name = "AzimuthTemperature1";
             this.AzimuthTemperature1.Size = new System.Drawing.Size(135, 17);
             this.AzimuthTemperature1.TabIndex = 2;
@@ -2033,7 +2079,7 @@
             // ElevationTemperature2
             // 
             this.ElevationTemperature2.AutoSize = true;
-            this.ElevationTemperature2.Location = new System.Drawing.Point(5, 89);
+            this.ElevationTemperature2.Location = new System.Drawing.Point(5, 74);
             this.ElevationTemperature2.Name = "ElevationTemperature2";
             this.ElevationTemperature2.Size = new System.Drawing.Size(142, 17);
             this.ElevationTemperature2.TabIndex = 1;
@@ -2043,7 +2089,7 @@
             // ElevationTemperature1
             // 
             this.ElevationTemperature1.AutoSize = true;
-            this.ElevationTemperature1.Location = new System.Drawing.Point(5, 66);
+            this.ElevationTemperature1.Location = new System.Drawing.Point(5, 56);
             this.ElevationTemperature1.Name = "ElevationTemperature1";
             this.ElevationTemperature1.Size = new System.Drawing.Size(142, 17);
             this.ElevationTemperature1.TabIndex = 0;
@@ -2815,5 +2861,11 @@
         private System.Windows.Forms.Label lblCbDisabled;
         private System.Windows.Forms.Label lblElDisabled;
         private System.Windows.Forms.Label lblAzDisabled;
+        private System.Windows.Forms.Label lblInitTimeout;
+        private System.Windows.Forms.Label lblDataTimeout;
+        private System.Windows.Forms.TextBox txtDataTimeout;
+        private System.Windows.Forms.TextBox txtInitTimeout;
+        private System.Windows.Forms.ToolTip DataTimeoutValidation;
+        private System.Windows.Forms.ToolTip InitTimeoutValidation;
     }
 }

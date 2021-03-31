@@ -166,6 +166,47 @@ namespace ControlRoomApplication.ValidationTests {
 
         }
 
+        [TestMethod]
+        public void TestIsDouble_IsDouble_Success()
+        {
+            Assert.IsTrue(Validator.IsDouble("1.5"));
+            Assert.IsTrue(Validator.IsDouble("1"));
+            Assert.IsTrue(Validator.IsDouble("0.0"));
+            Assert.IsTrue(Validator.IsDouble("-1.2"));
+        }
+
+        [TestMethod]
+        public void TestIsDouble_NotDouble_Fail()
+        {
+            Assert.IsFalse(Validator.IsDouble("hello"));
+            Assert.IsFalse(Validator.IsDouble("."));
+            Assert.IsFalse(Validator.IsDouble("32..."));
+            Assert.IsFalse(Validator.IsDouble("25565;"));
+        }
+
+        [TestMethod]
+        public void TestIsBetween_IsBetween_Success()
+        {
+            int upper = 5;
+            int lower = -1;
+
+            Assert.IsTrue(Validator.IsBetween(lower, lower, upper));
+            Assert.IsTrue(Validator.IsBetween(upper, lower, upper));
+            Assert.IsTrue(Validator.IsBetween(lower - 1, null, upper));
+            Assert.IsTrue(Validator.IsBetween(upper + 1, lower, null));
+        }
+
+        [TestMethod]
+        public void TestIsBetween_IsNotBetween_Fail()
+        {
+            int upper = 5;
+            int lower = -1;
+
+            Assert.IsFalse(Validator.IsBetween(lower - 1, lower, upper));
+            Assert.IsFalse(Validator.IsBetween(upper + 1, lower, upper));
+            Assert.IsFalse(Validator.IsBetween(lower - 1, lower, null));
+            Assert.IsFalse(Validator.IsBetween(upper + 1, null, upper));
+        }
     }
 }
 

@@ -62,6 +62,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         Rebooting,
 
         /// <summary>
+        /// This means that the transit ID that was received and we are either not receiving complete packets, or the packets are
+        /// coming through broken.
+        /// </summary>
+        TransitIdError,
+
+        /// <summary>
         /// This should never be reached, but if it is, then some troubleshooting needs to happen. The only way this can be set is
         /// if the timer is elapsed and the status is not ReceivingData or Initializing.
         /// </summary>
