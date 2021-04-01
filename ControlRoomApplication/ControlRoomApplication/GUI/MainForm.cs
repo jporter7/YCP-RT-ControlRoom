@@ -752,13 +752,19 @@ namespace ControlRoomApplication.Main
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("192.168.0.70");
-                comboSensorNetworkBox.SelectedIndex = 0;
+                comboSensorNetworkBox.SelectedIndex = 1;
 
                 // SensorNetwork and Server IP/Ports
-                sensorNetworkServerIPAddress.Text = "192.168.0.10";
-                sensorNetworkServerPort.Text = "1600";
-                sensorNetworkClientIPAddress.Text = "192.168.0.197";
-                sensorNetworkClientPort.Text = "1680";
+
+                this.sensorNetworkServerIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkClientIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
+
+                this.sensorNetworkServerPort.Text = "1600";
+                this.sensorNetworkClientPort.Text = "1680";
+                this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
             }
             this.txtPLCPort.Text = "502";
             this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Production PLC");

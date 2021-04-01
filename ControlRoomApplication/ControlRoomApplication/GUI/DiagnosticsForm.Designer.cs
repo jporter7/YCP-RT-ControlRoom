@@ -208,7 +208,7 @@
             this.label29 = new System.Windows.Forms.Label();
             this.AzMotTempSensOverride = new System.Windows.Forms.Button();
             this.label28 = new System.Windows.Forms.Label();
-            this.GateSensor = new System.Windows.Forms.GroupBox();
+            this.GatesSensors = new System.Windows.Forms.GroupBox();
             this.MGOverride = new System.Windows.Forms.Button();
             this.label27 = new System.Windows.Forms.Label();
             this.Accelerometers = new System.Windows.Forms.GroupBox();
@@ -275,7 +275,7 @@
             this.SensorNetworkSensorInitialization.SuspendLayout();
             this.grpProximitySensors.SuspendLayout();
             this.MotorTemperatureSensors.SuspendLayout();
-            this.GateSensor.SuspendLayout();
+            this.GatesSensors.SuspendLayout();
             this.Accelerometers.SuspendLayout();
             this.WeatherStation.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -1851,7 +1851,7 @@
             this.tabPage3.Controls.Add(this.SensorNetworkSensorInitialization);
             this.tabPage3.Controls.Add(this.grpProximitySensors);
             this.tabPage3.Controls.Add(this.MotorTemperatureSensors);
-            this.tabPage3.Controls.Add(this.GateSensor);
+            this.tabPage3.Controls.Add(this.GatesSensors);
             this.tabPage3.Controls.Add(this.Accelerometers);
             this.tabPage3.Controls.Add(this.WeatherStation);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
@@ -2219,17 +2219,17 @@
             this.label28.TabIndex = 12;
             this.label28.Text = "Azimuth Motor Temperature Sensor";
             // 
-            // GateSensor
+            // GatesSensors
             // 
-            this.GateSensor.BackColor = System.Drawing.Color.Gainsboro;
-            this.GateSensor.Controls.Add(this.MGOverride);
-            this.GateSensor.Controls.Add(this.label27);
-            this.GateSensor.Location = new System.Drawing.Point(3, 86);
-            this.GateSensor.Name = "GateSensor";
-            this.GateSensor.Size = new System.Drawing.Size(338, 69);
-            this.GateSensor.TabIndex = 28;
-            this.GateSensor.TabStop = false;
-            this.GateSensor.Text = "Gate Sensor";
+            this.GatesSensors.BackColor = System.Drawing.Color.Gainsboro;
+            this.GatesSensors.Controls.Add(this.MGOverride);
+            this.GatesSensors.Controls.Add(this.label27);
+            this.GatesSensors.Location = new System.Drawing.Point(3, 86);
+            this.GatesSensors.Name = "GatesSensors";
+            this.GatesSensors.Size = new System.Drawing.Size(338, 69);
+            this.GatesSensors.TabIndex = 28;
+            this.GatesSensors.TabStop = false;
+            this.GatesSensors.Text = "Gates Sensors";
             // 
             // MGOverride
             // 
@@ -2251,9 +2251,9 @@
             this.label27.Location = new System.Drawing.Point(9, 31);
             this.label27.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(114, 13);
+            this.label27.Size = new System.Drawing.Size(120, 13);
             this.label27.TabIndex = 12;
-            this.label27.Text = "Main Gates Sensor";
+            this.label27.Text = "Main Gates Sensors";
             // 
             // Accelerometers
             // 
@@ -2653,8 +2653,8 @@
             this.grpProximitySensors.PerformLayout();
             this.MotorTemperatureSensors.ResumeLayout(false);
             this.MotorTemperatureSensors.PerformLayout();
-            this.GateSensor.ResumeLayout(false);
-            this.GateSensor.PerformLayout();
+            this.GatesSensors.ResumeLayout(false);
+            this.GatesSensors.PerformLayout();
             this.Accelerometers.ResumeLayout(false);
             this.Accelerometers.PerformLayout();
             this.WeatherStation.ResumeLayout(false);
@@ -2762,7 +2762,7 @@
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Button AzMotTempSensOverride;
         private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.GroupBox GateSensor;
+        private System.Windows.Forms.GroupBox GatesSensors;
         private System.Windows.Forms.Button MGOverride;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Button WSOverride;
