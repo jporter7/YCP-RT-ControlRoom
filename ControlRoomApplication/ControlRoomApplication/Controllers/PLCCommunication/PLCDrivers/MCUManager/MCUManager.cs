@@ -19,18 +19,6 @@ namespace ControlRoomApplication.Controllers {
     //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
     // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
     // so the best thing to do would be to split up the AZ and EL components of MCUCommand and then have 2 inststances for running command one for AZ one for EL
-
-    public enum MCUCommandType {
-        JOG,
-        RELATIVE_MOVE,
-        CONFIGURE,
-        CLEAR_LAST_MOVE,
-        HOLD_MOVE,
-        IMMEDIATE_STOP,
-        RESET_ERRORS,
-        HOME
-    }
-
     public class MCUpositonRegs : MCUpositonStore {
         private ModbusIpMaster MCUModbusMaster;
         public MCUpositonRegs( ModbusIpMaster _MCUModbusMaster ):base() {
