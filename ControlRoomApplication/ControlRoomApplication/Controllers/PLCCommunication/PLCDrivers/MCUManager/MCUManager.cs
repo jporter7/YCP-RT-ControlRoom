@@ -19,46 +19,6 @@ namespace ControlRoomApplication.Controllers {
     //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
     // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
     // so the best thing to do would be to split up the AZ and EL components of MCUCommand and then have 2 inststances for running command one for AZ one for EL
-
-
-    public class FixedSizedQueue<T> : ConcurrentQueue<T> {
-        private readonly object syncObject = new object();
-
-        public int Size { get; private set; }
-
-        public FixedSizedQueue( int size ) {
-            Size = size;
-        }
-
-        public new void Enqueue( T obj ) {
-            base.Enqueue( obj );
-            lock(syncObject) {
-                while(base.Count > Size) {
-                    T outObj;
-                    base.TryDequeue( out outObj );
-                }
-            }
-        }
-        public MCUPositonStore GetAbsolutePosChange() {
-            if(typeof(T)==typeof(MCUPositonStore)) {
-                var en = base.GetEnumerator();
-                MCUPositonStore x, y,sum=new MCUPositonStore();
-                try {
-                    en.MoveNext();
-                    x = en.Current as MCUPositonStore;
-                    while(en.MoveNext()) {
-                        y = en.Current as MCUPositonStore;
-                        sum.SUMAbsolute( y , x );
-                        x = y;
-                    }
-                } catch (Exception err){
-                    Console.WriteLine( err );
-                }
-                return sum;
-            }else return new MCUPositonStore();
-        }
-    }
-
     public class MCUManager {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
         /// <summary>
