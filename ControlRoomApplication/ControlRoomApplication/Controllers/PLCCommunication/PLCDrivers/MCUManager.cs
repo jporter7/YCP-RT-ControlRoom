@@ -257,7 +257,7 @@ namespace ControlRoomApplication.Controllers {
         public MCUCommand RunningCommand= new MCUCommand(new ushort[20],MCUCommandType.CLEAR_LAST_MOVE,99) { completed = true };
         private MCUCommand PreviousCommand = new MCUCommand( new ushort[20] , MCUCommandType.CLEAR_LAST_MOVE,99 ) { completed = true };
         private int consecutiveErrors = 0;
-        private int consecutiveSucsefullMoves = 0;
+        private int consecutiveSuccessfulMoves = 0;
         private int MCU_port;
         private string MCU_ip;
         private DateTime lastConnectAttempt = DateTime.Now ;
@@ -870,7 +870,7 @@ namespace ControlRoomApplication.Controllers {
                 positionHistory.Enqueue(new MCUpositonStore(mCUpositon));
                 bool isMoving = Is_Moing( MCUdata );
                 if(Math.Abs( mCUpositon.AZ_Steps ) < 4 && Math.Abs( mCUpositon.EL_Steps ) < 4 && !isMoving) {//if the encoders fave been 0'ed out with some error
-                    consecutiveSucsefullMoves++;
+                    consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
                     ThisMove.completed = true;
                     ThisMove.Dispose();
@@ -884,14 +884,14 @@ namespace ControlRoomApplication.Controllers {
                         bool ELCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
                         bool ELHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
                         if (Math.Abs(mCUpositon.AZ_Steps) > 4 || Math.Abs(mCUpositon.EL_Steps) > 4) {//and the pozition is not 0 then homeing has failed
-                            consecutiveSucsefullMoves = 0;
+                            consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
                             ThisMove.completed = true;
                             ThisMove.Dispose();
                             return false;
                             //throw new Exception("Homing faild to reach 0 properly");
                         } else if (ELHomeErr || AZHomeErr || AZCmdErr || ELCmdErr) {
-                            consecutiveSucsefullMoves = 0;
+                            consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
                             ThisMove.completed = true;
                             ThisMove.Dispose();
@@ -968,10 +968,10 @@ namespace ControlRoomApplication.Controllers {
                 if(elErr || azErr) {//TODO:add more checks to this 
                     ThisMove.completed = true;
                     ThisMove.CommandError = new Exception( "MCU command error bit was set" );
-                    consecutiveSucsefullMoves = 0;
+                    consecutiveSuccessfulMoves = 0;
                     consecutiveErrors++;
                     Send_Generic_Command_And_Track( new MCUCommand( MESSAGE_CONTENTS_RESET_ERRORS , MCUCommandType.RESET_ERRORS,0 ) ).Wait();
-                    PLCEvents.DurringOverrideRemoveSecondary( handle );
+                    PLCEvents.DuringOverrideRemoveSecondary( handle );
                     ThisMove.Dispose();
                     return false;
                 }
@@ -981,10 +981,10 @@ namespace ControlRoomApplication.Controllers {
                 if(azFin && elFin && !isMoving) {
                     //TODO:check that position is correct and there arent any errors
 
-                    consecutiveSucsefullMoves++;
+                    consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
                     ThisMove.completed = true;
-                    PLCEvents.DurringOverrideRemoveSecondary( handle );
+                    PLCEvents.DuringOverrideRemoveSecondary( handle );
                     ThisMove.Dispose();
                     return true;
                 }
@@ -994,15 +994,15 @@ namespace ControlRoomApplication.Controllers {
             if(Is_Moing( data2 )) {
                 ThisMove.completed = true;
                 ThisMove.CommandError = new Exception( "Move did not complete in the expected time" );
-                consecutiveSucsefullMoves = 0;
+                consecutiveSuccessfulMoves = 0;
                 consecutiveErrors++;
             }else if(WasLimitCancled) {
                 ThisMove.completed = true;
                 ThisMove.CommandError = new Exception( "Move ended when a limit switch was hit" );
-                consecutiveSucsefullMoves = 0;
+                consecutiveSuccessfulMoves = 0;
                 consecutiveErrors++;
             }
-            PLCEvents.DurringOverrideRemoveSecondary( handle );
+            PLCEvents.DuringOverrideRemoveSecondary( handle );
             ThisMove.Dispose();
             return true;
         }
