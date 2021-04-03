@@ -19,40 +19,7 @@ namespace ControlRoomApplication.Controllers {
     //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
     // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
     // so the best thing to do would be to split up the AZ and EL components of MCUCommand and then have 2 inststances for running command one for AZ one for EL
-    public class MCUpositonStore {
-        public int AZ_Steps, EL_Steps;
-        public int AZ_Encoder, EL_Encoder;
-        public MCUpositonStore() {
 
-        }
-
-        public MCUpositonStore(MCUPositonRegs mCUpositon) {
-            this.AZ_Encoder = mCUpositon.AZ_Encoder;
-            this.AZ_Steps = mCUpositon.AZ_Steps;
-            this.EL_Encoder = mCUpositon.EL_Encoder;
-            this.EL_Steps = mCUpositon.EL_Steps;
-        }
-        public MCUpositonStore(MCUpositonStore current, MCUpositonStore previous) {
-            this.AZ_Steps = previous.AZ_Steps - current.AZ_Steps;
-            this.EL_Steps = previous.EL_Steps - current.EL_Steps;
-            this.AZ_Encoder = previous.AZ_Encoder - current.AZ_Encoder;
-            this.EL_Encoder = previous.EL_Encoder - current.EL_Encoder;
-        }
-
-        public void SUM(MCUpositonStore current, MCUpositonStore previous) {
-            this.AZ_Steps += current.AZ_Steps - previous.AZ_Steps;
-            this.EL_Steps += current.EL_Steps - previous.EL_Steps;
-            this.AZ_Encoder += current.AZ_Encoder - previous.AZ_Encoder;
-            this.EL_Encoder += current.EL_Encoder - previous.EL_Encoder;
-        }
-
-        public void SUMAbsolute(MCUpositonStore current, MCUpositonStore previous) {
-            this.AZ_Steps += Math.Abs(current.AZ_Steps - previous.AZ_Steps);
-            this.EL_Steps += Math.Abs(current.EL_Steps - previous.EL_Steps);
-            this.AZ_Encoder += Math.Abs(current.AZ_Encoder - previous.AZ_Encoder);
-            this.EL_Encoder += Math.Abs(current.EL_Encoder - previous.EL_Encoder);
-        }
-    }
 
     public class FixedSizedQueue<T> : ConcurrentQueue<T> {
         private readonly object syncObject = new object();
@@ -72,15 +39,15 @@ namespace ControlRoomApplication.Controllers {
                 }
             }
         }
-        public MCUpositonStore GetAbsolutePosChange() {
-            if(typeof(T)==typeof( MCUpositonStore )) {
+        public MCUPositonStore GetAbsolutePosChange() {
+            if(typeof(T)==typeof(MCUPositonStore)) {
                 var en = base.GetEnumerator();
-                MCUpositonStore x, y,sum=new MCUpositonStore();
+                MCUPositonStore x, y,sum=new MCUPositonStore();
                 try {
                     en.MoveNext();
-                    x = en.Current as MCUpositonStore;
+                    x = en.Current as MCUPositonStore;
                     while(en.MoveNext()) {
-                        y = en.Current as MCUpositonStore;
+                        y = en.Current as MCUPositonStore;
                         sum.SUMAbsolute( y , x );
                         x = y;
                     }
@@ -88,7 +55,7 @@ namespace ControlRoomApplication.Controllers {
                     Console.WriteLine( err );
                 }
                 return sum;
-            }else return new MCUpositonStore();
+            }else return new MCUPositonStore();
         }
     }
 
@@ -733,7 +700,7 @@ namespace ControlRoomApplication.Controllers {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
             } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();
-            FixedSizedQueue<MCUpositonStore> positionHistory = new FixedSizedQueue<MCUpositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
+            FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
             Task<ushort[]> datatask;
             ushort[] MCUdata;
             while(!ThisMove.timeout.IsCancellationRequested) {
@@ -744,7 +711,7 @@ namespace ControlRoomApplication.Controllers {
 
 
                 updatePoss.Wait();
-                positionHistory.Enqueue(new MCUpositonStore(mCUpositon));
+                positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
                 bool isMoving = Is_Moing( MCUdata );
                 if(Math.Abs( mCUpositon.AZ_Steps ) < 4 && Math.Abs( mCUpositon.EL_Steps ) < 4 && !isMoving) {//if the encoders fave been 0'ed out with some error
                     consecutiveSuccessfulMoves++;
@@ -811,7 +778,7 @@ namespace ControlRoomApplication.Controllers {
         public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL,int priority ) {
             positionTranslationEL = -positionTranslationEL;
             mCUpositon.update().Wait();
-            var startPos =  mCUpositon as MCUpositonStore;
+            var startPos =  mCUpositon as MCUPositonStore;
             Cancel_move( priority );
             Task.Delay( 50 ).Wait();//wait to ensure it is porcessed
             ushort[] CMDdata = prepairRelativeMoveData( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL );

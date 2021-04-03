@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager
 {
-    public class MCUPositonRegs : MCUpositonStore
+    public class MCUPositonRegs : MCUPositonStore
     {
         private ModbusIpMaster MCUModbusMaster;
 
@@ -27,14 +27,14 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
             return;
         }
 
-        public async Task<MCUpositonStore> updateAndReturnDif(MCUpositonStore previous)
+        public async Task<MCUPositonStore> updateAndReturnDif(MCUPositonStore previous)
         {
             ushort[] data = TryReadRegs(0, 20).GetAwaiter().GetResult();
             AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
             EL_Steps = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW]);
             AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
             EL_Encoder = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
-            MCUpositonStore dif = new MCUpositonStore((this as MCUpositonStore), previous);
+            MCUPositonStore dif = new MCUPositonStore((this as MCUPositonStore), previous);
             return dif;
         }
 
