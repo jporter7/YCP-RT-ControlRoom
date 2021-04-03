@@ -623,11 +623,16 @@ namespace ControlRoomApplication.Controllers
             Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
             Orientation current = read_Position();
 
+            Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
+            Orientation dumpElevation = new Orientation(dump.Azimuth, dump.Elevation);
+
             // move to dump snow
-            Move_to_orientation(dump, current);
+            Move_to_orientation(dumpAzimuth, current);
+            Move_to_orientation(dumpElevation, dumpAzimuth);
+           
 
             // move back to initial orientation
-            return Move_to_orientation(current, read_Position());
+            return Move_to_orientation(current, dump);
         }
 
         private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
