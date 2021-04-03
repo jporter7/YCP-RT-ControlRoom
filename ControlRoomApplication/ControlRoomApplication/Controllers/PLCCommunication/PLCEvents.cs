@@ -89,7 +89,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication {
             }
         }
 
-        public static void DurringOverrideRemoveSecondary( PLCLimitChangedEvent Handl ) {
+        public static void DuringOverrideRemoveSecondary( PLCLimitChangedEvent Handl ) {
             lock(eventLock) {
                 try {
                     LimitEvent -= Handl;
