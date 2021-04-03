@@ -226,6 +226,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUCommand.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUCommandType.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUManager.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUPositionRegs.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />

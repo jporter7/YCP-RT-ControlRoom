@@ -19,36 +19,6 @@ namespace ControlRoomApplication.Controllers {
     //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
     // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
     // so the best thing to do would be to split up the AZ and EL components of MCUCommand and then have 2 inststances for running command one for AZ one for EL
-    public class MCUpositonRegs : MCUpositonStore {
-        private ModbusIpMaster MCUModbusMaster;
-        public MCUpositonRegs( ModbusIpMaster _MCUModbusMaster ):base() {
-            MCUModbusMaster = _MCUModbusMaster;
-        }
-        public async Task update() {
-            ushort[] data = TryReadRegs( 0 , 20 ).GetAwaiter().GetResult();
-            AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
-            EL_Steps = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW]);
-            AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
-            EL_Encoder = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
-            return;
-        }
-        public async Task<MCUpositonStore> updateAndReturnDif( MCUpositonStore previous ) {
-            ushort[] data = TryReadRegs( 0 , 20 ).GetAwaiter().GetResult();
-            AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
-            EL_Steps = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW]);
-            AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
-            EL_Encoder = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
-            MCUpositonStore dif = new MCUpositonStore( (this as MCUpositonStore) , previous);
-            return dif;
-        }
-        private async Task<ushort[]> TryReadRegs( ushort address , ushort Length ) {
-            try {
-                return MCUModbusMaster.ReadHoldingRegistersAsync( address , Length ).GetAwaiter().GetResult();
-            } catch {
-                return new ushort[Length];
-            }
-        }
-    }
     public class MCUpositonStore {
         public int AZ_Steps, EL_Steps;
         public int AZ_Encoder, EL_Encoder;
@@ -56,7 +26,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public MCUpositonStore(MCUpositonRegs mCUpositon) {
+        public MCUpositonStore(MCUPositonRegs mCUpositon) {
             this.AZ_Encoder = mCUpositon.AZ_Encoder;
             this.AZ_Steps = mCUpositon.AZ_Steps;
             this.EL_Encoder = mCUpositon.EL_Encoder;
@@ -155,7 +125,7 @@ namespace ControlRoomApplication.Controllers {
         private bool keep_modbus_server_alive = true;
         public ModbusIpMaster MCUModbusMaster;
         private TcpClient MCUTCPClient;
-        public MCUpositonRegs mCUpositon;
+        public MCUPositonRegs mCUpositon;
         private MCUConfigurationAxys Current_AZConfiguration;
         private MCUConfigurationAxys Current_ELConfiguration;
         /// <summary>
@@ -179,7 +149,7 @@ namespace ControlRoomApplication.Controllers {
                 lastConnectAttempt = DateTime.Now;
                 MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
                 MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
-                mCUpositon = new MCUpositonRegs( MCUModbusMaster );
+                mCUpositon = new MCUPositonRegs( MCUModbusMaster );
                 MCU_Monitor_Thread = new Thread( new ThreadStart( MonitorMCU ) ) { Name = "MCU Monitor Thread" };
                 SoftwareStopThread = new Thread( new ThreadStart( SoftwareStopper ) ) { Name = "softwre stop thread" };
             } catch(Exception e) {
@@ -195,7 +165,7 @@ namespace ControlRoomApplication.Controllers {
                 lastConnectAttempt = DateTime.Now;
                 MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
                 MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
-                mCUpositon = new MCUpositonRegs( MCUModbusMaster );
+                mCUpositon = new MCUPositonRegs( MCUModbusMaster );
             } catch(Exception e) {
                 logger.Error( "[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString() );
                 return;
