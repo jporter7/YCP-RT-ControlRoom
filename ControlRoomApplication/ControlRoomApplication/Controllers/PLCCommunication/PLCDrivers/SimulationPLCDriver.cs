@@ -166,14 +166,14 @@ namespace ControlRoomApplication.Controllers
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
 
-        public override bool Controled_stop()
+        public override bool ControlledStop()
         {
-            return driver.Controled_stop();
+            return driver.ControlledStop();
         }
 
-        public override bool Immediade_stop()
+        public override bool ImmediateStop()
         {
-            return driver.Immediade_stop();
+            return driver.ImmediateStop();
         }
 
         public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)

@@ -240,7 +240,40 @@ namespace ControlRoomApplication.Validation {
             return (hertz >= 0.0);
         }
 
+        /// <summary>
+        /// This is used to determine if a string value can be parsed into a double.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns>True if it is a valid double, false otherwise.</returns>
+        public static bool IsDouble(string text)
+        {
+            try
+            {
+                double.Parse(text);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
+        /// <summary>
+        /// This is used to validate if a value is in between two values. Null can be passed through
+        /// the lower or upper bounds if a lower or upper bound is not necessary.
+        /// </summary>
+        /// <param name="value">The value being assessed.</param>
+        /// <param name="lower">The valid lower bound of the value.</param>
+        /// <param name="upper">The valid upper bound of the value.</param>
+        /// <returns></returns>
+        public static bool IsBetween(double value, double? lower, double? upper)
+        {
+            if (lower != null && value < lower) return false;
+
+            if (upper != null && value > upper) return false;
+
+            return true;
+        }
     }
 
 }

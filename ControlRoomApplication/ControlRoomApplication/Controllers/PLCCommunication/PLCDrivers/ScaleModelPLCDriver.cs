@@ -240,12 +240,12 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override bool Controled_stop() {
+        public override bool ControlledStop() {
             return true;
 
         }
 
-        public override bool Immediade_stop() {
+        public override bool ImmediateStop() {
             return true;
 
         }

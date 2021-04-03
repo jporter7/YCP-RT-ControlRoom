@@ -2,7 +2,7 @@
 {
     public sealed class SimulationConstants
     {
-        public const double STABLE_MOTOR_TEMP = 50; // Measured in farenheit
+        public const double STABLE_MOTOR_TEMP = 50; // Measured in fahrenheit
         public const double OVERHEAT_MOTOR_TEMP = 150;
         public const double MIN_MOTOR_TEMP = 0;
         public const double MAX_MOTOR_TEMP = 200;

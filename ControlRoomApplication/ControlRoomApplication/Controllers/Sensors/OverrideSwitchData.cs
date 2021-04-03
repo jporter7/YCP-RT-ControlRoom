@@ -29,6 +29,13 @@ namespace ControlRoomApplication.Controllers.Sensors
         public bool overrideAzimuthMotTemp { get; set; }
         public bool overrideElevatMotTemp { get; set; }
 
+        public bool overrideAzimuthAbsEncoder { get; set; }
+        public bool overrideElevationAbsEncoder { get; set; }
+        public bool overrideAzimuthAccelerometer { get; set; }
+        public bool overrideElevationAccelerometer { get; set; }
+        public bool overrideCounterbalanceAccelerometer { get; set; }
+
+
         // Parent so we can set PLC values
         private RadioTelescope RadioTelescope { get; }
 
@@ -44,6 +51,13 @@ namespace ControlRoomApplication.Controllers.Sensors
             // Sensor Network
             overrideAzimuthMotTemp = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
             overrideElevatMotTemp = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+
+            overrideAzimuthAbsEncoder = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_ABS_ENCODER);
+            overrideElevationAbsEncoder = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_ABS_ENCODER);
+            overrideAzimuthAccelerometer = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZ_MOTOR_VIBRATION);
+            overrideElevationAccelerometer = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEV_MOTOR_VIBRATION);
+            overrideCounterbalanceAccelerometer = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.COUNTER_BALANCE_VIBRATION);
+
 
             // Azimuth overrides are no longer needed because we are using the slip ring
             overrideAzimuthProx0 = true;
@@ -81,6 +95,36 @@ namespace ControlRoomApplication.Controllers.Sensors
         {
             overrideElevatMotTemp = doOverride;
             DatabaseOperations.SetOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR, doOverride);
+        }
+
+        public void setAzimuthAbsEncoder(bool doOverride)
+        {
+            overrideAzimuthAbsEncoder = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.AZIMUTH_ABS_ENCODER, doOverride);
+        }
+
+        public void setElevationAbsEncoder(bool doOverride)
+        {
+            overrideElevationAbsEncoder = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.ELEVATION_ABS_ENCODER, doOverride);
+        }
+
+        public void setAzimuthAccelerometer(bool doOverride)
+        {
+            overrideAzimuthAccelerometer = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.AZ_MOTOR_VIBRATION, doOverride);
+        }
+
+        public void setElevationAccelerometer(bool doOverride)
+        {
+            overrideElevationAccelerometer = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.ELEV_MOTOR_VIBRATION, doOverride);
+        }
+
+        public void setCounterbalanceAccelerometer(bool doOverride)
+        {
+            overrideCounterbalanceAccelerometer = doOverride;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.COUNTER_BALANCE_VIBRATION, doOverride);
         }
     }
 }

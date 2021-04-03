@@ -129,9 +129,9 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
-        public abstract bool Controled_stop();
+        public abstract bool ControlledStop();
 
-        public abstract bool Immediade_stop();
+        public abstract bool ImmediateStop();
 
         public abstract bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL);
 

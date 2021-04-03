@@ -77,7 +77,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public Orientation GetAbsoluteOrientation()
         {
-            return RadioTelescope.Encoders.GetCurentOrientation();
+            return RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation;
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeControlledStop()
         {
-            return RadioTelescope.PLCDriver.Controled_stop(); // NO MOVE
+            return RadioTelescope.PLCDriver.ControlledStop(); // NO MOVE
         }
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ExecuteRadioTelescopeImmediateStop()
         {
-            return RadioTelescope.PLCDriver.Immediade_stop(); // NO MOVE
+            return RadioTelescope.PLCDriver.ImmediateStop(); // NO MOVE
         }
 
 
@@ -388,6 +388,12 @@ namespace ControlRoomApplication.Controllers
             else if (sensor.Equals("main gate"))                    overrides.setGatesOverride(set);
             else if (sensor.Equals("elevation proximity (1)"))      overrides.setElProx0Override(set);
             else if (sensor.Equals("elevation proximity (2)"))      overrides.setElProx90Override(set);
+            else if (sensor.Equals("azimuth absolute encoder")) overrides.setAzimuthAbsEncoder(set);
+            else if (sensor.Equals("elevation absolute encoder")) overrides.setElevationAbsEncoder(set);
+            else if (sensor.Equals("azimuth motor accelerometer")) overrides.setAzimuthAccelerometer(set);
+            else if (sensor.Equals("elevation motor accelerometer")) overrides.setElevationAccelerometer(set);
+            else if (sensor.Equals("counterbalance accelerometer")) overrides.setCounterbalanceAccelerometer(set);
+
 
             if (set)
             {

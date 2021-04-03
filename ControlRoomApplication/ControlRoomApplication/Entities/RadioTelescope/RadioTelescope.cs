@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using System;
+using ControlRoomApplication.Controllers.SensorNetwork;
 
 namespace ControlRoomApplication.Entities
 {
@@ -101,6 +102,9 @@ namespace ControlRoomApplication.Entities
 
         [NotMapped]
         public AbstractPLCDriver PLCDriver { get; set; }
+
+        [NotMapped]
+        public SensorNetworkServer SensorNetworkServer { get; set; }
 
         [NotMapped]
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
