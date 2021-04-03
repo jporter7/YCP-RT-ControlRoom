@@ -29,10 +29,22 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series13 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series14 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series15 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series16 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series17 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series18 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series19 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series20 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.windSpeedLabel = new System.Windows.Forms.Label();
             this.windDirLabel = new System.Windows.Forms.Label();
@@ -49,20 +61,6 @@
             this.fldElTemp = new System.Windows.Forms.Label();
             this.btnTest = new System.Windows.Forms.Button();
             this.selectDemo = new System.Windows.Forms.CheckBox();
-            this.lblElLimStatus2 = new System.Windows.Forms.Label();
-            this.lblElLimStatus1 = new System.Windows.Forms.Label();
-            this.lblAzLimStatus2 = new System.Windows.Forms.Label();
-            this.lblAzLimStatus1 = new System.Windows.Forms.Label();
-            this.lblElLimit2 = new System.Windows.Forms.Label();
-            this.lblElLimit1 = new System.Windows.Forms.Label();
-            this.lblAzLimit2 = new System.Windows.Forms.Label();
-            this.lblAzLimit1 = new System.Windows.Forms.Label();
-            this.lblELHomeStatus = new System.Windows.Forms.Label();
-            this.lblAzHomeStatus2 = new System.Windows.Forms.Label();
-            this.lblAzHomeStatus1 = new System.Windows.Forms.Label();
-            this.lblElHome = new System.Windows.Forms.Label();
-            this.lblAzHome2 = new System.Windows.Forms.Label();
-            this.lblAzHome1 = new System.Windows.Forms.Label();
             this.lblAbsEncoder = new System.Windows.Forms.Label();
             this.lblEncoderDegrees = new System.Windows.Forms.Label();
             this.lblAzEncoderDegrees = new System.Windows.Forms.Label();
@@ -108,17 +106,54 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.grpAccelerometerSensorData = new System.Windows.Forms.GroupBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label48 = new System.Windows.Forms.Label();
+            this.pnlCounterbalanceAccelerometer = new System.Windows.Forms.Panel();
+            this.lblCbDisabled = new System.Windows.Forms.Label();
+            this.counterBalanceAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.label50 = new System.Windows.Forms.Label();
+            this.label37 = new System.Windows.Forms.Label();
+            this.label49 = new System.Windows.Forms.Label();
+            this.pnlElevationMotorAccelerometer = new System.Windows.Forms.Panel();
+            this.lblElDisabled = new System.Windows.Forms.Label();
+            this.elevationAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.label47 = new System.Windows.Forms.Label();
+            this.label36 = new System.Windows.Forms.Label();
+            this.pnlAzimuthMotorAccelerometer = new System.Windows.Forms.Panel();
+            this.lblAzDisabled = new System.Windows.Forms.Label();
+            this.azimuthAccChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.grpSensorData = new System.Windows.Forms.GroupBox();
+            this.lbGateStat = new System.Windows.Forms.Label();
+            this.lbEstopStat = new System.Windows.Forms.Label();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.lblAzHome1 = new System.Windows.Forms.Label();
+            this.lblElLimStatus2 = new System.Windows.Forms.Label();
+            this.lblElLimStatus1 = new System.Windows.Forms.Label();
+            this.lblElHome = new System.Windows.Forms.Label();
+            this.lblELHomeStatus = new System.Windows.Forms.Label();
+            this.lblAzHomeStatus1 = new System.Windows.Forms.Label();
+            this.lblAzLimit1 = new System.Windows.Forms.Label();
+            this.lblAzLimit2 = new System.Windows.Forms.Label();
+            this.grpMcuStatus = new System.Windows.Forms.GroupBox();
+            this.lblMCUStatus = new System.Windows.Forms.Label();
+            this.lblMCUStatusText = new System.Windows.Forms.Label();
+            this.lblMCUErrors = new System.Windows.Forms.Label();
+            this.btnResetMcuErrors = new System.Windows.Forms.Button();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.farTempConvert = new System.Windows.Forms.Button();
             this.celTempConvert = new System.Windows.Forms.Button();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.grpAbsoluteMotorPositionsTemperatures = new System.Windows.Forms.GroupBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.label32 = new System.Windows.Forms.Label();
             this.label34 = new System.Windows.Forms.Label();
             this.lblCurrentAzOrientation = new System.Windows.Forms.Label();
             this.lblCurrentElOrientation = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
+            this.lblElAbsPos = new System.Windows.Forms.Label();
+            this.lblAzAbsPos = new System.Windows.Forms.Label();
             this.AZTempUnitLabel = new System.Windows.Forms.Label();
             this.ElTempUnitLabel = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -141,30 +176,49 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.lbGateStat = new System.Windows.Forms.Label();
-            this.lbEstopStat = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
-            this.label30 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.Encoders = new System.Windows.Forms.GroupBox();
+            this.ElecationAbsoluteEncoder_lbl = new System.Windows.Forms.Label();
+            this.btnElevationAbsoluteEncoder = new System.Windows.Forms.Button();
+            this.btnAzimuthAbsoluteEncoder = new System.Windows.Forms.Button();
+            this.AzimuthAbsoluteEncoder_lbl = new System.Windows.Forms.Label();
+            this.SensorNetworkSensorInitialization = new System.Windows.Forms.GroupBox();
+            this.lblInitTimeout = new System.Windows.Forms.Label();
+            this.lblDataTimeout = new System.Windows.Forms.Label();
+            this.txtDataTimeout = new System.Windows.Forms.TextBox();
+            this.txtInitTimeout = new System.Windows.Forms.TextBox();
+            this.lblSNStatus = new System.Windows.Forms.Label();
+            this.UpdateSensorInitiliazation = new System.Windows.Forms.Button();
+            this.AzimuthEncoder = new System.Windows.Forms.CheckBox();
+            this.ElevationEncoder = new System.Windows.Forms.CheckBox();
+            this.CounterbalanceAccelerometer = new System.Windows.Forms.CheckBox();
+            this.ElevationAccelerometer = new System.Windows.Forms.CheckBox();
+            this.AzimuthAccelerometer = new System.Windows.Forms.CheckBox();
+            this.AzimuthTemperature2 = new System.Windows.Forms.CheckBox();
+            this.AzimuthTemperature1 = new System.Windows.Forms.CheckBox();
+            this.ElevationTemperature2 = new System.Windows.Forms.CheckBox();
+            this.ElevationTemperature1 = new System.Windows.Forms.CheckBox();
+            this.grpProximitySensors = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.ElivationLimitSwitch0 = new System.Windows.Forms.Button();
+            this.ElevationLimitSwitch90 = new System.Windows.Forms.Button();
+            this.MotorTemperatureSensors = new System.Windows.Forms.GroupBox();
             this.ElMotTempSensOverride = new System.Windows.Forms.Button();
             this.label29 = new System.Windows.Forms.Label();
             this.AzMotTempSensOverride = new System.Windows.Forms.Button();
             this.label28 = new System.Windows.Forms.Label();
-            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.GatesSensors = new System.Windows.Forms.GroupBox();
             this.MGOverride = new System.Windows.Forms.Button();
             this.label27 = new System.Windows.Forms.Label();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.ElevationProximityOveride2 = new System.Windows.Forms.Button();
-            this.ElevationProximityOveride1 = new System.Windows.Forms.Button();
-            this.ORAzimuthSens2 = new System.Windows.Forms.Button();
-            this.ORAzimuthSens1 = new System.Windows.Forms.Button();
+            this.Accelerometers = new System.Windows.Forms.GroupBox();
+            this.btnElevationMotorAccelerometerOverride = new System.Windows.Forms.Button();
+            this.btnCounterbalanceMotorAccelerometerOverride = new System.Windows.Forms.Button();
+            this.btnAzimuthMotorAccelerometerOverride = new System.Windows.Forms.Button();
+            this.label33 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.WeatherStation = new System.Windows.Forms.GroupBox();
             this.WSOverride = new System.Windows.Forms.Button();
             this.label24 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -185,6 +239,8 @@
             this.OffsetVoltageVal = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.consoleLogBox = new System.Windows.Forms.TextBox();
+            this.DataTimeoutValidation = new System.Windows.Forms.ToolTip(this.components);
+            this.InitTimeoutValidation = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -198,19 +254,30 @@
             this.splitContainer2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.grpAccelerometerSensorData.SuspendLayout();
+            this.pnlCounterbalanceAccelerometer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.counterBalanceAccChart)).BeginInit();
+            this.pnlElevationMotorAccelerometer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.elevationAccChart)).BeginInit();
+            this.pnlAzimuthMotorAccelerometer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.azimuthAccChart)).BeginInit();
+            this.grpSensorData.SuspendLayout();
+            this.grpMcuStatus.SuspendLayout();
             this.groupBox14.SuspendLayout();
-            this.groupBox6.SuspendLayout();
+            this.grpAbsoluteMotorPositionsTemperatures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.groupBox13.SuspendLayout();
-            this.groupBox12.SuspendLayout();
-            this.groupBox10.SuspendLayout();
-            this.groupBox11.SuspendLayout();
+            this.Encoders.SuspendLayout();
+            this.SensorNetworkSensorInitialization.SuspendLayout();
+            this.grpProximitySensors.SuspendLayout();
+            this.MotorTemperatureSensors.SuspendLayout();
+            this.GatesSensors.SuspendLayout();
+            this.Accelerometers.SuspendLayout();
+            this.WeatherStation.SuspendLayout();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spectraCyberScanChart)).BeginInit();
             this.tabPage5.SuspendLayout();
@@ -222,14 +289,14 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridView1.Location = new System.Drawing.Point(3, 6);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
@@ -328,25 +395,25 @@
             this.lblAzimuthTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAzimuthTemp.Location = new System.Drawing.Point(10, 9);
             this.lblAzimuthTemp.Name = "lblAzimuthTemp";
-            this.lblAzimuthTemp.Size = new System.Drawing.Size(109, 16);
+            this.lblAzimuthTemp.Size = new System.Drawing.Size(152, 16);
             this.lblAzimuthTemp.TabIndex = 14;
-            this.lblAzimuthTemp.Text = "Azimuth Temp:";
+            this.lblAzimuthTemp.Text = "Azimuth Motor Temp:";
             // 
             // lblElevationTemp
             // 
             this.lblElevationTemp.AutoSize = true;
             this.lblElevationTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElevationTemp.Location = new System.Drawing.Point(11, 31);
+            this.lblElevationTemp.Location = new System.Drawing.Point(11, 26);
             this.lblElevationTemp.Name = "lblElevationTemp";
-            this.lblElevationTemp.Size = new System.Drawing.Size(121, 16);
+            this.lblElevationTemp.Size = new System.Drawing.Size(164, 16);
             this.lblElevationTemp.TabIndex = 15;
-            this.lblElevationTemp.Text = "Elevation Temp:";
+            this.lblElevationTemp.Text = "Elevation Motor Temp:";
             // 
             // fldAzTemp
             // 
             this.fldAzTemp.AutoSize = true;
             this.fldAzTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldAzTemp.Location = new System.Drawing.Point(212, 7);
+            this.fldAzTemp.Location = new System.Drawing.Point(202, 7);
             this.fldAzTemp.Name = "fldAzTemp";
             this.fldAzTemp.Size = new System.Drawing.Size(18, 18);
             this.fldAzTemp.TabIndex = 18;
@@ -356,7 +423,7 @@
             // 
             this.fldElTemp.AutoSize = true;
             this.fldElTemp.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fldElTemp.Location = new System.Drawing.Point(212, 34);
+            this.fldElTemp.Location = new System.Drawing.Point(202, 29);
             this.fldElTemp.Name = "fldElTemp";
             this.fldElTemp.Size = new System.Drawing.Size(18, 18);
             this.fldElTemp.TabIndex = 19;
@@ -384,146 +451,6 @@
             this.selectDemo.Text = "Run Demo";
             this.selectDemo.UseVisualStyleBackColor = true;
             // 
-            // lblElLimStatus2
-            // 
-            this.lblElLimStatus2.AutoSize = true;
-            this.lblElLimStatus2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElLimStatus2.Location = new System.Drawing.Point(223, 293);
-            this.lblElLimStatus2.Name = "lblElLimStatus2";
-            this.lblElLimStatus2.Size = new System.Drawing.Size(56, 15);
-            this.lblElLimStatus2.TabIndex = 17;
-            this.lblElLimStatus2.Text = "Inactive";
-            // 
-            // lblElLimStatus1
-            // 
-            this.lblElLimStatus1.AutoSize = true;
-            this.lblElLimStatus1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElLimStatus1.Location = new System.Drawing.Point(223, 241);
-            this.lblElLimStatus1.Name = "lblElLimStatus1";
-            this.lblElLimStatus1.Size = new System.Drawing.Size(56, 15);
-            this.lblElLimStatus1.TabIndex = 16;
-            this.lblElLimStatus1.Text = "Inactive";
-            // 
-            // lblAzLimStatus2
-            // 
-            this.lblAzLimStatus2.AutoSize = true;
-            this.lblAzLimStatus2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzLimStatus2.Location = new System.Drawing.Point(223, 192);
-            this.lblAzLimStatus2.Name = "lblAzLimStatus2";
-            this.lblAzLimStatus2.Size = new System.Drawing.Size(56, 15);
-            this.lblAzLimStatus2.TabIndex = 15;
-            this.lblAzLimStatus2.Text = "Inactive";
-            // 
-            // lblAzLimStatus1
-            // 
-            this.lblAzLimStatus1.AutoSize = true;
-            this.lblAzLimStatus1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzLimStatus1.Location = new System.Drawing.Point(223, 143);
-            this.lblAzLimStatus1.Name = "lblAzLimStatus1";
-            this.lblAzLimStatus1.Size = new System.Drawing.Size(56, 15);
-            this.lblAzLimStatus1.TabIndex = 14;
-            this.lblAzLimStatus1.Text = "Inactive";
-            // 
-            // lblElLimit2
-            // 
-            this.lblElLimit2.AutoSize = true;
-            this.lblElLimit2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElLimit2.Location = new System.Drawing.Point(9, 293);
-            this.lblElLimit2.Name = "lblElLimit2";
-            this.lblElLimit2.Size = new System.Drawing.Size(160, 15);
-            this.lblElLimit2.TabIndex = 13;
-            this.lblElLimit2.Text = "Elevation Limit Switch 2";
-            // 
-            // lblElLimit1
-            // 
-            this.lblElLimit1.AutoSize = true;
-            this.lblElLimit1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElLimit1.Location = new System.Drawing.Point(9, 241);
-            this.lblElLimit1.Name = "lblElLimit1";
-            this.lblElLimit1.Size = new System.Drawing.Size(160, 15);
-            this.lblElLimit1.TabIndex = 12;
-            this.lblElLimit1.Text = "Elevation Limit Switch 1";
-            // 
-            // lblAzLimit2
-            // 
-            this.lblAzLimit2.AutoSize = true;
-            this.lblAzLimit2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzLimit2.Location = new System.Drawing.Point(9, 192);
-            this.lblAzLimit2.Name = "lblAzLimit2";
-            this.lblAzLimit2.Size = new System.Drawing.Size(152, 15);
-            this.lblAzLimit2.TabIndex = 11;
-            this.lblAzLimit2.Text = "Azimuth Limit Switch 2";
-            // 
-            // lblAzLimit1
-            // 
-            this.lblAzLimit1.AutoSize = true;
-            this.lblAzLimit1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzLimit1.Location = new System.Drawing.Point(9, 143);
-            this.lblAzLimit1.Name = "lblAzLimit1";
-            this.lblAzLimit1.Size = new System.Drawing.Size(152, 15);
-            this.lblAzLimit1.TabIndex = 10;
-            this.lblAzLimit1.Text = "Azimuth Limit Switch 1";
-            // 
-            // lblELHomeStatus
-            // 
-            this.lblELHomeStatus.AutoSize = true;
-            this.lblELHomeStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblELHomeStatus.Location = new System.Drawing.Point(220, 97);
-            this.lblELHomeStatus.Name = "lblELHomeStatus";
-            this.lblELHomeStatus.Size = new System.Drawing.Size(56, 15);
-            this.lblELHomeStatus.TabIndex = 5;
-            this.lblELHomeStatus.Text = "Inactive";
-            // 
-            // lblAzHomeStatus2
-            // 
-            this.lblAzHomeStatus2.AutoSize = true;
-            this.lblAzHomeStatus2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzHomeStatus2.Location = new System.Drawing.Point(220, 57);
-            this.lblAzHomeStatus2.Name = "lblAzHomeStatus2";
-            this.lblAzHomeStatus2.Size = new System.Drawing.Size(56, 15);
-            this.lblAzHomeStatus2.TabIndex = 4;
-            this.lblAzHomeStatus2.Text = "Inactive";
-            // 
-            // lblAzHomeStatus1
-            // 
-            this.lblAzHomeStatus1.AutoSize = true;
-            this.lblAzHomeStatus1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzHomeStatus1.Location = new System.Drawing.Point(220, 16);
-            this.lblAzHomeStatus1.Name = "lblAzHomeStatus1";
-            this.lblAzHomeStatus1.Size = new System.Drawing.Size(56, 15);
-            this.lblAzHomeStatus1.TabIndex = 3;
-            this.lblAzHomeStatus1.Text = "Inactive";
-            // 
-            // lblElHome
-            // 
-            this.lblElHome.AutoSize = true;
-            this.lblElHome.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblElHome.Location = new System.Drawing.Point(6, 97);
-            this.lblElHome.Name = "lblElHome";
-            this.lblElHome.Size = new System.Drawing.Size(157, 15);
-            this.lblElHome.TabIndex = 2;
-            this.lblElHome.Text = "Elevation Home Sensor";
-            // 
-            // lblAzHome2
-            // 
-            this.lblAzHome2.AutoSize = true;
-            this.lblAzHome2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzHome2.Location = new System.Drawing.Point(6, 57);
-            this.lblAzHome2.Name = "lblAzHome2";
-            this.lblAzHome2.Size = new System.Drawing.Size(161, 15);
-            this.lblAzHome2.TabIndex = 1;
-            this.lblAzHome2.Text = "Azimuth Home Sensor 2";
-            // 
-            // lblAzHome1
-            // 
-            this.lblAzHome1.AutoSize = true;
-            this.lblAzHome1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAzHome1.Location = new System.Drawing.Point(6, 16);
-            this.lblAzHome1.Name = "lblAzHome1";
-            this.lblAzHome1.Size = new System.Drawing.Size(154, 15);
-            this.lblAzHome1.TabIndex = 0;
-            this.lblAzHome1.Text = "Azimuth Home Senor 1";
-            // 
             // lblAbsEncoder
             // 
             this.lblAbsEncoder.AutoSize = true;
@@ -546,7 +473,7 @@
             // lblAzEncoderDegrees
             // 
             this.lblAzEncoderDegrees.AutoSize = true;
-            this.lblAzEncoderDegrees.Location = new System.Drawing.Point(77, 29);
+            this.lblAzEncoderDegrees.Location = new System.Drawing.Point(61, 29);
             this.lblAzEncoderDegrees.Name = "lblAzEncoderDegrees";
             this.lblAzEncoderDegrees.Size = new System.Drawing.Size(13, 13);
             this.lblAzEncoderDegrees.TabIndex = 38;
@@ -564,7 +491,7 @@
             // lblAzEncoderTicks
             // 
             this.lblAzEncoderTicks.AutoSize = true;
-            this.lblAzEncoderTicks.Location = new System.Drawing.Point(77, 52);
+            this.lblAzEncoderTicks.Location = new System.Drawing.Point(61, 52);
             this.lblAzEncoderTicks.Name = "lblAzEncoderTicks";
             this.lblAzEncoderTicks.Size = new System.Drawing.Size(13, 13);
             this.lblAzEncoderTicks.TabIndex = 40;
@@ -755,7 +682,7 @@
             // lblElEncoderTicks
             // 
             this.lblElEncoderTicks.AutoSize = true;
-            this.lblElEncoderTicks.Location = new System.Drawing.Point(69, 59);
+            this.lblElEncoderTicks.Location = new System.Drawing.Point(61, 59);
             this.lblElEncoderTicks.Name = "lblElEncoderTicks";
             this.lblElEncoderTicks.Size = new System.Drawing.Size(13, 13);
             this.lblElEncoderTicks.TabIndex = 61;
@@ -773,7 +700,7 @@
             // lblElEncoderDegrees
             // 
             this.lblElEncoderDegrees.AutoSize = true;
-            this.lblElEncoderDegrees.Location = new System.Drawing.Point(68, 36);
+            this.lblElEncoderDegrees.Location = new System.Drawing.Point(60, 36);
             this.lblElEncoderDegrees.Name = "lblElEncoderDegrees";
             this.lblElEncoderDegrees.Size = new System.Drawing.Size(13, 13);
             this.lblElEncoderDegrees.TabIndex = 59;
@@ -865,7 +792,7 @@
             this.tabControl1.Location = new System.Drawing.Point(2, 11);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(653, 437);
+            this.tabControl1.Size = new System.Drawing.Size(653, 531);
             this.tabControl1.TabIndex = 74;
             // 
             // tabPage1
@@ -881,7 +808,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage1.Size = new System.Drawing.Size(645, 411);
+            this.tabPage1.Size = new System.Drawing.Size(645, 505);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Appointment Control";
             // 
@@ -903,7 +830,7 @@
             this.groupBox9.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox9.Controls.Add(this.btnTest);
             this.groupBox9.Controls.Add(this.selectDemo);
-            this.groupBox9.Location = new System.Drawing.Point(416, 339);
+            this.groupBox9.Location = new System.Drawing.Point(416, 388);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(210, 66);
             this.groupBox9.TabIndex = 77;
@@ -936,8 +863,8 @@
             // diagnosticScriptCombo
             // 
             this.diagnosticScriptCombo.BackColor = System.Drawing.Color.DarkGray;
-            this.diagnosticScriptCombo.FormattingEnabled = true;
             this.diagnosticScriptCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.diagnosticScriptCombo.FormattingEnabled = true;
             this.diagnosticScriptCombo.Items.AddRange(new object[] {
             "Select a Script",
             "Hit Azimuth Counter Clockwise Limit Switch",
@@ -946,7 +873,6 @@
             "Hit Elevation Upper Limit Switch",
             "Hit Clockwise",
             "Hit Counter Clockwise Hardstop"});
-            this.diagnosticScriptCombo.SelectedIndex = 0;
             this.diagnosticScriptCombo.Location = new System.Drawing.Point(6, 22);
             this.diagnosticScriptCombo.Name = "diagnosticScriptCombo";
             this.diagnosticScriptCombo.Size = new System.Drawing.Size(180, 21);
@@ -962,7 +888,7 @@
             this.groupBox3.Controls.Add(this.label13);
             this.groupBox3.Controls.Add(this.textBox4);
             this.groupBox3.Controls.Add(this.label18);
-            this.groupBox3.Location = new System.Drawing.Point(416, 197);
+            this.groupBox3.Location = new System.Drawing.Point(416, 246);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(210, 133);
             this.groupBox3.TabIndex = 75;
@@ -973,9 +899,9 @@
             // 
             this.groupBox2.BackColor = System.Drawing.Color.Gainsboro;
             this.groupBox2.Controls.Add(this.splitContainer2);
-            this.groupBox2.Location = new System.Drawing.Point(6, 197);
+            this.groupBox2.Location = new System.Drawing.Point(6, 246);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(393, 210);
+            this.groupBox2.Size = new System.Drawing.Size(393, 208);
             this.groupBox2.TabIndex = 74;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Encoder Simulation";
@@ -1041,16 +967,488 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.Gray;
+            this.tabPage2.Controls.Add(this.grpAccelerometerSensorData);
+            this.tabPage2.Controls.Add(this.grpSensorData);
+            this.tabPage2.Controls.Add(this.grpMcuStatus);
             this.tabPage2.Controls.Add(this.groupBox14);
-            this.tabPage2.Controls.Add(this.groupBox6);
+            this.tabPage2.Controls.Add(this.grpAbsoluteMotorPositionsTemperatures);
             this.tabPage2.Controls.Add(this.groupBox5);
-            this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage2.Size = new System.Drawing.Size(645, 411);
+            this.tabPage2.Size = new System.Drawing.Size(645, 505);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Sensor Data";
+            // 
+            // grpAccelerometerSensorData
+            // 
+            this.grpAccelerometerSensorData.BackColor = System.Drawing.Color.Gainsboro;
+            this.grpAccelerometerSensorData.Controls.Add(this.label45);
+            this.grpAccelerometerSensorData.Controls.Add(this.label38);
+            this.grpAccelerometerSensorData.Controls.Add(this.label46);
+            this.grpAccelerometerSensorData.Controls.Add(this.label48);
+            this.grpAccelerometerSensorData.Controls.Add(this.pnlCounterbalanceAccelerometer);
+            this.grpAccelerometerSensorData.Controls.Add(this.label50);
+            this.grpAccelerometerSensorData.Controls.Add(this.label37);
+            this.grpAccelerometerSensorData.Controls.Add(this.label49);
+            this.grpAccelerometerSensorData.Controls.Add(this.pnlElevationMotorAccelerometer);
+            this.grpAccelerometerSensorData.Controls.Add(this.label47);
+            this.grpAccelerometerSensorData.Controls.Add(this.label36);
+            this.grpAccelerometerSensorData.Controls.Add(this.pnlAzimuthMotorAccelerometer);
+            this.grpAccelerometerSensorData.Location = new System.Drawing.Point(9, 127);
+            this.grpAccelerometerSensorData.Name = "grpAccelerometerSensorData";
+            this.grpAccelerometerSensorData.Size = new System.Drawing.Size(295, 374);
+            this.grpAccelerometerSensorData.TabIndex = 43;
+            this.grpAccelerometerSensorData.TabStop = false;
+            this.grpAccelerometerSensorData.Text = "Accelerometer Sensor Data";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(172, 19);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(14, 13);
+            this.label45.TabIndex = 52;
+            this.label45.Text = "Y";
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(2, 263);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(153, 13);
+            this.label38.TabIndex = 10;
+            this.label38.Text = "Counterbalance Accelerometer";
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.ForeColor = System.Drawing.Color.Blue;
+            this.label46.Location = new System.Drawing.Point(2, 16);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(67, 13);
+            this.label46.TabIndex = 100;
+            this.label46.Text = "__________";
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(265, 19);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(14, 13);
+            this.label48.TabIndex = 51;
+            this.label48.Text = "Z";
+            // 
+            // pnlCounterbalanceAccelerometer
+            // 
+            this.pnlCounterbalanceAccelerometer.Controls.Add(this.lblCbDisabled);
+            this.pnlCounterbalanceAccelerometer.Controls.Add(this.counterBalanceAccChart);
+            this.pnlCounterbalanceAccelerometer.Location = new System.Drawing.Point(0, 279);
+            this.pnlCounterbalanceAccelerometer.Name = "pnlCounterbalanceAccelerometer";
+            this.pnlCounterbalanceAccelerometer.Size = new System.Drawing.Size(295, 96);
+            this.pnlCounterbalanceAccelerometer.TabIndex = 4;
+            // 
+            // lblCbDisabled
+            // 
+            this.lblCbDisabled.AutoSize = true;
+            this.lblCbDisabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCbDisabled.Location = new System.Drawing.Point(17, 41);
+            this.lblCbDisabled.Name = "lblCbDisabled";
+            this.lblCbDisabled.Size = new System.Drawing.Size(75, 18);
+            this.lblCbDisabled.TabIndex = 33;
+            this.lblCbDisabled.Text = "CB Status";
+            this.lblCbDisabled.Visible = false;
+            // 
+            // counterBalanceAccChart
+            // 
+            this.counterBalanceAccChart.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea5.AxisX.IsLabelAutoFit = false;
+            chartArea5.AxisX.LabelStyle.Enabled = false;
+            chartArea5.AxisX.MajorGrid.Enabled = false;
+            chartArea5.AxisY.MajorGrid.Enabled = false;
+            chartArea5.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea5.Name = "ChartArea1";
+            this.counterBalanceAccChart.ChartAreas.Add(chartArea5);
+            this.counterBalanceAccChart.Location = new System.Drawing.Point(-20, 0);
+            this.counterBalanceAccChart.Name = "counterBalanceAccChart";
+            series11.ChartArea = "ChartArea1";
+            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series11.Color = System.Drawing.Color.Blue;
+            series11.Name = "x";
+            series11.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series11.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series12.ChartArea = "ChartArea1";
+            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series12.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series12.Name = "y";
+            series13.ChartArea = "ChartArea1";
+            series13.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series13.Color = System.Drawing.Color.Red;
+            series13.Name = "z";
+            this.counterBalanceAccChart.Series.Add(series11);
+            this.counterBalanceAccChart.Series.Add(series12);
+            this.counterBalanceAccChart.Series.Add(series13);
+            this.counterBalanceAccChart.Size = new System.Drawing.Size(315, 98);
+            this.counterBalanceAccChart.TabIndex = 0;
+            this.counterBalanceAccChart.Text = "chart1";
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.ForeColor = System.Drawing.Color.Red;
+            this.label50.Location = new System.Drawing.Point(192, 16);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(67, 13);
+            this.label50.TabIndex = 48;
+            this.label50.Text = "__________";
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(3, 140);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(152, 13);
+            this.label37.TabIndex = 10;
+            this.label37.Text = "Elevation Motor Accelerometer";
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(75, 19);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(14, 13);
+            this.label49.TabIndex = 50;
+            this.label49.Text = "X";
+            // 
+            // pnlElevationMotorAccelerometer
+            // 
+            this.pnlElevationMotorAccelerometer.Controls.Add(this.lblElDisabled);
+            this.pnlElevationMotorAccelerometer.Controls.Add(this.elevationAccChart);
+            this.pnlElevationMotorAccelerometer.Location = new System.Drawing.Point(-3, 156);
+            this.pnlElevationMotorAccelerometer.Name = "pnlElevationMotorAccelerometer";
+            this.pnlElevationMotorAccelerometer.Size = new System.Drawing.Size(298, 98);
+            this.pnlElevationMotorAccelerometer.TabIndex = 2;
+            // 
+            // lblElDisabled
+            // 
+            this.lblElDisabled.AutoSize = true;
+            this.lblElDisabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblElDisabled.Location = new System.Drawing.Point(20, 43);
+            this.lblElDisabled.Name = "lblElDisabled";
+            this.lblElDisabled.Size = new System.Drawing.Size(72, 18);
+            this.lblElDisabled.TabIndex = 32;
+            this.lblElDisabled.Text = "EL Status";
+            this.lblElDisabled.Visible = false;
+            // 
+            // elevationAccChart
+            // 
+            this.elevationAccChart.BackColor = System.Drawing.Color.Gainsboro;
+            this.elevationAccChart.BorderlineColor = System.Drawing.Color.Gainsboro;
+            this.elevationAccChart.BorderSkin.PageColor = System.Drawing.Color.Gainsboro;
+            chartArea6.AxisX.IsLabelAutoFit = false;
+            chartArea6.AxisX.LabelStyle.Enabled = false;
+            chartArea6.AxisX.MajorGrid.Enabled = false;
+            chartArea6.AxisY.IsLabelAutoFit = false;
+            chartArea6.AxisY.MajorGrid.Enabled = false;
+            chartArea6.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea6.Name = "ChartArea1";
+            this.elevationAccChart.ChartAreas.Add(chartArea6);
+            this.elevationAccChart.Location = new System.Drawing.Point(-10, 0);
+            this.elevationAccChart.Name = "elevationAccChart";
+            series14.ChartArea = "ChartArea1";
+            series14.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series14.Color = System.Drawing.Color.Blue;
+            series14.Name = "x";
+            series14.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series14.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series15.ChartArea = "ChartArea1";
+            series15.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series15.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series15.Name = "y";
+            series16.ChartArea = "ChartArea1";
+            series16.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series16.Color = System.Drawing.Color.Red;
+            series16.Name = "z";
+            this.elevationAccChart.Series.Add(series14);
+            this.elevationAccChart.Series.Add(series15);
+            this.elevationAccChart.Series.Add(series16);
+            this.elevationAccChart.Size = new System.Drawing.Size(308, 101);
+            this.elevationAccChart.TabIndex = 0;
+            this.elevationAccChart.Text = "elevationAccChart";
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.ForeColor = System.Drawing.Color.Green;
+            this.label47.Location = new System.Drawing.Point(99, 16);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(67, 13);
+            this.label47.TabIndex = 49;
+            this.label47.Text = "__________";
+            // 
+            // label36
+            // 
+            this.label36.AutoSize = true;
+            this.label36.Location = new System.Drawing.Point(3, 34);
+            this.label36.Name = "label36";
+            this.label36.Size = new System.Drawing.Size(145, 13);
+            this.label36.TabIndex = 10;
+            this.label36.Text = "Azimuth Motor Accelerometer";
+            // 
+            // pnlAzimuthMotorAccelerometer
+            // 
+            this.pnlAzimuthMotorAccelerometer.Controls.Add(this.lblAzDisabled);
+            this.pnlAzimuthMotorAccelerometer.Controls.Add(this.azimuthAccChart);
+            this.pnlAzimuthMotorAccelerometer.Location = new System.Drawing.Point(-4, 50);
+            this.pnlAzimuthMotorAccelerometer.Name = "pnlAzimuthMotorAccelerometer";
+            this.pnlAzimuthMotorAccelerometer.Size = new System.Drawing.Size(299, 86);
+            this.pnlAzimuthMotorAccelerometer.TabIndex = 0;
+            // 
+            // lblAzDisabled
+            // 
+            this.lblAzDisabled.AutoSize = true;
+            this.lblAzDisabled.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAzDisabled.Location = new System.Drawing.Point(21, 35);
+            this.lblAzDisabled.Name = "lblAzDisabled";
+            this.lblAzDisabled.Size = new System.Drawing.Size(72, 18);
+            this.lblAzDisabled.TabIndex = 31;
+            this.lblAzDisabled.Text = "AZ Status";
+            this.lblAzDisabled.Visible = false;
+            // 
+            // azimuthAccChart
+            // 
+            this.azimuthAccChart.BackColor = System.Drawing.Color.Gainsboro;
+            this.azimuthAccChart.BorderlineColor = System.Drawing.Color.Gainsboro;
+            chartArea7.AxisX.IsLabelAutoFit = false;
+            chartArea7.AxisX.LabelStyle.Enabled = false;
+            chartArea7.AxisX.MajorGrid.Enabled = false;
+            chartArea7.AxisY.IsLabelAutoFit = false;
+            chartArea7.AxisY.MajorGrid.Enabled = false;
+            chartArea7.BackColor = System.Drawing.Color.Gainsboro;
+            chartArea7.Name = "ChartArea1";
+            this.azimuthAccChart.ChartAreas.Add(chartArea7);
+            this.azimuthAccChart.Location = new System.Drawing.Point(-9, 0);
+            this.azimuthAccChart.Name = "azimuthAccChart";
+            series17.ChartArea = "ChartArea1";
+            series17.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series17.Color = System.Drawing.Color.Blue;
+            series17.Name = "x";
+            series17.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series17.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            series18.ChartArea = "ChartArea1";
+            series18.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series18.Color = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            series18.Name = "y";
+            series19.ChartArea = "ChartArea1";
+            series19.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series19.Color = System.Drawing.Color.Red;
+            series19.Name = "z";
+            this.azimuthAccChart.Series.Add(series17);
+            this.azimuthAccChart.Series.Add(series18);
+            this.azimuthAccChart.Series.Add(series19);
+            this.azimuthAccChart.Size = new System.Drawing.Size(308, 86);
+            this.azimuthAccChart.TabIndex = 0;
+            this.azimuthAccChart.Text = "chart1";
+            // 
+            // grpSensorData
+            // 
+            this.grpSensorData.BackColor = System.Drawing.Color.Gainsboro;
+            this.grpSensorData.Controls.Add(this.lbGateStat);
+            this.grpSensorData.Controls.Add(this.lbEstopStat);
+            this.grpSensorData.Controls.Add(this.label31);
+            this.grpSensorData.Controls.Add(this.label30);
+            this.grpSensorData.Controls.Add(this.lblAzHome1);
+            this.grpSensorData.Controls.Add(this.lblElLimStatus2);
+            this.grpSensorData.Controls.Add(this.lblElLimStatus1);
+            this.grpSensorData.Controls.Add(this.lblElHome);
+            this.grpSensorData.Controls.Add(this.lblELHomeStatus);
+            this.grpSensorData.Controls.Add(this.lblAzHomeStatus1);
+            this.grpSensorData.Controls.Add(this.lblAzLimit1);
+            this.grpSensorData.Controls.Add(this.lblAzLimit2);
+            this.grpSensorData.Location = new System.Drawing.Point(9, 4);
+            this.grpSensorData.Name = "grpSensorData";
+            this.grpSensorData.Size = new System.Drawing.Size(295, 117);
+            this.grpSensorData.TabIndex = 42;
+            this.grpSensorData.TabStop = false;
+            this.grpSensorData.Text = "Sensor Data";
+            // 
+            // lbGateStat
+            // 
+            this.lbGateStat.AutoSize = true;
+            this.lbGateStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbGateStat.Location = new System.Drawing.Point(220, 93);
+            this.lbGateStat.Name = "lbGateStat";
+            this.lbGateStat.Size = new System.Drawing.Size(56, 15);
+            this.lbGateStat.TabIndex = 21;
+            this.lbGateStat.Text = "Inactive";
+            // 
+            // lbEstopStat
+            // 
+            this.lbEstopStat.AutoSize = true;
+            this.lbEstopStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbEstopStat.Location = new System.Drawing.Point(220, 78);
+            this.lbEstopStat.Name = "lbEstopStat";
+            this.lbEstopStat.Size = new System.Drawing.Size(56, 15);
+            this.lbEstopStat.TabIndex = 20;
+            this.lbEstopStat.Text = "Inactive";
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label31.Location = new System.Drawing.Point(6, 93);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(44, 15);
+            this.label31.TabIndex = 19;
+            this.label31.Text = "Gates";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label30.Location = new System.Drawing.Point(6, 78);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(43, 15);
+            this.label30.TabIndex = 18;
+            this.label30.Text = "Estop";
+            // 
+            // lblAzHome1
+            // 
+            this.lblAzHome1.AutoSize = true;
+            this.lblAzHome1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAzHome1.Location = new System.Drawing.Point(6, 16);
+            this.lblAzHome1.Name = "lblAzHome1";
+            this.lblAzHome1.Size = new System.Drawing.Size(149, 15);
+            this.lblAzHome1.TabIndex = 0;
+            this.lblAzHome1.Text = "Azimuth Home Sensor";
+            // 
+            // lblElLimStatus2
+            // 
+            this.lblElLimStatus2.AutoSize = true;
+            this.lblElLimStatus2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblElLimStatus2.Location = new System.Drawing.Point(220, 63);
+            this.lblElLimStatus2.Name = "lblElLimStatus2";
+            this.lblElLimStatus2.Size = new System.Drawing.Size(56, 15);
+            this.lblElLimStatus2.TabIndex = 15;
+            this.lblElLimStatus2.Text = "Inactive";
+            // 
+            // lblElLimStatus1
+            // 
+            this.lblElLimStatus1.AutoSize = true;
+            this.lblElLimStatus1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblElLimStatus1.Location = new System.Drawing.Point(220, 48);
+            this.lblElLimStatus1.Name = "lblElLimStatus1";
+            this.lblElLimStatus1.Size = new System.Drawing.Size(56, 15);
+            this.lblElLimStatus1.TabIndex = 14;
+            this.lblElLimStatus1.Text = "Inactive";
+            // 
+            // lblElHome
+            // 
+            this.lblElHome.AutoSize = true;
+            this.lblElHome.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblElHome.Location = new System.Drawing.Point(6, 31);
+            this.lblElHome.Name = "lblElHome";
+            this.lblElHome.Size = new System.Drawing.Size(157, 15);
+            this.lblElHome.TabIndex = 2;
+            this.lblElHome.Text = "Elevation Home Sensor";
+            // 
+            // lblELHomeStatus
+            // 
+            this.lblELHomeStatus.AutoSize = true;
+            this.lblELHomeStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblELHomeStatus.Location = new System.Drawing.Point(220, 31);
+            this.lblELHomeStatus.Name = "lblELHomeStatus";
+            this.lblELHomeStatus.Size = new System.Drawing.Size(56, 15);
+            this.lblELHomeStatus.TabIndex = 5;
+            this.lblELHomeStatus.Text = "Inactive";
+            // 
+            // lblAzHomeStatus1
+            // 
+            this.lblAzHomeStatus1.AutoSize = true;
+            this.lblAzHomeStatus1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAzHomeStatus1.Location = new System.Drawing.Point(220, 16);
+            this.lblAzHomeStatus1.Name = "lblAzHomeStatus1";
+            this.lblAzHomeStatus1.Size = new System.Drawing.Size(56, 15);
+            this.lblAzHomeStatus1.TabIndex = 3;
+            this.lblAzHomeStatus1.Text = "Inactive";
+            // 
+            // lblAzLimit1
+            // 
+            this.lblAzLimit1.AutoSize = true;
+            this.lblAzLimit1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAzLimit1.Location = new System.Drawing.Point(6, 48);
+            this.lblAzLimit1.Name = "lblAzLimit1";
+            this.lblAzLimit1.Size = new System.Drawing.Size(160, 15);
+            this.lblAzLimit1.TabIndex = 10;
+            this.lblAzLimit1.Text = "Elevation Limit Switch 1";
+            // 
+            // lblAzLimit2
+            // 
+            this.lblAzLimit2.AutoSize = true;
+            this.lblAzLimit2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAzLimit2.Location = new System.Drawing.Point(6, 63);
+            this.lblAzLimit2.Name = "lblAzLimit2";
+            this.lblAzLimit2.Size = new System.Drawing.Size(160, 15);
+            this.lblAzLimit2.TabIndex = 11;
+            this.lblAzLimit2.Text = "Elevation Limit Switch 2";
+            // 
+            // grpMcuStatus
+            // 
+            this.grpMcuStatus.BackColor = System.Drawing.Color.Gainsboro;
+            this.grpMcuStatus.Controls.Add(this.lblMCUStatus);
+            this.grpMcuStatus.Controls.Add(this.lblMCUStatusText);
+            this.grpMcuStatus.Controls.Add(this.lblMCUErrors);
+            this.grpMcuStatus.Controls.Add(this.btnResetMcuErrors);
+            this.grpMcuStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.grpMcuStatus.Location = new System.Drawing.Point(314, 394);
+            this.grpMcuStatus.Margin = new System.Windows.Forms.Padding(2);
+            this.grpMcuStatus.Name = "grpMcuStatus";
+            this.grpMcuStatus.Padding = new System.Windows.Forms.Padding(2);
+            this.grpMcuStatus.Size = new System.Drawing.Size(324, 106);
+            this.grpMcuStatus.TabIndex = 38;
+            this.grpMcuStatus.TabStop = false;
+            this.grpMcuStatus.Text = "Motor Controller Status";
+            // 
+            // lblMCUStatus
+            // 
+            this.lblMCUStatus.AutoSize = true;
+            this.lblMCUStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMCUStatus.ForeColor = System.Drawing.Color.Black;
+            this.lblMCUStatus.Location = new System.Drawing.Point(95, 81);
+            this.lblMCUStatus.Name = "lblMCUStatus";
+            this.lblMCUStatus.Size = new System.Drawing.Size(34, 16);
+            this.lblMCUStatus.TabIndex = 76;
+            this.lblMCUStatus.Text = "N/A";
+            // 
+            // lblMCUStatusText
+            // 
+            this.lblMCUStatusText.AutoSize = true;
+            this.lblMCUStatusText.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMCUStatusText.Location = new System.Drawing.Point(6, 81);
+            this.lblMCUStatusText.Name = "lblMCUStatusText";
+            this.lblMCUStatusText.Size = new System.Drawing.Size(92, 16);
+            this.lblMCUStatusText.TabIndex = 33;
+            this.lblMCUStatusText.Text = "MCU Status:";
+            // 
+            // lblMCUErrors
+            // 
+            this.lblMCUErrors.AutoSize = true;
+            this.lblMCUErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMCUErrors.Location = new System.Drawing.Point(17, 24);
+            this.lblMCUErrors.Name = "lblMCUErrors";
+            this.lblMCUErrors.Size = new System.Drawing.Size(0, 13);
+            this.lblMCUErrors.TabIndex = 75;
+            // 
+            // btnResetMcuErrors
+            // 
+            this.btnResetMcuErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnResetMcuErrors.Location = new System.Drawing.Point(210, 78);
+            this.btnResetMcuErrors.Name = "btnResetMcuErrors";
+            this.btnResetMcuErrors.Size = new System.Drawing.Size(110, 23);
+            this.btnResetMcuErrors.TabIndex = 0;
+            this.btnResetMcuErrors.Text = "Reset MCU Errors";
+            this.btnResetMcuErrors.UseVisualStyleBackColor = true;
+            this.btnResetMcuErrors.Click += new System.EventHandler(this.btnResetMcuErrors_Click);
             // 
             // groupBox14
             // 
@@ -1072,7 +1470,7 @@
             this.farTempConvert.Name = "farTempConvert";
             this.farTempConvert.Size = new System.Drawing.Size(130, 23);
             this.farTempConvert.TabIndex = 1;
-            this.farTempConvert.Text = "Farenheit";
+            this.farTempConvert.Text = "Fahrenheit";
             this.farTempConvert.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.farTempConvert.UseVisualStyleBackColor = false;
             this.farTempConvert.Click += new System.EventHandler(this.farTempConvert_Click);
@@ -1089,18 +1487,18 @@
             this.celTempConvert.UseVisualStyleBackColor = false;
             this.celTempConvert.Click += new System.EventHandler(this.celTempConvert_Click);
             // 
-            // groupBox6
+            // grpAbsoluteMotorPositionsTemperatures
             // 
-            this.groupBox6.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox6.Controls.Add(this.splitContainer1);
-            this.groupBox6.Location = new System.Drawing.Point(314, 267);
-            this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox6.Size = new System.Drawing.Size(324, 140);
-            this.groupBox6.TabIndex = 38;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Motor Sensor Data";
+            this.grpAbsoluteMotorPositionsTemperatures.BackColor = System.Drawing.Color.Gainsboro;
+            this.grpAbsoluteMotorPositionsTemperatures.Controls.Add(this.splitContainer1);
+            this.grpAbsoluteMotorPositionsTemperatures.Location = new System.Drawing.Point(314, 267);
+            this.grpAbsoluteMotorPositionsTemperatures.Margin = new System.Windows.Forms.Padding(2);
+            this.grpAbsoluteMotorPositionsTemperatures.Name = "grpAbsoluteMotorPositionsTemperatures";
+            this.grpAbsoluteMotorPositionsTemperatures.Padding = new System.Windows.Forms.Padding(2);
+            this.grpAbsoluteMotorPositionsTemperatures.Size = new System.Drawing.Size(324, 123);
+            this.grpAbsoluteMotorPositionsTemperatures.TabIndex = 38;
+            this.grpAbsoluteMotorPositionsTemperatures.TabStop = false;
+            this.grpAbsoluteMotorPositionsTemperatures.Text = "Absolute Motor Positions and Temperatures";
             // 
             // splitContainer1
             // 
@@ -1115,8 +1513,8 @@
             this.splitContainer1.Panel1.Controls.Add(this.label34);
             this.splitContainer1.Panel1.Controls.Add(this.lblCurrentAzOrientation);
             this.splitContainer1.Panel1.Controls.Add(this.lblCurrentElOrientation);
-            this.splitContainer1.Panel1.Controls.Add(this.label25);
-            this.splitContainer1.Panel1.Controls.Add(this.label26);
+            this.splitContainer1.Panel1.Controls.Add(this.lblElAbsPos);
+            this.splitContainer1.Panel1.Controls.Add(this.lblAzAbsPos);
             // 
             // splitContainer1.Panel2
             // 
@@ -1127,14 +1525,14 @@
             this.splitContainer1.Panel2.Controls.Add(this.fldAzTemp);
             this.splitContainer1.Panel2.Controls.Add(this.lblElevationTemp);
             this.splitContainer1.Size = new System.Drawing.Size(333, 123);
-            this.splitContainer1.SplitterDistance = 54;
+            this.splitContainer1.SplitterDistance = 48;
             this.splitContainer1.TabIndex = 20;
             // 
             // label32
             // 
             this.label32.AutoSize = true;
             this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.Location = new System.Drawing.Point(262, 32);
+            this.label32.Location = new System.Drawing.Point(257, 27);
             this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(47, 13);
@@ -1145,7 +1543,7 @@
             // 
             this.label34.AutoSize = true;
             this.label34.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label34.Location = new System.Drawing.Point(262, 10);
+            this.label34.Location = new System.Drawing.Point(257, 10);
             this.label34.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(47, 13);
@@ -1159,62 +1557,62 @@
             this.lblCurrentAzOrientation.Location = new System.Drawing.Point(10, 7);
             this.lblCurrentAzOrientation.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCurrentAzOrientation.Name = "lblCurrentAzOrientation";
-            this.lblCurrentAzOrientation.Size = new System.Drawing.Size(122, 16);
+            this.lblCurrentAzOrientation.Size = new System.Drawing.Size(129, 16);
             this.lblCurrentAzOrientation.TabIndex = 7;
-            this.lblCurrentAzOrientation.Text = "Current Azimuth: ";
+            this.lblCurrentAzOrientation.Text = "Azimuth Position: ";
             // 
             // lblCurrentElOrientation
             // 
             this.lblCurrentElOrientation.AutoSize = true;
             this.lblCurrentElOrientation.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCurrentElOrientation.Location = new System.Drawing.Point(9, 30);
+            this.lblCurrentElOrientation.Location = new System.Drawing.Point(9, 25);
             this.lblCurrentElOrientation.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblCurrentElOrientation.Name = "lblCurrentElOrientation";
-            this.lblCurrentElOrientation.Size = new System.Drawing.Size(134, 16);
+            this.lblCurrentElOrientation.Size = new System.Drawing.Size(141, 16);
             this.lblCurrentElOrientation.TabIndex = 8;
-            this.lblCurrentElOrientation.Text = "Current Elevation: ";
+            this.lblCurrentElOrientation.Text = "Elevation Position: ";
             // 
-            // label25
+            // lblElAbsPos
             // 
-            this.label25.AutoSize = true;
-            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(208, 32);
-            this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(28, 18);
-            this.label25.TabIndex = 10;
-            this.label25.Text = "0.0";
+            this.lblElAbsPos.AutoSize = true;
+            this.lblElAbsPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblElAbsPos.Location = new System.Drawing.Point(198, 27);
+            this.lblElAbsPos.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblElAbsPos.Name = "lblElAbsPos";
+            this.lblElAbsPos.Size = new System.Drawing.Size(28, 18);
+            this.lblElAbsPos.TabIndex = 10;
+            this.lblElAbsPos.Text = "0.0";
             // 
-            // label26
+            // lblAzAbsPos
             // 
-            this.label26.AutoSize = true;
-            this.label26.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label26.Location = new System.Drawing.Point(208, 6);
-            this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(28, 18);
-            this.label26.TabIndex = 9;
-            this.label26.Text = "0.0";
+            this.lblAzAbsPos.AutoSize = true;
+            this.lblAzAbsPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAzAbsPos.Location = new System.Drawing.Point(198, 6);
+            this.lblAzAbsPos.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblAzAbsPos.Name = "lblAzAbsPos";
+            this.lblAzAbsPos.Size = new System.Drawing.Size(28, 18);
+            this.lblAzAbsPos.TabIndex = 9;
+            this.lblAzAbsPos.Text = "0.0";
             // 
             // AZTempUnitLabel
             // 
             this.AZTempUnitLabel.AutoSize = true;
             this.AZTempUnitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.AZTempUnitLabel.Location = new System.Drawing.Point(262, 12);
+            this.AZTempUnitLabel.Location = new System.Drawing.Point(257, 12);
             this.AZTempUnitLabel.Name = "AZTempUnitLabel";
-            this.AZTempUnitLabel.Size = new System.Drawing.Size(51, 13);
+            this.AZTempUnitLabel.Size = new System.Drawing.Size(57, 13);
             this.AZTempUnitLabel.TabIndex = 32;
-            this.AZTempUnitLabel.Text = "Farenheit";
+            this.AZTempUnitLabel.Text = "Fahrenheit";
             // 
             // ElTempUnitLabel
             // 
             this.ElTempUnitLabel.AutoSize = true;
             this.ElTempUnitLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ElTempUnitLabel.Location = new System.Drawing.Point(262, 34);
+            this.ElTempUnitLabel.Location = new System.Drawing.Point(257, 33);
             this.ElTempUnitLabel.Name = "ElTempUnitLabel";
-            this.ElTempUnitLabel.Size = new System.Drawing.Size(51, 13);
+            this.ElTempUnitLabel.Size = new System.Drawing.Size(57, 13);
             this.ElTempUnitLabel.TabIndex = 31;
-            this.ElTempUnitLabel.Text = "Farenheit";
+            this.ElTempUnitLabel.Text = "Fahrenheit";
             // 
             // groupBox5
             // 
@@ -1255,9 +1653,9 @@
             this.InsideTempUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.InsideTempUnits.Location = new System.Drawing.Point(257, 117);
             this.InsideTempUnits.Name = "InsideTempUnits";
-            this.InsideTempUnits.Size = new System.Drawing.Size(51, 13);
+            this.InsideTempUnits.Size = new System.Drawing.Size(57, 13);
             this.InsideTempUnits.TabIndex = 30;
-            this.InsideTempUnits.Text = "Farenheit";
+            this.InsideTempUnits.Text = "Fahrenheit";
             // 
             // rainRateUnits
             // 
@@ -1297,9 +1695,9 @@
             this.outTempUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.outTempUnits.Location = new System.Drawing.Point(257, 139);
             this.outTempUnits.Name = "outTempUnits";
-            this.outTempUnits.Size = new System.Drawing.Size(51, 13);
+            this.outTempUnits.Size = new System.Drawing.Size(57, 13);
             this.outTempUnits.TabIndex = 28;
-            this.outTempUnits.Text = "Farenheit";
+            this.outTempUnits.Text = "Fahrenheit";
             // 
             // label35
             // 
@@ -1446,107 +1844,338 @@
             this.label11.TabIndex = 15;
             this.label11.Text = "Wind Direction:";
             // 
-            // groupBox4
-            // 
-            this.groupBox4.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox4.Controls.Add(this.lbGateStat);
-            this.groupBox4.Controls.Add(this.lbEstopStat);
-            this.groupBox4.Controls.Add(this.label31);
-            this.groupBox4.Controls.Add(this.label30);
-            this.groupBox4.Controls.Add(this.lblElLimStatus2);
-            this.groupBox4.Controls.Add(this.lblElLimStatus1);
-            this.groupBox4.Controls.Add(this.lblAzHome1);
-            this.groupBox4.Controls.Add(this.lblAzLimStatus2);
-            this.groupBox4.Controls.Add(this.lblAzHome2);
-            this.groupBox4.Controls.Add(this.lblAzLimStatus1);
-            this.groupBox4.Controls.Add(this.lblElHome);
-            this.groupBox4.Controls.Add(this.lblElLimit2);
-            this.groupBox4.Controls.Add(this.lblELHomeStatus);
-            this.groupBox4.Controls.Add(this.lblAzHomeStatus2);
-            this.groupBox4.Controls.Add(this.lblElLimit1);
-            this.groupBox4.Controls.Add(this.lblAzHomeStatus1);
-            this.groupBox4.Controls.Add(this.lblAzLimit1);
-            this.groupBox4.Controls.Add(this.lblAzLimit2);
-            this.groupBox4.Location = new System.Drawing.Point(6, 3);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(295, 405);
-            this.groupBox4.TabIndex = 36;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Sensor Data";
-            // 
-            // lbGateStat
-            // 
-            this.lbGateStat.AutoSize = true;
-            this.lbGateStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbGateStat.Location = new System.Drawing.Point(223, 363);
-            this.lbGateStat.Name = "lbGateStat";
-            this.lbGateStat.Size = new System.Drawing.Size(56, 15);
-            this.lbGateStat.TabIndex = 21;
-            this.lbGateStat.Text = "Inactive";
-            // 
-            // lbEstopStat
-            // 
-            this.lbEstopStat.AutoSize = true;
-            this.lbEstopStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbEstopStat.Location = new System.Drawing.Point(223, 333);
-            this.lbEstopStat.Name = "lbEstopStat";
-            this.lbEstopStat.Size = new System.Drawing.Size(56, 15);
-            this.lbEstopStat.TabIndex = 20;
-            this.lbEstopStat.Text = "Inactive";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label31.Location = new System.Drawing.Point(9, 363);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(37, 15);
-            this.label31.TabIndex = 19;
-            this.label31.Text = "Gate";
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label30.Location = new System.Drawing.Point(9, 333);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(43, 15);
-            this.label30.TabIndex = 18;
-            this.label30.Text = "Estop";
-            // 
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.Gray;
-            this.tabPage3.Controls.Add(this.groupBox13);
-            this.tabPage3.Controls.Add(this.groupBox12);
-            this.tabPage3.Controls.Add(this.groupBox10);
-            this.tabPage3.Controls.Add(this.groupBox11);
+            this.tabPage3.Controls.Add(this.Encoders);
+            this.tabPage3.Controls.Add(this.SensorNetworkSensorInitialization);
+            this.tabPage3.Controls.Add(this.grpProximitySensors);
+            this.tabPage3.Controls.Add(this.MotorTemperatureSensors);
+            this.tabPage3.Controls.Add(this.GatesSensors);
+            this.tabPage3.Controls.Add(this.Accelerometers);
+            this.tabPage3.Controls.Add(this.WeatherStation);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(2);
-            this.tabPage3.Size = new System.Drawing.Size(645, 411);
+            this.tabPage3.Size = new System.Drawing.Size(645, 505);
             this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Sensor Overrides";
+            this.tabPage3.Text = "Sensor Overrides/Init";
             // 
-            // groupBox13
+            // Encoders
             // 
-            this.groupBox13.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox13.Controls.Add(this.ElMotTempSensOverride);
-            this.groupBox13.Controls.Add(this.label29);
-            this.groupBox13.Controls.Add(this.AzMotTempSensOverride);
-            this.groupBox13.Controls.Add(this.label28);
-            this.groupBox13.Location = new System.Drawing.Point(3, 233);
-            this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(338, 157);
-            this.groupBox13.TabIndex = 29;
-            this.groupBox13.TabStop = false;
-            this.groupBox13.Text = "Motor Temperature Sensors";
+            this.Encoders.BackColor = System.Drawing.Color.Gainsboro;
+            this.Encoders.Controls.Add(this.ElecationAbsoluteEncoder_lbl);
+            this.Encoders.Controls.Add(this.btnElevationAbsoluteEncoder);
+            this.Encoders.Controls.Add(this.btnAzimuthAbsoluteEncoder);
+            this.Encoders.Controls.Add(this.AzimuthAbsoluteEncoder_lbl);
+            this.Encoders.Location = new System.Drawing.Point(3, 380);
+            this.Encoders.Name = "Encoders";
+            this.Encoders.Padding = new System.Windows.Forms.Padding(2);
+            this.Encoders.Size = new System.Drawing.Size(338, 120);
+            this.Encoders.TabIndex = 16;
+            this.Encoders.TabStop = false;
+            this.Encoders.Text = "Encoders";
+            // 
+            // ElecationAbsoluteEncoder_lbl
+            // 
+            this.ElecationAbsoluteEncoder_lbl.AutoSize = true;
+            this.ElecationAbsoluteEncoder_lbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ElecationAbsoluteEncoder_lbl.Location = new System.Drawing.Point(9, 68);
+            this.ElecationAbsoluteEncoder_lbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.ElecationAbsoluteEncoder_lbl.Name = "ElecationAbsoluteEncoder_lbl";
+            this.ElecationAbsoluteEncoder_lbl.Size = new System.Drawing.Size(164, 13);
+            this.ElecationAbsoluteEncoder_lbl.TabIndex = 10;
+            this.ElecationAbsoluteEncoder_lbl.Text = "Elevation Absolute Encoder";
+            // 
+            // btnElevationAbsoluteEncoder
+            // 
+            this.btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.Yellow;
+            this.btnElevationAbsoluteEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnElevationAbsoluteEncoder.Location = new System.Drawing.Point(227, 63);
+            this.btnElevationAbsoluteEncoder.Name = "btnElevationAbsoluteEncoder";
+            this.btnElevationAbsoluteEncoder.Size = new System.Drawing.Size(88, 23);
+            this.btnElevationAbsoluteEncoder.TabIndex = 14;
+            this.btnElevationAbsoluteEncoder.Text = "NOT LOADED";
+            this.btnElevationAbsoluteEncoder.UseVisualStyleBackColor = false;
+            this.btnElevationAbsoluteEncoder.Click += new System.EventHandler(this.btnElevationAbsoluteEncoder_Click);
+            // 
+            // btnAzimuthAbsoluteEncoder
+            // 
+            this.btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.Yellow;
+            this.btnAzimuthAbsoluteEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnAzimuthAbsoluteEncoder.Location = new System.Drawing.Point(227, 31);
+            this.btnAzimuthAbsoluteEncoder.Name = "btnAzimuthAbsoluteEncoder";
+            this.btnAzimuthAbsoluteEncoder.Size = new System.Drawing.Size(90, 23);
+            this.btnAzimuthAbsoluteEncoder.TabIndex = 13;
+            this.btnAzimuthAbsoluteEncoder.Text = "NOT LOADED";
+            this.btnAzimuthAbsoluteEncoder.UseVisualStyleBackColor = false;
+            this.btnAzimuthAbsoluteEncoder.Click += new System.EventHandler(this.btnAzimuthAbsoluteEncoder_Click);
+            // 
+            // AzimuthAbsoluteEncoder_lbl
+            // 
+            this.AzimuthAbsoluteEncoder_lbl.AutoSize = true;
+            this.AzimuthAbsoluteEncoder_lbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AzimuthAbsoluteEncoder_lbl.Location = new System.Drawing.Point(9, 36);
+            this.AzimuthAbsoluteEncoder_lbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.AzimuthAbsoluteEncoder_lbl.Name = "AzimuthAbsoluteEncoder_lbl";
+            this.AzimuthAbsoluteEncoder_lbl.Size = new System.Drawing.Size(155, 13);
+            this.AzimuthAbsoluteEncoder_lbl.TabIndex = 9;
+            this.AzimuthAbsoluteEncoder_lbl.Text = "Azimuth Absolute Encoder";
+            // 
+            // SensorNetworkSensorInitialization
+            // 
+            this.SensorNetworkSensorInitialization.BackColor = System.Drawing.Color.Gainsboro;
+            this.SensorNetworkSensorInitialization.Controls.Add(this.lblInitTimeout);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.lblDataTimeout);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.txtDataTimeout);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.txtInitTimeout);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.lblSNStatus);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.UpdateSensorInitiliazation);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthEncoder);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.ElevationEncoder);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.CounterbalanceAccelerometer);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.ElevationAccelerometer);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthAccelerometer);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthTemperature2);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthTemperature1);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.ElevationTemperature2);
+            this.SensorNetworkSensorInitialization.Controls.Add(this.ElevationTemperature1);
+            this.SensorNetworkSensorInitialization.Location = new System.Drawing.Point(344, 210);
+            this.SensorNetworkSensorInitialization.Name = "SensorNetworkSensorInitialization";
+            this.SensorNetworkSensorInitialization.Padding = new System.Windows.Forms.Padding(2);
+            this.SensorNetworkSensorInitialization.Size = new System.Drawing.Size(296, 290);
+            this.SensorNetworkSensorInitialization.TabIndex = 17;
+            this.SensorNetworkSensorInitialization.TabStop = false;
+            this.SensorNetworkSensorInitialization.Text = "Sensor Network Sensor Initialization";
+            // 
+            // lblInitTimeout
+            // 
+            this.lblInitTimeout.AutoSize = true;
+            this.lblInitTimeout.ForeColor = System.Drawing.Color.Black;
+            this.lblInitTimeout.Location = new System.Drawing.Point(69, 237);
+            this.lblInitTimeout.Name = "lblInitTimeout";
+            this.lblInitTimeout.Size = new System.Drawing.Size(154, 13);
+            this.lblInitTimeout.TabIndex = 78;
+            this.lblInitTimeout.Text = "Initialization Timeout (seconds):";
+            // 
+            // lblDataTimeout
+            // 
+            this.lblDataTimeout.AutoSize = true;
+            this.lblDataTimeout.ForeColor = System.Drawing.Color.Black;
+            this.lblDataTimeout.Location = new System.Drawing.Point(55, 217);
+            this.lblDataTimeout.Name = "lblDataTimeout";
+            this.lblDataTimeout.Size = new System.Drawing.Size(168, 13);
+            this.lblDataTimeout.TabIndex = 77;
+            this.lblDataTimeout.Text = "Data Retrieval Timeout (seconds):";
+            // 
+            // txtDataTimeout
+            // 
+            this.txtDataTimeout.Location = new System.Drawing.Point(237, 214);
+            this.txtDataTimeout.Name = "txtDataTimeout";
+            this.txtDataTimeout.Size = new System.Drawing.Size(44, 20);
+            this.txtDataTimeout.TabIndex = 76;
+            this.txtDataTimeout.TextChanged += new System.EventHandler(this.txtDataTimeout_TextChanged);
+            // 
+            // txtInitTimeout
+            // 
+            this.txtInitTimeout.Location = new System.Drawing.Point(237, 235);
+            this.txtInitTimeout.Name = "txtInitTimeout";
+            this.txtInitTimeout.Size = new System.Drawing.Size(44, 20);
+            this.txtInitTimeout.TabIndex = 75;
+            this.txtInitTimeout.TextChanged += new System.EventHandler(this.txtInitTimeout_TextChanged);
+            // 
+            // lblSNStatus
+            // 
+            this.lblSNStatus.AutoSize = true;
+            this.lblSNStatus.ForeColor = System.Drawing.Color.Black;
+            this.lblSNStatus.Location = new System.Drawing.Point(5, 257);
+            this.lblSNStatus.Name = "lblSNStatus";
+            this.lblSNStatus.Size = new System.Drawing.Size(40, 13);
+            this.lblSNStatus.TabIndex = 10;
+            this.lblSNStatus.Text = "Status:";
+            // 
+            // UpdateSensorInitiliazation
+            // 
+            this.UpdateSensorInitiliazation.Location = new System.Drawing.Point(118, 257);
+            this.UpdateSensorInitiliazation.Name = "UpdateSensorInitiliazation";
+            this.UpdateSensorInitiliazation.Size = new System.Drawing.Size(164, 23);
+            this.UpdateSensorInitiliazation.TabIndex = 9;
+            this.UpdateSensorInitiliazation.Text = "Update Sensor Configuration";
+            this.UpdateSensorInitiliazation.UseVisualStyleBackColor = true;
+            this.UpdateSensorInitiliazation.Click += new System.EventHandler(this.UpdateSensorInitiliazation_Click);
+            // 
+            // AzimuthEncoder
+            // 
+            this.AzimuthEncoder.AutoSize = true;
+            this.AzimuthEncoder.ForeColor = System.Drawing.Color.Red;
+            this.AzimuthEncoder.Location = new System.Drawing.Point(5, 39);
+            this.AzimuthEncoder.Name = "AzimuthEncoder";
+            this.AzimuthEncoder.Size = new System.Drawing.Size(106, 17);
+            this.AzimuthEncoder.TabIndex = 8;
+            this.AzimuthEncoder.Text = "Azimuth Encoder";
+            this.AzimuthEncoder.UseVisualStyleBackColor = true;
+            // 
+            // ElevationEncoder
+            // 
+            this.ElevationEncoder.AutoSize = true;
+            this.ElevationEncoder.ForeColor = System.Drawing.Color.Red;
+            this.ElevationEncoder.Location = new System.Drawing.Point(5, 21);
+            this.ElevationEncoder.Name = "ElevationEncoder";
+            this.ElevationEncoder.Size = new System.Drawing.Size(113, 17);
+            this.ElevationEncoder.TabIndex = 7;
+            this.ElevationEncoder.Text = "Elevation Encoder";
+            this.ElevationEncoder.UseVisualStyleBackColor = true;
+            // 
+            // CounterbalanceAccelerometer
+            // 
+            this.CounterbalanceAccelerometer.AutoSize = true;
+            this.CounterbalanceAccelerometer.Location = new System.Drawing.Point(5, 164);
+            this.CounterbalanceAccelerometer.Name = "CounterbalanceAccelerometer";
+            this.CounterbalanceAccelerometer.Size = new System.Drawing.Size(172, 17);
+            this.CounterbalanceAccelerometer.TabIndex = 6;
+            this.CounterbalanceAccelerometer.Text = "Counterbalance Accelerometer";
+            this.CounterbalanceAccelerometer.UseVisualStyleBackColor = true;
+            // 
+            // ElevationAccelerometer
+            // 
+            this.ElevationAccelerometer.AutoSize = true;
+            this.ElevationAccelerometer.Location = new System.Drawing.Point(5, 146);
+            this.ElevationAccelerometer.Name = "ElevationAccelerometer";
+            this.ElevationAccelerometer.Size = new System.Drawing.Size(141, 17);
+            this.ElevationAccelerometer.TabIndex = 5;
+            this.ElevationAccelerometer.Text = "Elevation Accelerometer";
+            this.ElevationAccelerometer.UseVisualStyleBackColor = true;
+            // 
+            // AzimuthAccelerometer
+            // 
+            this.AzimuthAccelerometer.AutoSize = true;
+            this.AzimuthAccelerometer.Location = new System.Drawing.Point(5, 128);
+            this.AzimuthAccelerometer.Name = "AzimuthAccelerometer";
+            this.AzimuthAccelerometer.Size = new System.Drawing.Size(134, 17);
+            this.AzimuthAccelerometer.TabIndex = 4;
+            this.AzimuthAccelerometer.Text = "Azimuth Accelerometer";
+            this.AzimuthAccelerometer.UseVisualStyleBackColor = true;
+            // 
+            // AzimuthTemperature2
+            // 
+            this.AzimuthTemperature2.AutoSize = true;
+            this.AzimuthTemperature2.Location = new System.Drawing.Point(5, 110);
+            this.AzimuthTemperature2.Name = "AzimuthTemperature2";
+            this.AzimuthTemperature2.Size = new System.Drawing.Size(135, 17);
+            this.AzimuthTemperature2.TabIndex = 3;
+            this.AzimuthTemperature2.Text = "Azimuth Temperature 2";
+            this.AzimuthTemperature2.UseVisualStyleBackColor = true;
+            // 
+            // AzimuthTemperature1
+            // 
+            this.AzimuthTemperature1.AutoSize = true;
+            this.AzimuthTemperature1.Location = new System.Drawing.Point(5, 92);
+            this.AzimuthTemperature1.Name = "AzimuthTemperature1";
+            this.AzimuthTemperature1.Size = new System.Drawing.Size(135, 17);
+            this.AzimuthTemperature1.TabIndex = 2;
+            this.AzimuthTemperature1.Text = "Azimuth Temperature 1";
+            this.AzimuthTemperature1.UseVisualStyleBackColor = true;
+            // 
+            // ElevationTemperature2
+            // 
+            this.ElevationTemperature2.AutoSize = true;
+            this.ElevationTemperature2.Location = new System.Drawing.Point(5, 74);
+            this.ElevationTemperature2.Name = "ElevationTemperature2";
+            this.ElevationTemperature2.Size = new System.Drawing.Size(142, 17);
+            this.ElevationTemperature2.TabIndex = 1;
+            this.ElevationTemperature2.Text = "Elevation Temperature 2";
+            this.ElevationTemperature2.UseVisualStyleBackColor = true;
+            // 
+            // ElevationTemperature1
+            // 
+            this.ElevationTemperature1.AutoSize = true;
+            this.ElevationTemperature1.Location = new System.Drawing.Point(5, 56);
+            this.ElevationTemperature1.Name = "ElevationTemperature1";
+            this.ElevationTemperature1.Size = new System.Drawing.Size(142, 17);
+            this.ElevationTemperature1.TabIndex = 0;
+            this.ElevationTemperature1.Text = "Elevation Temperature 1";
+            this.ElevationTemperature1.UseVisualStyleBackColor = true;
+            // 
+            // grpProximitySensors
+            // 
+            this.grpProximitySensors.BackColor = System.Drawing.Color.Gainsboro;
+            this.grpProximitySensors.Controls.Add(this.label4);
+            this.grpProximitySensors.Controls.Add(this.label21);
+            this.grpProximitySensors.Controls.Add(this.ElivationLimitSwitch0);
+            this.grpProximitySensors.Controls.Add(this.ElevationLimitSwitch90);
+            this.grpProximitySensors.Location = new System.Drawing.Point(3, 275);
+            this.grpProximitySensors.Name = "grpProximitySensors";
+            this.grpProximitySensors.Padding = new System.Windows.Forms.Padding(2);
+            this.grpProximitySensors.Size = new System.Drawing.Size(338, 101);
+            this.grpProximitySensors.TabIndex = 15;
+            this.grpProximitySensors.TabStop = false;
+            this.grpProximitySensors.Text = " Proximity Sensors";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(9, 62);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(155, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Elevation Limit Switch 90°";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label21.Location = new System.Drawing.Point(9, 30);
+            this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(148, 13);
+            this.label21.TabIndex = 9;
+            this.label21.Text = "Elevation Limit Switch 0°";
+            // 
+            // ElivationLimitSwitch0
+            // 
+            this.ElivationLimitSwitch0.BackColor = System.Drawing.Color.Yellow;
+            this.ElivationLimitSwitch0.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ElivationLimitSwitch0.Location = new System.Drawing.Point(228, 25);
+            this.ElivationLimitSwitch0.Name = "ElivationLimitSwitch0";
+            this.ElivationLimitSwitch0.Size = new System.Drawing.Size(90, 23);
+            this.ElivationLimitSwitch0.TabIndex = 13;
+            this.ElivationLimitSwitch0.Text = "NOT LOADED";
+            this.ElivationLimitSwitch0.UseVisualStyleBackColor = false;
+            this.ElivationLimitSwitch0.Click += new System.EventHandler(this.ElevationProximityOverideButton1_Click);
+            // 
+            // ElevationLimitSwitch90
+            // 
+            this.ElevationLimitSwitch90.BackColor = System.Drawing.Color.Yellow;
+            this.ElevationLimitSwitch90.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ElevationLimitSwitch90.Location = new System.Drawing.Point(230, 57);
+            this.ElevationLimitSwitch90.Name = "ElevationLimitSwitch90";
+            this.ElevationLimitSwitch90.Size = new System.Drawing.Size(88, 23);
+            this.ElevationLimitSwitch90.TabIndex = 14;
+            this.ElevationLimitSwitch90.Text = "NOT LOADED";
+            this.ElevationLimitSwitch90.UseVisualStyleBackColor = false;
+            this.ElevationLimitSwitch90.Click += new System.EventHandler(this.ElevationProximityOverideButton2_Click);
+            // 
+            // MotorTemperatureSensors
+            // 
+            this.MotorTemperatureSensors.BackColor = System.Drawing.Color.Gainsboro;
+            this.MotorTemperatureSensors.Controls.Add(this.ElMotTempSensOverride);
+            this.MotorTemperatureSensors.Controls.Add(this.label29);
+            this.MotorTemperatureSensors.Controls.Add(this.AzMotTempSensOverride);
+            this.MotorTemperatureSensors.Controls.Add(this.label28);
+            this.MotorTemperatureSensors.Location = new System.Drawing.Point(3, 159);
+            this.MotorTemperatureSensors.Name = "MotorTemperatureSensors";
+            this.MotorTemperatureSensors.Size = new System.Drawing.Size(338, 112);
+            this.MotorTemperatureSensors.TabIndex = 29;
+            this.MotorTemperatureSensors.TabStop = false;
+            this.MotorTemperatureSensors.Text = "Motor Temperature Sensors";
             // 
             // ElMotTempSensOverride
             // 
             this.ElMotTempSensOverride.BackColor = System.Drawing.Color.Yellow;
             this.ElMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElMotTempSensOverride.Location = new System.Drawing.Point(227, 78);
+            this.ElMotTempSensOverride.Location = new System.Drawing.Point(227, 63);
             this.ElMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.ElMotTempSensOverride.Name = "ElMotTempSensOverride";
             this.ElMotTempSensOverride.Size = new System.Drawing.Size(91, 23);
@@ -1559,7 +2188,7 @@
             // 
             this.label29.AutoSize = true;
             this.label29.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label29.Location = new System.Drawing.Point(9, 78);
+            this.label29.Location = new System.Drawing.Point(9, 68);
             this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(214, 13);
@@ -1570,7 +2199,7 @@
             // 
             this.AzMotTempSensOverride.BackColor = System.Drawing.Color.Yellow;
             this.AzMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.AzMotTempSensOverride.Location = new System.Drawing.Point(229, 23);
+            this.AzMotTempSensOverride.Location = new System.Drawing.Point(229, 30);
             this.AzMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.AzMotTempSensOverride.Name = "AzMotTempSensOverride";
             this.AzMotTempSensOverride.Size = new System.Drawing.Size(89, 23);
@@ -1583,30 +2212,30 @@
             // 
             this.label28.AutoSize = true;
             this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.Location = new System.Drawing.Point(9, 31);
+            this.label28.Location = new System.Drawing.Point(9, 35);
             this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(205, 13);
             this.label28.TabIndex = 12;
             this.label28.Text = "Azimuth Motor Temperature Sensor";
             // 
-            // groupBox12
+            // GatesSensors
             // 
-            this.groupBox12.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox12.Controls.Add(this.MGOverride);
-            this.groupBox12.Controls.Add(this.label27);
-            this.groupBox12.Location = new System.Drawing.Point(3, 135);
-            this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(338, 92);
-            this.groupBox12.TabIndex = 28;
-            this.groupBox12.TabStop = false;
-            this.groupBox12.Text = "Gate Sensor";
+            this.GatesSensors.BackColor = System.Drawing.Color.Gainsboro;
+            this.GatesSensors.Controls.Add(this.MGOverride);
+            this.GatesSensors.Controls.Add(this.label27);
+            this.GatesSensors.Location = new System.Drawing.Point(3, 86);
+            this.GatesSensors.Name = "GatesSensors";
+            this.GatesSensors.Size = new System.Drawing.Size(338, 69);
+            this.GatesSensors.TabIndex = 28;
+            this.GatesSensors.TabStop = false;
+            this.GatesSensors.Text = "Gates Sensors";
             // 
             // MGOverride
             // 
             this.MGOverride.BackColor = System.Drawing.Color.Yellow;
             this.MGOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.MGOverride.Location = new System.Drawing.Point(229, 31);
+            this.MGOverride.Location = new System.Drawing.Point(227, 26);
             this.MGOverride.Margin = new System.Windows.Forms.Padding(2);
             this.MGOverride.Name = "MGOverride";
             this.MGOverride.Size = new System.Drawing.Size(89, 23);
@@ -1622,141 +2251,115 @@
             this.label27.Location = new System.Drawing.Point(9, 31);
             this.label27.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(108, 13);
+            this.label27.Size = new System.Drawing.Size(120, 13);
             this.label27.TabIndex = 12;
-            this.label27.Text = "Main Gate Sensor";
+            this.label27.Text = "Main Gates Sensors";
             // 
-            // groupBox10
+            // Accelerometers
             // 
-            this.groupBox10.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox10.Controls.Add(this.ElevationProximityOveride2);
-            this.groupBox10.Controls.Add(this.ElevationProximityOveride1);
-            this.groupBox10.Controls.Add(this.ORAzimuthSens2);
-            this.groupBox10.Controls.Add(this.ORAzimuthSens1);
-            this.groupBox10.Controls.Add(this.label3);
-            this.groupBox10.Controls.Add(this.label4);
-            this.groupBox10.Controls.Add(this.label21);
-            this.groupBox10.Controls.Add(this.label22);
-            this.groupBox10.Location = new System.Drawing.Point(347, 24);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox10.Size = new System.Drawing.Size(293, 366);
-            this.groupBox10.TabIndex = 0;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = " Proximity Sensors";
+            this.Accelerometers.BackColor = System.Drawing.Color.Gainsboro;
+            this.Accelerometers.Controls.Add(this.btnElevationMotorAccelerometerOverride);
+            this.Accelerometers.Controls.Add(this.btnCounterbalanceMotorAccelerometerOverride);
+            this.Accelerometers.Controls.Add(this.btnAzimuthMotorAccelerometerOverride);
+            this.Accelerometers.Controls.Add(this.label33);
+            this.Accelerometers.Controls.Add(this.label3);
+            this.Accelerometers.Controls.Add(this.label22);
+            this.Accelerometers.Location = new System.Drawing.Point(344, 3);
+            this.Accelerometers.Name = "Accelerometers";
+            this.Accelerometers.Padding = new System.Windows.Forms.Padding(2);
+            this.Accelerometers.Size = new System.Drawing.Size(296, 203);
+            this.Accelerometers.TabIndex = 0;
+            this.Accelerometers.TabStop = false;
+            this.Accelerometers.Text = "Accelerometers";
             // 
-            // ElevationProximityOveride2
+            // btnElevationMotorAccelerometerOverride
             // 
-            this.ElevationProximityOveride2.BackColor = System.Drawing.Color.Yellow;
-            this.ElevationProximityOveride2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElevationProximityOveride2.Location = new System.Drawing.Point(194, 114);
-            this.ElevationProximityOveride2.Name = "ElevationProximityOveride2";
-            this.ElevationProximityOveride2.Size = new System.Drawing.Size(88, 23);
-            this.ElevationProximityOveride2.TabIndex = 14;
-            this.ElevationProximityOveride2.Text = "NOT LOADED";
-            this.ElevationProximityOveride2.UseVisualStyleBackColor = false;
-            this.ElevationProximityOveride2.Click += new System.EventHandler(this.ElevationProximityOverideButton2_Click);
+            this.btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Yellow;
+            this.btnElevationMotorAccelerometerOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnElevationMotorAccelerometerOverride.Location = new System.Drawing.Point(192, 89);
+            this.btnElevationMotorAccelerometerOverride.Name = "btnElevationMotorAccelerometerOverride";
+            this.btnElevationMotorAccelerometerOverride.Size = new System.Drawing.Size(88, 23);
+            this.btnElevationMotorAccelerometerOverride.TabIndex = 14;
+            this.btnElevationMotorAccelerometerOverride.Text = "NOT LOADED";
+            this.btnElevationMotorAccelerometerOverride.UseVisualStyleBackColor = false;
+            this.btnElevationMotorAccelerometerOverride.Click += new System.EventHandler(this.btnElevationMotorAccelerometerOverride_Click);
             // 
-            // ElevationProximityOveride1
+            // btnCounterbalanceMotorAccelerometerOverride
             // 
-            this.ElevationProximityOveride1.BackColor = System.Drawing.Color.Yellow;
-            this.ElevationProximityOveride1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElevationProximityOveride1.Location = new System.Drawing.Point(194, 56);
-            this.ElevationProximityOveride1.Name = "ElevationProximityOveride1";
-            this.ElevationProximityOveride1.Size = new System.Drawing.Size(90, 23);
-            this.ElevationProximityOveride1.TabIndex = 13;
-            this.ElevationProximityOveride1.Text = "NOT LOADED";
-            this.ElevationProximityOveride1.UseVisualStyleBackColor = false;
-            this.ElevationProximityOveride1.Click += new System.EventHandler(this.ElevationProximityOverideButton1_Click);
+            this.btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.Yellow;
+            this.btnCounterbalanceMotorAccelerometerOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnCounterbalanceMotorAccelerometerOverride.Location = new System.Drawing.Point(192, 141);
+            this.btnCounterbalanceMotorAccelerometerOverride.Name = "btnCounterbalanceMotorAccelerometerOverride";
+            this.btnCounterbalanceMotorAccelerometerOverride.Size = new System.Drawing.Size(88, 23);
+            this.btnCounterbalanceMotorAccelerometerOverride.TabIndex = 16;
+            this.btnCounterbalanceMotorAccelerometerOverride.Text = "NOT LOADED";
+            this.btnCounterbalanceMotorAccelerometerOverride.UseVisualStyleBackColor = false;
+            this.btnCounterbalanceMotorAccelerometerOverride.Click += new System.EventHandler(this.btnCounterbalanceMotorAccelerometerOverride_Click);
             // 
-            // ORAzimuthSens2
+            // btnAzimuthMotorAccelerometerOverride
             // 
-            this.ORAzimuthSens2.BackColor = System.Drawing.Color.Yellow;
-            this.ORAzimuthSens2.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ORAzimuthSens2.Location = new System.Drawing.Point(194, 271);
-            this.ORAzimuthSens2.Name = "ORAzimuthSens2";
-            this.ORAzimuthSens2.Size = new System.Drawing.Size(90, 23);
-            this.ORAzimuthSens2.TabIndex = 12;
-            this.ORAzimuthSens2.Text = "NOT LOADED";
-            this.ORAzimuthSens2.UseVisualStyleBackColor = false;
-            this.ORAzimuthSens2.Click += new System.EventHandler(this.ORAzimuthSens2_Click);
+            this.btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Yellow;
+            this.btnAzimuthMotorAccelerometerOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnAzimuthMotorAccelerometerOverride.Location = new System.Drawing.Point(190, 40);
+            this.btnAzimuthMotorAccelerometerOverride.Name = "btnAzimuthMotorAccelerometerOverride";
+            this.btnAzimuthMotorAccelerometerOverride.Size = new System.Drawing.Size(90, 23);
+            this.btnAzimuthMotorAccelerometerOverride.TabIndex = 13;
+            this.btnAzimuthMotorAccelerometerOverride.Text = "NOT LOADED";
+            this.btnAzimuthMotorAccelerometerOverride.UseVisualStyleBackColor = false;
+            this.btnAzimuthMotorAccelerometerOverride.Click += new System.EventHandler(this.btnAzimuthMotorAccelerometerOverride_Click);
             // 
-            // ORAzimuthSens1
+            // label33
             // 
-            this.ORAzimuthSens1.BackColor = System.Drawing.Color.Yellow;
-            this.ORAzimuthSens1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ORAzimuthSens1.Location = new System.Drawing.Point(194, 190);
-            this.ORAzimuthSens1.Name = "ORAzimuthSens1";
-            this.ORAzimuthSens1.Size = new System.Drawing.Size(90, 23);
-            this.ORAzimuthSens1.TabIndex = 11;
-            this.ORAzimuthSens1.Text = "NOT LOADED";
-            this.ORAzimuthSens1.UseVisualStyleBackColor = false;
-            this.ORAzimuthSens1.Click += new System.EventHandler(this.ORAzimuthSens1_Click);
+            this.label33.AutoSize = true;
+            this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label33.Location = new System.Drawing.Point(9, 146);
+            this.label33.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(181, 13);
+            this.label33.TabIndex = 15;
+            this.label33.Text = "Counterbalance Accelerometer";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(9, 114);
+            this.label3.Location = new System.Drawing.Point(9, 94);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(155, 13);
+            this.label3.Size = new System.Drawing.Size(181, 13);
             this.label3.TabIndex = 10;
-            this.label3.Text = "Elevation Limit Switch 90°";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(9, 190);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(150, 13);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "Azimuth Limit Switch -10°";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.Location = new System.Drawing.Point(11, 271);
-            this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(153, 13);
-            this.label21.TabIndex = 8;
-            this.label21.Text = "Azimuth Limit Switch 375°";
+            this.label3.Text = "Elevation Motor Accelerometer";
             // 
             // label22
             // 
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(9, 56);
+            this.label22.Location = new System.Drawing.Point(9, 45);
             this.label22.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(148, 13);
+            this.label22.Size = new System.Drawing.Size(172, 13);
             this.label22.TabIndex = 9;
-            this.label22.Text = "Elevation Limit Switch 0°";
+            this.label22.Text = "Azimuth Motor Accelerometer";
             // 
-            // groupBox11
+            // WeatherStation
             // 
-            this.groupBox11.BackColor = System.Drawing.Color.Gainsboro;
-            this.groupBox11.Controls.Add(this.WSOverride);
-            this.groupBox11.Controls.Add(this.label24);
-            this.groupBox11.Location = new System.Drawing.Point(2, 24);
-            this.groupBox11.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox11.Size = new System.Drawing.Size(339, 106);
-            this.groupBox11.TabIndex = 27;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "Weather Station";
+            this.WeatherStation.BackColor = System.Drawing.Color.Gainsboro;
+            this.WeatherStation.Controls.Add(this.WSOverride);
+            this.WeatherStation.Controls.Add(this.label24);
+            this.WeatherStation.Location = new System.Drawing.Point(2, 3);
+            this.WeatherStation.Margin = new System.Windows.Forms.Padding(2);
+            this.WeatherStation.Name = "WeatherStation";
+            this.WeatherStation.Padding = new System.Windows.Forms.Padding(2);
+            this.WeatherStation.Size = new System.Drawing.Size(339, 79);
+            this.WeatherStation.TabIndex = 27;
+            this.WeatherStation.TabStop = false;
+            this.WeatherStation.Text = "Weather Station";
             // 
             // WSOverride
             // 
             this.WSOverride.BackColor = System.Drawing.Color.Yellow;
             this.WSOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.WSOverride.Location = new System.Drawing.Point(228, 35);
+            this.WSOverride.Location = new System.Drawing.Point(228, 30);
             this.WSOverride.Margin = new System.Windows.Forms.Padding(2);
             this.WSOverride.Name = "WSOverride";
             this.WSOverride.Size = new System.Drawing.Size(89, 23);
@@ -1796,7 +2399,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(645, 411);
+            this.tabPage4.Size = new System.Drawing.Size(645, 505);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "RFData";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1805,7 +2408,7 @@
             // 
             this.lblModeType.AutoSize = true;
             this.lblModeType.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblModeType.Location = new System.Drawing.Point(155, 297);
+            this.lblModeType.Location = new System.Drawing.Point(155, 333);
             this.lblModeType.Name = "lblModeType";
             this.lblModeType.Size = new System.Drawing.Size(128, 15);
             this.lblModeType.TabIndex = 19;
@@ -1815,7 +2418,7 @@
             // 
             this.spectraModeTypeVal.AutoSize = true;
             this.spectraModeTypeVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.spectraModeTypeVal.Location = new System.Drawing.Point(369, 297);
+            this.spectraModeTypeVal.Location = new System.Drawing.Point(369, 333);
             this.spectraModeTypeVal.Name = "spectraModeTypeVal";
             this.spectraModeTypeVal.Size = new System.Drawing.Size(35, 15);
             this.spectraModeTypeVal.TabIndex = 20;
@@ -1825,7 +2428,7 @@
             // 
             this.lblFrequency.AutoSize = true;
             this.lblFrequency.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFrequency.Location = new System.Drawing.Point(300, 333);
+            this.lblFrequency.Location = new System.Drawing.Point(300, 369);
             this.lblFrequency.Name = "lblFrequency";
             this.lblFrequency.Size = new System.Drawing.Size(73, 15);
             this.lblFrequency.TabIndex = 17;
@@ -1835,7 +2438,7 @@
             // 
             this.frequencyVal.AutoSize = true;
             this.frequencyVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.frequencyVal.Location = new System.Drawing.Point(514, 333);
+            this.frequencyVal.Location = new System.Drawing.Point(514, 369);
             this.frequencyVal.Name = "frequencyVal";
             this.frequencyVal.Size = new System.Drawing.Size(35, 15);
             this.frequencyVal.TabIndex = 18;
@@ -1843,19 +2446,19 @@
             // 
             // spectraCyberScanChart
             // 
-            chartArea1.AxisX.Title = "Time";
-            chartArea1.AxisY.Title = "RF Data";
-            chartArea1.Name = "ChartArea1";
-            this.spectraCyberScanChart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.spectraCyberScanChart.Legends.Add(legend1);
+            chartArea8.AxisX.Title = "Time";
+            chartArea8.AxisY.Title = "RF Data";
+            chartArea8.Name = "ChartArea1";
+            this.spectraCyberScanChart.ChartAreas.Add(chartArea8);
+            legend2.Name = "Legend1";
+            this.spectraCyberScanChart.Legends.Add(legend2);
             this.spectraCyberScanChart.Location = new System.Drawing.Point(36, 0);
             this.spectraCyberScanChart.Name = "spectraCyberScanChart";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
-            series1.Legend = "Legend1";
-            series1.Name = "Data/Time";
-            this.spectraCyberScanChart.Series.Add(series1);
+            series20.ChartArea = "ChartArea1";
+            series20.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline;
+            series20.Legend = "Legend1";
+            series20.Name = "Data/Time";
+            this.spectraCyberScanChart.Series.Add(series20);
             this.spectraCyberScanChart.Size = new System.Drawing.Size(571, 279);
             this.spectraCyberScanChart.TabIndex = 16;
             this.spectraCyberScanChart.Text = "spectraCyberScanChart";
@@ -1864,7 +2467,7 @@
             // 
             this.lblIntegrationStep.AutoSize = true;
             this.lblIntegrationStep.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblIntegrationStep.Location = new System.Drawing.Point(300, 363);
+            this.lblIntegrationStep.Location = new System.Drawing.Point(300, 399);
             this.lblIntegrationStep.Name = "lblIntegrationStep";
             this.lblIntegrationStep.Size = new System.Drawing.Size(105, 15);
             this.lblIntegrationStep.TabIndex = 14;
@@ -1874,7 +2477,7 @@
             // 
             this.IntegrationStepVal.AutoSize = true;
             this.IntegrationStepVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IntegrationStepVal.Location = new System.Drawing.Point(514, 363);
+            this.IntegrationStepVal.Location = new System.Drawing.Point(514, 399);
             this.IntegrationStepVal.Name = "IntegrationStepVal";
             this.IntegrationStepVal.Size = new System.Drawing.Size(35, 15);
             this.IntegrationStepVal.TabIndex = 15;
@@ -1884,7 +2487,7 @@
             // 
             this.lblDCGain.AutoSize = true;
             this.lblDCGain.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDCGain.Location = new System.Drawing.Point(6, 389);
+            this.lblDCGain.Location = new System.Drawing.Point(6, 425);
             this.lblDCGain.Name = "lblDCGain";
             this.lblDCGain.Size = new System.Drawing.Size(56, 15);
             this.lblDCGain.TabIndex = 12;
@@ -1894,7 +2497,7 @@
             // 
             this.DCGainVal.AutoSize = true;
             this.DCGainVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DCGainVal.Location = new System.Drawing.Point(220, 389);
+            this.DCGainVal.Location = new System.Drawing.Point(220, 425);
             this.DCGainVal.Name = "DCGainVal";
             this.DCGainVal.Size = new System.Drawing.Size(35, 15);
             this.DCGainVal.TabIndex = 13;
@@ -1904,7 +2507,7 @@
             // 
             this.lblIFGain.AutoSize = true;
             this.lblIFGain.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblIFGain.Location = new System.Drawing.Point(6, 363);
+            this.lblIFGain.Location = new System.Drawing.Point(6, 399);
             this.lblIFGain.Name = "lblIFGain";
             this.lblIFGain.Size = new System.Drawing.Size(53, 15);
             this.lblIFGain.TabIndex = 10;
@@ -1915,7 +2518,7 @@
             // 
             this.IFGainVal.AutoSize = true;
             this.IFGainVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IFGainVal.Location = new System.Drawing.Point(220, 363);
+            this.IFGainVal.Location = new System.Drawing.Point(220, 399);
             this.IFGainVal.Name = "IFGainVal";
             this.IFGainVal.Size = new System.Drawing.Size(35, 15);
             this.IFGainVal.TabIndex = 11;
@@ -1926,7 +2529,7 @@
             // 
             this.lblBandwidth.AutoSize = true;
             this.lblBandwidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBandwidth.Location = new System.Drawing.Point(6, 333);
+            this.lblBandwidth.Location = new System.Drawing.Point(6, 369);
             this.lblBandwidth.Name = "lblBandwidth";
             this.lblBandwidth.Size = new System.Drawing.Size(74, 15);
             this.lblBandwidth.TabIndex = 8;
@@ -1936,7 +2539,7 @@
             // 
             this.BandwidthVal.AutoSize = true;
             this.BandwidthVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BandwidthVal.Location = new System.Drawing.Point(220, 333);
+            this.BandwidthVal.Location = new System.Drawing.Point(220, 369);
             this.BandwidthVal.Name = "BandwidthVal";
             this.BandwidthVal.Size = new System.Drawing.Size(35, 15);
             this.BandwidthVal.TabIndex = 9;
@@ -1946,7 +2549,7 @@
             // 
             this.lblOffsetVoltage.AutoSize = true;
             this.lblOffsetVoltage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOffsetVoltage.Location = new System.Drawing.Point(300, 389);
+            this.lblOffsetVoltage.Location = new System.Drawing.Point(300, 425);
             this.lblOffsetVoltage.Name = "lblOffsetVoltage";
             this.lblOffsetVoltage.Size = new System.Drawing.Size(92, 15);
             this.lblOffsetVoltage.TabIndex = 6;
@@ -1956,7 +2559,7 @@
             // 
             this.OffsetVoltageVal.AutoSize = true;
             this.OffsetVoltageVal.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OffsetVoltageVal.Location = new System.Drawing.Point(514, 389);
+            this.OffsetVoltageVal.Location = new System.Drawing.Point(514, 425);
             this.OffsetVoltageVal.Name = "OffsetVoltageVal";
             this.OffsetVoltageVal.Size = new System.Drawing.Size(35, 15);
             this.OffsetVoltageVal.TabIndex = 7;
@@ -1968,7 +2571,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(645, 411);
+            this.tabPage5.Size = new System.Drawing.Size(645, 505);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Console Log";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1982,14 +2585,14 @@
             this.consoleLogBox.Multiline = true;
             this.consoleLogBox.Name = "consoleLogBox";
             this.consoleLogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.consoleLogBox.Size = new System.Drawing.Size(631, 400);
+            this.consoleLogBox.Size = new System.Drawing.Size(631, 494);
             this.consoleLogBox.TabIndex = 0;
             // 
             // DiagnosticsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(655, 446);
+            this.ClientSize = new System.Drawing.Size(655, 547);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.label15);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -2016,8 +2619,23 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.grpAccelerometerSensorData.ResumeLayout(false);
+            this.grpAccelerometerSensorData.PerformLayout();
+            this.pnlCounterbalanceAccelerometer.ResumeLayout(false);
+            this.pnlCounterbalanceAccelerometer.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.counterBalanceAccChart)).EndInit();
+            this.pnlElevationMotorAccelerometer.ResumeLayout(false);
+            this.pnlElevationMotorAccelerometer.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.elevationAccChart)).EndInit();
+            this.pnlAzimuthMotorAccelerometer.ResumeLayout(false);
+            this.pnlAzimuthMotorAccelerometer.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.azimuthAccChart)).EndInit();
+            this.grpSensorData.ResumeLayout(false);
+            this.grpSensorData.PerformLayout();
+            this.grpMcuStatus.ResumeLayout(false);
+            this.grpMcuStatus.PerformLayout();
             this.groupBox14.ResumeLayout(false);
-            this.groupBox6.ResumeLayout(false);
+            this.grpAbsoluteMotorPositionsTemperatures.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -2026,17 +2644,21 @@
             this.splitContainer1.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.tabPage3.ResumeLayout(false);
-            this.groupBox13.ResumeLayout(false);
-            this.groupBox13.PerformLayout();
-            this.groupBox12.ResumeLayout(false);
-            this.groupBox12.PerformLayout();
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
-            this.groupBox11.ResumeLayout(false);
-            this.groupBox11.PerformLayout();
+            this.Encoders.ResumeLayout(false);
+            this.Encoders.PerformLayout();
+            this.SensorNetworkSensorInitialization.ResumeLayout(false);
+            this.SensorNetworkSensorInitialization.PerformLayout();
+            this.grpProximitySensors.ResumeLayout(false);
+            this.grpProximitySensors.PerformLayout();
+            this.MotorTemperatureSensors.ResumeLayout(false);
+            this.MotorTemperatureSensors.PerformLayout();
+            this.GatesSensors.ResumeLayout(false);
+            this.GatesSensors.PerformLayout();
+            this.Accelerometers.ResumeLayout(false);
+            this.Accelerometers.PerformLayout();
+            this.WeatherStation.ResumeLayout(false);
+            this.WeatherStation.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.spectraCyberScanChart)).EndInit();
@@ -2065,20 +2687,6 @@
         private System.Windows.Forms.Label fldElTemp;
         private System.Windows.Forms.Button btnTest;
         private System.Windows.Forms.CheckBox selectDemo;
-        private System.Windows.Forms.Label lblElLimStatus2;
-        private System.Windows.Forms.Label lblElLimStatus1;
-        private System.Windows.Forms.Label lblAzLimStatus2;
-        private System.Windows.Forms.Label lblAzLimStatus1;
-        private System.Windows.Forms.Label lblElLimit2;
-        private System.Windows.Forms.Label lblElLimit1;
-        private System.Windows.Forms.Label lblAzLimit2;
-        private System.Windows.Forms.Label lblAzLimit1;
-        private System.Windows.Forms.Label lblELHomeStatus;
-        private System.Windows.Forms.Label lblAzHomeStatus2;
-        private System.Windows.Forms.Label lblAzHomeStatus1;
-        private System.Windows.Forms.Label lblElHome;
-        private System.Windows.Forms.Label lblAzHome2;
-        private System.Windows.Forms.Label lblAzHome1;
         private System.Windows.Forms.Label lblAbsEncoder;
         private System.Windows.Forms.Label lblEncoderDegrees;
         private System.Windows.Forms.Label lblAzEncoderDegrees;
@@ -2118,8 +2726,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox grpAbsoluteMotorPositionsTemperatures;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label20;
@@ -2132,8 +2739,8 @@
         private System.Windows.Forms.Label rainRateLabel;
         private System.Windows.Forms.Label dailyRainfallLabel;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.Label lblElAbsPos;
+        private System.Windows.Forms.Label lblAzAbsPos;
         private System.Windows.Forms.Label lblCurrentAzOrientation;
         private System.Windows.Forms.Label lblCurrentElOrientation;
         private System.Windows.Forms.GroupBox groupBox8;
@@ -2144,22 +2751,18 @@
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.GroupBox groupBox10;
-        private System.Windows.Forms.Button ElevationProximityOveride2;
-        private System.Windows.Forms.Button ElevationProximityOveride1;
-        private System.Windows.Forms.Button ORAzimuthSens2;
-        private System.Windows.Forms.Button ORAzimuthSens1;
+        private System.Windows.Forms.GroupBox Accelerometers;
+        private System.Windows.Forms.Button ElevationLimitSwitch90;
+        private System.Windows.Forms.Button ElivationLimitSwitch0;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.GroupBox groupBox11;
-        private System.Windows.Forms.GroupBox groupBox13;
+        private System.Windows.Forms.GroupBox WeatherStation;
+        private System.Windows.Forms.GroupBox MotorTemperatureSensors;
         private System.Windows.Forms.Button ElMotTempSensOverride;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Button AzMotTempSensOverride;
         private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.GroupBox GatesSensors;
         private System.Windows.Forms.Button MGOverride;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Button WSOverride;
@@ -2179,10 +2782,6 @@
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.Label AZTempUnitLabel;
         private System.Windows.Forms.Label ElTempUnitLabel;
-        private System.Windows.Forms.Label lbGateStat;
-        private System.Windows.Forms.Label lbEstopStat;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.Label label30;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.Label lblDCGain;
@@ -2201,5 +2800,72 @@
         private System.Windows.Forms.Label frequencyVal;
         private System.Windows.Forms.Label lblModeType;
         private System.Windows.Forms.Label spectraModeTypeVal;
+        private System.Windows.Forms.GroupBox SensorNetworkSensorInitialization;
+        private System.Windows.Forms.GroupBox grpProximitySensors;
+        private System.Windows.Forms.Button btnElevationMotorAccelerometerOverride;
+        private System.Windows.Forms.Button btnAzimuthMotorAccelerometerOverride;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Button btnCounterbalanceMotorAccelerometerOverride;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.Button UpdateSensorInitiliazation;
+        private System.Windows.Forms.CheckBox AzimuthEncoder;
+        private System.Windows.Forms.CheckBox ElevationEncoder;
+        private System.Windows.Forms.CheckBox CounterbalanceAccelerometer;
+        private System.Windows.Forms.CheckBox ElevationAccelerometer;
+        private System.Windows.Forms.CheckBox AzimuthAccelerometer;
+        private System.Windows.Forms.CheckBox AzimuthTemperature2;
+        private System.Windows.Forms.CheckBox AzimuthTemperature1;
+        private System.Windows.Forms.CheckBox ElevationTemperature2;
+        private System.Windows.Forms.CheckBox ElevationTemperature1;
+        private System.Windows.Forms.GroupBox Encoders;
+        private System.Windows.Forms.Button btnElevationAbsoluteEncoder;
+        private System.Windows.Forms.Button btnAzimuthAbsoluteEncoder;
+        private System.Windows.Forms.Label ElecationAbsoluteEncoder_lbl;
+        private System.Windows.Forms.Label AzimuthAbsoluteEncoder_lbl;
+        private System.Windows.Forms.Label lblSNStatus;
+        private System.Windows.Forms.GroupBox grpMcuStatus;
+        private System.Windows.Forms.Label lblMCUStatus;
+        private System.Windows.Forms.Label lblMCUStatusText;
+        private System.Windows.Forms.Label lblMCUErrors;
+        private System.Windows.Forms.Button btnResetMcuErrors;
+        private System.Windows.Forms.GroupBox grpAccelerometerSensorData;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.Panel pnlCounterbalanceAccelerometer;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.Panel pnlElevationMotorAccelerometer;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.Label label36;
+        private System.Windows.Forms.Panel pnlAzimuthMotorAccelerometer;
+        private System.Windows.Forms.GroupBox grpSensorData;
+        private System.Windows.Forms.Label lbGateStat;
+        private System.Windows.Forms.Label lbEstopStat;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.Label lblAzHome1;
+        private System.Windows.Forms.Label lblElLimStatus2;
+        private System.Windows.Forms.Label lblElLimStatus1;
+        private System.Windows.Forms.Label lblElHome;
+        private System.Windows.Forms.Label lblELHomeStatus;
+        private System.Windows.Forms.Label lblAzHomeStatus1;
+        private System.Windows.Forms.Label lblAzLimit1;
+        private System.Windows.Forms.Label lblAzLimit2;
+        private System.Windows.Forms.DataVisualization.Charting.Chart elevationAccChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart counterBalanceAccChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart azimuthAccChart;
+        private System.Windows.Forms.Label lblCbDisabled;
+        private System.Windows.Forms.Label lblElDisabled;
+        private System.Windows.Forms.Label lblAzDisabled;
+        private System.Windows.Forms.Label lblInitTimeout;
+        private System.Windows.Forms.Label lblDataTimeout;
+        private System.Windows.Forms.TextBox txtDataTimeout;
+        private System.Windows.Forms.TextBox txtInitTimeout;
+        private System.Windows.Forms.ToolTip DataTimeoutValidation;
+        private System.Windows.Forms.ToolTip InitTimeoutValidation;
     }
 }

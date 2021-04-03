@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ControlRoomApplication.Controllers.Sensors;
+using ControlRoomApplication.Util;
+
 
 
 namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
@@ -52,10 +54,10 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                         temps.Add( Temperature.Generate( element.time , element.val , SensorLocationEnumTypeConversionHelper.FromInt( element.loc ) ) );
                         threshold = 80;
                     } else if(data.type == "acc") {
-                        accs.Add( Acceleration.Generate( element.time , element.val , element.x , element.y , element.z , SensorLocationEnumTypeConversionHelper.FromInt( element.loc ) ) );
+                        accs.Add( Acceleration.Generate( element.time , element.x , element.y , element.z , SensorLocationEnumTypeConversionHelper.FromInt( element.loc ) ) );
                         threshold = 1.65;
                     } else {
-                        logger.Info("Datatype not found");
+                        logger.Info(Utilities.GetTimeStamp() + ": Datatype not found");
                         return;
                     }
                     if(element.val > threshold) {

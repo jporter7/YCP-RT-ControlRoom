@@ -42,6 +42,7 @@ namespace ControlRoomApplication.Main
         public DbSet<Temperature> Temperatures { get; set; }
         public DbSet<Acceleration> Accelerations { get; set; }
         public DbSet<CelestialBody> CelestialBodies { get; set; }
+        public DbSet<SensorNetworkConfig> SensorNetworkConfig { get; set; }
         public DbSet<SpectraCyberConfig> SpectraCyberConfigs { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
@@ -50,5 +51,6 @@ namespace ControlRoomApplication.Main
         public DbSet<RadioTelescope> RadioTelescope { get; set; }
         public DbSet<ThresholdValues> ThresholdValues { get; set; }
         public DbSet<Override> Override { get; set; }
+        public DbSet<WeatherThreshold> WeatherThreshold {get; set;}
     }
 }

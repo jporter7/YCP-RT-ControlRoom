@@ -14,6 +14,8 @@ namespace ControlRoomApplication.Entities
         AZIMUTH_MOTOR,
         ELEVATION_MOTOR,
         WEATHER_STATION,
+        EL_PROXIMITY_0,
+        EL_PROXIMITY_90,
 
         // specific
         AZ_MOTOR_TEMP,
@@ -24,6 +26,8 @@ namespace ControlRoomApplication.Entities
         ELEV_MOTOR_CURRENT,
         COUNTER_BALANCE_VIBRATION,
         WIND,
-        RAIN_AMOUNT
+        RAIN_AMOUNT,
+        ELEVATION_ABS_ENCODER,
+        AZIMUTH_ABS_ENCODER
     }
 }

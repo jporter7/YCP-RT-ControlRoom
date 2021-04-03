@@ -7,7 +7,7 @@ namespace ControlRoomApplication.Entities
 {
     [Table("orientation")]
     [Serializable]
-    public class Orientation
+    public class Orientation : ICloneable
     {
         public Orientation(double azimuth, double elevation)
         {
@@ -73,6 +73,15 @@ namespace ControlRoomApplication.Entities
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        /// <summary>
+        /// An extension function to duplicate (clone) an orientation.
+        /// </summary>
+        /// <returns>Returns a new orientation identical to the object in which it was called.</returns>
+        public object Clone()
+        {
+            return new Orientation(Azimuth, Elevation);
         }
     }
 }

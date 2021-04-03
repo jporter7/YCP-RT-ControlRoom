@@ -66,12 +66,13 @@ namespace ControlRoomApplication.Main
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.runControlScriptButton = new System.Windows.Forms.Button();
             this.manualGroupBox = new System.Windows.Forms.GroupBox();
+            this.speedTrackBar = new System.Windows.Forms.TrackBar();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.manualControlButton = new System.Windows.Forms.Button();
             this.immediateRadioButton = new System.Windows.Forms.RadioButton();
-            this.ControledButtonRadio = new System.Windows.Forms.RadioButton();
+            this.ControlledButtonRadio = new System.Windows.Forms.RadioButton();
             this.speedTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -79,9 +80,9 @@ namespace ControlRoomApplication.Main
             this.plusElaButton = new System.Windows.Forms.Button();
             this.subElaButton = new System.Windows.Forms.Button();
             this.plusJogButton = new System.Windows.Forms.Button();
-            this.speedTrackBar = new System.Windows.Forms.TrackBar();
             this.button1 = new System.Windows.Forms.Button();
             this.spectraCyberGroupBox = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.integrationStepCombo = new System.Windows.Forms.ComboBox();
             this.label10 = new System.Windows.Forms.Label();
             this.IFGainVal = new System.Windows.Forms.TextBox();
@@ -94,7 +95,6 @@ namespace ControlRoomApplication.Main
             this.lblFrequency = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.offsetVoltage = new System.Windows.Forms.TextBox();
-            this.label12 = new System.Windows.Forms.Label();
             this.scanTypeComboBox = new System.Windows.Forms.ComboBox();
             this.IFGainToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.frequencyToolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -505,8 +505,8 @@ namespace ControlRoomApplication.Main
             "Recover From Clockwise Hardstop",
             "Recover From Counter-Clockwise Hardstop",
             "Home Telescope",
-            "Custom Azimuth Movement (Slip Ring Test)"});
-            this.controlScriptsCombo.SelectedIndex = 0;
+            "Custom Orientation Movement",
+            "Endless Azimuth Rotation"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
@@ -550,7 +550,7 @@ namespace ControlRoomApplication.Main
             this.manualGroupBox.Controls.Add(this.label3);
             this.manualGroupBox.Controls.Add(this.manualControlButton);
             this.manualGroupBox.Controls.Add(this.immediateRadioButton);
-            this.manualGroupBox.Controls.Add(this.ControledButtonRadio);
+            this.manualGroupBox.Controls.Add(this.ControlledButtonRadio);
             this.manualGroupBox.Controls.Add(this.speedTextBox);
             this.manualGroupBox.Controls.Add(this.label2);
             this.manualGroupBox.Controls.Add(this.label1);
@@ -567,6 +567,16 @@ namespace ControlRoomApplication.Main
             this.manualGroupBox.TabStop = false;
             this.manualGroupBox.Text = "Manual Control";
             this.manualGroupBox.Enter += new System.EventHandler(this.manualGroupBox_Enter);
+            // 
+            // speedTrackBar
+            // 
+            this.speedTrackBar.Location = new System.Drawing.Point(108, 145);
+            this.speedTrackBar.Maximum = 20;
+            this.speedTrackBar.Name = "speedTrackBar";
+            this.speedTrackBar.Size = new System.Drawing.Size(150, 45);
+            this.speedTrackBar.SmallChange = 3;
+            this.speedTrackBar.TabIndex = 20;
+            this.speedTrackBar.Scroll += new System.EventHandler(this.speedTrackBar_Scroll);
             // 
             // label4
             // 
@@ -627,19 +637,19 @@ namespace ControlRoomApplication.Main
             this.immediateRadioButton.Text = "Immediate Stop";
             this.immediateRadioButton.UseVisualStyleBackColor = true;
             // 
-            // ControledButtonRadio
+            // ControlledButtonRadio
             // 
-            this.ControledButtonRadio.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.ControledButtonRadio.AutoSize = true;
-            this.ControledButtonRadio.Checked = true;
-            this.ControledButtonRadio.Location = new System.Drawing.Point(9, 104);
-            this.ControledButtonRadio.Margin = new System.Windows.Forms.Padding(2);
-            this.ControledButtonRadio.Name = "ControledButtonRadio";
-            this.ControledButtonRadio.Size = new System.Drawing.Size(97, 17);
-            this.ControledButtonRadio.TabIndex = 23;
-            this.ControledButtonRadio.TabStop = true;
-            this.ControledButtonRadio.Text = "Controlled Stop";
-            this.ControledButtonRadio.UseVisualStyleBackColor = true;
+            this.ControlledButtonRadio.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ControlledButtonRadio.AutoSize = true;
+            this.ControlledButtonRadio.Checked = true;
+            this.ControlledButtonRadio.Location = new System.Drawing.Point(9, 104);
+            this.ControlledButtonRadio.Margin = new System.Windows.Forms.Padding(2);
+            this.ControlledButtonRadio.Name = "ControlledButtonRadio";
+            this.ControlledButtonRadio.Size = new System.Drawing.Size(97, 17);
+            this.ControlledButtonRadio.TabIndex = 23;
+            this.ControlledButtonRadio.TabStop = true;
+            this.ControlledButtonRadio.Text = "Controlled Stop";
+            this.ControlledButtonRadio.UseVisualStyleBackColor = true;
             // 
             // speedTextBox
             // 
@@ -647,9 +657,9 @@ namespace ControlRoomApplication.Main
             this.speedTextBox.Location = new System.Drawing.Point(9, 162);
             this.speedTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.speedTextBox.Name = "speedTextBox";
+            this.speedTextBox.ReadOnly = true;
             this.speedTextBox.Size = new System.Drawing.Size(69, 20);
             this.speedTextBox.TabIndex = 10;
-            this.speedTextBox.ReadOnly = true;
             // 
             // label2
             // 
@@ -667,7 +677,7 @@ namespace ControlRoomApplication.Main
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(94, 13);
             this.label1.TabIndex = 8;
-            this.label1.Text = "Current Elavation: ";
+            this.label1.Text = "Current Elevation: ";
             // 
             // subJogButton
             // 
@@ -726,18 +736,9 @@ namespace ControlRoomApplication.Main
             this.plusJogButton.TabIndex = 7;
             this.plusJogButton.Text = "+ Jog";
             this.plusJogButton.UseVisualStyleBackColor = false;
+            this.plusJogButton.Click += new System.EventHandler(this.plusJogButton_Click);
             this.plusJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_Down);
             this.plusJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_UP);
-            // 
-            // speedTrackBar
-            // 
-            this.speedTrackBar.Location = new System.Drawing.Point(108, 145);
-            this.speedTrackBar.Maximum = 20;
-            this.speedTrackBar.Name = "speedTrackBar";
-            this.speedTrackBar.Size = new System.Drawing.Size(150, 45);
-            this.speedTrackBar.SmallChange = 3;
-            this.speedTrackBar.TabIndex = 20;
-            this.speedTrackBar.Scroll += new System.EventHandler(this.speedTrackBar_Scroll);
             // 
             // button1
             // 
@@ -757,6 +758,7 @@ namespace ControlRoomApplication.Main
             // spectraCyberGroupBox
             // 
             this.spectraCyberGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+            this.spectraCyberGroupBox.Controls.Add(this.label12);
             this.spectraCyberGroupBox.Controls.Add(this.integrationStepCombo);
             this.spectraCyberGroupBox.Controls.Add(this.label10);
             this.spectraCyberGroupBox.Controls.Add(this.IFGainVal);
@@ -769,7 +771,6 @@ namespace ControlRoomApplication.Main
             this.spectraCyberGroupBox.Controls.Add(this.lblFrequency);
             this.spectraCyberGroupBox.Controls.Add(this.label9);
             this.spectraCyberGroupBox.Controls.Add(this.offsetVoltage);
-            this.spectraCyberGroupBox.Controls.Add(this.label12);
             this.spectraCyberGroupBox.Controls.Add(this.scanTypeComboBox);
             this.spectraCyberGroupBox.Location = new System.Drawing.Point(296, 111);
             this.spectraCyberGroupBox.Margin = new System.Windows.Forms.Padding(2);
@@ -779,6 +780,19 @@ namespace ControlRoomApplication.Main
             this.spectraCyberGroupBox.TabIndex = 29;
             this.spectraCyberGroupBox.TabStop = false;
             this.spectraCyberGroupBox.Text = "Spectra Cyber";
+            // 
+            // label12
+            // 
+            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(133, 43);
+            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(74, 13);
+            this.label12.TabIndex = 26;
+            this.label12.Text = "Offset Voltage";
+            this.label12.Click += new System.EventHandler(this.label12_Click);
+            this.label12.MouseHover += new System.EventHandler(this.label12_MouseHover);
             // 
             // integrationStepCombo
             // 
@@ -790,7 +804,6 @@ namespace ControlRoomApplication.Main
             "0.3",
             "0.5(S)/1.00(C) ",
             "1.00(S)/10.00(C)"});
-            this.integrationStepCombo.SelectedIndex = 0;
             this.integrationStepCombo.Location = new System.Drawing.Point(215, 56);
             this.integrationStepCombo.Margin = new System.Windows.Forms.Padding(2);
             this.integrationStepCombo.MaxDropDownItems = 6;
@@ -859,7 +872,6 @@ namespace ControlRoomApplication.Main
             "X20",
             "X50",
             "X60"});
-            this.DCGain.SelectedIndex = 0;
             this.DCGain.Location = new System.Drawing.Point(4, 56);
             this.DCGain.Margin = new System.Windows.Forms.Padding(2);
             this.DCGain.MaxDropDownItems = 6;
@@ -941,19 +953,6 @@ namespace ControlRoomApplication.Main
             this.offsetVoltage.TabIndex = 27;
             this.offsetVoltage.TextChanged += new System.EventHandler(this.offsetVoltage_TextChanged);
             // 
-            // label12
-            // 
-            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(133, 43);
-            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(74, 13);
-            this.label12.TabIndex = 26;
-            this.label12.Text = "Offset Voltage";
-            this.label12.Click += new System.EventHandler(this.label12_Click);
-            this.label12.MouseHover += new System.EventHandler(this.label12_MouseHover);
-            // 
             // scanTypeComboBox
             // 
             this.scanTypeComboBox.BackColor = System.Drawing.Color.DarkGray;
@@ -963,7 +962,6 @@ namespace ControlRoomApplication.Main
             "Scan Type",
             "Continuum",
             "Spectral"});
-            this.scanTypeComboBox.SelectedIndex = 0;
             this.scanTypeComboBox.Location = new System.Drawing.Point(4, 18);
             this.scanTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.scanTypeComboBox.MaxDropDownItems = 2;
@@ -1047,7 +1045,7 @@ namespace ControlRoomApplication.Main
         private System.Windows.Forms.TextBox speedTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton immediateRadioButton;
-        private System.Windows.Forms.RadioButton ControledButtonRadio;
+        private System.Windows.Forms.RadioButton ControlledButtonRadio;
         private System.Windows.Forms.Button manualControlButton;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;

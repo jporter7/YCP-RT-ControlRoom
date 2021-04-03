@@ -15,6 +15,12 @@ using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Controllers.Communications;
 using System.Threading;
 using System.ComponentModel;
+using ControlRoomApplication.Util;
+using System.Linq;
+using ControlRoomApplication.Controllers.SensorNetwork;
+using System.Drawing.Printing;
+using System.Threading.Tasks;
+using ControlRoomApplication.Validation;
 
 namespace ControlRoomApplication.GUI
 {
@@ -77,9 +83,18 @@ namespace ControlRoomApplication.GUI
         bool _elUpperProxChange = false;
 
         // Alert Flags
-        bool farenheit = true;
+        bool fahrenheit = true;
+
+        // Validation for sensor timeouts
+        bool DataTimeoutValid;
+        bool InitTimeoutValid;
 
         private int rtId;
+
+
+        // Config file for the sensor network server to use
+        SensorNetworkConfig SensorNetworkConfig;
+        
 
         // This is being passed through so the Weather Station override bool can be modified
         private readonly MainForm mainF;
@@ -124,31 +139,54 @@ namespace ControlRoomApplication.GUI
             //MCU_Statui.Columns[0].HeaderText = "Status name";
             //MCU_Statui.Columns[1].HeaderText = "value";
 
-            controlRoom.RadioTelescopeControllers.Find(x => x.RadioTelescope.Id == rtId).RadioTelescope.Micro_controler.BringUp();
-
             SetCurrentWeatherData();
             runDiagScriptsButton.Enabled = false;
 
             // Updates the override buttons so they reflect what the actual override values are
-            updateButtons();
+            bool currMain = rtController.overrides.overrideGate;
+            bool currWS = controlRoom.weatherStationOverride;
+            bool currAZ = rtController.overrides.overrideAzimuthMotTemp;
+            bool currEL = rtController.overrides.overrideElevatMotTemp;
+            bool currElProx0 = rtController.overrides.overrideElevatProx0;
+            bool currElProx90 = rtController.overrides.overrideElevatProx90;
+            bool currAzimuthAbsEncoder = rtController.overrides.overrideAzimuthAbsEncoder;
+            bool currElevationAbsEncoder = rtController.overrides.overrideElevationAbsEncoder;
+            bool currAzimuthAccelerometer = rtController.overrides.overrideAzimuthAccelerometer;
+            bool currElevationAccelerometer = rtController.overrides.overrideElevationAccelerometer;
+            bool currCounterbalanceAccelerometer = rtController.overrides.overrideCounterbalanceAccelerometer;
+            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90, 
+                currAzimuthAbsEncoder, currElevationAbsEncoder, currAzimuthAccelerometer, currElevationAccelerometer, currCounterbalanceAccelerometer);
+            
             updateOverride = new BackgroundWorker();
             updateOverride.DoWork += new DoWorkEventHandler(checkOverrideVars);
             updateOverride.RunWorkerAsync();
-
-            // Set azimuth limit switch overrides to hidden if slip ring is the telescope type
-            if(rtController.RadioTelescope._TeleType == RadioTelescopeTypeEnum.SLIP_RING)
-            {
-                ORAzimuthSens1.Visible = false;
-                ORAzimuthSens2.Visible = false;
-                label4.Visible = false;
-                label21.Visible = false;
-            }
 
             //Initialize Color
             celTempConvert.BackColor = System.Drawing.Color.DarkGray;
             farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
 
-            logger.Info("DiagnosticsForm Initalized");
+            lblSNStatus.Text = "";
+
+            // Set sensor initialization checkboxes to reflect what is stored in the database
+            SensorNetworkConfig = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
+
+            AzimuthTemperature1.Checked = SensorNetworkConfig.AzimuthTemp1Init;
+            AzimuthTemperature2.Checked = SensorNetworkConfig.AzimuthTemp2Init;
+            ElevationTemperature1.Checked = SensorNetworkConfig.ElevationTemp1Init;
+            ElevationTemperature2.Checked = SensorNetworkConfig.ElevationTemp2Init;
+            AzimuthAccelerometer.Checked = SensorNetworkConfig.AzimuthAccelerometerInit;
+            ElevationAccelerometer.Checked = SensorNetworkConfig.ElevationAccelerometerInit;
+            CounterbalanceAccelerometer.Checked = SensorNetworkConfig.CounterbalanceAccelerometerInit;
+            ElevationEncoder.Checked = SensorNetworkConfig.ElevationEncoderInit;
+            AzimuthEncoder.Checked = SensorNetworkConfig.AzimuthEncoderInit;
+            txtDataTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutDataRetrieval / 1000;
+            txtInitTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutInitialization / 1000;
+
+            // Set default values for timeout validation
+            DataTimeoutValid = true;
+            InitTimeoutValid = true;
+
+            logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
 
         private void SetCurrentWeatherData()
@@ -226,17 +264,19 @@ namespace ControlRoomApplication.GUI
         {
             double currWindSpeed = controlRoom.WeatherStation.GetWindSpeed();//wind speed
 
-            double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
+            //double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
 
-            _azEncoderDegrees = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
-            _elEncoderDegrees = rtController.RadioTelescope.Encoders.GetCurentOrientation().Elevation;
+            _azEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth;
+            _elEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation;
+            lblAzAbsPos.Text = Math.Round(_azEncoderDegrees, 2).ToString();
+            lblElAbsPos.Text = Math.Round(_elEncoderDegrees, 2).ToString();
 
             timer1.Interval = 200;
 
+            //TODO: Investigate if needed 
+            /*
             if (selectDemo.Checked == true)
             {
-                rtController.RadioTelescope.Micro_controler.setStableOrTesting(false);
-
                 // Simulating Encoder Sensors
                 TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
 
@@ -263,19 +303,29 @@ namespace ControlRoomApplication.GUI
 
 
             }
+            */
 
-            double ElMotTemp = rtController.RadioTelescope.Micro_controler.tempData.elevationTemp;
-            double AzMotTemp = rtController.RadioTelescope.Micro_controler.tempData.azimuthTemp;
+            Temperature[] ElMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp;
+            Temperature[] AzMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp;
+
+            // these come in as celsius
+            double ElMotTemp = ElMotTemps[ElMotTemps.Length - 1].temp;
+            double AzMotTemp = AzMotTemps[AzMotTemps.Length - 1].temp;
+
             float insideTemp = controlRoom.WeatherStation.GetInsideTemp();
             float outsideTemp = controlRoom.WeatherStation.GetOutsideTemp();
 
-            double ElMotTempCel = (ElMotTemp - 32) * (5.0 / 9);
-            double AzMotTempCel = (AzMotTemp - 32) * (5.0 / 9);
             double insideTempCel = (insideTemp - 32) * (5.0 / 9);
             double outsideTempCel = (outsideTemp - 32) * (5.0 / 9);
 
+            // fahrenheit conversion
+            double ElMotTempFahrenheit = (ElMotTemp * (5.0 / 9)) + 32;
+            double AzMotTempFahrenheit = (AzMotTemp * (5.0 / 9)) + 32;
+
+
+
             //Celsius
-            if (farenheit == false)
+            if (fahrenheit == false)
             {
                 InsideTempUnits.Text = "Celsius";
                 outTempUnits.Text = "Celsius";
@@ -283,49 +333,67 @@ namespace ControlRoomApplication.GUI
                 ElTempUnitLabel.Text = "Celsius";
                 outsideTempLabel.Text = Math.Round(insideTempCel, 2).ToString();
                 insideTempLabel.Text = Math.Round(outsideTempCel, 2).ToString();
-                fldElTemp.Text = Math.Round(ElMotTempCel, 2).ToString();
-                fldAzTemp.Text = Math.Round(AzMotTempCel, 2).ToString();
+
+                if (SensorNetworkConfig.ElevationTemp1Init)
+                {
+                    fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
+                }
+                else
+                {
+                    fldElTemp.Text = "--";
+                }
+
+                if (SensorNetworkConfig.AzimuthTemp1Init)
+                {
+                    fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
+                }
+                else
+                {
+                    fldAzTemp.Text = "--";
+                }
             }
-            //Farenheit
-            else if (farenheit == true)
+            //fahrenheit
+            else if (fahrenheit == true)
             {
-                InsideTempUnits.Text = "Farenheit";
-                outTempUnits.Text = "Farenheit";
-                AZTempUnitLabel.Text = "Farenheit";
-                ElTempUnitLabel.Text = "Farenheit";
+                InsideTempUnits.Text = "Fahrenheit";
+                outTempUnits.Text = "Fahrenheit";
+                AZTempUnitLabel.Text = "Fahrenheit";
+                ElTempUnitLabel.Text = "Fahrenheit";
                 outsideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetOutsideTemp(), 2).ToString();
                 insideTempLabel.Text = Math.Round(controlRoom.WeatherStation.GetInsideTemp(), 2).ToString();
-                fldElTemp.Text = Math.Round(ElMotTemp, 2).ToString();
-                fldAzTemp.Text = Math.Round(AzMotTemp, 2).ToString();
+
+                if (SensorNetworkConfig.ElevationTemp1Init)
+                {
+                    fldElTemp.Text = Math.Round(ElMotTempFahrenheit, 2).ToString();
+                }
+                else
+                {
+                    fldElTemp.Text = "--";
+                }
+
+                if (SensorNetworkConfig.AzimuthTemp1Init)
+                {
+                    fldAzTemp.Text = Math.Round(AzMotTempFahrenheit, 2).ToString();
+                }
+                else
+                {
+                    fldAzTemp.Text = "--";
+                }
             }
 
             // Encoder Position in both degrees and motor ticks
-            lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 3).ToString();
+            lblAzEncoderDegrees.Text = Math.Round(_azEncoderDegrees, 2).ToString();
             lblAzEncoderTicks.Text = _azEncoderTicks.ToString();
 
             // lblElEncoderDegrees.Text = _elEncoderDegrees.ToString();
-            lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 3).ToString();
+            lblElEncoderDegrees.Text =Math.Round(_elEncoderDegrees, 2).ToString();
             lblElEncoderTicks.Text = _elEncoderTicks.ToString();
 
             // Proximity and Limit Switches
-
-            // Tell the user azimuth limits are not present if the telescope type is set to SLIP_RING
-            if (rtController.RadioTelescope._TeleType == RadioTelescopeTypeEnum.SLIP_RING)
-            {
-                lblAzLimStatus1.Text = "N/A";
-                lblAzLimStatus2.Text = "N/A";
-            }
-            else
-            {
-                lblAzLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CCW_Limit.ToString();
-                lblAzLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Azimuth_CW_Limit.ToString();
-            }
-
             lblElLimStatus1.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Lower_Limit.ToString();
             lblElLimStatus2.Text = rtController.RadioTelescope.PLCDriver.limitSwitchData.Elevation_Upper_Limit.ToString();
 
             lblAzHomeStatus1.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_One.ToString();
-            lblAzHomeStatus2.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Azimuth_Home_Two.ToString();
             lblELHomeStatus.Text = rtController.RadioTelescope.PLCDriver.homeSensorData.Elevation_Home.ToString();
 
             lbEstopStat.Text = rtController.RadioTelescope.PLCDriver.plcInput.Estop.ToString();
@@ -400,6 +468,29 @@ namespace ControlRoomApplication.GUI
                 graphClear = true;
             }
 
+            // Update MCU error status
+
+            // First retrieve errors
+            String errors = string.Join("\n", rtController.RadioTelescope.PLCDriver.CheckMCUErrors().
+                Select(s =>
+                    s.Item1.ToString() + ": " + s.Item2.ToString()
+                ).ToArray());
+
+            if(!errors.Equals(""))
+            {
+                lblMCUStatus.ForeColor = Color.Red;
+                lblMCUStatus.Text = "Contains Errors";
+
+            }
+            else
+            {
+                lblMCUStatus.ForeColor = Color.Green;
+                lblMCUStatus.Text = "Running";
+            }
+
+            // Display errors
+            lblMCUErrors.Text = errors;
+
             // Console Log Output Update
             consoleLogBox.Text = mainF.log.loggerQueue;
 
@@ -408,6 +499,135 @@ namespace ControlRoomApplication.GUI
                 consoleLogBox.SelectionStart = consoleLogBox.TextLength;
                 consoleLogBox.ScrollToCaret();
             }
+            
+            // FFT transformations -- currently not in use
+            //double[] fftX = FftSharp.Transform.FFTpower(eleAccelerometerX);
+            //double[]fft
+            //double SAMPLE_RATE = 0.8;
+
+            // Create an array of frequencies for each point of the FFT
+            //double[] freqs = FftSharp.Transform.FFTfreq(SAMPLE_RATE , fftX.Length);
+
+            // Azimuth Accelerometer Chart /////////////////////////////////////////////
+            if (SensorNetworkConfig.AzimuthAccelerometerInit)
+            {
+                lblAzDisabled.Visible = false;
+                Acceleration[] azimuthAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorAccl;
+                azimuthAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+                azimuthAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
+
+                for (int i = 0; i < azimuthAccel.Length; i++)
+                {
+                    azimuthAccChart.Series["x"].Points.AddY(azimuthAccel[i].x);
+                    azimuthAccChart.Series["y"].Points.AddY(azimuthAccel[i].y);
+                    azimuthAccChart.Series["z"].Points.AddY(azimuthAccel[i].z);
+
+
+                    if (azimuthAccChart.Series["x"].Points.Count > 500)
+                    {
+                        azimuthAccChart.Series["x"].Points.RemoveAt(0);
+                        azimuthAccChart.Series["y"].Points.RemoveAt(0);
+                        azimuthAccChart.Series["z"].Points.RemoveAt(0);
+                    }
+                    azimuthAccChart.ChartAreas[0].RecalculateAxesScale();
+                }
+            }
+            else
+            {
+                // This all only needs to be executed once when it is reached. This if statement
+                // blocks these five lines from being executed during every single tick
+                if (!lblAzDisabled.Visible)
+                {
+                    lblAzDisabled.Visible = true;
+                    lblAzDisabled.Text = "Azimuth Motor Accelerometer Disabled";
+                    azimuthAccChart.Series["x"].Points.Clear();
+                    azimuthAccChart.Series["y"].Points.Clear();
+                    azimuthAccChart.Series["z"].Points.Clear();
+                }
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+
+            // Elevation Accelerometer Chart /////////////////////////////////////////////
+            if (SensorNetworkConfig.ElevationAccelerometerInit)
+            {
+                lblElDisabled.Visible = false;
+                Acceleration[] eleAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorAccl;
+
+                elevationAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+                elevationAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
+
+                for (int i = 0; i < eleAccel.Length; i++)
+                {
+                    elevationAccChart.Series["x"].Points.AddY(eleAccel[i].x);
+                    elevationAccChart.Series["y"].Points.AddY(eleAccel[i].y);
+                    elevationAccChart.Series["z"].Points.AddY(eleAccel[i].z);
+
+
+                    if (elevationAccChart.Series["x"].Points.Count > 500)
+                    {
+                        elevationAccChart.Series["x"].Points.RemoveAt(0);
+                        elevationAccChart.Series["y"].Points.RemoveAt(0);
+                        elevationAccChart.Series["z"].Points.RemoveAt(0);
+                    }
+                    elevationAccChart.ChartAreas[0].RecalculateAxesScale();
+                }
+            }
+            else
+            {
+                // This all only needs to be executed once when it is reached. This if statement
+                // blocks these five lines from being executed during every single tick
+                if (!lblElDisabled.Visible)
+                {
+                    lblElDisabled.Visible = true;
+                    lblElDisabled.Text = "Elevation Motor Accelerometer Disabled";
+                    elevationAccChart.Series["x"].Points.Clear();
+                    elevationAccChart.Series["y"].Points.Clear();
+                    elevationAccChart.Series["z"].Points.Clear();
+                }
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+
+            // CounterBalance Accelerometer Chart /////////////////////////////////////////////
+            if (SensorNetworkConfig.CounterbalanceAccelerometerInit)
+            {
+                lblCbDisabled.Visible = false;
+                Acceleration[] cbAccel = rtController.RadioTelescope.SensorNetworkServer.CurrentCounterbalanceAccl;
+                counterBalanceAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
+                counterBalanceAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
+
+                for (int i = 0; i < cbAccel.Length; i++)
+                {
+                    counterBalanceAccChart.Series["x"].Points.AddY(cbAccel[i].x);
+                    counterBalanceAccChart.Series["y"].Points.AddY(cbAccel[i].y);
+                    counterBalanceAccChart.Series["z"].Points.AddY(cbAccel[i].z);
+
+
+                    if (counterBalanceAccChart.Series["x"].Points.Count > 500)
+                    {
+                        counterBalanceAccChart.Series["x"].Points.RemoveAt(0);
+                        counterBalanceAccChart.Series["y"].Points.RemoveAt(0);
+                        counterBalanceAccChart.Series["z"].Points.RemoveAt(0);
+                    }
+                    counterBalanceAccChart.ChartAreas[0].RecalculateAxesScale();
+                }
+            }
+            else
+            {
+                // This all only needs to be executed once when it is reached. This if statement
+                // blocks these five lines from being executed during every single tick
+                if (!lblCbDisabled.Visible)
+                {
+                    lblCbDisabled.Visible = true;
+                    lblCbDisabled.Text = "Counterbalance Accelerometer Disabled";
+                    counterBalanceAccChart.Series["x"].Points.Clear();
+                    counterBalanceAccChart.Series["y"].Points.Clear();
+                    counterBalanceAccChart.Series["z"].Points.Clear();
+                }
+            }
+            ///////////////////////////////////////////////////////////////////////////////
+
+            // Update the Sensor Network status
+            lblSNStatus.Text = "Status:\n" + rtController.RadioTelescope.SensorNetworkServer.Status.ToString();
         }
 
         private void DiagnosticsForm_Load(object sender, System.EventArgs e)
@@ -535,7 +755,7 @@ namespace ControlRoomApplication.GUI
 
         private void editDiagScriptsButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Edit Scripts Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Edit Scripts Button Clicked");
             int caseSwitch = diagnosticScriptCombo.SelectedIndex;
 
             switch (caseSwitch)
@@ -585,66 +805,35 @@ namespace ControlRoomApplication.GUI
                 System.Diagnostics.Process.Start(filename);
         }
 
-        private void ORAzimuthSens1_Click(object sender, EventArgs e)
-        {
-            if (!rtController.overrides.overrideAzimuthProx1)
-            {
-                ORAzimuthSens1.Text = "OVERRIDING";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
-                rtController.setOverride("azimuth proximity (1)", true);
-            }
-            else if (rtController.overrides.overrideAzimuthProx1)
-            {
-                ORAzimuthSens1.Text = "ENABLED";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
-                rtController.setOverride("azimuth proximity (1)", false);
-            }
-        }
-
-        private void ORAzimuthSens2_Click(object sender, EventArgs e)
-        {
-            if (!rtController.overrides.overrideAzimuthProx2)
-            {
-                ORAzimuthSens2.Text = "OVERRIDING";
-                ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
-                rtController.setOverride("azimuth proximity (2)", true);
-            }
-            else if (rtController.overrides.overrideAzimuthProx2)
-            {
-                ORAzimuthSens2.Text = "ENABLED";
-                ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
-                rtController.setOverride("azimuth proximity (2)", false);
-            }
-        }
 
         private void ElevationProximityOverideButton1_Click(object sender, EventArgs e)
         {
-            if (!rtController.overrides.overrideElevatProx1)
+            if (!rtController.overrides.overrideElevatProx0)
             {
-                ElevationProximityOveride1.Text = "OVERRIDING";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+                ElivationLimitSwitch0.Text = "OVERRIDING";
+                ElivationLimitSwitch0.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("elevation proximity (1)", true);
             }
-            else if (rtController.overrides.overrideElevatProx1)
+            else if (rtController.overrides.overrideElevatProx0)
             {
-                ElevationProximityOveride1.Text = "ENABLED";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+                ElivationLimitSwitch0.Text = "ENABLED";
+                ElivationLimitSwitch0.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("elevation proximity (1)", false);
             }
         }
 
         private void ElevationProximityOverideButton2_Click(object sender, EventArgs e)
         {
-            if (!rtController.overrides.overrideElevatProx2)
+            if (!rtController.overrides.overrideElevatProx90)
             {
-                ElevationProximityOveride2.Text = "OVERRIDING";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
+                ElevationLimitSwitch90.Text = "OVERRIDING";
+                ElevationLimitSwitch90.BackColor = System.Drawing.Color.Red;
                 rtController.setOverride("elevation proximity (2)", true);
             }
             else
             {
-                ElevationProximityOveride2.Text = "ENABLED";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
+                ElevationLimitSwitch90.Text = "ENABLED";
+                ElevationLimitSwitch90.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("elevation proximity (2)", false);
             }
         }
@@ -675,9 +864,9 @@ namespace ControlRoomApplication.GUI
 
             
 
-            if (farenheit == true)
+            if (fahrenheit == true)
             {
-                farenheit = false;
+                fahrenheit = false;
                 celTempConvert.BackColor = System.Drawing.Color.LimeGreen;
                 farTempConvert.BackColor = System.Drawing.Color.DarkGray;
                 
@@ -689,9 +878,9 @@ namespace ControlRoomApplication.GUI
           
             
 
-            if (farenheit == false)
+            if (fahrenheit == false)
             {
-                farenheit = true;
+                fahrenheit = true;
                 celTempConvert.BackColor = System.Drawing.Color.DarkGray;
                 farTempConvert.BackColor = System.Drawing.Color.LimeGreen;
             
@@ -705,19 +894,19 @@ namespace ControlRoomApplication.GUI
                 WSOverride.Text = "OVERRIDING";
                 WSOverride.BackColor = System.Drawing.Color.Red;
                 mainF.setWSOverride(true);
-                rtController.setOverride("weather station", true);
 
+                // We are only calling this to send the push notification and email, it does not actually set the override
+                rtController.setOverride("weather station", true);
             }
             else
             {
                 WSOverride.Text = "ENABLED";
                 WSOverride.BackColor = System.Drawing.Color.LimeGreen;
                 mainF.setWSOverride(false);
+
+                // We are only calling this to send the push notification and email, it does not actually set the override
                 rtController.setOverride("weather station", false);
             }
-
-            // Change value in database
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.WEATHER_STATION);
         }
 
         private void MGOverride_Click(object sender, EventArgs e)
@@ -734,9 +923,6 @@ namespace ControlRoomApplication.GUI
                 MGOverride.BackColor = System.Drawing.Color.LimeGreen;
                 rtController.setOverride("main gate", false);
             }
-
-            // Change value in database
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.GATE);
         }
 
         private void lblElEncoderDegrees_Click(object sender, EventArgs e)
@@ -765,9 +951,6 @@ namespace ControlRoomApplication.GUI
 
                 rtController.setOverride("azimuth motor temperature", false);
             }
-
-            // Change value in database
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
         }
 
         private void ElMotTempSensOverride_Click(object sender, EventArgs e)
@@ -786,9 +969,6 @@ namespace ControlRoomApplication.GUI
 
                 rtController.setOverride("elevation motor temperature", false);
             }
-
-            // Change value in database
-            DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
         }
 
         private void buttonWS_Click(object sender, EventArgs e)
@@ -823,32 +1003,66 @@ namespace ControlRoomApplication.GUI
         private void checkOverrideVars(object sender, DoWorkEventArgs e)
         {
             // Current overrides
-            bool currMain = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
-            bool currWS = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.WEATHER_STATION);
-            bool currAZ = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-            bool currEL = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
-            bool newMain, newWS, newAZ, newEL;
+            bool currMain = rtController.overrides.overrideGate;
+            bool currWS = controlRoom.weatherStationOverride;
+            bool currAZ = rtController.overrides.overrideAzimuthMotTemp;
+            bool currEL = rtController.overrides.overrideElevatMotTemp;
+            bool currElProx0 = rtController.overrides.overrideElevatProx0;
+            bool currElProx90 = rtController.overrides.overrideElevatProx90;
+            bool currAzimuthAbsEncoder = rtController.overrides.overrideAzimuthAbsEncoder;
+            bool currElevationAbsEncoder = rtController.overrides.overrideElevationAbsEncoder;
+            bool currAzimuthAccelerometer = rtController.overrides.overrideAzimuthAccelerometer;
+            bool currElevationAccelerometer = rtController.overrides.overrideElevationAccelerometer;
+            bool currCounterbalanceAccelerometer = rtController.overrides.overrideCounterbalanceAccelerometer;
+
+            bool newMain, newWS, newAZ, newEL, newElProx0, newElProx90, 
+                newAzimuthAbsEncoder, newElevationAbsEncoder, newAzimuthAccelerometer, newElevationAccelerometer, newCounterbalanceAccelerometer;
 
 
             while (true)
             {
-                newMain = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
-                newWS = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.WEATHER_STATION);
-                newAZ = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-                newEL = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+                newMain = rtController.overrides.overrideGate;
+                newWS = controlRoom.weatherStationOverride;
+                newAZ = rtController.overrides.overrideAzimuthMotTemp;
+                newEL = rtController.overrides.overrideElevatMotTemp;
+                newElProx0 = rtController.overrides.overrideElevatProx0;
+                newElProx90 = rtController.overrides.overrideElevatProx90;
+                newAzimuthAbsEncoder = rtController.overrides.overrideAzimuthAbsEncoder;
+                newElevationAbsEncoder = rtController.overrides.overrideElevationAbsEncoder;
+                newAzimuthAccelerometer = rtController.overrides.overrideAzimuthAccelerometer;
+                newElevationAccelerometer = rtController.overrides.overrideElevationAccelerometer;
+                newCounterbalanceAccelerometer = rtController.overrides.overrideCounterbalanceAccelerometer;
 
-                if (currWS != newWS || currMain != newMain || currAZ != newAZ || currEL != newEL)
+                if (currWS != newWS || 
+                    currMain != newMain || 
+                    currAZ != newAZ || 
+                    currEL != newEL ||
+                    currElProx0 != newElProx0 ||
+                    currElProx90 != newElProx90 ||
+                    currAzimuthAbsEncoder != newAzimuthAbsEncoder ||
+                    currElevationAbsEncoder != newElevationAbsEncoder ||
+                    currAzimuthAccelerometer != newAzimuthAccelerometer ||
+                    currElevationAccelerometer != newElevationAccelerometer ||
+                    currCounterbalanceAccelerometer != newCounterbalanceAccelerometer)
                 {
-                    currMain = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE);
-                    currWS = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.WEATHER_STATION);
-                    currAZ = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-                    currEL = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR);
+                    currMain = newMain;
+                    currWS = newWS;
+                    currAZ = newAZ;
+                    currEL = newEL;
+                    currElProx0 = newElProx0;
+                    currElProx90 = newElProx90;
+                    currAzimuthAbsEncoder = newAzimuthAbsEncoder;
+                    currElevationAbsEncoder = newElevationAbsEncoder;
+                    currAzimuthAccelerometer = newAzimuthAccelerometer;
+                    currElevationAccelerometer = newElevationAccelerometer;
+                    currCounterbalanceAccelerometer = newCounterbalanceAccelerometer;
 
                     if (IsHandleCreated)
                     {
                         this.BeginInvoke((MethodInvoker)delegate
                         {
-                            updateButtons();
+                            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90, 
+                                currAzimuthAbsEncoder, currElevationAbsEncoder, currAzimuthAccelerometer, currElevationAccelerometer, currCounterbalanceAccelerometer);
                         });
                     }
 
@@ -858,10 +1072,11 @@ namespace ControlRoomApplication.GUI
         }
 
         // Loads the override buttons
-        public void updateButtons()
+        public void updateButtons(bool currMain, bool currWS, bool currAZ, bool currEL, bool currElProx0, bool currElProx90,
+            bool azimuthAbsEncoder, bool elevationAbsEncoder, bool azimuthAccelerometer, bool elevationAccelerometer, bool counterbalanceAccelerometer)
         {
             // Weather Station Override
-            if(DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.WEATHER_STATION))
+            if(currWS)
             {
                 WSOverride.Text = "OVERRIDING";
                 WSOverride.BackColor = System.Drawing.Color.Red;
@@ -873,7 +1088,7 @@ namespace ControlRoomApplication.GUI
             }
 
             // Main Gate Override
-            if(DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.GATE))
+            if(currMain)
             {
                 MGOverride.Text = "OVERRIDING";
                 MGOverride.BackColor = System.Drawing.Color.Red;
@@ -885,7 +1100,7 @@ namespace ControlRoomApplication.GUI
             }
 
             // Azimuth Motor Override
-            if(DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR))
+            if(currAZ)
             {
                 AzMotTempSensOverride.Text = "OVERRIDING";
                 AzMotTempSensOverride.BackColor = System.Drawing.Color.Red;
@@ -897,7 +1112,7 @@ namespace ControlRoomApplication.GUI
             }
             
             // Elevation Motor Override
-            if(DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
+            if(currEL)
             {
                 ElMotTempSensOverride.Text = "OVERRIDING";
                 ElMotTempSensOverride.BackColor = System.Drawing.Color.Red;
@@ -908,52 +1123,271 @@ namespace ControlRoomApplication.GUI
                 ElMotTempSensOverride.BackColor = System.Drawing.Color.LimeGreen;
             }
 
-            // Azimuth Limit Switch -10 Degrees Override
-            if(rtController.overrides.overrideAzimuthProx1)
-            {
-                ORAzimuthSens1.Text = "OVERRIDING";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.Red;
-            }
-            else
-            {
-                ORAzimuthSens1.Text = "ENABLED";
-                ORAzimuthSens1.BackColor = System.Drawing.Color.LimeGreen;
-            }
-
-            // Azimuth Limit Switch -375 Degrees Override
-            if(rtController.overrides.overrideAzimuthProx2)
-            {
-                ORAzimuthSens2.Text = "OVERRIDING";
-                ORAzimuthSens2.BackColor = System.Drawing.Color.Red;
-            }
-            else
-            {
-                ORAzimuthSens2.Text = "ENABLED";
-                ORAzimuthSens2.BackColor = System.Drawing.Color.LimeGreen;
-            }
-
             // Elevation Limit Switch 0 Degrees Override
-            if(rtController.overrides.overrideElevatProx1)
+            if(currElProx0)
             {
-                ElevationProximityOveride1.Text = "OVERRIDING";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.Red;
+                ElivationLimitSwitch0.Text = "OVERRIDING";
+                ElivationLimitSwitch0.BackColor = System.Drawing.Color.Red;
             }
             else
             {
-                ElevationProximityOveride1.Text = "ENABLED";
-                ElevationProximityOveride1.BackColor = System.Drawing.Color.LimeGreen;
+                ElivationLimitSwitch0.Text = "ENABLED";
+                ElivationLimitSwitch0.BackColor = System.Drawing.Color.LimeGreen;
             }
 
             // Elevation Limit Switch 90 Degrees Override
-            if (rtController.overrides.overrideElevatProx2)
+            if (currElProx90)
             {
-                ElevationProximityOveride2.Text = "OVERRIDING";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.Red;
+                ElevationLimitSwitch90.Text = "OVERRIDING";
+                ElevationLimitSwitch90.BackColor = System.Drawing.Color.Red;
             }
             else
             {
-                ElevationProximityOveride2.Text = "ENABLED";
-                ElevationProximityOveride2.BackColor = System.Drawing.Color.LimeGreen;
+                ElevationLimitSwitch90.Text = "ENABLED";
+                ElevationLimitSwitch90.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Azimuth ABS Encoder Override
+            if (azimuthAbsEncoder)
+            {
+                btnAzimuthAbsoluteEncoder.Text = "OVERRIDING";
+                btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnAzimuthAbsoluteEncoder.Text = "ENABLED";
+                btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Elevation ABS Encoder Override
+            if (elevationAbsEncoder)
+            {
+                btnElevationAbsoluteEncoder.Text = "OVERRIDING";
+                btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnElevationAbsoluteEncoder.Text = "ENABLED";
+                btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Azimuth Accelerometer Override
+            if (azimuthAccelerometer)
+            {
+                btnAzimuthMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnAzimuthMotorAccelerometerOverride.Text = "ENABLED";
+                btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Elevation Accelerometer Override
+            if (elevationAccelerometer)
+            {
+                btnElevationMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnElevationMotorAccelerometerOverride.Text = "ENABLED";
+                btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+            }
+
+            // Counterbalce Accelerometer Override
+            if (counterbalanceAccelerometer)
+            {
+                btnCounterbalanceMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+            }
+            else
+            {
+                btnCounterbalanceMotorAccelerometerOverride.Text = "ENABLED";
+                btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+            }
+        }
+
+        private void btnResetMcuErrors_Click(object sender, EventArgs e)
+        {
+            rtController.RadioTelescope.PLCDriver.ResetMCUErrors();
+        }
+
+        private void lblAzLimStatus1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label41_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void btnAzimuthAbsoluteEncoder_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideAzimuthAbsEncoder)
+            {
+                btnAzimuthAbsoluteEncoder.Text = "OVERRIDING";
+                btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("azimuth absolute encoder", true);
+            }
+            else if (rtController.overrides.overrideAzimuthAbsEncoder)
+            {
+                btnAzimuthAbsoluteEncoder.Text = "ENABLED";
+                btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.LimeGreen;
+
+                rtController.setOverride("azimuth absolute encoder", false);
+            }
+        }
+
+        private void btnElevationAbsoluteEncoder_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideElevationAbsEncoder)
+            {
+                btnElevationAbsoluteEncoder.Text = "OVERRIDING";
+                btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("elevation absolute encoder", true);
+            }
+            else if (rtController.overrides.overrideElevationAbsEncoder)
+            {
+                btnElevationAbsoluteEncoder.Text = "ENABLED";
+                btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.LimeGreen;
+
+                rtController.setOverride("elevation absolute encoder", false);
+            }
+        }
+
+        private void btnAzimuthMotorAccelerometerOverride_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideAzimuthAccelerometer)
+            {
+                btnAzimuthMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("azimuth motor accelerometer", true);
+            }
+            else if (rtController.overrides.overrideAzimuthAccelerometer)
+            {
+                btnAzimuthMotorAccelerometerOverride.Text = "ENABLED";
+                btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+
+                rtController.setOverride("azimuth motor accelerometer", false);
+            }
+        }
+
+        private void btnElevationMotorAccelerometerOverride_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideElevationAccelerometer)
+            {
+                btnElevationMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("elevation motor accelerometer", true);
+            }
+            else if (rtController.overrides.overrideElevationAccelerometer)
+            {
+                btnElevationMotorAccelerometerOverride.Text = "ENABLED";
+                btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+
+                rtController.setOverride("elevation motor accelerometer", false);
+            }
+        }
+
+        private void btnCounterbalanceMotorAccelerometerOverride_Click(object sender, EventArgs e)
+        {
+            if (!rtController.overrides.overrideCounterbalanceAccelerometer)
+            {
+                btnCounterbalanceMotorAccelerometerOverride.Text = "OVERRIDING";
+                btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.Red;
+
+                rtController.setOverride("counterbalance accelerometer", true);
+            }
+            else if (rtController.overrides.overrideCounterbalanceAccelerometer)
+            {
+                btnCounterbalanceMotorAccelerometerOverride.Text = "ENABLED";
+                btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.LimeGreen;
+                
+                rtController.setOverride("counterbalance accelerometer", false);
+            }
+        }
+
+        private async void UpdateSensorInitiliazation_Click(object sender, EventArgs e)
+        {
+            // This must be executed async so the status updates/timer keeps ticking
+            await Task.Run(() => { 
+                // First set all the checkboxes equal to the sensor network config
+                SensorNetworkConfig.AzimuthTemp1Init = AzimuthTemperature1.Checked;
+                SensorNetworkConfig.AzimuthTemp2Init = AzimuthTemperature2.Checked;
+                SensorNetworkConfig.ElevationTemp1Init = ElevationTemperature1.Checked;
+                SensorNetworkConfig.ElevationTemp2Init = ElevationTemperature2.Checked;
+                SensorNetworkConfig.AzimuthAccelerometerInit = AzimuthAccelerometer.Checked;
+                SensorNetworkConfig.ElevationAccelerometerInit = ElevationAccelerometer.Checked;
+                SensorNetworkConfig.CounterbalanceAccelerometerInit = CounterbalanceAccelerometer.Checked;
+                SensorNetworkConfig.ElevationEncoderInit = ElevationEncoder.Checked;
+                SensorNetworkConfig.AzimuthEncoderInit = AzimuthEncoder.Checked;
+
+                // Update initializations
+                SensorNetworkConfig.TimeoutDataRetrieval = (int)(double.Parse(txtDataTimeout.Text) * 1000);
+                SensorNetworkConfig.TimeoutInitialization = (int)(double.Parse(txtInitTimeout.Text) * 1000);
+
+                // Update the config in the DB
+                DatabaseOperations.UpdateSensorNetworkConfig(SensorNetworkConfig);
+            
+                // reboot
+                rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
+            });
+        }
+
+        private void txtDataTimeout_TextChanged(object sender, EventArgs e)
+        {
+            DataTimeoutValid = false;
+
+            if(Validator.IsDouble(txtDataTimeout.Text))
+            {
+                DataTimeoutValid = Validator.IsBetween(double.Parse(txtDataTimeout.Text), 0, null);
+            }
+
+            if(DataTimeoutValid)
+            {
+                txtDataTimeout.BackColor = Color.White;
+                DataTimeoutValidation.Hide(lblDataTimeout);
+
+                // If the other tooltip is not in error, the button may be clicked
+                if (InitTimeoutValid) UpdateSensorInitiliazation.Enabled = true;
+            }
+            else
+            {
+                txtDataTimeout.BackColor = Color.Yellow;
+                DataTimeoutValidation.Show("Must be a positive double value.", lblDataTimeout, 2000);
+                UpdateSensorInitiliazation.Enabled = false;
+            }
+        }
+
+        private void txtInitTimeout_TextChanged(object sender, EventArgs e)
+        {
+            InitTimeoutValid = false;
+
+            if (Validator.IsDouble(txtInitTimeout.Text))
+            {
+                InitTimeoutValid = Validator.IsBetween(double.Parse(txtInitTimeout.Text), 0, null);
+            }
+
+            if (InitTimeoutValid)
+            {
+                txtInitTimeout.BackColor = Color.White;
+                InitTimeoutValidation.Hide(lblInitTimeout);
+
+                // If the other tooltip is not in error, the button may be clicked
+                if (DataTimeoutValid) UpdateSensorInitiliazation.Enabled = true;
+            }
+            else
+            {
+                txtInitTimeout.BackColor = Color.Yellow;
+                InitTimeoutValidation.Show("Must be a positive double value.", lblInitTimeout, 2000);
+                UpdateSensorInitiliazation.Enabled = false;
             }
         }
     }

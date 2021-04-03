@@ -10,6 +10,9 @@ using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Validation;
 using Microsoft.VisualBasic;
+using ControlRoomApplication.GUI.Data;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Main
 {
@@ -33,6 +36,8 @@ namespace ControlRoomApplication.Main
         public bool freeEditActive;
         public bool manualControlActive;
         public bool spectraEditActive;
+        bool manual_save_state;
+        bool save_state;
         public SpectraCyberDCGainEnum DCGainInput;
         public SpectraCyberIntegrationTimeEnum IntTimeInput;
         public SpectraCyberBandwidthEnum BandwidthInput;
@@ -40,8 +45,9 @@ namespace ControlRoomApplication.Main
         public bool frequencyValid = false;
         public bool offsetVoltValid = false;
         public bool IFGainValid = false;
+        RTControlFormData formData;
 
-        public FreeControlForm(ControlRoom new_controlRoom, int new_rtId)
+        public FreeControlForm(ControlRoom new_controlRoom, int new_rtId, RTControlFormData controlFormData)
         {
             InitializeComponent();
             // Set ControlRoom
@@ -54,6 +60,23 @@ namespace ControlRoomApplication.Main
             // Set increment
             Increment = 1;
             UpdateIncrementButtons();
+
+            // set form data object
+            formData = controlFormData;
+        
+            // set form data
+            controlScriptsCombo.SelectedIndex = formData.controlScriptIndex;
+            scanTypeComboBox.SelectedIndex = formData.spectraCyberScanIndex;
+            frequency.Text = formData.frequency;
+            DCGain.SelectedIndex = formData.DCGainIndex;
+            integrationStepCombo.SelectedIndex = formData.integrationStepIndex;
+            speedTextBox.Text = formData.speed.ToString();
+            offsetVoltage.Text = formData.offsetVoltage;
+            IFGainVal.Text = formData.IFGain;
+            immediateRadioButton.Checked = formData.immediateStopBool;
+            ControlledButtonRadio.Checked = formData.controlledStopBool;
+            manual_save_state = formData.manualControlEnabled;
+            save_state = formData.freeControlEnabled;
 
             ControlRoomUser = DatabaseOperations.GetControlRoomUser();
 
@@ -77,33 +100,85 @@ namespace ControlRoomApplication.Main
 
             //Calibrate Move
             CalibrateMove();
-            runControlScriptButton.Enabled = false;       
+            runControlScriptButton.Enabled = false;
 
-            //Initialize Free control Box as disabled
-            freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
-            PosDecButton.Enabled = false;
-            NegDecButton.Enabled = false;
-            PosRAButton.Enabled = false;
-            NegRAButton.Enabled = false;
-            oneForthButton.Enabled = false;
-            oneForthButtonDec.Enabled = false;
-            oneButton.Enabled = false;
-            oneButtonDec.Enabled = false;
-            fiveButton.Enabled = false;
-            fiveButtonDec.Enabled = false;
-            tenButton.Enabled = false;
-            tenButtonDec.Enabled = false;
+            //Initialize Free control Box based on manual control
+            if (!save_state)
+            {
+                editButton.Text = "Edit Position";
+                if (manual_save_state)
+                {
+                   editButton.BackColor = System.Drawing.Color.DarkGray;
+                   freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                    editButton.Enabled = false;
+                }
+                else
+                {
+                    editButton.BackColor = System.Drawing.Color.Red;
+                    freeControlGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                    editButton.Enabled = true;
+                }
+               
+                decIncGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                RAIncGroupbox.BackColor = System.Drawing.Color.DarkGray;
+               
+            }
+            else
+            {
+                editButton.Text = "Save Position";
+                editButton.BackColor = System.Drawing.Color.LimeGreen;
+                freeControlGroupbox.BackColor = System.Drawing.Color.Gainsboro;
+                decIncGroupbox.BackColor = System.Drawing.Color.Gray;
+                RAIncGroupbox.BackColor = System.Drawing.Color.Gray;
+                manualControlButton.Enabled = !formData.freeControlEnabled;
+                manualControlButton.BackColor = System.Drawing.Color.DarkGray;
+            }
+            PosDecButton.Enabled = formData.freeControlEnabled;
+            NegDecButton.Enabled = formData.freeControlEnabled;
+            PosRAButton.Enabled = formData.freeControlEnabled;
+            NegRAButton.Enabled = formData.freeControlEnabled;
+            oneForthButton.Enabled = formData.freeControlEnabled;
+            oneForthButtonDec.Enabled = formData.freeControlEnabled;
+            oneButton.Enabled = formData.freeControlEnabled;
+            oneButtonDec.Enabled = formData.freeControlEnabled;
+            fiveButton.Enabled = formData.freeControlEnabled;
+            fiveButtonDec.Enabled = formData.freeControlEnabled;
+            tenButton.Enabled = formData.freeControlEnabled;
+            tenButtonDec.Enabled = formData.freeControlEnabled;
 
-            //Initialize Manual control Box as disabled
-            manualGroupBox.BackColor = System.Drawing.Color.DarkGray;
-            plusElaButton.Enabled = false;
-            plusJogButton.Enabled = false;
-            subJogButton.Enabled = false;
-            subElaButton.Enabled = false;
-            ControledButtonRadio.Enabled = false;
-            immediateRadioButton.Enabled = false;
-            speedTextBox.Enabled = false;
-            speedTrackBar.Enabled = false;
+            //Initialize Manual control Box based on previous data (false by default)
+            if (!manual_save_state)
+            {
+                manualControlButton.Text = "Activate Manual Control";
+                // if free control is active, this button will be disabled. Gray it out if so
+                if (save_state)
+                {
+                    manualControlButton.BackColor = System.Drawing.Color.DarkGray;
+                    manualControlButton.Enabled = false;
+                }
+                else
+                {
+                    manualControlButton.BackColor = System.Drawing.Color.Red;
+                    manualControlButton.Enabled = true;
+                }
+                manualGroupBox.BackColor = System.Drawing.Color.DarkGray;
+            }
+            else if (manual_save_state)
+            {
+                manualControlButton.Text = "Deactivate Manual Control";
+                manualControlButton.BackColor = System.Drawing.Color.LimeGreen;
+                manualGroupBox.BackColor = System.Drawing.Color.Gainsboro;
+
+            }
+            plusElaButton.Enabled = formData.manualControlEnabled;
+            plusJogButton.Enabled = formData.manualControlEnabled;
+            subJogButton.Enabled = formData.manualControlEnabled;
+            subElaButton.Enabled = formData.manualControlEnabled;
+            ControlledButtonRadio.Enabled = formData.manualControlEnabled;
+            immediateRadioButton.Enabled = formData.manualControlEnabled;
+            speedTextBox.Enabled = formData.manualControlEnabled;
+            speedTrackBar.Enabled = formData.manualControlEnabled;
+            
 
             //Initialize Start and Stop Scan buttons as disabled
             spectraEditActive = true;
@@ -112,8 +187,8 @@ namespace ControlRoomApplication.Main
             stopScanButton.BackColor = System.Drawing.Color.DarkGray;
             stopScanButton.Enabled = false;
 
-            // finalize settings should be initially disabled, until values have been checked
-            finalizeSettingsButton.Enabled = false;
+            // finalize settings should be based on values in scan combo box
+            finalizeSettingsButton.Enabled = allScanInputsValid();
 
             this.FormClosing += FreeControlForm_Closing;
 
@@ -121,12 +196,12 @@ namespace ControlRoomApplication.Main
          //   threads[0].ManagementThread.Abort();
            // controlRoom.RTControllerManagementThreads.Where<RadioControllerManagementThread>( t => t.R == rtController));
 
-            logger.Info("Radio Telescope Control Form Initalized");
+            logger.Info(Utilities.GetTimeStamp() + ": Radio Telescope Control Form Initalized");
         }
 
         void FreeControlForm_Closing(object sender, CancelEventArgs e)
         {
-            logger.Info("Radio Telescope Control Form Closing");
+            logger.Info(Utilities.GetTimeStamp() + ": Radio Telescope Control Form Closing");
             CurrentAppointment._Status = AppointmentStatusEnum.COMPLETED;
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
 
@@ -135,12 +210,12 @@ namespace ControlRoomApplication.Main
 
             timer1.Enabled = false;
         }
-       // logger.Info("Adding RadioTelescope Controller");
+       // logger.Info(Utilities.GetTimeStamp() + ": Adding RadioTelescope Controller");
        //MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
 
         private void PosDecButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Positive Declination Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Positive Declination Button Clicked");
             Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension, TargetCoordinate.Declination + Increment);
             Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
             if(test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
@@ -156,7 +231,7 @@ namespace ControlRoomApplication.Main
 
         private void NegDecButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Negitive Declination Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Negitive Declination Button Clicked");
             Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension, TargetCoordinate.Declination - Increment);
             Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
             if (test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
@@ -172,7 +247,7 @@ namespace ControlRoomApplication.Main
 
         private void NegRAButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Negitive Right Ascension Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Negitive Right Ascension Button Clicked");
             Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension - Increment, TargetCoordinate.Declination);
             Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
             if (test_orientation.Azimuth > 0 && test_orientation.Elevation > 0)
@@ -188,7 +263,7 @@ namespace ControlRoomApplication.Main
 
         private void PosRAButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Positive Right Ascension Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Positive Right Ascension Button Clicked");
             Coordinate new_coord = new Coordinate(TargetCoordinate.RightAscension + Increment, TargetCoordinate.Declination);
             Entities.Orientation test_orientation = CoordCalc.CoordinateToOrientation(new_coord, DateTime.UtcNow);
             if (test_orientation.Azimuth >= 0 && test_orientation.Elevation >= 0)
@@ -204,20 +279,20 @@ namespace ControlRoomApplication.Main
 
         private void CalibrateButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Calibrate Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Calibrate Button Clicked");
             CalibrateMove();
         }
 
         public void CalibrateMove()
         {
-            logger.Info("CalibrateMove ");
+            logger.Info(Utilities.GetTimeStamp() + ": CalibrateMove ");
             TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
             UpdateText();
         }
 
         private void CoordMove()
         {
-            logger.Info("CoordMove ");
+            logger.Info(Utilities.GetTimeStamp() + ": CoordMove ");
             CurrentAppointment.Coordinates.Add(TargetCoordinate);
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
             UpdateText();
@@ -227,7 +302,7 @@ namespace ControlRoomApplication.Main
         {
             string RA = TargetCoordinate.RightAscension.ToString("0.##");
             string Dec = TargetCoordinate.Declination.ToString("0.##");
-            logger.Info("UpdateText, Target Coordinate = RA:" + RA + ", Dec:" + Dec);
+            logger.Info(Utilities.GetTimeStamp() + ": UpdateText, Target Coordinate = RA:" + RA + ", Dec:" + Dec);
             SetTargetRAText(RA);
             SetTargetDecText(Dec);
             errorLabel.Text = "Free Control for Radio Telescope " + rtId.ToString();
@@ -241,6 +316,7 @@ namespace ControlRoomApplication.Main
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
             SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
             SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
+            
         }
 
         delegate void SetTargetRATextCallback(string text);
@@ -359,28 +435,28 @@ namespace ControlRoomApplication.Main
 
         private void oneForthButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Increment = 0.25 Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Increment = 0.25 Button Clicked");
             Increment = 0.25;
             UpdateIncrementButtons();
         }
 
         private void oneButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Increment = 1 Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Increment = 1 Button Clicked");
             Increment = 1;
             UpdateIncrementButtons();
         }
 
         private void fiveButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Increment = 5 Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Increment = 5 Button Clicked");
             Increment = 5;
             UpdateIncrementButtons();
         }
 
         private void tenButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Increment = 10 Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Increment = 10 Button Clicked");
             Increment = 10;
             UpdateIncrementButtons();
         }
@@ -413,10 +489,11 @@ namespace ControlRoomApplication.Main
 
         private void editButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Edit Button Clicked");
-            bool save_state = (editButton.Text == "Save Position" );
-            freeEditActive = !freeEditActive;
-            if (save_state)
+            logger.Info(Utilities.GetTimeStamp() + ": Edit Button Clicked");
+            save_state = !save_state;
+
+            formData.freeControlEnabled = save_state;
+            if (!save_state)
             {
                 editButton.Text = "Edit Position";
                 editButton.BackColor = System.Drawing.Color.Red;
@@ -450,28 +527,29 @@ namespace ControlRoomApplication.Main
                 RAIncGroupbox.BackColor = System.Drawing.Color.Gray;
             }
 
-            PosDecButton.Enabled = !save_state;
-            NegDecButton.Enabled = !save_state;
-            PosRAButton.Enabled = !save_state;
-            NegRAButton.Enabled = !save_state;
-            oneForthButton.Enabled = !save_state;
-            oneForthButtonDec.Enabled = !save_state;
-            oneButton.Enabled = !save_state;
-            oneButtonDec.Enabled = !save_state;
-            fiveButton.Enabled = !save_state;
-            fiveButtonDec.Enabled = !save_state;
-            tenButton.Enabled = !save_state;
-            tenButtonDec.Enabled = !save_state;
+            PosDecButton.Enabled = save_state;
+            NegDecButton.Enabled = save_state;
+            PosRAButton.Enabled = save_state;
+            NegRAButton.Enabled = save_state;
+            oneForthButton.Enabled = save_state;
+            oneForthButtonDec.Enabled = save_state;
+            oneButton.Enabled = save_state;
+            oneButtonDec.Enabled = save_state;
+            fiveButton.Enabled = save_state;
+            fiveButtonDec.Enabled = save_state;
+            tenButton.Enabled = save_state;
+            tenButtonDec.Enabled = save_state;
             TargetRATextBox.ReadOnly = save_state;
             TargetDecTextBox.ReadOnly = save_state;
 
-            manualControlButton.Enabled = save_state;
+            manualControlButton.Enabled = !save_state;
         }
         //
         private void manualControlButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Activate Manual Control Clicked");
-            bool manual_save_state = (manualControlButton.Text == "Activate Manual Control");
+            logger.Info(Utilities.GetTimeStamp() + ": Activate Manual Control Clicked");
+            manual_save_state = !manual_save_state;
+            formData.manualControlEnabled = manual_save_state;
             
             if (!manual_save_state)
             {
@@ -492,7 +570,7 @@ namespace ControlRoomApplication.Main
             plusJogButton.Enabled = manual_save_state;
             subJogButton.Enabled = manual_save_state;
             subElaButton.Enabled = manual_save_state;
-            ControledButtonRadio.Enabled = manual_save_state;
+            ControlledButtonRadio.Enabled = manual_save_state;
             immediateRadioButton.Enabled = manual_save_state;
             speedTextBox.Enabled = manual_save_state;
             speedTrackBar.Enabled = manual_save_state;
@@ -505,7 +583,7 @@ namespace ControlRoomApplication.Main
         //Case Depends on which script is currently selected 
         private void runControlScript_Click(object sender, EventArgs e)
         {
-            logger.Info("Run Script Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Run Script Button Clicked");
             int caseSwitch = controlScriptsCombo.SelectedIndex;
 
             RadioTelescope tele = rtController.RadioTelescope;
@@ -598,30 +676,58 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         double azimuthPos = 0;
+                        double elevationPos = 0;    
                         string input = "";
-                        string warning = "";
-
-                        // Notify the user if they do not have the type set to SLIP_RING
-                        if(rtController.RadioTelescope._TeleType != RadioTelescopeTypeEnum.SLIP_RING)
-                        {
-                            warning = "\n\nWarning: The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
-                            " This script is best run with a telescope type of SLIP_RING.";
-                        }
-
+                        string[] values;
+                        Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
 
                         // Get validated user input for azimuth position
                         do
                         {
-                            input = Interaction.InputBox("Please type an azimuth orientation between 0 and 360 degrees." + warning,
-                                "Azimuth Orientation", "0");
+                            input = Interaction.InputBox("The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
+                            " This script is best run with a telescope type of SLIP_RING.\n\n" +
+                            "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
+                                " and elevation between "+ Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES+ " and "+ Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
+                                " degrees. Format the entry as a comma-separated list in the format " +
+                                "azimuth, elevation. Ex: 55,80",
+                                "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
+                            values = input.Split(',');
+                        
+                            if (values.Length == 2 && !input.Equals(""))
+                            {
+                                Double.TryParse(values[0], out azimuthPos);
+                                Double.TryParse(values[1], out elevationPos);
+                               
+                            }
 
-                        } while ((!Double.TryParse(input, out azimuthPos) || azimuthPos > 360 || azimuthPos < 0) && !input.Equals(""));
+                            // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
+                        }
+                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES) 
+                            && (!input.Equals("") && values.Length <= 2));
 
                         // Only run script if cancel button was not hit
-                        if (!input.Equals("")) tele.PLCDriver.CustomAzimuthMove(azimuthPos);
-                        else MessageBox.Show("Custom azimuth movement script cancelled.", "Script Cancelled");
+                        if (!input.Equals(""))
+                        {
+                            tele.PLCDriver.CustomOrientationMove(azimuthPos, elevationPos);
+
+                        }
+                        else 
+                        {
+                            MessageBox.Show("Custom Orientation script cancelled.", "Script Cancelled");
+                        }
                     });
                     // Custom azimuth position. This is only used to test the slip ring implementation
+                    break;
+
+                case 12:
+                    thread = new Thread(() =>
+                    {
+                        rtController.StartRadioTelescopeAzimuthJog(1, true);
+                    });
+                    thread.Start();
+                    MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
+                    ExecuteCorrectStop();
+
                     break;
                 default:
 
@@ -648,6 +754,8 @@ namespace ControlRoomApplication.Main
                 runControlScriptButton.Enabled = false;
                 runControlScriptButton.BackColor = System.Drawing.Color.Gray;
             }
+            
+            formData.controlScriptIndex = controlScriptsCombo.SelectedIndex;
 
         }
 
@@ -657,7 +765,7 @@ namespace ControlRoomApplication.Main
                 double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
-                    logger.Info("Jog PosButton MouseDown");
+                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
                     // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
@@ -675,7 +783,8 @@ namespace ControlRoomApplication.Main
         }
 
         private void subJogButton_Up( object sender , MouseEventArgs e ) {
-            logger.Info( "Jog PosButton MouseUp" );
+            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
+
             // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //Stop Move
@@ -691,7 +800,7 @@ namespace ControlRoomApplication.Main
                 if (Validator.ValidateSpeed(speed))
                 {
 
-                    logger.Info("Jog PosButton MouseDown");
+                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
                     // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
@@ -709,7 +818,8 @@ namespace ControlRoomApplication.Main
         }
 
         private void plusJogButton_UP( object sender , MouseEventArgs e ) {
-            logger.Info( "Jog PosButton MouseUp" );
+            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
+
             // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //  Stop Move
@@ -718,19 +828,24 @@ namespace ControlRoomApplication.Main
 
         private void ExecuteCorrectStop()
         {
-            if (ControledButtonRadio.Checked)
+            if (ControlledButtonRadio.Checked)
             {
-                logger.Info("Executed Controlled Stop");
+                logger.Info(Utilities.GetTimeStamp() + ": Executed Controlled Stop");
                 rtController.ExecuteRadioTelescopeStopJog();
+                formData.immediateStopBool = false;
+                formData.controlledStopBool = true;
             }
             else if (immediateRadioButton.Checked)
             {
-                logger.Info("Executed Immediate Stop");
+                logger.Info(Utilities.GetTimeStamp() + ": Executed Immediate Stop");
                 rtController.ExecuteRadioTelescopeImmediateStop();
+                formData.immediateStopBool = true;
+                formData.controlledStopBool = false;
+
             }
             else
             {
-                logger.Info("Invalid Stop Selected");
+                logger.Info(Utilities.GetTimeStamp() + ": Invalid Stop Selected");
                 throw new Exception();
             }
         }
@@ -780,7 +895,7 @@ namespace ControlRoomApplication.Main
                 if (Validator.ValidateSpeed(speed))
                 {
 
-                    logger.Info("Jog PosButton MouseDown");
+                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
                     // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
@@ -798,7 +913,7 @@ namespace ControlRoomApplication.Main
         }
 
         private void plusElaButton_Up( object sender , MouseEventArgs e ) {
-            logger.Info( "Jog PosButton MouseUp" );
+            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
             // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //  Stop Move
@@ -812,7 +927,7 @@ namespace ControlRoomApplication.Main
                 if (Validator.ValidateSpeed(speed))
                 {
 
-                    logger.Info("Jog PosButton MouseDown");
+                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
                     // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
@@ -830,7 +945,8 @@ namespace ControlRoomApplication.Main
         }
 
         private void subElaButton_Up( object sender , MouseEventArgs e ) {
-            logger.Info( "Jog PosButton MouseUp" );
+             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
+
             // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //  Stop Move
@@ -858,7 +974,7 @@ namespace ControlRoomApplication.Main
                 {
                     this.finalizeSettingsButton.Text = "Finalize Settings";
                 }
-                logger.Info("[SpectraCyberController] Finalize settings button has been clicked");
+                logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Finalize settings button has been clicked");
 
 
                 if (spectraEditActive)
@@ -945,7 +1061,7 @@ namespace ControlRoomApplication.Main
 
         private void startScan_Click(object sender, EventArgs e)
         {
-            logger.Info("[SpectraCyberController] Start Scan button has been clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Start Scan button has been clicked");
             
                 int caseSwitch = scanTypeComboBox.SelectedIndex;
 
@@ -977,7 +1093,7 @@ namespace ControlRoomApplication.Main
 
                 rtController.RadioTelescope.SpectraCyberController.StartScan(CurrentAppointment);
                 //  controlRoom.RTControllerManagementThreads.Find(t => t.RTController.RadioTelescope.Id == rtId).StartReadingData(CurrentAppointment);
-                logger.Info("[SpectraCyberController] Scan has started");
+                logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has started");
             
 
          
@@ -987,11 +1103,11 @@ namespace ControlRoomApplication.Main
         {
             if (rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.OFF ||
                 rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.UNKNOWN)
-                logger.Info("[SpectraCyberController] There is no scan to stop");
+                logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] There is no scan to stop");
             else
             {
                 rtController.RadioTelescope.SpectraCyberController.StopScan();
-                logger.Info("[SpectraCyberController] Scan has stopped");
+                logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has stopped");
             }
 
             startScanButton.Enabled = true;
@@ -1033,6 +1149,7 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
+            formData.integrationStepIndex = integrationStepCombo.SelectedIndex;
 
         }
 
@@ -1046,7 +1163,7 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
-
+            formData.spectraCyberScanIndex = scanTypeComboBox.SelectedIndex;
         }
 
 
@@ -1060,7 +1177,7 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = true;
             }
-           
+            formData.DCGainIndex = DCGain.SelectedIndex;
             
         }
 
@@ -1099,18 +1216,26 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = false;
                 frequency.BackColor = System.Drawing.Color.Yellow;
-                this.frequencyToolTip.Show("Frequency must be a non-negative\n " +
+                Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
+                {
+                   this.frequencyToolTip.Show("Frequency must be a non-negative\n " +
                 "value, in hertz (>= 0 Hz)", lblFrequency);
+                });
+                
             }
             else
             {
                 frequency.BackColor = System.Drawing.Color.White;
-                this.frequencyToolTip.Hide(lblFrequency);
+                Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
+                {
+                    this.frequencyToolTip.Hide(lblFrequency);
+                });
             }
             if(allScanInputsValid())
             {
                 finalizeSettingsButton.Enabled = true;
             }
+            formData.frequency = frequency.Text;
         }
 
         private void offsetVoltage_TextChanged(object sender, EventArgs e)
@@ -1120,18 +1245,27 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = false;
                 offsetVoltage.BackColor = System.Drawing.Color.Yellow;
-                this.offsetVoltageToolTip.Show("Offset voltage must be\n " +
-                "between 0 - 4.095 Volts", label12);
+                Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
+                {
+                    this.offsetVoltageToolTip.Show("Offset voltage must be\n " +
+                        "between 0 - 4.095 Volts", label12);
+                });
+                
             }
             else
             {
                 offsetVoltage.BackColor = System.Drawing.Color.White;
-                this.offsetVoltageToolTip.Hide(label12);
+                Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
+                {
+                    this.offsetVoltageToolTip.Hide(label12);
+                });
+                
             }
             if (allScanInputsValid())
             {
                 finalizeSettingsButton.Enabled = true;
             }
+            formData.offsetVoltage = offsetVoltage.Text;
         }
 
         private void IFGainVal_TextChanged(object sender, EventArgs e)
@@ -1141,24 +1275,38 @@ namespace ControlRoomApplication.Main
             {
                 finalizeSettingsButton.Enabled = false;
                 IFGainVal.BackColor = System.Drawing.Color.Yellow;
-                this.IFGainToolTip.Show("IFGain must be between\n " +
-                "10.00 and 25.75 decibles.", lblIFGain);
+                Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
+                {
+                    this.IFGainToolTip.Show("IFGain must be between\n " +
+                                "10.00 and 25.75 decibles.", lblIFGain);
+                });
+               
             }
             else
             {
                 IFGainVal.BackColor = System.Drawing.Color.White;
-                this.IFGainToolTip.Hide(lblIFGain);
+                Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
+                {
+                     this.IFGainToolTip.Hide(lblIFGain);
+                });
+                
             }
             if (allScanInputsValid())
             {
                 finalizeSettingsButton.Enabled = true;
             }
+            formData.IFGain = IFGainVal.Text;
         }
 
         private void speedTrackBar_Scroll(object sender, EventArgs e)
         {
             double actualSpeed = (double)speedTrackBar.Value / 10;
             speedTextBox.Text = actualSpeed.ToString();
+            Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
+            {
+                formData.speed = Double.Parse(speedTextBox.Text);
+            });
+            
         }
 
         private bool allScanInputsValid()
@@ -1166,6 +1314,23 @@ namespace ControlRoomApplication.Main
             return (scanTypeComboBox.SelectedIndex != 0 && integrationStepCombo.SelectedIndex != 0 &&
                 DCGain.SelectedIndex != 0 && offsetVoltValid && IFGainValid && frequencyValid);
           
+        }
+
+        private void plusJogButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            if (rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.OFF ||
+                rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.UNKNOWN)
+                logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] There is no scan to stop");
+            else
+            {
+                rtController.RadioTelescope.SpectraCyberController.StopScan();
+                logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has stopped");
+            }
         }
     }
 }

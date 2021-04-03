@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using Newtonsoft.Json;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers {
 
@@ -238,12 +240,12 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override bool Controled_stop() {
+        public override bool ControlledStop() {
             return true;
 
         }
 
-        public override bool Immediade_stop() {
+        public override bool ImmediateStop() {
             return true;
 
         }
@@ -430,7 +432,25 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> CustomAzimuthMove(double azimuthPos)
+        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// This has not been implemented on the scale model.
+        /// </summary>
+        public override void ResetMCUErrors()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
         {
             throw new NotImplementedException();
         }

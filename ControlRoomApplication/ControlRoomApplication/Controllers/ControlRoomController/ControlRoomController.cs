@@ -3,6 +3,8 @@ using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Communications;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -87,7 +89,7 @@ namespace ControlRoomApplication.Controllers
                 // The Wind Speed has triggered an Alarm Status
                 if (windSpeedStatus == 2)
                 {
-                    logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    logger.Info(Utilities.GetTimeStamp() + ": [ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
 
                     // Overriding the status warning if override is true
                     if (!ControlRoom.weatherStationOverride)
@@ -114,7 +116,7 @@ namespace ControlRoomApplication.Controllers
                 // The Wind Speed has triggered a Warning Status
                 else if(windSpeedStatus == 1)
                 {
-                    logger.Info("[ControlRoomController] Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    logger.Info(Utilities.GetTimeStamp() + ": [ControlRoomController] Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
 
 
                     // Overriding the status warning if override is true
@@ -129,7 +131,7 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (windSpeedStatus == 0)
                 {
-                    //logger.Info("[ControlRoomController] Wind speeds are in a Safe State: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    //logger.Info(Utilities.GetTimeStamp() + ": [ControlRoomController] Wind speeds are in a Safe State: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
                     currentSensor.Status = SensorStatusEnum.NORMAL;
                     DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
                 }
@@ -139,10 +141,10 @@ namespace ControlRoomApplication.Controllers
 
                     //change the status
                     currentSensor.Status = SensorStatus.NORMAL;
-                    logger.Info("Wind speed sensor back in normal range.");
+                    logger.Info(Utilities.GetTimeStamp() + ": Wind speed sensor back in normal range.");
                 }*/
 
-                //logger.Info("Current wind speed is: " + ControlRoom.WeatherStation.GetWindSpeed());
+                //logger.Info(Utilities.GetTimeStamp() + ": Current wind speed is: " + ControlRoom.WeatherStation.GetWindSpeed());
 
                 Thread.Sleep(1000);                
             }

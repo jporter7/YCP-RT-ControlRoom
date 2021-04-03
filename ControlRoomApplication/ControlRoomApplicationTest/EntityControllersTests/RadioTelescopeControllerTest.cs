@@ -414,44 +414,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Assert.AreEqual(expectedOrientation.Elevation, resultOrientation.Elevation, 0.001);
         }
 
-        [TestMethod]
-        public void testOrientationValid()
-        {
-            const int SAFE_VAL = 50;
-
-            // Valid (low edge azimuth)
-            Orientation orientation = new Orientation(-5, SAFE_VAL);
-            Assert.IsTrue(orientation.orientationValid());
-
-            // Valid (high edge azimuth)
-            orientation = new Orientation(365, SAFE_VAL);
-            Assert.IsTrue(orientation.orientationValid());
-
-            // Invalid (low azimuth)
-            orientation = new Orientation(-6, SAFE_VAL);
-            Assert.IsFalse(orientation.orientationValid());
-
-            // Invalid (high azimuth)
-            orientation = new Orientation(366, SAFE_VAL);
-            Assert.IsFalse(orientation.orientationValid());
-
-            // Valid (low edge elevation)
-            orientation = new Orientation(SAFE_VAL, -15);
-            Assert.IsTrue(orientation.orientationValid());
-
-            // Valid (high edge elevation)
-            orientation = new Orientation(SAFE_VAL, 93);
-            Assert.IsTrue(orientation.orientationValid());
-
-            // Invalid (low elevation)
-            orientation = new Orientation(SAFE_VAL, -16);
-            Assert.IsFalse(orientation.orientationValid());
-
-            // Invalid (high elevation)
-            orientation = new Orientation(SAFE_VAL, 94);
-            Assert.IsFalse(orientation.orientationValid());
-        }
-
         /*
         [TestMethod]
         public void test_orientation_change() {
@@ -497,14 +459,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         public void test_temperature_check()
         {
             // make sure neither override is set
-           if (DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.AZIMUTH_MOTOR))
-           {
-                DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR);
-           }
-           if (DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.ELEVATION_MOTOR))
-           {
-               DatabaseOperations.SwitchOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR);
-            }
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.AZIMUTH_MOTOR, false);
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.ELEVATION_MOTOR, false);
 
             // Enable motor temperature sensors
             TestRadioTelescopeController.overrides.overrideAzimuthMotTemp = false;

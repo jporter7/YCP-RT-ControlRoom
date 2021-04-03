@@ -16,6 +16,9 @@ using ControlRoomApplication.Entities.WeatherStation;
 using log4net.Appender;
 using ControlRoomApplication.Documentation;
 using ControlRoomApplication.Validation;
+using ControlRoomApplication.GUI.Data;
+using ControlRoomApplication.Util;
+using ControlRoomApplication.Controllers.SensorNetwork;
 
 namespace ControlRoomApplication.Main
 {
@@ -43,6 +46,16 @@ namespace ControlRoomApplication.Main
         public bool MCUPortValid = false;
         public bool PLCPortValid = false;
         public bool WCOMPortValid = false;
+        public bool SensorNetworkServerIPBool = false;
+        public bool SensorNetworkServerPortBool = false;
+        public bool SensorNetworkClientIPBool = false;
+        public bool SensorNetworkClientPortBool = false;
+
+
+        
+        // form
+        RTControlFormData formData;
+        
 
         enum TempSensorType
         {
@@ -87,7 +100,7 @@ namespace ControlRoomApplication.Main
             this.LocalIPCombo.Items.AddRange(v4_list);
 
 
-            logger.Info("<--------------- Control Room Application Started --------------->");
+            logger.Info(Utilities.GetTimeStamp() + ": <--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 5;
             dataGridView1.Columns[0].HeaderText = "ID";
             dataGridView1.Columns[1].HeaderText = "PLC IP";
@@ -113,10 +126,27 @@ namespace ControlRoomApplication.Main
             loopBackBox.Enabled = true;
             checkBox1.Enabled = true;
 
+            comboSensorNetworkBox.SelectedIndex = 1;
+            comboBox1.SelectedIndex = 1;
+            comboBox2.SelectedIndex = 1;
+            comboPLCType.SelectedIndex = 2;
+            LocalIPCombo.SelectedIndex = 0;
 
+            sensorNetworkServerIPAddress.Text = "IP Address";
+            // initialize formData struct
+            formData = new RTControlFormData();
+            sensorNetworkServerPort.Text = "Port";
+            sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Gray;
+            sensorNetworkServerPort.ForeColor = System.Drawing.Color.Gray;
+            // initialize formData struct
+            formData = new RTControlFormData();
 
+            sensorNetworkClientIPAddress.Text = "IP Address";
+            sensorNetworkClientPort.Text = "Port";
+            sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Gray;
+            sensorNetworkClientPort.ForeColor = System.Drawing.Color.Gray;
 
-            logger.Info("MainForm Initalized");
+            logger.Info(Utilities.GetTimeStamp() + ": MainForm Initalized");
         }
 
         public void DoAppend(log4net.Core.LoggingEvent loggingEvent)
@@ -133,20 +163,76 @@ namespace ControlRoomApplication.Main
         /// <param name="e"> The eventargs from the button being clicked on the GUI. </param>
         private void startButton_Click(object sender, EventArgs e)
         {
-            logger.Info("Start Telescope Button Clicked");
-
-            var RT = DatabaseOperations.FetchFirstRadioTelescope();
+            logger.Info(Utilities.GetTimeStamp() + ": Start Telescope Button Clicked");
 
             // This will tell us whether or not the RT is safe to start.
             // It may not be safe to start if, for example, there are
             // validation errors, or no Telescope is found in the DB
             bool runRt = false;
 
-            if (RT == null)
+            // retrirve contents of JSON file
+            RadioTelescopeConfig RTConfig = RadioTelescopeConfig.DeserializeRTConfig();
+
+            // this will be null if an error occurs in parsing JSON from the file, if the expected types do not match, i.e. a string
+            // was given where an integer was expected, or if any of the inputs were null.
+            if (RTConfig == null)
+            {
+                DialogResult result =  MessageBox.Show("An error occured while parsing the RTConfig JSON file. Would you like to recreate the JSON " +
+                    "file?", "Error Parsing JSON", MessageBoxButtons.YesNo);
+                // If yes, recreate the file and remind the user to set the ID and change the flag back to false
+                if(result == DialogResult.Yes)
+                {
+                    RadioTelescopeConfig.CreateAndWriteToNewJSONFile(RadioTelescopeConfig.DEFAULT_JSON_CONTENTS);
+                    MessageBox.Show("JSON file successfully recreated! Do not forget to specify the ID of telescope you want to run inside the file, " +
+                        "and set the newTelescope flag to false.",
+                        "JSON File Sucessfully Created", MessageBoxButtons.OK);
+                }
+            }
+            // retrieve RT by specified ID, if newTelescope flag set to false (meaning the user is trying to run a pre-existing telescope)
+            else if (!RTConfig.newTelescope)
+            {
+                RadioTelescope RT = DatabaseOperations.FetchRadioTelescopeByID(RTConfig.telescopeID);
+                if (RT == null)
+                {
+                    DialogResult result = MessageBox.Show("The ID of " + RTConfig.telescopeID + 
+                        " was not found in the database. Would you like to create a new one?", "No Telescope found", MessageBoxButtons.YesNoCancel);
+                    if(result == DialogResult.Yes)
+                    {
+                        runRt = true;
+                    }
+                }
+                // we cannot run a second telescope if the selected one is already running.
+                else if (RT.online == 1)
+                {
+                    DialogResult result = MessageBox.Show(
+                        $"Telescope {RT.Id} is already in use, or the program crashed. Would you like to override this check and run the telescope anyway?",
+                        "Telescope in use",
+                        MessageBoxButtons.YesNo);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        runRt = true;
+                        current_rt_id = RTConfig.telescopeID;
+                    }
+                }
+                // else the telescope entered by the user is valid and is currently not running. Start it up
+                else
+                {
+                    Console.WriteLine("The Selected RT with id " + RTConfig.telescopeID + " was not null, and is not running. Starting telescope "+RTConfig.telescopeID);
+                    current_rt_id = RTConfig.telescopeID;
+                    runRt = true;
+
+                }
+
+            }
+            // else the user is trying to create a new telescope. Discard the RadioTelescope ID from the file, and ask
+            // the user to confirm they would like to create a new one.
+            else
             {
                 DialogResult result = MessageBox.Show(
-                    "No Radio Telescope found in the database. Would you like to create one?",
-                    "No Telescope Found",
+                    "The new telescope flag was set to true in the RTConfig File. Please confirm you like to create " +
+                    "a new telescope, or go back and input the ID of an existing telescope in the database.",
+                    "New Telescope Flag Set to True",
                     MessageBoxButtons.YesNoCancel);
 
                 if (result == DialogResult.Yes)
@@ -154,24 +240,16 @@ namespace ControlRoomApplication.Main
                     runRt = true;
                 }
             }
-            else if(RT.online == 1)
-            {
-                DialogResult result = MessageBox.Show(
-                   $"Telescope {RT.Id} is already running",
-                   "Telescope is running",
-                   MessageBoxButtons.OK);
-            }
-            else runRt = true;
+            
 
             if (runRt)
             {
                 shutdownButton.BackColor = System.Drawing.Color.Red;
                 shutdownButton.Enabled = true;
                 simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
-                comboMicrocontrollerBox.Enabled = true;
+                comboSensorNetworkBox.Enabled = true;
                 comboBox2.Enabled = true;
                 comboBox1.Enabled = true;
-                comboEncoderType.Enabled = true;
                 comboPLCType.Enabled = true;
                 LocalIPCombo.Enabled = true;
 
@@ -189,17 +267,17 @@ namespace ControlRoomApplication.Main
 
                     if (checkBox1.Checked)
                     {
-                        logger.Info("Populating Local Database");
+                        logger.Info(Utilities.GetTimeStamp() + ": Populating Local Database");
                         //     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
                         Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).start_time.ToString());
-                        logger.Info("Disabling ManualControl and FreeControl");
+                        logger.Info(Utilities.GetTimeStamp() + ": Disabling ManualControl and FreeControl");
                         //ManualControl.Enabled = false;
                         FreeControl.Enabled = false;
                         // createWSButton.Enabled = false;
                     }
                     else
                     {
-                        logger.Info("Enabling ManualControl and FreeControl");
+                        logger.Info(Utilities.GetTimeStamp() + ": Enabling ManualControl and FreeControl");
                         // ManualControl.Enabled = true;
                         FreeControl.Enabled = true;
 
@@ -208,19 +286,26 @@ namespace ControlRoomApplication.Main
                     // If the main control room controller hasn't been initialized, initialize it.
                     if (MainControlRoomController == null)
                     {
-                        logger.Info("Initializing ControlRoomController");
+                        logger.Info(Utilities.GetTimeStamp() + ": Initializing ControlRoomController");
                         if (lastCreatedProductionWeatherStation == null)
                             MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
                         else
                             MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
                     }
 
+                    bool isSensorNetworkServerSimulated = false;
+                    if(comboSensorNetworkBox.SelectedIndex == 1)
+                    {
+                        isSensorNetworkServerSimulated = true;
+                    }
+
                     //current_rt_id++;
                     AbstractPLCDriver APLCDriver = BuildPLCDriver();
-                    AbstractMicrocontroller ctrler = build_CTRL();
-                    ctrler.BringUp();
-                    AbstractEncoderReader encoder = build_encoder(APLCDriver);
-                    RadioTelescope ARadioTelescope = BuildRT(APLCDriver, ctrler, encoder);
+                    SensorNetworkServer sensorNetworkServer = new SensorNetworkServer(IPAddress.Parse(sensorNetworkServerIPAddress.Text), int.Parse(sensorNetworkServerPort.Text),
+                    sensorNetworkClientIPAddress.Text, int.Parse(sensorNetworkClientPort.Text), RTConfig.telescopeID, isSensorNetworkServerSimulated);
+
+                    sensorNetworkServer.StartSensorMonitoringRoutine();
+                    RadioTelescope ARadioTelescope = BuildRT(APLCDriver, sensorNetworkServer);
                     ARadioTelescope.WeatherStation = MainControlRoomController.ControlRoom.WeatherStation;
 
                     // Add the RT/PLC driver pair and the RT controller to their respective lists
@@ -229,30 +314,30 @@ namespace ControlRoomApplication.Main
                     ProgramPLCDriverList.Add(APLCDriver);
 
                     // Start plc server and attempt to connect to it.
-                    logger.Info("Starting plc server and attempting to connect to it");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting plc server and attempting to connect to it");
                     ProgramPLCDriverList[ProgramPLCDriverList.Count - 1].StartAsyncAcceptingClients();
                     //ProgramRTControllerList[current_rt_id - 1].RadioTelescope.PLCClient.ConnectToServer();//////####################################
 
-                    logger.Info("Adding RadioTelescope Controller");
+                    logger.Info(Utilities.GetTimeStamp() + ": Adding RadioTelescope Controller");
                     MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
                     ARadioTelescope.SetParent(ProgramRTControllerList[ProgramRTControllerList.Count - 1]);
 
                     // linking radio telescope controller to tcp listener
                     MainControlRoomController.ControlRoom.mobileControlServer.rtController = ARadioTelescope.GetParent();
 
-                    logger.Info("Starting Weather Monitoring Routine");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting Weather Monitoring Routine");
                     MainControlRoomController.StartWeatherMonitoringRoutine();
 
-                    logger.Info("Starting Spectra Cyber Controller");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting Spectra Cyber Controller");
                     ARadioTelescope.SpectraCyberController.BringUp();
 
-                    logger.Info("Setting Default Values for Spectra Cyber Controller");
+                    logger.Info(Utilities.GetTimeStamp() + ": Setting Default Values for Spectra Cyber Controller");
                     ARadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.SPECTRAL);
                     ARadioTelescope.SpectraCyberController.SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN);
                     ARadioTelescope.SpectraCyberController.SetContinuumOffsetVoltage(2.0);
 
                     // Start RT controller's threaded management
-                    logger.Info("Starting RT controller's threaded management");
+                    logger.Info(Utilities.GetTimeStamp() + ": Starting RT controller's threaded management");
                     RadioTelescopeControllerManagementThread ManagementThread = MainControlRoomController.ControlRoom.RTControllerManagementThreads[MainControlRoomController.ControlRoom.RTControllerManagementThreads.Count - 1];
 
                     // add telescope to database
@@ -261,26 +346,29 @@ namespace ControlRoomApplication.Main
                     int RT_ID = ManagementThread.RadioTelescopeID;
                     List<Appointment> AllAppointments = DatabaseOperations.GetListOfAppointmentsForRadioTelescope(RT_ID);
 
-                    logger.Info("Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": Attempting to queue " + AllAppointments.Count.ToString() + " appointments for RT with ID " + RT_ID.ToString());
                     foreach (Appointment appt in AllAppointments)
                     {
-                        logger.Info("\t[" + appt.Id + "] " + appt.start_time.ToString() + " -> " + appt.end_time.ToString());
+                        logger.Info(Utilities.GetTimeStamp() + ": \t[" + appt.Id + "] " + appt.start_time.ToString() + " -> " + appt.end_time.ToString());
                     }
 
                     if (ManagementThread.Start())
                     {
-                        logger.Info("Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
+                        logger.Info(Utilities.GetTimeStamp() + ": Successfully started RT controller management thread [" + RT_ID.ToString() + "]");
 
                         ProgramRTControllerList[ProgramRTControllerList.Count - 1].ConfigureRadioTelescope(.06, .06, 300, 300);
                     }
                     else
                     {
-                        logger.Info("ERROR starting RT controller management thread [" + RT_ID.ToString() + "]");
+                        logger.Info(Utilities.GetTimeStamp() + ": ERROR starting RT controller management thread [" + RT_ID.ToString() + "]");
                     }
 
                     AddConfigurationToDataGrid();
 
-            
+                    // Set PLC override bits because they may be different than what's in the database
+                    bool gateOvr = ProgramRTControllerList[ProgramRTControllerList.Count - 1].overrides.overrideGate;
+
+                    APLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(gateOvr));
                 }
             }
 
@@ -293,7 +381,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void AddConfigurationToDataGrid()
         {
-            logger.Info("Adding Configuration To DataGrid");
+            logger.Info(Utilities.GetTimeStamp() + ": Adding Configuration To DataGrid");
             string[] row = { (current_rt_id).ToString(), txtPLCIP.Text, txtPLCPort.Text, txtMcuCOMPort.Text, txtWSCOMPort.Text };
 
             dataGridView1.Rows.Add(row);
@@ -305,14 +393,14 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
-              logger.Info("Shut Down Telescope Button Clicked");
+              logger.Info(Utilities.GetTimeStamp() + ": Shut Down Telescope Button Clicked");
             if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
-                logger.Info("Successfully shut down weather monitoring routine.");
+                logger.Info(Utilities.GetTimeStamp() + ": Successfully shut down weather monitoring routine.");
             }
             else
             {
-                logger.Info("ERROR shutting down weather monitoring routine!");
+                logger.Info(Utilities.GetTimeStamp() + ": ERROR shutting down weather monitoring routine!");
             }
 
             // Loop through the list of telescope controllers and call their respective bring down sequences.
@@ -320,15 +408,16 @@ namespace ControlRoomApplication.Main
             {
                 if (MainControlRoomController.RemoveRadioTelescopeControllerAt(0, false))
                 {
-                    logger.Info("Successfully brought down RT controller at index " + i.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": Successfully brought down RT controller at index " + i.ToString());
                 }
                 else
                 {
-                    logger.Info("ERROR killing RT controller at index " + i.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": ERROR killing RT controller at index " + i.ToString());
                 }
 
                 //Turn off Telescope in database
                 ProgramRTControllerList[i].RadioTelescope.online = 0;
+                ProgramRTControllerList[i].RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
@@ -336,7 +425,7 @@ namespace ControlRoomApplication.Main
             }
 
             // End logging
-            logger.Info("<--------------- Control Room Application Terminated --------------->");
+            logger.Info(Utilities.GetTimeStamp() + ": <--------------- Control Room Application Terminated --------------->");
             Environment.Exit(0);
         }
 
@@ -346,13 +435,14 @@ namespace ControlRoomApplication.Main
             {
                 //Turn off Telescope in database
                 ProgramRTControllerList[i].RadioTelescope.online = 0;
+                ProgramRTControllerList[i].RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
             }
 
         }
         private void textBox3_Focus(object sender, EventArgs e)
         {
-            logger.Info("textBox3_Focus Event");
+            logger.Info(Utilities.GetTimeStamp() + ": textBox3_Focus Event");
             txtWSCOMPort.Text = "";
         }
 
@@ -362,7 +452,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void textBox2_Focus(object sender, EventArgs e)
         {
-            logger.Info("textBox2_Focus Event");
+            logger.Info(Utilities.GetTimeStamp() + ": textBox2_Focus Event");
             txtPLCIP.Text = "";
         }
 
@@ -371,7 +461,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void textBox1_Focus(object sender, EventArgs e)
         {
-            logger.Info("textBox1_Focus Event");
+            logger.Info(Utilities.GetTimeStamp() + ": textBox1_Focus Event");
             txtPLCPort.Text = "";
         }
 
@@ -381,7 +471,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            logger.Info("dataGridView1_CellContent Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": dataGridView1_CellContent Clicked");
             try
             {
                 DiagnosticsForm diagnosticForm = new DiagnosticsForm(MainControlRoomController.ControlRoom, AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id, this);
@@ -397,46 +487,66 @@ namespace ControlRoomApplication.Main
         /// Builds a radio telescope instance based off of the input from the GUI form.
         /// </summary>
         /// <returns> A radio telescope instance representing the configuration chosen. </returns>
-        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver, AbstractMicrocontroller ctrler, AbstractEncoderReader encoder)
+        public RadioTelescope BuildRT(AbstractPLCDriver abstractPLCDriver, SensorNetworkServer sns)
         {
-            logger.Info("Building RadioTelescope");
+            logger.Info(Utilities.GetTimeStamp() + ": Building RadioTelescope");
 
-            // If no Telescope is present in the database, create a new one
-            RadioTelescope newRT = DatabaseOperations.FetchFirstRadioTelescope();
-            if (newRT == null)
+            // if this is set to 0, it has not been updated with an existing ID from the database. Therefore, we must create one.
+            if (current_rt_id == 0)
             {
-                // Create Radio Telescope
-                newRT = new RadioTelescope();
+                RadioTelescope newRT = new RadioTelescope();
                 newRT.Location = new Location(0, 0, 0, "");
                 newRT.CalibrationOrientation = new Entities.Orientation(0, 90);
                 newRT.CurrentOrientation = new Entities.Orientation(0, 0);
 
                 // This is the TELESCOPE TYPE
-                // It is only set to HARD_STOPS right now because that is what we are using for testing
-                newRT._TeleType = RadioTelescopeTypeEnum.HARD_STOPS;
+                // It is now set to SLIP_RING because we finally removed the hard stops. Isn't that exciting?!
+                newRT._TeleType = RadioTelescopeTypeEnum.SLIP_RING;
 
                 DatabaseOperations.AddRadioTelescope(newRT);
 
-                newRT.Id = DatabaseOperations.FetchFirstRadioTelescope().Id;
+                newRT.Id = DatabaseOperations.FetchLastRadioTelescope().Id;
+
+                //Turn telescope on in database 
+                newRT.online = 1;
+                DatabaseOperations.UpdateTelescope(newRT);
+
+                // These settings are not stored in the database, so they are new every time
+                abstractPLCDriver.SetParent(newRT);
+                newRT.PLCDriver = abstractPLCDriver;
+                newRT.PLCDriver.setTelescopeType(newRT._TeleType);
+                newRT.SpectraCyberController = BuildSpectraCyber();
+                newRT.SensorNetworkServer = sns;
+                logger.Info(Utilities.GetTimeStamp() + ": New RadioTelescope built successfully");
+
+                current_rt_id = newRT.Id;
+
+                // update the JSON config file to reflect the newly created telescope
+                RadioTelescopeConfig.SerializeRTConfig(new RadioTelescopeConfig(newRT.Id, false));
+
+                return newRT;
+            }
+            else
+            // else there has been a specified RT instance we are retrieving from the database. Do that and build that specific telescope here
+            {
+                RadioTelescope existingRT = DatabaseOperations.FetchRadioTelescopeByID(current_rt_id);
+
+                // Turn on telescope in database
+                existingRT.online = 1;
+                DatabaseOperations.UpdateTelescope(existingRT);
+
+                // These settings are not stored in the database, so they are new every time
+                abstractPLCDriver.SetParent(existingRT);
+                existingRT.PLCDriver = abstractPLCDriver;
+                existingRT.PLCDriver.setTelescopeType(existingRT._TeleType);
+                existingRT.SpectraCyberController = BuildSpectraCyber();
+                existingRT.SensorNetworkServer = sns;
+                logger.Info(Utilities.GetTimeStamp() + ": Existing RadioTelescope with ID " +current_rt_id+ " retrieved and built successfully");
+
+                return existingRT;
+
             }
 
-            //Turn telescope on in databse 
-            newRT.online = 1;
-            DatabaseOperations.UpdateTelescope(newRT);
-
-            // These settings are not stored in the database, so they are new every time
-            abstractPLCDriver.SetParent(newRT);
-            newRT.PLCDriver = abstractPLCDriver;
-            newRT.PLCDriver.setTelescopeType(newRT._TeleType);
-            newRT.SpectraCyberController = BuildSpectraCyber();
-            newRT.Micro_controler = ctrler;
-            newRT.Encoders = encoder;
-            logger.Info("New RadioTelescope built successfully");
-
-            // 
-            current_rt_id = newRT.Id;
-
-            return newRT;
         }
 
         /// <summary>
@@ -448,12 +558,12 @@ namespace ControlRoomApplication.Main
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building SpectraCyber");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SpectraCyber");
                     return new SpectraCyberController(new SpectraCyber());
 
                 case 1:
                 default:
-                    logger.Info("Building SpectraCyberSimulator");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SpectraCyberSimulator");
                     return new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             }
         }
@@ -467,19 +577,19 @@ namespace ControlRoomApplication.Main
             switch (comboPLCType.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building ProductionPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ProductionPLCDriver");
                     return new ProductionPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text));
 
                 case 1:
-                    logger.Info("Building ScaleModelPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ScaleModelPLCDriver");
                     return new ScaleModelPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text));
 
                 case 3:
-                    logger.Info("Building TestPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building TestPLCDriver");
                     return new TestPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text), false);
                 case 2:
                 default:
-                    logger.Info("Building SimulationPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SimulationPLCDriver");
                     return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text), false, false);
             }
         }
@@ -491,18 +601,18 @@ namespace ControlRoomApplication.Main
 
         public AbstractMicrocontroller build_CTRL()
         {
-            switch (comboMicrocontrollerBox.SelectedIndex)
+            switch (comboSensorNetworkBox.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building ProductionPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ProductionPLCDriver");
                     return new MicroControlerControler(LocalIPCombo.Text, 1600);
 
                 case 1:
-                    logger.Info("Building ScaleModelPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ScaleModelPLCDriver");
                     return new SimulatedMicrocontroller(-20, 100, true);
 
                 default:
-                    logger.Info("Building SimulationPLCDriver");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SimulationPLCDriver");
                     return new SimulatedMicrocontroller(SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
             }
         }
@@ -515,9 +625,9 @@ namespace ControlRoomApplication.Main
         {
             bool isSimulated = false;
 
-            logger.Info("Selected Microcontroller Type: ");
+            logger.Info(Utilities.GetTimeStamp() + ": Selected Microcontroller Type: ");
 
-            if (comboMicrocontrollerBox.SelectedIndex - 1 == (int)MicrocontrollerType.Production)
+            if (comboSensorNetworkBox.SelectedIndex - 1 == (int)MicrocontrollerType.Production)
             {
                 isSimulated = false;
             }
@@ -542,16 +652,16 @@ namespace ControlRoomApplication.Main
             switch (comboBox2.SelectedIndex)
             {
                 case 0:
-                    logger.Info("Building ProductionWeatherStation");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building ProductionWeatherStation");
                     return new WeatherStation(1000, int.Parse(txtWSCOMPort.Text));
 
                 case 2:
-                    logger.Error("The test weather station is not yet supported.");
+                    logger.Error(Utilities.GetTimeStamp() + ": The test weather station is not yet supported.");
                     throw new NotImplementedException("The test weather station is not yet supported.");
 
                 case 1:
                 default:
-                    logger.Info("Building SimulationWeatherStation");
+                    logger.Info(Utilities.GetTimeStamp() + ": Building SimulationWeatherStation");
                     return new SimulationWeatherStation(1000);
             }
         }
@@ -563,9 +673,9 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void FreeControl_Click(object sender, EventArgs e)
         {
-            logger.Info("Free Control Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Free Control Button Clicked");
             int rtIDforControl = AbstractRTDriverPairList[dataGridView1.CurrentCell.RowIndex].Key.Id;
-            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl);
+            FreeControlForm freeControlWindow = new FreeControlForm(MainControlRoomController.ControlRoom, rtIDforControl, formData);
             // Create free control thread
             Thread FreeControlThread = new Thread(() => freeControlWindow.ShowDialog())
             {
@@ -580,7 +690,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         //private void ManualControl_Click(object sender, EventArgs e)
         //{
-        //    logger.Info("Manual Control Button Clicked");
+        //    logger.Info(Utilities.GetTimeStamp() + ": Manual Control Button Clicked");
         //    ProgramRTControllerList[current_rt_id - 1].ConfigureRadioTelescope( .1 , .1 , 0 , 0 );
         //    ManualControlForm manualControlWindow = new ManualControlForm(MainControlRoomController.ControlRoom, current_rt_id);
         //    // Create free control thread
@@ -605,6 +715,20 @@ namespace ControlRoomApplication.Main
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
                 this.txtMcuCOMPort.Text = ((int)(8083 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
+
+                this.sensorNetworkServerIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkClientIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
+
+                this.sensorNetworkServerPort.Text = "1600";
+                this.sensorNetworkClientPort.Text = "1680";
+                this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
+
+                comboSensorNetworkBox.SelectedIndex = 1;
+
+
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("127.0.0.1"));
@@ -612,6 +736,7 @@ namespace ControlRoomApplication.Main
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("127.0.0.1");
             }
             this.txtPLCPort.Text = ((int)(8082 + ProgramPLCDriverList.Count * 3)).ToString();
+
         }
 
         private void ProdcheckBox_CheckedChanged(object sender, EventArgs e)
@@ -627,6 +752,19 @@ namespace ControlRoomApplication.Main
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("192.168.0.70");
+                comboSensorNetworkBox.SelectedIndex = 1;
+
+                // SensorNetwork and Server IP/Ports
+
+                this.sensorNetworkServerIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkClientIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
+
+                this.sensorNetworkServerPort.Text = "1600";
+                this.sensorNetworkClientPort.Text = "1680";
+                this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
             }
             this.txtPLCPort.Text = "502";
             this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Production PLC");
@@ -639,7 +777,7 @@ namespace ControlRoomApplication.Main
             lastCreatedProductionWeatherStation = BuildWeatherStation();
         }
 
-        private void comboMicrocontrollerBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboSensorNetworkBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
@@ -664,7 +802,7 @@ namespace ControlRoomApplication.Main
                 txtPLCPort.BackColor = System.Drawing.Color.White;
                 this.PLCPortToolTip.Hide(label3);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -691,7 +829,7 @@ namespace ControlRoomApplication.Main
                 txtPLCIP.BackColor = System.Drawing.Color.White;
                 this.MCUIPToolTip.Hide(label4);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -732,7 +870,7 @@ namespace ControlRoomApplication.Main
                 this.WCOMPortToolTip.Hide(label2);
                 
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -762,10 +900,9 @@ namespace ControlRoomApplication.Main
                     checkBox1.Enabled = false;
 
                     simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
-                    comboMicrocontrollerBox.Enabled = false;
+                    comboSensorNetworkBox.Enabled = false;
                     comboBox2.Enabled = false;
                     comboBox1.Enabled = false;
-                    comboEncoderType.Enabled = false;
                     comboPLCType.Enabled = false;
                     LocalIPCombo.Enabled = false;
 
@@ -775,7 +912,13 @@ namespace ControlRoomApplication.Main
                     txtMcuCOMPort.Enabled = false;
                     txtWSCOMPort.Enabled = false;
                     txtPLCPort.Enabled = false;
-                }
+
+                    sensorNetworkServerIPAddress.Enabled = false;
+                    sensorNetworkServerPort.Enabled = false;
+                    sensorNetworkClientIPAddress.Enabled = false;
+                    sensorNetworkClientPort.Enabled = false;
+
+            }
                 else if (finalSettings == true)
                 {
                     // Editing Text to reflect state -- when finalized, you can click "edit settings"
@@ -788,10 +931,9 @@ namespace ControlRoomApplication.Main
                     checkBox1.Enabled = true;
 
                     simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
-                    comboMicrocontrollerBox.Enabled = true;
+                    comboSensorNetworkBox.Enabled = true;
                     comboBox2.Enabled = true;
                     comboBox1.Enabled = true;
-                    comboEncoderType.Enabled = true;
                     comboPLCType.Enabled = true;
                     LocalIPCombo.Enabled = true;
 
@@ -801,7 +943,12 @@ namespace ControlRoomApplication.Main
                     txtMcuCOMPort.Enabled = true;
                     txtWSCOMPort.Enabled = true;
                     txtPLCPort.Enabled = true;
-                }
+
+                    sensorNetworkServerIPAddress.Enabled = true;
+                    sensorNetworkServerPort.Enabled = true;
+                    sensorNetworkClientIPAddress.Enabled = true;
+                    sensorNetworkClientPort.Enabled = true;
+            }
  
         }
 
@@ -828,6 +975,7 @@ namespace ControlRoomApplication.Main
         public void setWSOverride(bool WSO)
         {
             MainControlRoomController.ControlRoom.weatherStationOverride = WSO;
+            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, WSO);
         }
 
         public bool getWSOverride()
@@ -850,7 +998,7 @@ namespace ControlRoomApplication.Main
                 txtMcuCOMPort.BackColor = System.Drawing.Color.White;
                 this.MCUIPToolTip.Hide(label5);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid)
+            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -876,6 +1024,207 @@ namespace ControlRoomApplication.Main
 
         }
 
-      
+        private void sensorNetworkServerIPAddress_TextChanged(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerIPAddress.Text != "IP Address")
+            {
+                SensorNetworkServerIPBool = Validator.ValidateIPAddress(sensorNetworkServerIPAddress.Text);
+                if (!SensorNetworkServerIPBool)
+                {
+                    acceptSettings.Enabled = false;
+                    sensorNetworkServerIPAddress.BackColor = System.Drawing.Color.Yellow;
+                    this.MCUIPToolTip.Show("Enter a valid IP Address\n" +
+                        " (xxx.xxx.xxx.xxx)", label6);
+                }
+                else
+                {
+                    sensorNetworkServerIPAddress.BackColor = System.Drawing.Color.White;
+                    this.MCUIPToolTip.Hide(label6);
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else
+            {
+                sensorNetworkServerIPAddress.BackColor = System.Drawing.Color.LightGray;
+                this.MCUIPToolTip.Hide(label6);
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void sensorNetworkServerIPAddress_Enter(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerIPAddress.Text == "IP Address")
+            {
+                sensorNetworkServerIPAddress.Text = "";
+                sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void sensorNetworkServerIPAddress_Leave(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerIPAddress.Text == "")
+            {
+                sensorNetworkServerIPAddress.Text = "IP Address";
+                sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        private void sensorNetworkClientIPAddress_TextChanged(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientIPAddress.Text != "IP Address")
+            {
+                SensorNetworkClientIPBool = Validator.ValidateIPAddress(sensorNetworkClientIPAddress.Text);
+                if (!SensorNetworkClientIPBool)
+                {
+                    acceptSettings.Enabled = false;
+                    sensorNetworkClientIPAddress.BackColor = System.Drawing.Color.Yellow;
+                    this.MCUIPToolTip.Show("Enter a valid IP Address\n" +
+                        " (xxx.xxx.xxx.xxx)", label7);
+                }
+                else
+                {
+                    sensorNetworkClientIPAddress.BackColor = System.Drawing.Color.White;
+                    this.MCUIPToolTip.Hide(label7);
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else
+            {
+                sensorNetworkClientIPAddress.BackColor = System.Drawing.Color.LightGray;
+                this.MCUIPToolTip.Hide(label7);
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void sensorNetworkClientIPAddress_Enter(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientIPAddress.Text == "IP Address")
+            {
+                sensorNetworkClientIPAddress.Text = "";
+                sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void sensorNetworkClientIPAddress_Leave(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientIPAddress.Text == "")
+            {
+                sensorNetworkClientIPAddress.Text = "IP Address";
+                sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        private void sensorNetworkServerPort_TextChanged(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerPort.Text != "Port")
+            {
+                SensorNetworkServerPortBool = Validator.ValidatePort(sensorNetworkServerPort.Text);
+                if (!SensorNetworkServerPortBool)
+                {
+                    acceptSettings.Enabled = false;
+                    sensorNetworkServerPort.BackColor = System.Drawing.Color.Yellow;
+                    this.WCOMPortToolTip.Show("Enter a valid port number\n" +
+                        " between 1 and 65536", label6);
+                }
+                else
+                {
+                    sensorNetworkServerPort.BackColor = System.Drawing.Color.White;
+                    this.WCOMPortToolTip.Hide(label6);
+
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else 
+            {
+                sensorNetworkServerPort.BackColor = System.Drawing.Color.LightGray;
+                this.WCOMPortToolTip.Hide(label6);
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void sensorNetworkServerPort_Enter(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerPort.Text == "Port")
+            {
+                sensorNetworkServerPort.Text = "";
+                sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void sensorNetworkServerPort_Leave(object sender, EventArgs e)
+        {
+            if (sensorNetworkServerPort.Text == "")
+            {
+                sensorNetworkServerPort.Text = "Port";
+                sensorNetworkServerPort.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        private void sensorNetworkClientPort_TextChanged(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientPort.Text != "Port")
+            {
+                SensorNetworkClientPortBool = Validator.ValidatePort(sensorNetworkClientPort.Text);
+                if (!SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = false;
+                    sensorNetworkClientPort.BackColor = System.Drawing.Color.Yellow;
+                    this.WCOMPortToolTip.Show("Enter a valid port number\n" +
+                        " between 1 and 65536", label7);
+                }
+                else
+                {
+                    sensorNetworkClientPort.BackColor = System.Drawing.Color.White;
+                    this.WCOMPortToolTip.Hide(label7);
+
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else
+            {
+                sensorNetworkClientPort.BackColor = System.Drawing.Color.LightGray;
+                this.WCOMPortToolTip.Hide(label7);
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void sensorNetworkClientPort_Enter(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientPort.Text == "Port")
+            {
+                sensorNetworkClientPort.Text = "";
+                sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void sensorNetworkClientPort_Leave(object sender, EventArgs e)
+        {
+            if (sensorNetworkClientPort.Text == "")
+            {
+                sensorNetworkClientPort.Text = "Port";
+                sensorNetworkClientPort.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        private void WCOMPortToolTip_Popup(object sender, PopupEventArgs e)
+        {
+
+        }
     }
 }

@@ -12,6 +12,8 @@ using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Main;
 using System.Reflection;
 using System.Data.Entity.Core.Objects;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Database
 {
@@ -178,7 +180,7 @@ namespace ControlRoomApplication.Database
             }
             else
             {
-                logger.Error("Cannot populate a non-local database!");
+                logger.Error(Utilities.GetTimeStamp() + ": Cannot populate a non-local database!");
             }
         }
 
@@ -602,7 +604,7 @@ namespace ControlRoomApplication.Database
             Appointment appointment = null;
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                //logger.Debug("Retrieving list of appointments.");
+                //logger.Debug(Utilities.GetTimeStamp() + ": Retrieving list of appointments.");
                 List<Appointment> appointments = GetListOfAppointmentsForRadioTelescope(radioTelescopeId);
 
                 if (appointments.Count > 0)
@@ -613,7 +615,7 @@ namespace ControlRoomApplication.Database
                 }
                 else
                 {
-                    //logger.Debug("No appointments found");
+                    //logger.Debug(Utilities.GetTimeStamp() + ": No appointments found");
                 }
             }
             
@@ -734,8 +736,6 @@ namespace ControlRoomApplication.Database
            {
                Context.Weather.Add(weather);
                SaveContext(Context);
-
-               logger.Info("Added weather data to database");
            }
         }
 
@@ -749,7 +749,7 @@ namespace ControlRoomApplication.Database
                Context.SensorStatus.Add(sensors);
                SaveContext(Context);
 
-               //logger.Info("Added sensor status data to database");
+               //logger.Info(Utilities.GetTimeStamp() + ": Added sensor status data to database");
            }
         }
 
@@ -775,9 +775,9 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// Updates the current override to the opposite of the given sensor name
+        /// Updates the current override to whatever is provided
         /// </summary>
-        public static void SwitchOverrideForSensor(SensorItemEnum item)
+        public static void SetOverrideForSensor(SensorItemEnum item, bool doOverride)
         {
             using (RTDbContext Context = InitializeDatabaseContext())
             {
@@ -789,7 +789,7 @@ namespace ControlRoomApplication.Database
                 }
 
                 Override current = overrides[0];
-                current.Overridden = current.Overridden == 1 ? Convert.ToSByte(0) : Convert.ToSByte(1);
+                current.Overridden = Convert.ToSByte(doOverride);
 
                 Context.Override.AddOrUpdate(current);
 
@@ -828,12 +828,12 @@ namespace ControlRoomApplication.Database
                 Context.RadioTelescope.Add(telescope);
                 SaveContext(Context);
 
-                logger.Info("Added radio telescope to database");
+                logger.Info(Utilities.GetTimeStamp() + ": Added radio telescope to database");
             }
         }
 
         /// <summary>
-        /// Adds the radio telescope
+        /// Retrieves the lowest 'ID' radio telescope from the database
         /// </summary>
         public static RadioTelescope FetchFirstRadioTelescope()
         {
@@ -847,20 +847,20 @@ namespace ControlRoomApplication.Database
 
                 foreach (RadioTelescope rt in telescopes)
                 {
-                    logger.Info("Retrieved Radio Telescope from the database");
+                    logger.Info(Utilities.GetTimeStamp() + ": Retrieved Radio Telescope from the database");
                     return rt;
                 }
 
-                logger.Info("No Radio Telescope found in the database");
+                logger.Info(Utilities.GetTimeStamp() + ": No Radio Telescope found in the database");
                 return null;
                 
             }
         }
 
         /// <summary>
-        /// This function is only intended to be used for testing.
+        /// Method used to retrieve the last RadioTelescope found in the database
         /// </summary>
-        /// <returns>last RadioTelescope found in the database</returns>
+        /// <returns>last RadioTelescope instance found in the database</returns>
         public static RadioTelescope FetchLastRadioTelescope()
         {
             using (RTDbContext Context = InitializeDatabaseContext())
@@ -874,6 +874,178 @@ namespace ControlRoomApplication.Database
                 return telescopes[telescopes.Count - 1];
             }
         }
+        
+
+        /// <summary>
+        /// Function to retrieve a RT Instance in the database by a given ID
+        /// </summary>
+        /// <param name="id">ID of RadioTelescope inside the DB</param>
+        /// <returns> RadioTelescope found in the database with the associated ID
+        /// Null, if the specified RT does not exist. </returns>
+        public static RadioTelescope FetchRadioTelescopeByID(int id)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var telescope = Context.RadioTelescope.
+                    Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .Where(t => t.Id == id).FirstOrDefault();
+
+                if(telescope == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The Radio Telescope with ID " + id + " could not be found.");
+                    return null;
+                }
+                else
+                {
+                    return telescope;
+                }
+            }
+
+            
+        }
+
+        /// <summary>
+        /// Adds a new Sensor Network Configuration to the database
+        /// </summary>
+        public static void AddSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                // First see if the config already exists (if Add was called by accident)
+                var testConf = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
+
+                // if it exists, forward the config to UpdateSensorNetworkConfig
+                if (testConf != null)
+                {
+                    UpdateSensorNetworkConfig(config);
+                }
+                else
+                {
+                    Context.SensorNetworkConfig.Add(config);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + $": Created Sensor Network Configuration for Radio Telescope {config.TelescopeId}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns a SensorNetworkConfig based on the RadioTelescope.Id provided.
+        /// </summary>
+        /// <param name="telescopeId">ID of the Radio Telescope the SensorNetworkConfig is related to</param>
+        /// <returns>SensorNetworkConfig pertaining to a Radio Telescope; if none is found, null</returns>
+        public static SensorNetworkConfig RetrieveSensorNetworkConfigByTelescopeId(int telescopeId)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var config = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == telescopeId).FirstOrDefault();
+
+                if (config == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The Sensor Network Configuration for Telescope ID " + telescopeId + " could not be found.");
+                    return null;
+                }
+                else
+                {
+                    return config;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This will update the sensor network configuration for a specific Telescope
+        /// </summary>
+        /// <param name="config">The SensorNetworkConfig to be updated</param>
+        public static void UpdateSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var outdated = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
+
+                if (outdated == null)
+                {
+                    throw new InvalidOperationException($"Cannot update config; no config found with a telescope of ID {config.TelescopeId}");
+                }
+                else
+                {
+                    config.Id = outdated.Id;
+                    Context.SensorNetworkConfig.AddOrUpdate(config);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + ": Updated Sensor Network Configuration for Telescope ID " + config.TelescopeId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method used to delete a SensorNetworkConfig. This is not currently being
+        /// used in any production code, only for unit tests.
+        /// </summary>
+        /// <param name="config">The SensorNetworkConfig to be deleted.</param>
+        public static void DeleteSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var toDelete = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
+
+                if (toDelete == null)
+                {
+                    throw new InvalidOperationException($"Cannot delete config; no config found with a telescope of ID {config.TelescopeId}");
+                }
+                else
+                {
+                    Context.SensorNetworkConfig.Attach(toDelete);
+                    Context.SensorNetworkConfig.Remove(toDelete);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + ": Deleted Sensor Network Configuration for Telescope ID " + config.TelescopeId);
+                }
+            }
+        }
+        /// <summary>
+        /// Adds a selected weather Threshold to the database
+        /// </summary>
+        /// <param name="weatherThreshold"></param>
+        public static void AddWeatherThreshold(WeatherThreshold weatherThreshold)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.WeatherThreshold.Add(weatherThreshold);
+                SaveContext(Context);
+
+                logger.Info(Utilities.GetTimeStamp() + ": Added WeatherThreshold to database");
+            }
+        }
+
+        /// <summary>
+        /// Routine to retrieve the time interval for dumping snow off of the dish (in minutes) from the database
+        /// </summary>
+        public static WeatherThreshold FetchWeatherThreshold()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var threshold = Context.WeatherThreshold.FirstOrDefault();
+
+
+                if (threshold == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The WeatherThreshold data could not be found. Creating a new one with default values...");
+                    // default values of 0 windSpeed and 2 hours for snow dump time. If the table is empty, add it
+                    threshold = new WeatherThreshold(0, 120);
+                    AddWeatherThreshold(threshold);
+                }
+                return threshold;
+               
+            }
+            
+        }
+
 
     }
 }

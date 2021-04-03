@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
+using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -27,7 +29,7 @@ namespace ControlRoomApplication.Controllers
         {
             SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, is_Test);
             Thread.Sleep(1000);//wait for server in simMcu to come up
-            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port, true);
             if(startPLC) {
                 driver.StartAsyncAcceptingClients();
             }
@@ -44,6 +46,7 @@ namespace ControlRoomApplication.Controllers
 
         public override bool StartAsyncAcceptingClients()
         {
+            driver.SetParent(Parent);
             return driver.StartAsyncAcceptingClients();
         }
 
@@ -80,7 +83,6 @@ namespace ControlRoomApplication.Controllers
 
         public override Task<bool> Thermal_Calibrate()
         {
-            driver.SetParent(Parent);
             return driver.Thermal_Calibrate();
         }
 
@@ -164,14 +166,14 @@ namespace ControlRoomApplication.Controllers
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
         }
 
-        public override bool Controled_stop()
+        public override bool ControlledStop()
         {
-            return driver.Controled_stop();
+            return driver.ControlledStop();
         }
 
-        public override bool Immediade_stop()
+        public override bool ImmediateStop()
         {
-            return driver.Immediade_stop();
+            return driver.ImmediateStop();
         }
 
         public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
@@ -229,9 +231,26 @@ namespace ControlRoomApplication.Controllers
             driver.setTelescopeType(type);
         }
 
-        public override Task<bool> CustomAzimuthMove(double azimuthPos)
+        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
         {
-            return driver.CustomAzimuthMove(azimuthPos);
+            return driver.CustomOrientationMove(azimuthPos, elevationPos);
+        }
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// </summary>
+        public override void ResetMCUErrors()
+        {
+            driver.ResetMCUErrors();
+        }
+
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
+        {
+            return driver.CheckMCUErrors();
         }
     }
 }
