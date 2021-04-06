@@ -143,6 +143,45 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreNotEqual(a1, a2);
             Assert.AreNotEqual(a2, a1);
         }
+
+        [TestMethod]
+        public void TestSequenceEquals()
+        {
+            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+            SensorLocationEnum loc2 = SensorLocationEnum.EL_MOTOR;
+
+            Acceleration[] acc1 = new Acceleration[2];
+            Acceleration[] acc2= new Acceleration[2];
+            Acceleration[] acc3 = new Acceleration[2];
+            Acceleration[] acc4 = new Acceleration[1];
+
+
+            //Generate current time
+            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long dateTime2 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+
+            //Generate Temperature
+            Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
+            Acceleration a2 = Acceleration.Generate(dateTime2, 2, 2, 2, loc2);
+            Acceleration a3 = Acceleration.Generate(dateTime2, 3, 3, 3, loc2);
+
+            acc1[0] = a1;
+            acc1[1] = a2;
+
+            acc2[0] = a1;
+            acc2[1] = a2;
+
+            acc3[0] = a2;
+            acc3[1] = a3;
+
+            acc4[0] = a1;
+
+            Assert.IsTrue(Acceleration.SequenceEquals(acc1, acc2));
+            Assert.IsFalse(Acceleration.SequenceEquals(acc2, acc3));
+            Assert.IsFalse(Acceleration.SequenceEquals(acc1, acc4));
+
+        }
     }
 }
     
