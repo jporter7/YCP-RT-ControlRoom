@@ -223,7 +223,12 @@
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\FixedSizedQueue.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUCommand.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUCommandType.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUManager.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUPositionRegs.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUPositionStore.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />

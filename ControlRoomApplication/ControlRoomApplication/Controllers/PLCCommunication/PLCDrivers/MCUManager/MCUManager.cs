@@ -1,5 +1,6 @@
 ﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Configuration;
 using ControlRoomApplication.Simulators.Hardware;
@@ -18,203 +19,6 @@ namespace ControlRoomApplication.Controllers {
     //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
     // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
     // so the best thing to do would be to split up the AZ and EL components of MCUCommand and then have 2 inststances for running command one for AZ one for EL
-    /// <summary>
-    /// used to keep track of what comand the MCU is running
-    /// </summary>
-    public class MCUCommand : IDisposable{
-        /// <summary>
-        /// similar to priority to keep certian moves from overriding others, 0 is highest
-        /// </summary>
-        /// <remarks>
-        /// if 2 move with same priority conflict the one that is incoming will override the exsisting move
-        /// 0 is intended for emergency types of moves like software and hardware stops
-        /// 2 is user scheduald moves lie manual jogs,
-        /// 4 is normal moves like those comming from appointments
-        /// </remarks>
-        public int Move_Priority;
-        /// <summary>
-        /// stores the data that is to be sent to the mcu
-        /// </summary>
-        public ushort[] commandData;
-        /// <summary>
-        /// high level information about the comands general purpose
-        /// </summary>
-        public MCUCommandType CommandType;
-        /// <summary>
-        /// time at which the comand was sent to the MCU
-        /// </summary>
-        public DateTime issued;
-        /// <summary>
-        /// true when comand has completed, used to determine when the next move can be sent
-        /// </summary>
-        public bool completed = false;
-        /// <summary>
-        /// this will be set when returnd to the calling function if the move could not be run for some reason
-        /// </summary>
-        public Exception CommandError;
-        /// <summary>
-        /// these variables set so that different parts of the MCUManager can calculate how parts of the operation will take
-        /// </summary>
-        public int AZ_Programed_Speed,EL_Programed_Speed,AZ_ACC = 50,EL_ACC = 50;
-
-        /// <summary>
-        /// these are set to determine the direction of motion
-        /// </summary>
-        public bool AZ_CW, EL_CW;
-
-        /// <summary>
-        /// create a MCU command and record the current time
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="CMDType"></param>
-        public MCUCommand( ushort[] data, MCUCommandType CMDType, int priority ) {
-            CommandType = CMDType;
-            commandData = data;
-            issued = DateTime.Now;
-            Move_Priority = priority;
-        }
-
-        /// <summary>
-        /// creat a comand for movement
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="CMDType"></param>
-        /// <param name="AZCW"></param>
-        /// <param name="ELCW"></param>
-        /// <param name="AZSpeed"></param>
-        /// <param name="ElSpeed"></param>
-        public MCUCommand( ushort[] data , MCUCommandType CMDType, int priority , bool AZCW,bool ELCW,int AZSpeed,int ElSpeed ) {
-            CommandType = CMDType;
-            commandData = data;
-            issued = DateTime.Now;
-            AZ_CW = AZCW;
-            EL_CW = ELCW;
-            AZ_Programed_Speed = AZSpeed;
-            EL_Programed_Speed = ElSpeed;
-            Move_Priority = priority;
-        }
-
-        public CancellationTokenSource timeout;
-        public void Dispose() {
-            try {
-                timeout.Dispose();
-            } catch { }
-        }
-    }
-    public enum MCUCommandType {
-        JOG,
-        RELATIVE_MOVE,
-        CONFIGURE,
-        CLEAR_LAST_MOVE,
-        HOLD_MOVE,
-        IMMEDIATE_STOP,
-        RESET_ERRORS,
-        HOME
-    }
-
-    public class MCUpositonRegs : MCUpositonStore {
-        private ModbusIpMaster MCUModbusMaster;
-        public MCUpositonRegs( ModbusIpMaster _MCUModbusMaster ):base() {
-            MCUModbusMaster = _MCUModbusMaster;
-        }
-        public async Task update() {
-            ushort[] data = TryReadRegs( 0 , 20 ).GetAwaiter().GetResult();
-            AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
-            EL_Steps = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW]);
-            AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
-            EL_Encoder = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
-            return;
-        }
-        public async Task<MCUpositonStore> updateAndReturnDif( MCUpositonStore previous ) {
-            ushort[] data = TryReadRegs( 0 , 20 ).GetAwaiter().GetResult();
-            AZ_Steps = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_Current_Position_LSW];
-            EL_Steps = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_Current_Position_LSW]);
-            AZ_Encoder = (data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
-            EL_Encoder = -((data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUConstants.MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
-            MCUpositonStore dif = new MCUpositonStore( (this as MCUpositonStore) , previous);
-            return dif;
-        }
-        private async Task<ushort[]> TryReadRegs( ushort address , ushort Length ) {
-            try {
-                return MCUModbusMaster.ReadHoldingRegistersAsync( address , Length ).GetAwaiter().GetResult();
-            } catch {
-                return new ushort[Length];
-            }
-        }
-    }
-    public class MCUpositonStore {
-        public int AZ_Steps, EL_Steps;
-        public int AZ_Encoder, EL_Encoder;
-        public MCUpositonStore() {
-
-        }
-
-        public MCUpositonStore(MCUpositonRegs mCUpositon) {
-            this.AZ_Encoder = mCUpositon.AZ_Encoder;
-            this.AZ_Steps = mCUpositon.AZ_Steps;
-            this.EL_Encoder = mCUpositon.EL_Encoder;
-            this.EL_Steps = mCUpositon.EL_Steps;
-        }
-        public MCUpositonStore(MCUpositonStore current, MCUpositonStore previous) {
-            this.AZ_Steps = previous.AZ_Steps - current.AZ_Steps;
-            this.EL_Steps = previous.EL_Steps - current.EL_Steps;
-            this.AZ_Encoder = previous.AZ_Encoder - current.AZ_Encoder;
-            this.EL_Encoder = previous.EL_Encoder - current.EL_Encoder;
-        }
-
-        public void SUM(MCUpositonStore current, MCUpositonStore previous) {
-            this.AZ_Steps += current.AZ_Steps - previous.AZ_Steps;
-            this.EL_Steps += current.EL_Steps - previous.EL_Steps;
-            this.AZ_Encoder += current.AZ_Encoder - previous.AZ_Encoder;
-            this.EL_Encoder += current.EL_Encoder - previous.EL_Encoder;
-        }
-
-        public void SUMAbsolute(MCUpositonStore current, MCUpositonStore previous) {
-            this.AZ_Steps += Math.Abs(current.AZ_Steps - previous.AZ_Steps);
-            this.EL_Steps += Math.Abs(current.EL_Steps - previous.EL_Steps);
-            this.AZ_Encoder += Math.Abs(current.AZ_Encoder - previous.AZ_Encoder);
-            this.EL_Encoder += Math.Abs(current.EL_Encoder - previous.EL_Encoder);
-        }
-    }
-
-    public class FixedSizedQueue<T> : ConcurrentQueue<T> {
-        private readonly object syncObject = new object();
-
-        public int Size { get; private set; }
-
-        public FixedSizedQueue( int size ) {
-            Size = size;
-        }
-
-        public new void Enqueue( T obj ) {
-            base.Enqueue( obj );
-            lock(syncObject) {
-                while(base.Count > Size) {
-                    T outObj;
-                    base.TryDequeue( out outObj );
-                }
-            }
-        }
-        public MCUpositonStore GetAbsolutePosChange() {
-            if(typeof(T)==typeof( MCUpositonStore )) {
-                var en = base.GetEnumerator();
-                MCUpositonStore x, y,sum=new MCUpositonStore();
-                try {
-                    en.MoveNext();
-                    x = en.Current as MCUpositonStore;
-                    while(en.MoveNext()) {
-                        y = en.Current as MCUpositonStore;
-                        sum.SUMAbsolute( y , x );
-                        x = y;
-                    }
-                } catch (Exception err){
-                    Console.WriteLine( err );
-                }
-                return sum;
-            }else return new MCUpositonStore();
-        }
-    }
-
     public class MCUManager {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
         /// <summary>
@@ -248,7 +52,7 @@ namespace ControlRoomApplication.Controllers {
         private bool keep_modbus_server_alive = true;
         public ModbusIpMaster MCUModbusMaster;
         private TcpClient MCUTCPClient;
-        public MCUpositonRegs mCUpositon;
+        public MCUPositonRegs mCUpositon;
         private MCUConfigurationAxys Current_AZConfiguration;
         private MCUConfigurationAxys Current_ELConfiguration;
         /// <summary>
@@ -272,7 +76,7 @@ namespace ControlRoomApplication.Controllers {
                 lastConnectAttempt = DateTime.Now;
                 MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
                 MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
-                mCUpositon = new MCUpositonRegs( MCUModbusMaster );
+                mCUpositon = new MCUPositonRegs( MCUModbusMaster );
                 MCU_Monitor_Thread = new Thread( new ThreadStart( MonitorMCU ) ) { Name = "MCU Monitor Thread" };
                 SoftwareStopThread = new Thread( new ThreadStart( SoftwareStopper ) ) { Name = "softwre stop thread" };
             } catch(Exception e) {
@@ -288,7 +92,7 @@ namespace ControlRoomApplication.Controllers {
                 lastConnectAttempt = DateTime.Now;
                 MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
                 MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
-                mCUpositon = new MCUpositonRegs( MCUModbusMaster );
+                mCUpositon = new MCUPositonRegs( MCUModbusMaster );
             } catch(Exception e) {
                 logger.Error( "[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString() );
                 return;
@@ -856,7 +660,7 @@ namespace ControlRoomApplication.Controllers {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
             } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();
-            FixedSizedQueue<MCUpositonStore> positionHistory = new FixedSizedQueue<MCUpositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
+            FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
             Task<ushort[]> datatask;
             ushort[] MCUdata;
             while(!ThisMove.timeout.IsCancellationRequested) {
@@ -867,7 +671,7 @@ namespace ControlRoomApplication.Controllers {
 
 
                 updatePoss.Wait();
-                positionHistory.Enqueue(new MCUpositonStore(mCUpositon));
+                positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
                 bool isMoving = Is_Moing( MCUdata );
                 if(Math.Abs( mCUpositon.AZ_Steps ) < 4 && Math.Abs( mCUpositon.EL_Steps ) < 4 && !isMoving) {//if the encoders fave been 0'ed out with some error
                     consecutiveSuccessfulMoves++;
@@ -934,7 +738,7 @@ namespace ControlRoomApplication.Controllers {
         public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL,int priority ) {
             positionTranslationEL = -positionTranslationEL;
             mCUpositon.update().Wait();
-            var startPos =  mCUpositon as MCUpositonStore;
+            var startPos =  mCUpositon as MCUPositonStore;
             Cancel_move( priority );
             Task.Delay( 50 ).Wait();//wait to ensure it is porcessed
             ushort[] CMDdata = prepairRelativeMoveData( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL );
