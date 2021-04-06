@@ -60,6 +60,23 @@ namespace ControlRoomApplication.Entities {
             }
             return true;
         }
+
+        public static bool SequenceEquals(Acceleration[] start , Acceleration[] other)
+        {
+            if(start.Length != other.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < start.Length; i++)
+            {
+                if (start[i].x != other[i].x || start[i].y != other[i].y || start[i].z != other[i].z || start[i].location_ID != other[i].location_ID)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
 

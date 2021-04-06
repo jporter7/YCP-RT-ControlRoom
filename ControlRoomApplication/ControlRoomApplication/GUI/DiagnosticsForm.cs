@@ -91,6 +91,12 @@ namespace ControlRoomApplication.GUI
 
         private int rtId;
 
+        private Acceleration[] azOld;
+        private Acceleration[] elOld;
+        private Acceleration[] cbOld;
+
+
+
 
         // Config file for the sensor network server to use
         SensorNetworkConfig SensorNetworkConfig;
@@ -185,6 +191,10 @@ namespace ControlRoomApplication.GUI
             // Set default values for timeout validation
             DataTimeoutValid = true;
             InitTimeoutValid = true;
+
+            azOld = new Acceleration[0];
+            elOld = new Acceleration[0];
+            cbOld = new Acceleration[0];
 
             logger.Info(Utilities.GetTimeStamp() + ": DiagnosticsForm Initalized");
         }
@@ -508,6 +518,8 @@ namespace ControlRoomApplication.GUI
             // Create an array of frequencies for each point of the FFT
             //double[] freqs = FftSharp.Transform.FFTfreq(SAMPLE_RATE , fftX.Length);
 
+
+
             // Azimuth Accelerometer Chart /////////////////////////////////////////////
             if (SensorNetworkConfig.AzimuthAccelerometerInit)
             {
@@ -516,21 +528,27 @@ namespace ControlRoomApplication.GUI
                 azimuthAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
                 azimuthAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-                for (int i = 0; i < azimuthAccel.Length; i++)
+                if (azOld != null && Acceleration.SequenceEquals(azOld, azimuthAccel))
                 {
-                    azimuthAccChart.Series["x"].Points.AddY(azimuthAccel[i].x);
-                    azimuthAccChart.Series["y"].Points.AddY(azimuthAccel[i].y);
-                    azimuthAccChart.Series["z"].Points.AddY(azimuthAccel[i].z);
-
-
-                    if (azimuthAccChart.Series["x"].Points.Count > 500)
+                    for (int i = 0; i < azimuthAccel.Length; i++)
                     {
-                        azimuthAccChart.Series["x"].Points.RemoveAt(0);
-                        azimuthAccChart.Series["y"].Points.RemoveAt(0);
-                        azimuthAccChart.Series["z"].Points.RemoveAt(0);
+                        azimuthAccChart.Series["x"].Points.AddY(azimuthAccel[i].x);
+                        azimuthAccChart.Series["y"].Points.AddY(azimuthAccel[i].y);
+                        azimuthAccChart.Series["z"].Points.AddY(azimuthAccel[i].z);
+
+
+                        if (azimuthAccChart.Series["x"].Points.Count > 500)
+                        {
+                            azimuthAccChart.Series["x"].Points.RemoveAt(0);
+                            azimuthAccChart.Series["y"].Points.RemoveAt(0);
+                            azimuthAccChart.Series["z"].Points.RemoveAt(0);
+                        }
+                        azimuthAccChart.ChartAreas[0].RecalculateAxesScale();
                     }
-                    azimuthAccChart.ChartAreas[0].RecalculateAxesScale();
                 }
+
+                azOld = azimuthAccel;
+
             }
             else
             {
@@ -556,21 +574,27 @@ namespace ControlRoomApplication.GUI
                 elevationAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
                 elevationAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-                for (int i = 0; i < eleAccel.Length; i++)
+                if (elOld != null && Acceleration.SequenceEquals(elOld, eleAccel))
                 {
-                    elevationAccChart.Series["x"].Points.AddY(eleAccel[i].x);
-                    elevationAccChart.Series["y"].Points.AddY(eleAccel[i].y);
-                    elevationAccChart.Series["z"].Points.AddY(eleAccel[i].z);
-
-
-                    if (elevationAccChart.Series["x"].Points.Count > 500)
+                    for (int i = 0; i < eleAccel.Length; i++)
                     {
-                        elevationAccChart.Series["x"].Points.RemoveAt(0);
-                        elevationAccChart.Series["y"].Points.RemoveAt(0);
-                        elevationAccChart.Series["z"].Points.RemoveAt(0);
+                        elevationAccChart.Series["x"].Points.AddY(eleAccel[i].x);
+                        elevationAccChart.Series["y"].Points.AddY(eleAccel[i].y);
+                        elevationAccChart.Series["z"].Points.AddY(eleAccel[i].z);
+
+
+                        if (elevationAccChart.Series["x"].Points.Count > 500)
+                        {
+                            elevationAccChart.Series["x"].Points.RemoveAt(0);
+                            elevationAccChart.Series["y"].Points.RemoveAt(0);
+                            elevationAccChart.Series["z"].Points.RemoveAt(0);
+                        }
+                        elevationAccChart.ChartAreas[0].RecalculateAxesScale();
                     }
-                    elevationAccChart.ChartAreas[0].RecalculateAxesScale();
                 }
+
+                elOld = eleAccel;
+
             }
             else
             {
@@ -595,21 +619,28 @@ namespace ControlRoomApplication.GUI
                 counterBalanceAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
                 counterBalanceAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-                for (int i = 0; i < cbAccel.Length; i++)
+                if (cbOld != null && Acceleration.SequenceEquals(cbOld, cbAccel))
                 {
-                    counterBalanceAccChart.Series["x"].Points.AddY(cbAccel[i].x);
-                    counterBalanceAccChart.Series["y"].Points.AddY(cbAccel[i].y);
-                    counterBalanceAccChart.Series["z"].Points.AddY(cbAccel[i].z);
 
-
-                    if (counterBalanceAccChart.Series["x"].Points.Count > 500)
+                    for (int i = 0; i < cbAccel.Length; i++)
                     {
-                        counterBalanceAccChart.Series["x"].Points.RemoveAt(0);
-                        counterBalanceAccChart.Series["y"].Points.RemoveAt(0);
-                        counterBalanceAccChart.Series["z"].Points.RemoveAt(0);
+                        counterBalanceAccChart.Series["x"].Points.AddY(cbAccel[i].x);
+                        counterBalanceAccChart.Series["y"].Points.AddY(cbAccel[i].y);
+                        counterBalanceAccChart.Series["z"].Points.AddY(cbAccel[i].z);
+
+
+                        if (counterBalanceAccChart.Series["x"].Points.Count > 500)
+                        {
+                            counterBalanceAccChart.Series["x"].Points.RemoveAt(0);
+                            counterBalanceAccChart.Series["y"].Points.RemoveAt(0);
+                            counterBalanceAccChart.Series["z"].Points.RemoveAt(0);
+                        }
+                        counterBalanceAccChart.ChartAreas[0].RecalculateAxesScale();
                     }
-                    counterBalanceAccChart.ChartAreas[0].RecalculateAxesScale();
                 }
+
+                cbOld = cbAccel;
+
             }
             else
             {
@@ -1389,6 +1420,11 @@ namespace ControlRoomApplication.GUI
                 InitTimeoutValidation.Show("Must be a positive double value.", lblInitTimeout, 2000);
                 UpdateSensorInitiliazation.Enabled = false;
             }
+        }
+
+        private void azimuthAccChart_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
