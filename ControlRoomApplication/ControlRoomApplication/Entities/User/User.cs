@@ -94,7 +94,6 @@ namespace ControlRoomApplication.Entities
         public string phone_number { get; set; }
 
         [Column("firebase_id")]
-        [StringLength(100)]
         public string firebase_id { get; set; }
     }
 }
