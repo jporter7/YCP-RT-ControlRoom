@@ -215,13 +215,38 @@ namespace ControlRoomApplication.Main
                         current_rt_id = RTConfig.telescopeID;
                     }
                 }
+                // Verify that the MCU's IP address is alive
+                // Also skip this validation if we are simulating, since the server is run internally
+                else if (comboPLCType.SelectedIndex != 2 && !Validator.ServerRunningOnIp(txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text)))
+                {
+                    // This is a dumb workaround for the problem, but if we are running the simulation, the
+                    // MCU server will not be started yet, so we just have to verify that it is a localhost
+                    // IP
+                    if (!loopBackBox.Checked)
+                    {
+                        MessageBox.Show(
+                            $"The MCU was not found on {txtPLCIP.Text}:{txtMcuCOMPort.Text}, or the system is still booting up.\n\n" +
+                            $"If this problem persists, please power-cycle the PLC and MCU and verify all connections are firmly in place.",
+
+                            "MCU Not Found"
+                        );
+                    }
+                    else if(!txtPLCIP.Text.Contains("127.0.0."))
+                    {
+                        MessageBox.Show(
+                            $"{txtPLCIP.Text} is not a valid IP address for the simulation MCU to run on.\n\n" +
+                            $"Please make sure that the IP is a local host address (Ex: 127.0.0.xxx).",
+
+                            "Invalid Simulation MCU IP"
+                        );
+                    }
+                }
                 // else the telescope entered by the user is valid and is currently not running. Start it up
                 else
                 {
                     Console.WriteLine("The Selected RT with id " + RTConfig.telescopeID + " was not null, and is not running. Starting telescope "+RTConfig.telescopeID);
                     current_rt_id = RTConfig.telescopeID;
                     runRt = true;
-
                 }
 
             }

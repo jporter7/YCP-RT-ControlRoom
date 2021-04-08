@@ -1,80 +1,82 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Validation;
+using System.Net.Sockets;
+using System.Net;
 
 namespace ControlRoomApplication.ValidationTests {
 
     [TestClass]
-    public class ValidatorTests { 
-    
-        
-            // ports for testing: valid, too high, too low,  empty, wrong type
-            private int validPort1 = 8080;
-            private string validPort2 = "8080";
-
-            private int invalidPort1 = 70000;
-            private string invalidPort2 = "hello";
-            private int invalidPort3 = 0;
-            private int invalidPort4 = -10000;
-            private string invalidPort5 = "";
-
-            // IP address for testing: valid, empty, wrong type
-            private string validIP1 = "127.0.0.1";
-            private string validIP2 = "10.0.2.5";
-
-            private string invalidIP1 = "i am an invalid IP address";
-            private string invalidIP2 = "";
-
-            // Speed values for testing
-            private double validSpeed1 = 0.5;
-            private double validSpeed2 = 1.5;
-            private string validSpeed3 = "1.5";
-            private string validSpeed4 = "0.5";
-
-            private double invalidSpeed1 = 3.0;
-            private double invalidSpeed2 = -1.5;
-            private string invalidSpeed3 = "";
-            private string invalidSpeed4 = "3.0";
-
-            // speed TEXT ONLY values for testing
-            private string validTextSpeed1 = "2.0";
-            private string validTextSpeed2 = "20.0";
-            private string invalidTextSpeed1 = "hello";
-            private string invalidTextSpeed2 = "saSDASDS";
-
-            // IFGain values for testing
-            private double validIFGain1 = 10.50;
-            private double validIFGain2 = 20.50;
-            private string validIFGain3 = "10.50";
-            private string validIFGain4 = "20.50";
-
-            private double invalidIFGain1 = 50.5;
-            private double invalidIFGain2 = 5.00;
-            private string invalidIFGain3 = "50.00";
-            private string invalidIFGain4 = "";
+    public class ValidatorTests {
 
 
-            // Offset Volts values testing
-            private double validVolts1 = 1.0;
-            private double validVolts2 = 3.5;
-            private string validVolts3 = "1.0";
-            private string validVolts4 = "3.5";
+        // ports for testing: valid, too high, too low,  empty, wrong type
+        private int validPort1 = 8080;
+        private string validPort2 = "8080";
 
-            private double invalidVolts1 = -1.0;
-            private double invalidVolts2 = 5.0;
-            private string invalidVolts3 = "5.0";
-            private string invalidVolts4 = "";
+        private int invalidPort1 = 70000;
+        private string invalidPort2 = "hello";
+        private int invalidPort3 = 0;
+        private int invalidPort4 = -10000;
+        private string invalidPort5 = "";
 
-            // Frequency hertz value testing
-            private double validFrequency1 = 0.1;
-            private double validFrequency2 = 5.0;
-            private string validFrequency3 = "0.1";
-            private string validFrequency4 = "0.5";
+        // IP address for testing: valid, empty, wrong type
+        private string validIP1 = "127.0.0.1";
+        private string validIP2 = "10.0.2.5";
 
-            private double invalidFrequency1 = -1.0;
-            private double invalidFrequency2 = -4.1;
-            private string invalidFrequency3 = "-1.0";
-            private string invalidFrequency4 = "-4.1";
+        private string invalidIP1 = "i am an invalid IP address";
+        private string invalidIP2 = "";
+
+        // Speed values for testing
+        private double validSpeed1 = 0.5;
+        private double validSpeed2 = 1.5;
+        private string validSpeed3 = "1.5";
+        private string validSpeed4 = "0.5";
+
+        private double invalidSpeed1 = 3.0;
+        private double invalidSpeed2 = -1.5;
+        private string invalidSpeed3 = "";
+        private string invalidSpeed4 = "3.0";
+
+        // speed TEXT ONLY values for testing
+        private string validTextSpeed1 = "2.0";
+        private string validTextSpeed2 = "20.0";
+        private string invalidTextSpeed1 = "hello";
+        private string invalidTextSpeed2 = "saSDASDS";
+
+        // IFGain values for testing
+        private double validIFGain1 = 10.50;
+        private double validIFGain2 = 20.50;
+        private string validIFGain3 = "10.50";
+        private string validIFGain4 = "20.50";
+
+        private double invalidIFGain1 = 50.5;
+        private double invalidIFGain2 = 5.00;
+        private string invalidIFGain3 = "50.00";
+        private string invalidIFGain4 = "";
+
+
+        // Offset Volts values testing
+        private double validVolts1 = 1.0;
+        private double validVolts2 = 3.5;
+        private string validVolts3 = "1.0";
+        private string validVolts4 = "3.5";
+
+        private double invalidVolts1 = -1.0;
+        private double invalidVolts2 = 5.0;
+        private string invalidVolts3 = "5.0";
+        private string invalidVolts4 = "";
+
+        // Frequency hertz value testing
+        private double validFrequency1 = 0.1;
+        private double validFrequency2 = 5.0;
+        private string validFrequency3 = "0.1";
+        private string validFrequency4 = "0.5";
+
+        private double invalidFrequency1 = -1.0;
+        private double invalidFrequency2 = -4.1;
+        private string invalidFrequency3 = "-1.0";
+        private string invalidFrequency4 = "-4.1";
 
         [TestMethod]
         public void TestPort()
@@ -206,6 +208,29 @@ namespace ControlRoomApplication.ValidationTests {
             Assert.IsFalse(Validator.IsBetween(upper + 1, lower, upper));
             Assert.IsFalse(Validator.IsBetween(lower - 1, lower, null));
             Assert.IsFalse(Validator.IsBetween(upper + 1, null, upper));
+        }
+
+        [TestMethod]
+        public void TestServerRunningOnIp_ServerIsRunning_Success()
+        {
+            string ip = "127.0.0.1";
+            int port = 3000;
+
+            TcpListener server = new TcpListener(IPAddress.Parse(ip), port);
+            server.Start();
+
+            Assert.IsTrue(Validator.ServerRunningOnIp(ip, port));
+
+            server.Stop();
+        }
+
+        [TestMethod]
+        public void TestServerRunningOnIp_ServerNotRunning_Fail()
+        {
+            string ip = "148.0.0.1";
+            int port = 3000;
+
+            Assert.IsFalse(Validator.ServerRunningOnIp(ip, port));
         }
     }
 }

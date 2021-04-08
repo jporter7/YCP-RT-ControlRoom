@@ -83,7 +83,15 @@ namespace ControlRoomApplication.Controllers {
                 if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
                     logger.Error( "[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString() );
                     return;
-                } else { throw e; }// Unexpected exception
+                }
+                else
+                {
+                    // This could occur if the IP address typed in does not have a server actively running,
+                    // or the MCU is still booting up and has not completed starting the server. Regardless,
+                    // it should not be reached because validation exists in the Start RT of MainForm.cs to
+                    // check that this IP is alive.
+                    throw e;
+                }
             }
         }
 
