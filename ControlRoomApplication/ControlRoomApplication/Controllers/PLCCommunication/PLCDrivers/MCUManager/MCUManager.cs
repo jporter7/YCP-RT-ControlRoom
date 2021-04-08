@@ -645,10 +645,6 @@ namespace ControlRoomApplication.Controllers {
             ushort azHomeDir = CcWHome;
             ushort elHomeDir = CcWHome;
 
-            if(!ELHomeCW) {//if the MCU dosnt expect the home sensor to be high when a home is initiated this will need to be changed
-                elHomeDir = CWHome;
-            }
-
             //set config word to 0x0040 to have the RT home at the minimumum speed// this requires the MCU to be configured properly
             ushort[] data = {
                 azHomeDir , 0x0000, 0x0000, 0x0000,(ushort)((AZ_Speed & 0xFFFF0000)>>16),(ushort)(AZ_Speed & 0xFFFF), ACCELERATION, ACCELERATION , 0x0000, 0x0000,
