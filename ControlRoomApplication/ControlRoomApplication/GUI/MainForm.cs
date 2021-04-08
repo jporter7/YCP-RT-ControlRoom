@@ -221,7 +221,6 @@ namespace ControlRoomApplication.Main
                     Console.WriteLine("The Selected RT with id " + RTConfig.telescopeID + " was not null, and is not running. Starting telescope "+RTConfig.telescopeID);
                     current_rt_id = RTConfig.telescopeID;
                     runRt = true;
-
                 }
 
             }
@@ -240,7 +239,40 @@ namespace ControlRoomApplication.Main
                     runRt = true;
                 }
             }
-            
+
+            /** MCU IP VALIDATION **/
+
+            // We want the IP to be marked as alive if we are running the simulation
+            // Otherwise, we call the validation
+            bool mcuIpAlive = true;
+            if (comboPLCType.SelectedIndex != 2)
+            {
+                mcuIpAlive = Validator.ServerRunningOnIp(txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text));
+            }
+            else if (!txtPLCIP.Text.Contains("127.0.0."))
+            {
+                MessageBox.Show(
+                    $"{txtPLCIP.Text} is not a valid IP address for the simulation MCU to run on.\n\n" +
+                    $"Please make sure that the IP is a local host address (Ex: 127.0.0.xxx).",
+
+                    "Invalid Simulation MCU IP"
+                );
+                runRt = false;
+            }
+
+            // Verify that the MCU's IP address is alive
+            // This is skipped if we are simulating, since the server is run internally
+            if (!mcuIpAlive)
+            {
+                MessageBox.Show(
+                    $"The MCU was not found on {txtPLCIP.Text}:{txtMcuCOMPort.Text}, or the system is still booting up.\n\n" +
+                    $"If this problem persists, please power-cycle the PLC and MCU and verify all connections are firmly in place.",
+
+                    "MCU Not Found"
+                );
+                runRt = false;
+            }
+
 
             if (runRt)
             {
