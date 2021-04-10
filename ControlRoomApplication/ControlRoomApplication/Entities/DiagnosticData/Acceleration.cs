@@ -49,6 +49,7 @@ namespace ControlRoomApplication.Entities {
             acx.y = y;
             acx.z = z;
             acx.location_ID = (int)loc;
+            acx.acc = Math.Sqrt(x * x + y * y + z * z);
             return acx;
         }
 
