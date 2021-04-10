@@ -80,14 +80,6 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         }
 
-        /*       [TestMethod]
-               public void TestPopulateLocalDatabase()
-               { 
-                   DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
-                   var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-                   Assert.AreEqual(45 * NumRTInstances, appt_count);
-               }
-       */
         [TestMethod]
         public void TestGetListOfAppointmentsForRadioTelescope()
         {

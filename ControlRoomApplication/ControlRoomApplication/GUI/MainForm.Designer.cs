@@ -41,7 +41,6 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.txtPLCIP = new System.Windows.Forms.TextBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.comboPLCType = new System.Windows.Forms.ComboBox();
             this.FreeControl = new System.Windows.Forms.Button();
             this.comboSensorNetworkBox = new System.Windows.Forms.ComboBox();
@@ -187,19 +186,6 @@
             this.comboBox2.TabIndex = 1;
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
-            // checkBox1
-            // 
-            this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1.Location = new System.Drawing.Point(555, 232);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(140, 17);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Populate local database";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
             // comboPLCType
             // 
             this.comboPLCType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -252,13 +238,12 @@
             // 
             // loopBackBox
             // 
-            this.loopBackBox.AutoSize = true;
-            this.loopBackBox.Location = new System.Drawing.Point(699, 219);
+            this.loopBackBox.Location = new System.Drawing.Point(559, 219);
             this.loopBackBox.Margin = new System.Windows.Forms.Padding(2);
             this.loopBackBox.Name = "loopBackBox";
-            this.loopBackBox.Size = new System.Drawing.Size(93, 43);
+            this.loopBackBox.Size = new System.Drawing.Size(150, 43);
             this.loopBackBox.TabIndex = 28;
-            this.loopBackBox.Text = "Loop back \r\n(for simulation)\r\n ";
+            this.loopBackBox.Text = "Loop back ( for simulation)";
             this.loopBackBox.UseVisualStyleBackColor = true;
             this.loopBackBox.CheckedChanged += new System.EventHandler(this.loopBackBox_CheckedChanged);
             // 
@@ -540,13 +525,12 @@
             // 
             // ProdcheckBox
             // 
-            this.ProdcheckBox.AutoSize = true;
-            this.ProdcheckBox.Location = new System.Drawing.Point(801, 225);
+            this.ProdcheckBox.Location = new System.Drawing.Point(733, 225);
             this.ProdcheckBox.Margin = new System.Windows.Forms.Padding(2);
             this.ProdcheckBox.Name = "ProdcheckBox";
-            this.ProdcheckBox.Size = new System.Drawing.Size(97, 30);
+            this.ProdcheckBox.Size = new System.Drawing.Size(160, 30);
             this.ProdcheckBox.TabIndex = 28;
-            this.ProdcheckBox.Text = "Default Vals \r\n(for production)";
+            this.ProdcheckBox.Text = "Default Vals ( for production)";
             this.ProdcheckBox.UseVisualStyleBackColor = true;
             this.ProdcheckBox.CheckedChanged += new System.EventHandler(this.ProdcheckBox_CheckedChanged);
             // 
@@ -569,7 +553,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.loopBackBox);
-            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.ProdcheckBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -596,7 +579,6 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.TextBox txtPLCIP;
         private System.Windows.Forms.ComboBox comboBox2;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ComboBox comboPLCType;
         private System.Windows.Forms.Button FreeControl;
         private System.Windows.Forms.ComboBox comboSensorNetworkBox;
