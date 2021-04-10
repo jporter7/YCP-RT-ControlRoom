@@ -125,7 +125,6 @@ namespace ControlRoomApplication.Main
             shutdownButton.BackColor = System.Drawing.Color.Gainsboro;
             shutdownButton.Enabled = false;
             loopBackBox.Enabled = true;
-            checkBox1.Enabled = true;
 
             comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
             comboBox1.SelectedIndex = 1;
@@ -296,25 +295,6 @@ namespace ControlRoomApplication.Main
                     && txtPLCIP.Text != null
                     && comboBox1.SelectedIndex > -1)
                 {
-
-
-                    if (checkBox1.Checked)
-                    {
-                        logger.Info(Utilities.GetTimeStamp() + ": Populating Local Database");
-                        //     DatabaseOperations.PopulateLocalDatabase(current_rt_id);
-                        Console.WriteLine(DatabaseOperations.GetNextAppointment(current_rt_id).start_time.ToString());
-                        logger.Info(Utilities.GetTimeStamp() + ": Disabling ManualControl and FreeControl");
-                        //ManualControl.Enabled = false;
-                        FreeControl.Enabled = false;
-                        // createWSButton.Enabled = false;
-                    }
-                    else
-                    {
-                        logger.Info(Utilities.GetTimeStamp() + ": Enabling ManualControl and FreeControl");
-                        // ManualControl.Enabled = true;
-                        FreeControl.Enabled = true;
-
-                    }
 
                     // If the main control room controller hasn't been initialized, initialize it.
                     if (MainControlRoomController == null)
@@ -953,7 +933,6 @@ namespace ControlRoomApplication.Main
                     }
                     startRTGroupbox.BackColor = System.Drawing.Color.Gray;
                     loopBackBox.Enabled = false;
-                    checkBox1.Enabled = false;
 
                     simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
                     comboSensorNetworkBox.Enabled = false;
@@ -984,7 +963,6 @@ namespace ControlRoomApplication.Main
                     startButton.Enabled = false;
                     startButton.BackColor = System.Drawing.Color.LightGray;
                     loopBackBox.Enabled = true;
-                    checkBox1.Enabled = true;
 
                     simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
                     comboSensorNetworkBox.Enabled = true;
