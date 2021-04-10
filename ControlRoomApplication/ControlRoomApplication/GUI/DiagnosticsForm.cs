@@ -535,6 +535,7 @@ namespace ControlRoomApplication.GUI
                         azimuthAccChart.Series["x"].Points.AddY(azimuthAccel[i].x);
                         azimuthAccChart.Series["y"].Points.AddY(azimuthAccel[i].y);
                         azimuthAccChart.Series["z"].Points.AddY(azimuthAccel[i].z);
+                        azimuthAccChart.Series["accel"].Points.AddY(azimuthAccel[i].acc);
 
 
                         if (azimuthAccChart.Series["x"].Points.Count > 500)
@@ -542,6 +543,7 @@ namespace ControlRoomApplication.GUI
                             azimuthAccChart.Series["x"].Points.RemoveAt(0);
                             azimuthAccChart.Series["y"].Points.RemoveAt(0);
                             azimuthAccChart.Series["z"].Points.RemoveAt(0);
+                            azimuthAccChart.Series["accel"].Points.RemoveAt(0);
                         }
                         azimuthAccChart.ChartAreas[0].RecalculateAxesScale();
                     }
@@ -561,6 +563,7 @@ namespace ControlRoomApplication.GUI
                     azimuthAccChart.Series["x"].Points.Clear();
                     azimuthAccChart.Series["y"].Points.Clear();
                     azimuthAccChart.Series["z"].Points.Clear();
+                    azimuthAccChart.Series["accel"].Points.Clear();
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
@@ -581,6 +584,7 @@ namespace ControlRoomApplication.GUI
                         elevationAccChart.Series["x"].Points.AddY(eleAccel[i].x);
                         elevationAccChart.Series["y"].Points.AddY(eleAccel[i].y);
                         elevationAccChart.Series["z"].Points.AddY(eleAccel[i].z);
+                        elevationAccChart.Series["accel"].Points.AddY(eleAccel[i].acc);
 
 
                         if (elevationAccChart.Series["x"].Points.Count > 500)
@@ -588,6 +592,7 @@ namespace ControlRoomApplication.GUI
                             elevationAccChart.Series["x"].Points.RemoveAt(0);
                             elevationAccChart.Series["y"].Points.RemoveAt(0);
                             elevationAccChart.Series["z"].Points.RemoveAt(0);
+                            elevationAccChart.Series["accel"].Points.RemoveAt(0); ;
                         }
                         elevationAccChart.ChartAreas[0].RecalculateAxesScale();
                     }
@@ -607,6 +612,7 @@ namespace ControlRoomApplication.GUI
                     elevationAccChart.Series["x"].Points.Clear();
                     elevationAccChart.Series["y"].Points.Clear();
                     elevationAccChart.Series["z"].Points.Clear();
+                    elevationAccChart.Series["accel"].Points.Clear();
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
@@ -627,6 +633,7 @@ namespace ControlRoomApplication.GUI
                         counterBalanceAccChart.Series["x"].Points.AddY(cbAccel[i].x);
                         counterBalanceAccChart.Series["y"].Points.AddY(cbAccel[i].y);
                         counterBalanceAccChart.Series["z"].Points.AddY(cbAccel[i].z);
+                        counterBalanceAccChart.Series["accel"].Points.AddY(cbAccel[i].acc);
 
 
                         if (counterBalanceAccChart.Series["x"].Points.Count > 500)
@@ -634,6 +641,7 @@ namespace ControlRoomApplication.GUI
                             counterBalanceAccChart.Series["x"].Points.RemoveAt(0);
                             counterBalanceAccChart.Series["y"].Points.RemoveAt(0);
                             counterBalanceAccChart.Series["z"].Points.RemoveAt(0);
+                            counterBalanceAccChart.Series["accel"].Points.RemoveAt(0);
                         }
                         counterBalanceAccChart.ChartAreas[0].RecalculateAxesScale();
                     }
@@ -653,6 +661,7 @@ namespace ControlRoomApplication.GUI
                     counterBalanceAccChart.Series["x"].Points.Clear();
                     counterBalanceAccChart.Series["y"].Points.Clear();
                     counterBalanceAccChart.Series["z"].Points.Clear();
+                    counterBalanceAccChart.Series["accel"].Points.Clear();
                 }
             }
             ///////////////////////////////////////////////////////////////////////////////
