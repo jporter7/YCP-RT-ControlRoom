@@ -194,9 +194,7 @@
             this.CounterbalanceAccelerometer = new System.Windows.Forms.CheckBox();
             this.ElevationAccelerometer = new System.Windows.Forms.CheckBox();
             this.AzimuthAccelerometer = new System.Windows.Forms.CheckBox();
-            this.AzimuthTemperature2 = new System.Windows.Forms.CheckBox();
             this.AzimuthTemperature1 = new System.Windows.Forms.CheckBox();
-            this.ElevationTemperature2 = new System.Windows.Forms.CheckBox();
             this.ElevationTemperature1 = new System.Windows.Forms.CheckBox();
             this.grpProximitySensors = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -1937,9 +1935,7 @@
             this.SensorNetworkSensorInitialization.Controls.Add(this.CounterbalanceAccelerometer);
             this.SensorNetworkSensorInitialization.Controls.Add(this.ElevationAccelerometer);
             this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthAccelerometer);
-            this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthTemperature2);
             this.SensorNetworkSensorInitialization.Controls.Add(this.AzimuthTemperature1);
-            this.SensorNetworkSensorInitialization.Controls.Add(this.ElevationTemperature2);
             this.SensorNetworkSensorInitialization.Controls.Add(this.ElevationTemperature1);
             this.SensorNetworkSensorInitialization.Location = new System.Drawing.Point(344, 210);
             this.SensorNetworkSensorInitialization.Name = "SensorNetworkSensorInitialization";
@@ -2030,7 +2026,7 @@
             // CounterbalanceAccelerometer
             // 
             this.CounterbalanceAccelerometer.AutoSize = true;
-            this.CounterbalanceAccelerometer.Location = new System.Drawing.Point(5, 164);
+            this.CounterbalanceAccelerometer.Location = new System.Drawing.Point(5, 126);
             this.CounterbalanceAccelerometer.Name = "CounterbalanceAccelerometer";
             this.CounterbalanceAccelerometer.Size = new System.Drawing.Size(172, 17);
             this.CounterbalanceAccelerometer.TabIndex = 6;
@@ -2040,7 +2036,7 @@
             // ElevationAccelerometer
             // 
             this.ElevationAccelerometer.AutoSize = true;
-            this.ElevationAccelerometer.Location = new System.Drawing.Point(5, 146);
+            this.ElevationAccelerometer.Location = new System.Drawing.Point(5, 108);
             this.ElevationAccelerometer.Name = "ElevationAccelerometer";
             this.ElevationAccelerometer.Size = new System.Drawing.Size(141, 17);
             this.ElevationAccelerometer.TabIndex = 5;
@@ -2050,51 +2046,31 @@
             // AzimuthAccelerometer
             // 
             this.AzimuthAccelerometer.AutoSize = true;
-            this.AzimuthAccelerometer.Location = new System.Drawing.Point(5, 128);
+            this.AzimuthAccelerometer.Location = new System.Drawing.Point(5, 90);
             this.AzimuthAccelerometer.Name = "AzimuthAccelerometer";
             this.AzimuthAccelerometer.Size = new System.Drawing.Size(134, 17);
             this.AzimuthAccelerometer.TabIndex = 4;
             this.AzimuthAccelerometer.Text = "Azimuth Accelerometer";
             this.AzimuthAccelerometer.UseVisualStyleBackColor = true;
             // 
-            // AzimuthTemperature2
-            // 
-            this.AzimuthTemperature2.AutoSize = true;
-            this.AzimuthTemperature2.Location = new System.Drawing.Point(5, 110);
-            this.AzimuthTemperature2.Name = "AzimuthTemperature2";
-            this.AzimuthTemperature2.Size = new System.Drawing.Size(135, 17);
-            this.AzimuthTemperature2.TabIndex = 3;
-            this.AzimuthTemperature2.Text = "Azimuth Temperature 2";
-            this.AzimuthTemperature2.UseVisualStyleBackColor = true;
-            // 
             // AzimuthTemperature1
             // 
             this.AzimuthTemperature1.AutoSize = true;
-            this.AzimuthTemperature1.Location = new System.Drawing.Point(5, 92);
+            this.AzimuthTemperature1.Location = new System.Drawing.Point(5, 73);
             this.AzimuthTemperature1.Name = "AzimuthTemperature1";
-            this.AzimuthTemperature1.Size = new System.Drawing.Size(135, 17);
+            this.AzimuthTemperature1.Size = new System.Drawing.Size(156, 17);
             this.AzimuthTemperature1.TabIndex = 2;
-            this.AzimuthTemperature1.Text = "Azimuth Temperature 1";
+            this.AzimuthTemperature1.Text = "Azimuth Motor Temperature";
             this.AzimuthTemperature1.UseVisualStyleBackColor = true;
-            // 
-            // ElevationTemperature2
-            // 
-            this.ElevationTemperature2.AutoSize = true;
-            this.ElevationTemperature2.Location = new System.Drawing.Point(5, 74);
-            this.ElevationTemperature2.Name = "ElevationTemperature2";
-            this.ElevationTemperature2.Size = new System.Drawing.Size(142, 17);
-            this.ElevationTemperature2.TabIndex = 1;
-            this.ElevationTemperature2.Text = "Elevation Temperature 2";
-            this.ElevationTemperature2.UseVisualStyleBackColor = true;
             // 
             // ElevationTemperature1
             // 
             this.ElevationTemperature1.AutoSize = true;
             this.ElevationTemperature1.Location = new System.Drawing.Point(5, 56);
             this.ElevationTemperature1.Name = "ElevationTemperature1";
-            this.ElevationTemperature1.Size = new System.Drawing.Size(142, 17);
+            this.ElevationTemperature1.Size = new System.Drawing.Size(163, 17);
             this.ElevationTemperature1.TabIndex = 0;
-            this.ElevationTemperature1.Text = "Elevation Temperature 1";
+            this.ElevationTemperature1.Text = "Elevation Motor Temperature";
             this.ElevationTemperature1.UseVisualStyleBackColor = true;
             // 
             // grpProximitySensors
@@ -2815,9 +2791,7 @@
         private System.Windows.Forms.CheckBox CounterbalanceAccelerometer;
         private System.Windows.Forms.CheckBox ElevationAccelerometer;
         private System.Windows.Forms.CheckBox AzimuthAccelerometer;
-        private System.Windows.Forms.CheckBox AzimuthTemperature2;
         private System.Windows.Forms.CheckBox AzimuthTemperature1;
-        private System.Windows.Forms.CheckBox ElevationTemperature2;
         private System.Windows.Forms.CheckBox ElevationTemperature1;
         private System.Windows.Forms.GroupBox Encoders;
         private System.Windows.Forms.Button btnElevationAbsoluteEncoder;

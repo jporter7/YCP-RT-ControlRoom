@@ -629,9 +629,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
             // Change values so the updated one is different
             original.ElevationTemp1Init = false;
-            original.ElevationTemp2Init = false;
             original.AzimuthTemp1Init = false;
-            original.AzimuthTemp2Init = false;
             original.ElevationAccelerometerInit = false;
             original.AzimuthAccelerometerInit = false;
             original.CounterbalanceAccelerometerInit = false;

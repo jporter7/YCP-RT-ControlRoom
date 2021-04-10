@@ -29,9 +29,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
 
             // default initialization (all must default to true)
             Assert.AreEqual(config.ElevationTemp1Init, true);
-            Assert.AreEqual(config.ElevationTemp2Init, true);
             Assert.AreEqual(config.AzimuthTemp1Init, true);
-            Assert.AreEqual(config.AzimuthTemp2Init, true);
             Assert.AreEqual(config.ElevationAccelerometerInit, true);
             Assert.AreEqual(config.AzimuthAccelerometerInit, true);
             Assert.AreEqual(config.CounterbalanceAccelerometerInit, true);
@@ -52,9 +50,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreEqual(config.TimeoutInitialization, 0);
             
             Assert.AreEqual(config.ElevationTemp1Init, false);
-            Assert.AreEqual(config.ElevationTemp2Init, false);
             Assert.AreEqual(config.AzimuthTemp1Init, false);
-            Assert.AreEqual(config.AzimuthTemp2Init, false);
             Assert.AreEqual(config.ElevationAccelerometerInit, false);
             Assert.AreEqual(config.AzimuthAccelerometerInit, false);
             Assert.AreEqual(config.CounterbalanceAccelerometerInit, false);
@@ -97,19 +93,6 @@ namespace ControlRoomApplicationTest.EntitiesTests
         }
 
         [TestMethod]
-        public void TestEquals_ElevationTemp2InitDifferent_NotEqual()
-        {
-            int telescopeId = 5;
-
-            SensorNetworkConfig config = new SensorNetworkConfig(telescopeId);
-            SensorNetworkConfig other = new SensorNetworkConfig(telescopeId);
-
-            other.ElevationTemp2Init = false;
-
-            Assert.IsFalse(config.Equals(other));
-        }
-
-        [TestMethod]
         public void TestEquals_AzimuthTemp1InitDifferent_NotEqual()
         {
             int telescopeId = 5;
@@ -118,19 +101,6 @@ namespace ControlRoomApplicationTest.EntitiesTests
             SensorNetworkConfig other = new SensorNetworkConfig(telescopeId);
 
             other.AzimuthTemp1Init = false;
-
-            Assert.IsFalse(config.Equals(other));
-        }
-
-        [TestMethod]
-        public void TestEquals_AzimuthTemp2InitDifferent_NotEqual()
-        {
-            int telescopeId = 5;
-
-            SensorNetworkConfig config = new SensorNetworkConfig(telescopeId);
-            SensorNetworkConfig other = new SensorNetworkConfig(telescopeId);
-
-            other.AzimuthTemp2Init = false;
 
             Assert.IsFalse(config.Equals(other));
         }
@@ -243,9 +213,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             SensorNetworkConfig config = new SensorNetworkConfig(5);
 
             config.ElevationTemp1Init = false;
-            config.ElevationTemp2Init = false;
             config.AzimuthTemp1Init = false;
-            config.AzimuthTemp2Init = false;
             config.ElevationAccelerometerInit = false;
             config.AzimuthAccelerometerInit = false;
             config.CounterbalanceAccelerometerInit = false;

@@ -163,9 +163,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Flip sensor initialization bytes to 0
             client.config.ElevationTemp1Init = false;
-            client.config.ElevationTemp2Init = false;
             client.config.AzimuthTemp1Init = false;
-            client.config.AzimuthTemp2Init = false;
             client.config.AzimuthAccelerometerInit = false;
             client.config.ElevationAccelerometerInit = false;
             client.config.CounterbalanceAccelerometerInit = false;

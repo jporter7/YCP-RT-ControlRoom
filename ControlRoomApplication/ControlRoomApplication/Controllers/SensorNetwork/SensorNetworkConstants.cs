@@ -42,12 +42,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         public const int DefaultInitializationTimeout = 10000; // in milliseconds
 
         /// <summary>
-        /// This is the total number of sensors that is a part of the Sensor Network. This is used to determine
-        /// the byte size of the initialization. The size for transit would be 9 minus the 2 redundant temperature
-        /// sensors, which is 7.
+        /// This is the total number of Sensor Network sensors that can be receiving data at a given time. 
+        /// This is used to determine the byte size of the initialization. 
         /// </summary>
-        public const int SensorNetworkSensorCount = 9;
-
+        public const int SensorNetworkSensorCount = 7;
 
         /// <summary>
         /// If we receive this ID from the sensor network, it means that everything is going well, and we are about

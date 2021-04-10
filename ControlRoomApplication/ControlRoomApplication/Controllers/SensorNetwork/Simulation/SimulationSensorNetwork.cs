@@ -307,29 +307,25 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         /// <param name="init">Sensor initialization we receive from the SensorNetworkServer's InitializationClient</param>
         private void InitializeSensors(byte[] init)
         {
-            if (init[0] == 0) ElevationTempData = null;
+            if (init[(int)SensorInitializationEnum.ElevationTemp] == 0) ElevationTempData = null;
             else ElevationTempData = new double[0];
 
-            // Skip [1] because that is a redundant temp sensor; the SensorNetworkServer should not know about the change
-
-            if (init[2] == 0) AzimuthTempData = null;
+            if (init[(int)SensorInitializationEnum.AzimuthTemp] == 0) AzimuthTempData = null;
             else AzimuthTempData = new double[0];
 
-            // Skip [3] because that is a redundant temp sensor; the SensorNetworkServer should not know about the change
-
-            if (init[4] == 0) ElevationEncoderData = null;
+            if (init[(int)SensorInitializationEnum.ElevationEncoder] == 0) ElevationEncoderData = null;
             else ElevationEncoderData = new double[0];
 
-            if (init[5] == 0) AzimuthEncoderData = null;
+            if (init[(int)SensorInitializationEnum.AzimuthEncoder] == 0) AzimuthEncoderData = null;
             else AzimuthEncoderData = new double[0];
 
-            if (init[6] == 0) AzimuthAccData = null;
+            if (init[(int)SensorInitializationEnum.AzimuthAccelerometer] == 0) AzimuthAccData = null;
             else AzimuthAccData = new RawAccelerometerData[0];
 
-            if (init[7] == 0) ElevationAccData = null;
+            if (init[(int)SensorInitializationEnum.ElevationAccelerometer] == 0) ElevationAccData = null;
             else ElevationAccData = new RawAccelerometerData[0];
 
-            if (init[8] == 0) CounterbalanceAccData = null;
+            if (init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] == 0) CounterbalanceAccData = null;
             else CounterbalanceAccData = new RawAccelerometerData[0];
         }
 
