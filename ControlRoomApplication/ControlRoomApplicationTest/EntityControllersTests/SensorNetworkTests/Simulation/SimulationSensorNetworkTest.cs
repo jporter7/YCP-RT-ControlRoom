@@ -94,19 +94,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -138,19 +134,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 0;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -182,19 +174,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 0;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -226,19 +214,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 0;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -270,19 +254,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 0;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -313,20 +293,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
-            // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 0;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -357,20 +332,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
-            // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -492,19 +462,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 1;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -538,19 +504,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 1;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -584,19 +546,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 1;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -629,20 +587,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
-            // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 1;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -677,20 +630,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
-            // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 1;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -725,20 +673,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
-            // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -838,7 +781,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             });
             expectConfThread.Start();
 
-            byte[] expected = Encoding.ASCII.GetBytes("123456789");
+            byte[] expected = Encoding.ASCII.GetBytes("1234567");
             byte[] result = new byte[expected.Length];
 
             // This method has a blocking method, so we must run it in a separate thread

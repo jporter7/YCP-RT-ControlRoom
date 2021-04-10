@@ -177,9 +177,7 @@ namespace ControlRoomApplication.GUI
             SensorNetworkConfig = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
 
             AzimuthTemperature1.Checked = SensorNetworkConfig.AzimuthTemp1Init;
-            AzimuthTemperature2.Checked = SensorNetworkConfig.AzimuthTemp2Init;
             ElevationTemperature1.Checked = SensorNetworkConfig.ElevationTemp1Init;
-            ElevationTemperature2.Checked = SensorNetworkConfig.ElevationTemp2Init;
             AzimuthAccelerometer.Checked = SensorNetworkConfig.AzimuthAccelerometerInit;
             ElevationAccelerometer.Checked = SensorNetworkConfig.ElevationAccelerometerInit;
             CounterbalanceAccelerometer.Checked = SensorNetworkConfig.CounterbalanceAccelerometerInit;
@@ -1360,9 +1358,7 @@ namespace ControlRoomApplication.GUI
             await Task.Run(() => { 
                 // First set all the checkboxes equal to the sensor network config
                 SensorNetworkConfig.AzimuthTemp1Init = AzimuthTemperature1.Checked;
-                SensorNetworkConfig.AzimuthTemp2Init = AzimuthTemperature2.Checked;
                 SensorNetworkConfig.ElevationTemp1Init = ElevationTemperature1.Checked;
-                SensorNetworkConfig.ElevationTemp2Init = ElevationTemperature2.Checked;
                 SensorNetworkConfig.AzimuthAccelerometerInit = AzimuthAccelerometer.Checked;
                 SensorNetworkConfig.ElevationAccelerometerInit = ElevationAccelerometer.Checked;
                 SensorNetworkConfig.CounterbalanceAccelerometerInit = CounterbalanceAccelerometer.Checked;
