@@ -322,6 +322,7 @@
     <Compile Include="GUI\DiagnosticsForm.Designer.cs">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\DropDownEnums\SensorNetworkDropdown.cs" />
     <Compile Include="GUI\EditTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
