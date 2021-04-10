@@ -19,6 +19,7 @@ using ControlRoomApplication.Validation;
 using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Controllers.SensorNetwork;
+using ControlRoomApplication.GUI.DropDownEnums;
 
 namespace ControlRoomApplication.Main
 {
@@ -126,7 +127,7 @@ namespace ControlRoomApplication.Main
             loopBackBox.Enabled = true;
             checkBox1.Enabled = true;
 
-            comboSensorNetworkBox.SelectedIndex = 1;
+            comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
             comboBox1.SelectedIndex = 1;
             comboBox2.SelectedIndex = 1;
             comboPLCType.SelectedIndex = 2;
@@ -326,7 +327,7 @@ namespace ControlRoomApplication.Main
                     }
 
                     bool isSensorNetworkServerSimulated = false;
-                    if(comboSensorNetworkBox.SelectedIndex == 1)
+                    if(comboSensorNetworkBox.SelectedIndex == (int)SensorNetworkDropdown.SimulatedSensorNetwork)
                     {
                         isSensorNetworkServerSimulated = true;
                     }
@@ -758,7 +759,7 @@ namespace ControlRoomApplication.Main
                 this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
                 this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
 
-                comboSensorNetworkBox.SelectedIndex = 1;
+                comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
 
 
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
@@ -784,7 +785,7 @@ namespace ControlRoomApplication.Main
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("192.168.0.70");
-                comboSensorNetworkBox.SelectedIndex = 1;
+                comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
 
                 // SensorNetwork and Server IP/Ports
 
@@ -811,7 +812,30 @@ namespace ControlRoomApplication.Main
 
         private void comboSensorNetworkBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if(comboSensorNetworkBox.SelectedIndex == (int)SensorNetworkDropdown.ProductionSensorNetwork)
+            {
+                this.sensorNetworkServerIPAddress.Text = "192.168.0.10";
+                this.sensorNetworkClientIPAddress.Text = "192.168.0.197";
+                this.sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
 
+                this.sensorNetworkServerPort.Text = "1600";
+                this.sensorNetworkClientPort.Text = "1680";
+                this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
+            }
+            else
+            {
+                this.sensorNetworkServerIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkClientIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
+
+                this.sensorNetworkServerPort.Text = "1600";
+                this.sensorNetworkClientPort.Text = "1680";
+                this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
+                this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
+            }
         }
 
         private void comboBox2_Click(object sender, EventArgs e)

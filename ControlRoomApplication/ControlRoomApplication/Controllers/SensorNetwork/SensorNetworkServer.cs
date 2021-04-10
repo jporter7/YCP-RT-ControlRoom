@@ -162,7 +162,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This starts the SensorMonitoringRoutine. Calling this will immediately begin initialization.
         /// </summary>
         /// <returns>If started successfully, return true. Else, return false.</returns>
-        public void StartSensorMonitoringRoutine()
+        public void StartSensorMonitoringRoutine(bool rebooting = false)
         {
             Server.Start();
             CurrentlyRunning = true;
@@ -171,7 +171,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             Timeout.Start();
             SensorMonitoringThread.Start();
 
-            if (SimulationSensorNetwork != null)
+            if (SimulationSensorNetwork != null && !rebooting)
             {
                 SimulationSensorNetwork.StartSimulationSensorNetwork();
             }
@@ -202,16 +202,16 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             { // We want to keep using the timer if we are rebooting, not destroy it.
                 Status = SensorNetworkStatusEnum.None;
                 Timeout.Dispose();
+
+                if (SimulationSensorNetwork != null)
+                {
+                    SimulationSensorNetwork.EndSimulationSensorNetwork();
+                }
             }
             else
             {
                 Status = SensorNetworkStatusEnum.Rebooting;
                 SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
-            }
-
-            if (SimulationSensorNetwork != null)
-            {
-                SimulationSensorNetwork.EndSimulationSensorNetwork();
             }
         }
 
@@ -230,7 +230,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             // sure it REALLY times out.
             Thread.Sleep(SensorNetworkConstants.WatchDogTimeout + 50);
 
-            StartSensorMonitoringRoutine();
+            StartSensorMonitoringRoutine(true);
         }
 
         /// <summary>
