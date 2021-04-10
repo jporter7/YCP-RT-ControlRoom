@@ -238,12 +238,12 @@
             // 
             // loopBackBox
             // 
-            this.loopBackBox.Location = new System.Drawing.Point(559, 219);
+            this.loopBackBox.Location = new System.Drawing.Point(539, 219);
             this.loopBackBox.Margin = new System.Windows.Forms.Padding(2);
             this.loopBackBox.Name = "loopBackBox";
-            this.loopBackBox.Size = new System.Drawing.Size(150, 43);
+            this.loopBackBox.Size = new System.Drawing.Size(160, 43);
             this.loopBackBox.TabIndex = 28;
-            this.loopBackBox.Text = "Loop back ( for simulation)";
+            this.loopBackBox.Text = "Loop back (for simulation)";
             this.loopBackBox.UseVisualStyleBackColor = true;
             this.loopBackBox.CheckedChanged += new System.EventHandler(this.loopBackBox_CheckedChanged);
             // 
@@ -525,12 +525,12 @@
             // 
             // ProdcheckBox
             // 
-            this.ProdcheckBox.Location = new System.Drawing.Point(733, 225);
+            this.ProdcheckBox.Location = new System.Drawing.Point(726, 225);
             this.ProdcheckBox.Margin = new System.Windows.Forms.Padding(2);
             this.ProdcheckBox.Name = "ProdcheckBox";
-            this.ProdcheckBox.Size = new System.Drawing.Size(160, 30);
+            this.ProdcheckBox.Size = new System.Drawing.Size(175, 30);
             this.ProdcheckBox.TabIndex = 28;
-            this.ProdcheckBox.Text = "Default Vals ( for production)";
+            this.ProdcheckBox.Text = "Default Vals (for production)";
             this.ProdcheckBox.UseVisualStyleBackColor = true;
             this.ProdcheckBox.CheckedChanged += new System.EventHandler(this.ProdcheckBox_CheckedChanged);
             // 
