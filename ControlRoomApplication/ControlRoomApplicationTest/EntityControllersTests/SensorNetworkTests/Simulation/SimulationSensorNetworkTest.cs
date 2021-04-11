@@ -371,20 +371,16 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
-            // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            // Create an initialization
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -416,19 +412,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             PrivateObject privSim = new PrivateObject(SimSensorNetwork);
 
             // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
             privSim.Invoke("InitializeSensors", init);
 
@@ -443,9 +435,10 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
             double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
 
+            double[] expectedArray = new double[] { 1, 2 };
+
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultElTemp.Length);
-            Assert.AreEqual(1, resultElTemp[0]);
+            Assert.IsTrue(expectedArray.SequenceEqual(resultElTemp));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultAzTemp);
@@ -485,9 +478,10 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
             double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
 
+            double[] expectedArray = new double[] { 2, 3 };
+
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultAzTemp.Length);
-            Assert.AreEqual(2, resultAzTemp[0]);
+            Assert.IsTrue(expectedArray.SequenceEqual(resultAzTemp));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -527,9 +521,10 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
             double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
 
+            double[] expectedArray = new double[] { 3, 4 };
+
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultElEnc.Length);
-            Assert.AreEqual(3, resultElEnc[0]);
+            Assert.IsTrue(expectedArray.SequenceEqual(resultElEnc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -569,9 +564,10 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
             double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
 
+            double[] expectedArray = new double[] { 4, 5 };
+
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultAzEnc.Length);
-            Assert.AreEqual(4, resultAzEnc[0]);
+            Assert.IsTrue(expectedArray.SequenceEqual(resultAzEnc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -610,11 +606,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
             double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
 
+            RawAccelerometerData[] expectedAcc = new RawAccelerometerData[400];
+
+            for (int i = 0; i < 400; i++)
+            {
+                if (i <= 199)
+                {
+                    expectedAcc[i].X = 6;
+                    expectedAcc[i].Y = 13;
+                    expectedAcc[i].Z = 11;
+                }
+                else
+                {
+                    expectedAcc[i].X = 5;
+                    expectedAcc[i].Y = 12;
+                    expectedAcc[i].Z = 10;
+                }
+            }
+
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultAzAcc.Length);
-            Assert.AreEqual(5, resultAzAcc[0].X);
-            Assert.AreEqual(6, resultAzAcc[0].Y);
-            Assert.AreEqual(7, resultAzAcc[0].Z);
+            Assert.IsTrue(expectedAcc.SequenceEqual(resultAzAcc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -653,11 +664,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
             double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
 
+            RawAccelerometerData[] expectedAcc = new RawAccelerometerData[400];
+
+            for (int i = 0; i < 400; i++)
+            {
+                if (i <= 199)
+                {
+                    expectedAcc[i].X = 6;
+                    expectedAcc[i].Y = 13;
+                    expectedAcc[i].Z = 11;
+                }
+                else
+                {
+                    expectedAcc[i].X = 5;
+                    expectedAcc[i].Y = 12;
+                    expectedAcc[i].Z = 10;
+                }
+            }
+
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultElAcc.Length);
-            Assert.AreEqual(8, resultElAcc[0].X);
-            Assert.AreEqual(9, resultElAcc[0].Y);
-            Assert.AreEqual(10, resultElAcc[0].Z);
+            Assert.IsTrue(expectedAcc.SequenceEqual(resultElAcc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -696,11 +722,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
             double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
 
+            RawAccelerometerData[] expectedAcc = new RawAccelerometerData[400];
+
+            for (int i = 0; i < 400; i++)
+            {
+                if (i <= 199)
+                {
+                    expectedAcc[i].X = 6;
+                    expectedAcc[i].Y = 13;
+                    expectedAcc[i].Z = 11;
+                }
+                else
+                {
+                    expectedAcc[i].X = 5;
+                    expectedAcc[i].Y = 12;
+                    expectedAcc[i].Z = 10;
+                }
+            }
+
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultCbAcc.Length);
-            Assert.AreEqual(11, resultCbAcc[0].X);
-            Assert.AreEqual(12, resultCbAcc[0].Y);
-            Assert.AreEqual(13, resultCbAcc[0].Z);
+            Assert.IsTrue(expectedAcc.SequenceEqual(resultCbAcc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
