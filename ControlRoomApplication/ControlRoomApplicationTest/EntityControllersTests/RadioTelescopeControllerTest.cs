@@ -414,47 +414,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Assert.AreEqual(expectedOrientation.Elevation, resultOrientation.Elevation, 0.001);
         }
 
-        /*
-        [TestMethod]
-        public void test_orientation_change() {
-            Random random = new Random();
-
-            Orientation current_orientation2;
-            current_orientation2 = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
-            Orientation current_orientation = current_orientation2;
-
-            int positionTranslationAZ, positionTranslationEL, current_stepsAZ, current_stepsEL;
-            current_stepsAZ = ConversionHelper.DegreesToSteps( current_orientation.Azimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
-            current_stepsEL = ConversionHelper.DegreesToSteps( current_orientation.Elevation , MotorConstants.GEARING_RATIO_ELEVATION );
-            for(int i = 0; i < 100; i++) {
-                Orientation target_orientation = new Orientation( random.NextDouble() * 360 , random.NextDouble() * 360 );
-
-                positionTranslationAZ = ConversionHelper.DegreesToSteps( (target_orientation.Azimuth - current_orientation.Azimuth) , MotorConstants.GEARING_RATIO_AZIMUTH );
-                positionTranslationEL = ConversionHelper.DegreesToSteps( (target_orientation.Elevation - current_orientation.Elevation) , MotorConstants.GEARING_RATIO_ELEVATION );
-
-
-                Console.WriteLine( "AZ_01 {0,16} EL_01 {1,16}" , current_stepsAZ , current_stepsEL );
-                current_stepsAZ = current_stepsAZ + positionTranslationAZ;
-                current_stepsEL = current_stepsEL + positionTranslationEL;
-
-                current_orientation = new Orientation( ConversionHelper.StepsToDegrees( current_stepsAZ , MotorConstants.GEARING_RATIO_AZIMUTH ) , ConversionHelper.StepsToDegrees( current_stepsEL , MotorConstants.GEARING_RATIO_ELEVATION ) );
-
-                Assert.AreEqual( target_orientation.Azimuth , current_orientation.Azimuth , 0.1 );
-                Assert.AreEqual( target_orientation.Elevation , current_orientation.Elevation , 0.1 );
-                Console.WriteLine( "AZ_finni0 {0,10} EL_finni0 {1,10}" , current_stepsAZ , current_stepsEL );
-                // current_orientation = new Orientation(ConversionHelper.StepsToDegrees(current_stepsAZ + positionTranslationAZ, MotorConstants.GEARING_RATIO_AZIMUTH), ConversionHelper.StepsToDegrees(current_stepsEL + positionTranslationEL, MotorConstants.GEARING_RATIO_ELEVATION));
-                //Console.WriteLine(current_orientation.Elevation + "    "+ target_orientation.Elevation);
-                // Console.WriteLine("AZ_step1 {0,10} EL_step1 {1,10}", positionTranslationAZ, positionTranslationEL);
-                TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move( 100_000 , 50 , positionTranslationAZ , positionTranslationEL );
-
-                current_orientation2 = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
-
-                Assert.AreEqual( target_orientation.Azimuth , current_orientation2.Azimuth , 0.1 );
-                Assert.AreEqual( target_orientation.Elevation , current_orientation2.Elevation , 0.1 );
-            }
-        }
-        */
-
         [TestMethod]
         public void test_temperature_check()
         {
@@ -469,51 +428,45 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             /** Azimuth tests **/
             Temperature az = new Temperature(); az.location_ID = (int)SensorLocationEnum.AZ_MOTOR;
 
-            // Overheating
+            // Stable
             az.temp = 100;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az, true));
 
             // Stable
             az.temp = 50;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
-
-            // Overheating
-            az.temp = 150;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az, true));
 
             // Overheating
             az.temp = 151;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az, true));
+
+            // Overheating
+            az.temp = 151;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az, true));
 
             // Too cold
-            az.temp = 49;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az));
+            az.temp = -1;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(az, true));
 
 
             /** Elevation tests **/
             Temperature el = new Temperature(); el.location_ID = (int)SensorLocationEnum.EL_MOTOR;
 
-            // Overheating
+            // Stable
             el.temp = 100;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el, true));
 
             // Stable
             el.temp = 50;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
-
-            // Overheating
-            el.temp = 150;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el, true));
 
             // Overheating
             el.temp = 151;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el, true));
 
             // Too cold
-            el.temp = 49;
-            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el));
-
-
+            el.temp = -1;
+            Assert.IsFalse(TestRadioTelescopeController.checkTemp(el, true));
         }
 
         [TestMethod]
@@ -528,19 +481,19 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Stable
             az.temp = 50;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az, true));
 
             // Stable
             az.temp = 150;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az, true));
 
             // Overheating
             az.temp = 151;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az, true));
 
             // To cold
             az.temp = 49;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(az, true));
 
 
             /** Elevation temperatures **/
@@ -548,19 +501,19 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Stable
             el.temp = 50;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el, true));
 
             // Stable
             el.temp = 150;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el, true));
 
             // Overheating
             el.temp = 151;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el, true));
 
             // To cold
             el.temp = 49;
-            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el));
+            Assert.IsTrue(TestRadioTelescopeController.checkTemp(el, true));
         }
 
         [TestMethod]
