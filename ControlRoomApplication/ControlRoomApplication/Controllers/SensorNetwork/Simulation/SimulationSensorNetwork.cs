@@ -39,6 +39,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         }
 
         private TcpListener Server { get; set; }
+        private NetworkStream ServerStream { get; set; }
 
         private TcpClient Client { get; set; }
         private string ClientIP { get; set; }
@@ -83,9 +84,18 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             if (CurrentlyRunning)
             {
                 CurrentlyRunning = false;
-                Client.Dispose();
-                ClientStream.Dispose();
+                if (Client != null) Client.Dispose();
+                if (ClientStream != null)
+                {
+                    ClientStream.Close();
+                    ClientStream.Dispose();
+                }
                 Server.Stop();
+                if (ServerStream != null)
+                {
+                    ServerStream.Close();
+                    ServerStream.Dispose();
+                }
                 SimulationSensorMonitoringThread.Join();
             }
         }
@@ -93,16 +103,17 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         private void SimulationSensorMonitor()
         {
             // First, we want to connect to the SensorNetworkServer
-            WaitForAndConnectToServer();
+            if(CurrentlyRunning) WaitForAndConnectToServer();
 
             // Next, we want to request initialization and receive it
-            byte[] receivedInit = RequestAndAcquireSensorInitialization();
+            byte[] receivedInit = new byte[0];
+            if(CurrentlyRunning) receivedInit = RequestAndAcquireSensorInitialization();
 
             // At this point, we have the initialization and can initialize the sensors
-            InitializeSensors(receivedInit);
+            if(CurrentlyRunning) InitializeSensors(receivedInit);
 
             // Now we can grab the CSV data for ONLY the initialized sensors...
-            ReadFakeDataFromCSV();
+            if(CurrentlyRunning) ReadFakeDataFromCSV();
 
             // Keep track of the indexes for each data array, because we are only extracting a small subsection of each one.
             // We want to know what subsection we just got so we can get the next subsection in the next iteration
@@ -252,7 +263,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             bool connected = false;
 
             // Wait for the SensorNetworkServer to be up
-            while (!connected)
+            while (!connected && CurrentlyRunning)
             {
                 try
                 {
@@ -268,6 +279,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
                 catch
                 {
                     logger.Info($"{Utilities.GetTimeStamp()}: SimulationSensorNetwork is waiting for the SensorNetworkServer.");
+                    if (Client != null) Client.Dispose();
+                    if (ClientStream != null) ClientStream.Dispose();
                 }
             }
         }
@@ -281,7 +294,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         {
             // Start the server that will expect the Sensor Configuration
             Server.Start();
-            NetworkStream ServerStream;
 
             // Wait for the SensorNetworkClient to send the initialization
             TcpClient localClient;

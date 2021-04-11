@@ -1,5 +1,6 @@
 ﻿using ControlRoomApplication.Controllers.SensorNetwork;
 using ControlRoomApplication.Controllers.SensorNetwork.Simulation;
+using ControlRoomApplication.Database;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
         IPAddress ServerIP = IPAddress.Parse("127.0.0.2");
         int ServerPort = 3001;
+
+        int TelescopeId = 3000;
 
         string DataPath = "../../EntityControllersTests/SensorNetworkTests/Simulation/TestCSVData/";
 
@@ -855,6 +858,54 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             client.Dispose();
 
             Assert.IsTrue(expected.SequenceEqual(result));
+        }
+
+        [TestMethod]
+        public void TestStartSimulationSensorNetwork_Starts_AllObjectsAsExpected()
+        {
+            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+
+            SimSensorNetwork.StartSimulationSensorNetwork();
+
+            bool resultCurrentlyRunning = (bool)privSim.GetFieldOrProperty("CurrentlyRunning");
+            Thread resultMonitoringThread = (Thread)privSim.GetFieldOrProperty("SimulationSensorMonitoringThread");
+
+            Assert.IsTrue(resultCurrentlyRunning);
+            Assert.IsTrue(resultMonitoringThread.IsAlive);
+
+            SimSensorNetwork.EndSimulationSensorNetwork();
+        }
+
+        [TestMethod]
+        public void TestEndSimulationSensorNetwork_Ends_AllObjectsBroughtDown()
+        {
+            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+            SensorNetworkServer SensorNetworkServer = new SensorNetworkServer(IPAddress.Parse(ClientIP), ClientPort, ServerIP.ToString(), ServerPort, TelescopeId, false);
+            SensorNetworkServer.StartSensorMonitoringRoutine();
+            SimSensorNetwork.StartSimulationSensorNetwork();
+
+            // Give plenty of time for everything to connect
+            Thread.Sleep(2000);
+
+            SimSensorNetwork.EndSimulationSensorNetwork();
+            SensorNetworkServer.EndSensorMonitoringRoutine();
+
+            bool resultCurrentlyRunning = (bool)privSim.GetFieldOrProperty("CurrentlyRunning");
+            Thread resultMonitoringThread = (Thread)privSim.GetFieldOrProperty("SimulationSensorMonitoringThread");
+            TcpClient resultClient = (TcpClient)privSim.GetFieldOrProperty("Client");
+            NetworkStream resultClientStream = (NetworkStream)privSim.GetFieldOrProperty("ClientStream");
+            TcpListener resultServer = (TcpListener)privSim.GetFieldOrProperty("Server");
+            NetworkStream resultServerStream = (NetworkStream)privSim.GetFieldOrProperty("ServerStream");
+
+            Assert.IsFalse(resultCurrentlyRunning);
+            Assert.IsFalse(resultMonitoringThread.IsAlive);
+            Assert.IsFalse(resultClient.Connected);
+            Assert.IsFalse(resultClientStream.CanWrite);
+            Assert.IsFalse(resultServer.Server.IsBound);
+            Assert.IsFalse(resultServerStream.CanRead);
+
+            // Remove SN config after we're done
+            DatabaseOperations.DeleteSensorNetworkConfig(SensorNetworkServer.InitializationClient.config);
         }
     }
 }
