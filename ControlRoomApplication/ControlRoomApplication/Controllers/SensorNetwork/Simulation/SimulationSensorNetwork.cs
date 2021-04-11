@@ -117,13 +117,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
 
             // Keep track of the indexes for each data array, because we are only extracting a small subsection of each one.
             // We want to know what subsection we just got so we can get the next subsection in the next iteration
-            int elTempIdx = 0;
-            int azTempIdx = 0;
-            int elEncIdx = 0;
-            int azEncIdx = 0;
-            int elAccIdx = 0;
-            int azAccIdx = 0;
-            int cbAccIdx = 0;
+            int? elTempIdx = 0;
+            int? azTempIdx = 0;
+            int? elEncIdx = 0;
+            int? azEncIdx = 0;
+            int? elAccIdx = 0;
+            int? azAccIdx = 0;
+            int? cbAccIdx = 0;
 
             // This will tell us if we are rebooting or not. We will only reboot if the connection is randomly terminated.
             bool reboot = false;
@@ -132,7 +132,17 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             while (CurrentlyRunning)
             {
                 // Convert subarrays to bytes
-                byte[] dataToSend = BuildSubArraysAndEncodeData(ref elTempIdx, ref azTempIdx, ref elEncIdx, ref azEncIdx, ref elAccIdx, ref azAccIdx, ref cbAccIdx);
+                SimulationSubArrayData subArrays = BuildSubArrays(ref elTempIdx, ref azTempIdx, ref elEncIdx, ref azEncIdx, ref elAccIdx, ref azAccIdx, ref cbAccIdx);
+
+                byte[] dataToSend = PacketEncodingTools.ConvertDataArraysToBytes(
+                    subArrays.ElevationAccl, 
+                    subArrays.AzimuthAccl, 
+                    subArrays.CounterBAccl, 
+                    subArrays.ElevationTemps, 
+                    subArrays.AzimuthTemps, 
+                    subArrays.ElevationEnc, 
+                    subArrays.AzimuthEnc
+                );
 
                 // We have to check for CurrentlyRunning down here because we don't know when the connection is going to be terminated, and
                 // it could very well be in the middle of the loop.
@@ -174,7 +184,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         /// <param name="azAccIdx">Azimuth accelerometer data array index that we are pulling from.</param>
         /// <param name="cbAccIdx">Counterbalance accelerometer data array index that we are pulling from.</param>
         /// <returns></returns>
-        private byte[] BuildSubArraysAndEncodeData(ref int elTempIdx, ref int azTempIdx, ref int elEncIdx, ref int azEncIdx, ref int elAccIdx, ref int azAccIdx, ref int cbAccIdx)
+        private SimulationSubArrayData BuildSubArrays(ref int? elTempIdx, ref int? azTempIdx, ref int? elEncIdx, ref int? azEncIdx, ref int? elAccIdx, ref int? azAccIdx, ref int? cbAccIdx)
         {
             // Select what index to go to next for each array. Each array will loop back around once it reaches its end.
             // We are looking at, for example "azTempIdx + 2" because one would only verify that the index is valid. To copy
@@ -194,64 +204,71 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             else azEncIdx += 1;
 
             // Accelerometers are pulling around 200 samples per iteration
-            if (ElevationAccData != null && elAccIdx + 200 >= ElevationAccData.Length - 1) elAccIdx = 0;
+            if (ElevationAccData != null && elAccIdx + 200 > ElevationAccData.Length - 1) elAccIdx = 0;
             else elAccIdx += 100;
 
-            if (AzimuthAccData != null && azAccIdx + 200 >= AzimuthAccData.Length - 1) azAccIdx = 0;
+            if (AzimuthAccData != null && azAccIdx + 200 > AzimuthAccData.Length - 1) azAccIdx = 0;
             else azAccIdx += 100;
 
-            if (CounterbalanceAccData != null && cbAccIdx + 200 >= CounterbalanceAccData.Length - 1) cbAccIdx = 0;
+            if (CounterbalanceAccData != null && cbAccIdx + 200 > CounterbalanceAccData.Length - 1) cbAccIdx = 0;
             else cbAccIdx += 100;
 
             // Initialize subarrays to be of size 0
-            double[] elTemps = new double[0];
-            double[] azTemps = new double[0];
-            RawAccelerometerData[] elAccl = new RawAccelerometerData[0];
-            RawAccelerometerData[] azAccl = new RawAccelerometerData[0];
-            RawAccelerometerData[] cbAccl = new RawAccelerometerData[0];
-            double[] elEnc = new double[0];
-            double[] azEnc = new double[0];
+            SimulationSubArrayData subArrays = new SimulationSubArrayData();
 
             // If the sensors are initialized, give them their subarrays, while also updating the index so that
             // this  knows what subarrays to go to next
-            if (ElevationTempData != null)
+            if (ElevationTempData != null && elTempIdx != null)
             {
-                elTemps = new double[1];
-                Array.Copy(ElevationTempData, elTempIdx, elTemps, 0, 1);
+                subArrays.ElevationTemps = new double[1];
+                Array.Copy(ElevationTempData, elTempIdx ?? 0, subArrays.ElevationTemps, 0, 1);
             }
-            if (AzimuthTempData != null)
+            else subArrays.ElevationTemps = new double[0];
+
+            if (AzimuthTempData != null && azTempIdx != null)
             {
-                azTemps = new double[1];
-                Array.Copy(AzimuthTempData, azTempIdx, azTemps, 0, 1);
+                subArrays.AzimuthTemps = new double[1];
+                Array.Copy(AzimuthTempData, azTempIdx ?? 0, subArrays.AzimuthTemps, 0, 1);
             }
-            if (ElevationEncoderData != null)
+            else subArrays.AzimuthTemps = new double[0];
+
+            if (ElevationEncoderData != null && elEncIdx != null)
             {
-                elEnc = new double[1];
-                Array.Copy(ElevationEncoderData, elEncIdx, elEnc, 0, 1);
+                subArrays.ElevationEnc = new double[1];
+                Array.Copy(ElevationEncoderData, elEncIdx ?? 0, subArrays.ElevationEnc, 0, 1);
             }
-            if (AzimuthEncoderData != null)
+            else subArrays.ElevationEnc = new double[0];
+
+            if (AzimuthEncoderData != null && azEncIdx != null)
             {
-                azEnc = new double[1];
-                Array.Copy(AzimuthEncoderData, azEncIdx, azEnc, 0, 1);
+                subArrays.AzimuthEnc = new double[1];
+                Array.Copy(AzimuthEncoderData, azEncIdx ?? 0, subArrays.AzimuthEnc, 0, 1);
             }
-            if (AzimuthAccData != null)
+            else subArrays.AzimuthEnc = new double[0];
+
+            if (AzimuthAccData != null && azAccIdx != null)
             {
-                azAccl = new RawAccelerometerData[100];
-                Array.Copy(AzimuthAccData, azAccIdx, azAccl, 0, 100);
+                subArrays.AzimuthAccl = new RawAccelerometerData[100];
+                Array.Copy(AzimuthAccData, azAccIdx ?? 0, subArrays.AzimuthAccl, 0, 100);
             }
-            if (ElevationAccData != null)
+            else subArrays.AzimuthAccl = new RawAccelerometerData[0];
+
+            if (ElevationAccData != null && elAccIdx != null)
             {
-                elAccl = new RawAccelerometerData[100];
-                Array.Copy(ElevationAccData, elAccIdx, elAccl, 0, 100);
+                subArrays.ElevationAccl = new RawAccelerometerData[100];
+                Array.Copy(ElevationAccData, elAccIdx ?? 0, subArrays.ElevationAccl, 0, 100);
             }
-            if (CounterbalanceAccData != null)
+            else subArrays.ElevationAccl = new RawAccelerometerData[0];
+
+            if (CounterbalanceAccData != null && cbAccIdx != null)
             {
-                cbAccl = new RawAccelerometerData[100];
-                Array.Copy(CounterbalanceAccData, cbAccIdx, cbAccl, 0, 100);
+                subArrays.CounterBAccl = new RawAccelerometerData[100];
+                Array.Copy(CounterbalanceAccData, cbAccIdx ?? 0, subArrays.CounterBAccl, 0, 100);
             }
+            else subArrays.CounterBAccl = new RawAccelerometerData[0];
 
             // Finally, encode the subarrays and return the result
-            return PacketEncodingTools.ConvertDataArraysToBytes(elAccl, azAccl, cbAccl, elTemps, azTemps, elEnc, azEnc);
+            return subArrays;
         }
 
         /// <summary>
