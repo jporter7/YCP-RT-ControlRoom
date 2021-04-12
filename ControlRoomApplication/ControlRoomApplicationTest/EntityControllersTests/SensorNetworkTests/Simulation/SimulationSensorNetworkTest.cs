@@ -1162,5 +1162,40 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
         }
+
+        [TestMethod]
+        public void TestSimulationSensorMonitor_SimulationIsRunning_ConnectsToServerAndSendsData()
+        {
+            SensorNetworkServer.StartSensorMonitoringRoutine();
+            SimSensorNetwork.StartSimulationSensorNetwork();
+
+            // Give plenty of time for everything to connect
+            Thread.Sleep(2000);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, SensorNetworkServer.Status);
+            
+            SimSensorNetwork.EndSimulationSensorNetwork();
+            SensorNetworkServer.EndSensorMonitoringRoutine();
+        }
+
+        [TestMethod]
+        public void TestSimulationSensorMonitor_ServerTriggersReboot_SimulationRebootsAndStartsSendingData()
+        {
+            SensorNetworkServer.StartSensorMonitoringRoutine();
+            SimSensorNetwork.StartSimulationSensorNetwork();
+
+            // Give plenty of time for everything to connect
+            Thread.Sleep(2000);
+
+            SensorNetworkServer.RebootSensorNetwork();
+
+            // Give plenty of time for timeout and for initialization
+            Thread.Sleep(2000 + SensorNetworkConstants.WatchDogTimeout);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, SensorNetworkServer.Status);
+
+            SimSensorNetwork.EndSimulationSensorNetwork();
+            SensorNetworkServer.EndSensorMonitoringRoutine();
+        }
     }
 }
