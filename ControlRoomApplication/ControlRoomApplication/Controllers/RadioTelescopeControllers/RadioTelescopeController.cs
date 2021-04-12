@@ -16,11 +16,15 @@ namespace ControlRoomApplication.Controllers
     {
         public RadioTelescope RadioTelescope { get; set; }
         public CoordinateCalculationController CoordinateController { get; set; }
-        private bool tempAcceptable = true;
         public OverrideSwitchData overrides;
 
         // Thread that monitors database current temperature
-        Thread tempM;
+        private Thread SensorMonitoringThread;
+        private bool MonitoringSensors;
+        private bool AllSensorsSafe;
+
+        private double MaxElTempThreshold;
+        private double MaxAzTempThreshold;
 
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -37,10 +41,13 @@ namespace ControlRoomApplication.Controllers
 
             overrides = new OverrideSwitchData(radioTelescope);
 
-            tempM = new Thread(tempMonitor);
-            tempM.Start();
+            SensorMonitoringThread = new Thread(SensorMonitor);
+            SensorMonitoringThread.Start();
+            MonitoringSensors = true;
+            AllSensorsSafe = true;
 
-
+            MaxAzTempThreshold = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
+            MaxElTempThreshold = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
         }
 
         /// <summary>
@@ -127,7 +134,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public Task<bool> ThermalCalibrateRadioTelescope()
         {
-            if (!tempAcceptable) return Task.FromResult(false);
+            if (!AllSensorsSafe) return Task.FromResult(false);
             return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
         }
 
@@ -156,7 +163,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
         {
-            if (!tempAcceptable) return Task.FromResult(false);
+            if (!AllSensorsSafe) return Task.FromResult(false);
             return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position()); // MOVE
         }
 
@@ -170,7 +177,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
-            if (!tempAcceptable) return Task.FromResult(false);
+            if (!AllSensorsSafe) return Task.FromResult(false);
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow)); // MOVE
         }
 
@@ -185,7 +192,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeAzimuthJog(double speed, bool PositiveDIR)
         {
-            if (!tempAcceptable) return false;
+            if (!AllSensorsSafe) return false;
             return RadioTelescope.PLCDriver.Start_jog( speed, PositiveDIR, 0,false );// MOVE
         }
 
@@ -199,7 +206,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool StartRadioTelescopeElevationJog(double speed, bool PositiveDIR)
         {
-            if (!tempAcceptable) return false;
+            if (!AllSensorsSafe) return false;
             return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, PositiveDIR);// MOVE
         }
 
@@ -276,39 +283,28 @@ namespace ControlRoomApplication.Controllers
         }
 
         // Checks the motor temperatures against acceptable ranges every second
-        private void tempMonitor()
+        private void SensorMonitor()
         {
             // Getting initial current temperatures
-            Temperature currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
-            bool AZ = checkTemp(currAZ);
+            Temperature currAzTemp = RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp[RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp.Length - 1];
+            Temperature currElTemp = RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp[RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp.Length - 1];
+            bool elTempSafe = checkTemp(currElTemp, true);
+            bool azTempSafe = checkTemp(currAzTemp, true);
 
-            Temperature currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
-            bool EL = checkTemp(currEL);
-
+            // Sensor overrides must be taken into account
             bool currentAZOveride = overrides.overrideAzimuthMotTemp;
-
             bool currentELOveride = overrides.overrideElevatMotTemp;
 
             // Loop through every one second to get new temperatures. If the temperature has changed, notify the user
-            while (true)
+            while (MonitoringSensors)
             {
-                // Only updates the info if the temperature has changed
-                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp || currentAZOveride != overrides.overrideAzimuthMotTemp) {
-                    currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
-                    AZ = checkTemp(currAZ);
-                    currentAZOveride = overrides.overrideAzimuthMotTemp;
-                }
-
-                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp || currentELOveride != overrides.overrideElevatMotTemp)
-                {
-                    currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
-                    EL = checkTemp(currEL);
-                    currentELOveride = overrides.overrideElevatMotTemp;
-                }
-
-                // Determines if the temperature is acceptable for both motors
-                if (AZ && EL) tempAcceptable = true;
-                else tempAcceptable = false;
+                azTempSafe = checkTemp(RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp[RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp.Length - 1], azTempSafe);
+                elTempSafe = checkTemp(RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp[RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp.Length - 1], elTempSafe);
+                
+                // Determines if the telescope is in a safe state
+                if (azTempSafe && elTempSafe) AllSensorsSafe = true;
+                else AllSensorsSafe = false;
+                
                 Thread.Sleep(1000);
             }
         }
@@ -322,53 +318,62 @@ namespace ControlRoomApplication.Controllers
         ///  True - good
         /// </summary>
         /// <returns>override bool</returns>
-        public bool checkTemp(Temperature t)
+        public bool checkTemp(Temperature t, bool lastIsSafe)
         {
             // get maximum temperature threshold
             double max;
 
             // Determine whether azimuth or elevation
             String s;
-            bool b;
+            bool isOverridden;
             if (t.location_ID == (int)SensorLocationEnum.AZ_MOTOR)
             {
                 s = "Azimuth";
-                b = overrides.overrideAzimuthMotTemp;
-                max = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
+                isOverridden = overrides.overrideAzimuthMotTemp;
+                max = MaxAzTempThreshold;
             }
             else
             {
                 s = "Elevation";
-                b = overrides.overrideElevatMotTemp;
-                max = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
+                isOverridden = overrides.overrideElevatMotTemp;
+                max = MaxElTempThreshold;
             }
-            
+
             // Check temperatures
-            if (t.temp < SimulationConstants.STABLE_MOTOR_TEMP)
+            if (t.temp < SimulationConstants.MIN_MOTOR_TEMP)
             {
-                logger.Info(Utilities.GetTimeStamp() + ": "+ s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                if (lastIsSafe)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
 
-                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
-                EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                    pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                    EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                }
+                    
                 // Only overrides if switch is true
-                if (!b) return false;
+                if (!isOverridden) return false;
                 else return true;
             }
-            else if (t.temp > max)
+            else if (t.temp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
             {
-                logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                if (lastIsSafe)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
 
-                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
-                EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                    pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                    EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                }
 
                 // Only overrides if switch is true
-                if (!b) return false;
+                if (!isOverridden) return false;
                 else return true;
             }
-            logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature stable.");
+            else if (t.temp <= SimulationConstants.MAX_MOTOR_TEMP && t.temp >= SimulationConstants.MIN_MOTOR_TEMP && !lastIsSafe) {
+                logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature stable.");
 
-            pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
-            EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
+                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
+                EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
+            }
 
             return true;
         }
