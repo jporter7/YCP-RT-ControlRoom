@@ -382,6 +382,10 @@ namespace ControlRoomApplication.Main
                     bool gateOvr = ProgramRTControllerList[ProgramRTControllerList.Count - 1].overrides.overrideGate;
 
                     APLCDriver.setregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE, Convert.ToUInt16(gateOvr));
+
+                    logger.Info(Utilities.GetTimeStamp() + ": Enabling ManualControl and FreeControl");
+                    // ManualControl.Enabled = true;
+                    FreeControl.Enabled = true;
                 }
             }
 
