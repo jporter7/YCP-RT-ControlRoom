@@ -244,6 +244,7 @@
     <Compile Include="Controllers\SensorNetwork\Simulation\PacketEncodingTools.cs" />
     <Compile Include="Controllers\SensorNetwork\Simulation\RawAccelerometerData.cs" />
     <Compile Include="Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\SimulationSubArrayData.cs" />
     <Compile Include="Controllers\Sensors\MiscPlcInput.cs" />
     <Compile Include="Controllers\Sensors\OverrideSwitchData.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />

@@ -219,5 +219,41 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             Assert.AreEqual(expected, result);
         }
+
+        [TestMethod]
+        public void TestConvertTempCToRawData_AnyNumber_MultipliesBy16()
+        {
+            double numToConvert = 3.56;
+
+            short expected = (short)(numToConvert * 16);
+
+            short result = PacketEncodingTools.ConvertTempCToRawData(numToConvert);
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void TestConvertDegreesToRawAzData_AnyNumber_FormulaCalculatesCorrectly()
+        {
+            double numToConvert = 3.56;
+
+            short expected = (short)((SensorNetworkConstants.AzimuthEncoderScaling * numToConvert) / 360);
+
+            short result = PacketEncodingTools.ConvertDegreesToRawAzData(numToConvert);
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void TestConvertDegreesToRawElData_AnyNumber_FormulaCalculatesCorrectly()
+        {
+            double numToConvert = 3.56;
+
+            short expected = (short)Math.Round((numToConvert + 20.375) / 0.25);
+
+            short result = PacketEncodingTools.ConvertDegreesToRawElData(numToConvert);
+
+            Assert.AreEqual(expected, result);
+        }
     }
 }
