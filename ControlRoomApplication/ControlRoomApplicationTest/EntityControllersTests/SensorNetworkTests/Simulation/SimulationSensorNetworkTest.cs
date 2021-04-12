@@ -880,9 +880,287 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         }
 
         [TestMethod]
-        public void TestBuildSubArraysAndEncodeData_AzimuthTemp_AzimuthTempIterates()
+        public void TestBuildSubArrays_AzimuthTemp_AzimuthTempIterates()
         {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("AzimuthTempData", new double[0]);
 
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            double[] initArray = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            double[] expectedArray = new double[initArray.Length + 1]; // + 1 is to test looping back to the beginning
+            initArray.CopyTo(expectedArray, 0);
+            expectedArray[expectedArray.Length - 1] = initArray[0];
+
+            double[] resultArray = new double[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+            
+            for (int i = 0; i < expectedArray.Length; i++) {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref index,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                resultArray[i] = subArrays.AzimuthTemps[subArrays.AzimuthTemps.Length - 1];
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_ElevationTemp_ElevationTempIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("ElevationTempData", new double[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            double[] initArray = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] expectedArray = new double[initArray.Length + 1]; // + 1 is to test looping back to the beginning
+            initArray.CopyTo(expectedArray, 0);
+            expectedArray[expectedArray.Length - 1] = initArray[0];
+
+            double[] resultArray = new double[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i++)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref index,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                resultArray[i] = subArrays.ElevationTemps[subArrays.ElevationTemps.Length - 1];
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_ElevationEncoder_ElevationEncoderIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("ElevationEncoderData", new double[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            double[] initArray = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] expectedArray = new double[initArray.Length + 1]; // + 1 is to test looping back to the beginning
+            initArray.CopyTo(expectedArray, 0);
+            expectedArray[expectedArray.Length - 1] = initArray[0];
+
+            double[] resultArray = new double[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i++)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref index,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                resultArray[i] = subArrays.ElevationEnc[subArrays.ElevationEnc.Length - 1];
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_AzimuthEncoder_AzimuthEncoderIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("AzimuthEncoderData", new double[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            double[] initArray = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] expectedArray = new double[initArray.Length + 1]; // + 1 is to test looping back to the beginning
+            initArray.CopyTo(expectedArray, 0);
+            expectedArray[expectedArray.Length - 1] = initArray[0];
+
+            double[] resultArray = new double[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i++)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref index,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                resultArray[i] = subArrays.AzimuthEnc[subArrays.AzimuthEnc.Length - 1];
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_ElevationAccelerometer_ElevationAccelerometerIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("ElevationAccData", new RawAccelerometerData[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            RawAccelerometerData[] initArray = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] expectedArray = new RawAccelerometerData[initArray.Length + 200]; // + 200 is to test looping back to the beginning
+
+            // Copy original array to expected array
+            initArray.CopyTo(expectedArray, 0);
+
+            // Get first half of the initial array for looping back
+            Array.Copy(initArray, 0, expectedArray, 400, 200);
+
+            RawAccelerometerData[] resultArray = new RawAccelerometerData[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i += 100)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref index,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                subArrays.ElevationAccl.CopyTo(resultArray, i);
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_AzimuthAccelerometer_AzimuthAccelerometerIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("AzimuthAccData", new RawAccelerometerData[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            RawAccelerometerData[] initArray = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] expectedArray = new RawAccelerometerData[initArray.Length + 200]; // + 200 is to test looping back to the beginning
+
+            // Copy original array to expected array
+            initArray.CopyTo(expectedArray, 0);
+
+            // Get first half of the initial array for looping back
+            Array.Copy(initArray, 0, expectedArray, 400, 200);
+
+            RawAccelerometerData[] resultArray = new RawAccelerometerData[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i += 100)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref index,
+                    ref nullInt
+                );
+
+                subArrays.AzimuthAccl.CopyTo(resultArray, i);
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_CounterbalanceAccelerometer_CounterbalanceAccelerometerIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("CounterbalanceAccData", new RawAccelerometerData[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            RawAccelerometerData[] initArray = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            RawAccelerometerData[] expectedArray = new RawAccelerometerData[initArray.Length + 200]; // + 200 is to test looping back to the beginning
+
+            // Copy original array to expected array
+            initArray.CopyTo(expectedArray, 0);
+
+            // Get first half of the initial array for looping back
+            Array.Copy(initArray, 0, expectedArray, 400, 200);
+
+            RawAccelerometerData[] resultArray = new RawAccelerometerData[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i += 100)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref index
+                );
+
+                subArrays.CounterBAccl.CopyTo(resultArray, i);
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
         }
     }
 }

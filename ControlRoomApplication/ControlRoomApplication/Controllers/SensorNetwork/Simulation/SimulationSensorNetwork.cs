@@ -184,44 +184,21 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
         /// <param name="azAccIdx">Azimuth accelerometer data array index that we are pulling from.</param>
         /// <param name="cbAccIdx">Counterbalance accelerometer data array index that we are pulling from.</param>
         /// <returns></returns>
-        private SimulationSubArrayData BuildSubArrays(ref int? elTempIdx, ref int? azTempIdx, ref int? elEncIdx, ref int? azEncIdx, ref int? elAccIdx, ref int? azAccIdx, ref int? cbAccIdx)
+        public SimulationSubArrayData BuildSubArrays(ref int? elTempIdx, ref int? azTempIdx, ref int? elEncIdx, ref int? azEncIdx, ref int? elAccIdx, ref int? azAccIdx, ref int? cbAccIdx)
         {
-            // Select what index to go to next for each array. Each array will loop back around once it reaches its end.
-            // We are looking at, for example "azTempIdx + 2" because one would only verify that the index is valid. To copy
-            // the subarray, we are reaching x indexes beyond that initial index. So, for the accelerometers, because we want 
-            // 100 samples, we must verify that the index + 100 exists, but we also want to verify that the index + 200 exists
-            // (and if the index + 200 exists, we know that the index + 100 must also exist)
-            if (AzimuthTempData != null && azTempIdx + 2 > AzimuthTempData.Length - 1) azTempIdx = 0;
-            else azTempIdx += 1;
-
-            if (ElevationTempData != null && elTempIdx + 2 > ElevationTempData.Length - 1) elTempIdx = 0;
-            else elTempIdx += 1;
-
-            if (ElevationEncoderData != null && elEncIdx + 2 > ElevationEncoderData.Length - 1) elEncIdx = 0;
-            else elEncIdx += 1;
-
-            if (AzimuthEncoderData != null && azEncIdx + 2 > AzimuthEncoderData.Length - 1) azEncIdx = 0;
-            else azEncIdx += 1;
-
-            // Accelerometers are pulling around 200 samples per iteration
-            if (ElevationAccData != null && elAccIdx + 200 > ElevationAccData.Length - 1) elAccIdx = 0;
-            else elAccIdx += 100;
-
-            if (AzimuthAccData != null && azAccIdx + 200 > AzimuthAccData.Length - 1) azAccIdx = 0;
-            else azAccIdx += 100;
-
-            if (CounterbalanceAccData != null && cbAccIdx + 200 > CounterbalanceAccData.Length - 1) cbAccIdx = 0;
-            else cbAccIdx += 100;
-
-            // Initialize subarrays to be of size 0
             SimulationSubArrayData subArrays = new SimulationSubArrayData();
 
             // If the sensors are initialized, give them their subarrays, while also updating the index so that
             // this  knows what subarrays to go to next
+
             if (ElevationTempData != null && elTempIdx != null)
             {
                 subArrays.ElevationTemps = new double[1];
                 Array.Copy(ElevationTempData, elTempIdx ?? 0, subArrays.ElevationTemps, 0, 1);
+
+                // Increment to next index, or back to 0 if we've reached the end of the main array
+                if (elTempIdx + 1 > ElevationTempData.Length - 1) elTempIdx = 0;
+                else elTempIdx++;
             }
             else subArrays.ElevationTemps = new double[0];
 
@@ -229,6 +206,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 subArrays.AzimuthTemps = new double[1];
                 Array.Copy(AzimuthTempData, azTempIdx ?? 0, subArrays.AzimuthTemps, 0, 1);
+
+                // Increment to next index, or back to 0 if we've reached the end of the main array
+                if (azTempIdx + 1 > AzimuthTempData.Length - 1) azTempIdx = 0;
+                else azTempIdx++;
             }
             else subArrays.AzimuthTemps = new double[0];
 
@@ -236,6 +217,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 subArrays.ElevationEnc = new double[1];
                 Array.Copy(ElevationEncoderData, elEncIdx ?? 0, subArrays.ElevationEnc, 0, 1);
+                
+                // Increment to next index, or back to 0 if we've reached the end of the main array
+                if (elEncIdx + 1 > ElevationEncoderData.Length - 1) elEncIdx = 0;
+                else elEncIdx++;
             }
             else subArrays.ElevationEnc = new double[0];
 
@@ -243,6 +228,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 subArrays.AzimuthEnc = new double[1];
                 Array.Copy(AzimuthEncoderData, azEncIdx ?? 0, subArrays.AzimuthEnc, 0, 1);
+
+                // Increment to next index, or back to 0 if we've reached the end of the main array
+                if (azEncIdx + 1 > AzimuthEncoderData.Length - 1) azEncIdx = 0;
+                else azEncIdx++;
             }
             else subArrays.AzimuthEnc = new double[0];
 
@@ -250,6 +239,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 subArrays.AzimuthAccl = new RawAccelerometerData[100];
                 Array.Copy(AzimuthAccData, azAccIdx ?? 0, subArrays.AzimuthAccl, 0, 100);
+
+                // Increment to next index, or back to 0 if we've reached the end of the main array
+                if (azAccIdx + 199 > AzimuthAccData.Length - 1) azAccIdx = 0;
+                else azAccIdx += 100;
             }
             else subArrays.AzimuthAccl = new RawAccelerometerData[0];
 
@@ -257,6 +250,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 subArrays.ElevationAccl = new RawAccelerometerData[100];
                 Array.Copy(ElevationAccData, elAccIdx ?? 0, subArrays.ElevationAccl, 0, 100);
+
+                // Increment to next index, or back to 0 if we've reached the end of the main array
+                if (elAccIdx + 199 > ElevationAccData.Length - 1) elAccIdx = 0;
+                else elAccIdx += 100;
             }
             else subArrays.ElevationAccl = new RawAccelerometerData[0];
 
@@ -264,10 +261,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             {
                 subArrays.CounterBAccl = new RawAccelerometerData[100];
                 Array.Copy(CounterbalanceAccData, cbAccIdx ?? 0, subArrays.CounterBAccl, 0, 100);
+
+                // Increment to next index, or back to 0 if we've reached the end of the main array
+                if (cbAccIdx + 199 > CounterbalanceAccData.Length - 1) cbAccIdx = 0;
+                else cbAccIdx += 100;
             }
             else subArrays.CounterBAccl = new RawAccelerometerData[0];
-
-            // Finally, encode the subarrays and return the result
+            
             return subArrays;
         }
 
