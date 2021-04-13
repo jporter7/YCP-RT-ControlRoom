@@ -60,7 +60,7 @@ namespace ControlRoomApplication.Controllers {
                 MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
                 MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
                 mCUpositon = new MCUPositonRegs( MCUModbusMaster );
-                MCU_Monitor_Thread = new Thread( new ThreadStart( MonitorMCU ) ) { Name = "MCU Monitor Thread" };
+                MCU_Monitor_Thread = new Thread( new ThreadStart( HeartbeatMonitor ) ) { Name = "MCU Monitor Thread" };
                 SoftwareStopThread = new Thread( new ThreadStart( SoftwareStopper ) ) { Name = "softwre stop thread" };
             } catch(Exception e) {
                 if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
@@ -82,16 +82,21 @@ namespace ControlRoomApplication.Controllers {
         /// Attempts to reconnect to the MCU if the connection has been lost.
         /// </summary>
         /// <returns></returns>
-        private bool attemptConnect() {
+        private bool AttemptReconnect() {
             try {
-                lastConnectAttempt = DateTime.Now;
-                MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
-                MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
-                mCUpositon = new MCUPositonRegs( MCUModbusMaster );
-                return true;
+                if ((DateTime.Now - lastConnectAttempt) > TimeSpan.FromSeconds(5))
+                {
+                    logger.Info("Attempting to reconnect to the MCU...");
+                    lastConnectAttempt = DateTime.Now;
+                    MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
+                    MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
+                    mCUpositon = new MCUPositonRegs(MCUModbusMaster);
+                    return true;
+                }
+                return false;
             }
             catch (Exception e) {
-                logger.Error( "[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString() );
+                logger.Error( "Failed to connect to the MCU's server: " + e.ToString() );
                 return false;
             }
         }
@@ -114,24 +119,24 @@ namespace ControlRoomApplication.Controllers {
             // This may happen if we lose connection to the MCU
             catch (InvalidOperationException)
             {
-                consecutiveErrors++;
+                if(consecutiveErrors == 0) logger.Error("Error reading the MCU registers; connection to the Modbus server was lost...");
 
-                logger.Error("Error reading the MCU registers; attempting to reconnect...");
-
-                // Attempt to reconnect to the MCU
-                if ((DateTime.Now - lastConnectAttempt) > TimeSpan.FromSeconds(5))
+                if(consecutiveErrors > MaxConscErrors)
                 {
-                    if(attemptConnect())
-                    {
-                        if (consecutiveErrors < MaxConscErrors)
-                        {
-                            value = ReadMCURegisters(address, length);
-                        }
-                        else
-                        {
-                            logger.Error("Cannot reconnect to the MCU. Please power down the telescope and verify all connections are still present.");
-                        }
-                    }
+                    consecutiveErrors++;
+                    AttemptReconnect();
+                    ReadMCURegisters(address, length);
+                }
+
+                // After so many tries, we give up
+                else
+                {
+                    consecutiveErrors = 0;
+                    logger.Error("MCU register read has been cancelled.");
+
+                    // returning a ushort of length 50 indicates that an error occurred. The reason we are using 50 and not 0
+                    // is so legacy code does not crash the program.
+                    return new ushort[50];
                 }
             }
 
@@ -143,26 +148,44 @@ namespace ControlRoomApplication.Controllers {
 
             return value;
         }
-
-        private async Task TryWriteRegs( ushort address , ushort[] data ) {
-            try {
-                MCUModbusMaster.WriteMultipleRegistersAsync( address , data ).GetAwaiter().GetResult();
-                return;
-            } catch(InvalidOperationException err) {
-                if((DateTime.Now - lastConnectAttempt) > TimeSpan.FromSeconds( 5 )) {
-                    attemptConnect();
-                }
-                return ;
-            } catch(Exception err2) {
-                throw err2;
+        
+        private bool WriteMCURegisters( ushort address , ushort[] data )
+        {
+            try
+            {
+                MCUModbusMaster.WriteMultipleRegistersAsync(address, data).GetAwaiter().GetResult();
+                consecutiveErrors = 0;
             }
+            catch (InvalidOperationException) {
+
+                // Retry the command the maximum allowed times
+                if (consecutiveErrors < MaxConscErrors)
+                {
+                    consecutiveErrors++;
+                    AttemptReconnect();
+                    WriteMCURegisters(address, data);
+                }
+                else
+                {
+                    consecutiveErrors = 0;
+                    logger.Error("MCU register write has been cancelled.");
+                    return false;
+                }
+            }
+
+            // This is an unknown error that should not be encountered
+            catch (Exception e) {
+                throw e;
+            }
+
+            return true;
         }
 
         /// <summary>
         /// This thread will read the heartbeat bit in the MCU status to determine if the MCU is still alive.
         /// This loops around every 250 ms.
         /// </summary>
-        private void MonitorMCU() {
+        private void HeartbeatMonitor() {
 
             int lastHeartBeat = 0;
 
@@ -952,7 +975,7 @@ namespace ControlRoomApplication.Controllers {
                         RunningCommand?.timeout?.Cancel();
                     } catch { }
                     RunningCommand = incoming;
-                    TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData ).Wait();
+                    WriteMCURegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData );
                     return incoming;
                 }
                 incoming.CommandError = new Exception( "MCU was running a JOG move which could not be overriden" );
@@ -963,7 +986,7 @@ namespace ControlRoomApplication.Controllers {
                         RunningCommand?.timeout?.Cancel();
                     } catch { }
                     RunningCommand = incoming;
-                    TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData ).Wait();
+                    WriteMCURegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData );
                     return incoming;
                 }
                 incoming.CommandError = new Exception( "MCU was running a home move which could not be overriden" );
@@ -973,7 +996,7 @@ namespace ControlRoomApplication.Controllers {
                 RunningCommand?.timeout?.Cancel();
             } catch { }
             RunningCommand = incoming;
-            TryWriteRegs( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData ).Wait();
+            WriteMCURegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData );
             return incoming;
         }
 
@@ -998,7 +1021,7 @@ namespace ControlRoomApplication.Controllers {
                 DataOffset = 10;
             }
             ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(StepSpeed >> 16) , (ushort)(StepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
-            TryWriteRegs( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset ), data ).Wait();
+            WriteMCURegisters( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset ), data );
             RunningCommand.Move_Priority = priority;
             RunningCommand.completed = false;
             return true;
@@ -1023,7 +1046,7 @@ namespace ControlRoomApplication.Controllers {
             for(int i = 0; i < data.Length; i++) {
                 data[i] = MCUMessages.ClearMove[i];
             }
-            TryWriteRegs( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset) , data ).Wait();
+            WriteMCURegisters( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset) , data );
             RunningCommand.Move_Priority = priority;
             RunningCommand.completed = true;
             return true;
