@@ -44,6 +44,9 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
         /// 
         /// </summary>
         /// <param name="data"></param>
+        /// 
+        /// 
+        /*
         protected void interpretData( dynamic data ) {
             double threshold = 0;
             try {
@@ -71,6 +74,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
                 logger.Info(e + "line 229");
             }
         }
+        */
 
         public bool getStableOrTesting()
         {
