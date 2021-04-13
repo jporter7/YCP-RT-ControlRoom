@@ -1,6 +1,7 @@
 ﻿using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Configuration;
 using ControlRoomApplication.Simulators.Hardware;
@@ -95,20 +96,6 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-
-        private async Task<ushort[]> TryReadRegs(ushort address, ushort Length ) {
-            try {
-                return MCUModbusMaster.ReadHoldingRegistersAsync( address , Length ).GetAwaiter().GetResult();
-            } catch (InvalidOperationException err){
-                if((DateTime.Now - lastConnectAttempt) > TimeSpan.FromSeconds(5)) {
-                    attemptConnect();
-                }
-                return new ushort[Length];
-            }catch(Exception err2) {
-                throw err2;
-            }
-        }
-
         /// <summary>
         /// Reads registers from the MCU without writing. This is public so the PLC can also read registers if needed.
         /// </summary>
@@ -172,23 +159,30 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// this thread will read the heartbeat bit in the MCU status to determine if the MCU is still allive
+        /// This thread will read the heartbeat bit in the MCU status to determine if the MCU is still alive.
+        /// This loops around every 250 ms.
         /// </summary>
         private void MonitorMCU() {
-            int lastMCUHeartbeatBit = 0;
+
+            int lastHeartBeat = 0;
+
             while(keep_modbus_server_alive) {
-                ushort network_status = TryReadRegs( (ushort)MCUConstants.MCUOutputRegs.Network_Conectivity , 1 ).GetAwaiter().GetResult()[0];
-                int CurrentHeartBeat = (network_status >> 14) & 1;//this bit changes every 500ms
-                if(CurrentHeartBeat != lastMCUHeartbeatBit) {
+
+                ushort networkStatus = ReadMCURegisters( (ushort)MCUConstants.MCUOutputRegs.NetworkConnectivity , 1 )[0];
+
+                int currentHeartBeat = (networkStatus >> (ushort)MCUNetworkStatus.MCUHeartBeat) & 1; //this bit changes every 500ms
+
+                if(currentHeartBeat != lastHeartBeat) {
                     MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    lastHeartBeat = currentHeartBeat;
                 }
-                lastMCUHeartbeatBit = CurrentHeartBeat;
-                if(((network_status >> 13) & 1) == 1) {
+
+                if(((networkStatus >> (ushort)MCUNetworkStatus.MCUNetworkDisconnected) & 1) == 1) {
                     logger.Warn( "MCU network disconected, reseting errors" );
-                    checkForAndResetErrors();
-                    //Send_Generic_Command_And_Track( new MCUCommand( MESSAGE_CONTENTS_RESET_ERRORS , MCUCommandType.RESET_ERRORS ) ).GetAwaiter().GetResult();
+                    ResetMCUErrors();
                 }
-                Task.Delay( 250 ).Wait();
+
+                Task.Delay(250).Wait();
             }
         }
 
