@@ -486,7 +486,7 @@ namespace ControlRoomApplication.Controllers {
                     while(!timout.IsCancellationRequested) {
                         var datatask = ReadMCURegisters(0 , 12);
                         Task.Delay( 33 ).Wait();
-                        if(!MotorsCurrentlyMoving_Per_Axis( datatask , is_AZ )) {
+                        if(!MotorsCurrentlyMoving(MotorAxisEnum.Azimuth)) {
                             return true;
                         }
                     }
@@ -501,7 +501,7 @@ namespace ControlRoomApplication.Controllers {
                     while(!timout.IsCancellationRequested) {
                         var datatask = ReadMCURegisters(0 , 12);
                         Task.Delay( 33 ).Wait();
-                        if(!MotorsCurrentlyMoving_Per_Axis( datatask , is_AZ )) {
+                        if(!MotorsCurrentlyMoving(MotorAxisEnum.Elevation)) {
                             return true;
                         }
                     }
@@ -515,53 +515,52 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// Tells us if the motors are currently moving.
+        /// Tells us if the motors are currently moving. This will automatically return if both motors are moving
+        /// if no parameter is passed through.
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="axis">The axis we want to check is moving.</param>
         /// <returns>True if they are moving clockwise or counter-clockwise, false if they are still.</returns>
-        public bool MotorsCurrentlyMoving() {
+        public bool MotorsCurrentlyMoving(MotorAxisEnum axis = MotorAxisEnum.Both) {
 
-            // Only read in the first two registers
-            ushort[] data = ReadMCURegisters(0, 2);
+            bool isMoving = false;
+            ushort[] data;
 
-            try {
+            switch(axis)
+            {
+                case MotorAxisEnum.Azimuth:
+                    // Only read the registers we need
+                    data = ReadMCURegisters(0, 1);
 
-                // Check if the azimuth motor is spinning clockwise or counterclockwise
-                bool azMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
-                                (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
+                    // Check if the azimuth motor is spinning clockwise or counter-clockwise
+                    isMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
+                            (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
+                    break;
 
-                // Check if the elevation motor is spinning clockwise or counterclockwise
-                bool elMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
-                                (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
+                case MotorAxisEnum.Elevation:
+                    // Only read the registers we need
+                    data = ReadMCURegisters(10, 1);
+                    isMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
+                            (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
+                    break;
 
-                // If either motor is moving, return true
-                return azMoving || elMoving;
-            } catch {
-                return false;
-            }
-        }
-
-        public bool MotorsCurrentlyMoving_Per_Axis( ushort[] data ,bool Is_AZ) {
-            if(Is_AZ) {
-                try {
+                case MotorAxisEnum.Both:
+                    // Now we need to capture some more registers to get both az and el
+                    data = ReadMCURegisters(0, 11);
+                    
                     bool azMoving = (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
-                                    (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
-                    return azMoving;
-                } catch {
-                    return false;
-                }
-            } else {
-                try {
+                            (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
+
                     bool elMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
-                                    (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
-                    return elMoving;
-                } catch {
-                    return false;
-                }
+                            (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
+
+                    // Check if azimuth or elevation are moving
+                    isMoving = azMoving || elMoving;
+
+                    break;
             }
 
+            return isMoving;
         }
-
 
         public bool Configure_MCU( MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig , int priority ) {
             Current_AZConfiguration = AZconfig;
