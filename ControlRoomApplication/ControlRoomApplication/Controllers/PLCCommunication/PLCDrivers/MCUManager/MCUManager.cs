@@ -332,7 +332,7 @@ namespace ControlRoomApplication.Controllers {
         }
 
         // This only resets command errors
-        private void checkForAndResetErrors() {
+        private void CheckForAndResetCommandErrors() {
 
             // Registers 0 and 11 are the most significant words fo the azimuth and elevation statuses
             var data = ReadMCURegisters(0, 11);
@@ -576,7 +576,7 @@ namespace ControlRoomApplication.Controllers {
 
             ImmediateStop( priority );
             Task.Delay( 50 ).Wait();
-            checkForAndResetErrors();
+            CheckForAndResetCommandErrors();
             Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.CONFIGURE , priority ) { completed = true} ).GetAwaiter().GetResult();
             Task.Delay( 100 ).Wait();
             //TODO: check for configuration Errors
