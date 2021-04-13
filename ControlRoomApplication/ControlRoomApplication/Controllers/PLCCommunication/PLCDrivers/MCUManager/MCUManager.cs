@@ -246,15 +246,6 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// allows the PLC driver class to read Modbus registers without giving it the ability to write to the MCU
-        /// </summary>
-        /// <param name="startadress"></param>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        public ushort[] readModbusReregs( ushort startadress , ushort length ) {
-            return TryReadRegs( startadress , length ).GetAwaiter().GetResult();
-        }
-        /// <summary>
         /// read the position from the motor encoders
         /// </summary>
         /// <returns></returns>
@@ -340,12 +331,17 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
+        // This only resets command errors
         private void checkForAndResetErrors() {
-            var data = TryReadRegs( 0 , 15 ).GetAwaiter().GetResult();
+
+            // Registers 0 and 11 are the most significant words fo the azimuth and elevation statuses
+            var data = ReadMCURegisters(0, 11);
+
             bool azCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
             bool elCmdErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
+
             if(elCmdErr || azCmdErr) {
-                Send_Generic_Command_And_Track( new MCUCommand( MCUMessages.ResetErrors , MCUCommandType.RESET_ERRORS , 0 ) { completed = true } ).GetAwaiter().GetResult();
+                ResetMCUErrors();
             }
         }
 
@@ -363,7 +359,7 @@ namespace ControlRoomApplication.Controllers {
         /// <returns>Returns all errors that were found.</returns>
         public List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
         {
-            var data = TryReadRegs(0, 15).GetAwaiter().GetResult();
+            var data = ReadMCURegisters(0, 12);
 
             // We will be storing the values in pairs so we can see which status bit has which error
             List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> errors = new List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>>();
@@ -401,7 +397,6 @@ namespace ControlRoomApplication.Controllers {
 
 
         private async Task<bool> Override_And_Stop_Motion( int priority ) {
-            var data = TryReadRegs( 0 , 15 ).GetAwaiter().GetResult();
             if(MotorsCurrentlyMoving()) {
                 if(RunningCommand.CommandType == MCUCommandType.JOG) {
                     Cancel_move( priority );
@@ -433,7 +428,6 @@ namespace ControlRoomApplication.Controllers {
                 int mS_To_Decelerate = estimateStopTime( PreviousCommand );
                 var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
                 while(!timout.IsCancellationRequested) {
-                    var datatask = TryReadRegs( 0 , 12 );
                     Task.Delay( 33 ).Wait();
                     if(!MotorsCurrentlyMoving()) {
                         return true;
@@ -490,9 +484,9 @@ namespace ControlRoomApplication.Controllers {
                     int mS_To_Decelerate = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
                     var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
                     while(!timout.IsCancellationRequested) {
-                        var datatask = TryReadRegs( 0 , 12 );
+                        var datatask = ReadMCURegisters(0 , 12);
                         Task.Delay( 33 ).Wait();
-                        if(!MotorsCurrentlyMoving_Per_Axis( datatask.GetAwaiter().GetResult() , is_AZ )) {
+                        if(!MotorsCurrentlyMoving_Per_Axis( datatask , is_AZ )) {
                             return true;
                         }
                     }
@@ -505,9 +499,9 @@ namespace ControlRoomApplication.Controllers {
                     int mS_To_Decelerate = (int)1.25 * (PreviousCommand.EL_Programed_Speed - ELStartSpeed) / PreviousCommand.EL_ACC;
                     var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
                     while(!timout.IsCancellationRequested) {
-                        var datatask = TryReadRegs( 0 , 12 );
+                        var datatask = ReadMCURegisters(0 , 12);
                         Task.Delay( 33 ).Wait();
-                        if(!MotorsCurrentlyMoving_Per_Axis( datatask.GetAwaiter().GetResult() , is_AZ )) {
+                        if(!MotorsCurrentlyMoving_Per_Axis( datatask , is_AZ )) {
                             return true;
                         }
                     }
@@ -569,7 +563,7 @@ namespace ControlRoomApplication.Controllers {
         }
 
 
-        public async Task<bool> Configure_MCU( MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig , int priority ) {
+        public bool Configure_MCU( MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig , int priority ) {
             Current_AZConfiguration = AZconfig;
             Current_ELConfiguration = ELconfig;
             int gearedSpeedAZ = ConversionHelper.RPMToSPS( AZconfig.StartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH );
@@ -583,7 +577,6 @@ namespace ControlRoomApplication.Controllers {
             ImmediateStop( priority );
             Task.Delay( 50 ).Wait();
             checkForAndResetErrors();
-            Task.Delay( 50 ).Wait();
             Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.CONFIGURE , priority ) { completed = true} ).GetAwaiter().GetResult();
             Task.Delay( 100 ).Wait();
             //TODO: check for configuration Errors
@@ -710,14 +703,10 @@ namespace ControlRoomApplication.Controllers {
             } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();
             FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
-            Task<ushort[]> datatask;
-            ushort[] MCUdata;
+            ushort[] outputRegData;
             while(!ThisMove.timeout.IsCancellationRequested) {
                 var updatePoss =  mCUpositon.update();
-                datatask = TryReadRegs( 0 , 12 );
-                Task.Delay( 50 ).Wait();
-                MCUdata = datatask.GetAwaiter().GetResult();
-
+                outputRegData = ReadMCURegisters(0 , 12);
 
                 updatePoss.Wait();
                 positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
@@ -731,10 +720,10 @@ namespace ControlRoomApplication.Controllers {
                 if(positionHistory.Count > positionHistory.Size - 2) {
                     var movement = positionHistory.GetAbsolutePosChange();
                     if(movement.AZ_Encoder <50 && movement.EL_Encoder < 50) {//if the telescope has been still for 7 seconds
-                        bool AZCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
-                        bool AZHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-                        bool ELCmdErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
-                        bool ELHomeErr = ((MCUdata[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
+                        bool AZCmdErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
+                        bool AZHomeErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
+                        bool ELCmdErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
+                        bool ELHomeErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
                         if (Math.Abs(mCUpositon.AZ_Steps) > 4 || Math.Abs(mCUpositon.EL_Steps) > 4) {//and the pozition is not 0 then homeing has failed
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
@@ -803,7 +792,7 @@ namespace ControlRoomApplication.Controllers {
             Task.Delay( 500 ).Wait();//wait for comand to be read
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
-                var data = TryReadRegs( 0 , 12 ).GetAwaiter().GetResult();
+                //var data = TryReadRegs( 0 , 12 ).GetAwaiter().GetResult();
                 if(!MotorsCurrentlyMoving()) {
                     ThisMove.timeout.Cancel();
                     WasLimitCancled = true;
@@ -811,9 +800,7 @@ namespace ControlRoomApplication.Controllers {
             };
             PLCEvents.DurringOverrideAddSecondary( handle);
             while(!ThisMove.timeout.IsCancellationRequested) {
-                var datatask = TryReadRegs( 0 , 12 );
-                 Task.Delay( 50 ).Wait();
-                var data = datatask.GetAwaiter().GetResult();
+                var data = ReadMCURegisters(0, 12);
                 bool azErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
                 bool elErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
                 if(elErr || azErr) {//TODO:add more checks to this 

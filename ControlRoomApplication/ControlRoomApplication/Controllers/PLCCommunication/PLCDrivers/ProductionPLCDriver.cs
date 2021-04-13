@@ -939,7 +939,7 @@ namespace ControlRoomApplication.Controllers
                     new MCUConfigurationAxys() { StartSpeed = startSpeedRPMAzimuth, HomeTimeoutSec = homeTimeoutSecondsAzimuth },
                     new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true },
                     0
-                ).GetAwaiter().GetResult();
+                );
         }
 
         /// <summary>
@@ -952,10 +952,6 @@ namespace ControlRoomApplication.Controllers
             else return MCU.read_Position();
         }
 
-        public ushort[] readModbusReregs(ushort start, ushort length) {
-            return MCU.readModbusReregs( start , length );
-        }
-
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
@@ -966,7 +962,7 @@ namespace ControlRoomApplication.Controllers
             if(axis == RadioTelescopeAxisEnum.ELEVATION) {
                 start = 10;
             }
-            ushort[] data = MCU.readModbusReregs( start , 2 );
+            ushort[] data = MCU.ReadMCURegisters(start , 2);
             bool[] target = new bool[32];
             for(int i = 0; i < 16; i++) {
                 target[i] = ((data[0] >> i) & 1) == 1;
@@ -1167,7 +1163,7 @@ namespace ControlRoomApplication.Controllers
 
             var AZTAsk = Task.Run( () => {
                int AZstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_AZIMUTH );
-               var timeoutMS = MCUManager.estimateTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
+               var timeoutMS = MCUManager.EstimateMovementTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
                var timeout = new CancellationTokenSource( timeoutMS );
                 if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
                     MCU.Send_Jog_command(0.2, true , 0, false, PRIORITY );
@@ -1197,7 +1193,7 @@ namespace ControlRoomApplication.Controllers
             } );
             var ELTAsk = Task<bool>.Run( ()  => {
                 int ELstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_ELEVATION );
-                var timeoutMS = MCUManager.estimateTime( ELstepSpeed , 50 , ConversionHelper.DegreesToSteps( 30 , MotorConstants.GEARING_RATIO_ELEVATION ) );
+                var timeoutMS = MCUManager.EstimateMovementTime( ELstepSpeed , 50 , ConversionHelper.DegreesToSteps( 30 , MotorConstants.GEARING_RATIO_ELEVATION ) );
                 var timeout = new CancellationTokenSource( timeoutMS );
                 if(limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) {
                     MCU.Send_Jog_command( 0 , false , 0.2 , false , PRIORITY );
