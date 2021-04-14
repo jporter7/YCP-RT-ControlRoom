@@ -8,8 +8,12 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
 {
     public class MCUPositonStore
     {
-        public int AZ_Steps, EL_Steps;
-        public int AZ_Encoder, EL_Encoder;
+        public int AzSteps;
+        public int AzEncoder;
+
+        public int ElSteps;
+        public int ElEncoder;
+
         public MCUPositonStore()
         {
 
@@ -17,33 +21,38 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
 
         public MCUPositonStore(MCUPositonRegs mCUpositon)
         {
-            this.AZ_Encoder = mCUpositon.AZ_Encoder;
-            this.AZ_Steps = mCUpositon.AZ_Steps;
-            this.EL_Encoder = mCUpositon.EL_Encoder;
-            this.EL_Steps = mCUpositon.EL_Steps;
+            this.AzSteps = mCUpositon.AzSteps;
+            this.AzEncoder = mCUpositon.AzEncoder;
+
+            this.ElSteps = mCUpositon.ElSteps;
+            this.ElEncoder = mCUpositon.ElEncoder;
         }
+
         public MCUPositonStore(MCUPositonStore current, MCUPositonStore previous)
         {
-            this.AZ_Steps = previous.AZ_Steps - current.AZ_Steps;
-            this.EL_Steps = previous.EL_Steps - current.EL_Steps;
-            this.AZ_Encoder = previous.AZ_Encoder - current.AZ_Encoder;
-            this.EL_Encoder = previous.EL_Encoder - current.EL_Encoder;
+            this.AzSteps = previous.AzSteps - current.AzSteps;
+            this.AzEncoder = previous.AzEncoder - current.AzEncoder;
+
+            this.ElSteps = previous.ElSteps - current.ElSteps;
+            this.ElEncoder = previous.ElEncoder - current.ElEncoder;
         }
 
         public void SUM(MCUPositonStore current, MCUPositonStore previous)
         {
-            this.AZ_Steps += current.AZ_Steps - previous.AZ_Steps;
-            this.EL_Steps += current.EL_Steps - previous.EL_Steps;
-            this.AZ_Encoder += current.AZ_Encoder - previous.AZ_Encoder;
-            this.EL_Encoder += current.EL_Encoder - previous.EL_Encoder;
+            this.AzSteps += current.AzSteps - previous.AzSteps;
+            this.AzEncoder += current.AzEncoder - previous.AzEncoder;
+
+            this.ElSteps += current.ElSteps - previous.ElSteps;
+            this.ElEncoder += current.ElEncoder - previous.ElEncoder;
         }
 
         public void SUMAbsolute(MCUPositonStore current, MCUPositonStore previous)
         {
-            this.AZ_Steps += Math.Abs(current.AZ_Steps - previous.AZ_Steps);
-            this.EL_Steps += Math.Abs(current.EL_Steps - previous.EL_Steps);
-            this.AZ_Encoder += Math.Abs(current.AZ_Encoder - previous.AZ_Encoder);
-            this.EL_Encoder += Math.Abs(current.EL_Encoder - previous.EL_Encoder);
+            this.AzSteps += Math.Abs(current.AzSteps - previous.AzSteps);
+            this.AzEncoder += Math.Abs(current.AzEncoder - previous.AzEncoder);
+
+            this.ElSteps += Math.Abs(current.ElSteps - previous.ElSteps);
+            this.ElEncoder += Math.Abs(current.ElEncoder - previous.ElEncoder);
         }
     }
 }

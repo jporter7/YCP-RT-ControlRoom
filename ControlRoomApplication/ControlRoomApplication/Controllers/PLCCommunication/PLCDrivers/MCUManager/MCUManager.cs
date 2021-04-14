@@ -59,7 +59,7 @@ namespace ControlRoomApplication.Controllers {
                 lastConnectAttempt = DateTime.Now;
                 MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
                 MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
-                mCUpositon = new MCUPositonRegs( MCUModbusMaster );
+                mCUpositon = new MCUPositonRegs();
                 MCU_Monitor_Thread = new Thread( new ThreadStart( HeartbeatMonitor ) ) { Name = "MCU Monitor Thread" };
                 SoftwareStopThread = new Thread( new ThreadStart( SoftwareStopper ) ) { Name = "softwre stop thread" };
             } catch(Exception e) {
@@ -90,7 +90,7 @@ namespace ControlRoomApplication.Controllers {
                     lastConnectAttempt = DateTime.Now;
                     MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
                     MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
-                    mCUpositon = new MCUPositonRegs(MCUModbusMaster);
+                    mCUpositon = new MCUPositonRegs();
                     return true;
                 }
                 return false;
@@ -239,7 +239,7 @@ namespace ControlRoomApplication.Controllers {
             keep_modbus_server_alive = true;
             try {
                 MCU_Monitor_Thread.Start();
-                SoftwareStopThread.Start();
+                SoftwareStopThread.Start(); // TODO: move this to the new MCU monitoring routine
             } catch(Exception e) {
                 if((e is ThreadStateException) || (e is OutOfMemoryException)) {
                     logger.Error( "failed to start prodi=uction plc and mcu threads err:____    {0}" , e );
@@ -273,21 +273,23 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns></returns>
         public Orientation read_Position() {
-            mCUpositon.update().Wait();
+
+            // First update the registers to be absolutely sure we have the most recent position
+            mCUpositon.update(ReadMCURegisters(0, 15));
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
             if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Encoder_Normalized(mCUpositon.AZ_Encoder, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.EL_Encoder, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Encoder_Normalized(mCUpositon.AzEncoder, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.ElEncoder, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
             else
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.AZ_Encoder, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.EL_Encoder, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.AzEncoder, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.ElEncoder, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
         }
@@ -303,21 +305,21 @@ namespace ControlRoomApplication.Controllers {
         /// </remarks>
         /// <returns></returns>
         public Orientation read_Position_steps() {
-            mCUpositon.update().Wait();
+            mCUpositon.update(ReadMCURegisters(0, 15));
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
             if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Normalized(mCUpositon.AZ_Steps, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees(mCUpositon.EL_Steps, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Normalized(mCUpositon.AzSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(mCUpositon.ElSteps, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
             else
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees(mCUpositon.AZ_Steps, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees(mCUpositon.EL_Steps, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees(mCUpositon.AzSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(mCUpositon.ElSteps, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
         }
@@ -726,13 +728,13 @@ namespace ControlRoomApplication.Controllers {
             Task.Delay( 500 ).Wait();
             FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
             ushort[] outputRegData;
-            while(!ThisMove.timeout.IsCancellationRequested) {
-                var updatePoss =  mCUpositon.update();
-                outputRegData = ReadMCURegisters(0 , 12);
-
-                updatePoss.Wait();
+            while(!ThisMove.timeout.IsCancellationRequested)
+            {
+                outputRegData = ReadMCURegisters(0, 15);
+                mCUpositon.update(outputRegData);
+                
                 positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
-                if(Math.Abs( mCUpositon.AZ_Steps ) < 4 && Math.Abs( mCUpositon.EL_Steps ) < 4 && !MotorsCurrentlyMoving()) {//if the encoders fave been 0'ed out with some error
+                if(Math.Abs( mCUpositon.AzSteps ) < 4 && Math.Abs( mCUpositon.ElSteps ) < 4 && !MotorsCurrentlyMoving()) {//if the encoders fave been 0'ed out with some error
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
                     ThisMove.completed = true;
@@ -741,12 +743,12 @@ namespace ControlRoomApplication.Controllers {
                 }
                 if(positionHistory.Count > positionHistory.Size - 2) {
                     var movement = positionHistory.GetAbsolutePosChange();
-                    if(movement.AZ_Encoder <50 && movement.EL_Encoder < 50) {//if the telescope has been still for 7 seconds
+                    if(movement.AzEncoder <50 && movement.ElEncoder < 50) {//if the telescope has been still for 7 seconds
                         bool AZCmdErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
                         bool AZHomeErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
                         bool ELCmdErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
                         bool ELHomeErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-                        if (Math.Abs(mCUpositon.AZ_Steps) > 4 || Math.Abs(mCUpositon.EL_Steps) > 4) {//and the pozition is not 0 then homeing has failed
+                        if (Math.Abs(mCUpositon.AzSteps) > 4 || Math.Abs(mCUpositon.ElSteps) > 4) {//and the pozition is not 0 then homeing has failed
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
                             ThisMove.completed = true;
@@ -796,7 +798,7 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL,int priority ) {
             positionTranslationEL = -positionTranslationEL;
-            mCUpositon.update().Wait();
+            mCUpositon.update(ReadMCURegisters(0, 15));
             var startPos =  mCUpositon as MCUPositonStore;
             Cancel_move( priority );
             Task.Delay( 50 ).Wait();//wait to ensure it is porcessed
