@@ -46,55 +46,54 @@ namespace ControlRoomApplication.Controllers {
         private int consecutiveSuccessfulMoves = 0;
         private int McuPort;
         private string McuIp;
-        private DateTime lastConnectAttempt = DateTime.Now;
         private RadioTelescopeTypeEnum telescopeType;
 
         public MCUManager(string ip, int port) {
             McuPort = port;
             McuIp = ip;
 
-            try {
-                lastConnectAttempt = DateTime.Now;
-                MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
-                MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
-                mCUpositon = new MCUPositonRegs();
-                MCU_Monitor_Thread = new Thread( new ThreadStart( HeartbeatMonitor ) ) { Name = "MCU Monitor Thread" };
-            } catch(Exception e) {
-                if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
-                    logger.Error( "[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString() );
-                    return;
-                }
-                else
-                {
-                    // This could occur if the IP address typed in does not have a server actively running,
-                    // or the MCU is still booting up and has not completed starting the server. Regardless,
-                    // it should not be reached because validation exists in the Start RT of MainForm.cs to
-                    // check that this IP is alive.
-                    throw e;
-                }
-            }
+            mCUpositon = new MCUPositonRegs();
+
+            MCU_Monitor_Thread = new Thread(new ThreadStart(HeartbeatMonitor)) { Name = "MCU Heartbeat Monitor Thread" };
+
+            ConnectToModbusServer();
         }
 
         /// <summary>
-        /// Attempts to reconnect to the MCU if the connection has been lost.
+        /// Attempts to connect to the MCU either for the first time, or after the connection has been lost.
         /// </summary>
         /// <returns></returns>
-        private bool AttemptReconnect() {
-            try {
-                if ((DateTime.Now - lastConnectAttempt) > TimeSpan.FromSeconds(5))
-                {
-                    logger.Info("Attempting to connect to the MCU...");
-                    lastConnectAttempt = DateTime.Now;
-                    MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
-                    MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
-                    return true;
-                }
+        private bool ConnectToModbusServer() {
+            logger.Info("Attempting to connect to the MCU...");
+
+            // Attempt to connect to the MCU's TCP server
+            try
+            {
+                MCUTCPClient = new TcpClient(McuIp, McuPort);
+            }
+            catch
+            {
+                logger.Error("There was an error connecting to the MCU's TCP server. Please shut down the Control Room software " +
+                    "and verify that the Ethernet cable connecting the PLC to the MCU is firmly in place.");
                 return false;
             }
-            catch (Exception e) {
-                logger.Error( "Failed to connect to the MCU's server: " + e.ToString() );
+
+            try
+            {
+                MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
+            }
+            catch
+            {
+                logger.Error("There was an error creating the Modbus IP Master. Please shut down the Control Room software and verify " +
+                    "that there are no loose connections between the PLC and the MCU.");
                 return false;
             }
+
+            // Sometimes when we first connect, there may be errors present on the registers still. With a new connect, we want
+            // to clear these
+            ResetMCUErrors();
+
+            return true;
         }
 
         /// <summary>
@@ -109,37 +108,13 @@ namespace ControlRoomApplication.Controllers {
             try
             {
                 value = MCUModbusMaster.ReadHoldingRegistersAsync(address, length).GetAwaiter().GetResult();
-                consecutiveErrors = 0;
             }
 
             // This may happen if we lose connection to the MCU
             catch (InvalidOperationException)
             {
-                if(consecutiveErrors == 0) logger.Error("Error reading the MCU registers; connection to the Modbus server was lost...");
-
-                if(consecutiveErrors > MaxConscErrors)
-                {
-                    consecutiveErrors++;
-                    AttemptReconnect();
-                    ReadMCURegisters(address, length);
-                }
-
-                // After so many tries, we give up
-                else
-                {
-                    consecutiveErrors = 0;
-                    logger.Error("MCU register read has been cancelled.");
-
-                    // returning a ushort of length 50 indicates that an error occurred. The reason we are using 50 and not 0
-                    // is so legacy code does not crash the program.
-                    return new ushort[50];
-                }
-            }
-
-            // This is an unknown error that should not be encountered
-            catch (Exception e)
-            {
-                throw e;
+                logger.Error("The MCU failed to retrieve the register data, and is either offline or the connection has been terminated.");
+                value = new ushort[50];
             }
 
             return value;
@@ -150,28 +125,11 @@ namespace ControlRoomApplication.Controllers {
             try
             {
                 MCUModbusMaster.WriteMultipleRegistersAsync(address, data).GetAwaiter().GetResult();
-                consecutiveErrors = 0;
             }
             catch (InvalidOperationException) {
-
-                // Retry the command the maximum allowed times
-                if (consecutiveErrors < MaxConscErrors)
-                {
-                    consecutiveErrors++;
-                    AttemptReconnect();
-                    WriteMCURegisters(address, data);
-                }
-                else
-                {
-                    consecutiveErrors = 0;
-                    logger.Error("MCU register write has been cancelled.");
-                    return false;
-                }
-            }
-
-            // This is an unknown error that should not be encountered
-            catch (Exception e) {
-                throw e;
+                
+                logger.Error("The MCU failed to receive the command, and is either offline or the connection has been terminated.");
+                return false;
             }
 
             return true;
@@ -184,21 +142,40 @@ namespace ControlRoomApplication.Controllers {
         private void HeartbeatMonitor() {
 
             int lastHeartBeat = 0;
+            DateTime lastConnectAttempt = DateTime.Now;
 
             while(keep_modbus_server_alive) {
 
-                ushort networkStatus = ReadMCURegisters( (ushort)MCUConstants.MCUOutputRegs.NetworkConnectivity , 1 )[0];
+                ushort[] networkStatus = ReadMCURegisters( (ushort)MCUConstants.MCUOutputRegs.NetworkConnectivity , 1 );
 
-                int currentHeartBeat = (networkStatus >> (ushort)MCUNetworkStatus.MCUHeartBeat) & 1; //this bit changes every 500ms
-
-                if(currentHeartBeat != lastHeartBeat) {
-                    MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-                    lastHeartBeat = currentHeartBeat;
+                // If the network status length is 50, it means the network has disconnected, and we must attempt to reconnect
+                if (networkStatus.Length == 50)
+                {
+                    // Only try to connect if it's been more than 5 seconds since the last attempt
+                    if ((DateTime.Now - lastConnectAttempt) > TimeSpan.FromSeconds(5))
+                    {
+                        logger.Error("MCU network disconnected...");
+                        ConnectToModbusServer();
+                        lastConnectAttempt = DateTime.Now;
+                    }
                 }
+                else
+                {
+                    // This heartbeat bit flips between 0 and 1 every 500ms to ensure that the MCU is still alive
+                    // and doing MCU stuff
+                    int currentHeartBeat = (networkStatus[0] >> (ushort)MCUNetworkStatus.MCUHeartBeat) & 1;
+                    if (currentHeartBeat != lastHeartBeat)
+                    {
+                        MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                        lastHeartBeat = currentHeartBeat;
+                    }
 
-                if(((networkStatus >> (ushort)MCUNetworkStatus.MCUNetworkDisconnected) & 1) == 1) {
-                    logger.Warn( "MCU network disconected, reseting errors" );
-                    ResetMCUErrors();
+                    // This bit is used to tell when the control room has reconnected to the MCU after being
+                    // disconnected
+                    if (((networkStatus[0] >> (ushort)MCUNetworkStatus.MCUNetworkDisconnected) & 1) == 1)
+                    {
+                        logger.Warn("MCU network recovered from being disconnected.");
+                    }
                 }
 
                 Task.Delay(250).Wait();
