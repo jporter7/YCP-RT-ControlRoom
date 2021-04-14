@@ -26,12 +26,14 @@ namespace ControlRoomApplication.Controllers {
         /// if more errors than this value are thrown in a row and this class cant resolve them subsiquent attempts to send moves to the MCU will throw exception
         /// </summary>
         private static int MaxConscErrors = 5;
-        
+        private int consecutiveErrors = 0;
+        private int consecutiveSuccessfulMoves = 0;
+
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        private Thread MCU_Monitor_Thread;
+        private Thread HeartbeatMonitorThread;
+        private bool HeartbeatMonitorRunning;
         private int AZStartSpeed = 0;
         private int ELStartSpeed = 0;
-        private bool keep_modbus_server_alive = true;
         public ModbusIpMaster MCUModbusMaster;
         private TcpClient MCUTCPClient;
         public MCUPositonRegs mCUpositon;
@@ -42,8 +44,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         private MCUCommand RunningCommand= new MCUCommand(new ushort[20],MCUCommandType.CLEAR_LAST_MOVE,99) { completed = true };
         private MCUCommand PreviousCommand = new MCUCommand( new ushort[20] , MCUCommandType.CLEAR_LAST_MOVE,99 ) { completed = true };
-        private int consecutiveErrors = 0;
-        private int consecutiveSuccessfulMoves = 0;
+
         private int McuPort;
         private string McuIp;
         private RadioTelescopeTypeEnum telescopeType;
@@ -54,15 +55,15 @@ namespace ControlRoomApplication.Controllers {
 
             mCUpositon = new MCUPositonRegs();
 
-            MCU_Monitor_Thread = new Thread(new ThreadStart(HeartbeatMonitor)) { Name = "MCU Heartbeat Monitor Thread" };
-
             ConnectToModbusServer();
+
+            HeartbeatMonitorThread = new Thread(new ThreadStart(HeartbeatMonitor)) { Name = "MCU Heartbeat Monitor Thread" };
         }
 
         /// <summary>
         /// Attempts to connect to the MCU either for the first time, or after the connection has been lost.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Result of whether or not the connection was successful.</returns>
         private bool ConnectToModbusServer() {
             logger.Info("Attempting to connect to the MCU...");
 
@@ -144,7 +145,7 @@ namespace ControlRoomApplication.Controllers {
             int lastHeartBeat = 0;
             DateTime lastConnectAttempt = DateTime.Now;
 
-            while(keep_modbus_server_alive) {
+            while(HeartbeatMonitorRunning) {
 
                 ushort[] networkStatus = ReadMCURegisters( (ushort)MCUConstants.MCUOutputRegs.NetworkConnectivity , 1 );
 
@@ -183,31 +184,36 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// starts the MCU monitor thread
+        /// Starts the MCU heartbeat monitor thread.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Boolean denoting whether the thread was started successfully or not.</returns>
         public bool StartAsyncAcceptingClients() {
-            keep_modbus_server_alive = true;
-            try {
-                MCU_Monitor_Thread.Start();
-            } catch(Exception e) {
-                if((e is ThreadStateException) || (e is OutOfMemoryException)) {
-                    logger.Error( "failed to start prodi=uction plc and mcu threads err:____    {0}" , e );
-                    return false;
-                } else { throw e; }// Unexpected exception
+            HeartbeatMonitorRunning = true;
+
+            try
+            {
+                HeartbeatMonitorThread.Start();
             }
+            catch (Exception e)
+            {
+                if((e is ThreadStateException) || (e is OutOfMemoryException))
+                {
+                    logger.Error( "Failed to start the MCU heartbeat monitor thread. Please restart the Control Room software.");
+                    return false;
+                }
+            }
+
             return true;
         }
-
 
         /// <summary>
         /// kills the MCU monitor thread
         /// </summary>
         /// <returns></returns>
         public bool RequestStopAsyncAcceptingClientsAndJoin() {
-            keep_modbus_server_alive = false;
+            HeartbeatMonitorRunning = false;
             try {
-                MCU_Monitor_Thread.Join();
+                HeartbeatMonitorThread.Join();
             } catch(Exception e) {
                 if((e is ThreadStateException) || (e is ThreadStartException)) {
                     logger.Error( e );
@@ -218,13 +224,13 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// read the position from the motor encoders
+        /// Reads the position from the motor encoders.
         /// </summary>
         /// <returns></returns>
         public Orientation read_Position() {
 
             // First update the registers to be absolutely sure we have the most recent position
-            mCUpositon.update(ReadMCURegisters(0, 15));
+            mCUpositon.update(ReadMCURegisters(0, 16));
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
             if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
@@ -242,6 +248,7 @@ namespace ControlRoomApplication.Controllers {
                 );
             }
         }
+
         /// <summary>
         /// gets the position from MCU step count, thsi should be compaired with the value from <see cref="read_Position"/>
         /// </summary>
@@ -254,7 +261,7 @@ namespace ControlRoomApplication.Controllers {
         /// </remarks>
         /// <returns></returns>
         public Orientation read_Position_steps() {
-            mCUpositon.update(ReadMCURegisters(0, 15));
+            mCUpositon.update(ReadMCURegisters(0, 16));
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
             if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
@@ -661,7 +668,7 @@ namespace ControlRoomApplication.Controllers {
             ushort[] outputRegData;
             while(!ThisMove.timeout.IsCancellationRequested)
             {
-                outputRegData = ReadMCURegisters(0, 15);
+                outputRegData = ReadMCURegisters(0, 16);
                 mCUpositon.update(outputRegData);
                 
                 positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
@@ -729,7 +736,7 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL,int priority ) {
             positionTranslationEL = -positionTranslationEL;
-            mCUpositon.update(ReadMCURegisters(0, 15));
+            mCUpositon.update(ReadMCURegisters(0, 16));
             var startPos =  mCUpositon as MCUPositonStore;
             Cancel_move( priority );
             Task.Delay( 50 ).Wait();//wait to ensure it is porcessed

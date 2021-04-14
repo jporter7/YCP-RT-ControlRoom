@@ -316,7 +316,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void test_MCU_Time_Estimate() {
             int vel = 170_000, acc = 50, dist = 10_000_000;
-            int time = MCUManager.estimateTime(vel, acc, dist);
+            int time = MCUManager.EstimateMovementTime(vel, acc, dist);
             Assert.AreEqual(61800, time);
         }
 
