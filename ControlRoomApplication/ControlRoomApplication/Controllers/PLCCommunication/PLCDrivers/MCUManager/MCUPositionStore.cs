@@ -28,24 +28,6 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
             this.ElEncoder = mCUpositon.ElEncoder;
         }
 
-        public MCUPositonStore(MCUPositonStore current, MCUPositonStore previous)
-        {
-            this.AzSteps = previous.AzSteps - current.AzSteps;
-            this.AzEncoder = previous.AzEncoder - current.AzEncoder;
-
-            this.ElSteps = previous.ElSteps - current.ElSteps;
-            this.ElEncoder = previous.ElEncoder - current.ElEncoder;
-        }
-
-        public void SUM(MCUPositonStore current, MCUPositonStore previous)
-        {
-            this.AzSteps += current.AzSteps - previous.AzSteps;
-            this.AzEncoder += current.AzEncoder - previous.AzEncoder;
-
-            this.ElSteps += current.ElSteps - previous.ElSteps;
-            this.ElEncoder += current.ElEncoder - previous.ElEncoder;
-        }
-
         public void SUMAbsolute(MCUPositonStore current, MCUPositonStore previous)
         {
             this.AzSteps += Math.Abs(current.AzSteps - previous.AzSteps);

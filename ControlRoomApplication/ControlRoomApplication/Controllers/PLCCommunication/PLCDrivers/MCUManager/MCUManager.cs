@@ -29,7 +29,6 @@ namespace ControlRoomApplication.Controllers {
         
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         private Thread MCU_Monitor_Thread;
-        private Thread SoftwareStopThread;
         private int AZStartSpeed = 0;
         private int ELStartSpeed = 0;
         private bool keep_modbus_server_alive = true;
@@ -41,27 +40,25 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// this value should not be changed from outside the MCU class
         /// </summary>
-        public MCUCommand RunningCommand= new MCUCommand(new ushort[20],MCUCommandType.CLEAR_LAST_MOVE,99) { completed = true };
+        private MCUCommand RunningCommand= new MCUCommand(new ushort[20],MCUCommandType.CLEAR_LAST_MOVE,99) { completed = true };
         private MCUCommand PreviousCommand = new MCUCommand( new ushort[20] , MCUCommandType.CLEAR_LAST_MOVE,99 ) { completed = true };
         private int consecutiveErrors = 0;
         private int consecutiveSuccessfulMoves = 0;
-        private int MCU_port;
-        private string MCU_ip;
-        private DateTime lastConnectAttempt = DateTime.Now ;
-        private bool initialConnect = true;
-        private bool SoftWareStopEnabled = false;
+        private int McuPort;
+        private string McuIp;
+        private DateTime lastConnectAttempt = DateTime.Now;
         private RadioTelescopeTypeEnum telescopeType;
 
-        public MCUManager( string _MCU_ip , int _MCU_port ) {
-            MCU_port = _MCU_port;
-            MCU_ip = _MCU_ip;
+        public MCUManager(string ip, int port) {
+            McuPort = port;
+            McuIp = ip;
+
             try {
                 lastConnectAttempt = DateTime.Now;
                 MCUTCPClient = new TcpClient( MCU_ip , MCU_port );
                 MCUModbusMaster = ModbusIpMaster.CreateIp( MCUTCPClient );
                 mCUpositon = new MCUPositonRegs();
                 MCU_Monitor_Thread = new Thread( new ThreadStart( HeartbeatMonitor ) ) { Name = "MCU Monitor Thread" };
-                SoftwareStopThread = new Thread( new ThreadStart( SoftwareStopper ) ) { Name = "softwre stop thread" };
             } catch(Exception e) {
                 if((e is ArgumentNullException) || (e is ArgumentOutOfRangeException)) {
                     logger.Error( "[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString() );
@@ -86,11 +83,10 @@ namespace ControlRoomApplication.Controllers {
             try {
                 if ((DateTime.Now - lastConnectAttempt) > TimeSpan.FromSeconds(5))
                 {
-                    logger.Info("Attempting to reconnect to the MCU...");
+                    logger.Info("Attempting to connect to the MCU...");
                     lastConnectAttempt = DateTime.Now;
                     MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
                     MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
-                    mCUpositon = new MCUPositonRegs();
                     return true;
                 }
                 return false;
@@ -210,28 +206,6 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// this thread will check if the telescope is about to move outeide of the 
-        /// </summary>
-        private void SoftwareStopper() {
-            while(keep_modbus_server_alive) {
-                try {
-                    if(SoftWareStopEnabled) {
-                        var current = read_Position();
-                        var Distance = estimateDistanceToStop( RunningCommand );
-                        var expected = new Orientation( current.Azimuth + Distance.Azimuth , current.Elevation + Distance.Elevation );
-                        if((expected.Azimuth > 360 || expected.Azimuth < 0) && Math.Abs( Distance.Azimuth ) > 0.1) {
-                            ControlledStop(0);
-                        }
-                        if((expected.Elevation > 90 || expected.Elevation < 0) && Math.Abs( Distance.Elevation ) > 0.1) {
-                            ControlledStop(0);
-                        }
-                    }
-                } catch { }
-                Task.Delay( 20 ).Wait();
-            }
-        }
-
-        /// <summary>
         /// starts the MCU monitor thread
         /// </summary>
         /// <returns></returns>
@@ -239,7 +213,6 @@ namespace ControlRoomApplication.Controllers {
             keep_modbus_server_alive = true;
             try {
                 MCU_Monitor_Thread.Start();
-                SoftwareStopThread.Start(); // TODO: move this to the new MCU monitoring routine
             } catch(Exception e) {
                 if((e is ThreadStateException) || (e is OutOfMemoryException)) {
                     logger.Error( "failed to start prodi=uction plc and mcu threads err:____    {0}" , e );
@@ -258,7 +231,6 @@ namespace ControlRoomApplication.Controllers {
             keep_modbus_server_alive = false;
             try {
                 MCU_Monitor_Thread.Join();
-                SoftwareStopThread.Join();
             } catch(Exception e) {
                 if((e is ThreadStateException) || (e is ThreadStartException)) {
                     logger.Error( e );
@@ -418,24 +390,6 @@ namespace ControlRoomApplication.Controllers {
             }
 
             return errors;
-        }
-
-
-        private async Task<bool> Override_And_Stop_Motion( int priority ) {
-            if(MotorsCurrentlyMoving()) {
-                if(RunningCommand.CommandType == MCUCommandType.JOG) {
-                    Cancel_move( priority );
-                    WaitUntilStopped().Wait();
-                } else if(RunningCommand.CommandType == MCUCommandType.RELATIVE_MOVE) {
-                    Cancel_move( priority );
-                    Task.Delay( 100 ).Wait();
-                    ControlledStop( priority );
-                    WaitUntilStopped().Wait();
-                } else {
-                    ImmediateStop( priority );
-                }
-            }
-            return true;
         }
 
         private async Task<bool> Wait_For_Stop_Motion( MCUCommand comand) {
@@ -1056,14 +1010,6 @@ namespace ControlRoomApplication.Controllers {
 
         public long getLastContact() {
             return MCU_last_contact;
-        }
-
-
-        private bool Int_to_bool( int val ) {
-            logger.Info( val );
-            if(val == 0) {
-                return false;
-            } else { return true; }
         }
 
         public void setTelescopeType(RadioTelescopeTypeEnum type)
