@@ -204,8 +204,8 @@ namespace ControlRoomApplication.Controllers
             return driver.workaroundAlive();
         }
 
-        public override Task<bool> Home() {
-            return driver.Home();
+        public override bool HomeTelescope() {
+            return driver.HomeTelescope();
         }
 
         public override bool Stop_Jog() {

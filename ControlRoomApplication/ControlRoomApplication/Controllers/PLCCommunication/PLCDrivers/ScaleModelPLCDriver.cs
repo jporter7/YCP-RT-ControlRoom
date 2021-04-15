@@ -414,7 +414,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override Task<bool> Home() {
+        public override bool HomeTelescope() {
             throw new NotImplementedException();
         }
 

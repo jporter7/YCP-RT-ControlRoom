@@ -667,7 +667,7 @@ namespace ControlRoomApplication.Main
                 case 10:
                     thread = new Thread(() =>
                     {
-                        tele.PLCDriver.Home();
+                        tele.PLCDriver.HomeTelescope();
                     });
                     //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
                     break;

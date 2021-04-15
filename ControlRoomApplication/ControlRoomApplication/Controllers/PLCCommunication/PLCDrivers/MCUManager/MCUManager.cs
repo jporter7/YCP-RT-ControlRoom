@@ -447,7 +447,7 @@ namespace ControlRoomApplication.Controllers {
                     while(!timout.IsCancellationRequested) {
                         var datatask = ReadMCURegisters(0 , 12);
                         Task.Delay( 33 ).Wait();
-                        if(!MotorsCurrentlyMoving(MotorAxisEnum.Azimuth)) {
+                        if(!MotorsCurrentlyMoving(RadioTelescopeAxisEnum.AZIMUTH)) {
                             return true;
                         }
                     }
@@ -462,7 +462,7 @@ namespace ControlRoomApplication.Controllers {
                     while(!timout.IsCancellationRequested) {
                         var datatask = ReadMCURegisters(0 , 12);
                         Task.Delay( 33 ).Wait();
-                        if(!MotorsCurrentlyMoving(MotorAxisEnum.Elevation)) {
+                        if(!MotorsCurrentlyMoving(RadioTelescopeAxisEnum.ELEVATION)) {
                             return true;
                         }
                     }
@@ -481,14 +481,14 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <param name="axis">The axis we want to check is moving.</param>
         /// <returns>True if they are moving clockwise or counter-clockwise, false if they are still.</returns>
-        public bool MotorsCurrentlyMoving(MotorAxisEnum axis = MotorAxisEnum.Both) {
+        public bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH) {
 
             bool isMoving = false;
             ushort[] data;
 
             switch(axis)
             {
-                case MotorAxisEnum.Azimuth:
+                case RadioTelescopeAxisEnum.AZIMUTH:
                     // Only read the registers we need
                     data = ReadMCURegisters(0, 1);
 
@@ -497,14 +497,14 @@ namespace ControlRoomApplication.Controllers {
                             (((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
                     break;
 
-                case MotorAxisEnum.Elevation:
+                case RadioTelescopeAxisEnum.ELEVATION:
                     // Only read the registers we need
                     data = ReadMCURegisters(10, 1);
                     isMoving = (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1) ||
                             (((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1);
                     break;
 
-                case MotorAxisEnum.Both:
+                case RadioTelescopeAxisEnum.BOTH:
                     // Now we need to capture some more registers to get both az and el
                     data = ReadMCURegisters(0, 11);
                     

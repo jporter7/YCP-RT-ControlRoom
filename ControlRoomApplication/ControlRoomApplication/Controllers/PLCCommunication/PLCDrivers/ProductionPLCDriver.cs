@@ -1080,18 +1080,11 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// move both axisi to 0,0 and zero out the MCU position data, after this comand is run a comand should be sent to the absolute encoders to zero out their position should be 
+        /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
+        /// the absolute encoders.
         /// </summary>
-        /// <returns></returns>
-        public override Task<bool> Home() {
-            return HomeBothAxyes();
-        }
-
-        /// <summary>
-        /// home both axsis of the RT
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> HomeBothAxyes() {
+        /// <returns>True if homing was successful, false if it failed</returns>
+        public override bool HomeTelescope() {
             // We only want to perform this movement if the telescope has hard stops, because the range of motion is 0-375. That gives
             // us 15 degrees of overlap, so we want to make sure we aren't hitting a limit switch
             if (telescopeType == RadioTelescopeTypeEnum.HARD_STOPS)
@@ -1218,9 +1211,7 @@ namespace ControlRoomApplication.Controllers
             ELTAsk.GetAwaiter().GetResult();
             return true;
         }
-
-
-
+        
         protected override bool TestIfComponentIsAlive() {
 
             bool PLC_alive, MCU_alive;

@@ -151,11 +151,12 @@ namespace ControlRoomApplication.Controllers
 
 
         /// <summary>
-        /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 
-        /// after calling this method we should zero out the apsolute encoders
+        /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
+        /// the absolute encoders.
         /// </summary>
-        /// <returns>sucsess bool</returns>
-        public abstract Task<bool> Home();
+        /// <returns>True if homing was successful, false if it failed</returns>
+        public abstract bool HomeTelescope();
+
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
