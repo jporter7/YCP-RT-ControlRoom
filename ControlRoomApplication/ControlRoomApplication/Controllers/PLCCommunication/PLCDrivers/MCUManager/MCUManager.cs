@@ -286,7 +286,7 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public bool Cancel_move() {
             var cmd = new MCUCommand(MCUMessages.ClearMove, MCUCommandType.CLEAR_LAST_MOVE) { completed = false };
-            Send_Generic_Command_And_Track( cmd ).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track( cmd );
             Wait_For_Stop_Motion( cmd );
             return true;
         }
@@ -300,14 +300,14 @@ namespace ControlRoomApplication.Controllers {
                 Cancel_move();
             } else {
                 var cmd = new MCUCommand(MCUMessages.HoldMove , MCUCommandType.HOLD_MOVE) { completed = false };
-                Send_Generic_Command_And_Track( cmd ).GetAwaiter().GetResult();
+                Send_Generic_Command_And_Track( cmd );
                 Wait_For_Stop_Motion( cmd );
             }
             return true;
         }
 
         public bool ImmediateStop() {
-            Send_Generic_Command_And_Track(new MCUCommand( MCUMessages.ImmediateStop , MCUCommandType.IMMEDIATE_STOP) { completed = true } ).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track(new MCUCommand( MCUMessages.ImmediateStop , MCUCommandType.IMMEDIATE_STOP) { completed = true } );
             return true;
         }
 
@@ -330,7 +330,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         public void ResetMCUErrors()
         {
-            Send_Generic_Command_And_Track(new MCUCommand(MCUMessages.ResetErrors, MCUCommandType.RESET_ERRORS) { completed = true }).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track(new MCUCommand(MCUMessages.ResetErrors, MCUCommandType.RESET_ERRORS) { completed = true });
         }
 
         /// <summary>
@@ -375,8 +375,8 @@ namespace ControlRoomApplication.Controllers {
             return errors;
         }
 
-        private async Task<bool> Wait_For_Stop_Motion( MCUCommand comand) {
-            WaitUntilStopped().Wait();
+        private bool Wait_For_Stop_Motion( MCUCommand comand) {
+            WaitUntilStopped();
             comand.completed = true;
             return true;
         }
@@ -385,7 +385,7 @@ namespace ControlRoomApplication.Controllers {
         /// this function assums that you have alread told both Axisi to stop moving otherwise it will timeout
         /// </summary>
         /// <returns>false if the telescope was still running at the end of the timeout</returns>
-        private async Task<bool> WaitUntilStopped() {
+        private bool WaitUntilStopped() {
             try {
                 int mS_To_Decelerate = estimateStopTime( PreviousCommand );
                 var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
@@ -537,7 +537,7 @@ namespace ControlRoomApplication.Controllers {
             ImmediateStop();
             Task.Delay( 50 ).Wait();
             CheckForAndResetCommandErrors();
-            Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.CONFIGURE) { completed = true} ).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.CONFIGURE) { completed = true} );
             Task.Delay( 100 ).Wait();
             //TODO: check for configuration Errors
             return true;
@@ -655,7 +655,7 @@ namespace ControlRoomApplication.Controllers {
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
             var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.RELATIVE_MOVE) {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
-            } ).GetAwaiter().GetResult();
+            } );
             Task.Delay( 500 ).Wait();
             FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
             ushort[] outputRegData;
@@ -685,14 +685,12 @@ namespace ControlRoomApplication.Controllers {
                             ThisMove.completed = true;
                             ThisMove.Dispose();
                             return false;
-                            //throw new Exception("Homing faild to reach 0 properly");
                         } else if (ELHomeErr || AZHomeErr || AZCmdErr || ELCmdErr) {
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
                             ThisMove.completed = true;
                             ThisMove.Dispose();
                             return false;
-                            //throw new Exception(String.Format("Homing faild due to an error MCU status bits were    ELHomeErr={0}   AZHomeErr={1}   AZCmdErr={2}   ELCmdErr={3}", ELHomeErr, AZHomeErr, AZCmdErr, ELCmdErr));
                         }
                     }
                 }
@@ -742,7 +740,7 @@ namespace ControlRoomApplication.Controllers {
             TimeToMove = ( int)(TimeToMove * 1.2);
             TimeToMove += 100;
 
-            var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, positionTranslationAZ > 0, positionTranslationEL > 0, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } ).GetAwaiter().GetResult();
+            var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, positionTranslationAZ > 0, positionTranslationEL > 0, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } );
             Task.Delay( 500 ).Wait();//wait for comand to be read
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
@@ -762,7 +760,7 @@ namespace ControlRoomApplication.Controllers {
                     ThisMove.CommandError = new Exception( "MCU command error bit was set" );
                     consecutiveSuccessfulMoves = 0;
                     consecutiveErrors++;
-                    Send_Generic_Command_And_Track( new MCUCommand( MCUMessages.ResetErrors , MCUCommandType.RESET_ERRORS) ).Wait();
+                    Send_Generic_Command_And_Track( new MCUCommand( MCUMessages.ResetErrors , MCUCommandType.RESET_ERRORS) );
                     PLCEvents.DuringOverrideRemoveSecondary( handle );
                     ThisMove.Dispose();
                     return false;
@@ -868,14 +866,14 @@ namespace ControlRoomApplication.Controllers {
                 booth = (RunningCommand.AZ_CW != AZClockwise) && (RunningCommand.EL_CW != ELPositive);
                 if(booth) {//if both axis need to change direction
                     Cancel_move();
-                    WaitUntilStopped().GetAwaiter().GetResult();
+                    WaitUntilStopped();
                 } else if(RunningCommand.EL_CW != ELPositive) {//if only elevation needs to change direction
                     for(int j = 0; j <= data3.Length - 11; j++) {
                         data3[j + 10] = MCUMessages.ClearMove[j + 10];//replace elevation portion of move with controled stop
                     }
                     _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
-                    } ).GetAwaiter().GetResult();
+                    } );
                     WaitUntilStoppedPerAxis( true ).GetAwaiter().GetResult();
                 } else if(RunningCommand.AZ_CW != AZClockwise) {//only Azimuth needs to change direction
                     for(int j = 0; j <= data3.Length - 1; j++) {
@@ -883,7 +881,7 @@ namespace ControlRoomApplication.Controllers {
                     }
                     _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
-                    } ).GetAwaiter().GetResult();
+                    } );
                     WaitUntilStoppedPerAxis( false ).GetAwaiter().GetResult();
                 }
             }
@@ -891,11 +889,11 @@ namespace ControlRoomApplication.Controllers {
             _ = Send_Generic_Command_And_Track( new MCUCommand( data2 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
                 EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                 AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
-            } ).GetAwaiter().GetResult();
+            } );
             return true;
         }
 
-        private async Task<MCUCommand> Send_Generic_Command_And_Track( MCUCommand incoming ) {
+        private MCUCommand Send_Generic_Command_And_Track( MCUCommand incoming ) {
             Console.WriteLine( "running: {0}     incoming: {1}", RunningCommand.CommandType.ToString(), incoming.CommandType.ToString());
             PreviousCommand = RunningCommand;
             if(RunningCommand.CommandType == MCUCommandType.JOG) {
@@ -936,7 +934,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="CW"></param>
         /// <param name="speed"></param>
         /// <returns></returns>
-        public async Task<bool> SendSingleAxisJog(bool AZ,bool CW, double speed) {
+        public bool SendSingleAxisJog(bool AZ,bool CW, double speed) {
             ushort DataOffset, dir;
             int StepSpeed;
             if(CW) {
@@ -962,7 +960,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="CW"></param>
         /// <param name="speed"></param>
         /// <returns></returns>
-        public async Task<bool> StopSingleAxisJog(bool AZ) {
+        public bool StopSingleAxisJog(bool AZ) {
             ushort DataOffset;
 
             if(AZ) {

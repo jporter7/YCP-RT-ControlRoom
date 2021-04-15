@@ -146,22 +146,21 @@ namespace ControlRoomApplication.Controllers
 
         private async void DefaultLimitSwitchHandle( object sender , limitEventArgs e ) {
             if(e.Value) {
-                //JogOffLimitSwitches().GetAwaiter().GetResult();
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
-                            MCU.SendSingleAxisJog( true , true , 0.25).Wait();
+                            MCU.SendSingleAxisJog( true , true , 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.SendSingleAxisJog( true , false , 0.25).Wait();
+                            MCU.SendSingleAxisJog( true , false , 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.SendSingleAxisJog( false , false , 0.25).Wait();
+                            MCU.SendSingleAxisJog( false , false , 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.SendSingleAxisJog( false , true , 0.25).Wait();
+                            MCU.SendSingleAxisJog( false , true , 0.25);
                             break;
                         }
 
@@ -170,19 +169,19 @@ namespace ControlRoomApplication.Controllers
             if(!e.Value) {
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
-                            MCU.StopSingleAxisJog(true).Wait();
+                            MCU.StopSingleAxisJog(true);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.StopSingleAxisJog(true).Wait();
+                            MCU.StopSingleAxisJog(true);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.StopSingleAxisJog(false).Wait();
+                            MCU.StopSingleAxisJog(false);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.StopSingleAxisJog(false).Wait();
+                            MCU.StopSingleAxisJog(false);
                             break;
                         }
                 }
