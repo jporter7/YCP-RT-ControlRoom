@@ -83,7 +83,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             // Create an Orientation object with an azimuth of 311 and elevation of 42
             Orientation Orientation = new Orientation( 311.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             // Ensure the objects are identical
@@ -94,7 +94,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Orientation = new Orientation( 28.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
             // Call the GetCurrentOrientationMethod
             CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             Assert.IsTrue( response);
@@ -104,7 +104,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Orientation = new Orientation( 310.0 , 42.0 );
             // Set the RadioTelescope's CurrentOrientation field
-            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
             // Call the GetCurrentOrientationMethod
             CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             // Ensure the objects are identical
@@ -172,7 +172,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation Orientation = new Orientation( 311.0 , 42.0 );
 
             // Set the RadioTelescope's CurrentOrientation field
-            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation ).GetAwaiter().GetResult();
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation( Orientation );
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -193,7 +193,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation TargetOrientation = new Orientation(311.0, 0);
 
             // Set the RadioTelescope's CurrentOrientation field
-            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation).GetAwaiter().GetResult();
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -214,7 +214,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation TargetOrientation = new Orientation(359.0, 0);
 
             // Set the RadioTelescope's CurrentOrientation field
-            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation).GetAwaiter().GetResult();
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -233,11 +233,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Initial movement from 0 to 350
             Orientation InitialOrientation = new Orientation(350, 0);
-            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation).GetAwaiter().GetResult();
+            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation);
 
             // Move from 350 to 90
             Orientation TargetOrientation = new Orientation(90, 0);
-            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation).GetAwaiter().GetResult();
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -256,11 +256,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Initial movement from 0 to 90
             Orientation InitialOrientation = new Orientation(90, 0);
-            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation).GetAwaiter().GetResult();
+            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation);
 
             // Move from 90 to 350
             Orientation TargetOrientation = new Orientation(350, 0);
-            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation).GetAwaiter().GetResult();
+            bool response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -316,7 +316,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void test_MCU_Time_Estimate() {
             int vel = 170_000, acc = 50, dist = 10_000_000;
-            int time = MCUManager.estimateTime(vel, acc, dist);
+            int time = MCUManager.EstimateMovementTime(vel, acc, dist);
             Assert.AreEqual(61800, time);
         }
 

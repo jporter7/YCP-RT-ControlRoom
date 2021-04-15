@@ -32,11 +32,7 @@ namespace ControlRoomApplication.GUI
         private RadioTelescopeController rtController { get; set; }
 
         // Thread that monitors the overrides, and updates the buttons as necessary
-        BackgroundWorker updateOverride;
-
-
-        private int demoIndex = 0;
-        //private PLC PLC; This needs to be defined once I can get find the currect import
+        BackgroundWorker SensorSettingsThread;
 
         FakeEncoderSensor myEncoder = new FakeEncoderSensor();
         /***********DEMO MODE VARIABLES**************/
@@ -95,12 +91,8 @@ namespace ControlRoomApplication.GUI
         private Acceleration[] elOld;
         private Acceleration[] cbOld;
 
-
-
-
         // Config file for the sensor network server to use
         SensorNetworkConfig SensorNetworkConfig;
-        
 
         // This is being passed through so the Weather Station override bool can be modified
         private readonly MainForm mainF;
@@ -160,12 +152,12 @@ namespace ControlRoomApplication.GUI
             bool currAzimuthAccelerometer = rtController.overrides.overrideAzimuthAccelerometer;
             bool currElevationAccelerometer = rtController.overrides.overrideElevationAccelerometer;
             bool currCounterbalanceAccelerometer = rtController.overrides.overrideCounterbalanceAccelerometer;
-            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90, 
+            UpdateOverrideButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90, 
                 currAzimuthAbsEncoder, currElevationAbsEncoder, currAzimuthAccelerometer, currElevationAccelerometer, currCounterbalanceAccelerometer);
-            
-            updateOverride = new BackgroundWorker();
-            updateOverride.DoWork += new DoWorkEventHandler(checkOverrideVars);
-            updateOverride.RunWorkerAsync();
+
+            SensorSettingsThread = new BackgroundWorker();
+            SensorSettingsThread.DoWork += new DoWorkEventHandler(SensorSettingsRoutine);
+            SensorSettingsThread.RunWorkerAsync();
 
             //Initialize Color
             celTempConvert.BackColor = System.Drawing.Color.DarkGray;
@@ -280,38 +272,6 @@ namespace ControlRoomApplication.GUI
             lblElAbsPos.Text = Math.Round(_elEncoderDegrees, 2).ToString();
 
             timer1.Interval = 200;
-
-            //TODO: Investigate if needed 
-            /*
-            if (selectDemo.Checked == true)
-            {
-                // Simulating Encoder Sensors
-                TimeSpan elapsedEncodTime = DateTime.Now - currentEncodDate;
-
-                if (elapsedEncodTime.TotalSeconds > 15)
-                {
-                    if (myEncoder.getLeftOrRight() == true && (myEncoder.GetAzimuthAngle() < 340 && myEncoder.GetAzimuthAngle() > 15))
-                        myEncoder.SetAzimuthAngle(340);
-                    else if (myEncoder.getLeftOrRight() == false && (myEncoder.GetAzimuthAngle() > 15 && myEncoder.GetAzimuthAngle() < 340))
-                        myEncoder.SetAzimuthAngle(15);
-
-                    if (myEncoder.getUpOrDown() == true && (myEncoder.GetElevationAngle() < 80 && myEncoder.GetElevationAngle() > 0))
-                        myEncoder.SetElevationAngle(80);
-                    else if (myEncoder.getUpOrDown() == false && (myEncoder.GetElevationAngle() > 0 && myEncoder.GetElevationAngle() < 80))
-                        myEncoder.SetElevationAngle(0);
-
-                    currentEncodDate = DateTime.Now;
-                }
-
-                _azEncoderDegrees = myEncoder.GetAzimuthAngle();
-                _elEncoderDegrees = myEncoder.GetElevationAngle();
-
-                _azEncoderTicks = (int)(_azEncoderDegrees * 11.38);
-                _elEncoderTicks = (int)(_elEncoderDegrees * 2.8);
-
-
-            }
-            */
 
             Temperature[] ElMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp;
             Temperature[] AzMotTemps = rtController.RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp;
@@ -673,11 +633,6 @@ namespace ControlRoomApplication.GUI
 
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
         private void btnTest_Click(object sender, System.EventArgs e)
         {
             double temperature = 0;
@@ -693,51 +648,10 @@ namespace ControlRoomApplication.GUI
             _elevationTemp += 5;
         }
 
-        private void button1_Click(object sender, System.EventArgs e)
-        {
-
-        }
-
         private void button2_Click(object sender, System.EventArgs e)
         {
             _elevationTemp -= 5;
         }
-
-        //private void btnAddXTemp_Click(object sender, System.EventArgs e)
-        //{
-        //    double tempVal; //temperature value
-
-
-        //    if (double.TryParse(txtCustTemp.Text, out tempVal))
-        //    {
-        //        _elevationTemp += tempVal;
-        //    }
-        //    else
-        //    {
-        //        MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //}
-
-        private void button3_Click(object sender, System.EventArgs e)
-        {
-           // double tempVal; //temperature value
-
-
-            //if (double.TryParse(txtCustTemp.Text, out tempVal))
-            //{
-            //    _elevationTemp -= tempVal;
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Invalid entry in Temperature field", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
-        }
-
-        private void timer2_Tick(object sender, System.EventArgs e)
-        {
-
-        }
-
 
         private void button4_Click(object sender, System.EventArgs e)
         {
@@ -885,23 +799,8 @@ namespace ControlRoomApplication.GUI
             }
         }
 
-        private void warningLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        /** Conversion from fahrenheit to celsius (Currently not being used) 
-            if(celOrFar)
-            {
-                elevationTemperature = (elevationTemperature - 32) * (5.0 / 9);
-                azimuthTemperature = (azimuthTemperature - 32) * (5.0 / 9);
-            }**/
-
         private void celTempConvert_Click(object sender, EventArgs e)
         {
-
-            
-
             if (fahrenheit == true)
             {
                 fahrenheit = false;
@@ -913,9 +812,6 @@ namespace ControlRoomApplication.GUI
 
         private void farTempConvert_Click(object sender, EventArgs e)
         {
-          
-            
-
             if (fahrenheit == false)
             {
                 fahrenheit = true;
@@ -963,16 +859,6 @@ namespace ControlRoomApplication.GUI
             }
         }
 
-        private void lblElEncoderDegrees_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label19_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void AzMotTempSensOverride_Click(object sender, EventArgs e)
         {
             if (!rtController.overrides.overrideAzimuthMotTemp)
@@ -1017,28 +903,20 @@ namespace ControlRoomApplication.GUI
           
         }
 
-        private void label4_Click(object sender, EventArgs e)
-        {
-
-        }
-
         // Getter for RadioTelescopeController
         public RadioTelescopeController getRTController()
         {
             return rtController;
         }
-
-        private void label40_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label39_Click(object sender, EventArgs e)
-        {
-        }
-
-        // Runs a check on the override variables, and if there is a change, updates the buttons appropriately
-        private void checkOverrideVars(object sender, DoWorkEventArgs e)
+        
+        /// <summary>
+        /// This runs through and checks if any sensor settings have changed. For example, someone might set an
+        /// override or change the sensor initialization from the mobile app, so we would want that change to
+        /// show up in the Diagnostics Form.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SensorSettingsRoutine(object sender, DoWorkEventArgs e)
         {
             // Current overrides
             bool currMain = rtController.overrides.overrideGate;
@@ -1056,8 +934,8 @@ namespace ControlRoomApplication.GUI
             bool newMain, newWS, newAZ, newEL, newElProx0, newElProx90, 
                 newAzimuthAbsEncoder, newElevationAbsEncoder, newAzimuthAccelerometer, newElevationAccelerometer, newCounterbalanceAccelerometer;
 
-
-            while (true)
+            // Only keep running this loop while the Radio Telescope is online
+            while (rtController.RadioTelescope.online == 1)
             {
                 newMain = rtController.overrides.overrideGate;
                 newWS = controlRoom.weatherStationOverride;
@@ -1095,22 +973,17 @@ namespace ControlRoomApplication.GUI
                     currElevationAccelerometer = newElevationAccelerometer;
                     currCounterbalanceAccelerometer = newCounterbalanceAccelerometer;
 
-                    if (IsHandleCreated)
-                    {
-                        this.BeginInvoke((MethodInvoker)delegate
-                        {
-                            updateButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90, 
-                                currAzimuthAbsEncoder, currElevationAbsEncoder, currAzimuthAccelerometer, currElevationAccelerometer, currCounterbalanceAccelerometer);
-                        });
-                    }
-
+                    Utilities.WriteToGUIFromThread(this, () => {
+                        UpdateOverrideButtons(currMain, currWS, currAZ, currEL, currElProx0, currElProx90,
+                            currAzimuthAbsEncoder, currElevationAbsEncoder, currAzimuthAccelerometer, currElevationAccelerometer, currCounterbalanceAccelerometer);
+                    });
                 }
                 Thread.Sleep(1000);
             }
         }
 
         // Loads the override buttons
-        public void updateButtons(bool currMain, bool currWS, bool currAZ, bool currEL, bool currElProx0, bool currElProx90,
+        public void UpdateOverrideButtons(bool currMain, bool currWS, bool currAZ, bool currEL, bool currElProx0, bool currElProx90,
             bool azimuthAbsEncoder, bool elevationAbsEncoder, bool azimuthAccelerometer, bool elevationAccelerometer, bool counterbalanceAccelerometer)
         {
             // Weather Station Override
@@ -1250,17 +1123,6 @@ namespace ControlRoomApplication.GUI
         {
             rtController.RadioTelescope.PLCDriver.ResetMCUErrors();
         }
-
-        private void lblAzLimStatus1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label41_Click(object sender, EventArgs e)
-        {
-
-        }
-
 
         private void btnAzimuthAbsoluteEncoder_Click(object sender, EventArgs e)
         {
@@ -1425,11 +1287,6 @@ namespace ControlRoomApplication.GUI
                 InitTimeoutValidation.Show("Must be a positive double value.", lblInitTimeout, 2000);
                 UpdateSensorInitiliazation.Enabled = false;
             }
-        }
-
-        private void azimuthAccChart_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

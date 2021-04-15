@@ -180,7 +180,6 @@ namespace ControlRoomApplication.Main
             this.ActualPositionLabel.Size = new System.Drawing.Size(114, 20);
             this.ActualPositionLabel.TabIndex = 7;
             this.ActualPositionLabel.Text = "Actual Position";
-            this.ActualPositionLabel.Click += new System.EventHandler(this.ActualPositionLabel_Click);
             // 
             // ActualRALabel
             // 
@@ -232,7 +231,6 @@ namespace ControlRoomApplication.Main
             this.TargetPositionLabel.Size = new System.Drawing.Size(115, 20);
             this.TargetPositionLabel.TabIndex = 12;
             this.TargetPositionLabel.Text = "Target Position";
-            this.TargetPositionLabel.Click += new System.EventHandler(this.TargetPositionLabel_Click);
             // 
             // TargetDecTextBox
             // 
@@ -274,7 +272,6 @@ namespace ControlRoomApplication.Main
             this.RAIncGroupbox.TabIndex = 16;
             this.RAIncGroupbox.TabStop = false;
             this.RAIncGroupbox.Text = "Right Ascension Increment";
-            this.RAIncGroupbox.Enter += new System.EventHandler(this.RAIncGroupbox_Enter);
             // 
             // tenButton
             // 
@@ -526,7 +523,6 @@ namespace ControlRoomApplication.Main
             this.groupBox4.TabIndex = 24;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Control Scripts and Spectra";
-            this.groupBox4.Enter += new System.EventHandler(this.groupBox4_Enter);
             // 
             // runControlScriptButton
             // 
@@ -566,7 +562,6 @@ namespace ControlRoomApplication.Main
             this.manualGroupBox.TabIndex = 25;
             this.manualGroupBox.TabStop = false;
             this.manualGroupBox.Text = "Manual Control";
-            this.manualGroupBox.Enter += new System.EventHandler(this.manualGroupBox_Enter);
             // 
             // speedTrackBar
             // 
@@ -609,7 +604,6 @@ namespace ControlRoomApplication.Main
             this.label3.Size = new System.Drawing.Size(76, 13);
             this.label3.TabIndex = 26;
             this.label3.Text = "Speed (RPMs)";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // manualControlButton
             // 
@@ -737,7 +731,6 @@ namespace ControlRoomApplication.Main
             this.plusJogButton.TabIndex = 7;
             this.plusJogButton.Text = "+ Jog";
             this.plusJogButton.UseVisualStyleBackColor = false;
-            this.plusJogButton.Click += new System.EventHandler(this.plusJogButton_Click);
             this.plusJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_Down);
             this.plusJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_UP);
             // 
@@ -792,8 +785,6 @@ namespace ControlRoomApplication.Main
             this.label12.Size = new System.Drawing.Size(74, 13);
             this.label12.TabIndex = 26;
             this.label12.Text = "Offset Voltage";
-            this.label12.Click += new System.EventHandler(this.label12_Click);
-            this.label12.MouseHover += new System.EventHandler(this.label12_MouseHover);
             // 
             // integrationStepCombo
             // 
@@ -844,8 +835,6 @@ namespace ControlRoomApplication.Main
             this.lblIFGain.Size = new System.Drawing.Size(60, 13);
             this.lblIFGain.TabIndex = 41;
             this.lblIFGain.Text = "IFGain (dB)";
-            this.lblIFGain.Click += new System.EventHandler(this.lblIFGain_Click);
-            this.lblIFGain.MouseHover += new System.EventHandler(this.lblIFGain_MouseHover);
             // 
             // finalizeSettingsButton
             // 
@@ -929,8 +918,6 @@ namespace ControlRoomApplication.Main
             this.lblFrequency.Size = new System.Drawing.Size(79, 13);
             this.lblFrequency.TabIndex = 34;
             this.lblFrequency.Text = "Frequency (Hz)";
-            this.lblFrequency.Click += new System.EventHandler(this.lblFrequency_Click);
-            this.lblFrequency.MouseHover += new System.EventHandler(this.lblFrequency_MouseHover);
             // 
             // label9
             // 
@@ -942,7 +929,6 @@ namespace ControlRoomApplication.Main
             this.label9.Size = new System.Drawing.Size(82, 13);
             this.label9.TabIndex = 32;
             this.label9.Text = "Integration Step";
-            this.label9.Click += new System.EventHandler(this.label9_Click);
             // 
             // offsetVoltage
             // 
@@ -988,7 +974,6 @@ namespace ControlRoomApplication.Main
             this.MinimumSize = new System.Drawing.Size(600, 478);
             this.Name = "FreeControlForm";
             this.Text = "Control Form";
-            this.Load += new System.EventHandler(this.FreeControlForm_Load);
             this.RAIncGroupbox.ResumeLayout(false);
             this.overRideGroupbox.ResumeLayout(false);
             this.overRideGroupbox.PerformLayout();

@@ -59,7 +59,7 @@
             /// used to track network conectivity bit 14 of this register will flip every .5 seconds,
             /// bit 13 is set when the MCU looses or has previously lost ethernet conectivity
             /// </summary>
-            Network_Conectivity = 9,
+            NetworkConnectivity = 9,
             /// <summary>
             /// most signifigant word (16 bits) of the EL axsys status <see cref="MCUStatusBitsMSW"/> for description of eacs bit
             /// </summary>

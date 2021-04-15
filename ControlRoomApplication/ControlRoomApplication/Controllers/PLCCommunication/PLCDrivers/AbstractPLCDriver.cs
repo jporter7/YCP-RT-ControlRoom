@@ -85,45 +85,45 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Cancel_move();
 
-        public abstract bool Shutdown_PLC_MCU();
-
         // All of the "scripts" are here all the way to....
         // Control Scripts
 
-        public abstract Task<bool> Thermal_Calibrate();
+        public abstract bool Thermal_Calibrate();
 
-        public abstract Task<bool> FullElevationMove();
+        public abstract bool FullElevationMove();
 
-        public abstract Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos);
+        public abstract bool Full_360_CCW_Rotation();
 
-        public abstract Task<bool> Full_360_CCW_Rotation();
+        public abstract bool Full_360_CW_Rotation();
 
-        public abstract Task<bool> Full_360_CW_Rotation();
+        public abstract bool SnowDump();
 
-        public abstract Task<bool> Stow();
-
-        public abstract Task<bool> SnowDump();
+        /// <summary>
+        /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
+        /// the absolute encoders.
+        /// </summary>
+        /// <returns>True if homing was successful, false if it failed</returns>
+        public abstract bool HomeTelescope();
 
         // Diagnostics Scripts
 
-        public abstract Task<bool> HitAzimuthLeftLimitSwitch();
+        public abstract bool HitAzimuthLeftLimitSwitch();
 
-        public abstract Task<bool> HitAzimuthRightLimitSwitch();
+        public abstract bool HitAzimuthRightLimitSwitch();
 
-        public abstract Task<bool> HitElevationLowerLimitSwitch();
+        public abstract bool HitElevationLowerLimitSwitch();
 
-        public abstract Task<bool> HitElevationUpperLimitSwitch();
+        public abstract bool HitElevationUpperLimitSwitch();
 
-        public abstract Task<bool> RecoverFromLimitSwitch();
+        public abstract bool RecoverFromLimitSwitch();
 
-        public abstract Task<bool> Hit_CW_Hardstop();
+        public abstract bool Hit_CW_Hardstop();
 
-        public abstract Task<bool> Hit_CCW_Hardstop();
-        public abstract Task<bool> Recover_CW_Hardstop();
+        public abstract bool Hit_CCW_Hardstop();
 
-        public abstract Task<bool> Recover_CCW_Hardstop();
+        public abstract bool Recover_CW_Hardstop();
 
-        public abstract Task<bool> Hit_Hardstops();
+        public abstract bool Recover_CCW_Hardstop();
 
         // ... to here
 
@@ -135,7 +135,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL);
 
-        public abstract Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
+        public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 
         public abstract bool Start_jog( double AZspeed ,bool AZ_CW, double ELspeed ,bool EL_CW);
 
@@ -149,13 +149,6 @@ namespace ControlRoomApplication.Controllers
 
         public abstract ushort getregvalue(ushort adr);
 
-
-        /// <summary>
-        /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 
-        /// after calling this method we should zero out the apsolute encoders
-        /// </summary>
-        /// <returns>sucsess bool</returns>
-        public abstract Task<bool> Home();
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
@@ -163,7 +156,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="axis"></param>
         /// <returns></returns>
-        public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
+        public abstract bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis );
 
         public abstract void setTelescopeType(RadioTelescopeTypeEnum type);
 

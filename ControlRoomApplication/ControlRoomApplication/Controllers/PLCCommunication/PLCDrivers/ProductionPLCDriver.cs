@@ -146,22 +146,21 @@ namespace ControlRoomApplication.Controllers
 
         private async void DefaultLimitSwitchHandle( object sender , limitEventArgs e ) {
             if(e.Value) {
-                //JogOffLimitSwitches().GetAwaiter().GetResult();
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
-                            MCU.SendSingleAxisJog( true , true , 0.25 , 0 ).Wait();
+                            MCU.SendSingleAxisJog( true , true , 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.SendSingleAxisJog( true , false , 0.25,0 ).Wait();
+                            MCU.SendSingleAxisJog( true , false , 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.SendSingleAxisJog( false , false , 0.25 , 0 ).Wait();
+                            MCU.SendSingleAxisJog( false , false , 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.SendSingleAxisJog( false , true , 0.25 , 0 ).Wait();
+                            MCU.SendSingleAxisJog( false , true , 0.25);
                             break;
                         }
 
@@ -170,19 +169,19 @@ namespace ControlRoomApplication.Controllers
             if(!e.Value) {
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
-                            MCU.StopSingleAxisJog( true , 0 ).Wait();
+                            MCU.StopSingleAxisJog(true);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.StopSingleAxisJog( true , 0 ).Wait();
+                            MCU.StopSingleAxisJog(true);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.StopSingleAxisJog( false , 0 ).Wait();
+                            MCU.StopSingleAxisJog(false);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.StopSingleAxisJog( false , 0 ).Wait();
+                            MCU.StopSingleAxisJog(false);
                             break;
                         }
                 }
@@ -560,7 +559,7 @@ namespace ControlRoomApplication.Controllers
         /// Postcondition: return true if the telescope data IS within 0.001 degrees fahrenheit
         ///                return false if the telescope data IS NOT within 0.001 degrees fahrenheit
         /// </summary>
-        public override Task<bool> Thermal_Calibrate() {
+        public override bool Thermal_Calibrate() {
             Orientation current = read_Position();
             Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
 
@@ -608,15 +607,16 @@ namespace ControlRoomApplication.Controllers
             // return true if working correctly, false if not
             if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
             {
-                return Stow();
+                return Move_to_orientation(MiscellaneousConstants.Stow, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
             }
-            return null;
+
+            return false;
         }
 
         /// <summary>
         /// This is a script that is called when we want to dump snow out of the dish
         /// </summary>
-        public override Task<bool> SnowDump()
+        public override bool SnowDump()
         {
             // insert snow dump movements here
             // default is azimuth of 0 and elevation of 0
@@ -650,19 +650,9 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// Moves the telescope to the stowed position
-        /// </summary>
-        public override Task<bool> Stow()
-        {
-            Orientation stow = new Orientation(0, 90);
-
-            return Move_to_orientation(stow, read_Position());
-        }
-
-        /// <summary>
         /// Moves the telescope to the left azimuth switch
         /// </summary>
-        public override Task<bool> HitAzimuthLeftLimitSwitch()
+        public override bool HitAzimuthLeftLimitSwitch()
         {
             Orientation AZLeftLimit = new Orientation(-9, 0);
 
@@ -672,7 +662,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Moves the telescope to the right azimuth switch
         /// </summary>
-        public override Task<bool> HitAzimuthRightLimitSwitch()
+        public override bool HitAzimuthRightLimitSwitch()
         {
             Orientation AZRightLimit = new Orientation(369, 0);
 
@@ -682,7 +672,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Moves the telescope to the lower elevation switch
         /// </summary>
-        public override Task<bool> HitElevationLowerLimitSwitch()
+        public override bool HitElevationLowerLimitSwitch()
         {
             Orientation ELLowerLimit = new Orientation(0, -14);
 
@@ -692,7 +682,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Moves the telescope to the upper elevation switch
         /// </summary>
-        public override Task<bool> HitElevationUpperLimitSwitch()
+        public override bool HitElevationUpperLimitSwitch()
         {
             Orientation ELUpperLimit = new Orientation(0, 92);
 
@@ -702,7 +692,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Recovers the telescope when a limit switch is hit
         /// </summary>
-        public override Task<bool> RecoverFromLimitSwitch()
+        public override bool RecoverFromLimitSwitch()
         {
             Orientation currentPos = read_Position();
 
@@ -711,8 +701,8 @@ namespace ControlRoomApplication.Controllers
             bool safeAz = false;
             bool safeEl = false;
 
-            Task<bool> azTask;
-            Task<bool> elTask;
+            bool azTask;
+            bool elTask;
 
             // Loops through just in case the move fails or if it as hit two limit switches
             while (true)
@@ -724,7 +714,7 @@ namespace ControlRoomApplication.Controllers
                     safe = new Orientation(0, currentPos.Elevation);
 
                     azTask = Move_to_orientation(safe, currentPos);
-                    safeAz = azTask.GetAwaiter().GetResult();
+                    safeAz = azTask;
                 }
                 // Checks to see if the right az switch has been hit
                 /// TODO: Update to also use limit switch sensors
@@ -733,12 +723,12 @@ namespace ControlRoomApplication.Controllers
                     safe = new Orientation(360, currentPos.Elevation);
 
                     azTask = Move_to_orientation(safe, currentPos);
-                    safeAz = azTask.GetAwaiter().GetResult();
+                    safeAz = azTask;
                 }
                 else
                 {
                     safeAz = true;
-                    azTask = null;
+                    azTask = false;
                 }
 
                 // Checks to see if the lower el switch has been hit
@@ -748,7 +738,7 @@ namespace ControlRoomApplication.Controllers
                     safe = new Orientation(currentPos.Azimuth, 0);
 
                     elTask = Move_to_orientation(safe, currentPos);
-                    safeEl = elTask.GetAwaiter().GetResult();
+                    safeEl = elTask;
                 }
                 // Checks to see if the upper el switch has been hit
                 /// TODO: Update to also use limit switch sensors
@@ -757,12 +747,12 @@ namespace ControlRoomApplication.Controllers
                     safe = new Orientation(currentPos.Azimuth, 85);
 
                     elTask = Move_to_orientation(safe, currentPos);
-                    safeEl = elTask.GetAwaiter().GetResult();
+                    safeEl = elTask;
                 }
                 else
                 {
                     safeEl = true;
-                    elTask = null;
+                    elTask = false;
                 }
 
                 // Check to see if the telescope is in a safe state
@@ -776,12 +766,12 @@ namespace ControlRoomApplication.Controllers
         /// 0 degrees elevation, then moves to 90 degrees, then returns to its
         /// initial position
         /// </summary>
-        public override Task<bool> FullElevationMove()
+        public override bool FullElevationMove()
         {
             Orientation currentPos = read_Position();
 
-            Task<bool> elStartFlag;
-            Task<bool> elFinishFlag;
+            bool elStartFlag;
+            bool elFinishFlag;
 
             Orientation elStart = new Orientation(currentPos.Azimuth, 0); ;
             Orientation elFinish = new Orientation(currentPos.Azimuth, 90);
@@ -790,7 +780,7 @@ namespace ControlRoomApplication.Controllers
 
             elFinishFlag = Move_to_orientation(elFinish, elStart);
 
-            if(!elStartFlag.GetAwaiter().GetResult() || !elFinishFlag.GetAwaiter().GetResult())
+            if(!elStartFlag || !elFinishFlag)
             {
                 throw new Exception();
             }
@@ -799,25 +789,10 @@ namespace ControlRoomApplication.Controllers
         }
         
         /// <summary>
-        /// Custom Orientaion Movement script. Used to move telescope to a specific orientation
-        /// </summary>
-        /// <param name="azimuthPos"></param>
-        /// <returns></returns>
-        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
-        {
-            Orientation currentPos = read_Position();
-
-            Orientation movement = new Orientation(azimuthPos, elevationPos);
-
-            // Move to desired azimuth coordinate
-            return Move_to_orientation(movement, currentPos);
-        }
-        
-        /// <summary>
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
         /// </summary>
-        public override Task<bool> Full_360_CCW_Rotation()
+        public override bool Full_360_CCW_Rotation()
         {
             Orientation current = read_Position();
             Orientation finish;
@@ -839,13 +814,13 @@ namespace ControlRoomApplication.Controllers
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The clockwise direction
         /// </summary>
-        public override Task<bool> Full_360_CW_Rotation()
+        public override bool Full_360_CW_Rotation()
         {
             Orientation current = read_Position();
             Orientation start = new Orientation(0, 0);
             Orientation finish = new Orientation(360, 0);
 
-            if (!Move_to_orientation(start, current).GetAwaiter().GetResult() || !Move_to_orientation(finish, start).GetAwaiter().GetResult())
+            if (!Move_to_orientation(start, current) || !Move_to_orientation(finish, start))
             {
                 throw new Exception();
             }
@@ -855,7 +830,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// This is a script that is called when we want to move the telescope to the CW hardware stop
         /// </summary>
-        public override Task<bool> Hit_CW_Hardstop()
+        public override bool Hit_CW_Hardstop()
         {
             Orientation current = read_Position();
             Orientation hardstop = new Orientation(370, current.Elevation);
@@ -866,7 +841,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// This is a script that is called when we want to move the telescope to the CCW hardware stop
         /// </summary>
-        public override Task<bool> Hit_CCW_Hardstop()
+        public override bool Hit_CCW_Hardstop()
         {
             Orientation current = read_Position();
             Orientation hardstop = new Orientation(-10, current.Elevation);
@@ -880,7 +855,7 @@ namespace ControlRoomApplication.Controllers
         /// Precondition: The telescope just hit the clockwise hardstop
         /// Postcondition: The telescope will be placed at 360 degrees azimuth (safe spot away from hard stop)
         /// </summary>
-        public override Task<bool> Recover_CW_Hardstop()
+        public override bool Recover_CW_Hardstop()
         {
             Orientation current = read_Position();
             Orientation recover = new Orientation(360, current.Elevation);
@@ -894,36 +869,12 @@ namespace ControlRoomApplication.Controllers
         /// Precondition: The telescope just hit the counter clockwise hardstop
         /// Postcondition: The telescope will be placed at 0 degrees azimuth (safe spot away from hard stop)
         /// </summary>
-        public override Task<bool> Recover_CCW_Hardstop()
+        public override bool Recover_CCW_Hardstop()
         {
             Orientation current = read_Position();
             Orientation recover = new Orientation(0, current.Elevation);
 
             return Move_to_orientation(recover, current);
-        }
-
-        /// <summary>
-        /// This script hits the two azimuth hardstops, first the clockwise one
-        /// WARNING: DO NOT CALL THIS SCRIPT UNLESS YOU ARE ABSOLUTELY SURE
-        /// </summary>
-        public override Task<bool> Hit_Hardstops()
-        {
-            // This will be one of the only functions that will always override the limit switch
-            // However, it will stop need an override for the rest of the sensors
-            Orientation current = read_Position();
-            Orientation hitClockwiseHardstop = new Orientation(375, current.Elevation);
-
-            Task<bool> clockwiseMove = Move_to_orientation(hitClockwiseHardstop, current);
-
-            if (!clockwiseMove.GetAwaiter().GetResult())
-            {
-                throw new Exception();
-            }
-
-            current = read_Position();
-            Orientation hitCounterHardstop = new Orientation(-15, current.Elevation);
-
-            return Move_to_orientation(hitCounterHardstop, current);
         }
 
         /// <summary>
@@ -937,9 +888,8 @@ namespace ControlRoomApplication.Controllers
         public override bool Configure_MCU(double startSpeedRPMAzimuth, double startSpeedRPMElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation) {
             return MCU.Configure_MCU(
                     new MCUConfigurationAxys() { StartSpeed = startSpeedRPMAzimuth, HomeTimeoutSec = homeTimeoutSecondsAzimuth },
-                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true },
-                    0
-                ).GetAwaiter().GetResult();
+                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true }
+                );
         }
 
         /// <summary>
@@ -952,21 +902,17 @@ namespace ControlRoomApplication.Controllers
             else return MCU.read_Position();
         }
 
-        public ushort[] readModbusReregs(ushort start, ushort length) {
-            return MCU.readModbusReregs( start , length );
-        }
-
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
         /// see <see cref="MCUConstants.MCUStatusBitsMSW"/> for description of each bit
         /// </summary>
-        public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
             ushort start = 0;
             if(axis == RadioTelescopeAxisEnum.ELEVATION) {
                 start = 10;
             }
-            ushort[] data = MCU.readModbusReregs( start , 2 );
+            ushort[] data = MCU.ReadMCURegisters(start , 2);
             bool[] target = new bool[32];
             for(int i = 0; i < 16; i++) {
                 target[i] = ((data[0] >> i) & 1) == 1;
@@ -981,7 +927,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override bool Cancel_move() {
-            return MCU.Cancel_move(2);
+            return MCU.Cancel_move();
         }
 
         /// <summary>
@@ -989,17 +935,11 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override bool ControlledStop(  ) {
-            return MCU.ControlledStop(2);
+            return MCU.ControlledStop();
         }
 
         public override bool ImmediateStop() {
-            return MCU.ImmediateStop(2);
-        }
-
-        // Is called when the PLC and/or MCU is shutdown, stows the telescope
-        public override bool Shutdown_PLC_MCU()
-        {
-            return Stow().GetAwaiter().GetResult();
+            return MCU.ImmediateStop();
         }
 
         /// <summary>
@@ -1019,11 +959,11 @@ namespace ControlRoomApplication.Controllers
                 );
             }
 
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
         }
 
 
-        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
             int positionTranslationAZ, positionTranslationEL;
 
@@ -1045,7 +985,7 @@ namespace ControlRoomApplication.Controllers
             else if(telescopeType == RadioTelescopeTypeEnum.NONE)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": ERROR: Invalid Telescope Type!");
-                return Task.FromResult(false);
+                return false;
             }
 
             positionTranslationAZ = ConversionHelper.DegreesToSteps(azimuthOrientationMovement, MotorConstants.GEARING_RATIO_AZIMUTH);
@@ -1074,34 +1014,23 @@ namespace ControlRoomApplication.Controllers
         /// <param name="ELPositive"></param>
         /// <returns></returns>
         public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool ELPositive) {
-            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive,2);
+            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive);
         }
 
         public override bool Stop_Jog() {
-            return MCU.Cancel_move(2);
+            return MCU.Cancel_move();
         }
 
-        public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL ,2).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        /// move both axisi to 0,0 and zero out the MCU position data, after this comand is run a comand should be sent to the absolute encoders to zero out their position should be 
-        /// </summary>
-        /// <returns></returns>
-        public override Task<bool> Home() {
-            return HomeBothAxyes();
+        public bool send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL);
         }
 
         /// <summary>
-        /// home both axsis of the RT
+        /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
+        /// the absolute encoders.
         /// </summary>
-        /// <returns></returns>
-        public async Task<bool> HomeBothAxyes() {
-            //place holder function until MCU homing functionality can be tested
-            //this method will also likley undego signifigant change once the hardeware configuration is locked down
-            int PRIORITY = 2;
-
+        /// <returns>True if homing was successful, false if it failed</returns>
+        public override bool HomeTelescope() {
             // We only want to perform this movement if the telescope has hard stops, because the range of motion is 0-375. That gives
             // us 15 degrees of overlap, so we want to make sure we aren't hitting a limit switch
             if (telescopeType == RadioTelescopeTypeEnum.HARD_STOPS)
@@ -1121,31 +1050,31 @@ namespace ControlRoomApplication.Controllers
                 if (ZeroOne & ZeroTwo)
                 {//very close to 0 degrees 
                  //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     if (limitSwitchData.Azimuth_CW_Limit)
                     {// we were actually at 360 and need to go back towards 0
                         JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     }
                 }
                 else if (ZeroOne & !ZeroTwo)
                 {//350 to 360 or -10 to 0
                  //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(-20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(-20, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     if (limitSwitchData.Azimuth_CCW_Limit)
                     {// we were actually less than 0 and need to go back past 0
                         JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(25, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(25, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     }
                 }
                 else if (!ZeroOne & ZeroTwo)
                 {//0 to 10   or 360 to 370
                  //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     if (limitSwitchData.Azimuth_CW_Limit)
                     {// we were actually at 360 and need to go back towards 0
                         JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     }
                 }
                 else
@@ -1157,20 +1086,18 @@ namespace ControlRoomApplication.Controllers
             }
 
             bool ELHome = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME]);
-            MCU.HomeBothAxyes( true , ELHome , 0.25 , PRIORITY ).Wait();
+            MCU.HomeBothAxyes( true , ELHome , 0.25);
 
             return true;
         }
 
         public override async Task<bool> JogOffLimitSwitches() {
-            int PRIORITY = 0;
-
             var AZTAsk = Task.Run( () => {
                int AZstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_AZIMUTH );
-               var timeoutMS = MCUManager.estimateTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
+               var timeoutMS = MCUManager.EstimateMovementTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
                var timeout = new CancellationTokenSource( timeoutMS );
                 if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
-                    MCU.Send_Jog_command(0.2, true , 0, false, PRIORITY );
+                    MCU.Send_Jog_command(0.2, true , 0, false);
                    while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Azimuth_CCW_Limit) {
@@ -1181,7 +1108,7 @@ namespace ControlRoomApplication.Controllers
                    Cancel_move();
                    return false;
                } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit) {
-                    MCU.Send_Jog_command(0.2, false , 0, false, PRIORITY );
+                    MCU.Send_Jog_command(0.2, false , 0, false);
                    while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Azimuth_CW_Limit) {
@@ -1197,10 +1124,10 @@ namespace ControlRoomApplication.Controllers
             } );
             var ELTAsk = Task<bool>.Run( ()  => {
                 int ELstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_ELEVATION );
-                var timeoutMS = MCUManager.estimateTime( ELstepSpeed , 50 , ConversionHelper.DegreesToSteps( 30 , MotorConstants.GEARING_RATIO_ELEVATION ) );
+                var timeoutMS = MCUManager.EstimateMovementTime( ELstepSpeed , 50 , ConversionHelper.DegreesToSteps( 30 , MotorConstants.GEARING_RATIO_ELEVATION ) );
                 var timeout = new CancellationTokenSource( timeoutMS );
                 if(limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) {
-                    MCU.Send_Jog_command( 0 , false , 0.2 , false , PRIORITY );
+                    MCU.Send_Jog_command( 0 , false , 0.2 , false);
                     while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Elevation_Lower_Limit) {
@@ -1211,7 +1138,7 @@ namespace ControlRoomApplication.Controllers
                     Cancel_move();
                     return false;
                 } else if(!limitSwitchData.Elevation_Lower_Limit && limitSwitchData.Elevation_Upper_Limit) {
-                    MCU.Send_Jog_command( 0 , false , 0.2 , true , PRIORITY );
+                    MCU.Send_Jog_command( 0 , false , 0.2 , true);
                     while(!timeout.IsCancellationRequested) {
                         Task.Delay( 33 ).Wait();
                         if(!limitSwitchData.Elevation_Upper_Limit) {
@@ -1230,9 +1157,7 @@ namespace ControlRoomApplication.Controllers
             ELTAsk.GetAwaiter().GetResult();
             return true;
         }
-
-
-
+        
         protected override bool TestIfComponentIsAlive() {
 
             bool PLC_alive, MCU_alive;

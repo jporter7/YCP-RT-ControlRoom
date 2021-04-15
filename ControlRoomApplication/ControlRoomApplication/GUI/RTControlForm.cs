@@ -12,7 +12,7 @@ using ControlRoomApplication.Validation;
 using Microsoft.VisualBasic;
 using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
-
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Main
 {
@@ -91,7 +91,9 @@ namespace ControlRoomApplication.Main
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
             CurrentAppointment.CelestialBody = new CelestialBody();
             CurrentAppointment.CelestialBody.Coordinate = new Coordinate(0, 0);
-            CurrentAppointment.Orientation = rtController.GetAbsoluteOrientation();
+
+            // TODO: Have this get the absolute orientation when it starts up
+            CurrentAppointment.Orientation = new Entities.Orientation(0, 0);//rtController.GetAbsoluteOrientation();
             CurrentAppointment.Telescope = controlRoom.RadioTelescopes.Find(x => x.Id == rtId);
             CurrentAppointment.User = ControlRoomUser;
 
@@ -194,10 +196,6 @@ namespace ControlRoomApplication.Main
 
             this.FormClosing += FreeControlForm_Closing;
 
-          //  var threads = controlRoom.RTControllerManagementThreads.Where<RadioTelescopeControllerManagementThread>(t => t.RTController == rtController).ToList<RadioTelescopeControllerManagementThread>();
-         //   threads[0].ManagementThread.Abort();
-           // controlRoom.RTControllerManagementThreads.Where<RadioControllerManagementThread>( t => t.R == rtController));
-
             logger.Info(Utilities.GetTimeStamp() + ": Radio Telescope Control Form Initalized");
         }
 
@@ -212,8 +210,6 @@ namespace ControlRoomApplication.Main
 
             timer1.Enabled = false;
         }
-       // logger.Info(Utilities.GetTimeStamp() + ": Adding RadioTelescope Controller");
-       //MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
 
         private void PosDecButton_Click(object sender, EventArgs e)
         {
@@ -305,134 +301,25 @@ namespace ControlRoomApplication.Main
             string RA = TargetCoordinate.RightAscension.ToString("0.##");
             string Dec = TargetCoordinate.Declination.ToString("0.##");
             logger.Info(Utilities.GetTimeStamp() + ": UpdateText, Target Coordinate = RA:" + RA + ", Dec:" + Dec);
-            SetTargetRAText(RA);
-            SetTargetDecText(Dec);
+            
+            TargetRATextBox.Text = RA;
+            TargetDecTextBox.Text = Dec;
+
             errorLabel.Text = "Free Control for Radio Telescope " + rtId.ToString();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             Entities.Orientation currentOrienation = rtController.GetCurrentOrientation();
-            SetAZText(String.Format("{0:N2}",currentOrienation.Azimuth));
-            SetELText(String.Format("{0:N2}", currentOrienation.Elevation));
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
-            SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
-            SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
-            
-        }
 
-        delegate void SetTargetRATextCallback(string text);
-        private void SetTargetRAText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (TargetRATextBox.InvokeRequired)
-            {
-                SetTargetRATextCallback d = new SetTargetRATextCallback(SetTargetRAText);
-                Invoke(d, new object[] { text });
-            }
-            else
-            {
-                TargetRATextBox.Text = text;
-            }
-        }
+            Utilities.WriteToGUIFromThread(this, () => {
+                label4.Text = String.Format("{0:N2}", currentOrienation.Azimuth);
+                label5.Text = String.Format("{0:N2}", currentOrienation.Elevation);
 
-        delegate void SetTargetDecTextCallback(string text);
-        private void SetTargetDecText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (TargetDecTextBox.InvokeRequired)
-            {
-                SetTargetDecTextCallback d = new SetTargetDecTextCallback(SetTargetDecText);
-                Invoke(d, new object[] { text });
-            }
-            else
-            {
-                TargetDecTextBox.Text = text;
-            }
-        }
-
-        delegate void SetActualRATextCallback(string text);
-        private void SetActualRAText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (ActualRATextBox.InvokeRequired)
-            {
-                SetActualRATextCallback d = new SetActualRATextCallback(SetActualRAText);
-                try
-                {
-                    Invoke(d, new object[] { text });
-
-                }
-                catch { }
-            }
-            else
-            {
-                ActualRATextBox.Text = text;
-            }
-        }
-
-        delegate void SetActualDecTextCallback(string text);
-        private void SetActualDecText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (ActualDecTextBox.InvokeRequired)
-            {
-                SetActualDecTextCallback d = new SetActualDecTextCallback(SetActualDecText);
-                try
-                {
-                    Invoke(d, new object[] { text });
-
-                }
-                catch { }
-            }
-            else
-            {
-                ActualDecTextBox.Text = text;
-            }
-        }
-
-
-        delegate void SetAZTextCallback(string text);
-        private void SetAZText(string text) {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (label4.InvokeRequired) {
-                SetAZTextCallback d = new SetAZTextCallback(SetAZText);
-                try {
-                    Invoke(d, new object[] { text });
-
-                }
-                catch { }
-            } else {
-                label4.Text = text;
-            }
-        }
-
-
-        delegate void SetELTextCallback(string text);
-        private void SetELText(string text) {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (label5.InvokeRequired) {
-                SetELTextCallback d = new SetELTextCallback(SetELText);
-                try {
-                    Invoke(d, new object[] { text });
-
-                }
-                catch { }
-            } else {
-                label5.Text = text;
-            }
+                ActualRATextBox.Text = ConvertedPosition.RightAscension.ToString("0.##");
+                ActualDecTextBox.Text = ConvertedPosition.Declination.ToString("0.##");
+            });
         }
 
         private void oneForthButton_Click(object sender, EventArgs e)
@@ -465,10 +352,6 @@ namespace ControlRoomApplication.Main
 
         private void UpdateIncrementButtons()
         {
-            //oneForthButton.BackColor = System.Drawing.Color.LightGray;
-            //oneButton.BackColor = System.Drawing.Color.LightGray;
-            //fiveButton.BackColor = System.Drawing.Color.LightGray;
-            //tenButton.BackColor = System.Drawing.Color.LightGray;
 
             switch (Increment)
             {
@@ -598,7 +481,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Stow().GetAwaiter();
+                        rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
                     });
                     //Stow Script selected (index 0 of control script combo)
                     break;
@@ -606,7 +489,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.FullElevationMove().GetAwaiter();
+                        tele.PLCDriver.FullElevationMove();
                     });
                     //Full Elevation selected (index 1 of control script combo)
                     break;
@@ -614,7 +497,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Full_360_CW_Rotation().GetAwaiter();
+                        tele.PLCDriver.Full_360_CW_Rotation();
                     });
                     //Full 360 CW selected (index 2 of control script combo)
                     break;
@@ -622,7 +505,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Full_360_CCW_Rotation().GetAwaiter();
+                        tele.PLCDriver.Full_360_CCW_Rotation();
                     });
                     //Full 360 CCW  selected (index 3 of control script combo)
                     break;
@@ -630,7 +513,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Thermal_Calibrate().GetAwaiter();
+                        rtController.ThermalCalibrateRadioTelescope();
                     });
                     //Thermal Calibration selected (index 4 of control script combo)
                     break;
@@ -638,7 +521,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.SnowDump().GetAwaiter();
+                        tele.PLCDriver.SnowDump();
                     });
                     //Snow Dump selected (index 5 of control script combo)
                     break;
@@ -646,7 +529,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.RecoverFromLimitSwitch().GetAwaiter();
+                        tele.PLCDriver.RecoverFromLimitSwitch();
                     });
                     //Recover from Limit Switch (index 6 of control script combo)
                     break;
@@ -654,7 +537,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Recover_CW_Hardstop().GetAwaiter();
+                        tele.PLCDriver.Recover_CW_Hardstop();
                     });
                     //Recover from Clockwise Hardstop (index 7 of control script combo)
                     break;
@@ -662,14 +545,14 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Recover_CCW_Hardstop().GetAwaiter();
+                        tele.PLCDriver.Recover_CCW_Hardstop();
                     });
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
                     break;
                 case 10:
                     thread = new Thread(() =>
                     {
-                        tele.PLCDriver.Home();
+                        tele.PLCDriver.HomeTelescope();
                     });
                     //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
                     break;
@@ -710,8 +593,8 @@ namespace ControlRoomApplication.Main
                         // Only run script if cancel button was not hit
                         if (!input.Equals(""))
                         {
-                            tele.PLCDriver.CustomOrientationMove(azimuthPos, elevationPos);
-
+                            Entities.Orientation moveTo = new Entities.Orientation(azimuthPos, elevationPos);
+                            rtController.MoveRadioTelescopeToOrientation(moveTo);
                         }
                         else 
                         {
@@ -768,7 +651,6 @@ namespace ControlRoomApplication.Main
                 if (Validator.ValidateSpeed(speed))
                 {
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
                     rtController.StartRadioTelescopeAzimuthJog(speed, false);
@@ -786,8 +668,6 @@ namespace ControlRoomApplication.Main
 
         private void subJogButton_Up( object sender , MouseEventArgs e ) {
             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
-            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //Stop Move
             ExecuteCorrectStop();
@@ -821,8 +701,6 @@ namespace ControlRoomApplication.Main
 
         private void plusJogButton_UP( object sender , MouseEventArgs e ) {
             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
-            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //  Stop Move
             ExecuteCorrectStop();
@@ -860,36 +738,6 @@ namespace ControlRoomApplication.Main
                 System.Diagnostics.Process.Start(filename);
         }
 
-        private void groupBox2_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ActualPositionLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TargetPositionLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void RAIncGroupbox_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void manualGroupBox_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void plusElaButton_Down(object sender, MouseEventArgs e ){
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
@@ -916,7 +764,6 @@ namespace ControlRoomApplication.Main
 
         private void plusElaButton_Up( object sender , MouseEventArgs e ) {
             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
 
             //  Stop Move
             ExecuteCorrectStop();
@@ -949,20 +796,8 @@ namespace ControlRoomApplication.Main
         private void subElaButton_Up( object sender , MouseEventArgs e ) {
              logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
 
-            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
             //  Stop Move
             ExecuteCorrectStop();
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox4_Enter(object sender, EventArgs e)
-        {
-
         }
 
         private void finalizeSettings_Click(object sender, EventArgs e)
@@ -1094,11 +929,8 @@ namespace ControlRoomApplication.Main
                 stopScanButton.BackColor = System.Drawing.Color.Red;
 
                 rtController.RadioTelescope.SpectraCyberController.StartScan(CurrentAppointment);
-                //  controlRoom.RTControllerManagementThreads.Find(t => t.RTController.RadioTelescope.Id == rtId).StartReadingData(CurrentAppointment);
                 logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has started");
-            
 
-         
         }
 
         private void stopScan_Click(object sender, EventArgs e)
@@ -1117,27 +949,6 @@ namespace ControlRoomApplication.Main
 
             stopScanButton.Enabled = false;
             stopScanButton.BackColor = System.Drawing.Color.DarkGray;
-
-        }
-
-
-        private void label11_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label9_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label12_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void FreeControlForm_Load(object sender, EventArgs e)
-        {
 
         }
 
@@ -1181,34 +992,6 @@ namespace ControlRoomApplication.Main
             }
             formData.DCGainIndex = DCGain.SelectedIndex;
             
-        }
-
-        private void lblFrequency_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblIFGain_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblIFGain_MouseHover(object sender, EventArgs e)
-        {
-            //this.IFGainToolTip.Show("IFGain must be between\n " +
-                //"10.00 and 25.75 decibles.", lblIFGain);
-        }
-
-        private void lblFrequency_MouseHover(object sender, EventArgs e)
-        {
-            //this.frequencyToolTip.Show("Frequency must be a non-negative\n " +
-                //"value, in hertz (>= 0 Hz)", lblFrequency);
-        }
-
-        private void label12_MouseHover(object sender, EventArgs e)
-        {
-            //this.offsetVoltageToolTip.Show("Offset voltage must be\n " +
-                //"between 0 - 4.095 Volts", label12);
         }
 
         private void frequency_TextChanged(object sender, EventArgs e)
@@ -1316,11 +1099,6 @@ namespace ControlRoomApplication.Main
             return (scanTypeComboBox.SelectedIndex != 0 && integrationStepCombo.SelectedIndex != 0 &&
                 DCGain.SelectedIndex != 0 && offsetVoltValid && IFGainValid && frequencyValid);
           
-        }
-
-        private void plusJogButton_Click(object sender, EventArgs e)
-        {
-
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e)

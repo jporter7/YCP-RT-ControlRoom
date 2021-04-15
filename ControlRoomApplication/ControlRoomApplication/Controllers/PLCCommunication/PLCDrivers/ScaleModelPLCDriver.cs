@@ -226,14 +226,8 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Shutdown_PLC_MCU() {
+        public override bool Thermal_Calibrate() {
             return true;
-
-        }
-
-        public override Task<bool> Thermal_Calibrate() {
-            return null;
-
         }
         
         public override bool Configure_MCU( double startSpeedAzimuth , double startSpeedElevation , int homeTimeoutAzimuth , int homeTimeoutElevation ) {
@@ -291,10 +285,8 @@ namespace ControlRoomApplication.Controllers {
 
 
 
-        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
-
-
             int positionTranslationAZ, positionTranslationEL;
             positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
@@ -308,81 +300,71 @@ namespace ControlRoomApplication.Controllers {
 
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return new Task<bool> (() => send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL));
+            return send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL);
 
         }
 
-        public override Task<bool> SnowDump()
+        public override bool SnowDump()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> Stow()
+        public override bool Full_360_CCW_Rotation()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> Full_360_CCW_Rotation()
+        public override bool HitAzimuthLeftLimitSwitch()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> HitAzimuthLeftLimitSwitch()
+        public override bool Full_360_CW_Rotation()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> Full_360_CW_Rotation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> HitAzimuthRightLimitSwitch()
+        public override bool HitAzimuthRightLimitSwitch()
         {
             throw new NotImplementedException();
         }
       
-        public override Task<bool> Recover_CW_Hardstop()
+        public override bool Recover_CW_Hardstop()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> HitElevationLowerLimitSwitch()
+        public override bool HitElevationLowerLimitSwitch()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> HitElevationUpperLimitSwitch()
+        public override bool HitElevationUpperLimitSwitch()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> RecoverFromLimitSwitch()
+        public override bool RecoverFromLimitSwitch()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> FullElevationMove()
+        public override bool FullElevationMove()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> Hit_CW_Hardstop()
+        public override bool Hit_CW_Hardstop()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> Hit_CCW_Hardstop()
+        public override bool Hit_CCW_Hardstop()
         {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> Recover_CCW_Hardstop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> Hit_Hardstops()
+        public override bool Recover_CCW_Hardstop()
         {
             throw new NotImplementedException();
         }
@@ -401,12 +383,12 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {//set 
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis ) {//set 
             bool[] stuf = new bool[33];
             for(int i = 0; i < 32; i++) {
                 stuf[i] = true;
             }
-            return Task.Run( () => stuf );
+            return stuf;
         }
 
         protected override bool TestIfComponentIsAlive() {
@@ -414,7 +396,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override Task<bool> Home() {
+        public override bool HomeTelescope() {
             throw new NotImplementedException();
         }
 
@@ -428,11 +410,6 @@ namespace ControlRoomApplication.Controllers {
         }
 
         public override void setTelescopeType(RadioTelescopeTypeEnum type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
         {
             throw new NotImplementedException();
         }
