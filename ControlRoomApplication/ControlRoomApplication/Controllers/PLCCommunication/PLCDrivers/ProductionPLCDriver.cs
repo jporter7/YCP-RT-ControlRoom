@@ -799,21 +799,6 @@ namespace ControlRoomApplication.Controllers
         }
         
         /// <summary>
-        /// Custom Orientaion Movement script. Used to move telescope to a specific orientation
-        /// </summary>
-        /// <param name="azimuthPos"></param>
-        /// <returns></returns>
-        public override bool CustomOrientationMove(double azimuthPos, double elevationPos)
-        {
-            Orientation currentPos = read_Position();
-
-            Orientation movement = new Orientation(azimuthPos, elevationPos);
-
-            // Move to desired azimuth coordinate
-            return Move_to_orientation(movement, currentPos);
-        }
-        
-        /// <summary>
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
         /// </summary>

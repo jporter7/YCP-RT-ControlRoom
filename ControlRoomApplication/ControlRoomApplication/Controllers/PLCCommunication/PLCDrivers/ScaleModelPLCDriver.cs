@@ -424,11 +424,6 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override bool CustomOrientationMove(double azimuthPos, double elevationPos)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Resets any errors the MCU encounters. This could be for either of the motors.
         /// This has not been implemented on the scale model.

@@ -90,7 +90,9 @@ namespace ControlRoomApplication.Main
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
             CurrentAppointment.CelestialBody = new CelestialBody();
             CurrentAppointment.CelestialBody.Coordinate = new Coordinate(0, 0);
-            CurrentAppointment.Orientation = rtController.GetAbsoluteOrientation();
+
+            // TODO: Have this get the absolute orientation when it starts up
+            CurrentAppointment.Orientation = new Entities.Orientation(0, 0);//rtController.GetAbsoluteOrientation();
             CurrentAppointment.Telescope = controlRoom.RadioTelescopes.Find(x => x.Id == rtId);
             CurrentAppointment.User = ControlRoomUser;
 
@@ -708,8 +710,8 @@ namespace ControlRoomApplication.Main
                         // Only run script if cancel button was not hit
                         if (!input.Equals(""))
                         {
-                            tele.PLCDriver.CustomOrientationMove(azimuthPos, elevationPos);
-
+                            Entities.Orientation moveTo = new Entities.Orientation(azimuthPos, elevationPos);
+                            rtController.MoveRadioTelescopeToOrientation(moveTo);
                         }
                         else 
                         {

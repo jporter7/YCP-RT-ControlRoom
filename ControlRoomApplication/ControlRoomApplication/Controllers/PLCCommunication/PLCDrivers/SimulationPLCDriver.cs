@@ -226,11 +226,6 @@ namespace ControlRoomApplication.Controllers
             driver.setTelescopeType(type);
         }
 
-        public override bool CustomOrientationMove(double azimuthPos, double elevationPos)
-        {
-            return driver.CustomOrientationMove(azimuthPos, elevationPos);
-        }
-
         /// <summary>
         /// Resets any errors the MCU encounters. This could be for either of the motors.
         /// </summary>
