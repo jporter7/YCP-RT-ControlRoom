@@ -63,6 +63,7 @@ namespace ControlRoomApplication.Main
 
             // set form data object
             formData = controlFormData;
+            formData.speed = 1;
         
             // set form data
             controlScriptsCombo.SelectedIndex = formData.controlScriptIndex;
@@ -180,6 +181,8 @@ namespace ControlRoomApplication.Main
             immediateRadioButton.Enabled = formData.manualControlEnabled;
             speedTextBox.Enabled = formData.manualControlEnabled;
             speedTrackBar.Enabled = formData.manualControlEnabled;
+            speedTrackBar.Value = 10;
+
 
             //Initialize Start and Stop Scan buttons as disabled
             spectraEditActive = true;
@@ -1108,6 +1111,11 @@ namespace ControlRoomApplication.Main
                 rtController.RadioTelescope.SpectraCyberController.StopScan();
                 logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has stopped");
             }
+        }
+
+        private void speedTextBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

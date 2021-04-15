@@ -13,7 +13,7 @@ using ControlRoomApplication.Main;
 using System.Reflection;
 using System.Data.Entity.Core.Objects;
 using ControlRoomApplication.Util;
-
+using System.Threading;
 
 namespace ControlRoomApplication.Database
 {
@@ -546,33 +546,54 @@ namespace ControlRoomApplication.Database
                     appt._Status.Equals(AppointmentStatusEnum.REQUESTED) ||
                     appt._Status.Equals(AppointmentStatusEnum.SCHEDULED);
         }
+
         /// <summary>
         /// add an array of sensor data to the apropriat table
         /// </summary>
         /// <param name="temp"></param>
-        public static void AddSensorData( List<Temperature> temp ) {
-            if(temp.Count <= 0) { return; }
-            if(!USING_REMOTE_DATABASE) {
-                using(RTDbContext Context = InitializeDatabaseContext()) {
-                    Context.Temperatures.AddRange( temp );
-                    //foreach(Temperature tump in temp) {}
-                    SaveContext( Context );
+        public static void AddSensorData(Temperature[] temp, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+                if (temp.Length <= 0) { return; }
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        Context.Temperatures.AddRange(temp);
+                        //foreach(Temperature tump in temp) {}
+                        SaveContext(Context);
+                    }
                 }
-            }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
         }
         /// <summary>
         /// add an array of sensor data to the apropriat table
         /// </summary>
         /// <param name="acc"></param>
-        public static void AddSensorData( List<Acceleration> acc ) {
-            if(acc.Count <= 0) { return; }
-            if(!USING_REMOTE_DATABASE) {
-                using(RTDbContext Context = InitializeDatabaseContext()) {
-                    Context.Accelerations.AddRange( acc );
-                    //foreach(Temperature tump in temp) {}
-                    SaveContext( Context );
+        public static void AddSensorData(Acceleration[] acc, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+                if (acc.Length <= 0) { return; }
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        Context.Accelerations.AddRange(acc);
+                        //foreach(Temperature tump in temp) {}
+                        SaveContext(Context);
+                    }
                 }
-            }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
         }
         /// <summary>
         /// get acc between starttime and now from sensor location loc

@@ -654,6 +654,7 @@ namespace ControlRoomApplication.Main
             this.speedTextBox.ReadOnly = true;
             this.speedTextBox.Size = new System.Drawing.Size(69, 20);
             this.speedTextBox.TabIndex = 10;
+            this.speedTextBox.TextChanged += new System.EventHandler(this.speedTextBox_TextChanged);
             // 
             // label2
             // 

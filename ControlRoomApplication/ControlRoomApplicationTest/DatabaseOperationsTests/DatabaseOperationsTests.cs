@@ -414,7 +414,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveTemperature()
         {
-            List<Temperature> temp = new List<Temperature>();
+            Temperature[] temp = new Temperature[1];
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
@@ -423,9 +423,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             //Generate Temperature
             Temperature t1 = Temperature.Generate(dateTime, 0.0, loc1);
 
-            temp.Add(t1);
+            temp[0] = (t1);
 
-            DatabaseOperations.AddSensorData(temp);
+            DatabaseOperations.AddSensorData(temp, true);
             List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime - 1, dateTime + 1, loc1);
 
             Assert.AreEqual(tempReturn.Count, 1);
@@ -440,7 +440,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveTemperatures()
         {
-            List<Temperature> temp = new List<Temperature>();
+            Temperature[] temp = new Temperature[2];
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
@@ -450,10 +450,10 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Temperature t1 = Temperature.Generate(dateTime, 500.0, loc1);
             Temperature t2 = Temperature.Generate(dateTime, 999.0, loc1);
 
-            temp.Add(t1);
-            temp.Add(t2);
+            temp[0] = (t1);
+            temp[1] = (t2);
 
-            DatabaseOperations.AddSensorData(temp);
+            DatabaseOperations.AddSensorData(temp, true);
             List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime - 1, dateTime + 1, loc1);
 
             Assert.AreEqual(tempReturn.Count, 2);
@@ -474,7 +474,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveAcceleration()
         {
-            List<Acceleration> acc = new List<Acceleration>();
+            Acceleration[] acc = new Acceleration[1];
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
@@ -483,9 +483,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             //Generate Acceleration
             Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
 
-            acc.Add(a1);
+            acc[0] = a1;
 
-            DatabaseOperations.AddSensorData(acc);
+            DatabaseOperations.AddSensorData(acc, true);
             List<Acceleration> accReturn = DatabaseOperations.GetACCData(dateTime1 - 1, dateTime1 + 1, loc1);
 
             Assert.AreEqual(accReturn.Count, 1);
@@ -502,7 +502,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveAccelerations()
         {
-            List<Acceleration> acc = new List<Acceleration>();
+            Acceleration[] acc = new Acceleration[2];
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
@@ -512,11 +512,11 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
             Acceleration a2 = Acceleration.Generate(dateTime1, 2, 2, 2, loc1);
 
-            acc.Add(a1);
-            acc.Add(a2);
+            acc[0] = (a1);
+            acc[1] = (a2);
 
 
-            DatabaseOperations.AddSensorData(acc);
+            DatabaseOperations.AddSensorData(acc, true);
             List<Acceleration> accReturn = DatabaseOperations.GetACCData(dateTime1 - 1, dateTime1 + 1, loc1);
 
             Assert.AreEqual(accReturn.Count, 2);
