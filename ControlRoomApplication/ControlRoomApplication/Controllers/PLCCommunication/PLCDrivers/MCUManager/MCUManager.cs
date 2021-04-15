@@ -724,7 +724,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
-        public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL) {
+        public bool MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL) {
             positionTranslationEL = -positionTranslationEL;
             mCUpositon.update(ReadMCURegisters(0, 16));
             var startPos =  mCUpositon as MCUPositonStore;
@@ -744,7 +744,6 @@ namespace ControlRoomApplication.Controllers {
             Task.Delay( 500 ).Wait();//wait for comand to be read
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
-                //var data = TryReadRegs( 0 , 12 ).GetAwaiter().GetResult();
                 if(!MotorsCurrentlyMoving()) {
                     ThisMove.timeout.Cancel();
                     WasLimitCancled = true;

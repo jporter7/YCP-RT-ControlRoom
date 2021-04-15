@@ -1076,7 +1076,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL).GetAwaiter().GetResult();
+            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL);
         }
 
         /// <summary>
@@ -1111,31 +1111,31 @@ namespace ControlRoomApplication.Controllers
                 if (ZeroOne & ZeroTwo)
                 {//very close to 0 degrees 
                  //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     if (limitSwitchData.Azimuth_CW_Limit)
                     {// we were actually at 360 and need to go back towards 0
                         JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     }
                 }
                 else if (ZeroOne & !ZeroTwo)
                 {//350 to 360 or -10 to 0
                  //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(-20, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(-20, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     if (limitSwitchData.Azimuth_CCW_Limit)
                     {// we were actually less than 0 and need to go back past 0
                         JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(25, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(25, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     }
                 }
                 else if (!ZeroOne & ZeroTwo)
                 {//0 to 10   or 360 to 370
                  //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     if (limitSwitchData.Azimuth_CW_Limit)
                     {// we were actually at 360 and need to go back towards 0
                         JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0).GetAwaiter().GetResult();
+                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0);
                     }
                 }
                 else
