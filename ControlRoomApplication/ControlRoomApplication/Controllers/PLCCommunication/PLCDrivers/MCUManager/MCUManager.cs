@@ -439,7 +439,7 @@ namespace ControlRoomApplication.Controllers {
         /// this function assums that you have alread told both Axisi to stop moving otherwise it will timeout
         /// </summary>
         /// <returns>false if the telescope was still running at the end of the timeout</returns>
-        private async Task<bool> WaitUntilStoppedPerAxis(bool is_AZ) {
+        private bool WaitUntilStoppedPerAxis(bool is_AZ) {
             if(is_AZ) {
                 try {
                     int mS_To_Decelerate = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
@@ -628,7 +628,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="ELHomeCW"></param>
         /// <param name="RPM"></param>
         /// <returns></returns>
-        public async Task<bool> HomeBothAxyes( bool AZHomeCW , bool ELHomeCW , double RPM) {
+        public bool HomeBothAxyes( bool AZHomeCW , bool ELHomeCW , double RPM) {
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_AZIMUTH );
             ushort ACCELERATION = 50;
@@ -873,7 +873,7 @@ namespace ControlRoomApplication.Controllers {
                     _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
-                    WaitUntilStoppedPerAxis( true ).GetAwaiter().GetResult();
+                    WaitUntilStoppedPerAxis( true );
                 } else if(RunningCommand.AZ_CW != AZClockwise) {//only Azimuth needs to change direction
                     for(int j = 0; j <= data3.Length - 1; j++) {
                         data3[j] = MCUMessages.ClearMove[j];//replace Azimuth portion of move with controled stop
@@ -881,7 +881,7 @@ namespace ControlRoomApplication.Controllers {
                     _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
-                    WaitUntilStoppedPerAxis( false ).GetAwaiter().GetResult();
+                    WaitUntilStoppedPerAxis( false );
                 }
             }
 

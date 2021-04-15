@@ -1147,7 +1147,7 @@ namespace ControlRoomApplication.Controllers
             }
 
             bool ELHome = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME]);
-            MCU.HomeBothAxyes( true , ELHome , 0.25).Wait();
+            MCU.HomeBothAxyes( true , ELHome , 0.25);
 
             return true;
         }
