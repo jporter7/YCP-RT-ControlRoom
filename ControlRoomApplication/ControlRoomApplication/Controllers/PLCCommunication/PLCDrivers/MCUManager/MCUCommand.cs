@@ -13,16 +13,6 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
     public class MCUCommand : IDisposable
     {
         /// <summary>
-        /// similar to priority to keep certian moves from overriding others, 0 is highest
-        /// </summary>
-        /// <remarks>
-        /// if 2 move with same priority conflict the one that is incoming will override the exsisting move
-        /// 0 is intended for emergency types of moves like software and hardware stops
-        /// 2 is user scheduald moves lie manual jogs,
-        /// 4 is normal moves like those comming from appointments
-        /// </remarks>
-        public int Move_Priority;
-        /// <summary>
         /// stores the data that is to be sent to the mcu
         /// </summary>
         public ushort[] commandData;
@@ -30,10 +20,6 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// high level information about the comands general purpose
         /// </summary>
         public MCUCommandType CommandType;
-        /// <summary>
-        /// time at which the comand was sent to the MCU
-        /// </summary>
-        public DateTime issued;
         /// <summary>
         /// true when comand has completed, used to determine when the next move can be sent
         /// </summary>
@@ -57,12 +43,10 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// </summary>
         /// <param name="data"></param>
         /// <param name="CMDType"></param>
-        public MCUCommand(ushort[] data, MCUCommandType CMDType, int priority)
+        public MCUCommand(ushort[] data, MCUCommandType CMDType)
         {
             CommandType = CMDType;
             commandData = data;
-            issued = DateTime.Now;
-            Move_Priority = priority;
         }
 
         /// <summary>
@@ -74,16 +58,14 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// <param name="ELCW"></param>
         /// <param name="AZSpeed"></param>
         /// <param name="ElSpeed"></param>
-        public MCUCommand(ushort[] data, MCUCommandType CMDType, int priority, bool AZCW, bool ELCW, int AZSpeed, int ElSpeed)
+        public MCUCommand(ushort[] data, MCUCommandType CMDType, bool AZCW, bool ELCW, int AZSpeed, int ElSpeed)
         {
             CommandType = CMDType;
             commandData = data;
-            issued = DateTime.Now;
             AZ_CW = AZCW;
             EL_CW = ELCW;
             AZ_Programed_Speed = AZSpeed;
             EL_Programed_Speed = ElSpeed;
-            Move_Priority = priority;
         }
 
         public CancellationTokenSource timeout;

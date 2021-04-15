@@ -42,8 +42,8 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// this value should not be changed from outside the MCU class
         /// </summary>
-        private MCUCommand RunningCommand= new MCUCommand(new ushort[20],MCUCommandType.CLEAR_LAST_MOVE,99) { completed = true };
-        private MCUCommand PreviousCommand = new MCUCommand( new ushort[20] , MCUCommandType.CLEAR_LAST_MOVE,99 ) { completed = true };
+        private MCUCommand RunningCommand= new MCUCommand(new ushort[20],MCUCommandType.CLEAR_LAST_MOVE) { completed = true };
+        private MCUCommand PreviousCommand = new MCUCommand( new ushort[20] , MCUCommandType.CLEAR_LAST_MOVE) { completed = true };
 
         private int McuPort;
         private string McuIp;
@@ -280,13 +280,12 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-
         /// <summary>
         /// clears the previos move comand from mthe PLC, only works for jog moves
         /// </summary>
         /// <returns></returns>
-        public bool Cancel_move(int priority) {
-            var cmd = new MCUCommand( MCUMessages.ClearMove , MCUCommandType.CLEAR_LAST_MOVE,priority ) { completed = false };
+        public bool Cancel_move() {
+            var cmd = new MCUCommand(MCUMessages.ClearMove, MCUCommandType.CLEAR_LAST_MOVE) { completed = false };
             Send_Generic_Command_And_Track( cmd ).GetAwaiter().GetResult();
             Wait_For_Stop_Motion( cmd );
             return true;
@@ -296,19 +295,19 @@ namespace ControlRoomApplication.Controllers {
         /// attempts to bring the Telescope to a controlled stop certian moves like Homeing are un affected by this
         /// </summary>
         /// <returns></returns>
-        public bool ControlledStop( int priority ) {
+        public bool ControlledStop() {
             if(RunningCommand.CommandType == MCUCommandType.JOG) {
-                Cancel_move( priority );
+                Cancel_move();
             } else {
-                var cmd = new MCUCommand( MCUMessages.HoldMove , MCUCommandType.HOLD_MOVE , priority ) { completed = false };
+                var cmd = new MCUCommand(MCUMessages.HoldMove , MCUCommandType.HOLD_MOVE) { completed = false };
                 Send_Generic_Command_And_Track( cmd ).GetAwaiter().GetResult();
                 Wait_For_Stop_Motion( cmd );
             }
             return true;
         }
 
-        public bool ImmediateStop( int priority ) {
-            Send_Generic_Command_And_Track( new MCUCommand( MCUMessages.ImmediateStop , MCUCommandType.IMMEDIATE_STOP , priority ) { completed = true } ).GetAwaiter().GetResult();
+        public bool ImmediateStop() {
+            Send_Generic_Command_And_Track(new MCUCommand( MCUMessages.ImmediateStop , MCUCommandType.IMMEDIATE_STOP) { completed = true } ).GetAwaiter().GetResult();
             return true;
         }
 
@@ -331,7 +330,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         public void ResetMCUErrors()
         {
-            Send_Generic_Command_And_Track(new MCUCommand(MCUMessages.ResetErrors, MCUCommandType.RESET_ERRORS, 0) { completed = true }).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track(new MCUCommand(MCUMessages.ResetErrors, MCUCommandType.RESET_ERRORS) { completed = true }).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -436,7 +435,6 @@ namespace ControlRoomApplication.Controllers {
             return new Orientation( ConversionHelper.StepsToDegrees( StepsAZ , MotorConstants.GEARING_RATIO_AZIMUTH ) , ConversionHelper.StepsToDegrees( StepsEL , MotorConstants.GEARING_RATIO_ELEVATION ) );
         }
 
-
         /// <summary>
         /// this function assums that you have alread told both Axisi to stop moving otherwise it will timeout
         /// </summary>
@@ -525,7 +523,7 @@ namespace ControlRoomApplication.Controllers {
             return isMoving;
         }
 
-        public bool Configure_MCU( MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig , int priority ) {
+        public bool Configure_MCU( MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig) {
             Current_AZConfiguration = AZconfig;
             Current_ELConfiguration = ELconfig;
             int gearedSpeedAZ = ConversionHelper.RPMToSPS( AZconfig.StartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH );
@@ -536,10 +534,10 @@ namespace ControlRoomApplication.Controllers {
             ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
 
-            ImmediateStop( priority );
+            ImmediateStop();
             Task.Delay( 50 ).Wait();
             CheckForAndResetCommandErrors();
-            Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.CONFIGURE , priority ) { completed = true} ).GetAwaiter().GetResult();
+            Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.CONFIGURE) { completed = true} ).GetAwaiter().GetResult();
             Task.Delay( 100 ).Wait();
             //TODO: check for configuration Errors
             return true;
@@ -623,11 +621,6 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-
-
-
-
-
         /// <summary>
         /// sends a home command and waits for the MCU to finish homeing
         /// </summary>
@@ -635,7 +628,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="ELHomeCW"></param>
         /// <param name="RPM"></param>
         /// <returns></returns>
-        public async Task<bool> HomeBothAxyes( bool AZHomeCW , bool ELHomeCW , double RPM,int priority ) {
+        public async Task<bool> HomeBothAxyes( bool AZHomeCW , bool ELHomeCW , double RPM) {
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_AZIMUTH );
             ushort ACCELERATION = 50;
@@ -656,11 +649,11 @@ namespace ControlRoomApplication.Controllers {
             } else {
                 timeout = Current_ELConfiguration.HomeTimeoutSec;
             }
-            Cancel_move( priority );
+            Cancel_move();
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
-            ControlledStop( priority );
+            ControlledStop();
             Task.Delay( 100 ).Wait();//wait to ensure it is porcessed
-            var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.RELATIVE_MOVE , priority ) {
+            var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( data , MCUCommandType.RELATIVE_MOVE) {
                 AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
             } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();
@@ -732,13 +725,12 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="ACCELERATION"></param>
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
-        ///  <param name="priority"></param>
         /// <returns></returns>
-        public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL,int priority ) {
+        public async Task<bool> MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL) {
             positionTranslationEL = -positionTranslationEL;
             mCUpositon.update(ReadMCURegisters(0, 16));
             var startPos =  mCUpositon as MCUPositonStore;
-            Cancel_move( priority );
+            Cancel_move();
             Task.Delay( 50 ).Wait();//wait to ensure it is porcessed
             ushort[] CMDdata = prepairRelativeMoveData( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL );
 
@@ -750,7 +742,7 @@ namespace ControlRoomApplication.Controllers {
             TimeToMove = ( int)(TimeToMove * 1.2);
             TimeToMove += 100;
 
-            var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, priority, positionTranslationAZ > 0, positionTranslationEL > 0, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } ).GetAwaiter().GetResult();
+            var ThisMove = Send_Generic_Command_And_Track( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, positionTranslationAZ > 0, positionTranslationEL > 0, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } ).GetAwaiter().GetResult();
             Task.Delay( 500 ).Wait();//wait for comand to be read
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
@@ -770,7 +762,7 @@ namespace ControlRoomApplication.Controllers {
                     ThisMove.CommandError = new Exception( "MCU command error bit was set" );
                     consecutiveSuccessfulMoves = 0;
                     consecutiveErrors++;
-                    Send_Generic_Command_And_Track( new MCUCommand( MCUMessages.ResetErrors , MCUCommandType.RESET_ERRORS,0 ) ).Wait();
+                    Send_Generic_Command_And_Track( new MCUCommand( MCUMessages.ResetErrors , MCUCommandType.RESET_ERRORS) ).Wait();
                     PLCEvents.DuringOverrideRemoveSecondary( handle );
                     ThisMove.Dispose();
                     return false;
@@ -835,7 +827,7 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-        public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELPositive , int priority ) {
+        public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELPositive) {
             ushort dir;
             ELPositive = !ELPositive;
             if(AZClockwise) {
@@ -875,13 +867,13 @@ namespace ControlRoomApplication.Controllers {
                 data2.CopyTo( data3 , 0 );
                 booth = (RunningCommand.AZ_CW != AZClockwise) && (RunningCommand.EL_CW != ELPositive);
                 if(booth) {//if both axis need to change direction
-                    Cancel_move( priority );
+                    Cancel_move();
                     WaitUntilStopped().GetAwaiter().GetResult();
                 } else if(RunningCommand.EL_CW != ELPositive) {//if only elevation needs to change direction
                     for(int j = 0; j <= data3.Length - 11; j++) {
                         data3[j + 10] = MCUMessages.ClearMove[j + 10];//replace elevation portion of move with controled stop
                     }
-                    _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
+                    _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } ).GetAwaiter().GetResult();
                     WaitUntilStoppedPerAxis( true ).GetAwaiter().GetResult();
@@ -889,25 +881,22 @@ namespace ControlRoomApplication.Controllers {
                     for(int j = 0; j <= data3.Length - 1; j++) {
                         data3[j] = MCUMessages.ClearMove[j];//replace Azimuth portion of move with controled stop
                     }
-                    _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
+                    _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } ).GetAwaiter().GetResult();
                     WaitUntilStoppedPerAxis( false ).GetAwaiter().GetResult();
                 }
             }
 
-            _ = Send_Generic_Command_And_Track( new MCUCommand( data2 , MCUCommandType.JOG , priority , AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
+            _ = Send_Generic_Command_And_Track( new MCUCommand( data2 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
                 EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                 AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
             } ).GetAwaiter().GetResult();
             return true;
         }
 
-        private async Task<MCUCommand> Send_Generic_Command_And_Track( MCUCommand incoming ) {//TODO: implament priority 
-            if((incoming.Move_Priority > RunningCommand.Move_Priority)&& !RunningCommand.completed) {
-                return incoming;
-            }
-            Console.WriteLine( "running: {0} ||| {1}     incoming: {2} ||| {3}", RunningCommand.CommandType.ToString(), RunningCommand.Move_Priority , incoming.CommandType.ToString(),incoming.Move_Priority );
+        private async Task<MCUCommand> Send_Generic_Command_And_Track( MCUCommand incoming ) {
+            Console.WriteLine( "running: {0}     incoming: {1}", RunningCommand.CommandType.ToString(), incoming.CommandType.ToString());
             PreviousCommand = RunningCommand;
             if(RunningCommand.CommandType == MCUCommandType.JOG) {
                 if(incoming.CommandType == MCUCommandType.CLEAR_LAST_MOVE || incoming.CommandType == MCUCommandType.IMMEDIATE_STOP || incoming.CommandType == MCUCommandType.JOG) {
@@ -947,7 +936,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="CW"></param>
         /// <param name="speed"></param>
         /// <returns></returns>
-        public async Task<bool> SendSingleAxisJog(bool AZ,bool CW, double speed, int priority ) {
+        public async Task<bool> SendSingleAxisJog(bool AZ,bool CW, double speed) {
             ushort DataOffset, dir;
             int StepSpeed;
             if(CW) {
@@ -962,7 +951,6 @@ namespace ControlRoomApplication.Controllers {
             }
             ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(StepSpeed >> 16) , (ushort)(StepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
             WriteMCURegisters( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset ), data );
-            RunningCommand.Move_Priority = priority;
             RunningCommand.completed = false;
             return true;
         }
@@ -974,7 +962,7 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="CW"></param>
         /// <param name="speed"></param>
         /// <returns></returns>
-        public async Task<bool> StopSingleAxisJog( bool AZ,int priority ) {
+        public async Task<bool> StopSingleAxisJog(bool AZ) {
             ushort DataOffset;
 
             if(AZ) {
@@ -987,7 +975,6 @@ namespace ControlRoomApplication.Controllers {
                 data[i] = MCUMessages.ClearMove[i];
             }
             WriteMCURegisters( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset) , data );
-            RunningCommand.Move_Priority = priority;
             RunningCommand.completed = true;
             return true;
         }
