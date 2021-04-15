@@ -306,7 +306,6 @@
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(331, 178);
             this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             // 
             // windSpeedLabel
             // 
@@ -708,7 +707,6 @@
             this.lblElEncoderDegrees.Size = new System.Drawing.Size(13, 13);
             this.lblElEncoderDegrees.TabIndex = 59;
             this.lblElEncoderDegrees.Text = "0";
-            this.lblElEncoderDegrees.Click += new System.EventHandler(this.lblElEncoderDegrees_Click);
             // 
             // label16
             // 
@@ -1275,7 +1273,6 @@
             this.azimuthAccChart.Size = new System.Drawing.Size(308, 86);
             this.azimuthAccChart.TabIndex = 0;
             this.azimuthAccChart.Text = "chart1";
-            this.azimuthAccChart.Click += new System.EventHandler(this.azimuthAccChart_Click);
             // 
             // grpSensorData
             // 
@@ -1819,7 +1816,6 @@
             this.label19.Size = new System.Drawing.Size(142, 15);
             this.label19.TabIndex = 19;
             this.label19.Text = "Barometric Pressure ";
-            this.label19.Click += new System.EventHandler(this.label19_Click);
             // 
             // label20
             // 
@@ -2517,7 +2513,6 @@
             this.lblIFGain.Size = new System.Drawing.Size(53, 15);
             this.lblIFGain.TabIndex = 10;
             this.lblIFGain.Text = "IF Gain";
-            this.lblIFGain.Click += new System.EventHandler(this.label39_Click);
             // 
             // IFGainVal
             // 
@@ -2528,7 +2523,6 @@
             this.IFGainVal.Size = new System.Drawing.Size(35, 15);
             this.IFGainVal.TabIndex = 11;
             this.IFGainVal.Text = "NaN";
-            this.IFGainVal.Click += new System.EventHandler(this.label40_Click);
             // 
             // lblBandwidth
             // 

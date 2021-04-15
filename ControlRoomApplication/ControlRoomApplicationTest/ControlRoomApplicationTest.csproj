@@ -100,7 +100,6 @@
     <Compile Include="CommunicationTests\DataToCSVTest.cs" />
     <Compile Include="CommunicationTests\EmailNotificationTests.cs" />
     <Compile Include="CommunicationTests\PushNotificationTest.cs" />
-    <Compile Include="CommunicationTests\AESTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
     <Compile Include="EntitiesTests\AccelerationTest.cs" />
     <Compile Include="EntitiesTests\TemperatureTest.cs" />

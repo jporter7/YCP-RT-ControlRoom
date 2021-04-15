@@ -159,7 +159,6 @@ namespace ControlRoomApplication.Controllers
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
-        /// <see cref="Controllers.BlkHeadUcontroler.EncoderReader"/>
         /// </summary>
         public bool MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
         {
