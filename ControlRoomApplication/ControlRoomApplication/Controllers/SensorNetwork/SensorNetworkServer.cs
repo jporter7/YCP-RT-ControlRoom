@@ -299,35 +299,35 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         if (elAcclSize > 0)
                         {
                             CurrentElevationMotorAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
-                            Database.DatabaseOperations.AddSensorData(CurrentElevationMotorAccl);
+                            //Database.DatabaseOperations.AddSensorData(CurrentElevationMotorAccl);
                         }
 
                         // Accelerometer 2 (azimuth)
                         if (azAcclSize > 0)
                         {
                             CurrentAzimuthMotorAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
-                            Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorAccl);
+                            //Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorAccl);
                         }
 
                         // Accelerometer 3 (counterbalance)
                         if (cbAcclSize > 0)
                         {
                             CurrentCounterbalanceAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
-                            Database.DatabaseOperations.AddSensorData(CurrentCounterbalanceAccl);
+                            //Database.DatabaseOperations.AddSensorData(CurrentCounterbalanceAccl);
                         }
 
                         // Elevation temperature
                         if (elTempSensorSize > 0)
                         {
                             CurrentElevationMotorTemp = PacketDecodingTools.GetTemperatureFromBytes(ref k, data, elTempSensorSize, SensorLocationEnum.EL_MOTOR);
-                            Database.DatabaseOperations.AddSensorData(CurrentElevationMotorTemp);
+                            //Database.DatabaseOperations.AddSensorData(CurrentElevationMotorTemp);
                         }
 
                         // Azimuth temperature
                         if (azTempSensorSize > 0)
                         {
                             CurrentAzimuthMotorTemp = PacketDecodingTools.GetTemperatureFromBytes(ref k, data, azTempSensorSize, SensorLocationEnum.AZ_MOTOR);
-                            Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorTemp);
+                            //Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorTemp);
                         }
 
                         // Elevation absolute encoder
