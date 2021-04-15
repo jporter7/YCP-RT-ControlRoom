@@ -81,84 +81,79 @@ namespace ControlRoomApplication.Controllers
             return driver.Shutdown_PLC_MCU();
         }
 
-        public override Task<bool> Thermal_Calibrate()
+        public override bool Thermal_Calibrate()
         {
             return driver.Thermal_Calibrate();
         }
 
-        public override Task<bool> SnowDump()
+        public override bool SnowDump()
         {
             return driver.SnowDump();
         }
 
-        public override Task<bool> Stow()
+        public override bool Stow()
         {
             return driver.Stow();
         }
 
-        public override Task<bool> HitAzimuthLeftLimitSwitch()
+        public override bool HitAzimuthLeftLimitSwitch()
         {
             return driver.HitAzimuthLeftLimitSwitch();
         }
 
-        public override Task<bool> HitAzimuthRightLimitSwitch()
+        public override bool HitAzimuthRightLimitSwitch()
         {
             return driver.HitAzimuthRightLimitSwitch();
         }
 
-        public override Task<bool> HitElevationLowerLimitSwitch()
+        public override bool HitElevationLowerLimitSwitch()
         {
             return driver.HitElevationLowerLimitSwitch();
         }
 
-        public override Task<bool> HitElevationUpperLimitSwitch()
+        public override bool HitElevationUpperLimitSwitch()
         {
             return driver.HitElevationUpperLimitSwitch();
         }
 
-        public override Task<bool> RecoverFromLimitSwitch()
+        public override bool RecoverFromLimitSwitch()
         {
             return driver.RecoverFromLimitSwitch();
         }
 
-        public override Task<bool> FullElevationMove()
+        public override bool FullElevationMove()
         {
             return driver.FullElevationMove();
         }
 
-        public override Task<bool> Full_360_CCW_Rotation()
+        public override bool Full_360_CCW_Rotation()
         {
             return driver.Full_360_CCW_Rotation();
         }
 
-        public override Task<bool> Full_360_CW_Rotation()
+        public override bool Full_360_CW_Rotation()
         {
             return driver.Full_360_CW_Rotation();
         }
 
-        public override Task<bool> Hit_CW_Hardstop()
+        public override bool Hit_CW_Hardstop()
         {
             return driver.Hit_CW_Hardstop();
         }
 
-        public override Task<bool> Hit_CCW_Hardstop()
+        public override bool Hit_CCW_Hardstop()
         {
             return driver.Hit_CCW_Hardstop();
         }
 
-        public override Task<bool> Recover_CW_Hardstop()
+        public override bool Recover_CW_Hardstop()
         {
             return driver.Recover_CW_Hardstop();
         }
 
-        public override Task<bool> Recover_CCW_Hardstop()
+        public override bool Recover_CCW_Hardstop()
         {
             return driver.Recover_CCW_Hardstop();
-        }
-
-        public override Task<bool> Hit_Hardstops()
-        {
-            return driver.Hit_Hardstops();
         }
 
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
@@ -181,7 +176,7 @@ namespace ControlRoomApplication.Controllers
             return driver.relative_move(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL);
         }
 
-        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }
@@ -195,7 +190,7 @@ namespace ControlRoomApplication.Controllers
             return driver.Get_interlock_status();
         }
 
-        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis )
         {
             return driver.GET_MCU_Status( axis );
         }
@@ -231,7 +226,7 @@ namespace ControlRoomApplication.Controllers
             driver.setTelescopeType(type);
         }
 
-        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
+        public override bool CustomOrientationMove(double azimuthPos, double elevationPos)
         {
             return driver.CustomOrientationMove(azimuthPos, elevationPos);
         }

@@ -132,9 +132,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public Task<bool> ThermalCalibrateRadioTelescope()
+        public bool ThermalCalibrateRadioTelescope()
         {
-            if (!AllSensorsSafe) return Task.FromResult(false);
+            if (!AllSensorsSafe) return false;
             return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
         }
 
@@ -161,9 +161,9 @@ namespace ControlRoomApplication.Controllers
         /// AbstractRadioTelescope class has implemented it.
         /// <see cref="Controllers.BlkHeadUcontroler.EncoderReader"/>
         /// </summary>
-        public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
+        public bool MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
         {
-            if (!AllSensorsSafe) return Task.FromResult(false);
+            if (!AllSensorsSafe) return false;
             return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position()); // MOVE
         }
 
@@ -175,9 +175,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
+        public bool MoveRadioTelescopeToCoordinate(Coordinate coordinate)
         {
-            if (!AllSensorsSafe) return Task.FromResult(false);
+            if (!AllSensorsSafe) return false;
             return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow)); // MOVE
         }
 
@@ -253,10 +253,9 @@ namespace ControlRoomApplication.Controllers
              
             var Taz = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH );  //Task.Run( async () => { await  } );
             var Tel = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.ELEVATION );
-
-            Taz.Wait();
-            bool azFin = Taz.Result[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
-            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
+            
+            bool azFin = Taz[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
+            bool elFin = Tel[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
             if(axis == RadioTelescopeAxisEnum.BOTH) {
                 return elFin && azFin;
             } else if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
@@ -295,7 +294,7 @@ namespace ControlRoomApplication.Controllers
             bool currentAZOveride = overrides.overrideAzimuthMotTemp;
             bool currentELOveride = overrides.overrideElevatMotTemp;
 
-            // Loop through every one second to get new temperatures. If the temperature has changed, notify the user
+            // Loop through every one second to get new sensor data
             while (MonitoringSensors)
             {
                 azTempSafe = checkTemp(RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp[RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp.Length - 1], azTempSafe);

@@ -596,7 +596,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Stow().GetAwaiter();
+                        tele.PLCDriver.Stow();
                     });
                     //Stow Script selected (index 0 of control script combo)
                     break;
@@ -604,7 +604,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.FullElevationMove().GetAwaiter();
+                        tele.PLCDriver.FullElevationMove();
                     });
                     //Full Elevation selected (index 1 of control script combo)
                     break;
@@ -612,7 +612,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Full_360_CW_Rotation().GetAwaiter();
+                        tele.PLCDriver.Full_360_CW_Rotation();
                     });
                     //Full 360 CW selected (index 2 of control script combo)
                     break;
@@ -620,7 +620,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Full_360_CCW_Rotation().GetAwaiter();
+                        tele.PLCDriver.Full_360_CCW_Rotation();
                     });
                     //Full 360 CCW  selected (index 3 of control script combo)
                     break;
@@ -628,7 +628,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Thermal_Calibrate().GetAwaiter();
+                        rtController.ThermalCalibrateRadioTelescope();
                     });
                     //Thermal Calibration selected (index 4 of control script combo)
                     break;
@@ -636,7 +636,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.SnowDump().GetAwaiter();
+                        tele.PLCDriver.SnowDump();
                     });
                     //Snow Dump selected (index 5 of control script combo)
                     break;
@@ -644,7 +644,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.RecoverFromLimitSwitch().GetAwaiter();
+                        tele.PLCDriver.RecoverFromLimitSwitch();
                     });
                     //Recover from Limit Switch (index 6 of control script combo)
                     break;
@@ -652,7 +652,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Recover_CW_Hardstop().GetAwaiter();
+                        tele.PLCDriver.Recover_CW_Hardstop();
                     });
                     //Recover from Clockwise Hardstop (index 7 of control script combo)
                     break;
@@ -660,7 +660,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Recover_CCW_Hardstop().GetAwaiter();
+                        tele.PLCDriver.Recover_CCW_Hardstop();
                     });
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
                     break;

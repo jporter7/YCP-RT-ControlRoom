@@ -559,7 +559,7 @@ namespace ControlRoomApplication.Controllers
         /// Postcondition: return true if the telescope data IS within 0.001 degrees fahrenheit
         ///                return false if the telescope data IS NOT within 0.001 degrees fahrenheit
         /// </summary>
-        public override Task<bool> Thermal_Calibrate() {
+        public override bool Thermal_Calibrate() {
             Orientation current = read_Position();
             Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
 
@@ -609,13 +609,14 @@ namespace ControlRoomApplication.Controllers
             {
                 return Stow();
             }
-            return null;
+
+            return false;
         }
 
         /// <summary>
         /// This is a script that is called when we want to dump snow out of the dish
         /// </summary>
-        public override Task<bool> SnowDump()
+        public override bool SnowDump()
         {
             // insert snow dump movements here
             // default is azimuth of 0 and elevation of 0
@@ -651,7 +652,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Moves the telescope to the stowed position
         /// </summary>
-        public override Task<bool> Stow()
+        public override bool Stow()
         {
             Orientation stow = new Orientation(0, 90);
 
@@ -661,7 +662,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Moves the telescope to the left azimuth switch
         /// </summary>
-        public override Task<bool> HitAzimuthLeftLimitSwitch()
+        public override bool HitAzimuthLeftLimitSwitch()
         {
             Orientation AZLeftLimit = new Orientation(-9, 0);
 
@@ -671,7 +672,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Moves the telescope to the right azimuth switch
         /// </summary>
-        public override Task<bool> HitAzimuthRightLimitSwitch()
+        public override bool HitAzimuthRightLimitSwitch()
         {
             Orientation AZRightLimit = new Orientation(369, 0);
 
@@ -681,7 +682,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Moves the telescope to the lower elevation switch
         /// </summary>
-        public override Task<bool> HitElevationLowerLimitSwitch()
+        public override bool HitElevationLowerLimitSwitch()
         {
             Orientation ELLowerLimit = new Orientation(0, -14);
 
@@ -691,7 +692,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Moves the telescope to the upper elevation switch
         /// </summary>
-        public override Task<bool> HitElevationUpperLimitSwitch()
+        public override bool HitElevationUpperLimitSwitch()
         {
             Orientation ELUpperLimit = new Orientation(0, 92);
 
@@ -701,7 +702,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// Recovers the telescope when a limit switch is hit
         /// </summary>
-        public override Task<bool> RecoverFromLimitSwitch()
+        public override bool RecoverFromLimitSwitch()
         {
             Orientation currentPos = read_Position();
 
@@ -710,8 +711,8 @@ namespace ControlRoomApplication.Controllers
             bool safeAz = false;
             bool safeEl = false;
 
-            Task<bool> azTask;
-            Task<bool> elTask;
+            bool azTask;
+            bool elTask;
 
             // Loops through just in case the move fails or if it as hit two limit switches
             while (true)
@@ -723,7 +724,7 @@ namespace ControlRoomApplication.Controllers
                     safe = new Orientation(0, currentPos.Elevation);
 
                     azTask = Move_to_orientation(safe, currentPos);
-                    safeAz = azTask.GetAwaiter().GetResult();
+                    safeAz = azTask;
                 }
                 // Checks to see if the right az switch has been hit
                 /// TODO: Update to also use limit switch sensors
@@ -732,12 +733,12 @@ namespace ControlRoomApplication.Controllers
                     safe = new Orientation(360, currentPos.Elevation);
 
                     azTask = Move_to_orientation(safe, currentPos);
-                    safeAz = azTask.GetAwaiter().GetResult();
+                    safeAz = azTask;
                 }
                 else
                 {
                     safeAz = true;
-                    azTask = null;
+                    azTask = false;
                 }
 
                 // Checks to see if the lower el switch has been hit
@@ -747,7 +748,7 @@ namespace ControlRoomApplication.Controllers
                     safe = new Orientation(currentPos.Azimuth, 0);
 
                     elTask = Move_to_orientation(safe, currentPos);
-                    safeEl = elTask.GetAwaiter().GetResult();
+                    safeEl = elTask;
                 }
                 // Checks to see if the upper el switch has been hit
                 /// TODO: Update to also use limit switch sensors
@@ -756,12 +757,12 @@ namespace ControlRoomApplication.Controllers
                     safe = new Orientation(currentPos.Azimuth, 85);
 
                     elTask = Move_to_orientation(safe, currentPos);
-                    safeEl = elTask.GetAwaiter().GetResult();
+                    safeEl = elTask;
                 }
                 else
                 {
                     safeEl = true;
-                    elTask = null;
+                    elTask = false;
                 }
 
                 // Check to see if the telescope is in a safe state
@@ -775,12 +776,12 @@ namespace ControlRoomApplication.Controllers
         /// 0 degrees elevation, then moves to 90 degrees, then returns to its
         /// initial position
         /// </summary>
-        public override Task<bool> FullElevationMove()
+        public override bool FullElevationMove()
         {
             Orientation currentPos = read_Position();
 
-            Task<bool> elStartFlag;
-            Task<bool> elFinishFlag;
+            bool elStartFlag;
+            bool elFinishFlag;
 
             Orientation elStart = new Orientation(currentPos.Azimuth, 0); ;
             Orientation elFinish = new Orientation(currentPos.Azimuth, 90);
@@ -789,7 +790,7 @@ namespace ControlRoomApplication.Controllers
 
             elFinishFlag = Move_to_orientation(elFinish, elStart);
 
-            if(!elStartFlag.GetAwaiter().GetResult() || !elFinishFlag.GetAwaiter().GetResult())
+            if(!elStartFlag || !elFinishFlag)
             {
                 throw new Exception();
             }
@@ -802,7 +803,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="azimuthPos"></param>
         /// <returns></returns>
-        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
+        public override bool CustomOrientationMove(double azimuthPos, double elevationPos)
         {
             Orientation currentPos = read_Position();
 
@@ -816,7 +817,7 @@ namespace ControlRoomApplication.Controllers
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The counter clockwise direction
         /// </summary>
-        public override Task<bool> Full_360_CCW_Rotation()
+        public override bool Full_360_CCW_Rotation()
         {
             Orientation current = read_Position();
             Orientation finish;
@@ -838,13 +839,13 @@ namespace ControlRoomApplication.Controllers
         /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
         /// The clockwise direction
         /// </summary>
-        public override Task<bool> Full_360_CW_Rotation()
+        public override bool Full_360_CW_Rotation()
         {
             Orientation current = read_Position();
             Orientation start = new Orientation(0, 0);
             Orientation finish = new Orientation(360, 0);
 
-            if (!Move_to_orientation(start, current).GetAwaiter().GetResult() || !Move_to_orientation(finish, start).GetAwaiter().GetResult())
+            if (!Move_to_orientation(start, current) || !Move_to_orientation(finish, start))
             {
                 throw new Exception();
             }
@@ -854,7 +855,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// This is a script that is called when we want to move the telescope to the CW hardware stop
         /// </summary>
-        public override Task<bool> Hit_CW_Hardstop()
+        public override bool Hit_CW_Hardstop()
         {
             Orientation current = read_Position();
             Orientation hardstop = new Orientation(370, current.Elevation);
@@ -865,7 +866,7 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// This is a script that is called when we want to move the telescope to the CCW hardware stop
         /// </summary>
-        public override Task<bool> Hit_CCW_Hardstop()
+        public override bool Hit_CCW_Hardstop()
         {
             Orientation current = read_Position();
             Orientation hardstop = new Orientation(-10, current.Elevation);
@@ -879,7 +880,7 @@ namespace ControlRoomApplication.Controllers
         /// Precondition: The telescope just hit the clockwise hardstop
         /// Postcondition: The telescope will be placed at 360 degrees azimuth (safe spot away from hard stop)
         /// </summary>
-        public override Task<bool> Recover_CW_Hardstop()
+        public override bool Recover_CW_Hardstop()
         {
             Orientation current = read_Position();
             Orientation recover = new Orientation(360, current.Elevation);
@@ -893,36 +894,12 @@ namespace ControlRoomApplication.Controllers
         /// Precondition: The telescope just hit the counter clockwise hardstop
         /// Postcondition: The telescope will be placed at 0 degrees azimuth (safe spot away from hard stop)
         /// </summary>
-        public override Task<bool> Recover_CCW_Hardstop()
+        public override bool Recover_CCW_Hardstop()
         {
             Orientation current = read_Position();
             Orientation recover = new Orientation(0, current.Elevation);
 
             return Move_to_orientation(recover, current);
-        }
-
-        /// <summary>
-        /// This script hits the two azimuth hardstops, first the clockwise one
-        /// WARNING: DO NOT CALL THIS SCRIPT UNLESS YOU ARE ABSOLUTELY SURE
-        /// </summary>
-        public override Task<bool> Hit_Hardstops()
-        {
-            // This will be one of the only functions that will always override the limit switch
-            // However, it will stop need an override for the rest of the sensors
-            Orientation current = read_Position();
-            Orientation hitClockwiseHardstop = new Orientation(375, current.Elevation);
-
-            Task<bool> clockwiseMove = Move_to_orientation(hitClockwiseHardstop, current);
-
-            if (!clockwiseMove.GetAwaiter().GetResult())
-            {
-                throw new Exception();
-            }
-
-            current = read_Position();
-            Orientation hitCounterHardstop = new Orientation(-15, current.Elevation);
-
-            return Move_to_orientation(hitCounterHardstop, current);
         }
 
         /// <summary>
@@ -955,7 +932,7 @@ namespace ControlRoomApplication.Controllers
         /// does not suport RadioTelescopeAxisEnum.BOTH
         /// see <see cref="MCUConstants.MCUStatusBitsMSW"/> for description of each bit
         /// </summary>
-        public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
             ushort start = 0;
             if(axis == RadioTelescopeAxisEnum.ELEVATION) {
                 start = 10;
@@ -993,7 +970,7 @@ namespace ControlRoomApplication.Controllers
         // Is called when the PLC and/or MCU is shutdown, stows the telescope
         public override bool Shutdown_PLC_MCU()
         {
-            return Stow().GetAwaiter().GetResult();
+            return Stow();
         }
 
         /// <summary>
@@ -1013,11 +990,11 @@ namespace ControlRoomApplication.Controllers
                 );
             }
 
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
         }
 
 
-        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
         {
             int positionTranslationAZ, positionTranslationEL;
 
@@ -1039,7 +1016,7 @@ namespace ControlRoomApplication.Controllers
             else if(telescopeType == RadioTelescopeTypeEnum.NONE)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": ERROR: Invalid Telescope Type!");
-                return Task.FromResult(false);
+                return false;
             }
 
             positionTranslationAZ = ConversionHelper.DegreesToSteps(azimuthOrientationMovement, MotorConstants.GEARING_RATIO_AZIMUTH);
@@ -1075,7 +1052,7 @@ namespace ControlRoomApplication.Controllers
             return MCU.Cancel_move();
         }
 
-        public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public bool send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
             return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL);
         }
 
