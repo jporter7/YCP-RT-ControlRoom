@@ -85,8 +85,6 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Cancel_move();
 
-        public abstract bool Shutdown_PLC_MCU();
-
         // All of the "scripts" are here all the way to....
         // Control Scripts
 
@@ -97,8 +95,6 @@ namespace ControlRoomApplication.Controllers
         public abstract bool Full_360_CCW_Rotation();
 
         public abstract bool Full_360_CW_Rotation();
-
-        public abstract bool Stow();
 
         public abstract bool SnowDump();
 

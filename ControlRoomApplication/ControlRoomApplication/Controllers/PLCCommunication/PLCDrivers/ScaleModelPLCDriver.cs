@@ -226,11 +226,6 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Shutdown_PLC_MCU() {
-            return true;
-
-        }
-
         public override bool Thermal_Calibrate() {
             return true;
         }
@@ -310,11 +305,6 @@ namespace ControlRoomApplication.Controllers {
         }
 
         public override bool SnowDump()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Stow()
         {
             throw new NotImplementedException();
         }

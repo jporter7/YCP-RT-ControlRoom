@@ -607,7 +607,7 @@ namespace ControlRoomApplication.Controllers
             // return true if working correctly, false if not
             if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
             {
-                return Stow();
+                return Move_to_orientation(MiscellaneousConstants.Stow, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
             }
 
             return false;
@@ -647,16 +647,6 @@ namespace ControlRoomApplication.Controllers
 
                 Console.WriteLine("Snow dump completed");
             }
-        }
-
-        /// <summary>
-        /// Moves the telescope to the stowed position
-        /// </summary>
-        public override bool Stow()
-        {
-            Orientation stow = new Orientation(0, 90);
-
-            return Move_to_orientation(stow, read_Position());
         }
 
         /// <summary>
@@ -950,12 +940,6 @@ namespace ControlRoomApplication.Controllers
 
         public override bool ImmediateStop() {
             return MCU.ImmediateStop();
-        }
-
-        // Is called when the PLC and/or MCU is shutdown, stows the telescope
-        public override bool Shutdown_PLC_MCU()
-        {
-            return Stow();
         }
 
         /// <summary>

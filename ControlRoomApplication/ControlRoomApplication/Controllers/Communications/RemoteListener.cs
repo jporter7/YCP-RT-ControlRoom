@@ -9,7 +9,7 @@ using ControlRoomApplication.Main;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Communications.Encryption;
 using ControlRoomApplication.Util;
-
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -249,7 +249,7 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("STOW"))
                 {
-                    rtController.RadioTelescope.PLCDriver.Stow();
+                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
                 }
                 else if (script.Contains("FULL_CLOCK"))
                 {

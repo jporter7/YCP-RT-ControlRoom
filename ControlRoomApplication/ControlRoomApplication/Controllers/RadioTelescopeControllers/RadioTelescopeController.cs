@@ -122,7 +122,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ShutdownRadioTelescope()
         {
-            return RadioTelescope.PLCDriver.Shutdown_PLC_MCU();
+            return MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ using ControlRoomApplication.Validation;
 using Microsoft.VisualBasic;
 using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
-
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Main
 {
@@ -598,7 +598,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Stow();
+                        rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
                     });
                     //Stow Script selected (index 0 of control script combo)
                     break;

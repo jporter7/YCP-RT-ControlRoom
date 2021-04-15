@@ -76,11 +76,6 @@ namespace ControlRoomApplication.Controllers
             return driver.Cancel_move();
         }
 
-        public override bool Shutdown_PLC_MCU()
-        {
-            return driver.Shutdown_PLC_MCU();
-        }
-
         public override bool Thermal_Calibrate()
         {
             return driver.Thermal_Calibrate();
@@ -89,11 +84,6 @@ namespace ControlRoomApplication.Controllers
         public override bool SnowDump()
         {
             return driver.SnowDump();
-        }
-
-        public override bool Stow()
-        {
-            return driver.Stow();
         }
 
         public override bool HitAzimuthLeftLimitSwitch()
