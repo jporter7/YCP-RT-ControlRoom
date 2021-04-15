@@ -235,8 +235,6 @@ namespace ControlRoomApplication.Controllers
 
                 if (script.Contains("DUMP"))
                 {
-                    // we have to use the - 1 here because the mobile app does not specify which radio telescope to control. This will just
-                    // enable them to control the most recently created telescope.
                     rtController.RadioTelescope.PLCDriver.SnowDump();
                 }
                 else if (script.Contains("FULL_EV"))
@@ -245,7 +243,7 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("CALIBRATE"))
                 {
-                    rtController.RadioTelescope.PLCDriver.Thermal_Calibrate();
+                    rtController.ThermalCalibrateRadioTelescope();
                 }
                 else if (script.Contains("STOW"))
                 {
@@ -268,7 +266,7 @@ namespace ControlRoomApplication.Controllers
             }
             else if (data.IndexOf("STOP_RT") != -1)
             {
-                rtController.RadioTelescope.PLCDriver.ControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop();
             }
 
             // can't find a keyword then we fail
