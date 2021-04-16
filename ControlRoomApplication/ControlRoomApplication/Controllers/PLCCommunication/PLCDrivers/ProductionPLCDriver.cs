@@ -37,13 +37,6 @@ namespace ControlRoomApplication.Controllers
         private MCUManager MCU;
         private RadioTelescopeTypeEnum telescopeType = RadioTelescopeTypeEnum.NONE;
 
-
-        // Previous snow dump azimuth -- we need to keep track of this in order to add 45 degrees each time we dump
-        private double previousSnowDumpAzimuth;
-
-        // Snow dump timer
-        private static System.Timers.Timer snowDumpTimer;
-
         // Used for the Unity simulation to keep track of its position
         // This is ONLY TEMPORARY until we can find the simulation source code and fix
         // this bug the correct way
@@ -103,14 +96,6 @@ namespace ControlRoomApplication.Controllers
                     return;
                 }
             }
-
-
-            previousSnowDumpAzimuth = 0;
-
-            snowDumpTimer = new System.Timers.Timer(DatabaseOperations.FetchWeatherThreshold().SnowDumpTime * 1000 * 60);
-            snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
-            snowDumpTimer.AutoReset = true;
-            snowDumpTimer.Enabled = true;
         }
 
 
@@ -245,11 +230,9 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-
         public override void Bring_down() {
             RequestStopAsyncAcceptingClientsAndJoin();
-            snowDumpTimer.Stop();
-            snowDumpTimer.Dispose();
+           
         }
 
         /// <summary>
@@ -542,111 +525,8 @@ namespace ControlRoomApplication.Controllers
         //above PLC modbus server ___below MCU comands
 
 
-
-
-
-
         public override bool Test_Connection() {
             return TestIfComponentIsAlive();
-        }
-
-
-
-
-        /// <summary>
-        /// This is a script that is called when we want to check the current thermal calibration of the telescope
-        /// Moves to point to the tree, reads in data, gets data from weather station, and compares
-        /// Postcondition: return true if the telescope data IS within 0.001 degrees fahrenheit
-        ///                return false if the telescope data IS NOT within 0.001 degrees fahrenheit
-        /// </summary>
-        public override bool Thermal_Calibrate() {
-            Orientation current = read_Position();
-            Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
-
-            // start a timer so we can have a time variable
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            // temporarily set spectracyber mode to continuum
-            Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-
-            // read data
-            SpectraCyberResponse response = Parent.SpectraCyberController.DoSpectraCyberScan();
-
-            // end the timer
-            stopWatch.Stop();
-            double time = stopWatch.Elapsed.TotalSeconds;
-
-            RFData rfResponse = RFData.GenerateFrom(response);
-
-            // move back to previous location
-            Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
-
-            // analyze data
-            // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
-            double weinConstant = 2.8977729;
-            double planckConstant = 6.62607004 * Math.Pow(10, -34);
-            double speedConstant = 299792458;
-            double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
-
-            // convert to fahrenheit
-            temperature = temperature * (9 / 5) - 459.67;
-
-            // check against weather station reading
-            double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
-
-            // Check if we need to dump the snow off of the telescope
-            if (Parent.WeatherStation.GetOutsideTemp() <= 40.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
-            {
-                SnowDump();
-            }
-
-            // Set SpectraCyber mode back to UNKNOWN
-            Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
-
-            // return true if working correctly, false if not
-            if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
-            {
-                return Move_to_orientation(MiscellaneousConstants.Stow, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to dump snow out of the dish
-        /// </summary>
-        public override bool SnowDump()
-        {
-            // insert snow dump movements here
-            // default is azimuth of 0 and elevation of 0
-            Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
-            Orientation current = read_Position();
-
-            Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
-            Orientation dumpElevation = new Orientation(dump.Azimuth, dump.Elevation);
-
-            // move to dump snow
-            Move_to_orientation(dumpAzimuth, current);
-            Move_to_orientation(dumpElevation, dumpAzimuth);
-           
-
-            // move back to initial orientation
-            return Move_to_orientation(current, dump);
-        }
-
-        private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
-        {
-
-            // Check if we need to dump the snow off of the telescope
-            if (Parent.WeatherStation.GetOutsideTemp() <= 30.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
-            {
-                Console.WriteLine("Time threshold reached. Running snow dump...");
-
-                SnowDump();
-
-                Console.WriteLine("Snow dump completed");
-            }
         }
 
         /// <summary>
