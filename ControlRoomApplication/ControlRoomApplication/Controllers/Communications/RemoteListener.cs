@@ -9,6 +9,7 @@ using ControlRoomApplication.Main;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -132,7 +133,7 @@ namespace ControlRoomApplication.Controllers
             if (data.IndexOf("COORDINATE_MOVE") != -1)
             {
                 // we have a move command coming in
-                rtController.ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
 
                 // get azimuth and orientation
                 int azimuthIndex = data.IndexOf("AZIM");
@@ -156,7 +157,7 @@ namespace ControlRoomApplication.Controllers
 
                 Orientation movingTo = new Orientation(azimuth, elevation);
 
-                rtController.MoveRadioTelescopeToOrientation(movingTo);
+                rtController.MoveRadioTelescopeToOrientation(movingTo, MovePriority.Manual);
 
                 // TODO: store the User Id and movement somewhere in the database
 
@@ -215,7 +216,7 @@ namespace ControlRoomApplication.Controllers
             else if (data.IndexOf("SCRIPT") != -1)
             {
                 // we have a move command coming in
-                rtController.ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
 
                 // get azimuth and orientation
                 int colonIndex = data.IndexOf(":");
@@ -244,7 +245,7 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("STOW"))
                 {
-                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
+                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
                 }
                 else if (script.Contains("FULL_CLOCK"))
                 {
@@ -263,7 +264,7 @@ namespace ControlRoomApplication.Controllers
             }
             else if (data.IndexOf("STOP_RT") != -1)
             {
-                rtController.ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
             }
 
             // can't find a keyword then we fail

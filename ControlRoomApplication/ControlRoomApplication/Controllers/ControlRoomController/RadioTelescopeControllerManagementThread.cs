@@ -8,7 +8,7 @@ using ControlRoomApplication.Controllers.Communications;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using ControlRoomApplication.Util;
-
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -357,7 +357,7 @@ namespace ControlRoomApplication.Controllers
                     }
 
                         logger.Info(Utilities.GetTimeStamp() + ": Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                        RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
+                        RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation, MovePriority.Appointment);
 
                         if (InterruptAppointmentFlag)
                         {
@@ -437,7 +437,7 @@ namespace ControlRoomApplication.Controllers
         {
             logger.Info(Utilities.GetTimeStamp() + ": Ending Appointment");
             endAppt = true;
-            RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90));
+            RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90), MovePriority.Appointment);
         }
 
         /// <summary>
@@ -498,7 +498,7 @@ namespace ControlRoomApplication.Controllers
                         // we should not be operating the telescope
                         logger.Fatal(Utilities.GetTimeStamp() + ": Telescope in DANGER due to fatal sensors");
                         safeTel = false;
-                        RTController.ExecuteRadioTelescopeImmediateStop();
+                        RTController.ExecuteRadioTelescopeImmediateStop(MovePriority.Critical);
                         OverallSensorStatus = false;
                         return false;
                     }                    

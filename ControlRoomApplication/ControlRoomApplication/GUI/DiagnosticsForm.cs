@@ -21,6 +21,7 @@ using ControlRoomApplication.Controllers.SensorNetwork;
 using System.Drawing.Printing;
 using System.Threading.Tasks;
 using ControlRoomApplication.Validation;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 
 namespace ControlRoomApplication.GUI
 {
@@ -713,32 +714,32 @@ namespace ControlRoomApplication.GUI
             switch (caseSwitch)
             {
                 case 0:
-                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                     rtController.RadioTelescope.PLCDriver.HitAzimuthLeftLimitSwitch();//Change left to CCW
                     //Hit Azimuth Counter-Clockwise Limit Switch (index 0 of control script combo)
                     break;
                 case 1:
-                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                     rtController.RadioTelescope.PLCDriver.HitAzimuthRightLimitSwitch();
                     //Hit Azimuth Clockwise Limit Switch (index 1 of control script combo)
                     break;
                 case 2:
-                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                     rtController.RadioTelescope.PLCDriver.HitElevationLowerLimitSwitch();
                     //Elevation Lower Limit Switch (index 2 of control script combo)
                     break;
                 case 3:
-                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                     rtController.RadioTelescope.PLCDriver.HitElevationUpperLimitSwitch();
                     //Elevation Upper Limit Switch (index 3 of control script combo)
                     break;
                 case 4:
-                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                     rtController.RadioTelescope.PLCDriver.Hit_CW_Hardstop();
                     //Hit Clockwise Hardstop (index 4 of control script combo)
                     break;
                 case 5:
-                    rtController.ExecuteRadioTelescopeControlledStop();
+                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                     rtController.RadioTelescope.PLCDriver.Hit_CCW_Hardstop();
                     //Hit Counter-Clockwise Hardstop (index 4 of control script combo)
                     break;

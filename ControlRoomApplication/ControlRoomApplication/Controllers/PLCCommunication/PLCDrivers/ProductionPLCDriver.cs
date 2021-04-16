@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using static ControlRoomApplication.Constants.MCUConstants;
 using ControlRoomApplication.Database;
 using System.Timers;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -33,7 +34,6 @@ namespace ControlRoomApplication.Controllers
         private long PLC_last_contact = 0;
         private bool keep_modbus_server_alive = true;
         private bool is_test = false;
-        private int temp =0;
         private MCUManager MCU;
         private RadioTelescopeTypeEnum telescopeType = RadioTelescopeTypeEnum.NONE;
 
@@ -96,6 +96,8 @@ namespace ControlRoomApplication.Controllers
                     return;
                 }
             }
+
+            CurrentMovementPriority = MovePriority.None;
         }
 
 
@@ -132,41 +134,53 @@ namespace ControlRoomApplication.Controllers
         private async void DefaultLimitSwitchHandle( object sender , limitEventArgs e ) {
             if(e.Value) {
                 switch(e.ChangedValue) {
-                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT :
+                        {
+                            CurrentMovementPriority = MovePriority.Critical;
                             MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.Clockwise, 0.25);
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
+                        {
+                            CurrentMovementPriority = MovePriority.Critical;
                             MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.Counterclockwise, 0.25);
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT:
+                        {
+                            CurrentMovementPriority = MovePriority.Critical;
                             MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.Counterclockwise, 0.25);
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT:
+                        {
+                            CurrentMovementPriority = MovePriority.Critical;
                             MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.Clockwise, 0.25);
                             break;
                         }
-
                 }
+                
             }
             if(!e.Value) {
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
                             MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                            CurrentMovementPriority = MovePriority.None;
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
                             MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                            CurrentMovementPriority = MovePriority.None;
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
                             MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                            CurrentMovementPriority = MovePriority.None;
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
                             MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                            CurrentMovementPriority = MovePriority.None;
                             break;
                         }
                 }
@@ -245,17 +259,7 @@ namespace ControlRoomApplication.Controllers
                 logger.Info(Utilities.GetTimeStamp() + ": PLC Red data from the the control room");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            // Console.WriteLine(e.Message);
             return;
-            /*
-            Regex rx = new Regex(@"\b(?:Read )([0-9]+)(?:.+)(?:address )([0-9]+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection matches = rx.Matches(e.Message.ToString());
-            foreach (Match match in matches)
-            {
-                GroupCollection groups = match.Groups;
-                Console.WriteLine("'{0}' repeated at positions {1} and {2}", groups["word"].Value, groups[0].Index, groups[1].Index);
-            }
-            //*/
         }
 
 

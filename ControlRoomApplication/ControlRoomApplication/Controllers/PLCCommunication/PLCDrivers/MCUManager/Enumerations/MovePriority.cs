@@ -31,6 +31,11 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         Manual,
 
         /// <summary>
+        /// This is a movement command for the general stopping of any lower-priority movement commands.
+        /// </summary>
+        GeneralStop,
+
+        /// <summary>
         /// These are movements that must override all other movements, such as stop commands or limit switch recovery.
         /// </summary>
         Critical
