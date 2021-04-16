@@ -226,10 +226,6 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Thermal_Calibrate() {
-            return true;
-        }
-        
         public override bool Configure_MCU( double startSpeedAzimuth , double startSpeedElevation , int homeTimeoutAzimuth , int homeTimeoutElevation ) {
             return true;
         }
@@ -302,11 +298,6 @@ namespace ControlRoomApplication.Controllers {
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
             return send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL);
 
-        }
-
-        public override bool SnowDump()
-        {
-            throw new NotImplementedException();
         }
 
         public override bool Full_360_CCW_Rotation()

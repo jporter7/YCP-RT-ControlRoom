@@ -22,8 +22,6 @@ namespace ControlRoomApplication.Controllers
 
         protected Thread ClientManagmentThread;
 
-        protected RadioTelescope Parent;
-
         public LimitSwitchData limitSwitchData;
         public HomeSensorData homeSensorData;
         public MiscPlcInput plcInput;
@@ -67,15 +65,6 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public abstract bool RequestStopAsyncAcceptingClientsAndJoin();
 
-        public RadioTelescope GetParent()
-        {
-            return Parent;
-        }
-
-        public void SetParent(RadioTelescope rt)
-        {
-            Parent = rt;
-        }
 
         public abstract void Bring_down();
 
@@ -87,16 +76,12 @@ namespace ControlRoomApplication.Controllers
 
         // All of the "scripts" are here all the way to....
         // Control Scripts
-
-        public abstract bool Thermal_Calibrate();
-
         public abstract bool FullElevationMove();
 
         public abstract bool Full_360_CCW_Rotation();
 
         public abstract bool Full_360_CW_Rotation();
 
-        public abstract bool SnowDump();
 
         /// <summary>
         /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then

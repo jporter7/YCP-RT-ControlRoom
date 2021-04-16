@@ -521,7 +521,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.SnowDump();
+                        rtController.SnowDump();
                     });
                     //Snow Dump selected (index 5 of control script combo)
                     break;

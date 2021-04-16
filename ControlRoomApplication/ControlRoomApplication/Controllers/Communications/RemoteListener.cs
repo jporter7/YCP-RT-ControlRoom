@@ -232,7 +232,7 @@ namespace ControlRoomApplication.Controllers
 
                 if (script.Contains("DUMP"))
                 {
-                    rtController.RadioTelescope.PLCDriver.SnowDump();
+                    rtController.SnowDump();
                 }
                 else if (script.Contains("FULL_EV"))
                 {

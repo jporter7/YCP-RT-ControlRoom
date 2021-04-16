@@ -8,7 +8,8 @@ using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Communications;
 using ControlRoomApplication.Util;
-
+using System.Timers;
+using System.Diagnostics;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -25,6 +26,12 @@ namespace ControlRoomApplication.Controllers
 
         private double MaxElTempThreshold;
         private double MaxAzTempThreshold;
+
+        // Previous snow dump azimuth -- we need to keep track of this in order to add 45 degrees each time we dump
+        private double previousSnowDumpAzimuth;
+
+        // Snow dump timer
+        private static System.Timers.Timer snowDumpTimer;
 
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -48,6 +55,13 @@ namespace ControlRoomApplication.Controllers
 
             MaxAzTempThreshold = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
             MaxElTempThreshold = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
+
+            previousSnowDumpAzimuth = 0;
+
+            snowDumpTimer = new System.Timers.Timer(DatabaseOperations.FetchWeatherThreshold().SnowDumpTime * 1000 * 60);
+            snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
+            snowDumpTimer.AutoReset = true;
+            snowDumpTimer.Enabled = true;
         }
 
         /// <summary>
@@ -75,8 +89,6 @@ namespace ControlRoomApplication.Controllers
         {
             return RadioTelescope.PLCDriver.read_Position();
         }
-
-
 
         /// <summary>
         /// 
@@ -122,6 +134,10 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ShutdownRadioTelescope()
         {
+            RadioTelescope.PLCDriver.Bring_down();
+            snowDumpTimer.Stop();
+            snowDumpTimer.Dispose();
+
             return MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
         }
 
@@ -134,8 +150,60 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ThermalCalibrateRadioTelescope()
         {
+            // We only want to do this if it is safe to do so. Return false if not
             if (!AllSensorsSafe) return false;
-            return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
+
+            Orientation current = GetCurrentOrientation();
+            MoveRadioTelescopeToOrientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
+
+            // start a timer so we can have a time variable
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+
+            // temporarily set spectracyber mode to continuum
+            RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+
+            // read data
+            SpectraCyberResponse response = RadioTelescope.SpectraCyberController.DoSpectraCyberScan();
+
+            // end the timer
+            stopWatch.Stop();
+            double time = stopWatch.Elapsed.TotalSeconds;
+
+            RFData rfResponse = RFData.GenerateFrom(response);
+
+            // move back to previous location
+            MoveRadioTelescopeToOrientation(current);
+
+            // analyze data
+            // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
+            double weinConstant = 2.8977729;
+            double planckConstant = 6.62607004 * Math.Pow(10, -34);
+            double speedConstant = 299792458;
+            double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
+
+            // convert to fahrenheit
+            temperature = temperature * (9 / 5) - 459.67;
+
+            // check against weather station reading
+            double weatherStationTemp = RadioTelescope.WeatherStation.GetOutsideTemp();
+
+            // Check if we need to dump the snow off of the telescope
+            if (RadioTelescope.WeatherStation.GetOutsideTemp() <= 40.00 && RadioTelescope.WeatherStation.GetTotalRain() > 0.00)
+            {
+                SnowDump();
+            }
+
+            // Set SpectraCyber mode back to UNKNOWN
+            RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
+
+            // return true if working correctly, false if not
+            if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
+            {
+                return MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -413,5 +481,42 @@ namespace ControlRoomApplication.Controllers
                 EmailNotifications.sendToAllAdmins("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
             }
         }
+
+        /// <summary>
+        /// This is a script that is called when we want to dump snow out of the dish
+        /// </summary>
+        public bool SnowDump()
+        {
+            // insert snow dump movements here
+            // default is azimuth of 0 and elevation of 0
+            Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
+            Orientation current = GetCurrentOrientation();
+
+            Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
+            Orientation dumpElevation = new Orientation(dump.Azimuth, dump.Elevation);
+
+            // move to dump snow
+            MoveRadioTelescopeToOrientation(dumpAzimuth);
+            MoveRadioTelescopeToOrientation(dumpElevation);
+
+
+            // move back to initial orientation
+            return MoveRadioTelescopeToOrientation(current);
+        }
+
+        private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
+        {
+
+            // Check if we need to dump the snow off of the telescope
+            if (RadioTelescope.WeatherStation.GetOutsideTemp() <= 30.00 && RadioTelescope.WeatherStation.GetTotalRain() > 0.00)
+            {
+                Console.WriteLine("Time threshold reached. Running snow dump...");
+
+                SnowDump();
+
+                Console.WriteLine("Snow dump completed");
+            }
+        }
+
     }
 }
