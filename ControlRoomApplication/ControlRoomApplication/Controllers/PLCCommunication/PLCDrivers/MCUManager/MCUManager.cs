@@ -121,11 +121,27 @@ namespace ControlRoomApplication.Controllers {
             return value;
         }
         
-        private bool WriteMCURegisters( ushort address , ushort[] data )
+        /// <summary>
+        /// Writes data to the MCU registers based on what motor axis we want to send information to.
+        /// </summary>
+        /// <remarks>
+        /// If elevation or azimuth the selected axis type, the ushort size should only be 10.
+        /// If "both" are selected, then the ushort size should be 20. This is the default selection.
+        /// If elevation is selected, then an additional offset is required to skip the azimuth registers, which
+        /// is automatically handled in this function.
+        /// </remarks>
+        /// <param name="data">The command data we want to send.</param>
+        /// <param name="axis">The motor axis registers we want to modify.</param>
+        /// <returns>Whether or not the writing was successful.</returns>
+        private bool WriteMCURegisters(ushort[] data, RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
         {
+            // Offset used to skip azimuth registers if we're only writing to elevation
+            ushort offset = 0;
+            if (axis == RadioTelescopeAxisEnum.ELEVATION) offset = 10;
+
             try
             {
-                MCUModbusMaster.WriteMultipleRegistersAsync(address, data).GetAwaiter().GetResult();
+                MCUModbusMaster.WriteMultipleRegistersAsync((ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + offset), data).GetAwaiter().GetResult();
             }
             catch (InvalidOperationException) {
                 
@@ -285,7 +301,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns></returns>
         public bool Cancel_move() {
-            var cmd = new MCUCommand(MCUMessages.ClearMove, MCUCommandType.CLEAR_LAST_MOVE) { completed = false };
+            var cmd = new MCUCommand(MCUMessages.ClearBothAxesMove, MCUCommandType.CLEAR_LAST_MOVE) { completed = false };
             Send_Generic_Command_And_Track( cmd );
             WaitUntilStopped();
             cmd.completed = true;
@@ -870,15 +886,18 @@ namespace ControlRoomApplication.Controllers {
                     WaitUntilStopped();
                 } else if(RunningCommand.EL_CW != ELPositive) {//if only elevation needs to change direction
                     for(int j = 0; j <= data3.Length - 11; j++) {
-                        data3[j + 10] = MCUMessages.ClearMove[j + 10];//replace elevation portion of move with controled stop
+                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove
+                        data3[j + 10] = MCUMessages.ClearBothAxesMove[j + 10];//replace elevation portion of move with controled stop
                     }
                     _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
                     WaitUntilStoppedPerAxis( true );
                 } else if(RunningCommand.AZ_CW != AZClockwise) {//only Azimuth needs to change direction
-                    for(int j = 0; j <= data3.Length - 1; j++) {
-                        data3[j] = MCUMessages.ClearMove[j];//replace Azimuth portion of move with controled stop
+                    for(int j = 0; j <= data3.Length - 1; j++)
+                    {
+                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove
+                        data3[j] = MCUMessages.ClearBothAxesMove[j];//replace Azimuth portion of move with controled stop
                     }
                     _ = Send_Generic_Command_And_Track( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
@@ -903,7 +922,7 @@ namespace ControlRoomApplication.Controllers {
                         RunningCommand?.timeout?.Cancel();
                     } catch { }
                     RunningCommand = incoming;
-                    WriteMCURegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData );
+                    WriteMCURegisters(incoming.commandData);
                     return incoming;
                 }
                 incoming.CommandError = new Exception( "MCU was running a JOG move which could not be overriden" );
@@ -914,7 +933,7 @@ namespace ControlRoomApplication.Controllers {
                         RunningCommand?.timeout?.Cancel();
                     } catch { }
                     RunningCommand = incoming;
-                    WriteMCURegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData );
+                    WriteMCURegisters(incoming.commandData);
                     return incoming;
                 }
                 incoming.CommandError = new Exception( "MCU was running a home move which could not be overriden" );
@@ -924,7 +943,7 @@ namespace ControlRoomApplication.Controllers {
                 RunningCommand?.timeout?.Cancel();
             } catch { }
             RunningCommand = incoming;
-            WriteMCURegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , incoming.commandData );
+            WriteMCURegisters(incoming.commandData);
             return incoming;
         }
 
@@ -937,15 +956,12 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="speed">What speed the motor will be spinning at.</param>
         /// <returns></returns>
         public bool SendSingleAxisJog(RadioTelescopeAxisEnum axis, RadioTelescopeDirectionEnum direction, double speed) {
-            ushort dataOffset;
             int stepSpeed;
 
             if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
                 stepSpeed = ConversionHelper.RPMToSPS(speed, MotorConstants.GEARING_RATIO_AZIMUTH);
-                dataOffset = 0;
             } else {
                 stepSpeed = ConversionHelper.RPMToSPS(speed, MotorConstants.GEARING_RATIO_ELEVATION);
-                dataOffset = 10;
             }
 
             ushort[] data = new ushort[10] {
@@ -961,7 +977,7 @@ namespace ControlRoomApplication.Controllers {
                 0x0
             };
 
-            WriteMCURegisters((ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + dataOffset), data);
+            WriteMCURegisters(data, axis);
 
             RunningCommand.completed = false;
 
@@ -969,25 +985,12 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// this should only be used to back off of limit switches for any other uses the <see cref="Send_Jog_command"/>
+        /// This should only be used to stop the jog command from backing off limit switches.
         /// </summary>
-        /// <param name="AZ"></param>
-        /// <param name="CW"></param>
-        /// <param name="speed"></param>
+        /// <param name="axis">The motor axis we are stopping.</param>
         /// <returns></returns>
         public bool StopSingleAxisJog(RadioTelescopeAxisEnum axis) {
-            ushort DataOffset;
-
-            if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
-                DataOffset = 0;
-            } else {
-                DataOffset = 10;
-            }
-            ushort[] data = new ushort[10];
-            for(int i = 0; i < data.Length; i++) {
-                data[i] = MCUMessages.ClearMove[i];
-            }
-            WriteMCURegisters((ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset), data);
+            WriteMCURegisters(MCUMessages.ClearOneAxisMove, axis);
             RunningCommand.completed = true;
             return true;
         }
@@ -996,6 +999,10 @@ namespace ControlRoomApplication.Controllers {
             return MCU_last_contact;
         }
 
+        /// <summary>
+        /// Sets the telescope type so we know if we should be normalizing the azimuth orientation or not.
+        /// </summary>
+        /// <param name="type"></param>
         public void setTelescopeType(RadioTelescopeTypeEnum type)
         {
             telescopeType = type;

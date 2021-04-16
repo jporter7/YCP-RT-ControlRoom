@@ -28,10 +28,18 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         };
 
         /// <summary>
-        /// Clears the current movement from the registers.
+        /// Clears the current movement for both motors from the registers.
         /// </summary>
-        public static readonly ushort[] ClearMove = new ushort[] {
+        public static readonly ushort[] ClearBothAxesMove = new ushort[] {
             0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+            0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
+        };
+
+        /// <summary>
+        /// Clears the movement for one motor from the registers
+        /// </summary>
+        public static readonly ushort[] ClearOneAxisMove = new ushort[]
+        {
             0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
         };
 
