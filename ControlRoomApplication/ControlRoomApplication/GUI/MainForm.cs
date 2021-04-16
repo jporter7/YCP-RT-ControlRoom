@@ -437,7 +437,7 @@ namespace ControlRoomApplication.Main
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
-                ProgramRTControllerList[i].RadioTelescope.PLCDriver.Bring_down();
+                ProgramRTControllerList[i].ShutdownRadioTelescope();
             }
 
             // End logging
@@ -453,6 +453,7 @@ namespace ControlRoomApplication.Main
                 ProgramRTControllerList[i].RadioTelescope.online = 0;
                 ProgramRTControllerList[i].RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
+                ProgramRTControllerList[i].ShutdownRadioTelescope();
             }
 
         }

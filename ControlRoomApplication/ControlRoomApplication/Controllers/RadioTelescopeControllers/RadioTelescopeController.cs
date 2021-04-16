@@ -134,11 +134,12 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ShutdownRadioTelescope()
         {
+            //MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
             RadioTelescope.PLCDriver.Bring_down();
             snowDumpTimer.Stop();
             snowDumpTimer.Dispose();
 
-            return MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
+            return true;
         }
 
         /// <summary>
@@ -506,15 +507,22 @@ namespace ControlRoomApplication.Controllers
 
         private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
         {
-
+            double DELTA = 0.01;
+            Orientation currentOrientation = GetCurrentOrientation();
+            
             // Check if we need to dump the snow off of the telescope
             if (RadioTelescope.WeatherStation.GetOutsideTemp() <= 30.00 && RadioTelescope.WeatherStation.GetTotalRain() > 0.00)
             {
-                Console.WriteLine("Time threshold reached. Running snow dump...");
+                // We want to check stow position precision with a 0.01 degree margin of error
+                if(Math.Abs(currentOrientation.Azimuth - MiscellaneousConstants.Stow.Azimuth) <= DELTA && Math.Abs(currentOrientation.Elevation - MiscellaneousConstants.Stow.Elevation) <= DELTA)
+                {
+                    Console.WriteLine("Time threshold reached. Running snow dump...");
 
-                SnowDump();
+                    SnowDump();
 
-                Console.WriteLine("Snow dump completed");
+                    Console.WriteLine("Snow dump completed");
+                }
+                
             }
         }
 
