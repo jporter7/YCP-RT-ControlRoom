@@ -287,12 +287,14 @@ namespace ControlRoomApplication.Controllers {
         public bool Cancel_move() {
             var cmd = new MCUCommand(MCUMessages.ClearMove, MCUCommandType.CLEAR_LAST_MOVE) { completed = false };
             Send_Generic_Command_And_Track( cmd );
-            Wait_For_Stop_Motion( cmd );
+            WaitUntilStopped();
+            cmd.completed = true;
             return true;
         }
 
         /// <summary>
-        /// attempts to bring the Telescope to a controlled stop certian moves like Homeing are un affected by this
+        /// Attempts to bring the Telescope to a controlled stop, ramping down speed.
+        /// Certian moves, such as homing, are unaffected by this.
         /// </summary>
         /// <returns></returns>
         public bool ControlledStop() {
@@ -301,11 +303,17 @@ namespace ControlRoomApplication.Controllers {
             } else {
                 var cmd = new MCUCommand(MCUMessages.HoldMove , MCUCommandType.HOLD_MOVE) { completed = false };
                 Send_Generic_Command_And_Track( cmd );
-                Wait_For_Stop_Motion( cmd );
+                WaitUntilStopped();
+                cmd.completed = true;
             }
             return true;
         }
 
+        /// <summary>
+        /// Immediately stops the telescope movement with no ramp down in speed.
+        /// Homing is unaffected by this command.
+        /// </summary>
+        /// <returns></returns>
         public bool ImmediateStop() {
             Send_Generic_Command_And_Track(new MCUCommand( MCUMessages.ImmediateStop , MCUCommandType.IMMEDIATE_STOP) { completed = true } );
             return true;
@@ -375,16 +383,10 @@ namespace ControlRoomApplication.Controllers {
             return errors;
         }
 
-        private bool Wait_For_Stop_Motion( MCUCommand comand) {
-            WaitUntilStopped();
-            comand.completed = true;
-            return true;
-        }
-
         /// <summary>
-        /// this function assums that you have alread told both Axisi to stop moving otherwise it will timeout
+        /// This function assumes that you have already told both axes to stop moving, otherwise it will time out.
         /// </summary>
-        /// <returns>false if the telescope was still running at the end of the timeout</returns>
+        /// <returns>False if the telescope is still moving at the end of the timeout.</returns>
         private bool WaitUntilStopped() {
             try {
                 int mS_To_Decelerate = estimateStopTime( PreviousCommand );
