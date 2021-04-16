@@ -233,7 +233,7 @@ namespace ControlRoomApplication.Controllers
 
                 if (script.Contains("DUMP"))
                 {
-                    rtController.SnowDump();
+                    rtController.SnowDump(MovePriority.Manual);
                 }
                 else if (script.Contains("FULL_EV"))
                 {
@@ -241,7 +241,7 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("CALIBRATE"))
                 {
-                    rtController.ThermalCalibrateRadioTelescope();
+                    rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
                 }
                 else if (script.Contains("STOW"))
                 {

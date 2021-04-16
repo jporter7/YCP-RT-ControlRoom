@@ -157,62 +157,66 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ThermalCalibrateRadioTelescope()
+        public bool ThermalCalibrateRadioTelescope(MovePriority priority)
         {
-            // We only want to do this if it is safe to do so. Return false if not
-            if (!AllSensorsSafe) return false;
+            bool successMove1 = false;
+            bool successMove2 = false;
+            bool successMove3 = false;
+            bool successMove4 = false;
 
-            Orientation current = GetCurrentOrientation();
-            RadioTelescope.PLCDriver.Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
-
-            // start a timer so we can have a time variable
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            // temporarily set spectracyber mode to continuum
-            RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-
-            // read data
-            SpectraCyberResponse response = RadioTelescope.SpectraCyberController.DoSpectraCyberScan();
-
-            // end the timer
-            stopWatch.Stop();
-            double time = stopWatch.Elapsed.TotalSeconds;
-
-            RFData rfResponse = RFData.GenerateFrom(response);
-
-            // move back to previous location
-            RadioTelescope.PLCDriver.Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
-
-            // analyze data
-            // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
-            double weinConstant = 2.8977729;
-            double planckConstant = 6.62607004 * Math.Pow(10, -34);
-            double speedConstant = 299792458;
-            double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
-
-            // convert to fahrenheit
-            temperature = temperature * (9 / 5) - 459.67;
-
-            // check against weather station reading
-            double weatherStationTemp = RadioTelescope.WeatherStation.GetOutsideTemp();
-
-            // Check if we need to dump the snow off of the telescope
-            if (RadioTelescope.WeatherStation.GetOutsideTemp() <= 40.00 && RadioTelescope.WeatherStation.GetTotalRain() > 0.00)
+            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
             {
-                SnowDump();
+                // We only want to do this if it is safe to do so. Return false if not
+                if (!AllSensorsSafe) return false;
+
+                Orientation current = GetCurrentOrientation();
+                successMove1 = RadioTelescope.PLCDriver.Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
+
+                // start a timer so we can have a time variable
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                // temporarily set spectracyber mode to continuum
+                RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+
+                // read data
+                SpectraCyberResponse response = RadioTelescope.SpectraCyberController.DoSpectraCyberScan();
+
+                // end the timer
+                stopWatch.Stop();
+                double time = stopWatch.Elapsed.TotalSeconds;
+
+                RFData rfResponse = RFData.GenerateFrom(response);
+
+                // move back to previous location
+                successMove2 = RadioTelescope.PLCDriver.Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
+
+                // analyze data
+                // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
+                double weinConstant = 2.8977729;
+                double planckConstant = 6.62607004 * Math.Pow(10, -34);
+                double speedConstant = 299792458;
+                double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
+
+                // convert to fahrenheit
+                temperature = temperature * (9 / 5) - 459.67;
+
+                // check against weather station reading
+                double weatherStationTemp = RadioTelescope.WeatherStation.GetOutsideTemp();
+
+                // Set SpectraCyber mode back to UNKNOWN
+                RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
+
+                // return true if working correctly, false if not
+                if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
+                {
+                    successMove4 = RadioTelescope.PLCDriver.Move_to_orientation(MiscellaneousConstants.Stow, current);
+                }
+
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
 
-            // Set SpectraCyber mode back to UNKNOWN
-            RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
-
-            // return true if working correctly, false if not
-            if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
-            {
-                return RadioTelescope.PLCDriver.Move_to_orientation(MiscellaneousConstants.Stow, current);
-            }
-
-            return false;
+            return successMove1 && successMove2 && successMove3 && successMove4;
         }
 
         /// <summary>
@@ -557,22 +561,37 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// This is a script that is called when we want to dump snow out of the dish
         /// </summary>
-        public bool SnowDump()
+        public bool SnowDump(MovePriority priority)
         {
-            // insert snow dump movements here
-            // default is azimuth of 0 and elevation of 0
-            Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
-            Orientation current = GetCurrentOrientation();
+            bool successMove1 = false;
+            bool successMove2 = false;
+            bool successMove3 = false;
 
-            Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
-            Orientation dumpElevation = new Orientation(dump.Azimuth, dump.Elevation);
+            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            {
+                if (!AllSensorsSafe) return false;
 
-            // move to dump snow
-            RadioTelescope.PLCDriver.Move_to_orientation(dumpAzimuth, current);
-            RadioTelescope.PLCDriver.Move_to_orientation(dumpElevation, dumpAzimuth);
+                priority = RadioTelescope.PLCDriver.CurrentMovementPriority;
 
-            // move back to initial orientation
-            return RadioTelescope.PLCDriver.Move_to_orientation(current, dumpElevation);
+                // insert snow dump movements here
+                // default is azimuth of 0 and elevation of 0
+                Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
+                Orientation current = GetCurrentOrientation();
+
+                Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
+                Orientation dumpElevation = new Orientation(dump.Azimuth, dump.Elevation);
+
+                // move to dump snow
+                successMove1 = RadioTelescope.PLCDriver.Move_to_orientation(dumpAzimuth, current);
+                successMove2 = RadioTelescope.PLCDriver.Move_to_orientation(dumpElevation, dumpAzimuth);
+
+                // move back to initial orientation
+                successMove3 = RadioTelescope.PLCDriver.Move_to_orientation(current, dumpElevation);
+
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+            }
+
+            return successMove1 && successMove2 && successMove3;
         }
 
         private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
@@ -588,7 +607,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     Console.WriteLine("Time threshold reached. Running snow dump...");
 
-                    SnowDump();
+                    SnowDump(MovePriority.Appointment);
 
                     Console.WriteLine("Snow dump completed");
                 }

@@ -515,7 +515,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                        rtController.ThermalCalibrateRadioTelescope();
+                        rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
                     });
                     //Thermal Calibration selected (index 4 of control script combo)
                     break;
@@ -523,7 +523,7 @@ namespace ControlRoomApplication.Main
                     thread = new Thread(() =>
                     {
                         rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                        rtController.SnowDump();
+                        rtController.SnowDump(MovePriority.Manual);
                     });
                     //Snow Dump selected (index 5 of control script combo)
                     break;
