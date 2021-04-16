@@ -160,6 +160,7 @@ namespace ControlRoomApplication.Controllers {
 
             int lastHeartBeat = 0;
             DateTime lastConnectAttempt = DateTime.Now;
+            bool inError = false;
 
             while(HeartbeatMonitorRunning) {
 
@@ -171,7 +172,11 @@ namespace ControlRoomApplication.Controllers {
                     // Only try to connect if it's been more than 5 seconds since the last attempt
                     if ((DateTime.Now - lastConnectAttempt) > TimeSpan.FromSeconds(5))
                     {
-                        logger.Error("MCU network disconnected...");
+                        if (!inError)
+                        {
+                            logger.Error("MCU network disconnected...");
+                            inError = true;
+                        }
                         ConnectToModbusServer();
                         lastConnectAttempt = DateTime.Now;
                     }
@@ -192,6 +197,7 @@ namespace ControlRoomApplication.Controllers {
                     if (((networkStatus[0] >> (ushort)MCUNetworkStatus.MCUNetworkDisconnected) & 1) == 1)
                     {
                         logger.Warn("MCU network recovered from being disconnected.");
+                        inError = false;
                     }
                 }
 
