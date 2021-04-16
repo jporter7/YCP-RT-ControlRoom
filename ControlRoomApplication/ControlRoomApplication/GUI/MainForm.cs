@@ -437,7 +437,7 @@ namespace ControlRoomApplication.Main
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
 
                 ProgramRTControllerList[i].RadioTelescope.SpectraCyberController.BringDown();
-                ProgramRTControllerList[i].RadioTelescope.PLCDriver.Bring_down();
+                ProgramRTControllerList[i].ShutdownRadioTelescope();
             }
 
             // End logging
@@ -453,6 +453,7 @@ namespace ControlRoomApplication.Main
                 ProgramRTControllerList[i].RadioTelescope.online = 0;
                 ProgramRTControllerList[i].RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
                 DatabaseOperations.UpdateTelescope(ProgramRTControllerList[i].RadioTelescope);
+                ProgramRTControllerList[i].ShutdownRadioTelescope();
             }
 
         }
@@ -528,7 +529,6 @@ namespace ControlRoomApplication.Main
                 DatabaseOperations.UpdateTelescope(newRT);
 
                 // These settings are not stored in the database, so they are new every time
-                abstractPLCDriver.SetParent(newRT);
                 newRT.PLCDriver = abstractPLCDriver;
                 newRT.PLCDriver.setTelescopeType(newRT._TeleType);
                 newRT.SpectraCyberController = BuildSpectraCyber();
@@ -552,7 +552,6 @@ namespace ControlRoomApplication.Main
                 DatabaseOperations.UpdateTelescope(existingRT);
 
                 // These settings are not stored in the database, so they are new every time
-                abstractPLCDriver.SetParent(existingRT);
                 existingRT.PLCDriver = abstractPLCDriver;
                 existingRT.PLCDriver.setTelescopeType(existingRT._TeleType);
                 existingRT.SpectraCyberController = BuildSpectraCyber();

@@ -46,7 +46,6 @@ namespace ControlRoomApplication.Controllers
 
         public override bool StartAsyncAcceptingClients()
         {
-            driver.SetParent(Parent);
             return driver.StartAsyncAcceptingClients();
         }
 
@@ -74,16 +73,6 @@ namespace ControlRoomApplication.Controllers
         public override bool Cancel_move()
         {
             return driver.Cancel_move();
-        }
-
-        public override bool Thermal_Calibrate()
-        {
-            return driver.Thermal_Calibrate();
-        }
-
-        public override bool SnowDump()
-        {
-            return driver.SnowDump();
         }
 
         public override bool HitAzimuthLeftLimitSwitch()
