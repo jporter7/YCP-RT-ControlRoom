@@ -1002,7 +1002,7 @@ namespace ControlRoomApplication.Controllers {
         /// <summary>
         /// Sets the telescope type so we know if we should be normalizing the azimuth orientation or not.
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type">The telescope type we are setting the MCU manager telescope type to.</param>
         public void setTelescopeType(RadioTelescopeTypeEnum type)
         {
             telescopeType = type;
