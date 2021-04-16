@@ -929,28 +929,42 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// this should only be used to back off of limit switches for any other jog move use the <see cref="Send_Jog_command"/>
+        /// This should only be used to back off of limit switches.
+        /// For any other jog moves, use the <see cref="Send_Jog_command"/>
         /// </summary>
-        /// <param name="AZ"></param>
-        /// <param name="CW"></param>
-        /// <param name="speed"></param>
+        /// <param name="axis">What axis (elevation or azimuth) is spinning.</param>
+        /// <param name="direction">Denotes what direction a motor will be spinning.</param>
+        /// <param name="speed">What speed the motor will be spinning at.</param>
         /// <returns></returns>
-        public bool SendSingleAxisJog(bool AZ,bool CW, double speed) {
-            ushort DataOffset, dir;
-            int StepSpeed;
-            if(CW) {
-                dir = 0x0080;
-            } else dir = 0x0100;
-            if(AZ) {
-                StepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_AZIMUTH );
-                DataOffset = 0;
+        public bool SendSingleAxisJog(RadioTelescopeAxisEnum axis, RadioTelescopeDirectionEnum direction, double speed) {
+            ushort dataOffset;
+            int stepSpeed;
+
+            if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
+                stepSpeed = ConversionHelper.RPMToSPS(speed, MotorConstants.GEARING_RATIO_AZIMUTH);
+                dataOffset = 0;
             } else {
-                StepSpeed = ConversionHelper.RPMToSPS( speed , MotorConstants.GEARING_RATIO_ELEVATION );
-                DataOffset = 10;
+                stepSpeed = ConversionHelper.RPMToSPS(speed, MotorConstants.GEARING_RATIO_ELEVATION);
+                dataOffset = 10;
             }
-            ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(StepSpeed >> 16) , (ushort)(StepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
-            WriteMCURegisters( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset ), data );
+
+            ushort[] data = new ushort[10] {
+                (ushort)direction,
+                0x0003,
+                0x0,
+                0x0,
+                (ushort)(stepSpeed >> 16),
+                (ushort)(stepSpeed & 0xffff),
+                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                0x0,
+                0x0
+            };
+
+            WriteMCURegisters((ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + dataOffset), data);
+
             RunningCommand.completed = false;
+
             return true;
         }
 
@@ -961,10 +975,10 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="CW"></param>
         /// <param name="speed"></param>
         /// <returns></returns>
-        public bool StopSingleAxisJog(bool AZ) {
+        public bool StopSingleAxisJog(RadioTelescopeAxisEnum axis) {
             ushort DataOffset;
 
-            if(AZ) {
+            if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
                 DataOffset = 0;
             } else {
                 DataOffset = 10;
@@ -973,7 +987,7 @@ namespace ControlRoomApplication.Controllers {
             for(int i = 0; i < data.Length; i++) {
                 data[i] = MCUMessages.ClearMove[i];
             }
-            WriteMCURegisters( (ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset) , data );
+            WriteMCURegisters((ushort)(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + DataOffset), data);
             RunningCommand.completed = true;
             return true;
         }

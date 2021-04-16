@@ -148,19 +148,19 @@ namespace ControlRoomApplication.Controllers
             if(e.Value) {
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
-                            MCU.SendSingleAxisJog( true , true , 0.25);
+                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.Clockwise, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.SendSingleAxisJog( true , false , 0.25);
+                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.Counterclockwise, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.SendSingleAxisJog( false , false , 0.25);
+                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.Counterclockwise, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.SendSingleAxisJog( false , true , 0.25);
+                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.Clockwise, 0.25);
                             break;
                         }
 
@@ -169,19 +169,19 @@ namespace ControlRoomApplication.Controllers
             if(!e.Value) {
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
-                            MCU.StopSingleAxisJog(true);
+                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.StopSingleAxisJog(true);
+                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.StopSingleAxisJog(false);
+                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.StopSingleAxisJog(false);
+                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
                             break;
                         }
                 }
