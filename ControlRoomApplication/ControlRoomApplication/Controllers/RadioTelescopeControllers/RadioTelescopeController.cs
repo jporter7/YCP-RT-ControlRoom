@@ -411,21 +411,6 @@ namespace ControlRoomApplication.Controllers
             return false;
         }
 
-
-        private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
-        {
-            return ((ResponseBytes[0] + (ResponseBytes[1] * 256)) == ExpectedSize) && (ResponseBytes[2] == 0x1);
-            //TODO: throws object is not instance of object when the  PLCClientCommunicationHandler.ReadResponse() retuns null usually due to time out
-
-         }
-
-        private static bool MinorResponseIsValid(byte[] MinorResponseBytes)
-        {
-            
-            System.Diagnostics.Debug.WriteLine(MinorResponseBytes);
-            return ResponseMetBasicExpectations(MinorResponseBytes, 0x3);
-        }
-
         // Checks the motor temperatures against acceptable ranges every second
         private void SensorMonitor()
         {
