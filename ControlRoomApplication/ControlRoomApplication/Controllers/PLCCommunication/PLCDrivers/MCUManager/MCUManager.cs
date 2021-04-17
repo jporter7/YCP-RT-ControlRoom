@@ -164,7 +164,7 @@ namespace ControlRoomApplication.Controllers {
 
             while(HeartbeatMonitorRunning) {
 
-                ushort[] networkStatus = ReadMCURegisters( (ushort)MCUConstants.MCUOutputRegs.NetworkConnectivity , 1 );
+                ushort[] networkStatus = ReadMCURegisters((ushort)MCUConstants.MCUOutputRegs.NetworkConnectivity, 1);
 
                 // If the network status length is 50, it means the network has disconnected, and we must attempt to reconnect
                 if (networkStatus.Length == 50)
