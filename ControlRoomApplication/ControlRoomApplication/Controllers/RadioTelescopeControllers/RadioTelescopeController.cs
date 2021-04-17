@@ -162,7 +162,6 @@ namespace ControlRoomApplication.Controllers
             bool successMove1 = false;
             bool successMove2 = false;
             bool successMove3 = false;
-            bool successMove4 = false;
 
             if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
             {
@@ -189,7 +188,10 @@ namespace ControlRoomApplication.Controllers
                 RFData rfResponse = RFData.GenerateFrom(response);
 
                 // move back to previous location
-                successMove2 = RadioTelescope.PLCDriver.Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
+                if (successMove1)
+                {
+                    successMove2 = RadioTelescope.PLCDriver.Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
+                }
 
                 // analyze data
                 // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
@@ -208,15 +210,15 @@ namespace ControlRoomApplication.Controllers
                 RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
 
                 // return true if working correctly, false if not
-                if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
+                if ((Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET) && successMove2 && successMove1)
                 {
-                    successMove4 = RadioTelescope.PLCDriver.Move_to_orientation(MiscellaneousConstants.Stow, current);
+                    successMove3 = RadioTelescope.PLCDriver.Move_to_orientation(MiscellaneousConstants.Stow, current);
                 }
 
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
 
-            return successMove1 && successMove2 && successMove3 && successMove4;
+            return successMove1 && successMove2 && successMove3;
         }
 
         /// <summary>
@@ -251,7 +253,7 @@ namespace ControlRoomApplication.Controllers
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
                 success = RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position());
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if(RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
 
             return success;
@@ -275,7 +277,7 @@ namespace ControlRoomApplication.Controllers
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
                 success = RadioTelescope.PLCDriver.Move_to_orientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), RadioTelescope.PLCDriver.read_Position()); // MOVE
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
 
             return success;
@@ -588,7 +590,7 @@ namespace ControlRoomApplication.Controllers
                 // move back to initial orientation
                 successMove3 = RadioTelescope.PLCDriver.Move_to_orientation(current, dumpElevation);
 
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
 
             return successMove1 && successMove2 && successMove3;
