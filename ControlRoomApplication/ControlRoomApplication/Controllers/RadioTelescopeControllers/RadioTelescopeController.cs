@@ -283,6 +283,32 @@ namespace ControlRoomApplication.Controllers
             return success;
         }
 
+        /// <summary>
+        /// This is used to home the telescope. Immediately after homing, the telescope will move to "Stow" position.
+        /// This will also zero out the absolute encoders and account for the true north offset.
+        /// </summary>
+        /// <param name="priority">The priority of this movement.</param>
+        /// <returns>True if homing was successful; false if homing failed.</returns>
+        public bool HomeTelescope(MovePriority priority)
+        {
+            bool success = false;
+
+            if(priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            {
+                if (!AllSensorsSafe) return false;
+
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+                success = RadioTelescope.PLCDriver.HomeTelescope(); // MOVE
+
+                // Zero out absolute encoders
+                RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = (Orientation)RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Clone();
+
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+            }
+
+            return success;
+        }
+
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's azimuth

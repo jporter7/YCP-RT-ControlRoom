@@ -134,8 +134,6 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Get_interlock_status();
 
-        public abstract Task<bool> JogOffLimitSwitches();
-
         public abstract void setregvalue(ushort adr, ushort value);
 
         public abstract ushort getregvalue(ushort adr);

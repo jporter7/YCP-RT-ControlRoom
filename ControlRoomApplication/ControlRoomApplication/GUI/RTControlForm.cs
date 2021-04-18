@@ -482,7 +482,6 @@ namespace ControlRoomApplication.Main
                 case 1:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
                     });
                     //Stow Script selected (index 0 of control script combo)
@@ -514,7 +513,6 @@ namespace ControlRoomApplication.Main
                 case 5:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
                     });
                     //Thermal Calibration selected (index 4 of control script combo)
@@ -522,7 +520,6 @@ namespace ControlRoomApplication.Main
                 case 6:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         rtController.SnowDump(MovePriority.Manual);
                     });
                     //Snow Dump selected (index 5 of control script combo)
@@ -546,7 +543,6 @@ namespace ControlRoomApplication.Main
                 case 9:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         tele.PLCDriver.Recover_CCW_Hardstop();
                     });
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
@@ -554,7 +550,7 @@ namespace ControlRoomApplication.Main
                 case 10:
                     thread = new Thread(() =>
                     {
-                        tele.PLCDriver.HomeTelescope();
+                        rtController.HomeTelescope(MovePriority.Manual);
                     });
                     //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
                     break;

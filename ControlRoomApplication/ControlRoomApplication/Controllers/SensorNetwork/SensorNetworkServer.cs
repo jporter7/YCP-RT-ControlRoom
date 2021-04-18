@@ -101,6 +101,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         public Orientation CurrentAbsoluteOrientation { get; set; }
 
         /// <summary>
+        /// The absolute encoders will be different from the motor encoders by default, so when we home the telescope,
+        /// the offset will be calculated and stored in here. This should work no matter where the homing sensor
+        /// is placed.
+        /// </summary>
+        public Orientation AbsoluteOrientationOffset { get; set; }
+
+        /// <summary>
         /// This tells us the current vibration coming from the azimuth motor. It is always received as
         /// an array to give us higher data accuracy.
         /// </summary>
@@ -336,7 +343,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                             // This must be converted into degrees, because we are only receiving raw data from the
                             // elevation encoder
                             CurrentAbsoluteOrientation.Elevation = 
-                                0.25 * (short)(data[k++] << 8 | data[k++]) - 20.375;
+                                (0.25 * (short)(data[k++] << 8 | data[k++]) - 20.375) - AbsoluteOrientationOffset.Elevation;
                         }
 
                         // Azimuth absolute encoder
@@ -345,7 +352,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                             // This must be converted into degrees, because we are only receiving raw data from the
                             // azimuth encoder
                             CurrentAbsoluteOrientation.Azimuth = 
-                                360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[k++] << 8 | data[k++]);
+                                (360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[k++] << 8 | data[k++])) - AbsoluteOrientationOffset.Azimuth;
                         }
 
                         success = true;
