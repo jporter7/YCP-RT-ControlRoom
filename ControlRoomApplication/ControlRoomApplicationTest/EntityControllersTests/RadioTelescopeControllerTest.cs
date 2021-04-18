@@ -330,7 +330,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             // Acquire current orientation
             Orientation currOrientation;
-            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
 
             // Calculate motor steps from current orientation
             int currStepsAz, currStepsEl;
@@ -349,7 +349,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
 
             // Create result orientation
-            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
 
             // Assert expected and result are identical
             Assert.AreEqual(expectedOrientation, resultOrientation);
@@ -360,7 +360,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             // Acquire current orientation
             Orientation currOrientation;
-            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
 
             // Calculate motor steps from current orientation
             int currStepsAz, currStepsEl;
@@ -379,7 +379,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
 
             // Create result orientation
-            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
 
             // Assert expected and result are identical
             Assert.AreEqual(expectedOrientation, resultOrientation);
@@ -393,7 +393,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Acquire current orientation
             Orientation currOrientation;
-            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+            currOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
 
             // Calculate motor steps from current orientation
             int currStepsAz, currStepsEl;
@@ -412,7 +412,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
 
             // Create result orientation
-            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.read_Position();
+            Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
 
             // Assert expected and result are identical
             Assert.AreEqual(expectedOrientation.Azimuth, resultOrientation.Azimuth, 0.001);

@@ -249,7 +249,7 @@ namespace ControlRoomApplication.Controllers {
         /// Reads the position from the motor encoders.
         /// </summary>
         /// <returns></returns>
-        public Orientation read_Position() {
+        public Orientation GetMotorEncoderPosition() {
 
             // First update the registers to be absolutely sure we have the most recent position
             mCUpositon.update(ReadMCURegisters(0, 16));
@@ -272,7 +272,7 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// gets the position from MCU step count, thsi should be compaired with the value from <see cref="read_Position"/>
+        /// gets the position from MCU step count, thsi should be compaired with the value from <see cref="GetMotorEncoderPosition"/>
         /// </summary>
         /// <remarks>
         /// the MCU traks 2 values for position one that comes from the encoder mounted on the motors shaft, 
@@ -282,7 +282,7 @@ namespace ControlRoomApplication.Controllers {
         /// also there will always be some play in the position that the encoder reports +-10 counts should be within acceptabele limts
         /// </remarks>
         /// <returns></returns>
-        public Orientation read_Position_steps() {
+        public Orientation GetMotorStepsPosition() {
             mCUpositon.update(ReadMCURegisters(0, 16));
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation

@@ -540,7 +540,7 @@ namespace ControlRoomApplication.Controllers
         {
             Orientation AZLeftLimit = new Orientation(-9, 0);
 
-            return Move_to_orientation(AZLeftLimit, read_Position());
+            return Move_to_orientation(AZLeftLimit, GetMotorEncoderPosition());
         }
 
         /// <summary>
@@ -550,7 +550,7 @@ namespace ControlRoomApplication.Controllers
         {
             Orientation AZRightLimit = new Orientation(369, 0);
 
-            return Move_to_orientation(AZRightLimit, read_Position());
+            return Move_to_orientation(AZRightLimit, GetMotorEncoderPosition());
         }
 
         /// <summary>
@@ -560,7 +560,7 @@ namespace ControlRoomApplication.Controllers
         {
             Orientation ELLowerLimit = new Orientation(0, -14);
 
-            return Move_to_orientation(ELLowerLimit, read_Position());
+            return Move_to_orientation(ELLowerLimit, GetMotorEncoderPosition());
         }
 
         /// <summary>
@@ -570,7 +570,7 @@ namespace ControlRoomApplication.Controllers
         {
             Orientation ELUpperLimit = new Orientation(0, 92);
 
-            return Move_to_orientation(ELUpperLimit, read_Position());
+            return Move_to_orientation(ELUpperLimit, GetMotorEncoderPosition());
         }
 
         /// <summary>
@@ -578,7 +578,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override bool RecoverFromLimitSwitch()
         {
-            Orientation currentPos = read_Position();
+            Orientation currentPos = GetMotorEncoderPosition();
 
             Orientation safe;
 
@@ -652,7 +652,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override bool FullElevationMove()
         {
-            Orientation currentPos = read_Position();
+            Orientation currentPos = GetMotorEncoderPosition();
 
             bool elStartFlag;
             bool elFinishFlag;
@@ -678,7 +678,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override bool Full_360_CCW_Rotation()
         {
-            Orientation current = read_Position();
+            Orientation current = GetMotorEncoderPosition();
             Orientation finish;
 
             if (current.Azimuth == 359)
@@ -700,7 +700,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override bool Full_360_CW_Rotation()
         {
-            Orientation current = read_Position();
+            Orientation current = GetMotorEncoderPosition();
             Orientation start = new Orientation(0, 0);
             Orientation finish = new Orientation(360, 0);
 
@@ -716,7 +716,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override bool Hit_CW_Hardstop()
         {
-            Orientation current = read_Position();
+            Orientation current = GetMotorEncoderPosition();
             Orientation hardstop = new Orientation(370, current.Elevation);
 
             return Move_to_orientation(hardstop, current);
@@ -727,7 +727,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override bool Hit_CCW_Hardstop()
         {
-            Orientation current = read_Position();
+            Orientation current = GetMotorEncoderPosition();
             Orientation hardstop = new Orientation(-10, current.Elevation);
 
             return Move_to_orientation(hardstop, current);
@@ -741,7 +741,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override bool Recover_CW_Hardstop()
         {
-            Orientation current = read_Position();
+            Orientation current = GetMotorEncoderPosition();
             Orientation recover = new Orientation(360, current.Elevation);
 
             return Move_to_orientation(recover, current);
@@ -755,7 +755,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override bool Recover_CCW_Hardstop()
         {
-            Orientation current = read_Position();
+            Orientation current = GetMotorEncoderPosition();
             Orientation recover = new Orientation(0, current.Elevation);
 
             return Move_to_orientation(recover, current);
@@ -780,10 +780,10 @@ namespace ControlRoomApplication.Controllers
         /// this gets the position stored in the MCU which is based of the number of steps the MCU has taken since it was last 0ed out
         /// </summary>
         /// <returns></returns>
-        public override Orientation read_Position(){
+        public override Orientation GetMotorEncoderPosition(){
 
             if (IsSimulation) return CurrentSimOrientation;
-            else return MCU.read_Position();
+            else return MCU.GetMotorEncoderPosition();
         }
 
         /// <summary>
@@ -1042,7 +1042,11 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
         
-        protected override bool TestIfComponentIsAlive() {
+        /// <summary>
+        /// Tests if both the PLC and MCU are alive and working.
+        /// </summary>
+        /// <returns>True if both the MCU and PLC are alive and working.</returns>
+        public override bool TestIfComponentIsAlive() {
 
             bool PLC_alive, MCU_alive;
             try {
@@ -1055,14 +1059,6 @@ namespace ControlRoomApplication.Controllers
                 }
                 return PLC_alive && MCU_alive;
             } catch { return false; }
-        }
-
-        /// <summary>
-        /// public version of TestIfComponentIsAlive
-        /// </summary>
-        /// <returns></returns>
-        public bool workaroundAlive() {
-            return TestIfComponentIsAlive();
         }
 
         public override void setTelescopeType(RadioTelescopeTypeEnum type)

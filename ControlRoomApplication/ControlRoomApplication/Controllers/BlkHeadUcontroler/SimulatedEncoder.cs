@@ -66,7 +66,7 @@ namespace ControlRoomApplication.Controllers.BlkHeadUcontroler {
             public void DoSomethingWithClient() {//once the server has a client send the position data immediately to the driver which will then close the conection
                 StreamWriter sw = new StreamWriter( ClientStream );
                 StreamReader sr = new StreamReader( sw.BaseStream );
-                Orientation or = PCL.read_Position();
+                Orientation or = PCL.GetMotorEncoderPosition();
                 int az = (int)((or.Azimuth / 360.0) * 4096);
                 int el = (int)((or.Elevation / 20.0) * 4096*10);
                 var obj = new {

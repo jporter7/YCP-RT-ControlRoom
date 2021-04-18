@@ -94,7 +94,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
         /// <summary>
         /// The current orientation of the telescope based off of the absolute encoders. These
-        /// are totally separate from the motor encoders' data that we get from the Read_position
+        /// are totally separate from the motor encoders' data that we get from the GetMotorEncoderPosition
         /// function in the PLC and MCU, and will provide more accurate data regarding the telescope's
         /// position.
         /// </summary>

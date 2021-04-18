@@ -88,7 +88,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-            return RadioTelescope.PLCDriver.read_Position();
+            return RadioTelescope.PLCDriver.GetMotorEncoderPosition();
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace ControlRoomApplication.Controllers
                 if (!AllSensorsSafe) return false;
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-                success = RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position());
+                success = RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.GetMotorEncoderPosition());
                 if(RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
 
@@ -276,7 +276,7 @@ namespace ControlRoomApplication.Controllers
                 if (!AllSensorsSafe) return false;
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-                success = RadioTelescope.PLCDriver.Move_to_orientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), RadioTelescope.PLCDriver.read_Position()); // MOVE
+                success = RadioTelescope.PLCDriver.Move_to_orientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), RadioTelescope.PLCDriver.GetMotorEncoderPosition()); // MOVE
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
 

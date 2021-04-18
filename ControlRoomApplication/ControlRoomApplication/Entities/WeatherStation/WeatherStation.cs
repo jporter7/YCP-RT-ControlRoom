@@ -85,7 +85,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
         }
 
         // From the HeartbeatInterface
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             // see if we can connect to the weather station
             return GetModelNo_V() != COM_ERROR;

@@ -76,7 +76,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Test_Connection();
 
-        public abstract Orientation read_Position();
+        public abstract Orientation GetMotorEncoderPosition();
 
         public abstract bool Cancel_move();
 

@@ -65,9 +65,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Test_Connection();
         }
 
-        public override Orientation read_Position()
+        public override Orientation GetMotorEncoderPosition()
         {
-            return driver.read_Position();
+            return driver.GetMotorEncoderPosition();
         }
 
         public override bool Cancel_move()
@@ -174,8 +174,8 @@ namespace ControlRoomApplication.Controllers
             return driver.GET_MCU_Status( axis );
         }
 
-        protected override bool TestIfComponentIsAlive() {
-            return driver.workaroundAlive();
+        public override bool TestIfComponentIsAlive() {
+            return driver.TestIfComponentIsAlive();
         }
 
         public override bool HomeTelescope() {

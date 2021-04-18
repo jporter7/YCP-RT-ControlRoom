@@ -25,7 +25,7 @@ namespace ControlRoomApplication.Controllers
             // pass
         }
 
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             //throw new System.NotImplementedException();
             return true;

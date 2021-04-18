@@ -217,7 +217,7 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override Orientation read_Position() {
+        public override Orientation GetMotorEncoderPosition() {
             return new Orientation();
         }
 
@@ -382,7 +382,7 @@ namespace ControlRoomApplication.Controllers {
             return stuf;
         }
 
-        protected override bool TestIfComponentIsAlive() {
+        public override bool TestIfComponentIsAlive() {
             return true;
 
         }
