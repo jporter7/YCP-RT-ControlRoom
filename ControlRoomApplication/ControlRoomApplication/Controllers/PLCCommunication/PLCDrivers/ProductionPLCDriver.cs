@@ -896,13 +896,13 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// speed in RPM
         /// </summary>
-        /// <param name="AZspeed"></param>
-        /// <param name="AZ_CW"></param>
-        /// <param name="ELspeed"></param>
-        /// <param name="ELPositive"></param>
+        /// <param name="azSpeed"></param>
+        /// <param name="azDirection"></param>
+        /// <param name="elSpeed"></param>
+        /// <param name="elDirection"></param>
         /// <returns></returns>
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool ELPositive) {
-            return MCU.SendBothAxesJog( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive);
+        public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+            return MCU.SendBothAxesJog(Math.Abs(azSpeed), azDirection, Math.Abs(elSpeed), elDirection);
         }
 
         public override bool Stop_Jog() {

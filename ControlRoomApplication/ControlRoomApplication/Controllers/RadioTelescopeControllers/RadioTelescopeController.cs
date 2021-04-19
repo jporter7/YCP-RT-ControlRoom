@@ -298,7 +298,7 @@ namespace ControlRoomApplication.Controllers
                 if (!AllSensorsSafe) return false;
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-                success = RadioTelescope.PLCDriver.HomeTelescope(); // MOVE
+                success = RadioTelescope.PLCDriver.HomeTelescope();
 
                 // Zero out absolute encoders
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = (Orientation)RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Clone();
@@ -318,7 +318,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeAzimuthJog(double speed, bool PositiveDIR, MovePriority priority)
+        public bool StartRadioTelescopeAzimuthJog(double speed, RadioTelescopeDirectionEnum direction, MovePriority priority)
         {
             bool success = false;
 
@@ -327,7 +327,9 @@ namespace ControlRoomApplication.Controllers
                 if (!AllSensorsSafe) return false;
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-                success = RadioTelescope.PLCDriver.Start_jog(speed, PositiveDIR, 0, false);
+
+                // Elevation direction is a "don't care" because its speed is 0, so it won't move anyway
+                success = RadioTelescope.PLCDriver.StartBothAxesJog(speed, direction, 0, direction);
             }
 
             return success;
@@ -341,7 +343,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeElevationJog(double speed, bool PositiveDIR, MovePriority priority)
+        public bool StartRadioTelescopeElevationJog(double speed, RadioTelescopeDirectionEnum direction, MovePriority priority)
         {
             bool success = false;
 
@@ -350,7 +352,9 @@ namespace ControlRoomApplication.Controllers
                 if (!AllSensorsSafe) return false;
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-                success = RadioTelescope.PLCDriver.Start_jog( 0,false,speed, PositiveDIR);
+
+                // Azimuth direction is a "don't care" because its speed is 0, so it won't move anyway
+                success = RadioTelescope.PLCDriver.StartBothAxesJog(0, direction, speed, direction);
             }
 
             return success;

@@ -128,7 +128,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 
-        public abstract bool Start_jog( double AZspeed ,bool AZ_CW, double ELspeed ,bool EL_CW);
+        public abstract bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection);
 
         public abstract bool Stop_Jog();
 

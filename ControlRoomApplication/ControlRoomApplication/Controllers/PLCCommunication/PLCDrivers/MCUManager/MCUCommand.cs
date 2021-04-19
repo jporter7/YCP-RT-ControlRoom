@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlRoomApplication.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,9 +39,14 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         public int AZ_Programed_Speed, EL_Programed_Speed, AZ_ACC = 50, EL_ACC = 50;
 
         /// <summary>
-        /// these are set to determine the direction of motion
+        /// Determines the direction of motion of the azimuth motor.
         /// </summary>
-        public bool AZ_CW, EL_CW;
+        public RadioTelescopeDirectionEnum AzimuthDirection;
+
+        /// <summary>
+        /// Determines the direction of motion fo the elevation motor.
+        /// </summary>
+        public RadioTelescopeDirectionEnum ElevationDirection;
 
         /// <summary>
         /// create a MCU command and record the current time
@@ -54,20 +60,21 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         }
 
         /// <summary>
-        /// creat a comand for movement
+        /// Create a command for movement. Only the "data" field is sent to the MCU; the rest of the fields
+        /// exist for internal tracking and estimations within the MCU manager.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="CMDType"></param>
-        /// <param name="AZCW"></param>
-        /// <param name="ELCW"></param>
+        /// <param name="azDir"></param>
+        /// <param name="elDir"></param>
         /// <param name="AZSpeed"></param>
         /// <param name="ElSpeed"></param>
-        public MCUCommand(ushort[] data, MCUCommandType CMDType, bool AZCW, bool ELCW, int AZSpeed, int ElSpeed)
+        public MCUCommand(ushort[] data, MCUCommandType CMDType, RadioTelescopeDirectionEnum azDir, RadioTelescopeDirectionEnum elDir, int AZSpeed, int ElSpeed)
         {
             CommandType = CMDType;
             commandData = data;
-            AZ_CW = AZCW;
-            EL_CW = ELCW;
+            AzimuthDirection = azDir;
+            ElevationDirection = elDir;
             AZ_Programed_Speed = AZSpeed;
             EL_Programed_Speed = ElSpeed;
         }

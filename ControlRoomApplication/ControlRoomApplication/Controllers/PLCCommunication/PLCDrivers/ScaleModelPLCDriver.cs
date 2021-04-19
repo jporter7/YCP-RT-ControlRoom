@@ -360,7 +360,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
+        public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
             throw new NotImplementedException();
 
         }

@@ -444,7 +444,7 @@ namespace ControlRoomApplication.Controllers {
                 int mS_To_DecelerateAZ = (int)((1.25 * (CMD.AZ_Programed_Speed - AZStartSpeed) / (double)CMD.AZ_ACC) / 1000.0);
                 StepsAZ = (int)(mS_To_DecelerateAZ * ((CMD.AZ_Programed_Speed + ConversionHelper.RPMToSPS( Current_AZConfiguration.StartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH )) / 2.0));
                 StepsAZ += (int)(CMD.AZ_Programed_Speed * 0.25);//add 100 ms worth of steps
-                if(!CMD.AZ_CW) {
+                if(CMD.AzimuthDirection == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive) {
                     StepsAZ = -StepsAZ;
                 }
             }
@@ -452,7 +452,7 @@ namespace ControlRoomApplication.Controllers {
                 int mS_To_DecelerateEL = (int)((1.25 * (CMD.EL_Programed_Speed - AZStartSpeed) / (double)CMD.EL_ACC) / 1000.0);
                 StepsEL = (int)(mS_To_DecelerateEL * ((CMD.EL_Programed_Speed + ConversionHelper.RPMToSPS( Current_ELConfiguration.StartSpeed , MotorConstants.GEARING_RATIO_ELEVATION )) / 2.0));
                 StepsEL += (int)(CMD.EL_Programed_Speed * 0.25);//add 100 ms worth of steps
-                if(!CMD.EL_CW) {
+                if(CMD.ElevationDirection == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive) {
                     StepsEL = -StepsEL;
                 }
             }
@@ -809,7 +809,17 @@ namespace ControlRoomApplication.Controllers {
             TimeToMove = ( int)(TimeToMove * 1.2);
             TimeToMove += 100;
 
-            var ThisMove = SendGenericCommand( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, positionTranslationAZ > 0, positionTranslationEL > 0, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } );
+            // Calculate azimuth movement direction
+            RadioTelescopeDirectionEnum azDirection;
+            if (positionTranslationAZ > 0) azDirection = RadioTelescopeDirectionEnum.ClockwiseOrNegative;
+            else azDirection = RadioTelescopeDirectionEnum.CounterclockwiseOrPositive;
+
+            // Calculate elevation movement direction
+            RadioTelescopeDirectionEnum elDirection;
+            if (positionTranslationEL > 0) elDirection = RadioTelescopeDirectionEnum.ClockwiseOrNegative;
+            else elDirection = RadioTelescopeDirectionEnum.CounterclockwiseOrPositive;
+
+            var ThisMove = SendGenericCommand( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, azDirection, elDirection, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } );
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
                 if(!MotorsCurrentlyMoving()) {
@@ -892,15 +902,11 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-        public bool SendBothAxesJog( double AZspeed , bool AZClockwise , double ELspeed , bool ELPositive) {
-            ushort dir;
-            ELPositive = !ELPositive;
-            if(AZClockwise) {
-                dir = 0x0080;
-            } else dir = 0x0100;
+        public bool SendBothAxesJog( double AZspeed, RadioTelescopeDirectionEnum azDirection, double ELspeed, RadioTelescopeDirectionEnum elDirection) {
+
             int AZstepSpeed = ConversionHelper.RPMToSPS( AZspeed , MotorConstants.GEARING_RATIO_AZIMUTH );
             int ELstepSpeed = ConversionHelper.RPMToSPS( ELspeed , MotorConstants.GEARING_RATIO_ELEVATION );
-            ushort[] data = new ushort[10] { dir , 0x0003 , 0x0 , 0x0 , (ushort)(AZstepSpeed >> 16) , (ushort)(AZstepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
+            ushort[] data = new ushort[10] { (ushort)azDirection , 0x0003 , 0x0 , 0x0 , (ushort)(AZstepSpeed >> 16) , (ushort)(AZstepSpeed & 0xffff) , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , 0x0 , 0x0 , };
             ushort[] data2 = new ushort[20];
 
             if(AZstepSpeed > AZStartSpeed) {
@@ -915,11 +921,8 @@ namespace ControlRoomApplication.Controllers {
                 for(int j = 0; j < data.Length; j++) {
                     data2[j + 10] = data[j];
                 }
-                if(ELPositive) {
-                    dir = 0x0080;
-                } else dir = 0x0100;
 
-                data2[10] = (ushort)(dir);
+                data2[10] = (ushort)(elDirection);
                 data2[14] = (ushort)(ELstepSpeed >> 16);
                 data2[15] = (ushort)(ELstepSpeed & 0xffff);
             } else {
@@ -930,33 +933,33 @@ namespace ControlRoomApplication.Controllers {
                 //if telescope is already joging changing direction requires stopping first
                 ushort[] data3 = new ushort[20];
                 data2.CopyTo( data3 , 0 );
-                booth = (RunningCommand.AZ_CW != AZClockwise) && (RunningCommand.EL_CW != ELPositive);
+                booth = (RunningCommand.AzimuthDirection != azDirection) && (RunningCommand.ElevationDirection != elDirection);
                 if(booth) {//if both axis need to change direction
                     Cancel_move();
                     WaitUntilStopped();
-                } else if(RunningCommand.EL_CW != ELPositive) {//if only elevation needs to change direction
+                } else if(RunningCommand.ElevationDirection != elDirection) {//if only elevation needs to change direction
                     for(int j = 0; j <= data3.Length - 11; j++) {
                         // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove
                         data3[j + 10] = MCUMessages.ClearBothAxesMove[j + 10];//replace elevation portion of move with controled stop
                     }
-                    _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
+                    _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
                     WaitUntilStoppedPerAxis(RadioTelescopeAxisEnum.AZIMUTH);
-                } else if(RunningCommand.AZ_CW != AZClockwise) {//only Azimuth needs to change direction
+                } else if(RunningCommand.AzimuthDirection != azDirection) {//only Azimuth needs to change direction
                     for(int j = 0; j <= data3.Length - 1; j++)
                     {
                         // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove
                         data3[j] = MCUMessages.ClearBothAxesMove[j];//replace Azimuth portion of move with controled stop
                     }
-                    _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
+                    _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
                     WaitUntilStoppedPerAxis(RadioTelescopeAxisEnum.ELEVATION);
                 }
             }
 
-            _ = SendGenericCommand( new MCUCommand( data2 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
+            _ = SendGenericCommand( new MCUCommand( data2 , MCUCommandType.JOG, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
                 EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                 AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
             } );

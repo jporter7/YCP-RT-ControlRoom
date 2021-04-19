@@ -605,7 +605,7 @@ namespace ControlRoomApplication.Main
                 case 12:
                     thread = new Thread(() =>
                     {
-                        rtController.StartRadioTelescopeAzimuthJog(1, true, MovePriority.Manual);
+                        rtController.StartRadioTelescopeAzimuthJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
                     });
                     thread.Start();
                     MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
@@ -651,7 +651,7 @@ namespace ControlRoomApplication.Main
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, false, MovePriority.Manual);
+                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovePriority.Manual);
                 }
                 else
                 {
@@ -684,7 +684,7 @@ namespace ControlRoomApplication.Main
                     // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, true, MovePriority.Manual);
+                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
                 }
                 else
                 {
@@ -747,7 +747,7 @@ namespace ControlRoomApplication.Main
                     // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, true, MovePriority.Manual);
+                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
                 }
                 else
                 {
@@ -778,7 +778,7 @@ namespace ControlRoomApplication.Main
                     // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, false, MovePriority.Manual);
+                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovePriority.Manual);
                 }
                 else
                 {
