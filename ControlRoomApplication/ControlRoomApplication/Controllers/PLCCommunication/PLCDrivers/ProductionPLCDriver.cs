@@ -137,25 +137,25 @@ namespace ControlRoomApplication.Controllers
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT :
                         {
                             CurrentMovementPriority = MovePriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.Clockwise, 0.25);
+                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
                         {
                             CurrentMovementPriority = MovePriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.Counterclockwise, 0.25);
+                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT:
                         {
                             CurrentMovementPriority = MovePriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.Counterclockwise, 0.25);
+                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT:
                         {
                             CurrentMovementPriority = MovePriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.Clockwise, 0.25);
+                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
                             break;
                         }
                 }
@@ -902,7 +902,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="ELPositive"></param>
         /// <returns></returns>
         public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool ELPositive) {
-            return MCU.SendBothAxisJog( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive);
+            return MCU.SendBothAxesJog( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive);
         }
 
         public override bool Stop_Jog() {

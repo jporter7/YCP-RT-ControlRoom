@@ -11,14 +11,14 @@
         None,
 
         /// <summary>
-        /// The motor is spinning clockwise.
+        /// The motor is spinning clockwise (azimuth), or in a negative direction (elevation).
         /// </summary>
-        Clockwise = 0x0080,
+        ClockwiseOrNegative = 0x0080,
 
         /// <summary>
-        /// The motor is spinning counter-clockwise.
+        /// The motor is spinning counter-clockwise (azimuth), or in a positive direction (elevation)
         /// </summary>
-        Counterclockwise = 0x0100,
+        CounterclockwiseOrPositive = 0x0100,
 
         /// <summary>
         /// The motor is spinning clockwise. This should ONLY be used for homing.

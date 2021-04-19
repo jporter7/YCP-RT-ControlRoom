@@ -501,6 +501,11 @@ namespace ControlRoomApplication.Controllers {
         /// Tells us if the motors are currently moving. This will automatically return if both motors are moving
         /// if no parameter is passed through.
         /// </summary>
+        /// <remarks>
+        /// This code could, technically, be shortened so we read all the registers in the beginning and decide
+        /// what to do with them in the switch, but my idea here was to only read the registers we need to ensure
+        /// the fastest possible execution time.
+        /// </remarks>
         /// <param name="axis">The axis we want to check is moving.</param>
         /// <returns>True if they are moving clockwise or counter-clockwise, false if they are still.</returns>
         public bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH) {
@@ -545,7 +550,7 @@ namespace ControlRoomApplication.Controllers {
             return isMoving;
         }
 
-        public bool Configure_MCU( MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig) {
+        public bool Configure_MCU(MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig) {
             Current_AZConfiguration = AZconfig;
             Current_ELConfiguration = ELconfig;
             int gearedSpeedAZ = ConversionHelper.RPMToSPS( AZconfig.StartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH );
