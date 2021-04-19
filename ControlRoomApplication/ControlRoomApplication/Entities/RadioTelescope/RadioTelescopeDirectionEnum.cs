@@ -18,6 +18,16 @@
         /// <summary>
         /// The motor is spinning counter-clockwise.
         /// </summary>
-        Counterclockwise = 0x0100
+        Counterclockwise = 0x0100,
+
+        /// <summary>
+        /// The motor is spinning clockwise. This should ONLY be used for homing.
+        /// </summary>
+        ClockwiseHoming = 0x0020,
+
+        /// <summary>
+        /// The motor is spinning counterclockwise. This should ONLY be used for homing.
+        /// </summary>
+        CounterclockwiseHoming = 0x0040
     }
 }

@@ -915,8 +915,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns>True if homing was successful, false if it failed</returns>
         public override bool HomeTelescope() {
-            bool ELHome = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME]);
-            MCU.HomeBothAxyes( true , ELHome , 0.25);
+            MCU.HomeBothAxes(0.25);
             return true;
         }
         
