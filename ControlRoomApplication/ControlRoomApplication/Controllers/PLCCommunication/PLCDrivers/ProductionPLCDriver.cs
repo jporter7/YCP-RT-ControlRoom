@@ -902,7 +902,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="ELPositive"></param>
         /// <returns></returns>
         public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool ELPositive) {
-            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive);
+            return MCU.SendBothAxisJog( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive);
         }
 
         public override bool Stop_Jog() {

@@ -460,42 +460,40 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// this function assums that you have alread told both Axisi to stop moving otherwise it will timeout
+        /// This function assumes that you have already told both Axes to stop moving, otherwise it will time out.
         /// </summary>
-        /// <returns>false if the telescope was still running at the end of the timeout</returns>
-        private bool WaitUntilStoppedPerAxis(bool is_AZ) {
-            if(is_AZ) {
-                try {
-                    int mS_To_Decelerate = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
-                    var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
-                    while(!timout.IsCancellationRequested) {
-                        var datatask = ReadMCURegisters(0 , 12);
-                        Task.Delay( 33 ).Wait();
-                        if(!MotorsCurrentlyMoving(RadioTelescopeAxisEnum.AZIMUTH)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                } catch {
-                    return false;
-                }
-            } else {
-                try {
-                    int mS_To_Decelerate = (int)1.25 * (PreviousCommand.EL_Programed_Speed - ELStartSpeed) / PreviousCommand.EL_ACC;
-                    var timout = new CancellationTokenSource( mS_To_Decelerate ).Token;
-                    while(!timout.IsCancellationRequested) {
-                        var datatask = ReadMCURegisters(0 , 12);
-                        Task.Delay( 33 ).Wait();
-                        if(!MotorsCurrentlyMoving(RadioTelescopeAxisEnum.ELEVATION)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                } catch {
-                    return false;
-                }
+        /// <returns>False if the telescope was still running at the end of the timeout</returns>
+        private bool WaitUntilStoppedPerAxis(RadioTelescopeAxisEnum axis) {
 
+            int msToDecelerate = 0;
+
+            // Calculate timeout based on the axis
+            if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
+                msToDecelerate = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
+            } else {
+                msToDecelerate = (int)1.25 * (PreviousCommand.EL_Programed_Speed - ELStartSpeed) / PreviousCommand.EL_ACC;
             }
+
+            CancellationToken timeout = new CancellationTokenSource(msToDecelerate).Token;
+
+            // Wait for the axis to stop. If it takes longer than the estimated time to decelerate, then
+            // the movement failed and we return false.
+            try
+            {
+                while (!timeout.IsCancellationRequested)
+                {
+                    if (!MotorsCurrentlyMoving(axis))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return false;
 
         }
 
@@ -889,7 +887,7 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-        public bool Send_Jog_command( double AZspeed , bool AZClockwise , double ELspeed , bool ELPositive) {
+        public bool SendBothAxesJog( double AZspeed , bool AZClockwise , double ELspeed , bool ELPositive) {
             ushort dir;
             ELPositive = !ELPositive;
             if(AZClockwise) {
@@ -939,7 +937,7 @@ namespace ControlRoomApplication.Controllers {
                     _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
-                    WaitUntilStoppedPerAxis( true );
+                    WaitUntilStoppedPerAxis(RadioTelescopeAxisEnum.AZIMUTH);
                 } else if(RunningCommand.AZ_CW != AZClockwise) {//only Azimuth needs to change direction
                     for(int j = 0; j <= data3.Length - 1; j++)
                     {
@@ -949,7 +947,7 @@ namespace ControlRoomApplication.Controllers {
                     _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, AZClockwise , ELPositive , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
-                    WaitUntilStoppedPerAxis( false );
+                    WaitUntilStoppedPerAxis(RadioTelescopeAxisEnum.ELEVATION);
                 }
             }
 
@@ -1004,7 +1002,7 @@ namespace ControlRoomApplication.Controllers {
 
         /// <summary>
         /// This should only be used to back off of limit switches.
-        /// For any other jog moves, use the <see cref="Send_Jog_command"/>
+        /// For any other jog moves, use the <see cref="SendBothAxesJog"/>
         /// </summary>
         /// <param name="axis">What axis (elevation or azimuth) is spinning.</param>
         /// <param name="direction">Denotes what direction a motor will be spinning.</param>
