@@ -646,14 +646,19 @@ namespace ControlRoomApplication.Controllers {
         }
 
         /// <summary>
-        /// sends a home command and waits for the MCU to finish homeing
+        /// Sends a home command and waits for the MCU to finish homing.
         /// </summary>
         /// <param name="RPM"></param>
         /// <returns></returns>
         public bool HomeBothAxes(double RPM) {
+
+            // Stop move just in case one is still running. This will only be reached if
+            // the last move is a lower priority than this one.
+            Cancel_move();
+            ControlledStop();
+
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_AZIMUTH );
-            ushort ACCELERATION = 50;
 
             //set config word to 0x0040 to have the RT home at the minimumum speed// this requires the MCU to be configured properly
             ushort[] data = {
@@ -664,8 +669,8 @@ namespace ControlRoomApplication.Controllers {
                 0x0000,
                 (ushort)((AZ_Speed & 0xFFFF0000)>>16),
                 (ushort)(AZ_Speed & 0xFFFF),
-                ACCELERATION,
-                ACCELERATION,
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 0x0000,
                 0x0000,
 
@@ -676,53 +681,74 @@ namespace ControlRoomApplication.Controllers {
                 0x0000,
                 (ushort)((EL_Speed & 0xFFFF0000)>>16),
                 (ushort)(EL_Speed & 0xFFFF),
-                ACCELERATION,
-                ACCELERATION,
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 0x0000,
                 0x0000
             };
 
+            // Calculate which axis has the longest timeout, then set the timeout as that axis
             int timeout;
             if(Current_AZConfiguration.HomeTimeoutSec > Current_ELConfiguration.HomeTimeoutSec) {
                 timeout = Current_AZConfiguration.HomeTimeoutSec;
             } else {
                 timeout = Current_ELConfiguration.HomeTimeoutSec;
             }
-            Cancel_move();
-            ControlledStop();
-            var ThisMove = SendGenericCommand( new MCUCommand( data , MCUCommandType.RELATIVE_MOVE) {
-                AZ_Programed_Speed = AZ_Speed , EL_Programed_Speed = EL_Speed , EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION , timeout = new CancellationTokenSource( (int)(timeout*1200) )//* 1000 for seconds to ms //* 1.2 for a 20% margin 
-            } );
 
-            FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );//140 samples at 1 sample/50mS = 7 seconds of data
+            // Builds the MCU command and then sends it
+            var ThisMove = SendGenericCommand(new MCUCommand(data, MCUCommandType.HOME) {
+                AZ_Programed_Speed = AZ_Speed,
+                EL_Programed_Speed = EL_Speed,
+                EL_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                AZ_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                timeout = new CancellationTokenSource( (int)(timeout*1200) ) //* 1000 for seconds to ms //* 1.2 for a 20% margin 
+            });
+
+            // ERROR AND STATUS CHECKING BEGINS HERE
+
+            // 140 samples at 1 sample/50mS = 7 seconds of data
+            FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );
             ushort[] outputRegData;
-            while(!ThisMove.timeout.IsCancellationRequested)
+
+            // This monitors the homing routine to make sure the motors are still moving and, when they stop,
+            // that their position is zeroed out.
+            while (!ThisMove.timeout.IsCancellationRequested)
             {
                 outputRegData = ReadMCURegisters(0, 16);
                 mCUpositon.update(outputRegData);
-                
                 positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
-                if(Math.Abs( mCUpositon.AzSteps ) < 4 && Math.Abs( mCUpositon.ElSteps ) < 4 && !MotorsCurrentlyMoving()) {//if the encoders fave been 0'ed out with some error
+                
+                // As soon as the motor steps are approximately 0 and no longer moving, we know homing has finished and the motors are zeroed
+                if (Math.Abs( mCUpositon.AzSteps ) < 4 && Math.Abs( mCUpositon.ElSteps ) < 4 && !MotorsCurrentlyMoving()) {
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
                     ThisMove.completed = true;
                     ThisMove.Dispose();
                     return true;
                 }
+
+                // This checks the new recorded position and compares it against the last
                 if(positionHistory.Count > positionHistory.Size - 2) {
                     var movement = positionHistory.GetAbsolutePosChange();
-                    if(movement.AzEncoder <50 && movement.ElEncoder < 50) {//if the telescope has been still for 7 seconds
-                        bool AZCmdErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
-                        bool AZHomeErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-                        bool ELCmdErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
-                        bool ELHomeErr = ((outputRegData[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Home_Invalid_Error) & 0b1) == 1;
-                        if (Math.Abs(mCUpositon.AzSteps) > 4 || Math.Abs(mCUpositon.ElSteps) > 4) {//and the pozition is not 0 then homeing has failed
+
+                    // If the motor encoders have not moved at least 50 steps, then they have been still for 7 seconds
+                    if(movement.AzEncoder < 50 && movement.ElEncoder < 50)
+                    {
+
+                        // If the motors are not zeroed out, then homing did not complete (aka failed)
+                        if (Math.Abs(mCUpositon.AzSteps) > 4 || Math.Abs(mCUpositon.ElSteps) > 4)
+                        {
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
                             ThisMove.completed = true;
                             ThisMove.Dispose();
                             return false;
-                        } else if (ELHomeErr || AZHomeErr || AZCmdErr || ELCmdErr) {
+
+                        }
+
+                        // If there are any errors in the registers, something bad happened and homing failed
+                        else if (CheckMCUErrors().Count > 0)
+                        {
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
                             ThisMove.completed = true;
@@ -733,7 +759,7 @@ namespace ControlRoomApplication.Controllers {
                 }
             }
             ThisMove.Dispose();
-            return true;
+            return false;
         }
 
         private ushort[] prepairRelativeMoveData(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {

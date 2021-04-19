@@ -884,9 +884,13 @@ namespace ControlRoomApplication.Controllers
 
             // Set the simulation's current position
             if(IsSimulation) CurrentSimOrientation = target_orientation;
-
-            //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL );
+            
+            return send_relative_move(
+                AZ_Speed, EL_Speed,
+                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, 
+                positionTranslationAZ, 
+                positionTranslationEL
+            );
         }
 
         /// <summary>

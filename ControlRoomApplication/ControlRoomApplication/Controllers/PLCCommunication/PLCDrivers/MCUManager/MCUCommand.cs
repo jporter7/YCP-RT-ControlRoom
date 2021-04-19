@@ -13,21 +13,25 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
     public class MCUCommand : IDisposable
     {
         /// <summary>
-        /// stores the data that is to be sent to the mcu
+        /// Stores the data that is to be sent to the MCU.
         /// </summary>
         public ushort[] commandData;
+
         /// <summary>
-        /// high level information about the comands general purpose
+        /// High-level information about the command's general purpose.
         /// </summary>
         public MCUCommandType CommandType;
+
         /// <summary>
-        /// true when comand has completed, used to determine when the next move can be sent
+        /// True when a command has completed. Used to determine when the next move can be sent.
         /// </summary>
         public bool completed = false;
+
         /// <summary>
         /// this will be set when returnd to the calling function if the move could not be run for some reason
         /// </summary>
         public Exception CommandError;
+
         /// <summary>
         /// these variables set so that different parts of the MCUManager can calculate how parts of the operation will take
         /// </summary>
