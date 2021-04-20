@@ -257,7 +257,7 @@ namespace ControlRoomApplication.Controllers
         }
 
         // Test if the physical SpectraCyber is alive, while making sure to not interrupt the schedule
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             // If the SpectraCyber has already told us it failed, then it's clearly not alive
             if (SerialCommsFailed)

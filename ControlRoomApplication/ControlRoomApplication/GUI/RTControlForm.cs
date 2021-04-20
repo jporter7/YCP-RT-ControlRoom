@@ -13,6 +13,8 @@ using Microsoft.VisualBasic;
 using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 
 namespace ControlRoomApplication.Main
 {
@@ -174,8 +176,8 @@ namespace ControlRoomApplication.Main
 
             }
             plusElaButton.Enabled = formData.manualControlEnabled;
-            plusJogButton.Enabled = formData.manualControlEnabled;
-            subJogButton.Enabled = formData.manualControlEnabled;
+            cwAzJogButton.Enabled = formData.manualControlEnabled;
+            ccwAzJogButton.Enabled = formData.manualControlEnabled;
             subElaButton.Enabled = formData.manualControlEnabled;
             ControlledButtonRadio.Enabled = formData.manualControlEnabled;
             immediateRadioButton.Enabled = formData.manualControlEnabled;
@@ -452,8 +454,8 @@ namespace ControlRoomApplication.Main
 
             }
             plusElaButton.Enabled = manual_save_state;
-            plusJogButton.Enabled = manual_save_state;
-            subJogButton.Enabled = manual_save_state;
+            cwAzJogButton.Enabled = manual_save_state;
+            ccwAzJogButton.Enabled = manual_save_state;
             subElaButton.Enabled = manual_save_state;
             ControlledButtonRadio.Enabled = manual_save_state;
             immediateRadioButton.Enabled = manual_save_state;
@@ -480,15 +482,14 @@ namespace ControlRoomApplication.Main
                 case 1:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
+                        rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
                     });
                     //Stow Script selected (index 0 of control script combo)
                     break;
                 case 2:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
+                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         tele.PLCDriver.FullElevationMove();
                     });
                     //Full Elevation selected (index 1 of control script combo)
@@ -496,7 +497,7 @@ namespace ControlRoomApplication.Main
                 case 3:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
+                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         tele.PLCDriver.Full_360_CW_Rotation();
                     });
                     //Full 360 CW selected (index 2 of control script combo)
@@ -504,7 +505,7 @@ namespace ControlRoomApplication.Main
                 case 4:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
+                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         tele.PLCDriver.Full_360_CCW_Rotation();
                     });
                     //Full 360 CCW  selected (index 3 of control script combo)
@@ -512,23 +513,21 @@ namespace ControlRoomApplication.Main
                 case 5:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        rtController.ThermalCalibrateRadioTelescope();
+                        rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
                     });
                     //Thermal Calibration selected (index 4 of control script combo)
                     break;
                 case 6:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        rtController.SnowDump();
+                        rtController.SnowDump(MovePriority.Manual);
                     });
                     //Snow Dump selected (index 5 of control script combo)
                     break;
                 case 7:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
+                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         tele.PLCDriver.RecoverFromLimitSwitch();
                     });
                     //Recover from Limit Switch (index 6 of control script combo)
@@ -536,7 +535,7 @@ namespace ControlRoomApplication.Main
                 case 8:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
+                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         tele.PLCDriver.Recover_CW_Hardstop();
                     });
                     //Recover from Clockwise Hardstop (index 7 of control script combo)
@@ -544,7 +543,6 @@ namespace ControlRoomApplication.Main
                 case 9:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop();
                         tele.PLCDriver.Recover_CCW_Hardstop();
                     });
                     //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
@@ -552,7 +550,7 @@ namespace ControlRoomApplication.Main
                 case 10:
                     thread = new Thread(() =>
                     {
-                        tele.PLCDriver.HomeTelescope();
+                        rtController.HomeTelescope(MovePriority.Manual);
                     });
                     //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
                     break;
@@ -594,7 +592,7 @@ namespace ControlRoomApplication.Main
                         if (!input.Equals(""))
                         {
                             Entities.Orientation moveTo = new Entities.Orientation(azimuthPos, elevationPos);
-                            rtController.MoveRadioTelescopeToOrientation(moveTo);
+                            rtController.MoveRadioTelescopeToOrientation(moveTo, MovePriority.Manual);
                         }
                         else 
                         {
@@ -607,7 +605,7 @@ namespace ControlRoomApplication.Main
                 case 12:
                     thread = new Thread(() =>
                     {
-                        rtController.StartRadioTelescopeAzimuthJog(1, true);
+                        rtController.StartRadioTelescopeAzimuthJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
                     });
                     thread.Start();
                     MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
@@ -644,7 +642,7 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void subJogButton_Down( object sender , MouseEventArgs e ) {
+        private void ccwAzJogButton_Down( object sender , MouseEventArgs e ) {
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
                 double speed = Convert.ToDouble(speedTextBox.Text);
@@ -653,7 +651,7 @@ namespace ControlRoomApplication.Main
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, false);
+                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovePriority.Manual);
                 }
                 else
                 {
@@ -666,14 +664,14 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void subJogButton_Up( object sender , MouseEventArgs e ) {
+        private void ccwAzJogButton_Up( object sender , MouseEventArgs e ) {
             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
 
             //Stop Move
             ExecuteCorrectStop();
         }
 
-        private void plusJogButton_Down(object sender, MouseEventArgs e)
+        private void cwAzJogButton_Down(object sender, MouseEventArgs e)
         {
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
@@ -683,10 +681,9 @@ namespace ControlRoomApplication.Main
                 {
 
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, true);
+                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
                 }
                 else
                 {
@@ -699,7 +696,7 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void plusJogButton_UP( object sender , MouseEventArgs e ) {
+        private void cwAzJogButton_UP( object sender , MouseEventArgs e ) {
             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
 
             //  Stop Move
@@ -711,14 +708,14 @@ namespace ControlRoomApplication.Main
             if (ControlledButtonRadio.Checked)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Executed Controlled Stop");
-                rtController.ExecuteRadioTelescopeStopJog();
+                rtController.ExecuteRadioTelescopeStopJog(MovePriority.GeneralStop);
                 formData.immediateStopBool = false;
                 formData.controlledStopBool = true;
             }
             else if (immediateRadioButton.Checked)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Executed Immediate Stop");
-                rtController.ExecuteRadioTelescopeImmediateStop();
+                rtController.ExecuteRadioTelescopeImmediateStop(MovePriority.GeneralStop);
                 formData.immediateStopBool = true;
                 formData.controlledStopBool = false;
 
@@ -746,10 +743,9 @@ namespace ControlRoomApplication.Main
                 {
 
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, true);
+                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovePriority.Manual);
                 }
                 else
                 {
@@ -777,10 +773,9 @@ namespace ControlRoomApplication.Main
                 {
 
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, false);
+                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
                 }
                 else
                 {

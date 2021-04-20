@@ -230,7 +230,7 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUMessages.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUPositionRegs.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUPositionStore.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MovePriority.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MovePriority.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
@@ -268,6 +268,7 @@
     <Compile Include="Entities\Override\Override.cs" />
     <Compile Include="Entities\ProximitySensor\AbstractProximitySensor.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeDirectionEnum.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeTypeEnum.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeConfig.cs" />
     <Compile Include="Entities\SensorNetworkConfig\SensorNetworkConfig.cs" />

@@ -12,6 +12,7 @@ using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using System.Collections.Generic;
 using static ControlRoomApplication.Constants.MCUConstants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -27,6 +28,11 @@ namespace ControlRoomApplication.Controllers
         public MiscPlcInput plcInput;
         protected PLCEvents pLCEvents;
 
+        /// <summary>
+        /// This is the priority of the currently-running move. This will be "None" if no move is currently running, otherwise it will
+        /// reflect the priority.
+        /// </summary>
+        public MovePriority CurrentMovementPriority { get; set; }
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup
@@ -70,7 +76,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Test_Connection();
 
-        public abstract Orientation read_Position();
+        public abstract Orientation GetMotorEncoderPosition();
 
         public abstract bool Cancel_move();
 
@@ -122,13 +128,11 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 
-        public abstract bool Start_jog( double AZspeed ,bool AZ_CW, double ELspeed ,bool EL_CW);
+        public abstract bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection);
 
         public abstract bool Stop_Jog();
 
         public abstract bool Get_interlock_status();
-
-        public abstract Task<bool> JogOffLimitSwitches();
 
         public abstract void setregvalue(ushort adr, ushort value);
 

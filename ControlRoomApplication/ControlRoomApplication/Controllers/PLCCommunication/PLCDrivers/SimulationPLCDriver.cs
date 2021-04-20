@@ -65,9 +65,9 @@ namespace ControlRoomApplication.Controllers
             return driver.Test_Connection();
         }
 
-        public override Orientation read_Position()
+        public override Orientation GetMotorEncoderPosition()
         {
-            return driver.read_Position();
+            return driver.GetMotorEncoderPosition();
         }
 
         public override bool Cancel_move()
@@ -160,8 +160,8 @@ namespace ControlRoomApplication.Controllers
             return driver.Move_to_orientation(target_orientation, current_orientation);
         }
 
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
-            return driver.Start_jog( AZspeed, AZ_CW, ELspeed, EL_CW);
+        public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+            return driver.StartBothAxesJog(azSpeed, azDirection, elSpeed, elDirection);
         }
 
         public override bool Get_interlock_status()
@@ -174,8 +174,8 @@ namespace ControlRoomApplication.Controllers
             return driver.GET_MCU_Status( axis );
         }
 
-        protected override bool TestIfComponentIsAlive() {
-            return driver.workaroundAlive();
+        public override bool TestIfComponentIsAlive() {
+            return driver.TestIfComponentIsAlive();
         }
 
         public override bool HomeTelescope() {
@@ -184,10 +184,6 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Stop_Jog() {
             return driver.Stop_Jog();
-        }
-
-        public override Task<bool> JogOffLimitSwitches() {
-            return driver.JogOffLimitSwitches();
         }
 
         public override void setregvalue(ushort adr, ushort value)
