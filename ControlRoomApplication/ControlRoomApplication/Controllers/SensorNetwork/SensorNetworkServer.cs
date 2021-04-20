@@ -62,6 +62,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             CurrentCounterbalanceAccl = new Acceleration[1];
             CurrentCounterbalanceAccl[0] = new Acceleration();
 
+            AbsoluteOrientationOffset = new Orientation();
+
             // Initialize threads and additional processes, if applicable
             SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
             SensorMonitoringThread.Name = "SensorMonitorThread";
@@ -421,7 +423,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     localClient.Close();
                     localClient.Dispose();
                 }
-                catch
+                catch (Exception e)
                 {
                     if (CurrentlyRunning) // If we're not currently running, then it means we voluntarily shut down the server
                     {
