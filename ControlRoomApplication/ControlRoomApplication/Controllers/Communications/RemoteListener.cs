@@ -178,14 +178,6 @@ namespace ControlRoomApplication.Controllers
                     rtController.setOverride("weather station", data.Contains("OVR"));
                     DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, doOverride);
                 }
-                else if (data.Contains("AZIMUTH_MOT_TEMP"))
-                {
-                    rtController.setOverride("azimuth motor temperature", doOverride);
-                }
-                else if (data.Contains("ELEVATION_MOT_TEMP"))
-                {
-                    rtController.setOverride("elevation motor temperature", doOverride);
-                }
 
                 // PLC Overrides
                 else if (data.Contains("MAIN_GATE"))
@@ -193,15 +185,7 @@ namespace ControlRoomApplication.Controllers
                     rtController.setOverride("main gate", doOverride);
                 }
 
-                // May be removed with slip ring
-                else if (data.Contains("AZIMUTH_LIMIT_10"))
-                {
-                    rtController.setOverride("azimuth proximity (1)", doOverride);
-                }
-                else if (data.Contains("AZIMUTH_LIMIT_375"))
-                {
-                    rtController.setOverride("azimuth proximity (2)", doOverride);
-                }
+                // Proximity overrides
                 else if (data.Contains("ELEVATION_LIMIT_0"))
                 {
                     rtController.setOverride("elevation proximity (1)", doOverride);
@@ -209,6 +193,36 @@ namespace ControlRoomApplication.Controllers
                 else if (data.Contains("ELEVATION_LIMIT_90"))
                 {
                     rtController.setOverride("elevation proximity (2)", doOverride);
+                }
+
+                // Sensor network overrides
+                else if (data.Contains("AZ_ABS_ENC"))
+                {
+                    rtController.setOverride("azimuth absolute encoder", doOverride);
+                }
+                else if (data.Contains("EL_ABS_ENC"))
+                {
+                    rtController.setOverride("elevation absolute encoder", doOverride);
+                }
+                else if (data.Contains("AZ_ACC"))
+                {
+                    rtController.setOverride("azimuth motor accelerometer", doOverride);
+                }
+                else if (data.Contains("EL_ACC"))
+                {
+                    rtController.setOverride("elevation motor accelerometer", doOverride);
+                }
+                else if (data.Contains("CB_ACC"))
+                {
+                    rtController.setOverride("counterbalance accelerometer", doOverride);
+                }
+                else if (data.Contains("AZIMUTH_MOT_TEMP"))
+                {
+                    rtController.setOverride("azimuth motor temperature", doOverride);
+                }
+                else if (data.Contains("ELEVATION_MOT_TEMP"))
+                {
+                    rtController.setOverride("elevation motor temperature", doOverride);
                 }
                 else return false;
 
@@ -270,6 +284,8 @@ namespace ControlRoomApplication.Controllers
             else if (data.IndexOf("SENSOR_INIT") != -1)
             {
                 string[] splitData = data.Split(',');
+
+                if (splitData.Length != 10) return false;
 
                 var config = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
 
