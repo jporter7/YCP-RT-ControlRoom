@@ -132,6 +132,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
                     data.dailyRain = GetDailyRain_V();
                     data.rainRate = GetRainRate_V();
                     data.outsideTemp = GetOutsideTemp_V();
+                    data.insideTemp = GetInsideTemp_V();
                     data.baromPressure = GetBarometer_V();
                     data.dewPoint = GetDewPt_V();
                     data.windChill = GetWindChill_V();
@@ -142,10 +143,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
                     DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
                 }
-                else
-                {
-                    logger.Info(Utilities.GetTimeStamp() + ": Weather Data update failed");
-                }
+
 
                 Thread.Sleep(1000);
             }
