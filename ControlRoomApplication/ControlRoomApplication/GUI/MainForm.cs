@@ -47,16 +47,17 @@ namespace ControlRoomApplication.Main
         public bool MCUPortValid = false;
         public bool PLCPortValid = false;
         public bool WCOMPortValid = false;
+        public bool SpectraPortValid = false;
         public bool SensorNetworkServerIPBool = false;
         public bool SensorNetworkServerPortBool = false;
         public bool SensorNetworkClientIPBool = false;
         public bool SensorNetworkClientPortBool = false;
 
 
-        
+
         // form
         RTControlFormData formData;
-        
+
 
         enum TempSensorType
         {
@@ -146,6 +147,11 @@ namespace ControlRoomApplication.Main
             sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Gray;
             sensorNetworkClientPort.ForeColor = System.Drawing.Color.Gray;
 
+            txtSpectraPort.Text = "COM";
+            txtSpectraPort.ForeColor = System.Drawing.Color.Gray;
+            txtWSCOMPort.Text = "COM";
+            txtWSCOMPort.ForeColor = System.Drawing.Color.Gray;
+
             logger.Info(Utilities.GetTimeStamp() + ": MainForm Initalized");
         }
 
@@ -177,10 +183,10 @@ namespace ControlRoomApplication.Main
             // was given where an integer was expected, or if any of the inputs were null.
             if (RTConfig == null)
             {
-                DialogResult result =  MessageBox.Show("An error occured while parsing the RTConfig JSON file. Would you like to recreate the JSON " +
+                DialogResult result = MessageBox.Show("An error occured while parsing the RTConfig JSON file. Would you like to recreate the JSON " +
                     "file?", "Error Parsing JSON", MessageBoxButtons.YesNo);
                 // If yes, recreate the file and remind the user to set the ID and change the flag back to false
-                if(result == DialogResult.Yes)
+                if (result == DialogResult.Yes)
                 {
                     RadioTelescopeConfig.CreateAndWriteToNewJSONFile(RadioTelescopeConfig.DEFAULT_JSON_CONTENTS);
                     MessageBox.Show("JSON file successfully recreated! Do not forget to specify the ID of telescope you want to run inside the file, " +
@@ -194,9 +200,9 @@ namespace ControlRoomApplication.Main
                 RadioTelescope RT = DatabaseOperations.FetchRadioTelescopeByID(RTConfig.telescopeID);
                 if (RT == null)
                 {
-                    DialogResult result = MessageBox.Show("The ID of " + RTConfig.telescopeID + 
+                    DialogResult result = MessageBox.Show("The ID of " + RTConfig.telescopeID +
                         " was not found in the database. Would you like to create a new one?", "No Telescope found", MessageBoxButtons.YesNoCancel);
-                    if(result == DialogResult.Yes)
+                    if (result == DialogResult.Yes)
                     {
                         runRt = true;
                     }
@@ -218,7 +224,7 @@ namespace ControlRoomApplication.Main
                 // else the telescope entered by the user is valid and is currently not running. Start it up
                 else
                 {
-                    Console.WriteLine("The Selected RT with id " + RTConfig.telescopeID + " was not null, and is not running. Starting telescope "+RTConfig.telescopeID);
+                    Console.WriteLine("The Selected RT with id " + RTConfig.telescopeID + " was not null, and is not running. Starting telescope " + RTConfig.telescopeID);
                     current_rt_id = RTConfig.telescopeID;
                     runRt = true;
                 }
@@ -290,6 +296,7 @@ namespace ControlRoomApplication.Main
                 txtMcuCOMPort.Enabled = true;
                 txtWSCOMPort.Enabled = true;
                 txtPLCPort.Enabled = true;
+                txtSpectraPort.Enabled = true;
 
                 if (txtPLCPort.Text != null
                     && txtPLCIP.Text != null
@@ -307,7 +314,7 @@ namespace ControlRoomApplication.Main
                     }
 
                     bool isSensorNetworkServerSimulated = false;
-                    if(comboSensorNetworkBox.SelectedIndex == (int)SensorNetworkDropdown.SimulatedSensorNetwork)
+                    if (comboSensorNetworkBox.SelectedIndex == (int)SensorNetworkDropdown.SimulatedSensorNetwork)
                     {
                         isSensorNetworkServerSimulated = true;
                     }
@@ -409,7 +416,7 @@ namespace ControlRoomApplication.Main
         /// </summary>
         private void button2_Click(object sender, EventArgs e)
         {
-              logger.Info(Utilities.GetTimeStamp() + ": Shut Down Telescope Button Clicked");
+            logger.Info(Utilities.GetTimeStamp() + ": Shut Down Telescope Button Clicked");
             if (MainControlRoomController != null && MainControlRoomController.RequestToKillWeatherMonitoringRoutine())
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Successfully shut down weather monitoring routine.");
@@ -556,7 +563,7 @@ namespace ControlRoomApplication.Main
                 existingRT.PLCDriver.setTelescopeType(existingRT._TeleType);
                 existingRT.SpectraCyberController = BuildSpectraCyber();
                 existingRT.SensorNetworkServer = sns;
-                logger.Info(Utilities.GetTimeStamp() + ": Existing RadioTelescope with ID " +current_rt_id+ " retrieved and built successfully");
+                logger.Info(Utilities.GetTimeStamp() + ": Existing RadioTelescope with ID " + current_rt_id + " retrieved and built successfully");
 
                 return existingRT;
 
@@ -728,6 +735,7 @@ namespace ControlRoomApplication.Main
             {
                 ProdcheckBox.Checked = false;
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
+                this.txtSpectraPort.Text = "777";
                 this.txtMcuCOMPort.Text = ((int)(8083 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
 
@@ -760,6 +768,7 @@ namespace ControlRoomApplication.Main
             {
                 loopBackBox.Checked = false;
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
+                this.txtSpectraPort.Text = "777";
                 this.txtMcuCOMPort.Text = "502"; //default MCU Port
                 this.txtPLCIP.Text = "192.168.0.50";//default IP address
                 if (LocalIPCombo.FindStringExact("192.168.0.70") == -1)
@@ -794,7 +803,7 @@ namespace ControlRoomApplication.Main
 
         private void comboSensorNetworkBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(comboSensorNetworkBox.SelectedIndex == (int)SensorNetworkDropdown.ProductionSensorNetwork)
+            if (comboSensorNetworkBox.SelectedIndex == (int)SensorNetworkDropdown.ProductionSensorNetwork)
             {
                 this.sensorNetworkServerIPAddress.Text = "192.168.0.10";
                 this.sensorNetworkClientIPAddress.Text = "192.168.0.197";
@@ -894,25 +903,34 @@ namespace ControlRoomApplication.Main
 
         private void txtWSCOMPort_TextChanged(object sender, EventArgs e)
         {
-            WCOMPortValid = Validator.ValidatePort(txtWSCOMPort.Text);
-            if (!WCOMPortValid)
+
+            if (txtWSCOMPort.Text != "COM")
             {
-                acceptSettings.Enabled = false;
-                txtWSCOMPort.BackColor = System.Drawing.Color.Yellow;
-                this.WCOMPortToolTip.Show("Enter a valid port number\n" +
-                    " between 1 and 65536", label2);
+                WCOMPortValid = Validator.ValidatePort(txtWSCOMPort.Text);
+                if (!WCOMPortValid)
+                {
+                    acceptSettings.Enabled = false;
+                    txtWSCOMPort.BackColor = System.Drawing.Color.Yellow;
+                    this.WCOMPortToolTip.Show("Enter a valid port number\n" +
+                        " between 1 and 65536", label2);
+                }
+                else
+                {
+                    txtWSCOMPort.BackColor = System.Drawing.Color.White;
+                    this.WCOMPortToolTip.Hide(label2);
+
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+
             }
             else
             {
-                txtWSCOMPort.BackColor = System.Drawing.Color.White;
+                txtWSCOMPort.BackColor = System.Drawing.Color.LightGray;
                 this.WCOMPortToolTip.Hide(label2);
-                
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
-            {
-                acceptSettings.Enabled = true;
-            }
-
         }
 
         private void groupBox3_Enter(object sender, EventArgs e)
@@ -922,70 +940,72 @@ namespace ControlRoomApplication.Main
 
         private void acceptSettings_Click(object sender, EventArgs e)
         {
-                finalSettings = !finalSettings;
-                if (finalSettings == false)
+            finalSettings = !finalSettings;
+            if (finalSettings == false)
+            {
+
+                //Editing text to relflect state -- When the settings are being edited, the button will need to say 'finalize'
+                acceptSettings.Text = "Edit Settings";
+                if (comboBox2.Text != "Production Weather Station")
                 {
+                    startButton.BackColor = System.Drawing.Color.LimeGreen;
+                    startButton.Enabled = true;
+                }
+                startRTGroupbox.BackColor = System.Drawing.Color.Gray;
+                loopBackBox.Enabled = false;
 
-                    //Editing text to relflect state -- When the settings are being edited, the button will need to say 'finalize'
-                    acceptSettings.Text = "Edit Settings";
-                    if (comboBox2.Text != "Production Weather Station")
-                    {
-                        startButton.BackColor = System.Drawing.Color.LimeGreen;
-                        startButton.Enabled = true;
-                    }
-                    startRTGroupbox.BackColor = System.Drawing.Color.Gray;
-                    loopBackBox.Enabled = false;
+                simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                comboSensorNetworkBox.Enabled = false;
+                comboBox2.Enabled = false;
+                comboBox1.Enabled = false;
+                comboPLCType.Enabled = false;
+                LocalIPCombo.Enabled = false;
 
-                    simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
-                    comboSensorNetworkBox.Enabled = false;
-                    comboBox2.Enabled = false;
-                    comboBox1.Enabled = false;
-                    comboPLCType.Enabled = false;
-                    LocalIPCombo.Enabled = false;
+                portGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                ProdcheckBox.Enabled = false;
+                txtPLCIP.Enabled = false;
+                txtMcuCOMPort.Enabled = false;
+                txtWSCOMPort.Enabled = false;
+                txtPLCPort.Enabled = false;
+                txtSpectraPort.Enabled = false;
 
-                    portGroupbox.BackColor = System.Drawing.Color.DarkGray;
-                    ProdcheckBox.Enabled = false;
-                    txtPLCIP.Enabled = false;
-                    txtMcuCOMPort.Enabled = false;
-                    txtWSCOMPort.Enabled = false;
-                    txtPLCPort.Enabled = false;
-
-                    sensorNetworkServerIPAddress.Enabled = false;
-                    sensorNetworkServerPort.Enabled = false;
-                    sensorNetworkClientIPAddress.Enabled = false;
-                    sensorNetworkClientPort.Enabled = false;
+                sensorNetworkServerIPAddress.Enabled = false;
+                sensorNetworkServerPort.Enabled = false;
+                sensorNetworkClientIPAddress.Enabled = false;
+                sensorNetworkClientPort.Enabled = false;
 
             }
-                else if (finalSettings == true)
-                {
-                    // Editing Text to reflect state -- when finalized, you can click "edit settings"
-                    acceptSettings.Text = "Finalize Settings";
+            else if (finalSettings == true)
+            {
+                // Editing Text to reflect state -- when finalized, you can click "edit settings"
+                acceptSettings.Text = "Finalize Settings";
 
-                    startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
-                    startButton.Enabled = false;
-                    startButton.BackColor = System.Drawing.Color.LightGray;
-                    loopBackBox.Enabled = true;
+                startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
+                startButton.Enabled = false;
+                startButton.BackColor = System.Drawing.Color.LightGray;
+                loopBackBox.Enabled = true;
 
-                    simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
-                    comboSensorNetworkBox.Enabled = true;
-                    comboBox2.Enabled = true;
-                    comboBox1.Enabled = true;
-                    comboPLCType.Enabled = true;
-                    LocalIPCombo.Enabled = true;
+                simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
+                comboSensorNetworkBox.Enabled = true;
+                comboBox2.Enabled = true;
+                comboBox1.Enabled = true;
+                comboPLCType.Enabled = true;
+                LocalIPCombo.Enabled = true;
 
-                    portGroupbox.BackColor = System.Drawing.Color.Gray;
-                    ProdcheckBox.Enabled = true;
-                    txtPLCIP.Enabled = true;
-                    txtMcuCOMPort.Enabled = true;
-                    txtWSCOMPort.Enabled = true;
-                    txtPLCPort.Enabled = true;
+                portGroupbox.BackColor = System.Drawing.Color.Gray;
+                ProdcheckBox.Enabled = true;
+                txtPLCIP.Enabled = true;
+                txtMcuCOMPort.Enabled = true;
+                txtWSCOMPort.Enabled = true;
+                txtPLCPort.Enabled = true;
+                txtSpectraPort.Enabled = true;
 
-                    sensorNetworkServerIPAddress.Enabled = true;
-                    sensorNetworkServerPort.Enabled = true;
-                    sensorNetworkClientIPAddress.Enabled = true;
-                    sensorNetworkClientPort.Enabled = true;
+                sensorNetworkServerIPAddress.Enabled = true;
+                sensorNetworkServerPort.Enabled = true;
+                sensorNetworkClientIPAddress.Enabled = true;
+                sensorNetworkClientPort.Enabled = true;
             }
- 
+
         }
 
         //Help button clicked ( user interface documentation PDF)
@@ -1181,7 +1201,7 @@ namespace ControlRoomApplication.Main
                     acceptSettings.Enabled = true;
                 }
             }
-            else 
+            else
             {
                 sensorNetworkServerPort.BackColor = System.Drawing.Color.LightGray;
                 this.WCOMPortToolTip.Hide(label6);
@@ -1205,6 +1225,46 @@ namespace ControlRoomApplication.Main
             {
                 sensorNetworkServerPort.Text = "Port";
                 sensorNetworkServerPort.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void txtSpectraPort_Enter(object sender, EventArgs e)
+        {
+            if (txtSpectraPort.Text == "COM")
+            {
+                txtSpectraPort.Text = "";
+                txtSpectraPort.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void txtSpectraPort_Leave(object sender, EventArgs e)
+        {
+            if (txtSpectraPort.Text == "")
+            {
+                txtSpectraPort.Text = "COM";
+                txtSpectraPort.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+        //Sets removes the temp value and sets text to black 
+        private void txtWSCOMPort_Enter(object sender, EventArgs e)
+        {
+            if (txtWSCOMPort.Text == "COM")
+            {
+                txtWSCOMPort.Text = "";
+                txtWSCOMPort.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void txtWSCOMPort_Leave(object sender, EventArgs e)
+        {
+            if (txtWSCOMPort.Text == "")
+            {
+                txtWSCOMPort.Text = "COM";
+                txtWSCOMPort.ForeColor = System.Drawing.Color.Gray;
             }
         }
 
@@ -1261,6 +1321,36 @@ namespace ControlRoomApplication.Main
         private void WCOMPortToolTip_Popup(object sender, PopupEventArgs e)
         {
 
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (txtSpectraPort.Text != "COM")
+            {
+                SpectraPortValid = Validator.ValidatePort(txtSpectraPort.Text);
+                if (!SpectraPortValid)
+                {
+                    acceptSettings.Enabled = false;
+                    txtSpectraPort.BackColor = System.Drawing.Color.Yellow;
+                    this.WCOMPortToolTip.Show("Enter a valid port number\n" +
+                        " between 1 and 65536", label8);
+                }
+                else
+                {
+                    txtSpectraPort.BackColor = System.Drawing.Color.White;
+                    this.WCOMPortToolTip.Hide(label8);
+
+                }
+                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool && SpectraPortValid)
+                {
+                    acceptSettings.Enabled = true;
+                }
+            }
+            else
+            {
+                txtSpectraPort.BackColor = System.Drawing.Color.LightGray;
+                this.WCOMPortToolTip.Hide(label8);
+            }
         }
     }
 }
