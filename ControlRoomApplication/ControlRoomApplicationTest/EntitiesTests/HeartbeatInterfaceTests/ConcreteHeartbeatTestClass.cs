@@ -14,7 +14,7 @@ namespace ControlRoomApplicationTest.EntitiesTests.HeartbeatInterfaceTests
             return true;
         }
 
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             throw new System.NotImplementedException();
         }
