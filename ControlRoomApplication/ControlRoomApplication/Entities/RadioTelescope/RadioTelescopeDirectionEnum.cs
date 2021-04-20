@@ -16,7 +16,7 @@
         ClockwiseOrNegative = 0x0080,
 
         /// <summary>
-        /// The motor is spinning counter-clockwise (azimuth), or in a positive direction (elevation)
+        /// The motor is spinning counter-clockwise (azimuth), or in a positive direction (elevation).
         /// </summary>
         CounterclockwiseOrPositive = 0x0100,
 

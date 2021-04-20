@@ -76,10 +76,10 @@ namespace ControlRoomApplication.Main
             this.speedTextBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.subJogButton = new System.Windows.Forms.Button();
+            this.ccwAzJogButton = new System.Windows.Forms.Button();
             this.plusElaButton = new System.Windows.Forms.Button();
             this.subElaButton = new System.Windows.Forms.Button();
-            this.plusJogButton = new System.Windows.Forms.Button();
+            this.cwAzJogButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.spectraCyberGroupBox = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -550,10 +550,10 @@ namespace ControlRoomApplication.Main
             this.manualGroupBox.Controls.Add(this.speedTextBox);
             this.manualGroupBox.Controls.Add(this.label2);
             this.manualGroupBox.Controls.Add(this.label1);
-            this.manualGroupBox.Controls.Add(this.subJogButton);
+            this.manualGroupBox.Controls.Add(this.ccwAzJogButton);
             this.manualGroupBox.Controls.Add(this.plusElaButton);
             this.manualGroupBox.Controls.Add(this.subElaButton);
-            this.manualGroupBox.Controls.Add(this.plusJogButton);
+            this.manualGroupBox.Controls.Add(this.cwAzJogButton);
             this.manualGroupBox.Location = new System.Drawing.Point(423, 213);
             this.manualGroupBox.Margin = new System.Windows.Forms.Padding(2);
             this.manualGroupBox.Name = "manualGroupBox";
@@ -674,20 +674,20 @@ namespace ControlRoomApplication.Main
             this.label1.TabIndex = 8;
             this.label1.Text = "Current Elevation: ";
             // 
-            // subJogButton
+            // ccwAzJogButton
             // 
-            this.subJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.subJogButton.BackColor = System.Drawing.Color.DarkGray;
-            this.subJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.subJogButton.Location = new System.Drawing.Point(150, 54);
-            this.subJogButton.Margin = new System.Windows.Forms.Padding(2);
-            this.subJogButton.Name = "subJogButton";
-            this.subJogButton.Size = new System.Drawing.Size(40, 40);
-            this.subJogButton.TabIndex = 6;
-            this.subJogButton.Text = "- Jog";
-            this.subJogButton.UseVisualStyleBackColor = false;
-            this.subJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.subJogButton_Down);
-            this.subJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.subJogButton_Up);
+            this.ccwAzJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.ccwAzJogButton.BackColor = System.Drawing.Color.DarkGray;
+            this.ccwAzJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ccwAzJogButton.Location = new System.Drawing.Point(150, 54);
+            this.ccwAzJogButton.Margin = new System.Windows.Forms.Padding(2);
+            this.ccwAzJogButton.Name = "ccwAzJogButton";
+            this.ccwAzJogButton.Size = new System.Drawing.Size(40, 40);
+            this.ccwAzJogButton.TabIndex = 6;
+            this.ccwAzJogButton.Text = "CCW Jog";
+            this.ccwAzJogButton.UseVisualStyleBackColor = false;
+            this.ccwAzJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ccwAzJogButton_Down);
+            this.ccwAzJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ccwAzJogButton_Up);
             // 
             // plusElaButton
             // 
@@ -719,20 +719,20 @@ namespace ControlRoomApplication.Main
             this.subElaButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.subElaButton_Down);
             this.subElaButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.subElaButton_Up);
             // 
-            // plusJogButton
+            // cwAzJogButton
             // 
-            this.plusJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.plusJogButton.BackColor = System.Drawing.Color.DarkGray;
-            this.plusJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.plusJogButton.Location = new System.Drawing.Point(230, 54);
-            this.plusJogButton.Margin = new System.Windows.Forms.Padding(2);
-            this.plusJogButton.Name = "plusJogButton";
-            this.plusJogButton.Size = new System.Drawing.Size(40, 40);
-            this.plusJogButton.TabIndex = 7;
-            this.plusJogButton.Text = "+ Jog";
-            this.plusJogButton.UseVisualStyleBackColor = false;
-            this.plusJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_Down);
-            this.plusJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.plusJogButton_UP);
+            this.cwAzJogButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.cwAzJogButton.BackColor = System.Drawing.Color.DarkGray;
+            this.cwAzJogButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.cwAzJogButton.Location = new System.Drawing.Point(230, 54);
+            this.cwAzJogButton.Margin = new System.Windows.Forms.Padding(2);
+            this.cwAzJogButton.Name = "cwAzJogButton";
+            this.cwAzJogButton.Size = new System.Drawing.Size(40, 40);
+            this.cwAzJogButton.TabIndex = 7;
+            this.cwAzJogButton.Text = "CW Jog";
+            this.cwAzJogButton.UseVisualStyleBackColor = false;
+            this.cwAzJogButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cwAzJogButton_Down);
+            this.cwAzJogButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.cwAzJogButton_UP);
             // 
             // button1
             // 
@@ -1024,10 +1024,10 @@ namespace ControlRoomApplication.Main
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox manualGroupBox;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button subJogButton;
+        private System.Windows.Forms.Button ccwAzJogButton;
         private System.Windows.Forms.Button plusElaButton;
         private System.Windows.Forms.Button subElaButton;
-        private System.Windows.Forms.Button plusJogButton;
+        private System.Windows.Forms.Button cwAzJogButton;
         private System.Windows.Forms.TextBox speedTextBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.RadioButton immediateRadioButton;

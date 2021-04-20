@@ -176,8 +176,8 @@ namespace ControlRoomApplication.Main
 
             }
             plusElaButton.Enabled = formData.manualControlEnabled;
-            plusJogButton.Enabled = formData.manualControlEnabled;
-            subJogButton.Enabled = formData.manualControlEnabled;
+            cwAzJogButton.Enabled = formData.manualControlEnabled;
+            ccwAzJogButton.Enabled = formData.manualControlEnabled;
             subElaButton.Enabled = formData.manualControlEnabled;
             ControlledButtonRadio.Enabled = formData.manualControlEnabled;
             immediateRadioButton.Enabled = formData.manualControlEnabled;
@@ -454,8 +454,8 @@ namespace ControlRoomApplication.Main
 
             }
             plusElaButton.Enabled = manual_save_state;
-            plusJogButton.Enabled = manual_save_state;
-            subJogButton.Enabled = manual_save_state;
+            cwAzJogButton.Enabled = manual_save_state;
+            ccwAzJogButton.Enabled = manual_save_state;
             subElaButton.Enabled = manual_save_state;
             ControlledButtonRadio.Enabled = manual_save_state;
             immediateRadioButton.Enabled = manual_save_state;
@@ -642,7 +642,7 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void subJogButton_Down( object sender , MouseEventArgs e ) {
+        private void ccwAzJogButton_Down( object sender , MouseEventArgs e ) {
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
                 double speed = Convert.ToDouble(speedTextBox.Text);
@@ -664,14 +664,14 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void subJogButton_Up( object sender , MouseEventArgs e ) {
+        private void ccwAzJogButton_Up( object sender , MouseEventArgs e ) {
             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
 
             //Stop Move
             ExecuteCorrectStop();
         }
 
-        private void plusJogButton_Down(object sender, MouseEventArgs e)
+        private void cwAzJogButton_Down(object sender, MouseEventArgs e)
         {
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
@@ -681,7 +681,6 @@ namespace ControlRoomApplication.Main
                 {
 
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
                     rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
@@ -697,7 +696,7 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void plusJogButton_UP( object sender , MouseEventArgs e ) {
+        private void cwAzJogButton_UP( object sender , MouseEventArgs e ) {
             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
 
             //  Stop Move
@@ -744,10 +743,9 @@ namespace ControlRoomApplication.Main
                 {
 
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
+                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovePriority.Manual);
                 }
                 else
                 {
@@ -775,10 +773,9 @@ namespace ControlRoomApplication.Main
                 {
 
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovePriority.Manual);
+                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
                 }
                 else
                 {
