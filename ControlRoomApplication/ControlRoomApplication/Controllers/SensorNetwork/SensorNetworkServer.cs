@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Timers;
 using ControlRoomApplication.Controllers.SensorNetwork.Simulation;
 using ControlRoomApplication.Controllers.Communications;
+using System.Collections;
+using ControlRoomApplication.Entities.DiagnosticData;
 
 namespace ControlRoomApplication.Controllers.SensorNetwork
 {
@@ -63,6 +65,18 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             CurrentCounterbalanceAccl[0] = new Acceleration();
 
             AbsoluteOrientationOffset = new Orientation();
+
+            // Sensor error initialization
+            SensorStatuses = new SensorStatuses();
+            SensorStatuses.AzimuthAbsoluteEncoderStatus = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.ElevationAbsoluteEncoderStatus = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.AzimuthTemperature1Status = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.AzimuthTemperature2Status = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.ElevationTemperature1Status = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.ElevationTemperature2Status = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.AzimuthAccelerometerStatus = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.ElevationAccelerometerStatus = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.CounterbalanceAccelerometerStatus = SensorNetworkSensorStatus.Okay;
 
             // Initialize threads and additional processes, if applicable
             SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
@@ -143,6 +157,11 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This will be used to tell us what the SensorNetwork status using <seealso cref="SensorNetworkStatusEnum"/>.
         /// </summary>
         public SensorNetworkStatusEnum Status { get; set; }
+
+        /// <summary>
+        /// This contains data for the individual sensors' statuses.
+        /// </summary>
+        public SensorStatuses SensorStatuses { get; set; }
 
         /// <summary>
         /// These two objects are used together to receive data, and should be destroyed together as well.
@@ -289,17 +308,23 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     {
                         // At this point, we may begin parsing the data
 
+                        // Sensor statuses and error codes
+                        BitArray sensorStatus = new BitArray(new byte[] { data[5] }); // sensor statuses 
+                        UInt32 sensorErrors = (UInt32)(data[6] << 16 | data[7] << 8 | data[8]); // sensor self-tests | adxl error codes and azimuth encoder error code | temp sensor error codes
+
                         // Acquire the sample sizes for each sensor
-                        UInt16 elAcclSize = (UInt16)(data[5] << 8 | data[6]);
-                        UInt16 azAcclSize = (UInt16)(data[7] << 8 | data[8]);
-                        UInt16 cbAcclSize = (UInt16)(data[9] << 8 | data[10]);
-                        UInt16 elTempSensorSize = (UInt16)(data[11] << 8 | data[12]);
-                        UInt16 azTempSensorSize = (UInt16)(data[13] << 8 | data[14]);
-                        UInt16 elEncoderSize = (UInt16)(data[15] << 8 | data[16]);
-                        UInt16 azEncoderSize = (UInt16)(data[17] << 8 | data[18]);
+                        UInt16 elAcclSize = (UInt16)(data[9] << 8 | data[10]);
+                        UInt16 azAcclSize = (UInt16)(data[11] << 8 | data[12]);
+                        UInt16 cbAcclSize = (UInt16)(data[13] << 8 | data[14]);
+                        UInt16 elTempSensorSize = (UInt16)(data[15] << 8 | data[16]);
+                        UInt16 azTempSensorSize = (UInt16)(data[17] << 8 | data[18]);
+                        UInt16 elEncoderSize = (UInt16)(data[19] << 8 | data[20]);
+                        UInt16 azEncoderSize = (UInt16)(data[21] << 8 | data[22]);
+
+                        SensorStatuses = ParseSensorStatuses(sensorStatus, sensorErrors);
 
                         // This is the index we start reading sensor data
-                        int k = 19;
+                        int k = 23;
 
                         // If no data comes through for a sensor (i.e. the size is 0), then it will not be updated,
                         // otherwise the UI value would temporarily be set to 0, which would be inaccurate
@@ -436,6 +461,29 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// This is used to parse the sensor statuses into the SensorStatuses object.
+        /// </summary>
+        /// <param name="statuses">Regular statuses.</param>
+        /// <param name="errors">Various error codes if there are errors.</param>
+        /// <returns></returns>
+        private SensorStatuses ParseSensorStatuses(BitArray statuses, UInt32 errors)
+        {
+            SensorStatuses s = new SensorStatuses();
+
+            // Regular statuses
+            SensorStatuses.AzimuthAbsoluteEncoderStatus = statuses[0] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+            SensorStatuses.AzimuthTemperature1Status = statuses[2] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+            SensorStatuses.AzimuthTemperature2Status = statuses[1] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+            SensorStatuses.ElevationTemperature1Status = statuses[4] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+            SensorStatuses.ElevationTemperature2Status = statuses[3] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+            SensorStatuses.AzimuthAccelerometerStatus = statuses[6] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+            SensorStatuses.ElevationAccelerometerStatus = statuses[7] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+            SensorStatuses.CounterbalanceAccelerometerStatus = statuses[5] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+
+            return s;
         }
 
         /// <summary>

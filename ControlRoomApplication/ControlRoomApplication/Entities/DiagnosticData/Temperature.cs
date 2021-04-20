@@ -28,12 +28,6 @@ namespace ControlRoomApplication.Entities {
         [Column( "location" )]
         public int location_ID { get; set; }
 
-        /// <summary>
-        /// The error status of a particular sensor.
-        /// </summary>
-        [NotMapped]
-        public SensorNetworkSensorStatus Status { get; set; }
-
         public static Temperature Generate( long UTCtics, double temperature , SensorLocationEnum loc  ) {
             Temperature temp = new Temperature();
             //Console.WriteLine( UTCtics );

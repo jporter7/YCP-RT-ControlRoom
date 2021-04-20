@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.DiagnosticData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
