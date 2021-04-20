@@ -79,7 +79,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
  
             InitializeStation(commPort);
 
-            ReloadWeatherDataThread = new Thread(new ThreadStart(ReloadWeatherDataRoutine));
+            ReloadWeatherDataThread = new Thread(() => { ReloadWeatherDataRoutine(); });
             KeepReloadWeatherDataThreadAlive = true;
             ReloadWeatherDataThread.Start();
         }
