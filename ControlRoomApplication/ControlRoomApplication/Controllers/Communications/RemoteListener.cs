@@ -10,6 +10,7 @@ using ControlRoomApplication.Database;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.SensorNetwork;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -265,6 +266,30 @@ namespace ControlRoomApplication.Controllers
             else if (data.IndexOf("STOP_RT") != -1)
             {
                 rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
+            }
+            else if (data.IndexOf("SENSOR_INIT") != -1)
+            {
+                string[] splitData = data.Split(',');
+
+                var config = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
+
+                // Set all the sensors to their new initialization
+                config.AzimuthTemp1Init = splitData[(int)SensorInitializationEnum.AzimuthTemp].Equals("1");
+                config.ElevationTemp1Init = splitData[(int)SensorInitializationEnum.ElevationTemp].Equals("1");
+                config.AzimuthAccelerometerInit = splitData[(int)SensorInitializationEnum.AzimuthAccelerometer].Equals("1");
+                config.ElevationAccelerometerInit = splitData[(int)SensorInitializationEnum.ElevationAccelerometer].Equals("1");
+                config.CounterbalanceAccelerometerInit = splitData[(int)SensorInitializationEnum.CounterbalanceAccelerometer].Equals("1");
+                config.AzimuthEncoderInit = splitData[(int)SensorInitializationEnum.AzimuthEncoder].Equals("1");
+                config.ElevationEncoderInit = splitData[(int)SensorInitializationEnum.ElevationEncoder].Equals("1");
+
+                // Set the timeout values
+                config.TimeoutDataRetrieval = (int)(double.Parse(splitData[7]) * 1000);
+                config.TimeoutInitialization = (int)(double.Parse(splitData[8]) * 1000);
+
+                // Reboot
+                rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
+
+                return true;
             }
 
             // can't find a keyword then we fail
