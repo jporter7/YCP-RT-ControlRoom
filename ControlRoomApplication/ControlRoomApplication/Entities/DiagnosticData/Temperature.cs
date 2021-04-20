@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlRoomApplication.Entities.DiagnosticData;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,6 +27,12 @@ namespace ControlRoomApplication.Entities {
         [Required]
         [Column( "location" )]
         public int location_ID { get; set; }
+
+        /// <summary>
+        /// The error status of a particular sensor.
+        /// </summary>
+        [NotMapped]
+        public SensorNetworkSensorStatus Status { get; set; }
 
         public static Temperature Generate( long UTCtics, double temperature , SensorLocationEnum loc  ) {
             Temperature temp = new Temperature();

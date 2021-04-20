@@ -237,11 +237,11 @@
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCEvents.cs" />
     <Compile Include="Controllers\SensorNetwork\PacketDecodingTools.cs" />
-    <Compile Include="Controllers\SensorNetwork\SensorInitializationEnum.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorInitializationEnum.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkClient.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkConstants.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkServer.cs" />
-    <Compile Include="Controllers\SensorNetwork\SensorNetworkStatusEnum.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorNetworkStatusEnum.cs" />
     <Compile Include="Controllers\SensorNetwork\Simulation\PacketEncodingTools.cs" />
     <Compile Include="Controllers\SensorNetwork\Simulation\RawAccelerometerData.cs" />
     <Compile Include="Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cs" />
@@ -261,6 +261,7 @@
     <Compile Include="Entities\CelestialBody\CelestialBodyStatusEnum.cs" />
     <Compile Include="Entities\Configuration\MCUConfiguration.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorNetworkSensorStatus.cs" />
     <Compile Include="Entities\DiagnosticData\Temperature.cs" />
     <Compile Include="Entities\Exceptions\MCUExceptions.cs" />
     <Compile Include="Entities\Location\SensorLocationEnum.cs" />
