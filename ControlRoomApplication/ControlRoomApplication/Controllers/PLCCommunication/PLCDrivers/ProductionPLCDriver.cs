@@ -485,38 +485,28 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Sets a register value on the PLC that corresponds to the given address.
         /// </summary>
-        /// <param name="adr"></param>
-        /// <param name="value"></param>
+        /// <param name="adr">The address of the value you want to set.</param>
+        /// <param name="value">The value you want to set the register to.</param>
         public override void setregvalue(ushort adr, ushort value) {
             PLC_Modbusserver.DataStore.HoldingRegisters[adr] = value;
         }
 
         /// <summary>
-        /// 
+        /// Retrieves a register value from the PLC that corresponds to the given address.
         /// </summary>
-        /// <param name="adr"></param>
+        /// <remarks>
+        /// See ControlRoomApplication.Entities.PLC_modbus_server_register_mapping for register mapping.
+        /// </remarks>
+        /// <param name="adr">Address of the register.</param>
         public override ushort getregvalue(ushort adr)
         {
             return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
         }
 
-        /// <summary>
-        /// see   ControlRoomApplication.Entities.PLC_modbus_server_register_mapping
-        /// for register maping
-        /// </summary>
-        /// <param name="adr"></param>
-        /// <returns></returns>
-        public ushort readregval(ushort adr) {
-            return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
-        }
-
-
-
         public override bool Get_interlock_status() {
             return plcInput.Gate_Sensor;
-            //return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
         }
 
         private bool Int_to_bool(int val) {
@@ -531,145 +521,6 @@ namespace ControlRoomApplication.Controllers
 
         public override bool Test_Connection() {
             return TestIfComponentIsAlive();
-        }
-
-        /// <summary>
-        /// Moves the telescope to the left azimuth switch
-        /// </summary>
-        public override bool HitAzimuthLeftLimitSwitch()
-        {
-            Orientation AZLeftLimit = new Orientation(-9, 0);
-
-            return Move_to_orientation(AZLeftLimit, GetMotorEncoderPosition());
-        }
-
-        /// <summary>
-        /// Moves the telescope to the right azimuth switch
-        /// </summary>
-        public override bool HitAzimuthRightLimitSwitch()
-        {
-            Orientation AZRightLimit = new Orientation(369, 0);
-
-            return Move_to_orientation(AZRightLimit, GetMotorEncoderPosition());
-        }
-
-        /// <summary>
-        /// Moves the telescope to the lower elevation switch
-        /// </summary>
-        public override bool HitElevationLowerLimitSwitch()
-        {
-            Orientation ELLowerLimit = new Orientation(0, -14);
-
-            return Move_to_orientation(ELLowerLimit, GetMotorEncoderPosition());
-        }
-
-        /// <summary>
-        /// Moves the telescope to the upper elevation switch
-        /// </summary>
-        public override bool HitElevationUpperLimitSwitch()
-        {
-            Orientation ELUpperLimit = new Orientation(0, 92);
-
-            return Move_to_orientation(ELUpperLimit, GetMotorEncoderPosition());
-        }
-
-        /// <summary>
-        /// Recovers the telescope when a limit switch is hit
-        /// </summary>
-        public override bool RecoverFromLimitSwitch()
-        {
-            Orientation currentPos = GetMotorEncoderPosition();
-
-            Orientation safe;
-
-            bool safeAz = false;
-            bool safeEl = false;
-
-            bool azTask;
-            bool elTask;
-
-            // Loops through just in case the move fails or if it as hit two limit switches
-            while (true)
-            {
-                // Checks to see if the left az switch has been hit
-                /// TODO: Update to also use limit switch sensors
-                if (currentPos.Azimuth <= -8 && !safeAz)
-                {
-                    safe = new Orientation(0, currentPos.Elevation);
-
-                    azTask = Move_to_orientation(safe, currentPos);
-                    safeAz = azTask;
-                }
-                // Checks to see if the right az switch has been hit
-                /// TODO: Update to also use limit switch sensors
-                else if (currentPos.Azimuth >= 368 && !safeAz)
-                {
-                    safe = new Orientation(360, currentPos.Elevation);
-
-                    azTask = Move_to_orientation(safe, currentPos);
-                    safeAz = azTask;
-                }
-                else
-                {
-                    safeAz = true;
-                    azTask = false;
-                }
-
-                // Checks to see if the lower el switch has been hit
-                /// TODO: Update to also use limit switch sensors
-                if (currentPos.Elevation <= -13 && !safeEl)
-                {
-                    safe = new Orientation(currentPos.Azimuth, 0);
-
-                    elTask = Move_to_orientation(safe, currentPos);
-                    safeEl = elTask;
-                }
-                // Checks to see if the upper el switch has been hit
-                /// TODO: Update to also use limit switch sensors
-                else if (currentPos.Elevation >= 91 && !safeEl)
-                {
-                    safe = new Orientation(currentPos.Azimuth, 85);
-
-                    elTask = Move_to_orientation(safe, currentPos);
-                    safeEl = elTask;
-                }
-                else
-                {
-                    safeEl = true;
-                    elTask = false;
-                }
-
-                // Check to see if the telescope is in a safe state
-                if (safeAz && safeEl)
-                    return elTask;
-            }
-        }
-
-        /// <summary>
-        /// Moves the telescope from its current position to a start position at
-        /// 0 degrees elevation, then moves to 90 degrees, then returns to its
-        /// initial position
-        /// </summary>
-        public override bool FullElevationMove()
-        {
-            Orientation currentPos = GetMotorEncoderPosition();
-
-            bool elStartFlag;
-            bool elFinishFlag;
-
-            Orientation elStart = new Orientation(currentPos.Azimuth, 0); ;
-            Orientation elFinish = new Orientation(currentPos.Azimuth, 90);
-
-            elStartFlag = Move_to_orientation(elStart, currentPos);
-
-            elFinishFlag = Move_to_orientation(elFinish, elStart);
-
-            if(!elStartFlag || !elFinishFlag)
-            {
-                throw new Exception();
-            }
-
-            return Move_to_orientation(currentPos, elFinish);
         }
         
         /// <summary>
@@ -709,56 +560,6 @@ namespace ControlRoomApplication.Controllers
                 throw new Exception();
             }
             return Move_to_orientation(current, finish);
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope to the CW hardware stop
-        /// </summary>
-        public override bool Hit_CW_Hardstop()
-        {
-            Orientation current = GetMotorEncoderPosition();
-            Orientation hardstop = new Orientation(370, current.Elevation);
-
-            return Move_to_orientation(hardstop, current);
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope to the CCW hardware stop
-        /// </summary>
-        public override bool Hit_CCW_Hardstop()
-        {
-            Orientation current = GetMotorEncoderPosition();
-            Orientation hardstop = new Orientation(-10, current.Elevation);
-
-            return Move_to_orientation(hardstop, current);
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope from the current position
-        /// to a safe position away from the hardstop
-        /// Precondition: The telescope just hit the clockwise hardstop
-        /// Postcondition: The telescope will be placed at 360 degrees azimuth (safe spot away from hard stop)
-        /// </summary>
-        public override bool Recover_CW_Hardstop()
-        {
-            Orientation current = GetMotorEncoderPosition();
-            Orientation recover = new Orientation(360, current.Elevation);
-
-            return Move_to_orientation(recover, current);
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope from the current position
-        /// to a safe position away from the hardstop
-        /// Precondition: The telescope just hit the counter clockwise hardstop
-        /// Postcondition: The telescope will be placed at 0 degrees azimuth (safe spot away from hard stop)
-        /// </summary>
-        public override bool Recover_CCW_Hardstop()
-        {
-            Orientation current = GetMotorEncoderPosition();
-            Orientation recover = new Orientation(0, current.Elevation);
-
-            return Move_to_orientation(recover, current);
         }
 
         /// <summary>

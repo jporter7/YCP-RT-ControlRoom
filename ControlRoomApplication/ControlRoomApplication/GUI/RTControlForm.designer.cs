@@ -498,9 +498,6 @@ namespace ControlRoomApplication.Main
             "Full 360 Counter-Clockwise Rotation",
             "Thermal Calibration",
             "Snow Dump",
-            "Recover From Limit Switch",
-            "Recover From Clockwise Hardstop",
-            "Recover From Counter-Clockwise Hardstop",
             "Home Telescope",
             "Custom Orientation Movement",
             "Endless Azimuth Rotation"});

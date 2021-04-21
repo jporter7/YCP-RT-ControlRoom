@@ -484,15 +484,14 @@ namespace ControlRoomApplication.Main
                     {
                         rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
                     });
-                    //Stow Script selected (index 0 of control script combo)
+                    //Stow Script selected
                     break;
                 case 2:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                        tele.PLCDriver.FullElevationMove();
+                        rtController.FullElevationMove(MovePriority.Manual);
                     });
-                    //Full Elevation selected (index 1 of control script combo)
+                    //Full Elevation selected
                     break;
                 case 3:
                     thread = new Thread(() =>
@@ -500,7 +499,7 @@ namespace ControlRoomApplication.Main
                         rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         tele.PLCDriver.Full_360_CW_Rotation();
                     });
-                    //Full 360 CW selected (index 2 of control script combo)
+                    //Full 360 CW selected
                     break;
                 case 4:
                     thread = new Thread(() =>
@@ -508,54 +507,31 @@ namespace ControlRoomApplication.Main
                         rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
                         tele.PLCDriver.Full_360_CCW_Rotation();
                     });
-                    //Full 360 CCW  selected (index 3 of control script combo)
+                    //Full 360 CCW  selected
                     break;
                 case 5:
                     thread = new Thread(() =>
                     {
                         rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
                     });
-                    //Thermal Calibration selected (index 4 of control script combo)
+                    //Thermal Calibration selected
                     break;
                 case 6:
                     thread = new Thread(() =>
                     {
                         rtController.SnowDump(MovePriority.Manual);
                     });
-                    //Snow Dump selected (index 5 of control script combo)
+                    //Snow Dump selected
                     break;
                 case 7:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                        tele.PLCDriver.RecoverFromLimitSwitch();
-                    });
-                    //Recover from Limit Switch (index 6 of control script combo)
-                    break;
-                case 8:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                        tele.PLCDriver.Recover_CW_Hardstop();
-                    });
-                    //Recover from Clockwise Hardstop (index 7 of control script combo)
-                    break;
-                case 9:
-                    thread = new Thread(() =>
-                    {
-                        tele.PLCDriver.Recover_CCW_Hardstop();
-                    });
-                    //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
-                    break;
-                case 10:
-                    thread = new Thread(() =>
-                    {
                         rtController.HomeTelescope(MovePriority.Manual);
                     });
-                    //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
+                    //Recover from Counter-Clockwise Hardstop
                     break;
 
-                case 11:
+                case 8:
                     thread = new Thread(() =>
                     {
                         double azimuthPos = 0;
@@ -599,10 +575,10 @@ namespace ControlRoomApplication.Main
                             MessageBox.Show("Custom Orientation script cancelled.", "Script Cancelled");
                         }
                     });
-                    // Custom azimuth position. This is only used to test the slip ring implementation
+                    // Custom orientation 
                     break;
 
-                case 12:
+                case 9:
                     thread = new Thread(() =>
                     {
                         rtController.StartRadioTelescopeAzimuthJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);

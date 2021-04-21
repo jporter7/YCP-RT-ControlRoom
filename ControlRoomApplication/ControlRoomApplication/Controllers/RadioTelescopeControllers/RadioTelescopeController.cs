@@ -309,6 +309,42 @@ namespace ControlRoomApplication.Controllers
             return success;
         }
 
+        /// <summary>
+        /// A demonstration script that moves the elevation motor to its maximum and minimum.
+        /// </summary>
+        /// <param name="priority">Movement priority.</param>
+        /// <returns></returns>
+        public bool FullElevationMove(MovePriority priority)
+        {
+            bool successMove1 = false;
+            bool successMove2 = false;
+            bool successReturnToOriginalPos = false;
+
+            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            {
+                Orientation origOrientation = GetCurrentOrientation();
+
+                Orientation move1 = new Orientation(origOrientation.Azimuth, 0);
+                Orientation move2 = new Orientation(origOrientation.Azimuth, 90);
+
+                // Move to a low elevation point
+                successMove1 = RadioTelescope.PLCDriver.Move_to_orientation(move1, origOrientation);
+
+                if(successMove1)
+                {
+                    // Move to a high elevation point
+                    successMove2 = RadioTelescope.PLCDriver.Move_to_orientation(move2, move1);
+
+                    if(successMove2)
+                    {
+                        // Move back to the original orientation
+                        successReturnToOriginalPos = RadioTelescope.PLCDriver.Move_to_orientation(origOrientation, move2);
+                    }
+                }
+            }
+
+            return successMove1 && successMove2 && successReturnToOriginalPos;
+        }
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's azimuth

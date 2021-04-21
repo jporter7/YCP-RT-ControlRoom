@@ -82,12 +82,10 @@ namespace ControlRoomApplication.Controllers
 
         // All of the "scripts" are here all the way to....
         // Control Scripts
-        public abstract bool FullElevationMove();
 
         public abstract bool Full_360_CCW_Rotation();
 
         public abstract bool Full_360_CW_Rotation();
-
 
         /// <summary>
         /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
@@ -95,28 +93,6 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns>True if homing was successful, false if it failed</returns>
         public abstract bool HomeTelescope();
-
-        // Diagnostics Scripts
-
-        public abstract bool HitAzimuthLeftLimitSwitch();
-
-        public abstract bool HitAzimuthRightLimitSwitch();
-
-        public abstract bool HitElevationLowerLimitSwitch();
-
-        public abstract bool HitElevationUpperLimitSwitch();
-
-        public abstract bool RecoverFromLimitSwitch();
-
-        public abstract bool Hit_CW_Hardstop();
-
-        public abstract bool Hit_CCW_Hardstop();
-
-        public abstract bool Recover_CW_Hardstop();
-
-        public abstract bool Recover_CCW_Hardstop();
-
-        // ... to here
 
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 

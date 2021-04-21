@@ -238,7 +238,7 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("FULL_EV"))
                 {
-                    rtController.RadioTelescope.PLCDriver.FullElevationMove();
+                    rtController.FullElevationMove(MovePriority.Manual);
                 }
                 else if (script.Contains("CALIBRATE"))
                 {
