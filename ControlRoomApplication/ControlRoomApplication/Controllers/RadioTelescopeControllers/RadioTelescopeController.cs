@@ -284,6 +284,19 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// This is a method used to move the radio telescope by X degrees.
+        /// Entering 0 for an axis will not move that motor.
+        /// </summary>
+        /// <param name="degreesToMoveBy">The number of degrees to move by.</param>
+        /// <param name="priority">The movement's priority.</param>
+        /// <returns></returns>
+        public bool MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovePriority priority)
+        {
+            // TODO: Implement (issue #379)
+            return false;
+        }
+
+        /// <summary>
         /// This is used to home the telescope. Immediately after homing, the telescope will move to "Stow" position.
         /// This will also zero out the absolute encoders and account for the true north offset.
         /// </summary>
