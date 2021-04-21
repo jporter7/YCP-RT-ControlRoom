@@ -1,4 +1,6 @@
 ﻿using ControlRoomApplication.Controllers.SensorNetwork;
+using ControlRoomApplication.Controllers.SensorNetwork.Simulation;
+using ControlRoomApplication.Entities.DiagnosticData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,8 +26,9 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         /// <param name="azTemps">Array of azimuth temperature samples.</param>
         /// <param name="elEnc">Array of elevation encoder samples.</param>
         /// <param name="azEnc">Array of azimuth encoder samples.</param>
+        /// <param name="statuses">All the sensor statuses and errors that come from the sensor network.</param>
         /// <returns></returns>
-        public static byte[] ConvertDataArraysToBytes(RawAccelerometerData[] elAccl, RawAccelerometerData[] azAccl, RawAccelerometerData[] cbAccl, double[] elTemps, double[] azTemps, double[] elEnc, double[] azEnc)
+        public static byte[] ConvertDataArraysToBytes(RawAccelerometerData[] elAccl, RawAccelerometerData[] azAccl, RawAccelerometerData[] cbAccl, double[] elTemps, double[] azTemps, double[] elEnc, double[] azEnc, SensorStatuses statuses)
         {
             uint dataSize = CalcDataSize(elAccl.Length, azAccl.Length, cbAccl.Length, elTemps.Length, azTemps.Length, elEnc.Length, azEnc.Length);
 
@@ -61,7 +64,20 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
                 rawAzEnc[i] = ConvertDegreesToRawAzData(azEnc[i]);
             }
 
-            return EncodeRawData(dataSize, elAccl, azAccl, cbAccl, rawElTemps, rawAzTemps, rawElEnc, rawAzEnc);
+            bool[] sensorStatusBoolArray = new bool[] {
+                statuses.ElevationAccelerometerStatus == SensorNetworkSensorStatus.Okay,
+                statuses.AzimuthAccelerometerStatus == SensorNetworkSensorStatus.Okay,
+                statuses.CounterbalanceAccelerometerStatus == SensorNetworkSensorStatus.Okay,
+                statuses.ElevationTemperature1Status == SensorNetworkSensorStatus.Okay,
+                statuses.ElevationTemperature2Status == SensorNetworkSensorStatus.Okay,
+                statuses.AzimuthTemperature1Status == SensorNetworkSensorStatus.Okay,
+                statuses.AzimuthTemperature2Status == SensorNetworkSensorStatus.Okay,
+                statuses.AzimuthAbsoluteEncoderStatus == SensorNetworkSensorStatus.Okay
+            };
+
+            int errors = 0; // TODO: implement conversion
+
+            return EncodeRawData(dataSize, elAccl, azAccl, cbAccl, rawElTemps, rawAzTemps, rawElEnc, rawAzEnc, sensorStatusBoolArray, errors);
         }
         
         /// <summary>
@@ -76,7 +92,7 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         /// <param name="elEnc">Array of RAW elevation encoder samples. (Should only ever be a size of 1)</param>
         /// <param name="azEnc">Array of RAW azimuth encoder samples. (Should only ever be a size of 1)</param>
         /// <returns></returns>
-        public static byte[] EncodeRawData(uint dataSize, RawAccelerometerData[] elAcclData, RawAccelerometerData[] azAcclData, RawAccelerometerData[] cbAcclData, short[] elTemp, short[] azTemp, short[] elEnc, short[] azEnc)
+        public static byte[] EncodeRawData(uint dataSize, RawAccelerometerData[] elAcclData, RawAccelerometerData[] azAcclData, RawAccelerometerData[] cbAcclData, short[] elTemp, short[] azTemp, short[] elEnc, short[] azEnc, bool[] statuses, int errors)
         {
             byte[] data = new byte[dataSize];
 
@@ -85,6 +101,12 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
 
             // Store the total data size in 4 bytes
             Add32BitValueToByteArray(ref data, ref i, dataSize);
+
+            // Store the sensor statuses
+            data[i++] = ConvertBoolArrayToByte(statuses);
+
+            // Store the sensor errors in 3 bytes
+            Add24BitValueToByteArray(ref data, ref i, errors);
 
             // Store elevation accelerometer size in 2 bytes
             Add16BitValueToByteArray(ref data, ref i, (short)elAcclData.Length);
@@ -181,8 +203,9 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         {
             // 1 for the transmit ID
             // 4 for the total data size
+            // 4 for the sensor statuses and errors
             // 14 for each sensor's data size (each sensor size is 2 bytes, with 7 sensors total)
-            uint length = 1 + 4 + 14;
+            uint length = 1 + 4 + 4 + 14;
 
             // Each accelerometer axis is 2 bytes each. With three axes, that's 6 bytes per accelerometer
             length += (uint)elAccSize * 6;
@@ -245,6 +268,19 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         }
 
         /// <summary>
+        /// A helper function to add 24-bit values to the byte array so we don't have to do this every single time.
+        /// </summary>
+        /// <param name="dataToAddTo">The byte array we are modifying.</param>
+        /// <param name="counter">The counter to tell us where in the byte array we are modifying.</param>
+        /// <param name="dataBeingAdded">The data we are adding to the byte array.</param>
+        public static void Add24BitValueToByteArray(ref byte[] dataToAddTo, ref int counter, int dataBeingAdded)
+        {
+            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0xFF0000) >> 16);
+            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0x00FF00) >> 8);
+            dataToAddTo[counter++] = (byte)((short)dataBeingAdded & 0x0000FF);
+        }
+
+        /// <summary>
         /// A helper function to add 32-bit values to the byte array so we don't have to do this every single time.
         /// </summary>
         /// <param name="dataToAddTo">The byte array we are modifying.</param>
@@ -256,6 +292,28 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
             dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0x00FF0000) >> 16);
             dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0x0000FF00) >> 8);
             dataToAddTo[counter++] = (byte)((((short)dataBeingAdded & 0x000000FF)));
+        }
+
+
+        private static byte ConvertBoolArrayToByte(bool[] source)
+        {
+            if (source.Length > 8) throw new ArgumentOutOfRangeException("There can only be 8 bits in a byte array.");
+
+            byte result = 0;
+
+            int index = 8 - source.Length;
+
+            // Loop through the array
+            foreach (bool b in source)
+            {
+                // if the element is 'true' set the bit at that position
+                if (b)
+                    result |= (byte)(1 << (7 - index));
+
+                index++;
+            }
+
+            return result;
         }
     }
 }
