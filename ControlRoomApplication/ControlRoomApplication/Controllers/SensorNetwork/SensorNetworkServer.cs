@@ -471,17 +471,18 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <returns></returns>
         private SensorStatuses ParseSensorStatuses(BitArray statuses, UInt32 errors)
         {
-            SensorStatuses s = new SensorStatuses();
-
-            // Regular statuses
-            SensorStatuses.AzimuthAbsoluteEncoderStatus = statuses[0] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
-            SensorStatuses.AzimuthTemperature1Status = statuses[2] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
-            SensorStatuses.AzimuthTemperature2Status = statuses[1] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
-            SensorStatuses.ElevationTemperature1Status = statuses[4] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
-            SensorStatuses.ElevationTemperature2Status = statuses[3] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
-            SensorStatuses.AzimuthAccelerometerStatus = statuses[6] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
-            SensorStatuses.ElevationAccelerometerStatus = statuses[7] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
-            SensorStatuses.CounterbalanceAccelerometerStatus = statuses[5] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error;
+            SensorStatuses s = new SensorStatuses
+            {
+                // Regular statuses
+                AzimuthAbsoluteEncoderStatus = statuses[0] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                AzimuthTemperature1Status = statuses[2] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                AzimuthTemperature2Status = statuses[1] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                ElevationTemperature1Status = statuses[4] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                ElevationTemperature2Status = statuses[3] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                AzimuthAccelerometerStatus = statuses[6] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                ElevationAccelerometerStatus = statuses[7] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                CounterbalanceAccelerometerStatus = statuses[5] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+            };
 
             return s;
         }
