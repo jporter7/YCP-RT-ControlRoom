@@ -581,7 +581,7 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info(Utilities.GetTimeStamp() + ": Building SpectraCyber");
-                    return new SpectraCyberController(new SpectraCyber());
+                    return new SpectraCyberController(new SpectraCyber(txtSpectraPort.Text));
 
                 case 1:
                 default:
