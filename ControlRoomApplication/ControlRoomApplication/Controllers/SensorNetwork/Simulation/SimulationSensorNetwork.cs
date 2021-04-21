@@ -134,6 +134,11 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
                 // Convert subarrays to bytes
                 SimulationSubArrayData subArrays = BuildSubArrays(ref elTempIdx, ref azTempIdx, ref elEncIdx, ref azEncIdx, ref elAccIdx, ref azAccIdx, ref cbAccIdx);
 
+                SensorStatuses statuses = new SensorStatuses
+                {
+                    // TODO: Write the values of each sensor status in here so it can get be encoded
+                };
+
                 byte[] dataToSend = PacketEncodingTools.ConvertDataArraysToBytes(
                     subArrays.ElevationAccl, 
                     subArrays.AzimuthAccl, 
@@ -141,7 +146,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
                     subArrays.ElevationTemps, 
                     subArrays.AzimuthTemps, 
                     subArrays.ElevationEnc, 
-                    subArrays.AzimuthEnc
+                    subArrays.AzimuthEnc,
+                    statuses
                 );
 
                 // We have to check for CurrentlyRunning down here because we don't know when the connection is going to be terminated, and

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlRoomApplication.Entities.DiagnosticData;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -38,9 +39,6 @@ namespace ControlRoomApplication.Entities {
         [Required]
         [Column( "location" )]
         public int location_ID { get; set; }
-
-
-
 
         public static Acceleration Generate( long UTCtics , double x , double y , double z , SensorLocationEnum loc ) {
             Acceleration acx = new Acceleration();
