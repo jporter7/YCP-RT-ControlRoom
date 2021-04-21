@@ -240,7 +240,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public bool send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public bool send_relative_move(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
             // Move the scale model's azimuth motor on com3 and its elevation on com4
             // make sure there is a delay in this thread for enough time to have the arduino
             // move the first motor (azimuth)
@@ -263,7 +263,7 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public override bool relative_move( int programmedPeakSpeedAZInt, int positionTranslationAZ , int positionTranslationEL ) {
             /*
                     if(Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT) {
                         logger.Error( $"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range." );
@@ -275,7 +275,7 @@ namespace ControlRoomApplication.Controllers {
                     */
             // Convert orientation object to a json string
             //string jsonOrientation = JsonConvert.SerializeObject( Plc.OutgoingOrientation );
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
+            return send_relative_move(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
 
         }
 
@@ -296,7 +296,7 @@ namespace ControlRoomApplication.Controllers {
 
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL);
+            return send_relative_move(AZ_Speed, EL_Speed, positionTranslationAZ, positionTranslationEL);
 
         }
 

@@ -100,9 +100,9 @@ namespace ControlRoomApplication.Controllers
             return driver.ImmediateStop();
         }
 
-        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        public override bool relative_move(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL)
         {
-            return driver.relative_move(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL);
+            return driver.relative_move(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
         }
 
         public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)

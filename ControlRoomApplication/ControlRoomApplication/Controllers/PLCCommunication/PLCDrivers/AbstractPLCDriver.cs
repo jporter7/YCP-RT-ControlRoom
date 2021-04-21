@@ -100,7 +100,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool ImmediateStop();
 
-        public abstract bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL);
+        public abstract bool relative_move(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL);
 
         public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
 

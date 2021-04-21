@@ -790,16 +790,16 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
-        public bool MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL) {
+        public bool MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL, int positionTranslationAZ , int positionTranslationEL) {
             positionTranslationEL = -positionTranslationEL;
             mCUpositon.update(ReadMCURegisters(0, 16));
             var startPos =  mCUpositon as MCUPositonStore;
             Cancel_move();
 
-            ushort[] CMDdata = prepairRelativeMoveData( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL );
+            ushort[] CMDdata = prepairRelativeMoveData( SpeedAZ , SpeedEL , ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , positionTranslationAZ , positionTranslationEL );
 
             // Estimate the time to move, which will be the axis that takes the longest
-            int AZTime = EstimateMovementTime( SpeedAZ , ACCELERATION , positionTranslationAZ ), ELTime = EstimateMovementTime( SpeedEL , ACCELERATION , positionTranslationEL );
+            int AZTime = EstimateMovementTime( SpeedAZ , ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, positionTranslationAZ ), ELTime = EstimateMovementTime( SpeedEL , ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, positionTranslationEL );
             int TimeToMove;
             if(AZTime > ELTime) {
                 TimeToMove = AZTime;
@@ -819,7 +819,7 @@ namespace ControlRoomApplication.Controllers {
             if (positionTranslationEL > 0) elDirection = RadioTelescopeDirectionEnum.ClockwiseOrNegative;
             else elDirection = RadioTelescopeDirectionEnum.CounterclockwiseOrPositive;
 
-            var ThisMove = SendGenericCommand( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, azDirection, elDirection, SpeedAZ, SpeedEL ) { EL_ACC = ACCELERATION , AZ_ACC = ACCELERATION,timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } );
+            var ThisMove = SendGenericCommand( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, azDirection, elDirection, SpeedAZ, SpeedEL ) { EL_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, AZ_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } );
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
                 if(!MotorsCurrentlyMoving()) {

@@ -635,7 +635,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
-        public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public override bool relative_move(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL) {
             if(IsSimulation)
             {
                 CurrentSimOrientation = new Orientation(
@@ -644,7 +644,7 @@ namespace ControlRoomApplication.Controllers
                 );
             }
 
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
+            return send_relative_move(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL );
         }
 
 
@@ -688,7 +688,6 @@ namespace ControlRoomApplication.Controllers
             
             return send_relative_move(
                 AZ_Speed, EL_Speed,
-                MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, 
                 positionTranslationAZ, 
                 positionTranslationEL
             );
@@ -710,8 +709,8 @@ namespace ControlRoomApplication.Controllers
             return MCU.Cancel_move();
         }
 
-        public bool send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL);
+        public bool send_relative_move(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
+            return MCU.MoveAndWaitForCompletion(SpeedAZ, SpeedEL, positionTranslationAZ, positionTranslationEL);
         }
 
         /// <summary>
