@@ -14,15 +14,15 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
     public enum MovePriority
     {
         /// <summary>
-        /// This priority is present if one has not yet been initialized. A movement should never be executed with
-        /// this priority in production.
+        /// This priority is present if one has not yet been initialized, or if no movement is currently running.
         /// </summary>
         None,
 
         /// <summary>
-        /// These are movements that must override all other movements, such as stop commands.
+        /// This is the lowest priority movement, which is reserved only for use with appointments, which are cued
+        /// up in <seealso cref="RadioTelescopeControllerManagementThread">RadioTelescopeControllerManagementThread</seealso>.
         /// </summary>
-        Critical,
+        Appointment,
 
         /// <summary>
         /// This denotes manual movements that the user would send through scripts or manual az/el movements on the
@@ -31,9 +31,13 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         Manual,
 
         /// <summary>
-        /// This is the lowest priority movement, which is reserved only for use with appiontments, which are cued
-        /// up in <seealso cref="RadioTelescopeControllerManagementThread">RadioTelescopeControllerManagementThread</seealso>.
+        /// This is a movement command for the general stopping of any lower-priority movement commands.
         /// </summary>
-        Appointment
+        GeneralStop,
+
+        /// <summary>
+        /// These are movements that must override all other movements, such as stop commands or limit switch recovery.
+        /// </summary>
+        Critical
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlRoomApplication.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,30 +14,39 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
     public class MCUCommand : IDisposable
     {
         /// <summary>
-        /// stores the data that is to be sent to the mcu
+        /// Stores the data that is to be sent to the MCU.
         /// </summary>
         public ushort[] commandData;
+
         /// <summary>
-        /// high level information about the comands general purpose
+        /// High-level information about the command's general purpose.
         /// </summary>
         public MCUCommandType CommandType;
+
         /// <summary>
-        /// true when comand has completed, used to determine when the next move can be sent
+        /// True when a command has completed. Used to determine when the next move can be sent.
         /// </summary>
         public bool completed = false;
+
         /// <summary>
         /// this will be set when returnd to the calling function if the move could not be run for some reason
         /// </summary>
         public Exception CommandError;
+
         /// <summary>
         /// these variables set so that different parts of the MCUManager can calculate how parts of the operation will take
         /// </summary>
         public int AZ_Programed_Speed, EL_Programed_Speed, AZ_ACC = 50, EL_ACC = 50;
 
         /// <summary>
-        /// these are set to determine the direction of motion
+        /// Determines the direction of motion of the azimuth motor.
         /// </summary>
-        public bool AZ_CW, EL_CW;
+        public RadioTelescopeDirectionEnum AzimuthDirection;
+
+        /// <summary>
+        /// Determines the direction of motion fo the elevation motor.
+        /// </summary>
+        public RadioTelescopeDirectionEnum ElevationDirection;
 
         /// <summary>
         /// create a MCU command and record the current time
@@ -50,20 +60,21 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         }
 
         /// <summary>
-        /// creat a comand for movement
+        /// Create a command for movement. Only the "data" field is sent to the MCU; the rest of the fields
+        /// exist for internal tracking and estimations within the MCU manager.
         /// </summary>
         /// <param name="data"></param>
         /// <param name="CMDType"></param>
-        /// <param name="AZCW"></param>
-        /// <param name="ELCW"></param>
+        /// <param name="azDir"></param>
+        /// <param name="elDir"></param>
         /// <param name="AZSpeed"></param>
         /// <param name="ElSpeed"></param>
-        public MCUCommand(ushort[] data, MCUCommandType CMDType, bool AZCW, bool ELCW, int AZSpeed, int ElSpeed)
+        public MCUCommand(ushort[] data, MCUCommandType CMDType, RadioTelescopeDirectionEnum azDir, RadioTelescopeDirectionEnum elDir, int AZSpeed, int ElSpeed)
         {
             CommandType = CMDType;
             commandData = data;
-            AZ_CW = AZCW;
-            EL_CW = ELCW;
+            AzimuthDirection = azDir;
+            ElevationDirection = elDir;
             AZ_Programed_Speed = AZSpeed;
             EL_Programed_Speed = ElSpeed;
         }

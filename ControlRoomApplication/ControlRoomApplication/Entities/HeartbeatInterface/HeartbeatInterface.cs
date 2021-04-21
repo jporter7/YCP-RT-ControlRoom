@@ -96,7 +96,7 @@ namespace ControlRoomApplication.Entities
         }
 
         // This is called to determine whether or not the component that this represents is responding to the system
-        protected abstract bool TestIfComponentIsAlive();
+        public abstract bool TestIfComponentIsAlive();
 
         // If this interface is failing to update appropriately or not hearing back as expected, this should be called
         protected abstract bool KillHeartbeatComponent();

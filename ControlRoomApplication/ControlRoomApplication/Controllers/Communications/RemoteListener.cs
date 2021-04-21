@@ -9,6 +9,8 @@ using ControlRoomApplication.Main;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.SensorNetwork;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -132,7 +134,7 @@ namespace ControlRoomApplication.Controllers
             if (data.IndexOf("COORDINATE_MOVE") != -1)
             {
                 // we have a move command coming in
-                rtController.ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
 
                 // get azimuth and orientation
                 int azimuthIndex = data.IndexOf("AZIM");
@@ -156,7 +158,7 @@ namespace ControlRoomApplication.Controllers
 
                 Orientation movingTo = new Orientation(azimuth, elevation);
 
-                rtController.MoveRadioTelescopeToOrientation(movingTo);
+                rtController.MoveRadioTelescopeToOrientation(movingTo, MovePriority.Manual);
 
                 // TODO: store the User Id and movement somewhere in the database
 
@@ -215,7 +217,7 @@ namespace ControlRoomApplication.Controllers
             else if (data.IndexOf("SCRIPT") != -1)
             {
                 // we have a move command coming in
-                rtController.ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
 
                 // get azimuth and orientation
                 int colonIndex = data.IndexOf(":");
@@ -232,7 +234,7 @@ namespace ControlRoomApplication.Controllers
 
                 if (script.Contains("DUMP"))
                 {
-                    rtController.SnowDump();
+                    rtController.SnowDump(MovePriority.Manual);
                 }
                 else if (script.Contains("FULL_EV"))
                 {
@@ -240,11 +242,11 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("CALIBRATE"))
                 {
-                    rtController.ThermalCalibrateRadioTelescope();
+                    rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
                 }
                 else if (script.Contains("STOW"))
                 {
-                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
+                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
                 }
                 else if (script.Contains("FULL_CLOCK"))
                 {
@@ -263,7 +265,31 @@ namespace ControlRoomApplication.Controllers
             }
             else if (data.IndexOf("STOP_RT") != -1)
             {
-                rtController.ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
+            }
+            else if (data.IndexOf("SENSOR_INIT") != -1)
+            {
+                string[] splitData = data.Split(',');
+
+                var config = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
+
+                // Set all the sensors to their new initialization
+                config.AzimuthTemp1Init = splitData[(int)SensorInitializationEnum.AzimuthTemp].Equals("1");
+                config.ElevationTemp1Init = splitData[(int)SensorInitializationEnum.ElevationTemp].Equals("1");
+                config.AzimuthAccelerometerInit = splitData[(int)SensorInitializationEnum.AzimuthAccelerometer].Equals("1");
+                config.ElevationAccelerometerInit = splitData[(int)SensorInitializationEnum.ElevationAccelerometer].Equals("1");
+                config.CounterbalanceAccelerometerInit = splitData[(int)SensorInitializationEnum.CounterbalanceAccelerometer].Equals("1");
+                config.AzimuthEncoderInit = splitData[(int)SensorInitializationEnum.AzimuthEncoder].Equals("1");
+                config.ElevationEncoderInit = splitData[(int)SensorInitializationEnum.ElevationEncoder].Equals("1");
+
+                // Set the timeout values
+                config.TimeoutDataRetrieval = (int)(double.Parse(splitData[7]) * 1000);
+                config.TimeoutInitialization = (int)(double.Parse(splitData[8]) * 1000);
+
+                // Reboot
+                rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
+
+                return true;
             }
 
             // can't find a keyword then we fail

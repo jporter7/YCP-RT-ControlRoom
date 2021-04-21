@@ -62,6 +62,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             CurrentCounterbalanceAccl = new Acceleration[1];
             CurrentCounterbalanceAccl[0] = new Acceleration();
 
+            AbsoluteOrientationOffset = new Orientation();
+
             // Initialize threads and additional processes, if applicable
             SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
             SensorMonitoringThread.Name = "SensorMonitorThread";
@@ -94,11 +96,18 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
         /// <summary>
         /// The current orientation of the telescope based off of the absolute encoders. These
-        /// are totally separate from the motor encoders' data that we get from the Read_position
+        /// are totally separate from the motor encoders' data that we get from the GetMotorEncoderPosition
         /// function in the PLC and MCU, and will provide more accurate data regarding the telescope's
         /// position.
         /// </summary>
         public Orientation CurrentAbsoluteOrientation { get; set; }
+
+        /// <summary>
+        /// The absolute encoders will be different from the motor encoders by default, so when we home the telescope,
+        /// the offset will be calculated and stored in here. This should work no matter where the homing sensor
+        /// is placed.
+        /// </summary>
+        public Orientation AbsoluteOrientationOffset { get; set; }
 
         /// <summary>
         /// This tells us the current vibration coming from the azimuth motor. It is always received as
@@ -336,7 +345,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                             // This must be converted into degrees, because we are only receiving raw data from the
                             // elevation encoder
                             CurrentAbsoluteOrientation.Elevation = 
-                                0.25 * (short)(data[k++] << 8 | data[k++]) - 20.375;
+                                (0.25 * (short)(data[k++] << 8 | data[k++]) - 20.375) - AbsoluteOrientationOffset.Elevation;
                         }
 
                         // Azimuth absolute encoder
@@ -345,7 +354,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                             // This must be converted into degrees, because we are only receiving raw data from the
                             // azimuth encoder
                             CurrentAbsoluteOrientation.Azimuth = 
-                                360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[k++] << 8 | data[k++]);
+                                (360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[k++] << 8 | data[k++])) - AbsoluteOrientationOffset.Azimuth;
                         }
 
                         success = true;
@@ -414,7 +423,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     localClient.Close();
                     localClient.Dispose();
                 }
-                catch
+                catch (Exception e)
                 {
                     if (CurrentlyRunning) // If we're not currently running, then it means we voluntarily shut down the server
                     {

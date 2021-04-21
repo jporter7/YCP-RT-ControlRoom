@@ -105,7 +105,7 @@ namespace ControlRoomApplication.Controllers
             // Do nothing to purge a simulated buffer
         }
 
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             return true;
         }

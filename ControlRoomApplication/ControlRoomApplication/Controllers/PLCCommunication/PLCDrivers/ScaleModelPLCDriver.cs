@@ -217,7 +217,7 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override Orientation read_Position() {
+        public override Orientation GetMotorEncoderPosition() {
             return new Orientation();
         }
 
@@ -360,7 +360,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
+        public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
             throw new NotImplementedException();
 
         }
@@ -382,7 +382,7 @@ namespace ControlRoomApplication.Controllers {
             return stuf;
         }
 
-        protected override bool TestIfComponentIsAlive() {
+        public override bool TestIfComponentIsAlive() {
             return true;
 
         }
@@ -393,10 +393,6 @@ namespace ControlRoomApplication.Controllers {
 
         public override ushort getregvalue(ushort adr)
         {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> JogOffLimitSwitches() {
             throw new NotImplementedException();
         }
 

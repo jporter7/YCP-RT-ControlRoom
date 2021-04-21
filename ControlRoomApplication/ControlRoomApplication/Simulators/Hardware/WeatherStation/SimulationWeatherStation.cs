@@ -82,7 +82,7 @@ namespace ControlRoomApplication.Simulators.Hardware.WeatherStation
             return randNormValue;
         }
 
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             return true;
         }
