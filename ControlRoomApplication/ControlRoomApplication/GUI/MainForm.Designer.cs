@@ -48,6 +48,8 @@
             this.LocalIPCombo = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.simulationSettingsGroupbox = new System.Windows.Forms.GroupBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.txtSpectraPort = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtWSCOMPort = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -130,7 +132,7 @@
             this.txtPLCPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.txtPLCPort.BackColor = System.Drawing.Color.Gainsboro;
             this.txtPLCPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtPLCPort.Location = new System.Drawing.Point(249, 42);
+            this.txtPLCPort.Location = new System.Drawing.Point(249, 49);
             this.txtPLCPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtPLCPort.Name = "txtPLCPort";
             this.txtPLCPort.Size = new System.Drawing.Size(118, 29);
@@ -148,10 +150,10 @@
             this.comboBox1.Items.AddRange(new object[] {
             "Production SpectraCyber",
             "Simulated SpectraCyber"});
-            this.comboBox1.Location = new System.Drawing.Point(260, 30);
+            this.comboBox1.Location = new System.Drawing.Point(6, 47);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(234, 28);
+            this.comboBox1.Size = new System.Drawing.Size(246, 28);
             this.comboBox1.TabIndex = 2;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -179,7 +181,7 @@
             "Production Weather Station",
             "Simulated Weather Station",
             "Test Weather Station"});
-            this.comboBox2.Location = new System.Drawing.Point(5, 76);
+            this.comboBox2.Location = new System.Drawing.Point(5, 77);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(247, 28);
@@ -198,10 +200,10 @@
             "Scale PLC",
             "Simulated PLC",
             "Test PLC"});
-            this.comboPLCType.Location = new System.Drawing.Point(260, 76);
+            this.comboPLCType.Location = new System.Drawing.Point(5, 107);
             this.comboPLCType.Margin = new System.Windows.Forms.Padding(2);
             this.comboPLCType.Name = "comboPLCType";
-            this.comboPLCType.Size = new System.Drawing.Size(234, 28);
+            this.comboPLCType.Size = new System.Drawing.Size(247, 28);
             this.comboPLCType.TabIndex = 3;
             this.comboPLCType.SelectedIndexChanged += new System.EventHandler(this.comboPLCType_SelectedIndexChanged);
             // 
@@ -230,7 +232,7 @@
             this.comboSensorNetworkBox.Items.AddRange(new object[] {
             "Production Sensor Network",
             "Simulated Sensor Network"});
-            this.comboSensorNetworkBox.Location = new System.Drawing.Point(6, 30);
+            this.comboSensorNetworkBox.Location = new System.Drawing.Point(6, 17);
             this.comboSensorNetworkBox.Name = "comboSensorNetworkBox";
             this.comboSensorNetworkBox.Size = new System.Drawing.Size(246, 28);
             this.comboSensorNetworkBox.TabIndex = 14;
@@ -257,10 +259,10 @@
             this.LocalIPCombo.Items.AddRange(new object[] {
             "RT IP Address",
             "127.0.0.1"});
-            this.LocalIPCombo.Location = new System.Drawing.Point(140, 120);
+            this.LocalIPCombo.Location = new System.Drawing.Point(6, 137);
             this.LocalIPCombo.Margin = new System.Windows.Forms.Padding(2);
             this.LocalIPCombo.Name = "LocalIPCombo";
-            this.LocalIPCombo.Size = new System.Drawing.Size(234, 28);
+            this.LocalIPCombo.Size = new System.Drawing.Size(246, 28);
             this.LocalIPCombo.TabIndex = 16;
             this.LocalIPCombo.SelectedIndexChanged += new System.EventHandler(this.LocalIPCombo_SelectedIndexChanged);
             // 
@@ -277,11 +279,15 @@
             // simulationSettingsGroupbox
             // 
             this.simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
+            this.simulationSettingsGroupbox.Controls.Add(this.label8);
+            this.simulationSettingsGroupbox.Controls.Add(this.txtSpectraPort);
             this.simulationSettingsGroupbox.Controls.Add(this.comboBox2);
             this.simulationSettingsGroupbox.Controls.Add(this.LocalIPCombo);
             this.simulationSettingsGroupbox.Controls.Add(this.comboSensorNetworkBox);
             this.simulationSettingsGroupbox.Controls.Add(this.comboPLCType);
             this.simulationSettingsGroupbox.Controls.Add(this.comboBox1);
+            this.simulationSettingsGroupbox.Controls.Add(this.label2);
+            this.simulationSettingsGroupbox.Controls.Add(this.txtWSCOMPort);
             this.simulationSettingsGroupbox.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.simulationSettingsGroupbox.Location = new System.Drawing.Point(12, 258);
             this.simulationSettingsGroupbox.Name = "simulationSettingsGroupbox";
@@ -291,15 +297,42 @@
             this.simulationSettingsGroupbox.Text = "Individual Component Simulation settings";
             this.simulationSettingsGroupbox.Enter += new System.EventHandler(this.simulationSettingsGroupbox_Enter);
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(257, 57);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(120, 18);
+            this.label8.TabIndex = 23;
+            this.label8.Text = "Spectra Cyber:";
+            this.WCOMPortToolTip.SetToolTip(this.label8, "Enter a valid port number, between 1 and 65536");
+            // 
+            // txtSpectraPort
+            // 
+            this.txtSpectraPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.txtSpectraPort.BackColor = System.Drawing.Color.Gainsboro;
+            this.txtSpectraPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
+            this.txtSpectraPort.ForeColor = System.Drawing.Color.DarkGray;
+            this.txtSpectraPort.Location = new System.Drawing.Point(389, 53);
+            this.txtSpectraPort.Margin = new System.Windows.Forms.Padding(2);
+            this.txtSpectraPort.Name = "txtSpectraPort";
+            this.txtSpectraPort.Size = new System.Drawing.Size(104, 29);
+            this.txtSpectraPort.TabIndex = 24;
+            this.txtSpectraPort.Text = " COM port";
+            this.txtSpectraPort.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.txtSpectraPort.Enter += new System.EventHandler(this.txtSpectraPort_Enter);
+            this.txtSpectraPort.Leave += new System.EventHandler(this.txtSpectraPort_Leave);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(9, 107);
+            this.label2.Location = new System.Drawing.Point(258, 21);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(211, 18);
+            this.label2.Size = new System.Drawing.Size(132, 18);
             this.label2.TabIndex = 17;
-            this.label2.Text = "Weather station COM port:";
+            this.label2.Text = "Weather station:";
             this.WCOMPortToolTip.SetToolTip(this.label2, "Enter a valid port number, between 1 and 65536");
             this.label2.Click += new System.EventHandler(this.label2_MouseHover);
             // 
@@ -308,18 +341,22 @@
             this.txtWSCOMPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.txtWSCOMPort.BackColor = System.Drawing.Color.Gainsboro;
             this.txtWSCOMPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtWSCOMPort.Location = new System.Drawing.Point(249, 100);
+            this.txtWSCOMPort.ForeColor = System.Drawing.Color.DarkGray;
+            this.txtWSCOMPort.Location = new System.Drawing.Point(390, 17);
             this.txtWSCOMPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtWSCOMPort.Name = "txtWSCOMPort";
-            this.txtWSCOMPort.Size = new System.Drawing.Size(118, 29);
+            this.txtWSCOMPort.Size = new System.Drawing.Size(104, 29);
             this.txtWSCOMPort.TabIndex = 22;
+            this.txtWSCOMPort.Text = " COM port";
             this.txtWSCOMPort.TextChanged += new System.EventHandler(this.txtWSCOMPort_TextChanged);
+            this.txtWSCOMPort.Enter += new System.EventHandler(this.txtWSCOMPort_Enter);
+            this.txtWSCOMPort.Leave += new System.EventHandler(this.txtWSCOMPort_Leave);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(4, 49);
+            this.label3.Location = new System.Drawing.Point(4, 56);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(85, 18);
             this.label3.TabIndex = 19;
@@ -353,8 +390,6 @@
             this.portGroupbox.Controls.Add(this.label4);
             this.portGroupbox.Controls.Add(this.txtPLCIP);
             this.portGroupbox.Controls.Add(this.label3);
-            this.portGroupbox.Controls.Add(this.label2);
-            this.portGroupbox.Controls.Add(this.txtWSCOMPort);
             this.portGroupbox.Location = new System.Drawing.Point(526, 25);
             this.portGroupbox.Name = "portGroupbox";
             this.portGroupbox.Size = new System.Drawing.Size(373, 195);
@@ -367,7 +402,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(9, 164);
+            this.label7.Location = new System.Drawing.Point(9, 162);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(183, 18);
             this.label7.TabIndex = 28;
@@ -378,7 +413,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(9, 136);
+            this.label6.Location = new System.Drawing.Point(9, 127);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(183, 18);
             this.label6.TabIndex = 27;
@@ -390,7 +425,7 @@
             this.sensorNetworkClientPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.sensorNetworkClientPort.BackColor = System.Drawing.Color.Gainsboro;
             this.sensorNetworkClientPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.sensorNetworkClientPort.Location = new System.Drawing.Point(303, 159);
+            this.sensorNetworkClientPort.Location = new System.Drawing.Point(303, 157);
             this.sensorNetworkClientPort.Margin = new System.Windows.Forms.Padding(2);
             this.sensorNetworkClientPort.Name = "sensorNetworkClientPort";
             this.sensorNetworkClientPort.Size = new System.Drawing.Size(64, 29);
@@ -404,7 +439,7 @@
             this.sensorNetworkClientIPAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.sensorNetworkClientIPAddress.BackColor = System.Drawing.Color.Gainsboro;
             this.sensorNetworkClientIPAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.sensorNetworkClientIPAddress.Location = new System.Drawing.Point(197, 159);
+            this.sensorNetworkClientIPAddress.Location = new System.Drawing.Point(197, 157);
             this.sensorNetworkClientIPAddress.Margin = new System.Windows.Forms.Padding(2);
             this.sensorNetworkClientIPAddress.Name = "sensorNetworkClientIPAddress";
             this.sensorNetworkClientIPAddress.Size = new System.Drawing.Size(104, 29);
@@ -418,7 +453,7 @@
             this.sensorNetworkServerPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.sensorNetworkServerPort.BackColor = System.Drawing.Color.Gainsboro;
             this.sensorNetworkServerPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.sensorNetworkServerPort.Location = new System.Drawing.Point(303, 130);
+            this.sensorNetworkServerPort.Location = new System.Drawing.Point(303, 121);
             this.sensorNetworkServerPort.Margin = new System.Windows.Forms.Padding(2);
             this.sensorNetworkServerPort.Name = "sensorNetworkServerPort";
             this.sensorNetworkServerPort.Size = new System.Drawing.Size(64, 29);
@@ -432,7 +467,7 @@
             this.sensorNetworkServerIPAddress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.sensorNetworkServerIPAddress.BackColor = System.Drawing.Color.Gainsboro;
             this.sensorNetworkServerIPAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.sensorNetworkServerIPAddress.Location = new System.Drawing.Point(197, 130);
+            this.sensorNetworkServerIPAddress.Location = new System.Drawing.Point(197, 121);
             this.sensorNetworkServerIPAddress.Margin = new System.Windows.Forms.Padding(2);
             this.sensorNetworkServerIPAddress.Name = "sensorNetworkServerIPAddress";
             this.sensorNetworkServerIPAddress.Size = new System.Drawing.Size(104, 29);
@@ -446,7 +481,7 @@
             this.txtMcuCOMPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.txtMcuCOMPort.BackColor = System.Drawing.Color.Gainsboro;
             this.txtMcuCOMPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtMcuCOMPort.Location = new System.Drawing.Point(249, 71);
+            this.txtMcuCOMPort.Location = new System.Drawing.Point(249, 85);
             this.txtMcuCOMPort.Margin = new System.Windows.Forms.Padding(2);
             this.txtMcuCOMPort.Name = "txtMcuCOMPort";
             this.txtMcuCOMPort.Size = new System.Drawing.Size(118, 29);
@@ -457,7 +492,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(9, 79);
+            this.label5.Location = new System.Drawing.Point(9, 93);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(93, 18);
             this.label5.TabIndex = 21;
@@ -562,6 +597,7 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.simulationSettingsGroupbox.ResumeLayout(false);
+            this.simulationSettingsGroupbox.PerformLayout();
             this.portGroupbox.ResumeLayout(false);
             this.portGroupbox.PerformLayout();
             this.startRTGroupbox.ResumeLayout(false);
@@ -608,6 +644,8 @@
         private System.Windows.Forms.TextBox sensorNetworkClientIPAddress;
         private System.Windows.Forms.TextBox sensorNetworkServerPort;
         private System.Windows.Forms.TextBox sensorNetworkServerIPAddress;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox txtSpectraPort;
 
 
 
