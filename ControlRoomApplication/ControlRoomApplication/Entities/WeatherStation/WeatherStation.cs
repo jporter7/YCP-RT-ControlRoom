@@ -145,7 +145,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
                     // This is here for a workaround to issue #360. We will occasionally get a "Connection failed on open" Entity exception
                     // We have this used to simply retry the database update if the exception occurs. It always (while I was testing, at least) succeeds after the retry.
-                    // We may need to remove this in production if we find a different solution for actually eliminating the bug insetad of w
+                    // We may need to remove this in production if we find a different solution for actually eliminating the bug insetad of this workaround
                     do
                     {
                         try
