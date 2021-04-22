@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Util;
-
+using System.Data.Entity.Core;
 
 namespace ControlRoomApplication.Entities.WeatherStation
 {
@@ -123,6 +123,8 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
         private void ReloadWeatherDataRoutine()
         {
+            bool retrySave = false;
+
             while (KeepReloadWeatherDataThreadAlive) {
                 if (LoadCurrentVantageData_V() != COM_ERROR)
                 {
@@ -141,7 +143,22 @@ namespace ControlRoomApplication.Entities.WeatherStation
                     data.monthlyRain = GetMonthlyRain_V();
                     data.heatIndex = GetHeatIndex_V();
 
-                    DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
+                    // This is here for a workaround to issue #360. We will occasionally get a "Connection failed on open" Entity exception
+                    // We have this used to simply retry the database update if the exception occurs. It always (while I was testing, at least) succeeds after the retry.
+                    // We may need to remove this in production if we find a different solution for actually eliminating the bug insetad of w
+                    do
+                    {
+                        try
+                        {
+                            DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
+                            retrySave = false;
+                        }
+                        catch (EntityException e)
+                        {
+                            retrySave = true;
+                        }
+                    }
+                    while (retrySave);
                 }
 
 
@@ -251,7 +268,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
                 }
             }
 
-            return "";
+            return "ERR";
         }
     }
 }
