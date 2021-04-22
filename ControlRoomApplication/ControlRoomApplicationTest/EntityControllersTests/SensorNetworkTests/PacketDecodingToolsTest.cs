@@ -200,7 +200,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
 
             // Encode
             int i = 0;
-            double initialValue = 800;
+            double initialValue = 361;
             short encoded = PacketEncodingTools.ConvertDegreesToRawAzData(initialValue);
             PacketEncodingTools.Add16BitValueToByteArray(ref pos, ref i, encoded);
 
@@ -213,6 +213,48 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
             double result = PacketDecodingTools.GetAzimuthAxisPositionFromBytes(ref i, pos, offset, 10);
 
             Assert.AreEqual(expected, result, 0.16);
+        }
+
+        [TestMethod]
+        public void TestGetElevationAxisPositionFromBytes_BytesToPosition_ReturnsPosition()
+        {
+            // byte size for an axis position is 2 bytes
+            byte[] pos = new byte[2];
+
+            // Encode
+            int i = 0;
+            double expected = 50;
+            short encoded = PacketEncodingTools.ConvertDegreesToRawElData(expected);
+            PacketEncodingTools.Add16BitValueToByteArray(ref pos, ref i, encoded);
+
+            // Decode
+            i = 0;
+            int offset = 0;
+
+            double result = PacketDecodingTools.GetElevationAxisPositionFromBytes(ref i, pos, offset, 0);
+
+            Assert.AreEqual(expected, result, 0.16);
+        }
+
+        [TestMethod]
+        public void TestGetElevationAxisPositionFromBytes_BytesToPositionWithOffset_ReturnsPosition()
+        {
+            // byte size for an axis position is 2 bytes
+            byte[] pos = new byte[2];
+
+            // Encode
+            int i = 0;
+            double expected = 50;
+            short encoded = PacketEncodingTools.ConvertDegreesToRawElData(expected);
+            PacketEncodingTools.Add16BitValueToByteArray(ref pos, ref i, encoded);
+
+            // Decode
+            i = 0;
+            int offset = 10;
+
+            double result = PacketDecodingTools.GetElevationAxisPositionFromBytes(ref i, pos, offset, 0);
+
+            Assert.AreEqual(expected - offset, result, 0.16);
         }
     }
 }
