@@ -315,6 +315,10 @@ namespace ControlRoomApplication.Controllers
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
                 success = RadioTelescope.PLCDriver.HomeTelescope();
 
+                // The MCU must slowly back toward the homing sensor's "low" position.
+                // Because of how the MCU's homing works, we just have to wait for this to happen.
+                Thread.Sleep(5000);
+
                 // Zero out absolute encoders
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = (Orientation)RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Clone();
 

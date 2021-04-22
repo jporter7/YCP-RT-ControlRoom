@@ -369,10 +369,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         // Elevation absolute encoder
                         if (elEncoderSize > 0)
                         {
-                            // This must be converted into degrees, because we are only receiving raw data from the
-                            // elevation encoder
-                            CurrentAbsoluteOrientation.Elevation = 
-                                ((0.25 * (short)(data[k++] << 8 | data[k++]) - 20.375) - AbsoluteOrientationOffset.Elevation) * -1;
+                            CurrentAbsoluteOrientation.Elevation = GetElevationAxisPositionFromBytes(ref k, data, AbsoluteOrientationOffset.Elevation, CurrentAbsoluteOrientation.Elevation);
                         }
 
                         // Azimuth absolute encoder

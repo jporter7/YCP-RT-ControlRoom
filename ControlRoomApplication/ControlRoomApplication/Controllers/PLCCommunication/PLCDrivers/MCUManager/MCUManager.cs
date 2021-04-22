@@ -722,7 +722,7 @@ namespace ControlRoomApplication.Controllers {
                 positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
                 
                 // As soon as the motor steps are approximately 0 and no longer moving, we know homing has finished and the motors are zeroed
-                if (Math.Abs( mCUpositon.AzSteps ) < 4 && Math.Abs( mCUpositon.ElSteps ) < 4 && !MotorsCurrentlyMoving()) {
+                if (Math.Abs( mCUpositon.AzSteps ) == 0 && Math.Abs( mCUpositon.ElSteps ) == 0 && !MotorsCurrentlyMoving()) {
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
                     ThisMove.completed = true;
