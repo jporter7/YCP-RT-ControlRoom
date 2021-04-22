@@ -310,6 +310,8 @@ namespace ControlRoomApplication.Controllers
             {
                 if (!AllSensorsSafe) return false;
 
+                RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = new Orientation(0, 0);
+
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
                 success = RadioTelescope.PLCDriver.HomeTelescope();
 
