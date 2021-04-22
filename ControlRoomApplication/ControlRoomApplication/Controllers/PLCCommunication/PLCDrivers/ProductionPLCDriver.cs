@@ -522,45 +522,6 @@ namespace ControlRoomApplication.Controllers
         public override bool Test_Connection() {
             return TestIfComponentIsAlive();
         }
-        
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
-        /// The counter clockwise direction
-        /// </summary>
-        public override bool Full_360_CCW_Rotation()
-        {
-            Orientation current = GetMotorEncoderPosition();
-            Orientation finish;
-
-            if (current.Azimuth == 359)
-            {
-                finish = new Orientation(0, current.Elevation);
-                return Move_to_orientation(finish, current);
-            }
-            else
-            {
-                finish = new Orientation(current.Azimuth + 1, current.Elevation);
-                return Move_to_orientation(finish, current);
-            }
-
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
-        /// The clockwise direction
-        /// </summary>
-        public override bool Full_360_CW_Rotation()
-        {
-            Orientation current = GetMotorEncoderPosition();
-            Orientation start = new Orientation(0, 0);
-            Orientation finish = new Orientation(360, 0);
-
-            if (!Move_to_orientation(start, current) || !Move_to_orientation(finish, start))
-            {
-                throw new Exception();
-            }
-            return Move_to_orientation(current, finish);
-        }
 
         /// <summary>
         /// send basic configuration to MCU

@@ -300,16 +300,6 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Full_360_CCW_Rotation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Full_360_CW_Rotation()
-        {
-            throw new NotImplementedException();
-        }
-
         public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
             throw new NotImplementedException();
 

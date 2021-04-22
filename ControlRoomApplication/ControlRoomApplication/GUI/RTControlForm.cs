@@ -496,16 +496,14 @@ namespace ControlRoomApplication.Main
                 case 3:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                        tele.PLCDriver.Full_360_CW_Rotation();
+                        // TODO: Implement 360 CW rotation with MoveByXDegrees function (issue #379)
                     });
                     //Full 360 CW selected
                     break;
                 case 4:
                     thread = new Thread(() =>
                     {
-                        rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                        tele.PLCDriver.Full_360_CCW_Rotation();
+                        // TODO: Implement 360 CCW rotation with MoveByXDegrees function (issue #379)
                     });
                     //Full 360 CCW  selected
                     break;

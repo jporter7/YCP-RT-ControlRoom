@@ -321,6 +321,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         UInt16 elEncoderSize = (UInt16)(data[19] << 8 | data[20]);
                         UInt16 azEncoderSize = (UInt16)(data[21] << 8 | data[22]);
 
+                        // TODO: Outside of right here, we aren't doing anything with the sensor statuses. These should
+                        // be updated along with the sensor data on the diagnostics form. How this looks is up to you. (issue #353)
                         SensorStatuses = ParseSensorStatuses(sensorStatus, sensorErrors);
 
                         // This is the index we start reading sensor data
@@ -482,6 +484,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 AzimuthAccelerometerStatus = statuses[6] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
                 ElevationAccelerometerStatus = statuses[7] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
                 CounterbalanceAccelerometerStatus = statuses[5] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+
+                // TODO: Parse errors here. You will need to add the errors to the SensorStatuses object (issue #353)
             };
 
             return s;

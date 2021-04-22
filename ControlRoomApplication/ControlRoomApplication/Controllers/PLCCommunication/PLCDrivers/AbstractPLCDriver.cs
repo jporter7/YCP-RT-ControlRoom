@@ -83,10 +83,6 @@ namespace ControlRoomApplication.Controllers
         // All of the "scripts" are here all the way to....
         // Control Scripts
 
-        public abstract bool Full_360_CCW_Rotation();
-
-        public abstract bool Full_360_CW_Rotation();
-
         /// <summary>
         /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
         /// the absolute encoders.
