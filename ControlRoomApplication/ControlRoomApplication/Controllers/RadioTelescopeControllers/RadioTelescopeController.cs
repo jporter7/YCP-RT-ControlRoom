@@ -322,6 +322,17 @@ namespace ControlRoomApplication.Controllers
                 // Zero out absolute encoders
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = (Orientation)RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Clone();
 
+                // Allow the absolute encoders' positions to even out
+                Thread.Sleep(100);
+
+                // Verify the absolute encoders have successfully zeroed out. There is a bit of fluctuation with their values, so homing could have occurred
+                // with an outlier value. This check (with half-degree of precision) verifies that did not happen.
+                Orientation absOrientation = RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation;
+                if (Math.Abs(absOrientation.Elevation) < 0.5 && Math.Abs(absOrientation.Azimuth) < 0.5)
+                {
+                    success = true;
+                }
+
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
 

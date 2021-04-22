@@ -78,7 +78,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         {
             double azPos = 360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[currPointer++] << 8 | data[currPointer++]);
 
-            if (azPos > 360) return currPos;
+            if (Math.Abs(azPos) > 360) return currPos;
 
             double azPosOffs = (azPos + offset) * -1;
 
@@ -99,8 +99,6 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         public static double GetElevationAxisPositionFromBytes(ref int currPointer, byte[] data, double offset, double currPos)
         {
             double elPos = -0.25 * (short)(data[currPointer++] << 8 | data[currPointer++]) + 104.375;
-
-            //if (elPos < -8)
 
             double elPosOffs = (elPos - offset);
 

@@ -231,7 +231,7 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         /// <returns>The raw elevation position.</returns>
         public static short ConvertDegreesToRawElData(double dataToConvert)
         {
-            return (short)Math.Round((dataToConvert + 20.375) / 0.25);
+            return (short)Math.Round((dataToConvert - 104.375) / -0.25);
         }
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         /// <returns>The raw elevation position</returns>
         public static short ConvertDegreesToRawAzData(double dataToConvert)
         {
-            return (short)((SensorNetworkConstants.AzimuthEncoderScaling * dataToConvert) / 360);
+            return (short)((SensorNetworkConstants.AzimuthEncoderScaling * dataToConvert / 360) * -1);
         }
 
         /// <summary>

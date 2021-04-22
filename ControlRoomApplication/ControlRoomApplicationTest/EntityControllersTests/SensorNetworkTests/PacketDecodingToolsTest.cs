@@ -153,6 +153,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
 
             // Encode
             int i = 0;
+
+            // 310 is 50 degrees away from 0, on the opposite end of 50
             double expected = 50;
             short encoded = PacketEncodingTools.ConvertDegreesToRawAzData(expected);
             PacketEncodingTools.Add16BitValueToByteArray(ref pos, ref i, encoded);
@@ -161,7 +163,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
             i = 0;
             int offset = 0;
 
-            double result = PacketDecodingTools.GetAzimuthAxisPositionFromBytes(ref i, pos, offset);
+            double result = PacketDecodingTools.GetAzimuthAxisPositionFromBytes(ref i, pos, offset, 0);
 
             Assert.AreEqual(expected, result, 0.16);
         }
@@ -183,9 +185,32 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
             // With an offset of 60, that would make the origination originally -10, but with normalization, it should be 350
             int offset = 60;
 
-            int expected = 350;
+            double expected = 350;
 
-            double result = PacketDecodingTools.GetAzimuthAxisPositionFromBytes(ref i, pos, offset);
+            double result = PacketDecodingTools.GetAzimuthAxisPositionFromBytes(ref i, pos, offset, 0);
+
+            Assert.AreEqual(expected, result, 0.16);
+        }
+
+        [TestMethod]
+        public void TestGetAzimuthAxisPositionFromBytes_CalculatedGreaterThan360_ReturnsOriginalValue()
+        {
+            // byte size for an axis position is 2 bytes
+            byte[] pos = new byte[2];
+
+            // Encode
+            int i = 0;
+            double initialValue = 800;
+            short encoded = PacketEncodingTools.ConvertDegreesToRawAzData(initialValue);
+            PacketEncodingTools.Add16BitValueToByteArray(ref pos, ref i, encoded);
+
+            // Decode
+            i = 0;
+            int offset = 0;
+
+            int expected = 10;
+
+            double result = PacketDecodingTools.GetAzimuthAxisPositionFromBytes(ref i, pos, offset, 10);
 
             Assert.AreEqual(expected, result, 0.16);
         }

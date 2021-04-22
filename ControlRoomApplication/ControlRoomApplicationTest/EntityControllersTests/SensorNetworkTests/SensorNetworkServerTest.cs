@@ -224,7 +224,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(Server.CurrentCounterbalanceAccl[0].y, 0);
             Assert.AreEqual(Server.CurrentCounterbalanceAccl[0].z, 0);
 
-            Assert.AreEqual(Server.CurrentAbsoluteOrientation.Elevation, 0); 
+            Assert.AreEqual(Server.CurrentAbsoluteOrientation.Elevation, 0);
             Assert.AreEqual(Server.CurrentAbsoluteOrientation.Azimuth, 50, 0.17); // This should be the only populated value
         }
 
