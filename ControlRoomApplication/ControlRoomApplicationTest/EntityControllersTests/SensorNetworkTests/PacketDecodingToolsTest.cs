@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ControlRoomApplication.Entities;
+using EmbeddedSystemsTest.SensorNetworkSimulation;
 
 namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
 {
@@ -142,6 +143,51 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
 
             Assert.AreEqual(expected[1].temp, result[1].temp);
             Assert.AreEqual(expected[1].location_ID, result[1].location_ID);
+        }
+
+        [TestMethod]
+        public void TestGetAzimuthAxisPositionFromBytes_BytesToPosition_ReturnsPosition()
+        {
+            // byte size for an axis position is 2 bytes
+            byte[] pos = new byte[2];
+
+            // Encode
+            int i = 0;
+            double expected = 50;
+            short encoded = PacketEncodingTools.ConvertDegreesToRawAzData(expected);
+            PacketEncodingTools.Add16BitValueToByteArray(ref pos, ref i, encoded);
+
+            // Decode
+            i = 0;
+            int offset = 0;
+
+            double result = PacketDecodingTools.GetAzimuthAxisPositionFromBytes(ref i, pos, offset);
+
+            Assert.AreEqual(expected, result, 0.16);
+        }
+
+        [TestMethod]
+        public void TestGetAzimuthAxisPositionFromBytes_BytesToPositionWithOffset_ReturnsNormalizedPosition()
+        {
+            // byte size for an axis position is 2 bytes
+            byte[] pos = new byte[2];
+
+            // Encode
+            int i = 0;
+            double initialValue = 50;
+            short encoded = PacketEncodingTools.ConvertDegreesToRawAzData(initialValue);
+            PacketEncodingTools.Add16BitValueToByteArray(ref pos, ref i, encoded);
+
+            // Decode
+            i = 0;
+            // With an offset of 60, that would make the origination originally -10, but with normalization, it should be 350
+            int offset = 60;
+
+            int expected = 350;
+
+            double result = PacketDecodingTools.GetAzimuthAxisPositionFromBytes(ref i, pos, offset);
+
+            Assert.AreEqual(expected, result, 0.16);
         }
     }
 }

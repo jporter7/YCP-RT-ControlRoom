@@ -22,7 +22,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
     /// with the main Sensor Network system, such as receiving data, setting statuses based on data it receives, and tells the
     /// client when to send iniC:\YCP-RT-ControlRoom\ControlRoomApplication\ControlRoomApplication\Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cstialization data.
     /// </summary>
-    public class SensorNetworkServer
+    public class SensorNetworkServer : PacketDecodingTools
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -334,35 +334,35 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         // Accelerometer 1 (elevation)
                         if (elAcclSize > 0)
                         {
-                            CurrentElevationMotorAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
+                            CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
                             //Database.DatabaseOperations.AddSensorData(CurrentElevationMotorAccl);
                         }
 
                         // Accelerometer 2 (azimuth)
                         if (azAcclSize > 0)
                         {
-                            CurrentAzimuthMotorAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
+                            CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
                             //Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorAccl);
                         }
 
                         // Accelerometer 3 (counterbalance)
                         if (cbAcclSize > 0)
                         {
-                            CurrentCounterbalanceAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
+                            CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
                             //Database.DatabaseOperations.AddSensorData(CurrentCounterbalanceAccl);
                         }
 
                         // Elevation temperature
                         if (elTempSensorSize > 0)
                         {
-                            CurrentElevationMotorTemp = PacketDecodingTools.GetTemperatureFromBytes(ref k, data, elTempSensorSize, SensorLocationEnum.EL_MOTOR);
+                            CurrentElevationMotorTemp = GetTemperatureFromBytes(ref k, data, elTempSensorSize, SensorLocationEnum.EL_MOTOR);
                             //Database.DatabaseOperations.AddSensorData(CurrentElevationMotorTemp);
                         }
 
                         // Azimuth temperature
                         if (azTempSensorSize > 0)
                         {
-                            CurrentAzimuthMotorTemp = PacketDecodingTools.GetTemperatureFromBytes(ref k, data, azTempSensorSize, SensorLocationEnum.AZ_MOTOR);
+                            CurrentAzimuthMotorTemp = GetTemperatureFromBytes(ref k, data, azTempSensorSize, SensorLocationEnum.AZ_MOTOR);
                             //Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorTemp);
                         }
 
@@ -378,10 +378,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         // Azimuth absolute encoder
                         if (azEncoderSize > 0)
                         {
-                            // This must be converted into degrees, because we are only receiving raw data from the
-                            // azimuth encoder
-                            CurrentAbsoluteOrientation.Azimuth = 
-                                (360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[k++] << 8 | data[k++])) - AbsoluteOrientationOffset.Azimuth;
+                            CurrentAbsoluteOrientation.Azimuth = GetAzimuthAxisPositionFromBytes(ref k, data, AbsoluteOrientationOffset.Azimuth);
                         }
 
                         success = true;

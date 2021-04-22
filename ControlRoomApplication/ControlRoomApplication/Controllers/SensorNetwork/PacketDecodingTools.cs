@@ -65,5 +65,22 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
             return temperature;
         }
+
+        /// <summary>
+        /// Converts two bytes to the azimuth position, then subtracts an offset and normalizes the orientation.
+        /// </summary>
+        /// <param name="currPointer">Current index in the byte array.</param>
+        /// <param name="data">Data we are converting to a double.</param>
+        /// <param name="offset">The offset to apply after double conversion.</param>
+        /// <returns></returns>
+        public static double GetAzimuthAxisPositionFromBytes(ref int currPointer, byte[] data, double offset)
+        {
+            double azPos = (360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[currPointer++] << 8 | data[currPointer++])) - offset;
+
+            // Because the offset could cause the axis position to be negative, we want to normalize that to a positive value.
+            if (azPos < 0) azPos += 360;
+
+            return azPos;
+        }
     }
 }
