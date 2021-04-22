@@ -1233,7 +1233,7 @@ namespace ControlRoomApplication.GUI
                 SensorNetworkConfig.TimeoutInitialization = (int)(double.Parse(txtInitTimeout.Text) * 1000);
 
                 // Update the config in the DB
-                DatabaseOperations.UpdateSensorNetworkConfig(SensorNetworkConfig);
+                //DatabaseOperations.UpdateSensorNetworkConfig(SensorNetworkConfig);
             
                 // reboot
                 rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
