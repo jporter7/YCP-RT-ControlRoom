@@ -346,7 +346,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, posTransAz, posTransEl);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
@@ -376,7 +376,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, posTransAz, posTransEl);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
@@ -409,7 +409,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, 50, posTransAz, posTransEl);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.relative_move(100_000, posTransAz, posTransEl);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
