@@ -530,8 +530,8 @@ namespace ControlRoomApplication.Controllers
         /// this gets the position stored in the MCU which is based of the number of steps the MCU has taken since it was last 0ed out
         /// </summary>
         /// <returns></returns>
-        public override Orientation GetMotorEncoderPosition(){
-            else return MCU.GetMotorEncoderPosition();
+        public override Orientation GetMotorEncoderPosition() {
+            return MCU.GetMotorEncoderPosition();
         }
 
         /// <summary>
