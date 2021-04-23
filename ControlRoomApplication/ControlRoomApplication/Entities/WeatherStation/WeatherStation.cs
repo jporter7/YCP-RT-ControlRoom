@@ -17,6 +17,8 @@ namespace ControlRoomApplication.Entities.WeatherStation
         private static readonly log4net.ILog logger =
            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        int count = 0;
+
         public struct WeatherUnits
         {
             public char tempUnit;
@@ -146,16 +148,27 @@ namespace ControlRoomApplication.Entities.WeatherStation
                     // This is here for a workaround to issue #360. We will occasionally get a "Connection failed on open" Entity exception
                     // We have this used to simply retry the database update if the exception occurs. It always (while I was testing, at least) succeeds after the retry.
                     // We may need to remove this in production if we find a different solution for actually eliminating the bug insetad of this workaround
+                    
                     do
                     {
                         try
                         {
                             DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
                             retrySave = false;
+                            count = 0;
                         }
                         catch (EntityException e)
                         {
+                            count++;
                             retrySave = true;
+
+                            // We want to retry 4 times, after which we will abandon the update.
+                            if (count == 4)
+                            {
+                                retrySave = false;
+                                count = 0;
+                                logger.Info(Utilities.GetTimeStamp() + " : Failed to update weather station data after 4 tries. Abandoning update...");
+                            }   
                         }
                     }
                     while (retrySave);
