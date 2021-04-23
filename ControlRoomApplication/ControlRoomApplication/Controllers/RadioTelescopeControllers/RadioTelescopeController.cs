@@ -284,6 +284,19 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// This is a method used to move the radio telescope by X degrees.
+        /// Entering 0 for an axis will not move that motor.
+        /// </summary>
+        /// <param name="degreesToMoveBy">The number of degrees to move by.</param>
+        /// <param name="priority">The movement's priority.</param>
+        /// <returns></returns>
+        public bool MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovePriority priority)
+        {
+            // TODO: Implement (issue #379)
+            return false;
+        }
+
+        /// <summary>
         /// This is used to home the telescope. Immediately after homing, the telescope will move to "Stow" position.
         /// This will also zero out the absolute encoders and account for the true north offset.
         /// </summary>
@@ -297,11 +310,28 @@ namespace ControlRoomApplication.Controllers
             {
                 if (!AllSensorsSafe) return false;
 
+                RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = new Orientation(0, 0);
+
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
                 success = RadioTelescope.PLCDriver.HomeTelescope();
 
+                // The MCU must slowly back toward the homing sensor's "low" position.
+                // Because of how the MCU's homing works, we just have to wait for this to happen.
+                Thread.Sleep(5000);
+
                 // Zero out absolute encoders
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = (Orientation)RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Clone();
+
+                // Allow the absolute encoders' positions to even out
+                Thread.Sleep(100);
+
+                // Verify the absolute encoders have successfully zeroed out. There is a bit of fluctuation with their values, so homing could have occurred
+                // with an outlier value. This check (with half-degree of precision) verifies that did not happen.
+                Orientation absOrientation = RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation;
+                if (Math.Abs(absOrientation.Elevation) < 0.5 && Math.Abs(absOrientation.Azimuth) < 0.5)
+                {
+                    success = true;
+                }
 
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
@@ -309,6 +339,42 @@ namespace ControlRoomApplication.Controllers
             return success;
         }
 
+        /// <summary>
+        /// A demonstration script that moves the elevation motor to its maximum and minimum.
+        /// </summary>
+        /// <param name="priority">Movement priority.</param>
+        /// <returns></returns>
+        public bool FullElevationMove(MovePriority priority)
+        {
+            bool successMove1 = false;
+            bool successMove2 = false;
+            bool successReturnToOriginalPos = false;
+
+            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            {
+                Orientation origOrientation = GetCurrentOrientation();
+
+                Orientation move1 = new Orientation(origOrientation.Azimuth, 0);
+                Orientation move2 = new Orientation(origOrientation.Azimuth, 90);
+
+                // Move to a low elevation point
+                successMove1 = RadioTelescope.PLCDriver.Move_to_orientation(move1, origOrientation);
+
+                if(successMove1)
+                {
+                    // Move to a high elevation point
+                    successMove2 = RadioTelescope.PLCDriver.Move_to_orientation(move2, move1);
+
+                    if(successMove2)
+                    {
+                        // Move back to the original orientation
+                        successReturnToOriginalPos = RadioTelescope.PLCDriver.Move_to_orientation(origOrientation, move2);
+                    }
+                }
+            }
+
+            return successMove1 && successMove2 && successReturnToOriginalPos;
+        }
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's azimuth

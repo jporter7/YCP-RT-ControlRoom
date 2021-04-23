@@ -240,7 +240,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public bool send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public bool send_relative_move(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
             // Move the scale model's azimuth motor on com3 and its elevation on com4
             // make sure there is a delay in this thread for enough time to have the arduino
             // move the first motor (azimuth)
@@ -263,7 +263,7 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public override bool relative_move( int programmedPeakSpeedAZInt, int positionTranslationAZ , int positionTranslationEL ) {
             /*
                     if(Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT) {
                         logger.Error( $"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range." );
@@ -275,7 +275,7 @@ namespace ControlRoomApplication.Controllers {
                     */
             // Convert orientation object to a json string
             //string jsonOrientation = JsonConvert.SerializeObject( Plc.OutgoingOrientation );
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
+            return send_relative_move(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
 
         }
 
@@ -296,68 +296,8 @@ namespace ControlRoomApplication.Controllers {
 
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL);
+            return send_relative_move(AZ_Speed, EL_Speed, positionTranslationAZ, positionTranslationEL);
 
-        }
-
-        public override bool Full_360_CCW_Rotation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool HitAzimuthLeftLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Full_360_CW_Rotation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool HitAzimuthRightLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-      
-        public override bool Recover_CW_Hardstop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool HitElevationLowerLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool HitElevationUpperLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool RecoverFromLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool FullElevationMove()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Hit_CW_Hardstop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Hit_CCW_Hardstop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Recover_CCW_Hardstop()
-        {
-            throw new NotImplementedException();
         }
 
         public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {

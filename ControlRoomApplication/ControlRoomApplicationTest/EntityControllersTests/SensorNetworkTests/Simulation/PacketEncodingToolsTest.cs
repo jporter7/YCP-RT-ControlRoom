@@ -109,7 +109,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             short result = PacketEncodingTools.ConvertDegreesToRawAzData(input);
 
-            short expected = (short)((SensorNetworkConstants.AzimuthEncoderScaling * input) / 360);
+            short expected = (short)(SensorNetworkConstants.AzimuthEncoderScaling * input / 360 * -1);
 
             Assert.AreEqual(expected, result);
         }
@@ -121,7 +121,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             short result = PacketEncodingTools.ConvertDegreesToRawElData(input);
 
-            short expected = (short)Math.Round((input + 20.375) / 0.25);
+            short expected = (short)Math.Round((input - 104.375) / -0.25);
 
             Assert.AreEqual(expected, result);
         }
@@ -237,7 +237,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             double numToConvert = 3.56;
 
-            short expected = (short)((SensorNetworkConstants.AzimuthEncoderScaling * numToConvert) / 360);
+            short expected = (short)(SensorNetworkConstants.AzimuthEncoderScaling * numToConvert / 360 * -1);
 
             short result = PacketEncodingTools.ConvertDegreesToRawAzData(numToConvert);
 
@@ -249,7 +249,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             double numToConvert = 3.56;
 
-            short expected = (short)Math.Round((numToConvert + 20.375) / 0.25);
+            short expected = (short)Math.Round((numToConvert - 104.375) / -0.25);
 
             short result = PacketEncodingTools.ConvertDegreesToRawElData(numToConvert);
 

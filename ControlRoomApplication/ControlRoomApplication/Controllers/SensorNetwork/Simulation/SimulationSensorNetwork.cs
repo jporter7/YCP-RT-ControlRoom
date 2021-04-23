@@ -136,7 +136,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
 
                 SensorStatuses statuses = new SensorStatuses
                 {
-                    // TODO: Write the values of each sensor status in here so it can get be encoded
+                    // TODO: Write the values of each sensor status in here so it can get be encoded (issue #376)
                 };
 
                 byte[] dataToSend = PacketEncodingTools.ConvertDataArraysToBytes(

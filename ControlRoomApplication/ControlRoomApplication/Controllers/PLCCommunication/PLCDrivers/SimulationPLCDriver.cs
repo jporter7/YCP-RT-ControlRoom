@@ -75,66 +75,6 @@ namespace ControlRoomApplication.Controllers
             return driver.Cancel_move();
         }
 
-        public override bool HitAzimuthLeftLimitSwitch()
-        {
-            return driver.HitAzimuthLeftLimitSwitch();
-        }
-
-        public override bool HitAzimuthRightLimitSwitch()
-        {
-            return driver.HitAzimuthRightLimitSwitch();
-        }
-
-        public override bool HitElevationLowerLimitSwitch()
-        {
-            return driver.HitElevationLowerLimitSwitch();
-        }
-
-        public override bool HitElevationUpperLimitSwitch()
-        {
-            return driver.HitElevationUpperLimitSwitch();
-        }
-
-        public override bool RecoverFromLimitSwitch()
-        {
-            return driver.RecoverFromLimitSwitch();
-        }
-
-        public override bool FullElevationMove()
-        {
-            return driver.FullElevationMove();
-        }
-
-        public override bool Full_360_CCW_Rotation()
-        {
-            return driver.Full_360_CCW_Rotation();
-        }
-
-        public override bool Full_360_CW_Rotation()
-        {
-            return driver.Full_360_CW_Rotation();
-        }
-
-        public override bool Hit_CW_Hardstop()
-        {
-            return driver.Hit_CW_Hardstop();
-        }
-
-        public override bool Hit_CCW_Hardstop()
-        {
-            return driver.Hit_CCW_Hardstop();
-        }
-
-        public override bool Recover_CW_Hardstop()
-        {
-            return driver.Recover_CW_Hardstop();
-        }
-
-        public override bool Recover_CCW_Hardstop()
-        {
-            return driver.Recover_CCW_Hardstop();
-        }
-
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
         {
             return driver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation);
@@ -150,9 +90,9 @@ namespace ControlRoomApplication.Controllers
             return driver.ImmediateStop();
         }
 
-        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        public override bool relative_move(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL)
         {
-            return driver.relative_move(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL);
+            return driver.relative_move(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
         }
 
         public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)

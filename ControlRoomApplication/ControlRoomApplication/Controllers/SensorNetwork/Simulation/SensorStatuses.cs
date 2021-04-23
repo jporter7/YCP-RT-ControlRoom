@@ -10,7 +10,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
     /// <summary>
     /// This contains all of the sensor statuses for the Sensor Network.
     /// </summary>
-    public class SensorStatuses
+    public class SensorStatuses // TODO: Add errors here (issue #353)
     {
         /// <summary>
         /// The error state of the azimuth absolute encoder.

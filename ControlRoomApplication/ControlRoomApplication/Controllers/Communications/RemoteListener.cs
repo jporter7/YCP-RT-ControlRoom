@@ -252,7 +252,7 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("FULL_EV"))
                 {
-                    rtController.RadioTelescope.PLCDriver.FullElevationMove();
+                    rtController.FullElevationMove(MovePriority.Manual);
                 }
                 else if (script.Contains("CALIBRATE"))
                 {
@@ -264,11 +264,11 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("FULL_CLOCK"))
                 {
-                    rtController.RadioTelescope.PLCDriver.Full_360_CW_Rotation();
+                    // TODO: Implement with MoveByX function (issue #379)
                 }
                 else if (script.Contains("FULL_COUNTER"))
                 {
-                    rtController.RadioTelescope.PLCDriver.Full_360_CCW_Rotation();
+                    // TODO: Implement with MoveByX function (issue #379)
                 }
                 else
                 {

@@ -4,6 +4,7 @@ using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
+using System.Net.Sockets;
 
 namespace ControlRoomApplicationTest.EntityControllersTests
 {
@@ -24,6 +25,12 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         public static void BringUp(TestContext context)
         {
             ControlRoom = new ControlRoom(new SimulationWeatherStation(100));
+
+            // End the CR's listener's server. We have to do this until we stop hard-coding that dang value.
+            // TODO: Remove this logic when the value is no longer hard-coded (issue #350)
+            PrivateObject listener = new PrivateObject(ControlRoom.mobileControlServer);
+            ((TcpListener)listener.GetFieldOrProperty("server")).Stop();
+
             CRController = new ControlRoomController(ControlRoom);
             CalibrationOrientation = new Orientation(0, 90);
         }

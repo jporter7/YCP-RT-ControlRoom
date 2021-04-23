@@ -711,37 +711,16 @@ namespace ControlRoomApplication.GUI
             logger.Info(Utilities.GetTimeStamp() + ": Edit Scripts Button Clicked");
             int caseSwitch = diagnosticScriptCombo.SelectedIndex;
 
+            // The current orientation is needed for most scripts
+            Entities.Orientation currOrientation = rtController.GetCurrentOrientation();
+
             switch (caseSwitch)
             {
-                case 0:
-                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                    rtController.RadioTelescope.PLCDriver.HitAzimuthLeftLimitSwitch();//Change left to CCW
-                    //Hit Azimuth Counter-Clockwise Limit Switch (index 0 of control script combo)
+                case 1: // Elevation Lower Limit Switch
+                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, -14), MovePriority.Manual);
                     break;
-                case 1:
-                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                    rtController.RadioTelescope.PLCDriver.HitAzimuthRightLimitSwitch();
-                    //Hit Azimuth Clockwise Limit Switch (index 1 of control script combo)
-                    break;
-                case 2:
-                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                    rtController.RadioTelescope.PLCDriver.HitElevationLowerLimitSwitch();
-                    //Elevation Lower Limit Switch (index 2 of control script combo)
-                    break;
-                case 3:
-                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                    rtController.RadioTelescope.PLCDriver.HitElevationUpperLimitSwitch();
-                    //Elevation Upper Limit Switch (index 3 of control script combo)
-                    break;
-                case 4:
-                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                    rtController.RadioTelescope.PLCDriver.Hit_CW_Hardstop();
-                    //Hit Clockwise Hardstop (index 4 of control script combo)
-                    break;
-                case 5:
-                    rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
-                    rtController.RadioTelescope.PLCDriver.Hit_CCW_Hardstop();
-                    //Hit Counter-Clockwise Hardstop (index 4 of control script combo)
+                case 2: // Elevation Upper Limit Switch
+                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 92), MovePriority.Manual);
                     break;
                 default:
 
