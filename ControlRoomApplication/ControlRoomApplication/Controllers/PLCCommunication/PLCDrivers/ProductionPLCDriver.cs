@@ -37,13 +37,6 @@ namespace ControlRoomApplication.Controllers
         private bool is_test = false;
         private MCUManager MCU;
         private RadioTelescopeTypeEnum telescopeType = RadioTelescopeTypeEnum.NONE;
-
-        // Used for the Unity simulation to keep track of its position
-        // This is ONLY TEMPORARY until we can find the simulation source code and fix
-        // this bug the correct way
-        private bool IsSimulation;
-        private Orientation CurrentSimOrientation;
-
         /// <summary>
         /// set this ONLY if using test driver, removes timouts and delays
         /// </summary>
@@ -58,14 +51,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        /// <param name="isSimulation">This wil tell us whether we are running a simulation or not.</param>
-        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool isSimulation = false) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
-            if (isSimulation)
-            {
-                IsSimulation = isSimulation;
-                CurrentSimOrientation = new Orientation();
-            }
 
             limitSwitchData = new Simulators.Hardware.LimitSwitchData();
             homeSensorData = new Simulators.Hardware.HomeSensorData();
@@ -544,8 +531,6 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override Orientation GetMotorEncoderPosition(){
-
-            if (IsSimulation) return CurrentSimOrientation;
             else return MCU.GetMotorEncoderPosition();
         }
 
