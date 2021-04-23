@@ -28,6 +28,7 @@ namespace ControlRoomApplication.Controllers {
         private static int MaxConscErrors = 5;
         private int consecutiveErrors = 0;
         private int consecutiveSuccessfulMoves = 0;
+        public bool MovementInterruptFlag = false;
 
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         private Thread HeartbeatMonitorThread;
@@ -550,6 +551,43 @@ namespace ControlRoomApplication.Controllers {
             return isMoving;
         }
 
+        /// <summary>
+        /// Will read the MCU bits to tell whether a movement has completed or not.
+        /// </summary>
+        /// <param name="axis">What axis you want to know the completion status of.</param>
+        /// <returns>Whether an axis' movement has completed or not.</returns>
+        public bool MovementCompleted(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
+        {
+            bool isFinished = false;
+            ushort[] data;
+
+            switch (axis)
+            {
+                case RadioTelescopeAxisEnum.AZIMUTH:
+                    // Only read the registers we need
+                    data = ReadMCURegisters(0, 1);
+                    isFinished = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
+                    break;
+
+                case RadioTelescopeAxisEnum.ELEVATION:
+                    // Only read the registers we need
+                    data = ReadMCURegisters(10, 1);
+                    isFinished = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
+                    break;
+
+                case RadioTelescopeAxisEnum.BOTH:
+                    data = ReadMCURegisters(0, 11);
+                    bool azFinished = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
+                    bool elFinished = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
+
+                    // Check if azimuth or elevation are finished with their movements
+                    isFinished = azFinished || elFinished;
+                    break;
+            }
+
+            return isFinished;
+        }
+
         public bool Configure_MCU(MCUConfigurationAxys AZconfig , MCUConfigurationAxys ELconfig) {
             Current_AZConfiguration = AZconfig;
             Current_ELConfiguration = ELconfig;
@@ -653,7 +691,9 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <param name="RPM"></param>
         /// <returns></returns>
-        public bool HomeBothAxes(double RPM) {
+        public MovementResult HomeBothAxes(double RPM) {
+
+            MovementResult result = MovementResult.None;
 
             // Stop move just in case one is still running. This will only be reached if
             // the last move is a lower priority than this one.
@@ -715,7 +755,7 @@ namespace ControlRoomApplication.Controllers {
 
             // This monitors the homing routine to make sure the motors are still moving and, when they stop,
             // that their position is zeroed out.
-            while (!ThisMove.timeout.IsCancellationRequested)
+            while (!ThisMove.timeout.IsCancellationRequested && result == MovementResult.None)
             {
                 outputRegData = ReadMCURegisters(0, 16);
                 mCUpositon.update(outputRegData);
@@ -725,9 +765,7 @@ namespace ControlRoomApplication.Controllers {
                 if (Math.Abs( mCUpositon.AzSteps ) == 0 && Math.Abs( mCUpositon.ElSteps ) == 0 && !MotorsCurrentlyMoving()) {
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
-                    ThisMove.completed = true;
-                    ThisMove.Dispose();
-                    return true;
+                    result = MovementResult.Success;
                 }
 
                 // This checks the new recorded position and compares it against the last
@@ -743,10 +781,7 @@ namespace ControlRoomApplication.Controllers {
                         {
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
-                            ThisMove.completed = true;
-                            ThisMove.Dispose();
-                            return false;
-
+                            result = MovementResult.IncorrectPosition;
                         }
 
                         // If there are any errors in the registers, something bad happened and homing failed
@@ -754,18 +789,18 @@ namespace ControlRoomApplication.Controllers {
                         {
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
-                            ThisMove.completed = true;
-                            ThisMove.Dispose();
-                            return false;
+                            result = MovementResult.McuErrorBitSet;
                         }
                     }
                 }
             }
+
+            ThisMove.completed = true;
             ThisMove.Dispose();
-            return false;
+            return result;
         }
 
-        private ushort[] prepairRelativeMoveData(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
+        private ushort[] PrepareRelativeMoveData(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
             if (SpeedAZ < AZStartSpeed) {
                 throw new ArgumentOutOfRangeException("SpeedAZ", SpeedAZ,
                     String.Format("SpeedAZ should be grater than {0} which is the stating speed set when configuring the MCU", AZStartSpeed));
@@ -786,20 +821,30 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <param name="SpeedAZ"></param>
         /// <param name="SpeedEL"></param>
-        /// <param name="ACCELERATION"></param>
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
-        public bool MoveAndWaitForCompletion( int SpeedAZ , int SpeedEL, int positionTranslationAZ , int positionTranslationEL) {
-            positionTranslationEL = -positionTranslationEL;
-            mCUpositon.update(ReadMCURegisters(0, 16));
-            var startPos =  mCUpositon as MCUPositonStore;
-            Cancel_move();
+        public MovementResult MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
+            MovementResult result = MovementResult.None;
 
-            ushort[] CMDdata = prepairRelativeMoveData( SpeedAZ , SpeedEL , ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING , positionTranslationAZ , positionTranslationEL );
+            // In case another move was running, cancel it
+            Cancel_move();
+            
+            // Update the current position
+            mCUpositon.update(ReadMCURegisters(0, 16));
+
+            // Build command data
+            ushort[] CMDdata = PrepareRelativeMoveData(
+                SpeedAZ, 
+                SpeedEL, 
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, 
+                positionTranslationAZ, 
+                positionTranslationEL
+            );
 
             // Estimate the time to move, which will be the axis that takes the longest
-            int AZTime = EstimateMovementTime( SpeedAZ , ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, positionTranslationAZ ), ELTime = EstimateMovementTime( SpeedEL , ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, positionTranslationEL );
+            int AZTime = EstimateMovementTime(SpeedAZ, positionTranslationAZ);
+            int ELTime = EstimateMovementTime(SpeedEL, positionTranslationEL);
             int TimeToMove;
             if(AZTime > ELTime) {
                 TimeToMove = AZTime;
@@ -816,10 +861,26 @@ namespace ControlRoomApplication.Controllers {
 
             // Calculate elevation movement direction
             RadioTelescopeDirectionEnum elDirection;
-            if (positionTranslationEL > 0) elDirection = RadioTelescopeDirectionEnum.ClockwiseOrNegative;
-            else elDirection = RadioTelescopeDirectionEnum.CounterclockwiseOrPositive;
+            if (positionTranslationEL > 0) elDirection = RadioTelescopeDirectionEnum.CounterclockwiseOrPositive;
+            else elDirection = RadioTelescopeDirectionEnum.ClockwiseOrNegative;
 
-            var ThisMove = SendGenericCommand( new MCUCommand( CMDdata , MCUCommandType.RELATIVE_MOVE, azDirection, elDirection, SpeedAZ, SpeedEL ) { EL_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, AZ_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, timeout=new CancellationTokenSource( (int)(TimeToMove ) ) } );
+            // Build and send the MCU Command (the data is the only part sent to the MCU; the rest is for inner tracking)
+            var ThisMove = SendGenericCommand( 
+                new MCUCommand( 
+                    CMDdata, 
+                    MCUCommandType.RELATIVE_MOVE, 
+                    azDirection, 
+                    elDirection, 
+                    SpeedAZ, 
+                    SpeedEL
+                ) {
+                    EL_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                    AZ_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                    timeout = new CancellationTokenSource(TimeToMove)
+                }
+            );
+
+            // Set up the PLC events that this movement can expect to deal with
             bool WasLimitCancled = false;
             PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
                 if(!MotorsCurrentlyMoving()) {
@@ -827,49 +888,57 @@ namespace ControlRoomApplication.Controllers {
                     WasLimitCancled = true;
                 }
             };
-            PLCEvents.DurringOverrideAddSecondary( handle);
-            while(!ThisMove.timeout.IsCancellationRequested) {
-                var data = ReadMCURegisters(0, 12);
-                bool azErr = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
-                bool elErr = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Command_Error) & 0b1) == 1;
-                if(elErr || azErr) {//TODO:add more checks to this 
-                    ThisMove.completed = true;
-                    ThisMove.CommandError = new Exception( "MCU command error bit was set" );
-                    consecutiveSuccessfulMoves = 0;
-                    consecutiveErrors++;
-                    SendGenericCommand( new MCUCommand( MCUMessages.ResetErrors , MCUCommandType.RESET_ERRORS) );
-                    PLCEvents.DuringOverrideRemoveSecondary( handle );
-                    ThisMove.Dispose();
-                    return false;
-                }
-                bool azFin = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
-                bool elFin = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
-                if(azFin && elFin && !MotorsCurrentlyMoving()) {
-                    //TODO:check that position is correct and there arent any errors
+            PLCEvents.DurringOverrideAddSecondary(handle);
+
+            // ERROR CHECKING DURING MOVEMENT. This is the MCU Monitoring Routine described in issue #333
+
+            // This will loop through and monitor MCU movement as long as the following conditions are true:
+            // Cannot be timed out
+            // Interrupt flag must be false
+            // No MCU errors
+            // The movement result cannot have been set yet. As soon as it is set, the routine ends.
+            while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
+                if(MovementCompleted() && !MotorsCurrentlyMoving()) {
+                    // TODO: Check that the position is correct
 
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
-                    ThisMove.completed = true;
-                    PLCEvents.DuringOverrideRemoveSecondary( handle );
-                    ThisMove.Dispose();
-                    return true;
+                    result = MovementResult.Success;
                 }
+            }
 
+            // If the movement times out, this is reached
+            if (MotorsCurrentlyMoving())
+            {
+                result = MovementResult.TimedOut;
+                ControlledStop();
             }
-            if(MotorsCurrentlyMoving()) {
-                ThisMove.completed = true;
-                ThisMove.CommandError = new Exception( "Move did not complete in the expected time" );
+
+            // If there are errors on the MCU registers, this is reached
+            else if (CheckMCUErrors().Count > 0) result = MovementResult.McuErrorBitSet;
+
+            // If the movement was voluntarily interrupted, this is reached
+            else if (MovementInterruptFlag)
+            {
+                MovementInterruptFlag = false;
+                result = MovementResult.Interrupted;
+            }
+
+            // If a limit switch gets hit, this is reached
+            else if (WasLimitCancled) result = MovementResult.LimitSwitchHit;
+
+            if (result != MovementResult.Success)
+            {
                 consecutiveSuccessfulMoves = 0;
                 consecutiveErrors++;
-            }else if(WasLimitCancled) {
-                ThisMove.completed = true;
-                ThisMove.CommandError = new Exception( "Move ended when a limit switch was hit" );
-                consecutiveSuccessfulMoves = 0;
-                consecutiveErrors++;
             }
-            PLCEvents.DuringOverrideRemoveSecondary( handle );
+
+            ThisMove.completed = true;
+
+            PLCEvents.DuringOverrideRemoveSecondary(handle);
             ThisMove.Dispose();
-            return true;
+
+            return result;
         }
 
         /// <summary>
@@ -879,17 +948,16 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="acceleration"></param>
         /// <param name="distance">The total number of motor steps that a movement will take.</param>
         /// <returns>Estimated time that a movement command will take in milliseconds.</returns>
-        public static int EstimateMovementTime(int maxVelocity, int acceleration, int distance) {
+        public static int EstimateMovementTime(int maxVelocity, int distance) {
             //acc steps/millisecond/second
             distance = Math.Abs(distance);
             maxVelocity = Math.Abs(maxVelocity);
-            acceleration = Math.Abs(acceleration);
 
-            int t1 = maxVelocity / acceleration;//ms
+            int t1 = maxVelocity / ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING;//ms
 
             double t1s = t1 / 1000.0;
 
-            int distT1 = (int)(acceleration * 1000 / 2 * (t1s * t1s) * 2);
+            int distT1 = (int)(ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING * 1000 / 2 * (t1s * t1s) * 2);
 
             if (distT1 < distance) {
 

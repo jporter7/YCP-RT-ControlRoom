@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
 using static ControlRoomApplication.Constants.MCUConstants;
@@ -90,14 +91,14 @@ namespace ControlRoomApplication.Controllers
             return driver.ImmediateStop();
         }
 
-        public override bool relative_move(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL)
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL)
         {
-            return driver.relative_move(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
+            return driver.RelativeMove(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
         }
 
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
         {
-            return driver.Move_to_orientation(target_orientation, current_orientation);
+            return driver.MoveToOrientation(target_orientation, current_orientation);
         }
 
         public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
@@ -118,7 +119,7 @@ namespace ControlRoomApplication.Controllers
             return driver.TestIfComponentIsAlive();
         }
 
-        public override bool HomeTelescope() {
+        public override MovementResult HomeTelescope() {
             return driver.HomeTelescope();
         }
 
@@ -156,6 +157,15 @@ namespace ControlRoomApplication.Controllers
         public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
         {
             return driver.CheckMCUErrors();
+        }
+        
+        /// <summary>
+        /// Allows us to interrupt (cancel) a movement
+        /// </summary>
+        /// <param name="set">Whether you are interrupting or not.</param>
+        public override void SetMovementInterrupt(bool set)
+        {
+            driver.SetMovementInterrupt(set);
         }
     }
 }
