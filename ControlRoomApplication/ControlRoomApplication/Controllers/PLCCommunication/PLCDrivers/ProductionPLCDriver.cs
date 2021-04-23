@@ -598,17 +598,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
         public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL) {
-            if(IsSimulation)
-            {
-                CurrentSimOrientation = new Orientation(
-                    ConversionHelper.StepsToDegrees(positionTranslationAZ, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees(positionTranslationEL, MotorConstants.GEARING_RATIO_ELEVATION)
-                );
-            }
-
             return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL );
         }
-
 
         public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
         {
@@ -645,9 +636,6 @@ namespace ControlRoomApplication.Controllers
             logger.Info(Utilities.GetTimeStamp() + ": degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
             logger.Info(Utilities.GetTimeStamp() + ": degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
-            // Set the simulation's current position
-            if(IsSimulation) CurrentSimOrientation = target_orientation;
-            
             return MCU.MoveAndWaitForCompletion(
                 AZ_Speed, EL_Speed,
                 positionTranslationAZ, 
