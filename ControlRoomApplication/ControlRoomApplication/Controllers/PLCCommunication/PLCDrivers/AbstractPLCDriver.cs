@@ -13,6 +13,7 @@ using ControlRoomApplication.Controllers.PLCCommunication;
 using System.Collections.Generic;
 using static ControlRoomApplication.Constants.MCUConstants;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -88,7 +89,7 @@ namespace ControlRoomApplication.Controllers
         /// the absolute encoders.
         /// </summary>
         /// <returns>True if homing was successful, false if it failed</returns>
-        public abstract bool HomeTelescope();
+        public abstract MovementResult HomeTelescope();
 
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
@@ -96,9 +97,9 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool ImmediateStop();
 
-        public abstract bool relative_move(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL);
+        public abstract MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL);
 
-        public abstract bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
+        public abstract MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation);
 
         public abstract bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection);
 

@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
 using Newtonsoft.Json;
 using static ControlRoomApplication.Constants.MCUConstants;
@@ -240,7 +241,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public bool send_relative_move(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
+        public MovementResult SendRelativeMove(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
             // Move the scale model's azimuth motor on com3 and its elevation on com4
             // make sure there is a delay in this thread for enough time to have the arduino
             // move the first motor (azimuth)
@@ -260,10 +261,10 @@ namespace ControlRoomApplication.Controllers {
             // Print the state of the move operation to the console.
             //Console.WriteLine(state);
 
-            return true;
+            return MovementResult.Success;
         }
 
-        public override bool relative_move( int programmedPeakSpeedAZInt, int positionTranslationAZ , int positionTranslationEL ) {
+        public override MovementResult RelativeMove( int programmedPeakSpeedAZInt, int positionTranslationAZ , int positionTranslationEL ) {
             /*
                     if(Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT) {
                         logger.Error( $"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range." );
@@ -275,13 +276,13 @@ namespace ControlRoomApplication.Controllers {
                     */
             // Convert orientation object to a json string
             //string jsonOrientation = JsonConvert.SerializeObject( Plc.OutgoingOrientation );
-            return send_relative_move(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
+            return SendRelativeMove(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
 
         }
 
 
 
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
         {
             int positionTranslationAZ, positionTranslationEL;
             positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
@@ -296,7 +297,7 @@ namespace ControlRoomApplication.Controllers {
 
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move(AZ_Speed, EL_Speed, positionTranslationAZ, positionTranslationEL);
+            return SendRelativeMove(AZ_Speed, EL_Speed, positionTranslationAZ, positionTranslationEL);
 
         }
 
@@ -327,7 +328,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool HomeTelescope() {
+        public override MovementResult HomeTelescope() {
             throw new NotImplementedException();
         }
 

@@ -691,7 +691,9 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <param name="RPM"></param>
         /// <returns></returns>
-        public bool HomeBothAxes(double RPM) {
+        public MovementResult HomeBothAxes(double RPM) {
+
+            MovementResult result = MovementResult.None;
 
             // Stop move just in case one is still running. This will only be reached if
             // the last move is a lower priority than this one.
@@ -753,7 +755,7 @@ namespace ControlRoomApplication.Controllers {
 
             // This monitors the homing routine to make sure the motors are still moving and, when they stop,
             // that their position is zeroed out.
-            while (!ThisMove.timeout.IsCancellationRequested)
+            while (!ThisMove.timeout.IsCancellationRequested && result == MovementResult.None)
             {
                 outputRegData = ReadMCURegisters(0, 16);
                 mCUpositon.update(outputRegData);
@@ -763,9 +765,7 @@ namespace ControlRoomApplication.Controllers {
                 if (Math.Abs( mCUpositon.AzSteps ) == 0 && Math.Abs( mCUpositon.ElSteps ) == 0 && !MotorsCurrentlyMoving()) {
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
-                    ThisMove.completed = true;
-                    ThisMove.Dispose();
-                    return true;
+                    result = MovementResult.Success;
                 }
 
                 // This checks the new recorded position and compares it against the last
@@ -781,10 +781,7 @@ namespace ControlRoomApplication.Controllers {
                         {
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
-                            ThisMove.completed = true;
-                            ThisMove.Dispose();
-                            return false;
-
+                            result = MovementResult.IncorrectPosition;
                         }
 
                         // If there are any errors in the registers, something bad happened and homing failed
@@ -792,15 +789,15 @@ namespace ControlRoomApplication.Controllers {
                         {
                             consecutiveSuccessfulMoves = 0;
                             consecutiveErrors++;
-                            ThisMove.completed = true;
-                            ThisMove.Dispose();
-                            return false;
+                            result = MovementResult.McuErrorBitSet;
                         }
                     }
                 }
             }
+
+            ThisMove.completed = true;
             ThisMove.Dispose();
-            return false;
+            return result;
         }
 
         private ushort[] PrepareRelativeMoveData(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
@@ -827,8 +824,8 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
-        public bool MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
-            bool success = false;
+        public MovementResult MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
+            MovementResult result = MovementResult.None;
 
             // In case another move was running, cancel it
             Cancel_move();
@@ -895,52 +892,53 @@ namespace ControlRoomApplication.Controllers {
 
             // ERROR CHECKING DURING MOVEMENT. This is the MCU Monitoring Routine described in issue #333
 
-            while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag) {
-
-                // Verify no errors have occurred. If they have, stop the movement and return false
-                if(CheckMCUErrors().Count > 0) {
-                    ThisMove.completed = true;
-                    consecutiveSuccessfulMoves = 0;
-                    consecutiveErrors++;
-                }
-
+            // This will loop through and monitor MCU movement as long as the following conditions are true:
+            // Cannot be timed out
+            // Interrupt flag must be false
+            // No MCU errors
+            // The movement result cannot have been set yet. As soon as it is set, the routine ends.
+            while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
                 if(MovementCompleted() && !MotorsCurrentlyMoving()) {
-                    //TODO:check that position is correct and there arent any errors
+                    //TODO:check that position is correct
 
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
-                    ThisMove.completed = true;
-                    success = true;
+                    result = MovementResult.Success;
                 }
             }
 
-            // The move failed
-            ThisMove.completed = true;
-            consecutiveSuccessfulMoves = 0;
-            consecutiveErrors++;
+            // If the movement times out, this is reached
+            if (MotorsCurrentlyMoving())
+            {
+                result = MovementResult.TimedOut;
+                ControlledStop();
+            }
+
+            // If there are errors on the MCU registers, this is reached
+            else if (CheckMCUErrors().Count > 0) result = MovementResult.McuErrorBitSet;
 
             // If the movement was voluntarily interrupted, this is reached
-            if (MovementInterruptFlag)
+            else if (MovementInterruptFlag)
             {
                 MovementInterruptFlag = false;
+                result = MovementResult.Interrupted;
             }
 
             // If a limit switch gets hit, this is reached
-            else if(WasLimitCancled)
-            {
+            else if (WasLimitCancled) result = MovementResult.LimitSwitchHit;
 
+            if (result != MovementResult.Success)
+            {
+                consecutiveSuccessfulMoves = 0;
+                consecutiveErrors++;
             }
 
-            // If the movement times out, this is reached
-            else if (MotorsCurrentlyMoving())
-            {
-
-            }
+            ThisMove.completed = true;
 
             PLCEvents.DuringOverrideRemoveSecondary(handle);
             ThisMove.Dispose();
 
-            return success;
+            return result;
         }
 
         /// <summary>

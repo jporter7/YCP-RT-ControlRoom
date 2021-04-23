@@ -39,6 +39,26 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// <summary>
         /// The movement was interrupted by either a higher-priority movement, or sensor data requested a stop.
         /// </summary>
-        Interrupted
+        Interrupted,
+
+        /// <summary>
+        /// The movement was ended early because one or more MCU error bits were set.
+        /// </summary>
+        McuErrorBitSet,
+
+        /// <summary>
+        /// The movement will not be sent to the MCU because a part of the command was invalid.
+        /// </summary>
+        ValidationError,
+
+        /// <summary>
+        /// If you try to run a movement while one with equal or higher priority is running, this will be returned.
+        /// </summary>
+        AlreadyMoving,
+
+        /// <summary>
+        /// If the sensors are communicating unsafe data, blocks the incoming move.
+        /// </summary>
+        SensorsNotSafe
     }
 }

@@ -19,6 +19,7 @@ using static ControlRoomApplication.Constants.MCUConstants;
 using ControlRoomApplication.Database;
 using System.Timers;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -596,7 +597,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
         /// <returns></returns>
-        public override bool relative_move(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL) {
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL) {
             if(IsSimulation)
             {
                 CurrentSimOrientation = new Orientation(
@@ -605,11 +606,11 @@ namespace ControlRoomApplication.Controllers
                 );
             }
 
-            return send_relative_move(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL );
+            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL );
         }
 
 
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
         {
             int positionTranslationAZ, positionTranslationEL;
 
@@ -631,7 +632,7 @@ namespace ControlRoomApplication.Controllers
             else if(telescopeType == RadioTelescopeTypeEnum.NONE)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": ERROR: Invalid Telescope Type!");
-                return false;
+                return MovementResult.ValidationError;
             }
 
             positionTranslationAZ = ConversionHelper.DegreesToSteps(azimuthOrientationMovement, MotorConstants.GEARING_RATIO_AZIMUTH);
@@ -647,7 +648,7 @@ namespace ControlRoomApplication.Controllers
             // Set the simulation's current position
             if(IsSimulation) CurrentSimOrientation = target_orientation;
             
-            return send_relative_move(
+            return MCU.MoveAndWaitForCompletion(
                 AZ_Speed, EL_Speed,
                 positionTranslationAZ, 
                 positionTranslationEL
@@ -670,18 +671,13 @@ namespace ControlRoomApplication.Controllers
             return MCU.Cancel_move();
         }
 
-        public bool send_relative_move(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
-            return MCU.MoveAndWaitForCompletion(SpeedAZ, SpeedEL, positionTranslationAZ, positionTranslationEL);
-        }
-
         /// <summary>
         /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
         /// the absolute encoders.
         /// </summary>
         /// <returns>True if homing was successful, false if it failed</returns>
-        public override bool HomeTelescope() {
-            MCU.HomeBothAxes(0.25);
-            return true;
+        public override MovementResult HomeTelescope() {
+            return MCU.HomeBothAxes(0.25);
         }
         
         /// <summary>
@@ -696,8 +692,7 @@ namespace ControlRoomApplication.Controllers
                 PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
                 MCU_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) < 3000;
                 if(is_test) {
-                    //return true;
-                    Console.WriteLine( "{0}   {1} " , (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) , (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) );
+                    return true;
                 }
                 return PLC_alive && MCU_alive;
             } catch { return false; }
