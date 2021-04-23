@@ -722,5 +722,14 @@ namespace ControlRoomApplication.Controllers
         {
             return MCU.CheckMCUErrors();
         }
+
+        /// <summary>
+        /// Allows us to interrupt (cancel) a movement
+        /// </summary>
+        /// <param name="set">Whether you are interrupting or not.</param>
+        public override void SetMovementInterrupt(bool set)
+        {
+            MCU.MovementInterruptFlag = set;
+        }
     }
 }

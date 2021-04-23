@@ -359,5 +359,14 @@ namespace ControlRoomApplication.Controllers {
         {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Allows us to interrupt (cancel) a movement
+        /// </summary>
+        /// <param name="set">Whether you are interrupting or not.</param>
+        public override void SetMovementInterrupt(bool set)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

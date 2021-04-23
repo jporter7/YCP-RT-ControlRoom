@@ -526,10 +526,18 @@ namespace ControlRoomApplication.Controllers
             {
                 azTempSafe = checkTemp(RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp[RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp.Length - 1], azTempSafe);
                 elTempSafe = checkTemp(RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp[RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp.Length - 1], elTempSafe);
-                
+
                 // Determines if the telescope is in a safe state
-                if (azTempSafe && elTempSafe) AllSensorsSafe = true;
-                else AllSensorsSafe = false;
+                if (azTempSafe && elTempSafe)
+                {
+                    AllSensorsSafe = true;
+                    RadioTelescope.PLCDriver.SetMovementInterrupt(false);
+                }
+                else
+                {
+                    AllSensorsSafe = false;
+                    RadioTelescope.PLCDriver.SetMovementInterrupt(true);
+                }
                 
                 Thread.Sleep(1000);
             }

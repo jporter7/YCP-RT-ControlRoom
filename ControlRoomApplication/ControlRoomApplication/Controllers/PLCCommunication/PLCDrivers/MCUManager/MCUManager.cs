@@ -28,7 +28,7 @@ namespace ControlRoomApplication.Controllers {
         private static int MaxConscErrors = 5;
         private int consecutiveErrors = 0;
         private int consecutiveSuccessfulMoves = 0;
-        private bool MovementInterruptFlag = false;
+        public bool MovementInterruptFlag = false;
 
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         private Thread HeartbeatMonitorThread;
@@ -899,7 +899,7 @@ namespace ControlRoomApplication.Controllers {
             // The movement result cannot have been set yet. As soon as it is set, the routine ends.
             while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
                 if(MovementCompleted() && !MotorsCurrentlyMoving()) {
-                    //TODO:check that position is correct
+                    // TODO: Check that the position is correct
 
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;

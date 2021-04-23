@@ -158,5 +158,14 @@ namespace ControlRoomApplication.Controllers
         {
             return driver.CheckMCUErrors();
         }
+        
+        /// <summary>
+        /// Allows us to interrupt (cancel) a movement
+        /// </summary>
+        /// <param name="set">Whether you are interrupting or not.</param>
+        public override void SetMovementInterrupt(bool set)
+        {
+            driver.SetMovementInterrupt(set);
+        }
     }
 }

@@ -132,5 +132,11 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
         public abstract List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors();
+
+        /// <summary>
+        /// Allows us to interrupt (cancel) a movement
+        /// </summary>
+        /// <param name="set">Whether you are interrupting or not.</param>
+        public abstract void SetMovementInterrupt(bool set);
     }
 }
