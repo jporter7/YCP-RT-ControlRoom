@@ -800,18 +800,43 @@ namespace ControlRoomApplication.Controllers {
             return result;
         }
 
-        private ushort[] PrepareRelativeMoveData(int SpeedAZ, int SpeedEL, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL) {
+        private ushort[] PrepareRelativeMoveData(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
             if (SpeedAZ < AZStartSpeed) {
                 throw new ArgumentOutOfRangeException("SpeedAZ", SpeedAZ,
-                    String.Format("SpeedAZ should be grater than {0} which is the stating speed set when configuring the MCU", AZStartSpeed));
+                    String.Format("SpeedAZ should be greater than {0} which is the stating speed set when configuring the MCU", AZStartSpeed));
             }
             if (SpeedEL < ELStartSpeed) {
                 throw new ArgumentOutOfRangeException("SpeedEL", SpeedEL,
-                    String.Format("SpeedAZ should be grater than {0} which is the stating speed set when configuring the MCU", ELStartSpeed));
+                    String.Format("SpeedAZ should be greater than {0} which is the stating speed set when configuring the MCU", ELStartSpeed));
             }
+
+            // This needs flipped so that the elevation axis moves the correct direction
+            positionTranslationEL = -positionTranslationEL;
+
             ushort[] data = {
-                0x0002 , 0x0003, (ushort)((positionTranslationAZ & 0xFFFF0000)>>16),(ushort)(positionTranslationAZ & 0xFFFF),(ushort)((SpeedAZ & 0xFFFF0000)>>16),(ushort)(SpeedAZ & 0xFFFF), ACCELERATION,ACCELERATION ,0,0,
-                0x0002 , 0x0003, (ushort)((positionTranslationEL & 0xFFFF0000)>>16),(ushort)(positionTranslationEL & 0xFFFF),(ushort)((SpeedEL & 0xFFFF0000)>>16),(ushort)(SpeedEL & 0xFFFF), ACCELERATION,ACCELERATION ,0,0
+                // Azimuth data
+                0x0002,
+                0x0003,
+                (ushort)((positionTranslationAZ & 0xFFFF0000)>>16),
+                (ushort)(positionTranslationAZ & 0xFFFF),
+                (ushort)((SpeedAZ & 0xFFFF0000)>>16),
+                (ushort)(SpeedAZ & 0xFFFF),
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                0,
+                0,
+
+                // Elevation data
+                0x0002,
+                0x0003,
+                (ushort)((positionTranslationEL & 0xFFFF0000)>>16),
+                (ushort)(positionTranslationEL & 0xFFFF),
+                (ushort)((SpeedEL & 0xFFFF0000)>>16),
+                (ushort)(SpeedEL & 0xFFFF),
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
+                0,
+                0
             };
             return data;
         }
@@ -837,7 +862,6 @@ namespace ControlRoomApplication.Controllers {
             ushort[] CMDdata = PrepareRelativeMoveData(
                 SpeedAZ, 
                 SpeedEL, 
-                ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING, 
                 positionTranslationAZ, 
                 positionTranslationEL
             );

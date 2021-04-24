@@ -750,7 +750,7 @@ namespace ControlRoomApplication.Main
                 this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
 
                 comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
-
+                comboPLCType.SelectedIndex = (int)PLCType.Simulation;
 
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
                 {
