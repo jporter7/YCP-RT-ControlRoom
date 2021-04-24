@@ -312,10 +312,10 @@ namespace ControlRoomApplication.Controllers
         /// <param name="degreesToMoveBy">The number of degrees to move by.</param>
         /// <param name="priority">The movement's priority.</param>
         /// <returns></returns>
-        public bool MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovePriority priority)
+        public MovementResult MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovePriority priority)
         {
             // TODO: Implement (issue #379)
-            return false;
+            return MovementResult.None;
         }
 
         /// <summary>
@@ -377,6 +377,8 @@ namespace ControlRoomApplication.Controllers
 
             if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
             {
+                if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
                 Orientation origOrientation = GetCurrentOrientation();
@@ -404,6 +406,10 @@ namespace ControlRoomApplication.Controllers
                 result = RadioTelescope.PLCDriver.MoveToOrientation(origOrientation, move2);
 
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
             }
 
             return result;

@@ -492,11 +492,11 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 3:
-                        // TODO: Implement 360 CW rotation with MoveByXDegrees function (issue #379)
+                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(360, 0), MovePriority.Manual);
                         break;
 
                     case 4:
-                        // TODO: Implement 360 CCW rotation with MoveByXDegrees function (issue #379)
+                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(-360, 0), MovePriority.Manual);
                         break;
 
                     case 5:
