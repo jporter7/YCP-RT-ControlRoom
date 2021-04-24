@@ -68,8 +68,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(true, RTCMT0.Start());
             Assert.AreEqual(true, RTCMT1.Start());
 
-            Thread.Sleep(100);
-
             Assert.AreEqual(false, RTCMT0.Busy);
             Assert.AreEqual(false, RTCMT1.Busy);
 
@@ -82,22 +80,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.AreEqual(false, RTCMT0.Busy);
             Assert.AreEqual(false, RTCMT1.Busy);
         }
-        //TestCleanup      ClassCleanup
+
         [TestCleanup]
         public void Bringdown() {
-           // RTC0.RadioTelescope.PLCDriver.Bring_down();
-          //  RTC1.RadioTelescope.PLCDriver.Bring_down();
-            RTC0 = null;
-            RTC1 = null;
+            RTC0.RadioTelescope.PLCDriver.Bring_down();
+            RTC1.RadioTelescope.PLCDriver.Bring_down();
             RTCMT0.RequestToKill();
             RTCMT1.RequestToKill();
-            RTCMT1 = null;
-            RTCMT0 = null;
-            PLCCCH0 = null;
-            PLCCCH1 = null;
-            // PLCCCH0.Bring_down();
-            Thread.Sleep( 100 );
+            PLCCCH0.Bring_down();
+            PLCCCH1.Bring_down();
         }
-        //*/
     }
 }

@@ -21,9 +21,22 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         private static RadioTelescopeController TestRadioTelescopeController;
         private static TestPLCDriver TestRTPLC;
 
+        private static SensorNetworkServer SensorNetworkServer;
+
         [TestCleanup]
         public void testClean() {
             try {
+                // Make sure all overrides are false
+                TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(false);
+                TestRadioTelescopeController.overrides.setElevationAbsEncoder(false);
+                TestRadioTelescopeController.overrides.setAzimuthMotTemp(false);
+                TestRadioTelescopeController.overrides.setElevationMotTemp(false);
+                TestRadioTelescopeController.overrides.setCounterbalanceAccelerometer(false);
+                TestRadioTelescopeController.overrides.setAzimuthAccelerometer(false);
+                TestRadioTelescopeController.overrides.setElevationAccelerometer(false);
+                TestRadioTelescopeController.overrides.setElProx0Override(false);
+                TestRadioTelescopeController.overrides.setElProx90Override(false);
+
                 TestRadioTelescopeController.RadioTelescope.PLCDriver.publicKillHeartbeatComponent();
                 TestRadioTelescopeController.RadioTelescope.SensorNetworkServer.EndSensorMonitoringRoutine();
             }catch { }
@@ -35,10 +48,10 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
        //     TestRTPLC = new ProductionPLCDriver("192.168.0.70", "192.168.0.50" , 502 , 502 );
             SpectraCyberSimulatorController SCSimController = new SpectraCyberSimulatorController( new SpectraCyberSimulator() );
             Location location = MiscellaneousConstants.JOHN_RUDY_PARK;
-            SensorNetworkServer server = new SensorNetworkServer(IPAddress.Parse("127.0.0.1"), 3000, "127.0.0.1", 3001, 500, false);
+            SensorNetworkServer = new SensorNetworkServer(IPAddress.Parse("127.0.0.1"), 3000, "127.0.0.1", 3001, 500, false);
             RadioTelescope TestRT = new RadioTelescope( SCSimController , TestRTPLC , location , new Orientation( 0 , 0 ) );
-            TestRT.SensorNetworkServer = server;
-            TestRT.SensorNetworkServer.StartSensorMonitoringRoutine();
+            TestRT.SensorNetworkServer = SensorNetworkServer;
+            //TestRT.SensorNetworkServer.StartSensorMonitoringRoutine();
             TestRT.WeatherStation = new SimulationWeatherStation(1000);
             TestRadioTelescopeController = new RadioTelescopeController( TestRT );
             
@@ -520,6 +533,162 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Assert.IsTrue(1 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT));
             Assert.IsTrue(1 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT));
             Assert.IsTrue(1 == (int)TestRadioTelescopeController.RadioTelescope.PLCDriver.getregvalue((ushort)PLC_modbus_server_register_mapping.GATE_OVERRIDE));
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_BothAbsolutePositionsOK_Success()
+        {
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_ElevationAbsoluteEncoderOff_IncorrectPosition()
+        {
+            SensorNetworkServer.CurrentAbsoluteOrientation.Elevation = 1;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.IncorrectPosition, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_AzimuthAbsoluteEncoderOff_IncorrectPosition()
+        {
+            SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth = 1;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.IncorrectPosition, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_BothAbsoluteEncodersOff_IncorrectPosition()
+        {
+            SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth = 1;
+            SensorNetworkServer.CurrentAbsoluteOrientation.Elevation = 1;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.IncorrectPosition, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_AzimuthAbsoluteEncoderOffButOverridden_Success()
+        {
+            SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth = 1;
+            TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(true);
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_ElevationAbsoluteEncoderOffButOverridden_Success()
+        {
+            SensorNetworkServer.CurrentAbsoluteOrientation.Elevation = 1;
+            TestRadioTelescopeController.overrides.setElevationAbsEncoder(true);
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_BothAbsoluteEncodersOffButOverridden_Success()
+        {
+            SensorNetworkServer.CurrentAbsoluteOrientation.Elevation = 1;
+            SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth = 1;
+            TestRadioTelescopeController.overrides.setElevationAbsEncoder(true);
+            TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(true);
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_AzimuthEncoderOKAndOverridden_Success()
+        {
+            TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(true);
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_ElevationEncoderOKAndOverridden_Success()
+        {
+            TestRadioTelescopeController.overrides.setElevationAbsEncoder(true);
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_BothEncodersOKAndOverridden_Success()
+        {
+            TestRadioTelescopeController.overrides.setElevationAbsEncoder(true);
+            TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(true);
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_SensorDataUnsafe_SensorsNotSafe()
+        {
+            SensorNetworkServer.CurrentElevationMotorTemp[0].temp = 3000;
+            SensorNetworkServer.CurrentElevationMotorTemp[0].location_ID = (int)SensorLocationEnum.EL_MOTOR;
+            TestRadioTelescopeController.overrides.setElevationMotTemp(false);
+
+            Thread.Sleep(2000);
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.SensorsNotSafe, result);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_IsHoming_PriorityPopulated()
+        {
+            MovePriority priority = MovePriority.Manual;
+
+            // Run async so that we can check for priority change during the movement
+            Task.Run(() =>
+            {
+                MovementResult result = TestRadioTelescopeController.HomeTelescope(priority);
+            });
+
+            Thread.Sleep(50);
+
+            Assert.AreEqual(priority, TestRadioTelescopeController.RadioTelescope.PLCDriver.CurrentMovementPriority);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_TriesToHomeWithAnotherCommandRunning_AlreadyMoving()
+        {
+            MovementResult result1 = MovementResult.None;
+            MovementResult result2 = MovementResult.None;
+            MovePriority priority = MovePriority.Manual;
+
+            // This is running two commands at the same time. One of them should succeed, while
+            // the other is rejected
+
+            Task.Run(() =>
+            {
+                result1 = TestRadioTelescopeController.HomeTelescope(priority);
+            });
+            
+            result2 = TestRadioTelescopeController.HomeTelescope(priority);
+
+            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
+            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
         }
     }
 }
