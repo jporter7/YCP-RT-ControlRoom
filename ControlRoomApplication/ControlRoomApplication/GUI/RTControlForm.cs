@@ -15,6 +15,8 @@ using ControlRoomApplication.Util;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using System.Threading.Tasks;
+using ControlRoomApplication.Controllers.Communications;
 
 namespace ControlRoomApplication.Main
 {
@@ -468,72 +470,50 @@ namespace ControlRoomApplication.Main
    
         //Run Script Button Functionality
         //Case Depends on which script is currently selected 
-        private void runControlScript_Click(object sender, EventArgs e)
+        private async void runControlScript_Click(object sender, EventArgs e)
         {
-            logger.Info(Utilities.GetTimeStamp() + ": Run Script Button Clicked");
-            int caseSwitch = controlScriptsCombo.SelectedIndex;
+            int index = controlScriptsCombo.SelectedIndex + 0;
+            string indexName = controlScriptsCombo.SelectedItem.ToString();
 
-            RadioTelescope tele = rtController.RadioTelescope;
+            // We must run this async so it doesn't hold up the UI
+            await Task.Run(() => {
+                logger.Info(Utilities.GetTimeStamp() + ": Run Script Button Clicked");
 
-            Thread thread =new Thread(() => { } );
+                MovementResult movementResult = MovementResult.None;
 
-            switch (caseSwitch)
-            {
-                case 1:
-                    thread = new Thread(() =>
-                    {
-                        rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
-                    });
-                    //Stow Script selected
-                    break;
-                case 2:
-                    thread = new Thread(() =>
-                    {
-                        rtController.FullElevationMove(MovePriority.Manual);
-                    });
-                    //Full Elevation selected
-                    break;
-                case 3:
-                    thread = new Thread(() =>
-                    {
+                switch (index)
+                {
+                    case 1:
+                        movementResult = rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
+                        break;
+
+                    case 2:
+                        movementResult = rtController.FullElevationMove(MovePriority.Manual);
+                        break;
+
+                    case 3:
                         // TODO: Implement 360 CW rotation with MoveByXDegrees function (issue #379)
-                    });
-                    //Full 360 CW selected
-                    break;
-                case 4:
-                    thread = new Thread(() =>
-                    {
-                        // TODO: Implement 360 CCW rotation with MoveByXDegrees function (issue #379)
-                    });
-                    //Full 360 CCW  selected
-                    break;
-                case 5:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
-                    });
-                    //Thermal Calibration selected
-                    break;
-                case 6:
-                    thread = new Thread(() =>
-                    {
-                        rtController.SnowDump(MovePriority.Manual);
-                    });
-                    //Snow Dump selected
-                    break;
-                case 7:
-                    thread = new Thread(() =>
-                    {
-                        rtController.HomeTelescope(MovePriority.Manual);
-                    });
-                    //Recover from Counter-Clockwise Hardstop
-                    break;
+                        break;
 
-                case 8:
-                    thread = new Thread(() =>
-                    {
+                    case 4:
+                        // TODO: Implement 360 CCW rotation with MoveByXDegrees function (issue #379)
+                        break;
+
+                    case 5:
+                        movementResult = rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
+                        break;
+
+                    case 6:
+                        movementResult = rtController.SnowDump(MovePriority.Manual);
+                        break;
+
+                    case 7:
+                        movementResult = rtController.HomeTelescope(MovePriority.Manual);
+                        break;
+
+                    case 8:
                         double azimuthPos = 0;
-                        double elevationPos = 0;    
+                        double elevationPos = 0;
                         string input = "";
                         string[] values;
                         Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
@@ -544,58 +524,59 @@ namespace ControlRoomApplication.Main
                             input = Interaction.InputBox("The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
                             " This script is best run with a telescope type of SLIP_RING.\n\n" +
                             "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
-                                " and elevation between "+ Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES+ " and "+ Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
+                                " and elevation between " + Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES + " and " + Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
                                 " degrees. Format the entry as a comma-separated list in the format " +
                                 "azimuth, elevation. Ex: 55,80",
                                 "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
                             values = input.Split(',');
-                        
+
                             if (values.Length == 2 && !input.Equals(""))
                             {
                                 Double.TryParse(values[0], out azimuthPos);
                                 Double.TryParse(values[1], out elevationPos);
-                               
+
                             }
 
                             // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
                         }
-                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES) 
+                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES)
                             && (!input.Equals("") && values.Length <= 2));
 
                         // Only run script if cancel button was not hit
                         if (!input.Equals(""))
                         {
                             Entities.Orientation moveTo = new Entities.Orientation(azimuthPos, elevationPos);
-                            rtController.MoveRadioTelescopeToOrientation(moveTo, MovePriority.Manual);
+                            movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovePriority.Manual);
                         }
-                        else 
+                        else
                         {
                             MessageBox.Show("Custom Orientation script cancelled.", "Script Cancelled");
                         }
-                    });
-                    // Custom orientation 
-                    break;
+                        break;
 
-                case 9:
-                    thread = new Thread(() =>
-                    {
+                    case 9:
                         rtController.StartRadioTelescopeAzimuthJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
-                    });
-                    thread.Start();
-                    MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
-                    ExecuteCorrectStop();
+                        MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
+                        ExecuteCorrectStop();
+                        movementResult = MovementResult.Success;
+                        break;
 
-                    break;
-                default:
-
-                    //Script cannot be run
-                    break;
-            }
-            try {
-                thread.Start();
-            } catch {
-
-            }
+                    default:
+                        // Script does not exist
+                        break;
+                }
+                
+                if(movementResult == MovementResult.Success)
+                {
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully finished script {indexName}.");
+                }
+                else if (movementResult != MovementResult.None)
+                {
+                    logger.Info($"{Utilities.GetTimeStamp()}: Script {indexName} FAILED with error message: {movementResult.ToString()}");
+                    pushNotification.sendToAllAdmins("Script Failed", $"Script {indexName} FAILED with error message: {movementResult.ToString()}");
+                    EmailNotifications.sendToAllAdmins("Script Failed", $"Script {indexName} FAILED with error message: {movementResult.ToString()}");
+                }
+            });
         }
 
         //Control Script combo box enables run button when a script has been selected
