@@ -776,6 +776,55 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
             Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
         }
+
+        [TestMethod]
+        public void TestMoveRadioTelescopeToCoordinate_AllStatusesOK_Success()
+        {
+            Coordinate c = new Coordinate();
+
+            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestMoveRadioTelescopeToCoordinate_SensorDataUnsafe_SensorsNotSafe()
+        {
+            TestRadioTelescopeController.overrides.setElevationMotTemp(false);
+            SensorNetworkServer.CurrentElevationMotorTemp[0].temp = 3000;
+            SensorNetworkServer.CurrentElevationMotorTemp[0].location_ID = (int)SensorLocationEnum.EL_MOTOR;
+
+            Coordinate c = new Coordinate();
+
+            Thread.Sleep(2000);
+
+            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.SensorsNotSafe, result);
+        }
+
+        [TestMethod]
+        public void TestMoveRadioTelescopeToCoordinate_TriesMoveRadioTelescopeToCoordinateWithAnotherCommandRunning_AlreadyMoving()
+        {
+            MovementResult result1 = MovementResult.None;
+            MovementResult result2 = MovementResult.None;
+            MovePriority priority = MovePriority.Manual;
+
+            Coordinate c = new Coordinate();
+
+            // This is running two commands at the same time. One of them should succeed, while
+            // the other is rejected
+
+            Task.Run(() =>
+            {
+                result1 = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
+            });
+
+            result2 = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
+
+            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
+            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+        }
     }
 }
 
