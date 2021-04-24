@@ -874,6 +874,49 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
             Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
         }
+
+        [TestMethod]
+        public void TestThermalCalibrateRadioTelescope_AllStatusesOK_Success()
+        {
+            MovementResult result = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.Success, result);
+        }
+
+        [TestMethod]
+        public void TestThermalCalibrateRadioTelescope_SensorDataUnsafe_SensorsNotSafe()
+        {
+            TestRadioTelescopeController.overrides.setElevationMotTemp(false);
+            SensorNetworkServer.CurrentElevationMotorTemp[0].temp = 3000;
+            SensorNetworkServer.CurrentElevationMotorTemp[0].location_ID = (int)SensorLocationEnum.EL_MOTOR;
+            
+            Thread.Sleep(2000);
+
+            MovementResult result = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
+
+            Assert.AreEqual(MovementResult.SensorsNotSafe, result);
+        }
+
+        [TestMethod]
+        public void TestThermalCalibrateRadioTelescope_TriesThermalCalibrateRadioTelescopeWithAnotherCommandRunning_AlreadyMoving()
+        {
+            MovementResult result1 = MovementResult.None;
+            MovementResult result2 = MovementResult.None;
+            MovePriority priority = MovePriority.Manual;
+
+            // This is running two commands at the same time. One of them should succeed, while
+            // the other is rejected
+
+            Task.Run(() =>
+            {
+                result1 = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
+            });
+
+            result2 = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
+
+            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
+            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+        }
     }
 }
 
