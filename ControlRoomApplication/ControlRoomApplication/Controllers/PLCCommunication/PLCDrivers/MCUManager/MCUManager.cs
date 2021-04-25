@@ -598,13 +598,14 @@ namespace ControlRoomApplication.Controllers {
             TestDefaultParams( AZconfig.StartSpeed , ELconfig.StartSpeed , AZconfig.HomeTimeoutSec , ELconfig.HomeTimeoutSec );
             ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
-
             ImmediateStop();
-            Task.Delay( 50 ).Wait();
-            CheckForAndResetCommandErrors();
             SendGenericCommand( new MCUCommand( data , MCUCommandType.CONFIGURE) { completed = true} );
-            Task.Delay( 100 ).Wait();
-            //TODO: check for configuration Errors
+
+            // Allow the MCU to configure
+            Thread.Sleep(250);
+
+            // If there are any errors present, return false
+            if (CheckMCUErrors().Count > 0) return false;
             return true;
         }
 
@@ -931,26 +932,35 @@ namespace ControlRoomApplication.Controllers {
                 }
             }
 
-            // If the movement times out, this is reached
-            if (MotorsCurrentlyMoving())
+            // If a limit switch gets hit, this is reached. We do NOT want to stop
+            // the motors if this happens. All other errors entail stopping the motors.
+            if (WasLimitCancled) result = MovementResult.LimitSwitchHit;
+            else
             {
-                result = MovementResult.TimedOut;
+
+                // If the movement times out, this is reached
+                if (ThisMove.timeout.IsCancellationRequested)
+                {
+                    result = MovementResult.TimedOut;
+                }
+
+                // If there are errors on the MCU registers, this is reached
+                else if (CheckMCUErrors().Count > 0)
+                {
+                    result = MovementResult.McuErrorBitSet;
+                }
+
+                // If the movement was voluntarily interrupted, this is reached
+                else if (MovementInterruptFlag)
+                {
+                    MovementInterruptFlag = true;
+                    result = MovementResult.Interrupted;
+                }
+
                 ControlledStop();
+
             }
-
-            // If there are errors on the MCU registers, this is reached
-            else if (CheckMCUErrors().Count > 0) result = MovementResult.McuErrorBitSet;
-
-            // If the movement was voluntarily interrupted, this is reached
-            else if (MovementInterruptFlag)
-            {
-                MovementInterruptFlag = false;
-                result = MovementResult.Interrupted;
-            }
-
-            // If a limit switch gets hit, this is reached
-            else if (WasLimitCancled) result = MovementResult.LimitSwitchHit;
-
+            
             if (result != MovementResult.Success)
             {
                 consecutiveSuccessfulMoves = 0;

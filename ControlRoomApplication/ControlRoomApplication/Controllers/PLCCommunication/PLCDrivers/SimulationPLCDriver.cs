@@ -158,14 +158,15 @@ namespace ControlRoomApplication.Controllers
         {
             return driver.CheckMCUErrors();
         }
-        
-        /// <summary>
-        /// Allows us to interrupt (cancel) a movement
-        /// </summary>
-        /// <param name="set">Whether you are interrupting or not.</param>
-        public override void SetMovementInterrupt(bool set)
+
+        public override void InterruptMovementAndWaitUntilStopped()
         {
-            driver.SetMovementInterrupt(set);
+            driver.InterruptMovementAndWaitUntilStopped();
+        }
+
+        public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
+        {
+            return driver.MotorsCurrentlyMoving(axis);
         }
     }
 }

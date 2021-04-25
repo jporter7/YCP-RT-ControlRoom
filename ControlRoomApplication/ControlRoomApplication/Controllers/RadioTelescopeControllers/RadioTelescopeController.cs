@@ -169,6 +169,9 @@ namespace ControlRoomApplication.Controllers
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
+                // If a lower-priority movement was running, safely interrupt it.
+                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
                 Orientation current = GetCurrentOrientation();
 
                 moveResult = RadioTelescope.PLCDriver.MoveToOrientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
@@ -266,8 +269,12 @@ namespace ControlRoomApplication.Controllers
                 if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+                // If a lower-priority movement was running, safely interrupt it.
+                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
                 result = RadioTelescope.PLCDriver.MoveToOrientation(orientation, RadioTelescope.PLCDriver.GetMotorEncoderPosition());
-                if(RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if(RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
             else
             {
@@ -294,8 +301,12 @@ namespace ControlRoomApplication.Controllers
                 if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+                // If a lower-priority movement was running, safely interrupt it.
+                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
                 result = RadioTelescope.PLCDriver.MoveToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), RadioTelescope.PLCDriver.GetMotorEncoderPosition()); // MOVE
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
             else
             {
@@ -334,6 +345,9 @@ namespace ControlRoomApplication.Controllers
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
+                // If a lower-priority movement was running, safely interrupt it.
+                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = new Orientation(0, 0);
                 result = RadioTelescope.PLCDriver.HomeTelescope();
 
@@ -356,7 +370,7 @@ namespace ControlRoomApplication.Controllers
                     result = MovementResult.IncorrectPosition;
                 }
 
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
             else
             {
@@ -381,6 +395,9 @@ namespace ControlRoomApplication.Controllers
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
+                // If a lower-priority movement was running, safely interrupt it.
+                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
                 Orientation origOrientation = GetCurrentOrientation();
 
                 Orientation move1 = new Orientation(origOrientation.Azimuth, 0);
@@ -390,7 +407,7 @@ namespace ControlRoomApplication.Controllers
                 result = RadioTelescope.PLCDriver.MoveToOrientation(move1, origOrientation);
                 if (result != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
                     return result;
                 }
 
@@ -398,14 +415,14 @@ namespace ControlRoomApplication.Controllers
                 result = RadioTelescope.PLCDriver.MoveToOrientation(move2, move1);
                 if (result != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
                     return result;
                 }
 
                 // Move back to the original orientation
                 result = RadioTelescope.PLCDriver.MoveToOrientation(origOrientation, move2);
 
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
             else
             {
@@ -569,15 +586,16 @@ namespace ControlRoomApplication.Controllers
                 elTempSafe = checkTemp(elTemp, elTempSafe);
 
                 // Determines if the telescope is in a safe state
-                if (azTempSafe && elTempSafe)
-                {
-                    AllSensorsSafe = true;
-                    RadioTelescope.PLCDriver.SetMovementInterrupt(false);
-                }
+                if (azTempSafe && elTempSafe) AllSensorsSafe = true;
                 else
                 {
                     AllSensorsSafe = false;
-                    RadioTelescope.PLCDriver.SetMovementInterrupt(true);
+
+                    // If the motors are moving, interrupt the current movement.
+                    if (RadioTelescope.PLCDriver.MotorsCurrentlyMoving())
+                    {
+                        RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+                    }
                 }
                 
                 Thread.Sleep(1000);
@@ -704,6 +722,9 @@ namespace ControlRoomApplication.Controllers
 
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
+                // If a lower-priority movement was running, safely interrupt it.
+                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
                 // insert snow dump movements here
                 // default is azimuth of 0 and elevation of 0
                 Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
@@ -716,21 +737,21 @@ namespace ControlRoomApplication.Controllers
                 result = RadioTelescope.PLCDriver.MoveToOrientation(dumpAzimuth, current);
                 if (result != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
                     return result;
                 }
 
                 result = RadioTelescope.PLCDriver.MoveToOrientation(dumpElevation, dumpAzimuth);
                 if (result != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
                     return result;
                 }
 
                 // move back to initial orientation
                 result = RadioTelescope.PLCDriver.MoveToOrientation(current, dumpElevation);
 
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
             }
             else
             {
