@@ -138,7 +138,6 @@
             this.txtPLCPort.Size = new System.Drawing.Size(118, 29);
             this.txtPLCPort.TabIndex = 5;
             this.txtPLCPort.TextChanged += new System.EventHandler(this.txtPLCPort_TextChanged);
-            this.txtPLCPort.GotFocus += new System.EventHandler(this.textBox1_Focus);
             // 
             // comboBox1
             // 
@@ -168,7 +167,6 @@
             this.txtPLCIP.Size = new System.Drawing.Size(118, 29);
             this.txtPLCIP.TabIndex = 4;
             this.txtPLCIP.TextChanged += new System.EventHandler(this.txtPLCIP_TextChanged);
-            this.txtPLCIP.GotFocus += new System.EventHandler(this.textBox2_Focus);
             // 
             // comboBox2
             // 
