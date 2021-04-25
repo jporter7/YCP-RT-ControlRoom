@@ -707,11 +707,12 @@ namespace ControlRoomApplication.Controllers
         {
             if (MCU.MotorsCurrentlyMoving())
             {
+                logger.Info(Utilities.GetTimeStamp() + ": Overriding current movement...");
                 MCU.MovementInterruptFlag = true;
 
                 // Wait until motors stop moving and the interrupt flag is set back to false,
                 // meaning the MCU has acknowledged and acted on the interrupt.
-                while (MCU.MotorsCurrentlyMoving() && MCU.MovementInterruptFlag != true) ;
+                while(MotorsCurrentlyMoving() && MCU.MovementInterruptFlag == true);
             }
             else
             {

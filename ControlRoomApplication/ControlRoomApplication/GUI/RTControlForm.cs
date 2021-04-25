@@ -488,7 +488,7 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 2:
-                        movementResult = rtController.FullElevationMove(MovePriority.Manual);
+                        movementResult = rtController.FullElevationMove(MovePriority.Appointment);
                         break;
 
                     case 3:

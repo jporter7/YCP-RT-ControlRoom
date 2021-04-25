@@ -959,7 +959,6 @@ namespace ControlRoomApplication.Controllers {
                 }
 
                 ControlledStop();
-
             }
             
             if (result != MovementResult.Success)
@@ -970,6 +969,7 @@ namespace ControlRoomApplication.Controllers {
 
             ThisMove.completed = true;
 
+            ThisMove.timeout.Cancel();
             PLCEvents.DuringOverrideRemoveSecondary(handle);
             ThisMove.Dispose();
 
