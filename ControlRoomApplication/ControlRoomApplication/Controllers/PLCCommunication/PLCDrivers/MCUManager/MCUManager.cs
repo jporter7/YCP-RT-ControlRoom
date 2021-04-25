@@ -581,7 +581,7 @@ namespace ControlRoomApplication.Controllers {
                     bool elFinished = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
 
                     // Check if azimuth or elevation are finished with their movements
-                    isFinished = azFinished || elFinished;
+                    isFinished = azFinished && elFinished;
                     break;
             }
 
@@ -923,7 +923,8 @@ namespace ControlRoomApplication.Controllers {
             // No MCU errors
             // The movement result cannot have been set yet. As soon as it is set, the routine ends.
             while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
-                if(MovementCompleted() && !MotorsCurrentlyMoving()) {
+                Task.Delay(50).Wait();
+                if (MovementCompleted() && !MotorsCurrentlyMoving()) {
                     // TODO: Check that the position is correct
 
                     consecutiveSuccessfulMoves++;

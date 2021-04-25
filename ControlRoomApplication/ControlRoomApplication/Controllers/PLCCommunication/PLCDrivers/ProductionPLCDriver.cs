@@ -713,6 +713,10 @@ namespace ControlRoomApplication.Controllers
                 // meaning the MCU has acknowledged and acted on the interrupt.
                 while (MCU.MotorsCurrentlyMoving() && MCU.MovementInterruptFlag != true) ;
             }
+            else
+            {
+                MCU.MovementInterruptFlag = false;
+            }
 
             // The cancelled move will set the interrupt back to false
         }
