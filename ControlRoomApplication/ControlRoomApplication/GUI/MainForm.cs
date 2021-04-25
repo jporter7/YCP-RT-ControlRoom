@@ -20,6 +20,7 @@ using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Controllers.SensorNetwork;
 using ControlRoomApplication.GUI.DropDownEnums;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Main
 {
@@ -392,6 +393,18 @@ namespace ControlRoomApplication.Main
 
                     logger.Info(Utilities.GetTimeStamp() + ": Enabling ManualControl and FreeControl");
                     FreeControl.Enabled = true;
+
+                    Task.Run(() =>
+                    {
+                        // Occasionally, during the initial connection (because things are being powered up, yet), there may be input errors present on the MCU.
+                        // We aren't concerned with these errors, so clearing them is a part of the startup procedure.
+                        Thread.Sleep(5000);
+                        while (ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0)
+                        {
+                            ProgramRTControllerList[ProgramRTControllerList.Count - 1].RadioTelescope.PLCDriver.ResetMCUErrors();
+                            Thread.Sleep(3000);
+                        }
+                    });
                 }
             }
 

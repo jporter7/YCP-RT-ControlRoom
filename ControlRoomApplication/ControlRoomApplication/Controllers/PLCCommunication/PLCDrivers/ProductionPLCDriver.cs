@@ -705,21 +705,20 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override void InterruptMovementAndWaitUntilStopped()
         {
-            if (MCU.MotorsCurrentlyMoving())
+            if (MCU.MotorsCurrentlyMoving() && CurrentMovementPriority != MovePriority.None)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Overriding current movement...");
                 MCU.MovementInterruptFlag = true;
 
                 // Wait until motors stop moving and the interrupt flag is set back to false,
                 // meaning the MCU has acknowledged and acted on the interrupt.
-                while(MotorsCurrentlyMoving() && MCU.MovementInterruptFlag == true);
-            }
-            else
-            {
-                MCU.MovementInterruptFlag = false;
-            }
+                while(MotorsCurrentlyMoving() && MCU.MovementInterruptFlag == true) ;
 
-            // The cancelled move will set the interrupt back to false
+                MCU.MovementInterruptFlag = false;
+
+                // Ensure there is plenty of time between MCU commands
+                Thread.Sleep(2000);
+            }
         }
 
         /// <summary>
