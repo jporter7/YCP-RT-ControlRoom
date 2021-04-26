@@ -160,7 +160,7 @@ namespace ControlRoomApplication.Controllers
 
                 rtController.MoveRadioTelescopeToOrientation(movingTo, MovementPriority.Manual);
 
-                // TODO: store the User Id and movement somewhere in the database
+                // TODO: store the User Id and movement somewhere in the database (issue #392)
 
                 return true;
 

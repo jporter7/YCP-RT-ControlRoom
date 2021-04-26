@@ -17,9 +17,6 @@ using System.Threading.Tasks;
 using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers {
-    //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
-    // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
-    // so the best thing to do would be to split up the AZ and EL components of MCUCommand and then have 2 inststances for running command one for AZ one for EL
     public class MCUManager {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
         /// <summary>
@@ -915,7 +912,7 @@ namespace ControlRoomApplication.Controllers {
             while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
                 Task.Delay(50).Wait();
                 if (MovementCompleted() && !MotorsCurrentlyMoving()) {
-                    // TODO: Check that the position is correct
+                    // TODO: Check that the position is correct (issue #389)
 
                     consecutiveSuccessfulMoves++;
                     consecutiveErrors = 0;
@@ -1040,7 +1037,7 @@ namespace ControlRoomApplication.Controllers {
                     WaitUntilStopped();
                 } else if(RunningCommand.ElevationDirection != elDirection) {//if only elevation needs to change direction
                     for(int j = 0; j <= data3.Length - 11; j++) {
-                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove
+                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove (issue #390)
                         data3[j + 10] = MCUMessages.ClearBothAxesMove[j + 10];//replace elevation portion of move with controled stop
                     }
                     _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {
@@ -1050,7 +1047,7 @@ namespace ControlRoomApplication.Controllers {
                 } else if(RunningCommand.AzimuthDirection != azDirection) {//only Azimuth needs to change direction
                     for(int j = 0; j <= data3.Length - 1; j++)
                     {
-                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove
+                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove (issue #390)
                         data3[j] = MCUMessages.ClearBothAxesMove[j];//replace Azimuth portion of move with controled stop
                     }
                     _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {

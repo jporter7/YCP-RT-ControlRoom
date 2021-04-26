@@ -260,7 +260,7 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public MovementResult MoveRadioTelescopeToOrientation(Orientation orientation, MovementPriority priority)//TODO: once its intagrated use the microcontrole to get the current opsition 
+        public MovementResult MoveRadioTelescopeToOrientation(Orientation orientation, MovementPriority priority)
         {
             MovementResult result = MovementResult.None;
 
