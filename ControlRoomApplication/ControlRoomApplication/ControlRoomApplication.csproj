@@ -208,12 +208,6 @@
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\ThreadNameConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\AbstractMicrocontroller.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\AbstractEncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\SimulatedEncoder.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\EncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
     <Compile Include="Controllers\Communications\DataToCSV.cs" />
     <Compile Include="Controllers\Communications\EmailNotifications.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />

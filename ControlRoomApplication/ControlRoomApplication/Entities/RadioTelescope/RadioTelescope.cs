@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using System;
 using ControlRoomApplication.Controllers.SensorNetwork;
 
@@ -25,23 +24,12 @@ namespace ControlRoomApplication.Entities
             CurrentOrientation = new Orientation();
         }
 
-        public RadioTelescope( AbstractSpectraCyberController spectraCyberController , AbstractPLCDriver plcCommsHandler , Location location , Orientation calibrationOrientation , int localDBID , AbstractMicrocontroller ctrler , AbstractEncoderReader encoder ) {
+        public RadioTelescope(AbstractSpectraCyberController spectraCyberController, AbstractPLCDriver plcCommsHandler, Location location, Orientation calibrationOrientation, int localDBID) {
             PLCDriver = plcCommsHandler;
             SpectraCyberController = spectraCyberController;
             CalibrationOrientation = calibrationOrientation;
             Location = location;
             CurrentOrientation = new Orientation();
-            Encoders = encoder;
-            Micro_controler = ctrler;
-            Id = localDBID;
-        }
-
-        //
-        // This is only to be used with a local DB instance!!
-        //
-        public RadioTelescope(AbstractSpectraCyberController spectraCyberController, AbstractPLCDriver plcCommsHandler, Location location, Orientation calibrationOrientation, int localDBID)
-            : this(spectraCyberController, plcCommsHandler, location, calibrationOrientation)
-        {
             Id = localDBID;
         }
 
@@ -108,12 +96,6 @@ namespace ControlRoomApplication.Entities
 
         [NotMapped]
         public AbstractSpectraCyberController SpectraCyberController { get; set; }
-
-        [NotMapped]
-        public AbstractMicrocontroller Micro_controler { get; set; }
-
-        [NotMapped]
-        public AbstractEncoderReader Encoders { get; set; }
 
         [NotMapped]
         protected RadioTelescopeController Parent;
