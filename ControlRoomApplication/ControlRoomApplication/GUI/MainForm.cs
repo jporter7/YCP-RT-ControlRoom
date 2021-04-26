@@ -477,30 +477,6 @@ namespace ControlRoomApplication.Main
             }
 
         }
-        private void textBox3_Focus(object sender, EventArgs e)
-        {
-            logger.Info(Utilities.GetTimeStamp() + ": textBox3_Focus Event");
-            txtWSCOMPort.Text = "";
-        }
-
-
-        /// <summary>
-        /// Erases the current text in the plc port textbox. 
-        /// </summary>
-        private void textBox2_Focus(object sender, EventArgs e)
-        {
-            logger.Info(Utilities.GetTimeStamp() + ": textBox2_Focus Event");
-            txtPLCIP.Text = "";
-        }
-
-        /// <summary>
-        /// Erases the current text in the plc IP address textbox.
-        /// </summary>
-        private void textBox1_Focus(object sender, EventArgs e)
-        {
-            logger.Info(Utilities.GetTimeStamp() + ": textBox1_Focus Event");
-            txtPLCPort.Text = "";
-        }
 
         /// <summary>
         /// Generates a diagnostic form for whichever telescope configuration is chosen
