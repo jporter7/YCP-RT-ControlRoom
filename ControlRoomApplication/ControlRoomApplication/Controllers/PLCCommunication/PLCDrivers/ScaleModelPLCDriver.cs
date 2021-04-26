@@ -360,11 +360,12 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Allows us to interrupt (cancel) a movement
-        /// </summary>
-        /// <param name="set">Whether you are interrupting or not.</param>
-        public override void SetMovementInterrupt(bool set)
+        public override void InterruptMovementAndWaitUntilStopped()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
         {
             throw new NotImplementedException();
         }

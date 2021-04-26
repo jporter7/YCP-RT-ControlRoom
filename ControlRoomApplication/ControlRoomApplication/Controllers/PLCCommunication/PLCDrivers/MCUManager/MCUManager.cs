@@ -581,7 +581,7 @@ namespace ControlRoomApplication.Controllers {
                     bool elFinished = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
 
                     // Check if azimuth or elevation are finished with their movements
-                    isFinished = azFinished || elFinished;
+                    isFinished = azFinished && elFinished;
                     break;
             }
 
@@ -598,13 +598,14 @@ namespace ControlRoomApplication.Controllers {
             TestDefaultParams( AZconfig.StartSpeed , ELconfig.StartSpeed , AZconfig.HomeTimeoutSec , ELconfig.HomeTimeoutSec );
             ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
-
             ImmediateStop();
-            Task.Delay( 50 ).Wait();
-            CheckForAndResetCommandErrors();
             SendGenericCommand( new MCUCommand( data , MCUCommandType.CONFIGURE) { completed = true} );
-            Task.Delay( 100 ).Wait();
-            //TODO: check for configuration Errors
+
+            // Allow the MCU to configure
+            Thread.Sleep(250);
+
+            // If there are any errors present, return false
+            if (CheckMCUErrors().Count > 0) return false;
             return true;
         }
 
@@ -904,16 +905,6 @@ namespace ControlRoomApplication.Controllers {
                 }
             );
 
-            // Set up the PLC events that this movement can expect to deal with
-            bool WasLimitCancled = false;
-            PLCLimitChangedEvent handle = ( object sender, limitEventArgs e ) => {
-                if(!MotorsCurrentlyMoving()) {
-                    ThisMove.timeout.Cancel();
-                    WasLimitCancled = true;
-                }
-            };
-            PLCEvents.DurringOverrideAddSecondary(handle);
-
             // ERROR CHECKING DURING MOVEMENT. This is the MCU Monitoring Routine described in issue #333
 
             // This will loop through and monitor MCU movement as long as the following conditions are true:
@@ -922,7 +913,8 @@ namespace ControlRoomApplication.Controllers {
             // No MCU errors
             // The movement result cannot have been set yet. As soon as it is set, the routine ends.
             while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
-                if(MovementCompleted() && !MotorsCurrentlyMoving()) {
+                Task.Delay(50).Wait();
+                if (MovementCompleted() && !MotorsCurrentlyMoving()) {
                     // TODO: Check that the position is correct
 
                     consecutiveSuccessfulMoves++;
@@ -931,26 +923,43 @@ namespace ControlRoomApplication.Controllers {
                 }
             }
 
-            // If the movement times out, this is reached
-            if (MotorsCurrentlyMoving())
+            List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> errors = CheckMCUErrors();
+
+            bool hitLimitSwitch = 
+                errors.Contains(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>(MCUOutputRegs.AZ_Status_Bist_MSW, MCUStatusBitsMSW.Input_Error)) ||
+                errors.Contains(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>(MCUOutputRegs.EL_Status_Bist_MSW, MCUStatusBitsMSW.Input_Error));
+
+            // If a limit switch gets hit, this is reached. We do NOT want to stop
+            // the motors if this happens. All other errors entail stopping the motors.
+            if (hitLimitSwitch)
             {
-                result = MovementResult.TimedOut;
+                result = MovementResult.LimitSwitchHit;
+                ResetMCUErrors();
+            }
+            else
+            {
+                // If the movement times out, this is reached
+                if (ThisMove.timeout.IsCancellationRequested)
+                {
+                    result = MovementResult.TimedOut;
+                }
+
+                // If there are errors on the MCU registers, this is reached
+                else if (errors.Count > 0)
+                {
+                    result = MovementResult.McuErrorBitSet;
+                }
+
+                // If the movement was voluntarily interrupted, this is reached
+                else if (MovementInterruptFlag)
+                {
+                    MovementInterruptFlag = false;
+                    result = MovementResult.Interrupted;
+                }
+
                 ControlledStop();
             }
-
-            // If there are errors on the MCU registers, this is reached
-            else if (CheckMCUErrors().Count > 0) result = MovementResult.McuErrorBitSet;
-
-            // If the movement was voluntarily interrupted, this is reached
-            else if (MovementInterruptFlag)
-            {
-                MovementInterruptFlag = false;
-                result = MovementResult.Interrupted;
-            }
-
-            // If a limit switch gets hit, this is reached
-            else if (WasLimitCancled) result = MovementResult.LimitSwitchHit;
-
+            
             if (result != MovementResult.Success)
             {
                 consecutiveSuccessfulMoves = 0;
@@ -959,7 +968,7 @@ namespace ControlRoomApplication.Controllers {
 
             ThisMove.completed = true;
 
-            PLCEvents.DuringOverrideRemoveSecondary(handle);
+            ThisMove.timeout.Cancel();
             ThisMove.Dispose();
 
             return result;

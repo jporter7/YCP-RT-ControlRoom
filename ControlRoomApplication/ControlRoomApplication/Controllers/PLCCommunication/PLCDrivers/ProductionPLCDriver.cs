@@ -697,12 +697,38 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// Allows us to interrupt (cancel) a movement
+        /// This will interrupt the current movement, wait until it has stopped, and then
+        /// end when the movement has stopped.
+        /// 
+        /// If no motors are moving when this is called, then it will not wait, and just be
+        /// able to pass through.
         /// </summary>
-        /// <param name="set">Whether you are interrupting or not.</param>
-        public override void SetMovementInterrupt(bool set)
+        public override void InterruptMovementAndWaitUntilStopped()
         {
-            MCU.MovementInterruptFlag = set;
+            if (MCU.MotorsCurrentlyMoving() && CurrentMovementPriority != MovePriority.None)
+            {
+                logger.Info(Utilities.GetTimeStamp() + ": Overriding current movement...");
+                MCU.MovementInterruptFlag = true;
+
+                // Wait until motors stop moving and the interrupt flag is set back to false,
+                // meaning the MCU has acknowledged and acted on the interrupt.
+                while(MotorsCurrentlyMoving() && MCU.MovementInterruptFlag == true) ;
+
+                MCU.MovementInterruptFlag = false;
+
+                // Ensure there is plenty of time between MCU commands
+                Thread.Sleep(2000);
+            }
+        }
+
+        /// <summary>
+        /// Checks to see if the motors are currently moving.
+        /// </summary>
+        /// <param name="axis">Azimuth, elevation, or both.</param>
+        /// <returns>True if moving, false if not moving.</returns>
+        public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
+        {
+            return MCU.MotorsCurrentlyMoving(axis);
         }
     }
 }
