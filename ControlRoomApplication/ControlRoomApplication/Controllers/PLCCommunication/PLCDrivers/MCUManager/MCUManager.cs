@@ -1068,39 +1068,6 @@ namespace ControlRoomApplication.Controllers {
 
             Console.WriteLine( "running: {0}     incoming: {1}", RunningCommand.CommandType.ToString(), incoming.CommandType.ToString());
 
-            // This looks like it's handling some kind of priority, which is handled in a higher layer. I'm only commenting it out for now
-            // so that we can bring it back quickly if we find that something is broken
-
-            //PreviousCommand = RunningCommand;
-
-            /*
-            if(RunningCommand.CommandType == MCUCommandType.JOG) {
-                if(incoming.CommandType == MCUCommandType.CLEAR_LAST_MOVE || incoming.CommandType == MCUCommandType.IMMEDIATE_STOP || incoming.CommandType == MCUCommandType.JOG) {
-                    try {
-                        RunningCommand?.timeout?.Cancel();
-                    } catch { }
-                    RunningCommand = incoming;
-                    WriteMCURegisters(incoming.commandData);
-                    return incoming;
-                }
-                incoming.CommandError = new Exception( "MCU was running a JOG move which could not be overriden" );
-                return incoming;
-            } else if((RunningCommand.CommandType == MCUCommandType.HOME && !RunningCommand.completed)) {
-                if( incoming.CommandType == MCUCommandType.IMMEDIATE_STOP) {
-                    try {
-                        RunningCommand?.timeout?.Cancel();
-                    } catch { }
-                    RunningCommand = incoming;
-                    WriteMCURegisters(incoming.commandData);
-                    return incoming;
-                }
-                incoming.CommandError = new Exception( "MCU was running a home move which could not be overriden" );
-                return incoming;
-            }
-            try {
-                RunningCommand?.timeout?.Cancel();
-            } catch { } */
-
             RunningCommand = incoming;
             WriteMCURegisters(incoming.commandData);
             return incoming;
