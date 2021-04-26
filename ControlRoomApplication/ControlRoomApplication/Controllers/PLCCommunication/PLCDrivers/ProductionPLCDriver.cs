@@ -85,7 +85,7 @@ namespace ControlRoomApplication.Controllers
                 }
             }
 
-            CurrentMovementPriority = MovePriority.None;
+            CurrentMovementPriority = MovementPriority.None;
         }
 
 
@@ -124,25 +124,25 @@ namespace ControlRoomApplication.Controllers
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT :
                         {
-                            CurrentMovementPriority = MovePriority.Critical;
+                            CurrentMovementPriority = MovementPriority.Critical;
                             MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
                         {
-                            CurrentMovementPriority = MovePriority.Critical;
+                            CurrentMovementPriority = MovementPriority.Critical;
                             MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT:
                         {
-                            CurrentMovementPriority = MovePriority.Critical;
+                            CurrentMovementPriority = MovementPriority.Critical;
                             MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT:
                         {
-                            CurrentMovementPriority = MovePriority.Critical;
+                            CurrentMovementPriority = MovementPriority.Critical;
                             MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
                             break;
                         }
@@ -153,22 +153,22 @@ namespace ControlRoomApplication.Controllers
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
                             MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
-                            CurrentMovementPriority = MovePriority.None;
+                            CurrentMovementPriority = MovementPriority.None;
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
                             MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
-                            CurrentMovementPriority = MovePriority.None;
+                            CurrentMovementPriority = MovementPriority.None;
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
                             MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
-                            CurrentMovementPriority = MovePriority.None;
+                            CurrentMovementPriority = MovementPriority.None;
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
                             MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
-                            CurrentMovementPriority = MovePriority.None;
+                            CurrentMovementPriority = MovementPriority.None;
                             break;
                         }
                 }
@@ -705,12 +705,12 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public override void InterruptMovementAndWaitUntilStopped()
         {
-            if (MCU.MotorsCurrentlyMoving() && CurrentMovementPriority != MovePriority.None)
+            if (MCU.MotorsCurrentlyMoving() && CurrentMovementPriority != MovementPriority.None)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Overriding current movement...");
                 MCU.MovementInterruptFlag = true;
 
-                // Wait until motors stop moving and the interrupt flag is set back to false,
+                // Wait until motors stop moving or the interrupt flag is set back to false,
                 // meaning the MCU has acknowledged and acted on the interrupt.
                 while(MotorsCurrentlyMoving() && MCU.MovementInterruptFlag == true) ;
 

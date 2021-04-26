@@ -33,7 +33,7 @@ namespace ControlRoomApplication.Controllers
         /// This is the priority of the currently-running move. This will be "None" if no move is currently running, otherwise it will
         /// reflect the priority.
         /// </summary>
-        public MovePriority CurrentMovementPriority { get; set; }
+        public MovementPriority CurrentMovementPriority { get; set; }
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup

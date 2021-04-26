@@ -717,10 +717,10 @@ namespace ControlRoomApplication.GUI
             switch (caseSwitch)
             {
                 case 1: // Elevation Lower Limit Switch
-                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, -14), MovePriority.Manual);
+                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, -14), MovementPriority.Manual);
                     break;
                 case 2: // Elevation Upper Limit Switch
-                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 92), MovePriority.Manual);
+                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 92), MovementPriority.Manual);
                     break;
                 default:
 

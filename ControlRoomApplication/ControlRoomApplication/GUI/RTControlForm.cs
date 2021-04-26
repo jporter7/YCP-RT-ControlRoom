@@ -484,31 +484,31 @@ namespace ControlRoomApplication.Main
                 switch (index)
                 {
                     case 1:
-                        movementResult = rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovementPriority.Manual);
                         break;
 
                     case 2:
-                        movementResult = rtController.FullElevationMove(MovePriority.Manual);
+                        movementResult = rtController.FullElevationMove(MovementPriority.Manual);
                         break;
 
                     case 3:
-                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(360, 0), MovePriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(360, 0), MovementPriority.Manual);
                         break;
 
                     case 4:
-                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(-360, 0), MovePriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(-360, 0), MovementPriority.Manual);
                         break;
 
                     case 5:
-                        movementResult = rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
+                        movementResult = rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
                         break;
 
                     case 6:
-                        movementResult = rtController.SnowDump(MovePriority.Manual);
+                        movementResult = rtController.SnowDump(MovementPriority.Manual);
                         break;
 
                     case 7:
-                        movementResult = rtController.HomeTelescope(MovePriority.Manual);
+                        movementResult = rtController.HomeTelescope(MovementPriority.Manual);
                         break;
 
                     case 8:
@@ -546,7 +546,7 @@ namespace ControlRoomApplication.Main
                         if (!input.Equals(""))
                         {
                             Entities.Orientation moveTo = new Entities.Orientation(azimuthPos, elevationPos);
-                            movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovePriority.Manual);
+                            movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovementPriority.Manual);
                         }
                         else
                         {
@@ -555,7 +555,7 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 9:
-                        rtController.StartRadioTelescopeAzimuthJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
+                        rtController.StartRadioTelescopeAzimuthJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovementPriority.Manual);
                         MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
                         ExecuteCorrectStop();
                         movementResult = MovementResult.Success;
@@ -606,7 +606,7 @@ namespace ControlRoomApplication.Main
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovePriority.Manual);
+                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovementPriority.Manual);
                 }
                 else
                 {
@@ -638,7 +638,7 @@ namespace ControlRoomApplication.Main
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
+                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovementPriority.Manual);
                 }
                 else
                 {
@@ -663,14 +663,14 @@ namespace ControlRoomApplication.Main
             if (ControlledButtonRadio.Checked)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Executed Controlled Stop");
-                rtController.ExecuteRadioTelescopeStopJog(MovePriority.GeneralStop);
+                rtController.ExecuteRadioTelescopeStopJog(MovementPriority.GeneralStop);
                 formData.immediateStopBool = false;
                 formData.controlledStopBool = true;
             }
             else if (immediateRadioButton.Checked)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Executed Immediate Stop");
-                rtController.ExecuteRadioTelescopeImmediateStop(MovePriority.GeneralStop);
+                rtController.ExecuteRadioTelescopeImmediateStop(MovementPriority.GeneralStop);
                 formData.immediateStopBool = true;
                 formData.controlledStopBool = false;
 
@@ -700,7 +700,7 @@ namespace ControlRoomApplication.Main
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovePriority.Manual);
+                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovementPriority.Manual);
                 }
                 else
                 {
@@ -730,7 +730,7 @@ namespace ControlRoomApplication.Main
                     logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
 
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovePriority.Manual);
+                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovementPriority.Manual);
                 }
                 else
                 {
