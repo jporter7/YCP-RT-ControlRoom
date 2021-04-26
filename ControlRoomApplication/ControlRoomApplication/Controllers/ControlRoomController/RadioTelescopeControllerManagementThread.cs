@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -363,15 +364,24 @@ namespace ControlRoomApplication.Controllers
                     }
 
                         logger.Info(Utilities.GetTimeStamp() + ": Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                        RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation, MovePriority.Appointment);
+                        
+                        MovementResult apptMovementResult = RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation, MovePriority.Appointment);
+
+                        // If the movement result was anything other than success, it means the movement failed and something is wrong with
+                        // the hardware.
+                        // TODO: Talk to Todd about thresholds for this. Right now, it is cancelling the appointment if the movement
+                        // returns back any single error. See the MovementResult enum for a list of the different errors.
+                        if (apptMovementResult != MovementResult.Success)
+                        {
+                            logger.Info($"{Utilities.GetTimeStamp()}: Appointment movement FAILED with the following error message: {apptMovementResult.ToString()}");
+                            InterruptAppointmentFlag = true;
+                        }
 
                         if (InterruptAppointmentFlag)
                         {
                             break;
                         }
-
-                         //currentOrientation = RTController.GetCurrentOrientation();
-                         //logger.Info(Utilities.GetTimeStamp() + ": Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                        
                          Thread.Sleep(100);
 
                         NextObjectiveOrientation = null;
