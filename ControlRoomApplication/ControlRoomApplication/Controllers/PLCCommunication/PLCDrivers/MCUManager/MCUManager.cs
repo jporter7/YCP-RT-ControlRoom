@@ -922,7 +922,7 @@ namespace ControlRoomApplication.Controllers {
 
                     // If this is reached, the motors have stopped and we are now checking that the orientation is correct
                     Orientation encoderOrientation = GetMotorEncoderPosition();
-                    if ((encoderOrientation.Azimuth - targetOrientation.Azimuth) <= 0.1 || (encoderOrientation.Elevation - targetOrientation.Elevation) <= 0.1)
+                    if ((encoderOrientation.Azimuth - targetOrientation.Azimuth) <= 0.1 && (encoderOrientation.Elevation - targetOrientation.Elevation) <= 0.1)
                     {
                         result = MovementResult.Success;
                     }
