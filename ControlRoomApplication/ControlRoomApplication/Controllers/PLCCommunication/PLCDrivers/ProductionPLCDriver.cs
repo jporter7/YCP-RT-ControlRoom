@@ -268,63 +268,17 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CCW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CCW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_0_LIMIT , limitSwitchData.Azimuth_CCW_Limit );
-                            if (limitSwitchData.Azimuth_CCW_Limit)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CCW Limit Switch Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CCW Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
-                            }
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_HOME: {
                         bool previous = homeSensorData.Azimuth_Home_One;
                         homeSensorData.Azimuth_Home_One = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_HOME] );
-                        if(previous != homeSensorData.Azimuth_Home_One) {
-                            if (homeSensorData.Azimuth_Home_One)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_One Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_One Sensor Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY: {
                         bool previous = homeSensorData.Azimuth_Home_Two;
                         homeSensorData.Azimuth_Home_Two = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );
-                        if(previous != homeSensorData.Azimuth_Home_Two) {
-                            if (homeSensorData.Azimuth_Home_Two)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_Two Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_Two Sensor Not Hit");;
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
@@ -332,20 +286,6 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_375_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_375_LIMIT , limitSwitchData.Azimuth_CW_Limit );
-                            if (limitSwitchData.Azimuth_CW_Limit)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CW Limit Switch Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CW Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
-                            }
                         }
                         break;
                     }
@@ -361,35 +301,12 @@ namespace ControlRoomApplication.Controllers
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                             }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Lower Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
-                            }
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_0_HOME: {
                         bool previous = homeSensorData.Elevation_Home;
                         homeSensorData.Elevation_Home = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_0_HOME] );
-                        if(previous != homeSensorData.Elevation_Home) {
-                            if (homeSensorData.Elevation_Home)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Home Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Home Sensor Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT: {
@@ -403,13 +320,6 @@ namespace ControlRoomApplication.Controllers
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Upper Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
                             }
                         }
                         break;
