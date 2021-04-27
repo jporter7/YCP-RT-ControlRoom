@@ -577,6 +577,9 @@ namespace ControlRoomApplication.Controllers {
 
                 case RadioTelescopeAxisEnum.BOTH:
                     data = ReadMCURegisters(0, 11);
+                    ushort dataISent = data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW];
+                    var resultOfShift = dataISent >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete;
+                    var resultOfAnd = resultOfShift & 0b1;
                     bool azFinished = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
                     bool elFinished = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
 
@@ -696,11 +699,6 @@ namespace ControlRoomApplication.Controllers {
 
             MovementResult result = MovementResult.None;
 
-            // Stop move just in case one is still running. This will only be reached if
-            // the last move is a lower priority than this one.
-            Cancel_move();
-            ControlledStop();
-
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_AZIMUTH );
 
@@ -758,6 +756,8 @@ namespace ControlRoomApplication.Controllers {
             // that their position is zeroed out.
             while (!ThisMove.timeout.IsCancellationRequested && result == MovementResult.None)
             {
+                // allow the MCU process the register data
+                Thread.Sleep(100);
                 outputRegData = ReadMCURegisters(0, 16);
                 mCUpositon.update(outputRegData);
                 positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
@@ -849,8 +849,11 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="SpeedEL"></param>
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
+        /// <param name="targetOrientation"></param>
         /// <returns></returns>
-        public MovementResult MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
+        public MovementResult MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL, 
+                Orientation targetOrientation = null) 
+        {
             MovementResult result = MovementResult.None;
 
             // In case another move was running, cancel it
@@ -913,13 +916,31 @@ namespace ControlRoomApplication.Controllers {
             // No MCU errors
             // The movement result cannot have been set yet. As soon as it is set, the routine ends.
             while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
-                Task.Delay(50).Wait();
+                Thread.Sleep(100);
                 if (MovementCompleted() && !MotorsCurrentlyMoving()) {
                     // TODO: Check that the position is correct
-
-                    consecutiveSuccessfulMoves++;
-                    consecutiveErrors = 0;
-                    result = MovementResult.Success;
+                    if (targetOrientation != null)
+                    {
+                        Orientation encoderOrientation = GetMotorEncoderPosition();
+                        // TODO: these have some margin of error, we need to account for that now
+                        //       right now these are always "exact" for the VR simulator
+                        //       something like a 10th of a degree delta
+                        if (((int) encoderOrientation.Azimuth != (int) targetOrientation.Azimuth) || ((int) encoderOrientation.Elevation != (int) targetOrientation.Elevation))
+                        {
+                            // something bad happened
+                            result = MovementResult.IncorrectPosition;
+                        } else
+                        {
+                            consecutiveSuccessfulMoves++;
+                            consecutiveErrors = 0;
+                            result = MovementResult.Success;
+                        }
+                    } else
+                    {
+                        consecutiveSuccessfulMoves++;
+                        consecutiveErrors = 0;
+                        result = MovementResult.Success;
+                    }
                 }
             }
 
