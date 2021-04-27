@@ -624,7 +624,8 @@ namespace ControlRoomApplication.Controllers
             return MCU.MoveAndWaitForCompletion(
                 AZ_Speed, EL_Speed,
                 positionTranslationAZ, 
-                positionTranslationEL
+                positionTranslationEL, 
+                target_orientation
             );
         }
 
