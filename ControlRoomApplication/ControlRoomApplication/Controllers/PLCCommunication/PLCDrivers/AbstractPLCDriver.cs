@@ -97,7 +97,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool ImmediateStop();
 
-        public abstract MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL);
+        public abstract MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation);
 
         public abstract MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation);
 

@@ -19,12 +19,6 @@ using static ControlRoomApplication.Constants.MCUConstants;
 namespace ControlRoomApplication.Controllers {
     public class MCUManager {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
-        /// <summary>
-        /// if more errors than this value are thrown in a row and this class cant resolve them subsiquent attempts to send moves to the MCU will throw exception
-        /// </summary>
-        private static int MaxConscErrors = 5;
-        private int consecutiveErrors = 0;
-        private int consecutiveSuccessfulMoves = 0;
         public bool MovementInterruptFlag = false;
 
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -760,9 +754,7 @@ namespace ControlRoomApplication.Controllers {
                 positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
                 
                 // As soon as the motor steps are approximately 0 and no longer moving, we know homing has finished and the motors are zeroed
-                if (Math.Abs( mCUpositon.AzSteps ) == 0 && Math.Abs( mCUpositon.ElSteps ) == 0 && !MotorsCurrentlyMoving()) {
-                    consecutiveSuccessfulMoves++;
-                    consecutiveErrors = 0;
+                if (Math.Abs( mCUpositon.AzSteps ) <= 4 && Math.Abs( mCUpositon.ElSteps ) <= 4 && !MotorsCurrentlyMoving()) {
                     result = MovementResult.Success;
                 }
 
@@ -777,16 +769,12 @@ namespace ControlRoomApplication.Controllers {
                         // If the motors are not zeroed out, then homing did not complete (aka failed)
                         if (Math.Abs(mCUpositon.AzSteps) > 4 || Math.Abs(mCUpositon.ElSteps) > 4)
                         {
-                            consecutiveSuccessfulMoves = 0;
-                            consecutiveErrors++;
                             result = MovementResult.IncorrectPosition;
                         }
 
                         // If there are any errors in the registers, something bad happened and homing failed
                         else if (CheckMCUErrors().Count > 0)
                         {
-                            consecutiveSuccessfulMoves = 0;
-                            consecutiveErrors++;
                             result = MovementResult.McuErrorBitSet;
                         }
                     }
@@ -798,7 +786,7 @@ namespace ControlRoomApplication.Controllers {
             return result;
         }
 
-        private void BuildAndSendRelativeMove(MCUCommand command, int positionTranslationEl = 0, int positionTranslationAz = 0) {
+        private void BuildAndSendRelativeMove(MCUCommand command, int positionTranslationAz, int positionTranslationEl) {
             if (command.AzimuthSpeed < AZStartSpeed) {
                 throw new ArgumentOutOfRangeException("SpeedAZ", command.AzimuthSpeed,
                     String.Format("Azimuth speed should be greater than {0}, which is the starting speed set when configuring the MCU", AZStartSpeed));
@@ -856,9 +844,8 @@ namespace ControlRoomApplication.Controllers {
         public MovementResult MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL, 
                 Orientation targetOrientation) 
         {
-            MovementResult result = MovementResult.None;
 
-            // In case another move was running, cancel it
+            // Clear any leftover register data
             Cancel_move();
             
             // Update the current position
@@ -910,17 +897,29 @@ namespace ControlRoomApplication.Controllers {
                 positionTranslationEL
             );
 
-            // ERROR CHECKING DURING MOVEMENT. This is the MCU Monitoring Routine described in issue #333
+            return MovementMonitor(ThisMove, targetOrientation);
+        }
 
-            // This will loop through and monitor MCU movement as long as the following conditions are true:
-            // Cannot be timed out
-            // Interrupt flag must be false
-            // No MCU errors
-            // The movement result cannot have been set yet. As soon as it is set, the routine ends.
-            while (!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
+        /// <summary>
+        /// This will loop through and monitor MCU movement as long as the following conditions are true:
+        /// Cannot be timed out
+        /// Interrupt flag must be false
+        /// No MCU errors
+        /// The movement result cannot have been set yet. As soon as it is set, the routine ends.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="targetOrientation"></param>
+        /// <returns></returns>
+        private MovementResult MovementMonitor(MCUCommand command, Orientation targetOrientation)
+        {
+            MovementResult result = MovementResult.None;
+            
+            while (!command.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None)
+            {
                 Thread.Sleep(100);
-                if (MovementCompleted() && !MotorsCurrentlyMoving()) {
-                    
+                if (MovementCompleted() && !MotorsCurrentlyMoving())
+                {
+
                     // If this is reached, the motors have stopped and we are now checking that the orientation is correct
                     Orientation encoderOrientation = GetMotorEncoderPosition();
                     if ((encoderOrientation.Azimuth - targetOrientation.Azimuth) <= 0.1 || (encoderOrientation.Elevation - targetOrientation.Elevation) <= 0.1)
@@ -936,7 +935,7 @@ namespace ControlRoomApplication.Controllers {
 
             List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> errors = CheckMCUErrors();
 
-            bool hitLimitSwitch = 
+            bool hitLimitSwitch =
                 errors.Contains(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>(MCUOutputRegs.AZ_Status_Bist_MSW, MCUStatusBitsMSW.Input_Error)) ||
                 errors.Contains(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>(MCUOutputRegs.EL_Status_Bist_MSW, MCUStatusBitsMSW.Input_Error));
 
@@ -950,7 +949,7 @@ namespace ControlRoomApplication.Controllers {
             else
             {
                 // If the movement times out, this is reached
-                if (ThisMove.timeout.IsCancellationRequested)
+                if (command.timeout.IsCancellationRequested)
                 {
                     result = MovementResult.TimedOut;
                 }
@@ -970,24 +969,13 @@ namespace ControlRoomApplication.Controllers {
 
                 ControlledStop();
             }
-            
-            if (result != MovementResult.Success)
-            {
-                consecutiveSuccessfulMoves = 0;
-                consecutiveErrors++;
-            }
 
-            ThisMove.completed = true;
+            command.completed = true;
 
-            ThisMove.timeout.Cancel();
-            ThisMove.Dispose();
+            command.timeout.Cancel();
+            command.Dispose();
 
             return result;
-        }
-
-        private MovementResult MovementMonitor(MCUCommand command, Orientation targetOrientation)
-        {
-            return MovementResult.None;
         }
 
         /// <summary>

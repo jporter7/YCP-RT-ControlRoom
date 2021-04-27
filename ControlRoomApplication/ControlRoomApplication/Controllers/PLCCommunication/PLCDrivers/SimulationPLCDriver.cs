@@ -91,9 +91,9 @@ namespace ControlRoomApplication.Controllers
             return driver.ImmediateStop();
         }
 
-        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL)
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation)
         {
-            return driver.RelativeMove(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
+            return driver.RelativeMove(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
         public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
