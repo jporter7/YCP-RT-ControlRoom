@@ -30,27 +30,22 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
         private bool runsimulator = true, mooving = false, jogging = false, isconfigured = false, isTest = false;
 
         private int acc, distAZ, distEL, currentAZ, currentEL, AZ_speed, EL_speed;
-        private int AZ10Lim_ON = -ConversionHelper.DegreesToSteps( 10 , MotorConstants.GEARING_RATIO_AZIMUTH );
-        private int AZ370Lim_ON = ConversionHelper.DegreesToSteps( 375 , MotorConstants.GEARING_RATIO_AZIMUTH );
-        private int EL0Lim_ON = -ConversionHelper.DegreesToSteps( 15 , MotorConstants.GEARING_RATIO_ELEVATION );
-        private int EL90Lim_ON = ConversionHelper.DegreesToSteps( 93 , MotorConstants.GEARING_RATIO_ELEVATION );
 
-        private int AZ10Lim_OFF = ConversionHelper.DegreesToSteps( 5 , MotorConstants.GEARING_RATIO_AZIMUTH );
-        private int AZ370Lim_OFF = ConversionHelper.DegreesToSteps( 355 , MotorConstants.GEARING_RATIO_AZIMUTH );
-        private int EL0Lim_OFF = -ConversionHelper.DegreesToSteps( 4 , MotorConstants.GEARING_RATIO_ELEVATION );
-        private int EL90Lim_OFF = ConversionHelper.DegreesToSteps( 89 , MotorConstants.GEARING_RATIO_ELEVATION );
+        private int EL0Lim_ON = -ConversionHelper.DegreesToSteps(15, MotorConstants.GEARING_RATIO_ELEVATION );
+        private int EL90Lim_ON = ConversionHelper.DegreesToSteps(93, MotorConstants.GEARING_RATIO_ELEVATION );
+        
+        private int EL0Lim_OFF = -ConversionHelper.DegreesToSteps(4, MotorConstants.GEARING_RATIO_ELEVATION );
+        private int EL90Lim_OFF = ConversionHelper.DegreesToSteps(89, MotorConstants.GEARING_RATIO_ELEVATION );
 
         bool AZ10LimStatus = false, AZ370LimStatus = false, EL0LimStatus = false, EL90LimStatus = false;
 
         public Simulation_control_pannel( string PLC_ip , string MCU_ip , int MCU_port , int PLC_port , bool istest ) {
-            // PLCTCPClient = new TcpClient(PLC_ip, PLC_port);
-            // PLCModbusMaster = ModbusIpMaster.CreateIp(PLCTCPClient);
+
             this.PLC_ip = PLC_ip;
             this.PLC_port = PLC_port;
             isTest = istest;
             try {
-                //MCU_TCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse("127.0.0.2"), 8080));
-                //Console.WriteLine(MCU_ip,)
+
                 MCU_TCPListener = new TcpListener( new IPEndPoint( IPAddress.Parse( MCU_ip ) , MCU_port ) );
                 MCU_emulator_thread = new Thread( new ThreadStart( Run_MCU_server_thread ) ) { Name="MCU Simulator Thread"};
             } catch(Exception e) {
@@ -101,8 +96,6 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                     PLCModbusMaster = ModbusIpMaster.CreateIp( PLCTCPClient );
                 } catch {//no server setup on control room yet 
                     logger.Info(Utilities.GetTimeStamp() + ": ________________PLC sim awaiting control room");
-
-                    //Thread.Sleep(1000);
                 }
                 logger.Info(Utilities.GetTimeStamp() + ": ________________PLC sim running");
                 PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK , new ushort[] { BoolToInt( true ) } );
@@ -112,28 +105,6 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                         Thread.Sleep( 5 );
                         continue;
                     } else {
-                        if(!AZ10LimStatus) {
-                            if(currentAZ < AZ10Lim_ON) {
-                                AZ10LimStatus = true;
-                                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT , new ushort[] { BoolToInt( !AZ10LimStatus ) } );
-                            }
-                        }else if(currentAZ > AZ10Lim_OFF) {
-                            AZ10LimStatus = false;
-                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT , new ushort[] { BoolToInt( !AZ10LimStatus ) } );
-                        }
-
-
-
-                        if(!AZ370LimStatus) {
-                            if(currentAZ > AZ370Lim_ON) {
-                                AZ370LimStatus =true;
-                                PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT , new ushort[] { BoolToInt( !AZ370LimStatus ) } );
-                            }
-                        } else if(currentAZ < AZ370Lim_OFF) {
-                            AZ370LimStatus = false;
-                            PLCModbusMaster.WriteMultipleRegisters( (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT , new ushort[] { BoolToInt( !AZ370LimStatus ) } );
-                        }
-
                         if(!EL0LimStatus) {
                             if(currentEL < EL0Lim_ON) {
                                 EL0LimStatus = (currentEL < EL0Lim_ON);
@@ -162,7 +133,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
         private void Server_Written_to_handler( object sender , DataStoreEventArgs e ) {
             MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
             MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
-            //Console.WriteLine("plcdriver data writen 1 reg "+ e.Data.B[0]+" start adr "+ e.StartAddress);
+
             ushort[] data = new ushort[20];//e.Data.B.Count
             if (e.StartAddress >= 1023)
             {
@@ -224,7 +195,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
             distEL -= travEL;
             currentAZ += travAZ;
             currentEL += travEL;
-            //   Console.WriteLine("offset: az" + currentAZ + " el " + currentEL);
+
             MCU_Modbusserver.DataStore.HoldingRegisters[3] = (ushort)((currentAZ & 0xffff0000) >> 16);
             MCU_Modbusserver.DataStore.HoldingRegisters[4] = (ushort)(currentAZ & 0xffff);
             MCU_Modbusserver.DataStore.HoldingRegisters[13] = (ushort)((currentEL & 0xffff0000) >> 16);

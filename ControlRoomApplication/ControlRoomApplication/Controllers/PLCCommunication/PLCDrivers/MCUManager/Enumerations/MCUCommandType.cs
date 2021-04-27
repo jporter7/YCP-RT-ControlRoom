@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlRoomApplication.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,43 +7,62 @@ using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager
 {
-    public enum MCUCommandType
-    {
-        JOG,
-        RELATIVE_MOVE,
-        CONFIGURE,
-        CLEAR_LAST_MOVE,
-        HOLD_MOVE,
-        IMMEDIATE_STOP,
-        RESET_ERRORS,
-        HOME
-    }
-
     /// <summary>
     /// These are all for the First Word Azimuth (registerData[0]) OR First word Elevation
     /// </summary>
-    public enum MCUMoveType : ushort
+    public enum MCUCommandType : ushort
     {
-        // first register bit (registerData[0])
-        RELATIVE_MOVE = 0x0002,
+        /// <summary>
+        /// First register bit (registerData[0])
+        /// </summary>
+        RelativeMove = 0x0002,
+        
+        /// <summary>
+        /// First register bit (registerData[0])
+        /// </summary>
+        CancelMove = 0x0003,
+        
+        /// <summary>
+        /// First register bit (registerData[0])
+        /// </summary>
+        ControlledStop = 0x0004,
+        
+        /// <summary>
+        /// first register bit (registerData[0])
+        /// </summary>
+        ImmediateStop = 0x0010,
+        
+        /// <summary>
+        /// first register bit (registerData[0])
+        /// </summary>
+        Home = 0x0040,
+        
+        /// <summary>
+        /// first register bit (registerData[0])
+        /// </summary>
+        ClearErrors = 0x0800,
+        
+        /// <summary>
+        /// first register bit (registerData[0])
+        /// </summary>
+        Configure = 0x852c,
 
-        // first register bit (registerData[0])
-        CANCEL_MOVE = 0x0003,
+        /// <summary>
+        /// A jog movement. If a movement is a jog, the first word must be the direction the telescope
+        /// is moving. <seealso cref="RadioTelescopeDirectionEnum"/>
+        /// </summary>
+        Jog,
 
-        // first register bit (registerData[0])
-        CONTROLLED_STOP = 0x0004,
+        /// <summary>
+        /// A movement used to stop the telescope. This is to be used only with the "Hold Move" complete message, 
+        /// found in <seealso cref="MCUMessages"/>
+        /// </summary>
+        HoldMove,
 
-        // first register bit (registerData[0])
-        IMMEDIATE_STOP = 0x0010,
-
-        // first register bit (registerData[0])
-        HOME = 0x0040,
-
-        // first register bit (registerData[0])
-        CLEAR_MCU_ERRORS = 0x0800,
-
-        // first register bit (registerData[0])
-        CONFIGURE_MCU = 0x852c
+        /// <summary>
+        /// This is empty data. If we want a register to be empty, this is used.
+        /// </summary>
+        EmptyData = 0x0000
     }
 
     /// <summary>
