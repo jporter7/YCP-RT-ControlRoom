@@ -36,7 +36,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// <summary>
         /// these variables set so that different parts of the MCUManager can calculate how parts of the operation will take
         /// </summary>
-        public int AZ_Programed_Speed, EL_Programed_Speed, AZ_ACC = 50, EL_ACC = 50;
+        public int AzimuthSpeed, ElevationSpeed, AZ_ACC = 50, EL_ACC = 50;
 
         /// <summary>
         /// Determines the direction of motion of the azimuth motor.
@@ -75,8 +75,8 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
             commandData = data;
             AzimuthDirection = azDir;
             ElevationDirection = elDir;
-            AZ_Programed_Speed = AZSpeed;
-            EL_Programed_Speed = ElSpeed;
+            AzimuthSpeed = AZSpeed;
+            ElevationSpeed = ElSpeed;
         }
 
         public CancellationTokenSource timeout;
