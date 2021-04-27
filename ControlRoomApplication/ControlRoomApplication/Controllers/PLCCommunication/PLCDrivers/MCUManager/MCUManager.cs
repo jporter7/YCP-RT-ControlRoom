@@ -919,6 +919,8 @@ namespace ControlRoomApplication.Controllers {
                 Thread.Sleep(100);
                 if (MovementCompleted() && !MotorsCurrentlyMoving())
                 {
+                    // update position after stop 
+                    mCUpositon.update(ReadMCURegisters(0, 16));
 
                     // If this is reached, the motors have stopped and we are now checking that the orientation is correct
                     Orientation encoderOrientation = GetMotorEncoderPosition();
