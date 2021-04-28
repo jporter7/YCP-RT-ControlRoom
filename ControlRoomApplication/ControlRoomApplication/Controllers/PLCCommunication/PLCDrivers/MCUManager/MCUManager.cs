@@ -688,8 +688,6 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public MovementResult HomeBothAxes(double RPM) {
 
-            MovementResult result = MovementResult.None;
-
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_AZIMUTH );
 
@@ -736,54 +734,9 @@ namespace ControlRoomApplication.Controllers {
                 AZ_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 timeout = new CancellationTokenSource( (int)(timeout*1200) ) //* 1000 for seconds to ms //* 1.2 for a 20% margin 
             });
-
-            // ERROR AND STATUS CHECKING BEGINS HERE
-
-            // 140 samples at 1 sample/50mS = 7 seconds of data
-            FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );
-            ushort[] outputRegData;
-
-            // This monitors the homing routine to make sure the motors are still moving and, when they stop,
-            // that their position is zeroed out.
-            while (!ThisMove.timeout.IsCancellationRequested && result == MovementResult.None)
-            {
-                // allow the MCU process the register data
-                Thread.Sleep(100);
-                outputRegData = ReadMCURegisters(0, 16);
-                mCUpositon.update(outputRegData);
-                positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
-                
-                // As soon as the motor steps are approximately 0 and no longer moving, we know homing has finished and the motors are zeroed
-                if (Math.Abs( mCUpositon.AzSteps ) <= 4 && Math.Abs( mCUpositon.ElSteps ) <= 4 && !MotorsCurrentlyMoving()) {
-                    result = MovementResult.Success;
-                }
-
-                // This checks the new recorded position and compares it against the last
-                if(positionHistory.Count > positionHistory.Size - 2) {
-                    var movement = positionHistory.GetAbsolutePosChange();
-
-                    // If the motor encoders have not moved at least 50 steps, then they have been still for 7 seconds
-                    if(movement.AzEncoder < 50 && movement.ElEncoder < 50)
-                    {
-
-                        // If the motors are not zeroed out, then homing did not complete (aka failed)
-                        if (Math.Abs(mCUpositon.AzSteps) > 4 || Math.Abs(mCUpositon.ElSteps) > 4)
-                        {
-                            result = MovementResult.IncorrectPosition;
-                        }
-
-                        // If there are any errors in the registers, something bad happened and homing failed
-                        else if (CheckMCUErrors().Count > 0)
-                        {
-                            result = MovementResult.McuErrorBitSet;
-                        }
-                    }
-                }
-            }
-
-            ThisMove.completed = true;
-            ThisMove.Dispose();
-            return result;
+            
+            // The new orientation is 0,0 because homing should result in the motor encoders being zeroed out
+            return MovementMonitor(ThisMove, new Orientation(0,0));
         }
 
         private void BuildAndSendRelativeMove(MCUCommand command, int positionTranslationAz, int positionTranslationEl) {
@@ -851,7 +804,6 @@ namespace ControlRoomApplication.Controllers {
             // Update the current position
             mCUpositon.update(ReadMCURegisters(0, 16));
 
-
             // Estimate the time to move, which will be the axis that takes the longest
             int AZTime = EstimateMovementTime(SpeedAZ, positionTranslationAZ);
             int ELTime = EstimateMovementTime(SpeedEL, positionTranslationEL);
@@ -907,17 +859,38 @@ namespace ControlRoomApplication.Controllers {
         /// No MCU errors
         /// The movement result cannot have been set yet. As soon as it is set, the routine ends.
         /// </summary>
+        /// <remarks>
+        /// I don't like having "homing or not homing" in a bool, because the homing routine should technically have
+        /// its own monitoring routine (as well as every other movement), but it's legacy at this point, and unless
+        /// we plan on adding more movements down the road, I would say it's not worth changing.
+        /// </remarks>
         /// <param name="command"></param>
         /// <param name="targetOrientation"></param>
+        /// <param name="homing">Tells us whether we are monitoring homing or a relative move</param>
         /// <returns></returns>
-        private MovementResult MovementMonitor(MCUCommand command, Orientation targetOrientation)
+        private MovementResult MovementMonitor(MCUCommand command, Orientation targetOrientation, bool homing = false)
         {
             MovementResult result = MovementResult.None;
+            bool completed = false;
             
             while (!command.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None)
             {
                 Thread.Sleep(100);
-                if (MovementCompleted() && !MotorsCurrentlyMoving() && !MovementInterruptFlag)
+
+                // Anything but homing...
+                if (!homing) completed = MovementCompleted();
+
+                // How we tell if homing completed...
+                else
+                {
+                    // Check the At_Home bit and see if it's true
+                    ushort[] data = ReadMCURegisters(0, 1);
+
+                    // Check if the azimuth motor is spinning clockwise or counter-clockwise
+                    completed = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.At_Home) & 0b1) == 1;
+                }
+
+                if (completed && !MotorsCurrentlyMoving() && !MovementInterruptFlag)
                 {
 
                     // If this is reached, the motors have stopped and we are now checking that the orientation is correct

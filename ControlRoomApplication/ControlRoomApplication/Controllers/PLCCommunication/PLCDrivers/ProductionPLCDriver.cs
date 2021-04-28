@@ -514,7 +514,6 @@ namespace ControlRoomApplication.Controllers
         /// move a set number of steps at the specified steps / second *intended for debuging
         /// </summary>
         /// <param name="programmedPeakSpeedAZInt"></param>
-        /// <param name="ACCELERATION"></param>
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
         /// <param name="targetOrientation">The target orientation.</param>
