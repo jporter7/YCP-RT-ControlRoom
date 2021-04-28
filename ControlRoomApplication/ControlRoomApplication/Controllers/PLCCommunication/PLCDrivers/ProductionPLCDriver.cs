@@ -20,6 +20,7 @@ using ControlRoomApplication.Database;
 using System.Timers;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
+using ControlRoomApplication.Controllers.Sensors;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -53,7 +54,6 @@ namespace ControlRoomApplication.Controllers
         /// <param name="PLC_port"></param>
         public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
-
             limitSwitchData = new Simulators.Hardware.LimitSwitchData();
             homeSensorData = new Simulators.Hardware.HomeSensorData();
             pLCEvents = new PLCEvents();
@@ -124,26 +124,38 @@ namespace ControlRoomApplication.Controllers
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT :
                         {
-                            CurrentMovementPriority = MovementPriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            if (!Overrides.overrideAzimuthProx0)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            }
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
                         {
-                            CurrentMovementPriority = MovementPriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            if (!Overrides.overrideAzimuthProx375)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            }
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT:
                         {
-                            CurrentMovementPriority = MovementPriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            if (!Overrides.overrideElevatProx0)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            }
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT:
                         {
-                            CurrentMovementPriority = MovementPriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            if (!Overrides.overrideElevatProx90)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            }
                             break;
                         }
                 }
@@ -151,24 +163,40 @@ namespace ControlRoomApplication.Controllers
             }
             if(!e.Value) {
                 switch(e.ChangedValue) {
-                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
-                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
-                            CurrentMovementPriority = MovementPriority.None;
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx0)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
-                            CurrentMovementPriority = MovementPriority.None;
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx375)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
-                            CurrentMovementPriority = MovementPriority.None;
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx0)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
-                            CurrentMovementPriority = MovementPriority.None;
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx90)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
                 }

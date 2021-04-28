@@ -28,6 +28,7 @@ namespace ControlRoomApplication.Controllers
         public HomeSensorData homeSensorData;
         public MiscPlcInput plcInput;
         protected PLCEvents pLCEvents;
+        public OverrideSwitchData Overrides { get; set; }
 
         /// <summary>
         /// This is the priority of the currently-running move. This will be "None" if no move is currently running, otherwise it will

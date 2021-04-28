@@ -49,6 +49,7 @@ namespace ControlRoomApplication.Controllers
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
 
             overrides = new OverrideSwitchData(radioTelescope);
+            radioTelescope.PLCDriver.Overrides = overrides;
 
             SensorMonitoringThread = new Thread(SensorMonitor);
             SensorMonitoringThread.Start();
@@ -64,6 +65,7 @@ namespace ControlRoomApplication.Controllers
             snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
             snowDumpTimer.AutoReset = true;
             snowDumpTimer.Enabled = true;
+
         }
 
         /// <summary>
