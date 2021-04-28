@@ -84,8 +84,6 @@ namespace ControlRoomApplication.Controllers
                     return;
                 }
             }
-
-            CurrentMovementPriority = MovementPriority.None;
         }
 
 
@@ -576,12 +574,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="elSpeed"></param>
         /// <param name="elDirection"></param>
         /// <returns></returns>
-        public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
             return MCU.SendBothAxesJog(Math.Abs(azSpeed), azDirection, Math.Abs(elSpeed), elDirection);
-        }
-
-        public override bool Stop_Jog() {
-            return MCU.Cancel_move();
         }
 
         /// <summary>
@@ -643,9 +637,12 @@ namespace ControlRoomApplication.Controllers
         /// If no motors are moving when this is called, then it will not wait, and just be
         /// able to pass through.
         /// </summary>
-        public override void InterruptMovementAndWaitUntilStopped()
+        /// <returns>True if it had to wait for a movement, false if it did not have to wait and there is no movement running.</returns>
+        public override bool InterruptMovementAndWaitUntilStopped()
         {
-            if (MCU.MotorsCurrentlyMoving() && CurrentMovementPriority != MovementPriority.None)
+            bool motorsMoving = MCU.MotorsCurrentlyMoving();
+
+            if (motorsMoving && CurrentMovementPriority != MovementPriority.None)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Overriding current movement...");
                 MCU.MovementInterruptFlag = true;
@@ -659,6 +656,12 @@ namespace ControlRoomApplication.Controllers
                 // Ensure there is plenty of time between MCU commands
                 Thread.Sleep(2000);
             }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

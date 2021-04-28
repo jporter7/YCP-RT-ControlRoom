@@ -477,7 +477,7 @@ namespace ControlRoomApplication.Main
 
             // We must run this async so it doesn't hold up the UI
             await Task.Run(() => {
-                logger.Info(Utilities.GetTimeStamp() + ": Run Script Button Clicked");
+                logger.Info($"{Utilities.GetTimeStamp()}: Starting script {indexName}.");
 
                 MovementResult movementResult = MovementResult.None;
 
@@ -555,7 +555,7 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 9:
-                        rtController.StartRadioTelescopeAzimuthJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovementPriority.Manual);
+                        rtController.StartRadioTelescopeJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.AZIMUTH);
                         MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
                         ExecuteCorrectStop();
                         movementResult = MovementResult.Success;
@@ -603,10 +603,15 @@ namespace ControlRoomApplication.Main
                 double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
-                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovementPriority.Manual);
+                    MovementResult result = rtController.StartRadioTelescopeJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, RadioTelescopeAxisEnum.AZIMUTH);
+
+                    if (result == MovementResult.Success)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Successfully started azimuth counterclockwise jog.");
+                    else if (result == MovementResult.StoppingCurrentMove)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
+                    else if (result == MovementResult.AlreadyMoving)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Azimuth counterclockwise jog BLOCKED. Another manual script is already running.");
                 }
                 else
                 {
@@ -620,8 +625,6 @@ namespace ControlRoomApplication.Main
         }
 
         private void ccwAzJogButton_Up( object sender , MouseEventArgs e ) {
-            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
             //Stop Move
             ExecuteCorrectStop();
         }
@@ -634,11 +637,15 @@ namespace ControlRoomApplication.Main
                
                 if (Validator.ValidateSpeed(speed))
                 {
-
-                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovementPriority.Manual);
+                    MovementResult result = rtController.StartRadioTelescopeJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.AZIMUTH);
+
+                    if (result == MovementResult.Success)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Successfully started azimuth clockwise jog.");
+                    else if (result == MovementResult.StoppingCurrentMove)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
+                    else if (result == MovementResult.AlreadyMoving)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Azimuth clockwise jog BLOCKED. Another manual script is already running.");
                 }
                 else
                 {
@@ -652,34 +659,38 @@ namespace ControlRoomApplication.Main
         }
 
         private void cwAzJogButton_UP( object sender , MouseEventArgs e ) {
-            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
             //  Stop Move
             ExecuteCorrectStop();
         }
 
         private void ExecuteCorrectStop()
         {
+            MovementResult result = MovementResult.None;
+
             if (ControlledButtonRadio.Checked)
             {
-                logger.Info(Utilities.GetTimeStamp() + ": Executed Controlled Stop");
-                rtController.ExecuteRadioTelescopeStopJog(MovementPriority.GeneralStop);
+                result = rtController.ExecuteRadioTelescopeStopJog(MCUCommandType.ControlledStop);
                 formData.immediateStopBool = false;
                 formData.controlledStopBool = true;
+
+                if (result == MovementResult.Success)
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully stopped jog with a controlled stop.");
             }
             else if (immediateRadioButton.Checked)
             {
-                logger.Info(Utilities.GetTimeStamp() + ": Executed Immediate Stop");
-                rtController.ExecuteRadioTelescopeImmediateStop(MovementPriority.GeneralStop);
+                result = rtController.ExecuteRadioTelescopeStopJog(MCUCommandType.ImmediateStop);
                 formData.immediateStopBool = true;
                 formData.controlledStopBool = false;
 
+                if (result == MovementResult.Success)
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully stopped jog with an immediate stop.");
             }
             else
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Invalid Stop Selected");
                 throw new Exception();
             }
+
         }
 
         //This Button executes a system call that opens up the user interface documentation as a PDF
@@ -696,11 +707,15 @@ namespace ControlRoomApplication.Main
                 double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
-
-                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, MovementPriority.Manual);
+                    MovementResult result = rtController.StartRadioTelescopeJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, RadioTelescopeAxisEnum.ELEVATION);
+                    
+                    if(result == MovementResult.Success)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Successfully started elevation positive jog.");
+                    else if(result == MovementResult.StoppingCurrentMove)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
+                    else if(result == MovementResult.AlreadyMoving)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Elevation positive jog BLOCKED. Another manual script is already running.");
                 }
                 else
                 {
@@ -714,8 +729,6 @@ namespace ControlRoomApplication.Main
         }
 
         private void plusElaButton_Up( object sender , MouseEventArgs e ) {
-            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
             //  Stop Move
             ExecuteCorrectStop();
         }
@@ -726,11 +739,15 @@ namespace ControlRoomApplication.Main
                 double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
-
-                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, MovementPriority.Manual);
+                    MovementResult result = rtController.StartRadioTelescopeJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.ELEVATION);
+
+                    if (result == MovementResult.Success)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Successfully started elevation negative jog.");
+                    else if (result == MovementResult.StoppingCurrentMove)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
+                    else if (result == MovementResult.AlreadyMoving)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Elevation negative jog BLOCKED. Another manual script is already running.");
                 }
                 else
                 {
@@ -744,8 +761,6 @@ namespace ControlRoomApplication.Main
         }
 
         private void subElaButton_Up( object sender , MouseEventArgs e ) {
-             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
             //  Stop Move
             ExecuteCorrectStop();
         }

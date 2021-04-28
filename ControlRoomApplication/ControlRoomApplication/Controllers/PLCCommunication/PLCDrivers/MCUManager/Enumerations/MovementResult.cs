@@ -59,6 +59,11 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// <summary>
         /// If the sensors are communicating unsafe data, blocks the incoming move.
         /// </summary>
-        SensorsNotSafe
+        SensorsNotSafe,
+
+        /// <summary>
+        /// This is only used for Jog commands if they are running overtop of a movement that is lower priority.
+        /// </summary>
+        StoppingCurrentMove
     }
 }

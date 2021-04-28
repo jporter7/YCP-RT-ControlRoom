@@ -917,7 +917,7 @@ namespace ControlRoomApplication.Controllers {
             while (!command.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None)
             {
                 Thread.Sleep(100);
-                if (MovementCompleted() && !MotorsCurrentlyMoving())
+                if (MovementCompleted() && !MotorsCurrentlyMoving() && !MovementInterruptFlag)
                 {
 
                     // If this is reached, the motors have stopped and we are now checking that the orientation is correct
@@ -1007,7 +1007,15 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-        public bool SendBothAxesJog(double AZspeed, RadioTelescopeDirectionEnum azDirection, double ELspeed, RadioTelescopeDirectionEnum elDirection) {
+        /// <summary>
+        /// Jogs one axis, or both axes at the same time.
+        /// </summary>
+        /// <param name="AZspeed"></param>
+        /// <param name="azDirection"></param>
+        /// <param name="ELspeed"></param>
+        /// <param name="elDirection"></param>
+        /// <returns></returns>
+        public MovementResult SendBothAxesJog(double AZspeed, RadioTelescopeDirectionEnum azDirection, double ELspeed, RadioTelescopeDirectionEnum elDirection) {
 
             int AZstepSpeed = ConversionHelper.RPMToSPS( AZspeed , MotorConstants.GEARING_RATIO_AZIMUTH );
             int ELstepSpeed = ConversionHelper.RPMToSPS( ELspeed , MotorConstants.GEARING_RATIO_ELEVATION );
@@ -1068,7 +1076,7 @@ namespace ControlRoomApplication.Controllers {
                 EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                 AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
             } );
-            return true;
+            return MovementResult.Success;
         }
 
         private MCUCommand SendGenericCommand(MCUCommand incoming) {

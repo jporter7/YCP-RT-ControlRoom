@@ -31,6 +31,12 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         Manual,
 
         /// <summary>
+        /// This denotes a jog movement, which is technically the same priority as Manual, but used so the GeneralStop
+        /// can differentiate the two movements.
+        /// </summary>
+        Jog,
+
+        /// <summary>
         /// This is a movement command for the general stopping of any lower-priority movement commands.
         /// </summary>
         GeneralStop,
