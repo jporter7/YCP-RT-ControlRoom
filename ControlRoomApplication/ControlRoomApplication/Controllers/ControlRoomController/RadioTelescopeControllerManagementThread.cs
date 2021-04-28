@@ -514,7 +514,7 @@ namespace ControlRoomApplication.Controllers
                         // we should not be operating the telescope
                         logger.Fatal(Utilities.GetTimeStamp() + ": Telescope in DANGER due to fatal sensors");
                         safeTel = false;
-                        RTController.ExecuteRadioTelescopeImmediateStop(MovementPriority.Critical);
+                        RTController.ExecuteRadioTelescopeImmediateStop(MovementPriority.GeneralStop);
                         OverallSensorStatus = false;
                         return false;
                     }                    

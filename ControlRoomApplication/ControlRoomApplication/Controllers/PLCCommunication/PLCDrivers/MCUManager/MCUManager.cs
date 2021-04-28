@@ -919,12 +919,10 @@ namespace ControlRoomApplication.Controllers {
                 Thread.Sleep(100);
                 if (MovementCompleted() && !MotorsCurrentlyMoving())
                 {
-                    // update position after stop 
-                    mCUpositon.update(ReadMCURegisters(0, 16));
 
                     // If this is reached, the motors have stopped and we are now checking that the orientation is correct
                     Orientation encoderOrientation = GetMotorEncoderPosition();
-                    if ((encoderOrientation.Azimuth - targetOrientation.Azimuth) <= 0.1 && (encoderOrientation.Elevation - targetOrientation.Elevation) <= 0.1)
+                    if (Math.Abs(encoderOrientation.Azimuth - targetOrientation.Azimuth) <= 0.1 && Math.Abs(encoderOrientation.Elevation - targetOrientation.Elevation) <= 0.1)
                     {
                         result = MovementResult.Success;
                     }
