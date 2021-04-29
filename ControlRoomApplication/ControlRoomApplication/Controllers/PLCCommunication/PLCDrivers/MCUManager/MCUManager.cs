@@ -879,8 +879,6 @@ namespace ControlRoomApplication.Controllers {
                 {
                     // Check the At_Home bit and see if it's true
                     ushort[] data = ReadMCURegisters(0, 1);
-
-                    // Check if the azimuth motor is spinning clockwise or counter-clockwise
                     completed = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.At_Home) & 0b1) == 1;
                 }
 

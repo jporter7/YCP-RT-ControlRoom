@@ -517,22 +517,23 @@ namespace ControlRoomApplication.Controllers
         public MovementResult ExecuteRadioTelescopeStopJog(MCUCommandType stopType)
         {
             MovementResult result = MovementResult.None;
+
+            if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Jog) return result;
+
             if (Monitor.TryEnter(MovementLock))
             {
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority == MovementPriority.Jog)
+                if (stopType == MCUCommandType.ControlledStop)
                 {
-                    if (stopType == MCUCommandType.ControlledStop)
-                    {
-                        if (RadioTelescope.PLCDriver.Cancel_move()) result = MovementResult.Success;
-                    }
-                    else if (stopType == MCUCommandType.ImmediateStop)
-                    {
-                        if (RadioTelescope.PLCDriver.ImmediateStop()) result = MovementResult.Success;
-                    }
-                    else throw new ArgumentException("Jogs can only be stopped with a controlled stop or immediate stop.");
-
-                    RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    if (RadioTelescope.PLCDriver.Cancel_move()) result = MovementResult.Success;
                 }
+                else if (stopType == MCUCommandType.ImmediateStop)
+                {
+                    if (RadioTelescope.PLCDriver.ImmediateStop()) result = MovementResult.Success;
+                }
+                else throw new ArgumentException("Jogs can only be stopped with a controlled stop or immediate stop.");
+
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
                 Monitor.Exit(MovementLock);
             }
 
