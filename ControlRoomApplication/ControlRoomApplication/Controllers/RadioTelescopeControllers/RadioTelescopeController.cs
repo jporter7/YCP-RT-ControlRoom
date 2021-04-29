@@ -517,21 +517,22 @@ namespace ControlRoomApplication.Controllers
         public MovementResult ExecuteRadioTelescopeStopJog(MCUCommandType stopType)
         {
             MovementResult result = MovementResult.None;
-
-            if (Monitor.TryEnter(MovementLock) && RadioTelescope.PLCDriver.CurrentMovementPriority == MovementPriority.Jog)
+            if (Monitor.TryEnter(MovementLock))
             {
-                if (stopType == MCUCommandType.ControlledStop)
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == MovementPriority.Jog)
                 {
-                    if (RadioTelescope.PLCDriver.Cancel_move()) result = MovementResult.Success;
-                }
-                else if (stopType == MCUCommandType.ImmediateStop)
-                {
-                    if (RadioTelescope.PLCDriver.ImmediateStop()) result = MovementResult.Success;
-                }
-                else throw new ArgumentException("Jogs can only be stopped with a controlled stop or immediate stop.");
-                   
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    if (stopType == MCUCommandType.ControlledStop)
+                    {
+                        if (RadioTelescope.PLCDriver.Cancel_move()) result = MovementResult.Success;
+                    }
+                    else if (stopType == MCUCommandType.ImmediateStop)
+                    {
+                        if (RadioTelescope.PLCDriver.ImmediateStop()) result = MovementResult.Success;
+                    }
+                    else throw new ArgumentException("Jogs can only be stopped with a controlled stop or immediate stop.");
 
+                    RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                }
                 Monitor.Exit(MovementLock);
             }
 
@@ -550,10 +551,13 @@ namespace ControlRoomApplication.Controllers
         {
             bool success = false;
 
-            if (Monitor.TryEnter(MovementLock) && priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            if (Monitor.TryEnter(MovementLock))
             {
-                success = RadioTelescope.PLCDriver.ControlledStop();
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+                {
+                    success = RadioTelescope.PLCDriver.ControlledStop();
+                    RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                }
                 Monitor.Exit(MovementLock);
             }
 
@@ -572,10 +576,13 @@ namespace ControlRoomApplication.Controllers
         {
             bool success = false;
 
-            if (Monitor.TryEnter(MovementLock) && priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            if (Monitor.TryEnter(MovementLock))
             {
-                success = RadioTelescope.PLCDriver.ImmediateStop();
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+                {
+                    success = RadioTelescope.PLCDriver.ImmediateStop();
+                    RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                }
                 Monitor.Exit(MovementLock);
             }
 
