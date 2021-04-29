@@ -671,27 +671,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
-        public void TestHomeTelescope_TriesToHomeWithAnotherCommandRunning_AlreadyMoving()
-        {
-            MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
-            MovementPriority priority = MovementPriority.Manual;
-
-            // This is running two commands at the same time. One of them should succeed, while
-            // the other is rejected
-
-            Task.Run(() =>
-            {
-                result1 = TestRadioTelescopeController.HomeTelescope(priority);
-            });
-
-            result2 = TestRadioTelescopeController.HomeTelescope(priority);
-
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
-        }
-
-        [TestMethod]
         public void TestSnowDump_AllStatusesOK_Success()
         {
             MovementResult result = TestRadioTelescopeController.SnowDump(MovementPriority.Manual);

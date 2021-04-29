@@ -9,7 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using ControlRoomApplication.Util;
-
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 
 namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
     class Simulation_control_pannel {
@@ -223,7 +223,7 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 return true;
             }
 
-            if(data[1] == 0x0403) {//move cmd
+            if (data[1] == 0x0403) {//move cmd
                 mooving = true;
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
@@ -233,29 +233,29 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 acc = data[4];
                 distAZ = (data[6] << 16) + data[7];
                 distEL = (data[12] << 16) + data[13];
-                Console.WriteLine( "moving to at ({0} , {1}) at ({2} , {3}) steps per second" , distAZ , distEL , AZ_speed , EL_speed );
+                Console.WriteLine("moving to at ({0} , {1}) at ({2} , {3}) steps per second", distAZ, distEL, AZ_speed, EL_speed);
                 return true;
-            } else if(data[0] == 0x0080 || data[0] == 0x0100 || data[10] == 0x0080 || data[10] == 0x0100) {
+            } else if (data[0] == 0x0080 || data[0] == 0x0100 || data[10] == 0x0080 || data[10] == 0x0100) {
                 jogging = true;
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
-                if(data[0] == 0x0080) {
+                if (data[0] == 0x0080) {
                     AZ_speed = ((data[4] << 16) + data[5]) / 1000;
-                } else if(data[0] == 0x0100) {
+                } else if (data[0] == 0x0100) {
                     AZ_speed = -((data[4] << 16) + data[5]) / 1000;
                 } else {
                     AZ_speed = 0;
                 }
-                if(data[10] == 0x0080) {
+                if (data[10] == 0x0080) {
                     EL_speed = ((data[14] << 16) + data[15]) / 1000;
-                } else if(data[10] == 0x0100) {
+                } else if (data[10] == 0x0100) {
                     EL_speed = -((data[14] << 16) + data[15]) / 1000;
                 } else {
                     EL_speed = 0;
                 }
-                Console.WriteLine( "jogging at {0}   {1}", AZ_speed , EL_speed );
+                Console.WriteLine("jogging at {0}   {1}", AZ_speed, EL_speed);
                 return true;
-            } else if(data[0] == 0x0002 || data[10] == 0x0002) {//move cmd
+            } else if (data[0] == 0x0002 || data[10] == 0x0002) {//move cmd
                 mooving = true;
                 MCU_Modbusserver.DataStore.HoldingRegisters[1] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[1] & 0xff7f);
                 MCU_Modbusserver.DataStore.HoldingRegisters[11] = (ushort)(MCU_Modbusserver.DataStore.HoldingRegisters[11] & 0xff7f);
@@ -264,10 +264,28 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
                 acc = data[6];
                 distAZ = (data[2] << 16) + data[3];
                 distEL = (data[12] << 16) + data[13];
-                Console.WriteLine( "also moving to at ({0} , {1}) at ({2} , {3}) steps per second" , distAZ , distEL , AZ_speed , EL_speed );
+                Console.WriteLine("also moving to at ({0} , {1}) at ({2} , {3}) steps per second", distAZ, distEL, AZ_speed, EL_speed);
                 return true;
-            } else {
-                Console.WriteLine( "Invalid telescope movement command");
+            }
+
+            // Homing
+            else if ((data[(int)MCURegPos.firstWordAzimuth] == (ushort)RadioTelescopeDirectionEnum.ClockwiseHoming || 
+                        data[(int)MCURegPos.firstWordAzimuth] == (ushort)RadioTelescopeDirectionEnum.CounterclockwiseHoming) && 
+                        (data[(int)MCURegPos.firstWordElevation] == (ushort)RadioTelescopeDirectionEnum.ClockwiseHoming ||
+                        data[(int)MCURegPos.firstWordElevation] == (ushort)RadioTelescopeDirectionEnum.CounterclockwiseHoming))
+            {
+                // If we're homing, set the position to 0 and say we are At_Home
+                currentAZ = 0;
+                currentEL = 0;
+
+                // Update position registers
+                move(0, 0);
+
+                // Update At_Home bit
+                MCU_Modbusserver.DataStore.HoldingRegisters[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW + 1] |= 1 << (int)MCUConstants.MCUStatusBitsMSW.At_Home;
+            }
+            else {
+                Console.WriteLine("Invalid telescope movement command");
             }
             return false;
         }
