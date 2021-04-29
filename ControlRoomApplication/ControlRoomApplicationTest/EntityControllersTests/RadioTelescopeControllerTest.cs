@@ -655,22 +655,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
-        public void TestHomeTelescope_IsHoming_PriorityPopulated()
-        {
-            MovementPriority priority = MovementPriority.Manual;
-
-            // Run async so that we can check for priority change during the movement
-            Task.Run(() =>
-            {
-                MovementResult result = TestRadioTelescopeController.HomeTelescope(priority);
-            });
-
-            Thread.Sleep(50);
-
-            Assert.AreEqual(priority, TestRadioTelescopeController.RadioTelescope.PLCDriver.CurrentMovementPriority);
-        }
-
-        [TestMethod]
         public void TestSnowDump_AllStatusesOK_Success()
         {
             MovementResult result = TestRadioTelescopeController.SnowDump(MovementPriority.Manual);
@@ -695,22 +679,31 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestSnowDump_TriesSnowDumpWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
             MovementPriority priority = MovementPriority.Manual;
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.SnowDump(priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.SnowDump(priority);
             });
 
-            result2 = TestRadioTelescopeController.SnowDump(priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
 
         [TestMethod]
@@ -738,22 +731,31 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestFullElevationMove_TriesFullElevationMoveWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
             MovementPriority priority = MovementPriority.Manual;
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.FullElevationMove(priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.FullElevationMove(priority);
             });
 
-            result2 = TestRadioTelescopeController.FullElevationMove(priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
 
         [TestMethod]
@@ -785,8 +787,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestMoveRadioTelescopeToCoordinate_TriesMoveRadioTelescopeToCoordinateWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
             MovementPriority priority = MovementPriority.Manual;
 
             Coordinate c = new Coordinate();
@@ -794,15 +796,24 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
             });
 
-            result2 = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
 
         [TestMethod]
@@ -834,24 +845,33 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestMoveRadioTelescopeToOrientation_TriesMoveRadioTelescopeToOrientationWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
             MovementPriority priority = MovementPriority.Manual;
-
-            Orientation o = new Orientation();
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Orientation o = new Orientation();
+
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
             });
 
-            result2 = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
 
         [TestMethod]
@@ -879,22 +899,61 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestThermalCalibrateRadioTelescope_TriesThermalCalibrateRadioTelescopeWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
             MovementPriority priority = MovementPriority.Manual;
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
             });
 
-            result2 = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_TriesHomeTelescopeWithAnotherCommandRunning_AlreadyMoving()
+        {
+            MovementResult result0 = MovementResult.None;
+            MovementResult result1 = MovementResult.None;
+            MovementPriority priority = MovementPriority.Manual;
+
+            // This is running two commands at the same time. One of them should succeed, while
+            // the other is rejected
+
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.HomeTelescope(priority);
+            });
+
+            Thread t1 = new Thread(() =>
+            {
+                result1 = TestRadioTelescopeController.HomeTelescope(priority);
+            });
+
+            t0.Start();
+            t1.Start();
+
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
     }
 }

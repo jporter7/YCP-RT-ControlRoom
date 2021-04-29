@@ -322,6 +322,23 @@ namespace ControlRoomApplication.Simulators.Hardware.PLC_MCU {
 
                 return true;
             }
+
+            // Homing
+            else if ((data[(int)MCURegPos.firstWordAzimuth] == (ushort)RadioTelescopeDirectionEnum.ClockwiseHoming ||
+                        data[(int)MCURegPos.firstWordAzimuth] == (ushort)RadioTelescopeDirectionEnum.CounterclockwiseHoming) &&
+                        (data[(int)MCURegPos.firstWordElevation] == (ushort)RadioTelescopeDirectionEnum.ClockwiseHoming ||
+                        data[(int)MCURegPos.firstWordElevation] == (ushort)RadioTelescopeDirectionEnum.CounterclockwiseHoming))
+            {
+                // If we're homing, set the position to 0 and say we are At_Home
+                currentAZ = 0;
+                currentEL = 0;
+
+                // Update position registers
+                move(0, 0);
+
+                // Update At_Home bit
+                MCU_Modbusserver.DataStore.HoldingRegisters[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW + 1] |= 1 << (int)MCUConstants.MCUStatusBitsMSW.At_Home;
+            }
             return false;
         }
 
