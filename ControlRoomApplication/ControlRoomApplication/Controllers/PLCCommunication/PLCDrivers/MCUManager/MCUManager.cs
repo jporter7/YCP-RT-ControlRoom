@@ -28,7 +28,6 @@ namespace ControlRoomApplication.Controllers {
         private int ELStartSpeed = 0;
         public ModbusIpMaster MCUModbusMaster;
         private TcpClient MCUTCPClient;
-        public MCUPositonRegs mCUpositon;
         private MCUConfigurationAxys Current_AZConfiguration;
         private MCUConfigurationAxys Current_ELConfiguration;
         /// <summary>
@@ -44,8 +43,6 @@ namespace ControlRoomApplication.Controllers {
         public MCUManager(string ip, int port) {
             McuPort = port;
             McuIp = ip;
-
-            mCUpositon = new MCUPositonRegs();
 
             ConnectToModbusServer();
 
@@ -81,10 +78,6 @@ namespace ControlRoomApplication.Controllers {
                     "that there are no loose connections between the PLC and the MCU.");
                 return false;
             }
-
-            // Sometimes when we first connect, there may be errors present on the registers still. With a new connect, we want
-            // to clear these
-            ResetMCUErrors();
 
             return true;
         }
@@ -243,22 +236,24 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public Orientation GetMotorEncoderPosition() {
 
-            // First update the registers to be absolutely sure we have the most recent position
-            mCUpositon.update(ReadMCURegisters(0, 16));
+            ushort[] data = ReadMCURegisters(0, 16);
+
+            int azMotorEncoderTicks = (data[(ushort)MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
+            int elMotorEncoderTicks = -((data[(ushort)MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
             if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Encoder_Normalized(mCUpositon.AzEncoder, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.ElEncoder, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Encoder_Normalized(azMotorEncoderTicks, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees_Encoder(elMotorEncoderTicks, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
             else
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.AzEncoder, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.ElEncoder, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Encoder(azMotorEncoderTicks, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees_Encoder(elMotorEncoderTicks, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
         }
@@ -275,21 +270,24 @@ namespace ControlRoomApplication.Controllers {
         /// </remarks>
         /// <returns></returns>
         public Orientation GetMotorStepsPosition() {
-            mCUpositon.update(ReadMCURegisters(0, 16));
+            ushort[] data = ReadMCURegisters(0, 16);
+
+            int azSteps = (data[(ushort)MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUOutputRegs.AZ_Current_Position_LSW];
+            int elSteps = -((data[(ushort)MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUOutputRegs.EL_Current_Position_LSW]);
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
             if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Normalized(mCUpositon.AzSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees(mCUpositon.ElSteps, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Normalized(azSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(elSteps, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
             else
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees(mCUpositon.AzSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees(mCUpositon.ElSteps, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees(azSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(elSteps, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
         }
@@ -797,12 +795,8 @@ namespace ControlRoomApplication.Controllers {
         public MovementResult MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL, 
                 Orientation targetOrientation) 
         {
-
             // Clear any leftover register data
             Cancel_move();
-            
-            // Update the current position
-            mCUpositon.update(ReadMCURegisters(0, 16));
 
             // Estimate the time to move, which will be the axis that takes the longest
             int AZTime = EstimateMovementTime(SpeedAZ, positionTranslationAZ);
