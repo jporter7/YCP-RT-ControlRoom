@@ -566,9 +566,6 @@ namespace ControlRoomApplication.Controllers {
 
                 case RadioTelescopeAxisEnum.BOTH:
                     data = ReadMCURegisters(0, 11);
-                    ushort dataISent = data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW];
-                    var resultOfShift = dataISent >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete;
-                    var resultOfAnd = resultOfShift & 0b1;
                     bool azFinished = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
                     bool elFinished = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
 
