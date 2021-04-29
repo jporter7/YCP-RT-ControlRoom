@@ -736,7 +736,7 @@ namespace ControlRoomApplication.Controllers {
             });
             
             // The new orientation is 0,0 because homing should result in the motor encoders being zeroed out
-            return MovementMonitor(ThisMove, new Orientation(0,0));
+            return MovementMonitor(ThisMove, new Orientation(0,0), true);
         }
 
         private void BuildAndSendRelativeMove(MCUCommand command, int positionTranslationAz, int positionTranslationEl) {
