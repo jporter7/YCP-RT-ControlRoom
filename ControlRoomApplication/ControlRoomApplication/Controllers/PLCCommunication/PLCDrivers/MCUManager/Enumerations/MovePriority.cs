@@ -11,7 +11,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
     /// will stop the currently-running movement and start the new one. The lower the number, the higher the priority
     /// (with the exception of "None").
     /// </summary>
-    public enum MovePriority
+    public enum MovementPriority
     {
         /// <summary>
         /// This priority is present if one has not yet been initialized, or if no movement is currently running.
@@ -29,6 +29,12 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// RT Control Form.
         /// </summary>
         Manual,
+
+        /// <summary>
+        /// This denotes a jog movement, which is technically the same priority as Manual, but used so the GeneralStop
+        /// can differentiate the two movements.
+        /// </summary>
+        Jog,
 
         /// <summary>
         /// This is a movement command for the general stopping of any lower-priority movement commands.

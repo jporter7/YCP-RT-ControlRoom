@@ -20,6 +20,7 @@ using ControlRoomApplication.Database;
 using System.Timers;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
+using ControlRoomApplication.Controllers.Sensors;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -53,7 +54,6 @@ namespace ControlRoomApplication.Controllers
         /// <param name="PLC_port"></param>
         public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
-
             limitSwitchData = new Simulators.Hardware.LimitSwitchData();
             homeSensorData = new Simulators.Hardware.HomeSensorData();
             pLCEvents = new PLCEvents();
@@ -84,8 +84,6 @@ namespace ControlRoomApplication.Controllers
                     return;
                 }
             }
-
-            CurrentMovementPriority = MovePriority.None;
         }
 
 
@@ -124,26 +122,38 @@ namespace ControlRoomApplication.Controllers
                 switch(e.ChangedValue) {
                     case PLC_modbus_server_register_mapping.AZ_0_LIMIT :
                         {
-                            CurrentMovementPriority = MovePriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            if (!Overrides.overrideAzimuthProx0)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            }
                             break;
                         }
                     case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
                         {
-                            CurrentMovementPriority = MovePriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            if (!Overrides.overrideAzimuthProx375)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            }
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_10_LIMIT:
                         {
-                            CurrentMovementPriority = MovePriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            if (!Overrides.overrideElevatProx0)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            }
                             break;
                         }
                     case PLC_modbus_server_register_mapping.EL_90_LIMIT:
                         {
-                            CurrentMovementPriority = MovePriority.Critical;
-                            MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            if (!Overrides.overrideElevatProx90)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            }
                             break;
                         }
                 }
@@ -151,24 +161,40 @@ namespace ControlRoomApplication.Controllers
             }
             if(!e.Value) {
                 switch(e.ChangedValue) {
-                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
-                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
-                            CurrentMovementPriority = MovePriority.None;
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx0)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
-                            CurrentMovementPriority = MovePriority.None;
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx375)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
-                            CurrentMovementPriority = MovePriority.None;
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx0)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
-                            CurrentMovementPriority = MovePriority.None;
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx90)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
                 }
@@ -268,63 +294,17 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CCW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CCW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_0_LIMIT , limitSwitchData.Azimuth_CCW_Limit );
-                            if (limitSwitchData.Azimuth_CCW_Limit)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CCW Limit Switch Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CCW Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
-                            }
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_HOME: {
                         bool previous = homeSensorData.Azimuth_Home_One;
                         homeSensorData.Azimuth_Home_One = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_HOME] );
-                        if(previous != homeSensorData.Azimuth_Home_One) {
-                            if (homeSensorData.Azimuth_Home_One)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_One Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_One Sensor Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY: {
                         bool previous = homeSensorData.Azimuth_Home_Two;
                         homeSensorData.Azimuth_Home_Two = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );
-                        if(previous != homeSensorData.Azimuth_Home_Two) {
-                            if (homeSensorData.Azimuth_Home_Two)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_Two Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_Two Sensor Not Hit");;
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
@@ -332,20 +312,6 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_375_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_375_LIMIT , limitSwitchData.Azimuth_CW_Limit );
-                            if (limitSwitchData.Azimuth_CW_Limit)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CW Limit Switch Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CW Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
-                            }
                         }
                         break;
                     }
@@ -361,35 +327,12 @@ namespace ControlRoomApplication.Controllers
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                             }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Lower Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
-                            }
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_0_HOME: {
                         bool previous = homeSensorData.Elevation_Home;
                         homeSensorData.Elevation_Home = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_0_HOME] );
-                        if(previous != homeSensorData.Elevation_Home) {
-                            if (homeSensorData.Elevation_Home)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Home Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Home Sensor Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT: {
@@ -403,13 +346,6 @@ namespace ControlRoomApplication.Controllers
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Upper Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
                             }
                         }
                         break;
@@ -578,12 +514,12 @@ namespace ControlRoomApplication.Controllers
         /// move a set number of steps at the specified steps / second *intended for debuging
         /// </summary>
         /// <param name="programmedPeakSpeedAZInt"></param>
-        /// <param name="ACCELERATION"></param>
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
+        /// <param name="targetOrientation">The target orientation.</param>
         /// <returns></returns>
-        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL) {
-            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL );
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
+            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
         public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
@@ -624,7 +560,8 @@ namespace ControlRoomApplication.Controllers
             return MCU.MoveAndWaitForCompletion(
                 AZ_Speed, EL_Speed,
                 positionTranslationAZ, 
-                positionTranslationEL
+                positionTranslationEL, 
+                target_orientation
             );
         }
 
@@ -636,12 +573,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="elSpeed"></param>
         /// <param name="elDirection"></param>
         /// <returns></returns>
-        public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
             return MCU.SendBothAxesJog(Math.Abs(azSpeed), azDirection, Math.Abs(elSpeed), elDirection);
-        }
-
-        public override bool Stop_Jog() {
-            return MCU.Cancel_move();
         }
 
         /// <summary>
@@ -703,14 +636,17 @@ namespace ControlRoomApplication.Controllers
         /// If no motors are moving when this is called, then it will not wait, and just be
         /// able to pass through.
         /// </summary>
-        public override void InterruptMovementAndWaitUntilStopped()
+        /// <returns>True if it had to wait for a movement, false if it did not have to wait and there is no movement running.</returns>
+        public override bool InterruptMovementAndWaitUntilStopped()
         {
-            if (MCU.MotorsCurrentlyMoving() && CurrentMovementPriority != MovePriority.None)
+            bool motorsMoving = MCU.MotorsCurrentlyMoving();
+
+            if (motorsMoving && CurrentMovementPriority != MovementPriority.None)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Overriding current movement...");
                 MCU.MovementInterruptFlag = true;
 
-                // Wait until motors stop moving and the interrupt flag is set back to false,
+                // Wait until motors stop moving or the interrupt flag is set back to false,
                 // meaning the MCU has acknowledged and acted on the interrupt.
                 while(MotorsCurrentlyMoving() && MCU.MovementInterruptFlag == true) ;
 
@@ -719,6 +655,12 @@ namespace ControlRoomApplication.Controllers
                 // Ensure there is plenty of time between MCU commands
                 Thread.Sleep(2000);
             }
+            else
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>

@@ -264,7 +264,7 @@ namespace ControlRoomApplication.Controllers {
             return MovementResult.Success;
         }
 
-        public override MovementResult RelativeMove( int programmedPeakSpeedAZInt, int positionTranslationAZ , int positionTranslationEL ) {
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
             /*
                     if(Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT) {
                         logger.Error( $"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range." );
@@ -301,13 +301,9 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
             throw new NotImplementedException();
 
-        }
-
-        public override bool Stop_Jog() {
-            throw new NotImplementedException();
         }
 
         public override bool Get_interlock_status() {
@@ -360,7 +356,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override void InterruptMovementAndWaitUntilStopped()
+        public override bool InterruptMovementAndWaitUntilStopped()
         {
             throw new NotImplementedException();
         }

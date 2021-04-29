@@ -28,12 +28,13 @@ namespace ControlRoomApplication.Controllers
         public HomeSensorData homeSensorData;
         public MiscPlcInput plcInput;
         protected PLCEvents pLCEvents;
+        public OverrideSwitchData Overrides { get; set; }
 
         /// <summary>
         /// This is the priority of the currently-running move. This will be "None" if no move is currently running, otherwise it will
         /// reflect the priority.
         /// </summary>
-        public MovePriority CurrentMovementPriority { get; set; }
+        public MovementPriority CurrentMovementPriority { get; set; }
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup
@@ -97,13 +98,11 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool ImmediateStop();
 
-        public abstract MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL);
+        public abstract MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation);
 
         public abstract MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation);
 
-        public abstract bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection);
-
-        public abstract bool Stop_Jog();
+        public abstract MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection);
 
         public abstract bool Get_interlock_status();
 
@@ -140,7 +139,7 @@ namespace ControlRoomApplication.Controllers
         /// If no motors are moving when this is called, then it will not wait, and just be
         /// able to pass through.
         /// </summary>
-        public abstract void InterruptMovementAndWaitUntilStopped();
+        public abstract bool InterruptMovementAndWaitUntilStopped();
 
         /// <summary>
         /// Checks to see if the motors are currently moving.

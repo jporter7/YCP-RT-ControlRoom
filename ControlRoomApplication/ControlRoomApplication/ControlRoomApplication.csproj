@@ -208,12 +208,6 @@
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\ThreadNameConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\AbstractMicrocontroller.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\AbstractEncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\SimulatedEncoder.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\EncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
     <Compile Include="Controllers\Communications\DataToCSV.cs" />
     <Compile Include="Controllers\Communications\EmailNotifications.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
@@ -224,13 +218,10 @@
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MCUNetworkStatus.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MovementResult.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\FixedSizedQueue.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUCommand.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MCUCommandType.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUManager.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUMessages.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUPositionRegs.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUPositionStore.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MovePriority.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />

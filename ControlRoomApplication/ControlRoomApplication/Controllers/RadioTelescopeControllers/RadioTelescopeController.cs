@@ -21,6 +21,8 @@ namespace ControlRoomApplication.Controllers
         public CoordinateCalculationController CoordinateController { get; set; }
         public OverrideSwitchData overrides;
 
+        private object MovementLock = new object();
+
         // Thread that monitors database current temperature
         private Thread SensorMonitoringThread;
         private bool MonitoringSensors;
@@ -49,6 +51,7 @@ namespace ControlRoomApplication.Controllers
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
 
             overrides = new OverrideSwitchData(radioTelescope);
+            radioTelescope.PLCDriver.Overrides = overrides;
 
             SensorMonitoringThread = new Thread(SensorMonitor);
             SensorMonitoringThread.Start();
@@ -64,6 +67,7 @@ namespace ControlRoomApplication.Controllers
             snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
             snowDumpTimer.AutoReset = true;
             snowDumpTimer.Enabled = true;
+
         }
 
         /// <summary>
@@ -121,14 +125,16 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool CancelCurrentMoveCommand(MovePriority priority)
+        public bool CancelCurrentMoveCommand(MovementPriority priority)
         {
             bool result = false;
 
-            if(priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+
+            if(Monitor.TryEnter(MovementLock) && priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
             {
                 result = RadioTelescope.PLCDriver.Cancel_move();
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                Monitor.Exit(MovementLock);
             }
 
             return result;
@@ -158,27 +164,30 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public MovementResult ThermalCalibrateRadioTelescope(MovePriority priority)
+        public MovementResult ThermalCalibrateRadioTelescope(MovementPriority priority)
         {
             MovementResult moveResult = MovementResult.None;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock))
             {
-                // We only want to do this if it is safe to do so. Return false if not
-                if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
-
-                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-
-                // If a lower-priority movement was running, safely interrupt it.
-                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
-
                 Orientation current = GetCurrentOrientation();
 
                 moveResult = RadioTelescope.PLCDriver.MoveToOrientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
 
                 if (moveResult != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
                     return moveResult;
                 }
 
@@ -202,7 +211,8 @@ namespace ControlRoomApplication.Controllers
                 moveResult = RadioTelescope.PLCDriver.MoveToOrientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
                 if (moveResult != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
                     return moveResult;
                 }
 
@@ -228,7 +238,9 @@ namespace ControlRoomApplication.Controllers
                     moveResult = RadioTelescope.PLCDriver.MoveToOrientation(MiscellaneousConstants.Stow, current);
                 }
 
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovePriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
             }
             else
             {
@@ -260,21 +272,28 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public MovementResult MoveRadioTelescopeToOrientation(Orientation orientation, MovePriority priority)//TODO: once its intagrated use the microcontrole to get the current opsition 
+        public MovementResult MoveRadioTelescopeToOrientation(Orientation orientation, MovementPriority priority)
         {
             MovementResult result = MovementResult.None;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
-            {
-                if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
 
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock))
+            {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
-                // If a lower-priority movement was running, safely interrupt it.
-                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
-
                 result = RadioTelescope.PLCDriver.MoveToOrientation(orientation, RadioTelescope.PLCDriver.GetMotorEncoderPosition());
-                if(RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
             }
             else
             {
@@ -292,21 +311,28 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public MovementResult MoveRadioTelescopeToCoordinate(Coordinate coordinate, MovePriority priority)
+        public MovementResult MoveRadioTelescopeToCoordinate(Coordinate coordinate, MovementPriority priority)
         {
             MovementResult result = MovementResult.None;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
-            {
-                if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
 
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock))
+            {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
-                // If a lower-priority movement was running, safely interrupt it.
-                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
-
                 result = RadioTelescope.PLCDriver.MoveToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), RadioTelescope.PLCDriver.GetMotorEncoderPosition()); // MOVE
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
             }
             else
             {
@@ -323,7 +349,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="degreesToMoveBy">The number of degrees to move by.</param>
         /// <param name="priority">The movement's priority.</param>
         /// <returns></returns>
-        public MovementResult MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovePriority priority)
+        public MovementResult MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovementPriority priority)
         {
             // TODO: Implement (issue #379)
             return MovementResult.None;
@@ -335,25 +361,25 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="priority">The priority of this movement.</param>
         /// <returns>True if homing was successful; false if homing failed.</returns>
-        public MovementResult HomeTelescope(MovePriority priority)
+        public MovementResult HomeTelescope(MovementPriority priority)
         {
             MovementResult result = MovementResult.None;
 
-            if(priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
-            {
-                if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
 
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock)) {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-
-                // If a lower-priority movement was running, safely interrupt it.
-                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
 
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = new Orientation(0, 0);
                 result = RadioTelescope.PLCDriver.HomeTelescope();
-
-                // The MCU must slowly back toward the homing sensor's "low" position.
-                // Because of how the MCU's homing works, we just have to wait for this to happen.
-                Thread.Sleep(5000);
 
                 // Zero out absolute encoders
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = (Orientation)RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Clone();
@@ -365,12 +391,14 @@ namespace ControlRoomApplication.Controllers
                 // with an outlier value. This check (with half-degree of precision) verifies that did not happen.
                 Orientation absOrientation = RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation;
                 if ((Math.Abs(absOrientation.Elevation) > 0.5 && !overrides.overrideElevationAbsEncoder) || 
-                     (Math.Abs(absOrientation.Azimuth) > 0.5 && !overrides.overrideAzimuthAbsEncoder))
+                        (Math.Abs(absOrientation.Azimuth) > 0.5 && !overrides.overrideAzimuthAbsEncoder))
                 {
                     result = MovementResult.IncorrectPosition;
                 }
 
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                
+                Monitor.Exit(MovementLock);
             }
             else
             {
@@ -385,18 +413,22 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="priority">Movement priority.</param>
         /// <returns></returns>
-        public MovementResult FullElevationMove(MovePriority priority)
+        public MovementResult FullElevationMove(MovementPriority priority)
         {
             MovementResult result = MovementResult.None;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
-            {
-                if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
 
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock)) {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-
-                // If a lower-priority movement was running, safely interrupt it.
-                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
 
                 Orientation origOrientation = GetCurrentOrientation();
 
@@ -407,7 +439,8 @@ namespace ControlRoomApplication.Controllers
                 result = RadioTelescope.PLCDriver.MoveToOrientation(move1, origOrientation);
                 if (result != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
                     return result;
                 }
 
@@ -415,14 +448,17 @@ namespace ControlRoomApplication.Controllers
                 result = RadioTelescope.PLCDriver.MoveToOrientation(move2, move1);
                 if (result != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
                     return result;
                 }
 
                 // Move back to the original orientation
                 result = RadioTelescope.PLCDriver.MoveToOrientation(origOrientation, move2);
 
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
             }
             else
             {
@@ -433,70 +469,75 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// Method used to request to start jogging the Radio Telescope's azimuth
-        /// at a speed (in RPM), in either the clockwise or counter-clockwise direction.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
-        /// </summary>
-        public bool StartRadioTelescopeAzimuthJog(double speed, RadioTelescopeDirectionEnum direction, MovePriority priority)
-        {
-            bool success = false;
-
-            if(priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
-            {
-                if (!AllSensorsSafe) return false;
-
-                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-
-                // Elevation direction is a "don't care" because its speed is 0, so it won't move anyway
-                success = RadioTelescope.PLCDriver.StartBothAxesJog(speed, direction, 0, direction);
-            }
-
-            return success;
-        }
-
-        /// <summary>
         /// Method used to request to start jogging the Radio Telescope's elevation
         /// at a speed (in RPM), in either the clockwise or counter-clockwise direction.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeElevationJog(double speed, RadioTelescopeDirectionEnum direction, MovePriority priority)
+        public MovementResult StartRadioTelescopeJog(double speed, RadioTelescopeDirectionEnum direction, RadioTelescopeAxisEnum axis)
         {
-            bool success = false;
+            MovementResult result = MovementResult.None;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            // Return if incoming priority is equal to or less than current movement
+            if ((MovementPriority.Jog - 1) <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            if (RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped())
             {
-                if (!AllSensorsSafe) return false;
-
-                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-
-                // Azimuth direction is a "don't care" because its speed is 0, so it won't move anyway
-                success = RadioTelescope.PLCDriver.StartBothAxesJog(0, direction, speed, direction);
+                return MovementResult.StoppingCurrentMove;
             }
 
-            return success;
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock)) {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.Jog;
+
+                double azSpeed = 0;
+                double elSpeed = 0;
+
+                if (axis == RadioTelescopeAxisEnum.AZIMUTH) azSpeed = speed;
+                else elSpeed = speed;
+                
+                result = RadioTelescope.PLCDriver.StartBothAxesJog(azSpeed, direction, elSpeed, direction);
+
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
         }
 
 
         /// <summary>
         /// send a clear move to the MCU to stop a jog
         /// </summary>
-        public bool ExecuteRadioTelescopeStopJog(MovePriority priority)
+        public MovementResult ExecuteRadioTelescopeStopJog(MCUCommandType stopType)
         {
-            bool success = false;
+            MovementResult result = MovementResult.None;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Jog) return result;
+
+            if (Monitor.TryEnter(MovementLock))
             {
-                success = RadioTelescope.PLCDriver.Stop_Jog();
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (stopType == MCUCommandType.ControlledStop)
+                {
+                    if (RadioTelescope.PLCDriver.Cancel_move()) result = MovementResult.Success;
+                }
+                else if (stopType == MCUCommandType.ImmediateStop)
+                {
+                    if (RadioTelescope.PLCDriver.ImmediateStop()) result = MovementResult.Success;
+                }
+                else throw new ArgumentException("Jogs can only be stopped with a controlled stop or immediate stop.");
+
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
             }
 
-            return success;
+            return result;
         }
 
         /// <summary>
@@ -507,14 +548,18 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRadioTelescopeControlledStop(MovePriority priority)
+        public bool ExecuteRadioTelescopeControlledStop(MovementPriority priority)
         {
             bool success = false;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            if (Monitor.TryEnter(MovementLock))
             {
-                success = RadioTelescope.PLCDriver.ControlledStop();
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+                {
+                    success = RadioTelescope.PLCDriver.ControlledStop();
+                    RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                }
+                Monitor.Exit(MovementLock);
             }
 
             return success;
@@ -528,14 +573,18 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRadioTelescopeImmediateStop(MovePriority priority)
+        public bool ExecuteRadioTelescopeImmediateStop(MovementPriority priority)
         {
             bool success = false;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            if (Monitor.TryEnter(MovementLock))
             {
-                success = RadioTelescope.PLCDriver.ImmediateStop();
-                RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+                {
+                    success = RadioTelescope.PLCDriver.ImmediateStop();
+                    RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                }
+                Monitor.Exit(MovementLock);
             }
 
             return success;
@@ -712,18 +761,22 @@ namespace ControlRoomApplication.Controllers
         /// <summary>
         /// This is a script that is called when we want to dump snow out of the dish
         /// </summary>
-        public MovementResult SnowDump(MovePriority priority)
+        public MovementResult SnowDump(MovementPriority priority)
         {
             MovementResult result = MovementResult.None;
 
-            if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
-            {
-                if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
 
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock)) {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
-
-                // If a lower-priority movement was running, safely interrupt it.
-                RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
 
                 // insert snow dump movements here
                 // default is azimuth of 0 and elevation of 0
@@ -737,21 +790,25 @@ namespace ControlRoomApplication.Controllers
                 result = RadioTelescope.PLCDriver.MoveToOrientation(dumpAzimuth, current);
                 if (result != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
                     return result;
                 }
 
                 result = RadioTelescope.PLCDriver.MoveToOrientation(dumpElevation, dumpAzimuth);
                 if (result != MovementResult.Success)
                 {
-                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
                     return result;
                 }
 
                 // move back to initial orientation
                 result = RadioTelescope.PLCDriver.MoveToOrientation(current, dumpElevation);
 
-                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovePriority.None;
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
             }
             else
             {
@@ -774,7 +831,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     Console.WriteLine("Time threshold reached. Running snow dump...");
 
-                    MovementResult result = SnowDump(MovePriority.Appointment);
+                    MovementResult result = SnowDump(MovementPriority.Appointment);
 
                     if(result != MovementResult.Success)
                     {

@@ -17,17 +17,8 @@ using System.Threading.Tasks;
 using static ControlRoomApplication.Constants.MCUConstants;
 
 namespace ControlRoomApplication.Controllers {
-    //TODO: this would be a fairly large amount of work but, when i wrote the class i assumed that the MCU would only ever get comands that affect both axsis at the same time
-    // the only place right now that only affects a single axsis is the single axsis jog, but there could be more in the future
-    // so the best thing to do would be to split up the AZ and EL components of MCUCommand and then have 2 inststances for running command one for AZ one for EL
     public class MCUManager {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
-        /// <summary>
-        /// if more errors than this value are thrown in a row and this class cant resolve them subsiquent attempts to send moves to the MCU will throw exception
-        /// </summary>
-        private static int MaxConscErrors = 5;
-        private int consecutiveErrors = 0;
-        private int consecutiveSuccessfulMoves = 0;
         public bool MovementInterruptFlag = false;
 
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -37,14 +28,13 @@ namespace ControlRoomApplication.Controllers {
         private int ELStartSpeed = 0;
         public ModbusIpMaster MCUModbusMaster;
         private TcpClient MCUTCPClient;
-        public MCUPositonRegs mCUpositon;
         private MCUConfigurationAxys Current_AZConfiguration;
         private MCUConfigurationAxys Current_ELConfiguration;
         /// <summary>
         /// this value should not be changed from outside the MCU class
         /// </summary>
-        private MCUCommand RunningCommand= new MCUCommand(new ushort[20],MCUCommandType.CLEAR_LAST_MOVE) { completed = true };
-        private MCUCommand PreviousCommand = new MCUCommand( new ushort[20] , MCUCommandType.CLEAR_LAST_MOVE) { completed = true };
+        private MCUCommand RunningCommand= new MCUCommand(new ushort[20], MCUCommandType.EmptyData) { completed = true };
+        private MCUCommand PreviousCommand = new MCUCommand(new ushort[20], MCUCommandType.EmptyData) { completed = true };
 
         private int McuPort;
         private string McuIp;
@@ -53,8 +43,6 @@ namespace ControlRoomApplication.Controllers {
         public MCUManager(string ip, int port) {
             McuPort = port;
             McuIp = ip;
-
-            mCUpositon = new MCUPositonRegs();
 
             ConnectToModbusServer();
 
@@ -90,10 +78,6 @@ namespace ControlRoomApplication.Controllers {
                     "that there are no loose connections between the PLC and the MCU.");
                 return false;
             }
-
-            // Sometimes when we first connect, there may be errors present on the registers still. With a new connect, we want
-            // to clear these
-            ResetMCUErrors();
 
             return true;
         }
@@ -252,22 +236,24 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public Orientation GetMotorEncoderPosition() {
 
-            // First update the registers to be absolutely sure we have the most recent position
-            mCUpositon.update(ReadMCURegisters(0, 16));
+            ushort[] data = ReadMCURegisters(0, 16);
+
+            int azMotorEncoderTicks = (data[(ushort)MCUOutputRegs.AZ_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUOutputRegs.AZ_MTR_Encoder_Pos_LSW];
+            int elMotorEncoderTicks = -((data[(ushort)MCUOutputRegs.EL_MTR_Encoder_Pos_MSW] << 16) + data[(ushort)MCUOutputRegs.EL_MTR_Encoder_Pos_LSW]);
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
             if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Encoder_Normalized(mCUpositon.AzEncoder, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.ElEncoder, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Encoder_Normalized(azMotorEncoderTicks, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees_Encoder(elMotorEncoderTicks, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
             else
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.AzEncoder, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees_Encoder(mCUpositon.ElEncoder, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Encoder(azMotorEncoderTicks, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees_Encoder(elMotorEncoderTicks, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
         }
@@ -284,21 +270,24 @@ namespace ControlRoomApplication.Controllers {
         /// </remarks>
         /// <returns></returns>
         public Orientation GetMotorStepsPosition() {
-            mCUpositon.update(ReadMCURegisters(0, 16));
+            ushort[] data = ReadMCURegisters(0, 16);
+
+            int azSteps = (data[(ushort)MCUOutputRegs.AZ_Current_Position_MSW] << 16) + data[(ushort)MCUOutputRegs.AZ_Current_Position_LSW];
+            int elSteps = -((data[(ushort)MCUOutputRegs.EL_Current_Position_MSW] << 16) + data[(ushort)MCUOutputRegs.EL_Current_Position_LSW]);
 
             // If the telescope type is SLIP_RING, we want to normalize the azimuth orientation
             if (telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees_Normalized(mCUpositon.AzSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees(mCUpositon.ElSteps, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees_Normalized(azSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(elSteps, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
             else
             {
                 return new Orientation(
-                    ConversionHelper.StepsToDegrees(mCUpositon.AzSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees(mCUpositon.ElSteps, MotorConstants.GEARING_RATIO_ELEVATION)
+                    ConversionHelper.StepsToDegrees(azSteps, MotorConstants.GEARING_RATIO_AZIMUTH),
+                    ConversionHelper.StepsToDegrees(elSteps, MotorConstants.GEARING_RATIO_ELEVATION)
                 );
             }
         }
@@ -308,7 +297,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns></returns>
         public bool Cancel_move() {
-            var cmd = new MCUCommand(MCUMessages.ClearBothAxesMove, MCUCommandType.CLEAR_LAST_MOVE) { completed = false };
+            var cmd = new MCUCommand(MCUMessages.ClearBothAxesMove, MCUCommandType.EmptyData) { completed = false };
             SendGenericCommand( cmd );
             WaitUntilStopped();
             cmd.completed = true;
@@ -321,10 +310,10 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns></returns>
         public bool ControlledStop() {
-            if(RunningCommand.CommandType == MCUCommandType.JOG) {
+            if(RunningCommand.CommandType == MCUCommandType.Jog) {
                 Cancel_move();
             } else {
-                var cmd = new MCUCommand(MCUMessages.HoldMove , MCUCommandType.HOLD_MOVE) { completed = false };
+                var cmd = new MCUCommand(MCUMessages.HoldMove , MCUCommandType.HoldMove) { completed = false };
                 SendGenericCommand( cmd );
                 WaitUntilStopped();
                 cmd.completed = true;
@@ -338,7 +327,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns></returns>
         public bool ImmediateStop() {
-            SendGenericCommand(new MCUCommand( MCUMessages.ImmediateStop , MCUCommandType.IMMEDIATE_STOP) { completed = true } );
+            SendGenericCommand(new MCUCommand( MCUMessages.ImmediateStop , MCUCommandType.ImmediateStop) { completed = true } );
             return true;
         }
 
@@ -361,7 +350,7 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         public void ResetMCUErrors()
         {
-            SendGenericCommand(new MCUCommand(MCUMessages.ResetErrors, MCUCommandType.RESET_ERRORS) { completed = true });
+            SendGenericCommand(new MCUCommand(MCUMessages.ResetErrors, MCUCommandType.ClearErrors) { completed = true });
         }
 
         /// <summary>
@@ -428,8 +417,8 @@ namespace ControlRoomApplication.Controllers {
         }
 
         private int estimateStopTime( MCUCommand CMD ) {
-            int mS_To_DecelerateAZ = (int)1.25 * (CMD.AZ_Programed_Speed - AZStartSpeed) / CMD.AZ_ACC;
-            int mS_To_DecelerateEL = (int)1.25 * (CMD.EL_Programed_Speed - AZStartSpeed) / CMD.EL_ACC;
+            int mS_To_DecelerateAZ = (int)1.25 * (CMD.AzimuthSpeed - AZStartSpeed) / CMD.AZ_ACC;
+            int mS_To_DecelerateEL = (int)1.25 * (CMD.ElevationSpeed - AZStartSpeed) / CMD.EL_ACC;
             int mS_To_Decelerate;
             if(mS_To_DecelerateAZ > mS_To_DecelerateEL) {
                 mS_To_Decelerate = mS_To_DecelerateAZ;
@@ -441,18 +430,18 @@ namespace ControlRoomApplication.Controllers {
 
         private Orientation estimateDistanceToStop( MCUCommand CMD ) {
             int StepsAZ = 0, StepsEL = 0;
-            if(CMD.AZ_Programed_Speed > 0) {
-                int mS_To_DecelerateAZ = (int)((1.25 * (CMD.AZ_Programed_Speed - AZStartSpeed) / (double)CMD.AZ_ACC) / 1000.0);
-                StepsAZ = (int)(mS_To_DecelerateAZ * ((CMD.AZ_Programed_Speed + ConversionHelper.RPMToSPS( Current_AZConfiguration.StartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH )) / 2.0));
-                StepsAZ += (int)(CMD.AZ_Programed_Speed * 0.25);//add 100 ms worth of steps
+            if(CMD.AzimuthSpeed > 0) {
+                int mS_To_DecelerateAZ = (int)((1.25 * (CMD.AzimuthSpeed - AZStartSpeed) / (double)CMD.AZ_ACC) / 1000.0);
+                StepsAZ = (int)(mS_To_DecelerateAZ * ((CMD.AzimuthSpeed + ConversionHelper.RPMToSPS( Current_AZConfiguration.StartSpeed , MotorConstants.GEARING_RATIO_AZIMUTH )) / 2.0));
+                StepsAZ += (int)(CMD.AzimuthSpeed * 0.25);//add 100 ms worth of steps
                 if(CMD.AzimuthDirection == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive) {
                     StepsAZ = -StepsAZ;
                 }
             }
-            if(CMD.EL_Programed_Speed > 0) {
-                int mS_To_DecelerateEL = (int)((1.25 * (CMD.EL_Programed_Speed - AZStartSpeed) / (double)CMD.EL_ACC) / 1000.0);
-                StepsEL = (int)(mS_To_DecelerateEL * ((CMD.EL_Programed_Speed + ConversionHelper.RPMToSPS( Current_ELConfiguration.StartSpeed , MotorConstants.GEARING_RATIO_ELEVATION )) / 2.0));
-                StepsEL += (int)(CMD.EL_Programed_Speed * 0.25);//add 100 ms worth of steps
+            if(CMD.ElevationSpeed > 0) {
+                int mS_To_DecelerateEL = (int)((1.25 * (CMD.ElevationSpeed - AZStartSpeed) / (double)CMD.EL_ACC) / 1000.0);
+                StepsEL = (int)(mS_To_DecelerateEL * ((CMD.ElevationSpeed + ConversionHelper.RPMToSPS( Current_ELConfiguration.StartSpeed , MotorConstants.GEARING_RATIO_ELEVATION )) / 2.0));
+                StepsEL += (int)(CMD.ElevationSpeed * 0.25);//add 100 ms worth of steps
                 if(CMD.ElevationDirection == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive) {
                     StepsEL = -StepsEL;
                 }
@@ -470,9 +459,9 @@ namespace ControlRoomApplication.Controllers {
 
             // Calculate timeout based on the axis
             if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
-                msToDecelerate = (int)1.25 * (PreviousCommand.AZ_Programed_Speed - AZStartSpeed) / PreviousCommand.AZ_ACC;
+                msToDecelerate = (int)1.25 * (PreviousCommand.AzimuthSpeed - AZStartSpeed) / PreviousCommand.AZ_ACC;
             } else {
-                msToDecelerate = (int)1.25 * (PreviousCommand.EL_Programed_Speed - ELStartSpeed) / PreviousCommand.EL_ACC;
+                msToDecelerate = (int)1.25 * (PreviousCommand.ElevationSpeed - ELStartSpeed) / PreviousCommand.EL_ACC;
             }
 
             CancellationToken timeout = new CancellationTokenSource(msToDecelerate).Token;
@@ -577,6 +566,9 @@ namespace ControlRoomApplication.Controllers {
 
                 case RadioTelescopeAxisEnum.BOTH:
                     data = ReadMCURegisters(0, 11);
+                    ushort dataISent = data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW];
+                    var resultOfShift = dataISent >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete;
+                    var resultOfAnd = resultOfShift & 0b1;
                     bool azFinished = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
                     bool elFinished = ((data[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.Move_Complete) & 0b1) == 1;
 
@@ -599,7 +591,7 @@ namespace ControlRoomApplication.Controllers {
             ushort[] data = {   MakeMcuConfMSW(AZconfig), MakeMcuConfLSW(AZconfig) , (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0,
                                 MakeMcuConfMSW(ELconfig), MakeMcuConfLSW(ELconfig), (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), 0x0,0x0,0x0,0x0,0x0,0x0 };
             ImmediateStop();
-            SendGenericCommand( new MCUCommand( data , MCUCommandType.CONFIGURE) { completed = true} );
+            SendGenericCommand( new MCUCommand( data , MCUCommandType.Configure) { completed = true} );
 
             // Allow the MCU to configure
             Thread.Sleep(250);
@@ -694,13 +686,6 @@ namespace ControlRoomApplication.Controllers {
         /// <returns></returns>
         public MovementResult HomeBothAxes(double RPM) {
 
-            MovementResult result = MovementResult.None;
-
-            // Stop move just in case one is still running. This will only be reached if
-            // the last move is a lower priority than this one.
-            Cancel_move();
-            ControlledStop();
-
             int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_ELEVATION );
             int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( RPM ) , MotorConstants.GEARING_RATIO_AZIMUTH );
 
@@ -708,27 +693,27 @@ namespace ControlRoomApplication.Controllers {
             ushort[] data = {
                 // azimuth data
                 (ushort)RadioTelescopeDirectionEnum.CounterclockwiseHoming,
-                0x0000,
-                0x0000,
-                0x0000,
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData,
                 (ushort)((AZ_Speed & 0xFFFF0000)>>16),
                 (ushort)(AZ_Speed & 0xFFFF),
                 ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                0x0000,
-                0x0000,
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData,
 
                 // elevation data
                 (ushort)RadioTelescopeDirectionEnum.CounterclockwiseHoming,
-                0x0000,
-                0x0000,
-                0x0000,
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData,
                 (ushort)((EL_Speed & 0xFFFF0000)>>16),
                 (ushort)(EL_Speed & 0xFFFF),
                 ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                0x0000,
-                0x0000
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData
             };
 
             // Calculate which axis has the longest timeout, then set the timeout as that axis
@@ -740,106 +725,62 @@ namespace ControlRoomApplication.Controllers {
             }
 
             // Builds the MCU command and then sends it
-            var ThisMove = SendGenericCommand(new MCUCommand(data, MCUCommandType.HOME) {
-                AZ_Programed_Speed = AZ_Speed,
-                EL_Programed_Speed = EL_Speed,
+            var ThisMove = SendGenericCommand(new MCUCommand(data, MCUCommandType.Home) {
+                AzimuthSpeed = AZ_Speed,
+                ElevationSpeed = EL_Speed,
                 EL_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 AZ_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 timeout = new CancellationTokenSource( (int)(timeout*1200) ) //* 1000 for seconds to ms //* 1.2 for a 20% margin 
             });
-
-            // ERROR AND STATUS CHECKING BEGINS HERE
-
-            // 140 samples at 1 sample/50mS = 7 seconds of data
-            FixedSizedQueue<MCUPositonStore> positionHistory = new FixedSizedQueue<MCUPositonStore>( 140 );
-            ushort[] outputRegData;
-
-            // This monitors the homing routine to make sure the motors are still moving and, when they stop,
-            // that their position is zeroed out.
-            while (!ThisMove.timeout.IsCancellationRequested && result == MovementResult.None)
-            {
-                outputRegData = ReadMCURegisters(0, 16);
-                mCUpositon.update(outputRegData);
-                positionHistory.Enqueue(new MCUPositonStore(mCUpositon));
-                
-                // As soon as the motor steps are approximately 0 and no longer moving, we know homing has finished and the motors are zeroed
-                if (Math.Abs( mCUpositon.AzSteps ) == 0 && Math.Abs( mCUpositon.ElSteps ) == 0 && !MotorsCurrentlyMoving()) {
-                    consecutiveSuccessfulMoves++;
-                    consecutiveErrors = 0;
-                    result = MovementResult.Success;
-                }
-
-                // This checks the new recorded position and compares it against the last
-                if(positionHistory.Count > positionHistory.Size - 2) {
-                    var movement = positionHistory.GetAbsolutePosChange();
-
-                    // If the motor encoders have not moved at least 50 steps, then they have been still for 7 seconds
-                    if(movement.AzEncoder < 50 && movement.ElEncoder < 50)
-                    {
-
-                        // If the motors are not zeroed out, then homing did not complete (aka failed)
-                        if (Math.Abs(mCUpositon.AzSteps) > 4 || Math.Abs(mCUpositon.ElSteps) > 4)
-                        {
-                            consecutiveSuccessfulMoves = 0;
-                            consecutiveErrors++;
-                            result = MovementResult.IncorrectPosition;
-                        }
-
-                        // If there are any errors in the registers, something bad happened and homing failed
-                        else if (CheckMCUErrors().Count > 0)
-                        {
-                            consecutiveSuccessfulMoves = 0;
-                            consecutiveErrors++;
-                            result = MovementResult.McuErrorBitSet;
-                        }
-                    }
-                }
-            }
-
-            ThisMove.completed = true;
-            ThisMove.Dispose();
-            return result;
+            
+            // The new orientation is 0,0 because homing should result in the motor encoders being zeroed out
+            return MovementMonitor(ThisMove, new Orientation(0,0), true);
         }
 
-        private ushort[] PrepareRelativeMoveData(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
-            if (SpeedAZ < AZStartSpeed) {
-                throw new ArgumentOutOfRangeException("SpeedAZ", SpeedAZ,
-                    String.Format("SpeedAZ should be greater than {0} which is the stating speed set when configuring the MCU", AZStartSpeed));
+        private void BuildAndSendRelativeMove(MCUCommand command, int positionTranslationAz, int positionTranslationEl) {
+            if (command.AzimuthSpeed < AZStartSpeed) {
+                throw new ArgumentOutOfRangeException("SpeedAZ", command.AzimuthSpeed,
+                    String.Format("Azimuth speed should be greater than {0}, which is the starting speed set when configuring the MCU", AZStartSpeed));
             }
-            if (SpeedEL < ELStartSpeed) {
-                throw new ArgumentOutOfRangeException("SpeedEL", SpeedEL,
-                    String.Format("SpeedAZ should be greater than {0} which is the stating speed set when configuring the MCU", ELStartSpeed));
+            if (command.ElevationSpeed < ELStartSpeed) {
+                throw new ArgumentOutOfRangeException("SpeedEL", command.ElevationSpeed,
+                    String.Format("Elevation speed should be greater than {0}, which is the starting speed set when configuring the MCU", ELStartSpeed));
             }
 
             // This needs flipped so that the elevation axis moves the correct direction
-            positionTranslationEL = -positionTranslationEL;
+            positionTranslationEl = -positionTranslationEl;
 
-            ushort[] data = {
+            command.commandData = new ushort[] {
                 // Azimuth data
-                0x0002,
+                (ushort)MCUCommandType.RelativeMove,
                 0x0003,
-                (ushort)((positionTranslationAZ & 0xFFFF0000)>>16),
-                (ushort)(positionTranslationAZ & 0xFFFF),
-                (ushort)((SpeedAZ & 0xFFFF0000)>>16),
-                (ushort)(SpeedAZ & 0xFFFF),
+                (ushort)((positionTranslationAz & 0xFFFF0000)>>16),
+                (ushort)(positionTranslationAz & 0xFFFF),
+                (ushort)((command.AzimuthSpeed & 0xFFFF0000)>>16),
+                (ushort)(command.AzimuthSpeed & 0xFFFF),
                 ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                0,
-                0,
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData,
 
                 // Elevation data
-                0x0002,
+                (ushort)MCUCommandType.RelativeMove,
                 0x0003,
-                (ushort)((positionTranslationEL & 0xFFFF0000)>>16),
-                (ushort)(positionTranslationEL & 0xFFFF),
-                (ushort)((SpeedEL & 0xFFFF0000)>>16),
-                (ushort)(SpeedEL & 0xFFFF),
+                (ushort)((positionTranslationEl & 0xFFFF0000)>>16),
+                (ushort)(positionTranslationEl & 0xFFFF),
+                (ushort)((command.ElevationSpeed & 0xFFFF0000)>>16),
+                (ushort)(command.ElevationSpeed & 0xFFFF),
                 ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                0,
-                0
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData
             };
-            return data;
+
+            RunningCommand = command;
+            WriteMCURegisters(command.commandData);
+
+            // Give the MCU time to process the data
+            Thread.Sleep(100);
         }
 
         /// <summary>
@@ -849,23 +790,13 @@ namespace ControlRoomApplication.Controllers {
         /// <param name="SpeedEL"></param>
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
+        /// <param name="targetOrientation"></param>
         /// <returns></returns>
-        public MovementResult MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
-            MovementResult result = MovementResult.None;
-
-            // In case another move was running, cancel it
+        public MovementResult MoveAndWaitForCompletion(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL, 
+                Orientation targetOrientation) 
+        {
+            // Clear any leftover register data
             Cancel_move();
-            
-            // Update the current position
-            mCUpositon.update(ReadMCURegisters(0, 16));
-
-            // Build command data
-            ushort[] CMDdata = PrepareRelativeMoveData(
-                SpeedAZ, 
-                SpeedEL, 
-                positionTranslationAZ, 
-                positionTranslationEL
-            );
 
             // Estimate the time to move, which will be the axis that takes the longest
             int AZTime = EstimateMovementTime(SpeedAZ, positionTranslationAZ);
@@ -890,42 +821,86 @@ namespace ControlRoomApplication.Controllers {
             else elDirection = RadioTelescopeDirectionEnum.ClockwiseOrNegative;
 
             // Build and send the MCU Command (the data is the only part sent to the MCU; the rest is for inner tracking)
-            var ThisMove = SendGenericCommand( 
-                new MCUCommand( 
-                    CMDdata, 
-                    MCUCommandType.RELATIVE_MOVE, 
-                    azDirection, 
-                    elDirection, 
-                    SpeedAZ, 
+            MCUCommand ThisMove =
+                new MCUCommand(
+                    new ushort[0],
+                    MCUCommandType.RelativeMove,
+                    azDirection,
+                    elDirection,
+                    SpeedAZ,
                     SpeedEL
-                ) {
+                )
+                {
                     EL_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                     AZ_ACC = ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                     timeout = new CancellationTokenSource(TimeToMove)
-                }
+                };
+
+            // Build command data
+            BuildAndSendRelativeMove(
+                ThisMove,
+                positionTranslationAZ,
+                positionTranslationEL
             );
 
-            // ERROR CHECKING DURING MOVEMENT. This is the MCU Monitoring Routine described in issue #333
+            return MovementMonitor(ThisMove, targetOrientation);
+        }
 
-            // This will loop through and monitor MCU movement as long as the following conditions are true:
-            // Cannot be timed out
-            // Interrupt flag must be false
-            // No MCU errors
-            // The movement result cannot have been set yet. As soon as it is set, the routine ends.
-            while(!ThisMove.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None) {
-                Task.Delay(50).Wait();
-                if (MovementCompleted() && !MotorsCurrentlyMoving()) {
-                    // TODO: Check that the position is correct
+        /// <summary>
+        /// This will loop through and monitor MCU movement as long as the following conditions are true:
+        /// Cannot be timed out
+        /// Interrupt flag must be false
+        /// No MCU errors
+        /// The movement result cannot have been set yet. As soon as it is set, the routine ends.
+        /// </summary>
+        /// <remarks>
+        /// I don't like having "homing or not homing" in a bool, because the homing routine should technically have
+        /// its own monitoring routine (as well as every other movement), but it's legacy at this point, and unless
+        /// we plan on adding more movements down the road, I would say it's not worth changing.
+        /// </remarks>
+        /// <param name="command"></param>
+        /// <param name="targetOrientation"></param>
+        /// <param name="homing">Tells us whether we are monitoring homing or a relative move</param>
+        /// <returns></returns>
+        private MovementResult MovementMonitor(MCUCommand command, Orientation targetOrientation, bool homing = false)
+        {
+            MovementResult result = MovementResult.None;
+            bool completed = false;
+            
+            while (!command.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None)
+            {
+                Thread.Sleep(100);
 
-                    consecutiveSuccessfulMoves++;
-                    consecutiveErrors = 0;
-                    result = MovementResult.Success;
+                // Anything but homing...
+                if (!homing) completed = MovementCompleted();
+
+                // How we tell if homing completed...
+                else
+                {
+                    // Check the At_Home bit and see if it's true
+                    ushort[] data = ReadMCURegisters(0, 1);
+                    completed = ((data[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.At_Home) & 0b1) == 1;
+                }
+
+                if (completed && !MotorsCurrentlyMoving() && !MovementInterruptFlag)
+                {
+
+                    // If this is reached, the motors have stopped and we are now checking that the orientation is correct
+                    Orientation encoderOrientation = GetMotorEncoderPosition();
+                    if (Math.Abs(encoderOrientation.Azimuth - targetOrientation.Azimuth) <= 0.1 && Math.Abs(encoderOrientation.Elevation - targetOrientation.Elevation) <= 0.1)
+                    {
+                        result = MovementResult.Success;
+                    }
+                    else
+                    {
+                        result = MovementResult.IncorrectPosition;
+                    }
                 }
             }
 
             List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> errors = CheckMCUErrors();
 
-            bool hitLimitSwitch = 
+            bool hitLimitSwitch =
                 errors.Contains(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>(MCUOutputRegs.AZ_Status_Bist_MSW, MCUStatusBitsMSW.Input_Error)) ||
                 errors.Contains(new Tuple<MCUOutputRegs, MCUStatusBitsMSW>(MCUOutputRegs.EL_Status_Bist_MSW, MCUStatusBitsMSW.Input_Error));
 
@@ -939,7 +914,7 @@ namespace ControlRoomApplication.Controllers {
             else
             {
                 // If the movement times out, this is reached
-                if (ThisMove.timeout.IsCancellationRequested)
+                if (command.timeout.IsCancellationRequested)
                 {
                     result = MovementResult.TimedOut;
                 }
@@ -959,17 +934,11 @@ namespace ControlRoomApplication.Controllers {
 
                 ControlledStop();
             }
-            
-            if (result != MovementResult.Success)
-            {
-                consecutiveSuccessfulMoves = 0;
-                consecutiveErrors++;
-            }
 
-            ThisMove.completed = true;
+            command.completed = true;
 
-            ThisMove.timeout.Cancel();
-            ThisMove.Dispose();
+            command.timeout.Cancel();
+            command.Dispose();
 
             return result;
         }
@@ -1003,7 +972,15 @@ namespace ControlRoomApplication.Controllers {
             }
         }
 
-        public bool SendBothAxesJog( double AZspeed, RadioTelescopeDirectionEnum azDirection, double ELspeed, RadioTelescopeDirectionEnum elDirection) {
+        /// <summary>
+        /// Jogs one axis, or both axes at the same time.
+        /// </summary>
+        /// <param name="AZspeed"></param>
+        /// <param name="azDirection"></param>
+        /// <param name="ELspeed"></param>
+        /// <param name="elDirection"></param>
+        /// <returns></returns>
+        public MovementResult SendBothAxesJog(double AZspeed, RadioTelescopeDirectionEnum azDirection, double ELspeed, RadioTelescopeDirectionEnum elDirection) {
 
             int AZstepSpeed = ConversionHelper.RPMToSPS( AZspeed , MotorConstants.GEARING_RATIO_AZIMUTH );
             int ELstepSpeed = ConversionHelper.RPMToSPS( ELspeed , MotorConstants.GEARING_RATIO_ELEVATION );
@@ -1030,7 +1007,7 @@ namespace ControlRoomApplication.Controllers {
                 ELstepSpeed = 0;
             }
             bool booth = false;
-            if(RunningCommand.CommandType == MCUCommandType.JOG) {
+            if(RunningCommand.CommandType == MCUCommandType.Jog) {
                 //if telescope is already joging changing direction requires stopping first
                 ushort[] data3 = new ushort[20];
                 data2.CopyTo( data3 , 0 );
@@ -1040,70 +1017,35 @@ namespace ControlRoomApplication.Controllers {
                     WaitUntilStopped();
                 } else if(RunningCommand.ElevationDirection != elDirection) {//if only elevation needs to change direction
                     for(int j = 0; j <= data3.Length - 11; j++) {
-                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove
+                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove (issue #390)
                         data3[j + 10] = MCUMessages.ClearBothAxesMove[j + 10];//replace elevation portion of move with controled stop
                     }
-                    _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {
+                    _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.Jog, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {
                         EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
                     WaitUntilStoppedPerAxis(RadioTelescopeAxisEnum.AZIMUTH);
                 } else if(RunningCommand.AzimuthDirection != azDirection) {//only Azimuth needs to change direction
                     for(int j = 0; j <= data3.Length - 1; j++)
                     {
-                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove
+                        // TODO: Replace ClearBothAxesMove with simplified code and ClearSingleAxisMove (issue #390)
                         data3[j] = MCUMessages.ClearBothAxesMove[j];//replace Azimuth portion of move with controled stop
                     }
-                    _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.JOG, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {
+                    _ = SendGenericCommand( new MCUCommand( data3 , MCUCommandType.Jog, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {
                         AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                     } );
                     WaitUntilStoppedPerAxis(RadioTelescopeAxisEnum.ELEVATION);
                 }
             }
 
-            _ = SendGenericCommand( new MCUCommand( data2 , MCUCommandType.JOG, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
+            _ = SendGenericCommand( new MCUCommand( data2 , MCUCommandType.Jog, azDirection , elDirection , AZstepSpeed , ELstepSpeed ) {//send the portion of the jog move that was previously replaced with a contoroled stop
                 EL_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
                 AZ_ACC = MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING ,
             } );
-            return true;
+            return MovementResult.Success;
         }
 
         private MCUCommand SendGenericCommand(MCUCommand incoming) {
-
-            Console.WriteLine( "running: {0}     incoming: {1}", RunningCommand.CommandType.ToString(), incoming.CommandType.ToString());
-
-            // This looks like it's handling some kind of priority, which is handled in a higher layer. I'm only commenting it out for now
-            // so that we can bring it back quickly if we find that something is broken
-
-            //PreviousCommand = RunningCommand;
-
-            /*
-            if(RunningCommand.CommandType == MCUCommandType.JOG) {
-                if(incoming.CommandType == MCUCommandType.CLEAR_LAST_MOVE || incoming.CommandType == MCUCommandType.IMMEDIATE_STOP || incoming.CommandType == MCUCommandType.JOG) {
-                    try {
-                        RunningCommand?.timeout?.Cancel();
-                    } catch { }
-                    RunningCommand = incoming;
-                    WriteMCURegisters(incoming.commandData);
-                    return incoming;
-                }
-                incoming.CommandError = new Exception( "MCU was running a JOG move which could not be overriden" );
-                return incoming;
-            } else if((RunningCommand.CommandType == MCUCommandType.HOME && !RunningCommand.completed)) {
-                if( incoming.CommandType == MCUCommandType.IMMEDIATE_STOP) {
-                    try {
-                        RunningCommand?.timeout?.Cancel();
-                    } catch { }
-                    RunningCommand = incoming;
-                    WriteMCURegisters(incoming.commandData);
-                    return incoming;
-                }
-                incoming.CommandError = new Exception( "MCU was running a home move which could not be overriden" );
-                return incoming;
-            }
-            try {
-                RunningCommand?.timeout?.Cancel();
-            } catch { } */
-
+            
             RunningCommand = incoming;
             WriteMCURegisters(incoming.commandData);
             return incoming;
@@ -1129,14 +1071,14 @@ namespace ControlRoomApplication.Controllers {
             ushort[] data = new ushort[10] {
                 (ushort)direction,
                 0x0003,
-                0x0,
-                0x0,
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData,
                 (ushort)(stepSpeed >> 16),
                 (ushort)(stepSpeed & 0xffff),
                 MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
                 MCUConstants.ACTUAL_MCU_MOVE_ACCELERATION_WITH_GEARING,
-                0x0,
-                0x0
+                (ushort)MCUCommandType.EmptyData,
+                (ushort)MCUCommandType.EmptyData
             };
 
             WriteMCURegisters(data, axis);

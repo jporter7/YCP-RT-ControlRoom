@@ -11,7 +11,6 @@ using System.Windows;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
 using System.Net;
-using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Entities.WeatherStation;
 using log4net.Appender;
 using ControlRoomApplication.Documentation;
@@ -32,9 +31,6 @@ namespace ControlRoomApplication.Main
         public List<AbstractPLCDriver> ProgramPLCDriverList { get; set; }
         public List<ControlRoomController> ProgramControlRoomControllerList { get; set; }
         public ControlRoomController MainControlRoomController { get; set; }
-        private Thread ControlRoomThread { get; set; }
-        private Thread MicroctrlServerThread { get; set; }
-        private CancellationTokenSource CancellationSource { get; set; }
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -53,13 +49,10 @@ namespace ControlRoomApplication.Main
         public bool SensorNetworkServerPortBool = false;
         public bool SensorNetworkClientIPBool = false;
         public bool SensorNetworkClientPortBool = false;
-
-
-
+        
         // form
         RTControlFormData formData;
-
-
+        
         enum TempSensorType
         {
             Production,
@@ -87,7 +80,6 @@ namespace ControlRoomApplication.Main
             Simulation
         }
 
-
         /// <summary>
         /// Constructor for the main GUI form. Initializes the GUI form by calling the
         /// initialization method in another partial class. Initializes the datagridview
@@ -101,8 +93,7 @@ namespace ControlRoomApplication.Main
             IPAddress[] v4_list = new IPAddress[ipHostInfo.AddressList.Length / 2];
             System.Array.Copy(ipHostInfo.AddressList, ipHostInfo.AddressList.Length / 2, v4_list, 0, ipHostInfo.AddressList.Length / 2);
             this.LocalIPCombo.Items.AddRange(v4_list);
-
-
+            
             logger.Info(Utilities.GetTimeStamp() + ": <--------------- Control Room Application Started --------------->");
             dataGridView1.ColumnCount = 5;
             dataGridView1.Columns[0].HeaderText = "ID";
@@ -604,55 +595,6 @@ namespace ControlRoomApplication.Main
                     return new SimulationPLCDriver(LocalIPCombo.Text, txtPLCIP.Text, int.Parse(txtMcuCOMPort.Text), int.Parse(txtPLCPort.Text), false, false);
             }
         }
-
-        public AbstractEncoderReader build_encoder(AbstractPLCDriver plc)
-        {
-            return new SimulatedEncoder(plc, LocalIPCombo.Text, 1602);
-        }
-
-        public AbstractMicrocontroller build_CTRL()
-        {
-            switch (comboSensorNetworkBox.SelectedIndex)
-            {
-                case 0:
-                    logger.Info(Utilities.GetTimeStamp() + ": Building ProductionPLCDriver");
-                    return new MicroControlerControler(LocalIPCombo.Text, 1600);
-
-                case 1:
-                    logger.Info(Utilities.GetTimeStamp() + ": Building ScaleModelPLCDriver");
-                    return new SimulatedMicrocontroller(-20, 100, true);
-
-                default:
-                    logger.Info(Utilities.GetTimeStamp() + ": Building SimulationPLCDriver");
-                    return new SimulatedMicrocontroller(SimulationConstants.MIN_MOTOR_TEMP, SimulationConstants.MAX_MOTOR_TEMP, true);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>  </returns>
-        public bool IsMicrocontrollerSimulated()
-        {
-            bool isSimulated = false;
-
-            logger.Info(Utilities.GetTimeStamp() + ": Selected Microcontroller Type: ");
-
-            if (comboSensorNetworkBox.SelectedIndex - 1 == (int)MicrocontrollerType.Production)
-            {
-                isSimulated = false;
-            }
-            else
-            {
-                isSimulated = true;
-            }
-
-            return isSimulated;
-        }
-
-
-
-
 
         /// <summary>
         /// Build a weather station based off of the input from the GUI form.

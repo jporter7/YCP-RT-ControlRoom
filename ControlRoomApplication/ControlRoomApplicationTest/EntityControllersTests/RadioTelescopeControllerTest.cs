@@ -76,7 +76,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             // Create an Orientation object with an azimuth of 311 and elevation of 42
             Orientation Orientation = new Orientation(311.0, 42.0);
             // Set the RadioTelescope's CurrentOrientation field
-            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation, MovePriority.Appointment);
+            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation, MovementPriority.Appointment);
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             // Ensure the objects are identical
@@ -87,7 +87,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Orientation = new Orientation(28.0, 42.0);
             // Set the RadioTelescope's CurrentOrientation field
-            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation, MovePriority.Appointment);
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation, MovementPriority.Appointment);
             // Call the GetCurrentOrientationMethod
             CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             Assert.AreEqual(response, MovementResult.Success);
@@ -97,7 +97,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Orientation = new Orientation(310.0, 42.0);
             // Set the RadioTelescope's CurrentOrientation field
-            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation, MovePriority.Appointment);
+            response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation, MovementPriority.Appointment);
             // Call the GetCurrentOrientationMethod
             CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
             // Ensure the objects are identical
@@ -122,8 +122,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestCancelCurrentMoveCommand() {
             // Test canceling the the current move command
-            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(new Orientation(0, 0), MovePriority.Appointment);
-            var response = TestRadioTelescopeController.CancelCurrentMoveCommand(MovePriority.GeneralStop);
+            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(new Orientation(0, 0), MovementPriority.Appointment);
+            var response = TestRadioTelescopeController.CancelCurrentMoveCommand(MovementPriority.GeneralStop);
 
             // Make sure it was successful
             Assert.IsTrue(response);
@@ -147,7 +147,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation before = TestRadioTelescopeController.GetCurrentOrientation();
 
             // Call the CalibrateRadioTelescope method
-            var response = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(MovePriority.Appointment);
+            var response = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(MovementPriority.Appointment);
             // this var response is going to be null because there is no reading. It means that the 
             // telescope isn't calibrated. At this time, all we care about is the movement
 
@@ -166,7 +166,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation Orientation = new Orientation(311.0, 42.0);
 
             // Set the RadioTelescope's CurrentOrientation field
-            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation, MovePriority.Appointment);
+            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(Orientation, MovementPriority.Appointment);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -187,7 +187,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation TargetOrientation = new Orientation(311.0, 0);
 
             // Set the RadioTelescope's CurrentOrientation field
-            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation, MovePriority.Appointment);
+            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation, MovementPriority.Appointment);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -208,7 +208,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Orientation TargetOrientation = new Orientation(359.0, 0);
 
             // Set the RadioTelescope's CurrentOrientation field
-            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation, MovePriority.Appointment);
+            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation, MovementPriority.Appointment);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -227,11 +227,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Initial movement from 0 to 350
             Orientation InitialOrientation = new Orientation(350, 0);
-            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation, MovePriority.Appointment);
+            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation, MovementPriority.Appointment);
 
             // Move from 350 to 90
             Orientation TargetOrientation = new Orientation(90, 0);
-            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation, MovePriority.Appointment);
+            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation, MovementPriority.Appointment);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -250,11 +250,11 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             // Initial movement from 0 to 90
             Orientation InitialOrientation = new Orientation(90, 0);
-            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation, MovePriority.Appointment);
+            TestRadioTelescopeController.MoveRadioTelescopeToOrientation(InitialOrientation, MovementPriority.Appointment);
 
             // Move from 90 to 350
             Orientation TargetOrientation = new Orientation(350, 0);
-            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation, MovePriority.Appointment);
+            MovementResult response = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(TargetOrientation, MovementPriority.Appointment);
 
             // Call the GetCurrentOrientationMethod
             Orientation CurrentOrientation = TestRadioTelescopeController.GetCurrentOrientation();
@@ -335,7 +335,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl, expectedOrientation);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
@@ -365,7 +365,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl, expectedOrientation);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
@@ -398,7 +398,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl, expectedOrientation);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
@@ -538,7 +538,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestHomeTelescope_BothAbsolutePositionsOK_Success()
         {
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -548,7 +548,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             SensorNetworkServer.CurrentAbsoluteOrientation.Elevation = 1;
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.IncorrectPosition, result);
         }
@@ -558,7 +558,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth = 1;
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.IncorrectPosition, result);
         }
@@ -569,7 +569,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth = 1;
             SensorNetworkServer.CurrentAbsoluteOrientation.Elevation = 1;
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.IncorrectPosition, result);
         }
@@ -580,7 +580,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth = 1;
             TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(true);
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -591,7 +591,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             SensorNetworkServer.CurrentAbsoluteOrientation.Elevation = 1;
             TestRadioTelescopeController.overrides.setElevationAbsEncoder(true);
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -604,7 +604,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             TestRadioTelescopeController.overrides.setElevationAbsEncoder(true);
             TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(true);
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -614,7 +614,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(true);
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -624,7 +624,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             TestRadioTelescopeController.overrides.setElevationAbsEncoder(true);
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -635,7 +635,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             TestRadioTelescopeController.overrides.setElevationAbsEncoder(true);
             TestRadioTelescopeController.overrides.setAzimuthAbsEncoder(true);
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -649,52 +649,15 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Thread.Sleep(2000);
 
-            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.SensorsNotSafe, result);
         }
 
         [TestMethod]
-        public void TestHomeTelescope_IsHoming_PriorityPopulated()
-        {
-            MovePriority priority = MovePriority.Manual;
-
-            // Run async so that we can check for priority change during the movement
-            Task.Run(() =>
-            {
-                MovementResult result = TestRadioTelescopeController.HomeTelescope(priority);
-            });
-
-            Thread.Sleep(50);
-
-            Assert.AreEqual(priority, TestRadioTelescopeController.RadioTelescope.PLCDriver.CurrentMovementPriority);
-        }
-
-        [TestMethod]
-        public void TestHomeTelescope_TriesToHomeWithAnotherCommandRunning_AlreadyMoving()
-        {
-            MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
-            MovePriority priority = MovePriority.Manual;
-
-            // This is running two commands at the same time. One of them should succeed, while
-            // the other is rejected
-
-            Task.Run(() =>
-            {
-                result1 = TestRadioTelescopeController.HomeTelescope(priority);
-            });
-
-            result2 = TestRadioTelescopeController.HomeTelescope(priority);
-
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
-        }
-
-        [TestMethod]
         public void TestSnowDump_AllStatusesOK_Success()
         {
-            MovementResult result = TestRadioTelescopeController.SnowDump(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.SnowDump(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -708,7 +671,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Thread.Sleep(2000);
 
-            MovementResult result = TestRadioTelescopeController.SnowDump(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.SnowDump(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.SensorsNotSafe, result);
         }
@@ -716,28 +679,37 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestSnowDump_TriesSnowDumpWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
-            MovePriority priority = MovePriority.Manual;
+            MovementPriority priority = MovementPriority.Manual;
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.SnowDump(priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.SnowDump(priority);
             });
 
-            result2 = TestRadioTelescopeController.SnowDump(priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
 
         [TestMethod]
         public void TestFullElevationMove_AllStatusesOK_Success()
         {
-            MovementResult result = TestRadioTelescopeController.FullElevationMove(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.FullElevationMove(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -751,7 +723,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Thread.Sleep(2000);
 
-            MovementResult result = TestRadioTelescopeController.FullElevationMove(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.FullElevationMove(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.SensorsNotSafe, result);
         }
@@ -759,22 +731,31 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestFullElevationMove_TriesFullElevationMoveWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
-            MovePriority priority = MovePriority.Manual;
+            MovementPriority priority = MovementPriority.Manual;
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.FullElevationMove(priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.FullElevationMove(priority);
             });
 
-            result2 = TestRadioTelescopeController.FullElevationMove(priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
 
         [TestMethod]
@@ -782,7 +763,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             Coordinate c = new Coordinate();
 
-            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -798,7 +779,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Thread.Sleep(2000);
 
-            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.SensorsNotSafe, result);
         }
@@ -806,24 +787,33 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestMoveRadioTelescopeToCoordinate_TriesMoveRadioTelescopeToCoordinateWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
-            MovePriority priority = MovePriority.Manual;
+            MovementPriority priority = MovementPriority.Manual;
 
             Coordinate c = new Coordinate();
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
             });
 
-            result2 = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
 
         [TestMethod]
@@ -831,7 +821,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             Orientation o = new Orientation();
 
-            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -847,7 +837,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
 
             Thread.Sleep(2000);
 
-            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.SensorsNotSafe, result);
         }
@@ -855,30 +845,39 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestMoveRadioTelescopeToOrientation_TriesMoveRadioTelescopeToOrientationWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
-            MovePriority priority = MovePriority.Manual;
-
-            Orientation o = new Orientation();
+            MovementPriority priority = MovementPriority.Manual;
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Orientation o = new Orientation();
+
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
             });
 
-            result2 = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
 
         [TestMethod]
         public void TestThermalCalibrateRadioTelescope_AllStatusesOK_Success()
         {
-            MovementResult result = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
         }
@@ -892,7 +891,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             
             Thread.Sleep(2000);
 
-            MovementResult result = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
+            MovementResult result = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.SensorsNotSafe, result);
         }
@@ -900,22 +899,146 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         [TestMethod]
         public void TestThermalCalibrateRadioTelescope_TriesThermalCalibrateRadioTelescopeWithAnotherCommandRunning_AlreadyMoving()
         {
+            MovementResult result0 = MovementResult.None;
             MovementResult result1 = MovementResult.None;
-            MovementResult result2 = MovementResult.None;
-            MovePriority priority = MovePriority.Manual;
+            MovementPriority priority = MovementPriority.Manual;
 
             // This is running two commands at the same time. One of them should succeed, while
             // the other is rejected
 
-            Task.Run(() =>
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
+            });
+
+            Thread t1 = new Thread(() =>
             {
                 result1 = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
             });
 
-            result2 = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
+            t0.Start();
+            t1.Start();
 
-            Assert.IsTrue(result1 == MovementResult.Success || result2 == MovementResult.Success);
-            Assert.IsTrue(result1 == MovementResult.AlreadyMoving || result2 == MovementResult.AlreadyMoving);
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_TriesHomeTelescopeWithAnotherCommandRunning_AlreadyMoving()
+        {
+            MovementResult result0 = MovementResult.None;
+            MovementResult result1 = MovementResult.None;
+            MovementPriority priority = MovementPriority.Manual;
+
+            // This is running two commands at the same time. One of them should succeed, while
+            // the other is rejected
+
+            Thread t0 = new Thread(() =>
+            {
+                result0 = TestRadioTelescopeController.HomeTelescope(priority);
+            });
+
+            Thread t1 = new Thread(() =>
+            {
+                result1 = TestRadioTelescopeController.HomeTelescope(priority);
+            });
+
+            t0.Start();
+            t1.Start();
+
+            t0.Join();
+            t1.Join();
+
+            Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
+            Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
+        }
+
+        /// <summary>
+        /// This is a heavy stress test to verify that our movements are thread safe. Meaning, if one current thread is
+        /// executing a movement, it is impossible for another thread to begin one (unless safely interrupted).
+        /// 
+        /// This test is specifically testing that if threadCount number of movements are run at the same time, only one
+        /// succeeds, and the rest will return back an error code.
+        /// 
+        /// This should never happen in production, but the premise still exists that we want movements to be thread safe,
+        /// stable and reliable.
+        /// </summary>
+        [TestMethod]
+        public void TestAllTelescopeMovements_RunABunchOfCommandsAtTheSameTime_OnlyOneCommandSucceedsWhileTheRestAreAlreadyMoving()
+        {
+            int threadCount = 7;
+
+            MovementPriority priority = MovementPriority.Manual;
+            Coordinate c = new Coordinate(0, 0);
+            Orientation o = new Orientation(0, 0);
+
+            // movement result array
+            MovementResult[] results = new MovementResult[threadCount];
+            for (int i = 0; i < threadCount; i++)
+                results[i] = MovementResult.None;
+
+            Thread t0 = new Thread(() =>
+            {
+                results[0] = TestRadioTelescopeController.HomeTelescope(priority);
+            });
+            Thread t1 = new Thread(() =>
+            {
+                results[1] = TestRadioTelescopeController.SnowDump(priority);
+            });
+            Thread t2 = new Thread(() =>
+            {
+                results[2] = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
+            });
+            Thread t3 = new Thread(() =>
+            {
+                results[3] = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
+            });
+            Thread t4 = new Thread(() =>
+            {
+                results[4] = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
+            });
+            Thread t5 = new Thread(() =>
+            {
+                results[5] = TestRadioTelescopeController.StartRadioTelescopeJog(5, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.AZIMUTH);
+            });
+            Thread t6 = new Thread(() =>
+            {
+                results[6] = TestRadioTelescopeController.FullElevationMove(priority);
+            });
+
+            // Run all threads concurrently
+            // These cannot be looped through because a loop adds enough delay to throw off concurrency
+            t0.Start();
+            t1.Start();
+            t2.Start();
+            t3.Start();
+            t4.Start();
+            t5.Start();
+            t6.Start();
+
+            // Wait for all threads to complete
+            t0.Join();
+            t1.Join();
+            t2.Join();
+            t3.Join();
+            t4.Join();
+            t5.Join();
+            t6.Join();
+
+            int successes = 0;
+            int alreadyMovings = 0;
+
+            for (int i = 0; i < threadCount; i++)
+            {
+                if (results[i] == MovementResult.Success) successes++;
+                else if (results[i] == MovementResult.AlreadyMoving) alreadyMovings++;
+            }
+
+            Assert.AreEqual(1, successes);
+            Assert.AreEqual(threadCount - 1, alreadyMovings);
         }
     }
 }

@@ -75,7 +75,7 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
                 statuses.AzimuthAbsoluteEncoderStatus == SensorNetworkSensorStatus.Okay
             };
 
-            int errors = 0; // TODO: implement conversion
+            int errors = 0; // TODO: implement conversion (issue #376)
 
             return EncodeRawData(dataSize, elAccl, azAccl, cbAccl, rawElTemps, rawAzTemps, rawElEnc, rawAzEnc, sensorStatusBoolArray, errors);
         }

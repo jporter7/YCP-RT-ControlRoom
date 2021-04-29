@@ -134,7 +134,7 @@ namespace ControlRoomApplication.Controllers
             if (data.IndexOf("COORDINATE_MOVE") != -1)
             {
                 // we have a move command coming in
-                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
+                rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
                 // get azimuth and orientation
                 int azimuthIndex = data.IndexOf("AZIM");
@@ -158,9 +158,9 @@ namespace ControlRoomApplication.Controllers
 
                 Orientation movingTo = new Orientation(azimuth, elevation);
 
-                rtController.MoveRadioTelescopeToOrientation(movingTo, MovePriority.Manual);
+                rtController.MoveRadioTelescopeToOrientation(movingTo, MovementPriority.Manual);
 
-                // TODO: store the User Id and movement somewhere in the database
+                // TODO: store the User Id and movement somewhere in the database (issue #392)
 
                 return true;
 
@@ -231,7 +231,7 @@ namespace ControlRoomApplication.Controllers
             else if (data.IndexOf("SCRIPT") != -1)
             {
                 // we have a move command coming in
-                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
+                rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
                 // get azimuth and orientation
                 int colonIndex = data.IndexOf(":");
@@ -248,19 +248,19 @@ namespace ControlRoomApplication.Controllers
 
                 if (script.Contains("DUMP"))
                 {
-                    rtController.SnowDump(MovePriority.Manual);
+                    rtController.SnowDump(MovementPriority.Manual);
                 }
                 else if (script.Contains("FULL_EV"))
                 {
-                    rtController.FullElevationMove(MovePriority.Manual);
+                    rtController.FullElevationMove(MovementPriority.Manual);
                 }
                 else if (script.Contains("CALIBRATE"))
                 {
-                    rtController.ThermalCalibrateRadioTelescope(MovePriority.Manual);
+                    rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
                 }
                 else if (script.Contains("STOW"))
                 {
-                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovePriority.Manual);
+                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovementPriority.Manual);
                 }
                 else if (script.Contains("FULL_CLOCK"))
                 {
@@ -279,7 +279,7 @@ namespace ControlRoomApplication.Controllers
             }
             else if (data.IndexOf("STOP_RT") != -1)
             {
-                rtController.ExecuteRadioTelescopeControlledStop(MovePriority.GeneralStop);
+                rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
             }
             else if (data.IndexOf("SENSOR_INIT") != -1)
             {

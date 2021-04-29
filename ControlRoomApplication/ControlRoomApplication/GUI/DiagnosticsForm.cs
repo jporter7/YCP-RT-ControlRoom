@@ -6,7 +6,6 @@ using System.Drawing;
 using ControlRoomApplication.Simulators.Hardware.AbsoluteEncoder;
 using ControlRoomApplication.Simulators.Hardware.MCU;
 using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Constants;
 using System;
@@ -28,7 +27,6 @@ namespace ControlRoomApplication.GUI
     public partial class DiagnosticsForm : Form
     {
         private ControlRoom controlRoom;
-        EncoderReader encoderReader = new EncoderReader("192.168.7.2", 1602);
         ControlRoomApplication.Entities.Orientation azimuthOrientation = new ControlRoomApplication.Entities.Orientation();
         private RadioTelescopeController rtController { get; set; }
 
@@ -717,10 +715,10 @@ namespace ControlRoomApplication.GUI
             switch (caseSwitch)
             {
                 case 1: // Elevation Lower Limit Switch
-                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, -14), MovePriority.Manual);
+                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, -14), MovementPriority.Manual);
                     break;
                 case 2: // Elevation Upper Limit Switch
-                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 92), MovePriority.Manual);
+                    rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 92), MovementPriority.Manual);
                     break;
                 default:
 

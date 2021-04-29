@@ -91,9 +91,9 @@ namespace ControlRoomApplication.Controllers
             return driver.ImmediateStop();
         }
 
-        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL)
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation)
         {
-            return driver.RelativeMove(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
+            return driver.RelativeMove(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
         public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
@@ -101,7 +101,7 @@ namespace ControlRoomApplication.Controllers
             return driver.MoveToOrientation(target_orientation, current_orientation);
         }
 
-        public override bool StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
             return driver.StartBothAxesJog(azSpeed, azDirection, elSpeed, elDirection);
         }
 
@@ -121,10 +121,6 @@ namespace ControlRoomApplication.Controllers
 
         public override MovementResult HomeTelescope() {
             return driver.HomeTelescope();
-        }
-
-        public override bool Stop_Jog() {
-            return driver.Stop_Jog();
         }
 
         public override void setregvalue(ushort adr, ushort value)
@@ -159,14 +155,15 @@ namespace ControlRoomApplication.Controllers
             return driver.CheckMCUErrors();
         }
 
-        public override void InterruptMovementAndWaitUntilStopped()
+        public override bool InterruptMovementAndWaitUntilStopped()
         {
-            driver.InterruptMovementAndWaitUntilStopped();
+            return driver.InterruptMovementAndWaitUntilStopped();
         }
 
         public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
         {
             return driver.MotorsCurrentlyMoving(axis);
         }
+
     }
 }
