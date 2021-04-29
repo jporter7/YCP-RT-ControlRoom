@@ -955,6 +955,91 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Assert.IsTrue(result0 == MovementResult.Success || result1 == MovementResult.Success);
             Assert.IsTrue(result0 == MovementResult.AlreadyMoving || result1 == MovementResult.AlreadyMoving);
         }
+
+        /// <summary>
+        /// This is a heavy stress test to verify that our movements are thread safe. Meaning, if one current thread is
+        /// executing a movement, it is impossible for another thread to begin one (unless safely interrupted).
+        /// 
+        /// This test is specifically testing that if threadCount number of movements are run at the same time, only one
+        /// succeeds, and the rest will return back an error code.
+        /// 
+        /// This should never happen in production, but the premise still exists that we want movements to be thread safe,
+        /// stable and reliable.
+        /// </summary>
+        [TestMethod]
+        public void TestAllTelescopeMovements_RunABunchOfCommandsAtTheSameTime_OnlyOneCommandSucceedsWhileTheRestAreAlreadyMoving()
+        {
+            int threadCount = 7;
+
+            MovementPriority priority = MovementPriority.Manual;
+            Coordinate c = new Coordinate(0, 0);
+            Orientation o = new Orientation(0, 0);
+
+            // movement result array
+            MovementResult[] results = new MovementResult[threadCount];
+            for (int i = 0; i < threadCount; i++)
+                results[i] = MovementResult.None;
+
+            Thread t0 = new Thread(() =>
+            {
+                results[0] = TestRadioTelescopeController.HomeTelescope(priority);
+            });
+            Thread t1 = new Thread(() =>
+            {
+                results[1] = TestRadioTelescopeController.SnowDump(priority);
+            });
+            Thread t2 = new Thread(() =>
+            {
+                results[2] = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
+            });
+            Thread t3 = new Thread(() =>
+            {
+                results[3] = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
+            });
+            Thread t4 = new Thread(() =>
+            {
+                results[4] = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
+            });
+            Thread t5 = new Thread(() =>
+            {
+                results[5] = TestRadioTelescopeController.StartRadioTelescopeJog(5, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.AZIMUTH);
+            });
+            Thread t6 = new Thread(() =>
+            {
+                results[6] = TestRadioTelescopeController.FullElevationMove(priority);
+            });
+
+            // Run all threads concurrently
+            // These cannot be looped through because a loop adds enough delay to throw off concurrency
+            t0.Start();
+            t1.Start();
+            t2.Start();
+            t3.Start();
+            t4.Start();
+            t5.Start();
+            t6.Start();
+
+            // Wait for all threads to complete
+            t0.Join();
+            t1.Join();
+            t2.Join();
+            t3.Join();
+            t4.Join();
+            t5.Join();
+            t6.Join();
+
+            int successes = 0;
+            int alreadyMovings = 0;
+
+            for (int i = 0; i < threadCount; i++)
+            {
+                if (results[i] == MovementResult.Success) successes++;
+                else if (results[i] == MovementResult.AlreadyMoving) alreadyMovings++;
+            }
+
+            Assert.AreEqual(1, successes);
+            Assert.AreEqual(threadCount - 1, alreadyMovings);
+        }
     }
 }
 
