@@ -655,6 +655,57 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
+        public void TestHomeTelescope_ContainsFinalOffset_SetsFinalOffset()
+        {
+            Orientation expectedOrientation = new Orientation(20, 20);
+
+            TestRadioTelescopeController.RadioTelescope.CalibrationOrientation = expectedOrientation;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
+
+            Orientation resultMotorEncoderOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+            Orientation resultAbsoluteEncoderOrientation = TestRadioTelescopeController.GetAbsoluteOrientation();
+
+            Assert.AreEqual(MovementResult.Success, result);
+            Assert.IsTrue(expectedOrientation.Equals(resultMotorEncoderOrientation));
+            Assert.IsTrue(expectedOrientation.Equals(resultAbsoluteEncoderOrientation));
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_FinalOffsetAboveAz360_NormalizesAzOffset()
+        {
+            Orientation expectedOrientation = new Orientation(0.5, 20);
+
+            TestRadioTelescopeController.RadioTelescope.CalibrationOrientation = new Orientation(360.5, 20); ;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
+
+            Orientation resultMotorEncoderOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+            Orientation resultAbsoluteEncoderOrientation = TestRadioTelescopeController.GetAbsoluteOrientation();
+
+            Assert.AreEqual(MovementResult.Success, result);
+            Assert.IsTrue(expectedOrientation.Equals(resultMotorEncoderOrientation));
+            Assert.IsTrue(expectedOrientation.Equals(resultAbsoluteEncoderOrientation));
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_FinalOffsetBelowAz0_NormalizesAzOffset()
+        {
+            Orientation expectedOrientation = new Orientation(359.5, 20);
+
+            TestRadioTelescopeController.RadioTelescope.CalibrationOrientation = new Orientation(-0.5, 20); ;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
+
+            Orientation resultMotorEncoderOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+            Orientation resultAbsoluteEncoderOrientation = TestRadioTelescopeController.GetAbsoluteOrientation();
+
+            Assert.AreEqual(MovementResult.Success, result);
+            Assert.IsTrue(expectedOrientation.Equals(resultMotorEncoderOrientation));
+            Assert.IsTrue(expectedOrientation.Equals(resultAbsoluteEncoderOrientation));
+        }
+
+        [TestMethod]
         public void TestSnowDump_AllStatusesOK_Success()
         {
             MovementResult result = TestRadioTelescopeController.SnowDump(MovementPriority.Manual);
