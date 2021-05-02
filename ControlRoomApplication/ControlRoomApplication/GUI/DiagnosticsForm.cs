@@ -286,8 +286,8 @@ namespace ControlRoomApplication.GUI
             double outsideTempCel = (outsideTemp - 32) * (5.0 / 9);
 
             // fahrenheit conversion
-            double ElMotTempFahrenheit = (ElMotTemp * (5.0 / 9)) + 32;
-            double AzMotTempFahrenheit = (AzMotTemp * (5.0 / 9)) + 32;
+            double ElMotTempFahrenheit = (ElMotTemp * (9.0 / 5.0)) + 32;
+            double AzMotTempFahrenheit = (AzMotTemp * (9.0 / 5.0)) + 32;
 
 
 
