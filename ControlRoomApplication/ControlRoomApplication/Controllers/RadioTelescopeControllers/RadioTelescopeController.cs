@@ -624,6 +624,28 @@ namespace ControlRoomApplication.Controllers
             return success;
         }
 
+        /// <summary>
+        /// This allows us to safely reset the motor controller errors if an error bit happens to be set.
+        /// This way, we don't have to restart the hardware to get things to work.
+        /// </summary>
+        /// <remarks>
+        /// This will overwrite a movement if one is currently running, so it cannot be run unless there are
+        /// no movements running.
+        /// </remarks>
+        /// <returns>True if successful, False if another movement is currently running</returns>
+        public bool ResetMCUErrors()
+        {
+            bool success = false;
+
+            if(Monitor.TryEnter(MovementLock))
+            {
+                RadioTelescope.PLCDriver.ResetMCUErrors();
+                success = true;
+                Monitor.Exit(MovementLock);
+            }
+
+            return success;
+        }
 
         /// <summary>
         /// return true if the RT has finished the previous move comand

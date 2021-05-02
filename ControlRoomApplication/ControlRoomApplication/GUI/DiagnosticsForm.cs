@@ -1099,7 +1099,14 @@ namespace ControlRoomApplication.GUI
 
         private void btnResetMcuErrors_Click(object sender, EventArgs e)
         {
-            rtController.RadioTelescope.PLCDriver.ResetMCUErrors();
+            if(rtController.ResetMCUErrors())
+            {
+                logger.Info(Utilities.GetTimeStamp() + "Successfully reset motor controller errors.");
+            }
+            else
+            {
+                logger.Info(Utilities.GetTimeStamp() + "Cannot reset motor controller errors while another command is running. Please wait until the other command has completed.");
+            }
         }
 
         private void btnAzimuthAbsoluteEncoder_Click(object sender, EventArgs e)
