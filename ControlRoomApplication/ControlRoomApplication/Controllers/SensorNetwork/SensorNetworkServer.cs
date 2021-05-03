@@ -20,7 +20,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
     /// <summary>
     /// This is the central component of the Sensor Network on the Control Room end. This handles all the main communications
     /// with the main Sensor Network system, such as receiving data, setting statuses based on data it receives, and tells the
-    /// client when to send iniC:\YCP-RT-ControlRoom\ControlRoomApplication\ControlRoomApplication\Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cstialization data.
+    /// client when to send initialization data.
     /// </summary>
     public class SensorNetworkServer : PacketDecodingTools
     {
