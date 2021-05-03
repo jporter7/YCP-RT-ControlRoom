@@ -68,7 +68,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
             // every test.
             ((TcpListener)PrivListener.GetFieldOrProperty("server")).Stop();
             
-            DatabaseOperations.DeleteSensorNetworkConfig(RadioTelescope.SensorNetworkServer.InitializationClient.config);
+            DatabaseOperations.DeleteSensorNetworkConfig(RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig);
         }
 
         [TestMethod]
@@ -94,9 +94,9 @@ namespace ControlRoomApplicationTest.CommunicationTests
                 $"SENSOR_INIT";
 
             bool result = (bool)PrivListener.Invoke("processMessage", command);
-            byte[] resultInitBytes = RadioTelescope.SensorNetworkServer.InitializationClient.config.GetSensorInitAsBytes();
-            int resultDataTimeout = RadioTelescope.SensorNetworkServer.InitializationClient.config.TimeoutDataRetrieval / 1000; // ms to seconds
-            int resultInitTimeout = RadioTelescope.SensorNetworkServer.InitializationClient.config.TimeoutInitialization / 1000; // ms to seconds
+            byte[] resultInitBytes = RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig.GetSensorInitAsBytes();
+            int resultDataTimeout = RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig.TimeoutDataRetrieval / 1000; // ms to seconds
+            int resultInitTimeout = RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig.TimeoutInitialization / 1000; // ms to seconds
 
             Assert.IsTrue(result);
 

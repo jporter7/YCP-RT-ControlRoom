@@ -38,7 +38,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestCleanup]
         public void Cleanup()
         {
-            DatabaseOperations.DeleteSensorNetworkConfig(Server.InitializationClient.config);
+            DatabaseOperations.DeleteSensorNetworkConfig(Server.InitializationClient.SensorNetworkConfig);
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             Assert.IsNotNull(Server.InitializationClient);
             Assert.AreEqual((string)privClient.GetFieldOrProperty("IPAddress"), ClientIpAddress);
             Assert.AreEqual((int)privClient.GetFieldOrProperty("Port"), ClientPort);
-            Assert.AreEqual(Server.InitializationClient.config.TelescopeId, TelescopeId);
+            Assert.AreEqual(Server.InitializationClient.SensorNetworkConfig.TelescopeId, TelescopeId);
 
             // Verify temperatures are correct
             Assert.IsNotNull(Server.CurrentElevationMotorTemp);
@@ -415,7 +415,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             Assert.IsTrue(success);
 
-            var expected = Server.InitializationClient.config.GetSensorInitAsBytes();
+            var expected = Server.InitializationClient.SensorNetworkConfig.GetSensorInitAsBytes();
 
             // Verify that we received the sensor initialization that the client had
             Assert.IsTrue(expected.SequenceEqual(result));

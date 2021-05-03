@@ -165,7 +165,7 @@ namespace ControlRoomApplication.GUI
             lblSNStatus.Text = "";
 
             // Set sensor initialization checkboxes to reflect what is stored in the database
-            SensorNetworkConfig = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
+            SensorNetworkConfig = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig;
 
             AzimuthTemperature1.Checked = SensorNetworkConfig.AzimuthTemp1Init;
             ElevationTemperature1.Checked = SensorNetworkConfig.ElevationTemp1Init;

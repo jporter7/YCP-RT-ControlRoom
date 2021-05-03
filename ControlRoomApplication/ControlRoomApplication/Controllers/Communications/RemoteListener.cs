@@ -287,7 +287,7 @@ namespace ControlRoomApplication.Controllers
 
                 if (splitData.Length != 10) return false;
 
-                var config = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
+                var config = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig;
 
                 // Set all the sensors to their new initialization
                 config.AzimuthTemp1Init = splitData[(int)SensorInitializationEnum.AzimuthTemp].Equals("1");
