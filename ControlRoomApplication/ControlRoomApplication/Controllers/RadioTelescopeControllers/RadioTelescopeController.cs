@@ -836,7 +836,10 @@ namespace ControlRoomApplication.Controllers
 
                 // insert snow dump movements here
                 // default is azimuth of 0 and elevation of 0
-                Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
+                previousSnowDumpAzimuth += 45;
+                if (previousSnowDumpAzimuth >= 360) previousSnowDumpAzimuth -= 360;
+
+                Orientation dump = new Orientation(previousSnowDumpAzimuth, -5);
                 Orientation current = GetCurrentOrientation();
 
                 Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
