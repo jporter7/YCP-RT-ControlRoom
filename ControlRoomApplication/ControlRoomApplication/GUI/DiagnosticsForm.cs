@@ -165,7 +165,7 @@ namespace ControlRoomApplication.GUI
             lblSNStatus.Text = "";
 
             // Set sensor initialization checkboxes to reflect what is stored in the database
-            SensorNetworkConfig = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.config;
+            SensorNetworkConfig = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig;
 
             AzimuthTemperature1.Checked = SensorNetworkConfig.AzimuthTemp1Init;
             ElevationTemperature1.Checked = SensorNetworkConfig.ElevationTemp1Init;
@@ -286,8 +286,8 @@ namespace ControlRoomApplication.GUI
             double outsideTempCel = (outsideTemp - 32) * (5.0 / 9);
 
             // fahrenheit conversion
-            double ElMotTempFahrenheit = (ElMotTemp * (5.0 / 9)) + 32;
-            double AzMotTempFahrenheit = (AzMotTemp * (5.0 / 9)) + 32;
+            double ElMotTempFahrenheit = (ElMotTemp * (9.0 / 5.0)) + 32;
+            double AzMotTempFahrenheit = (AzMotTemp * (9.0 / 5.0)) + 32;
 
 
 
@@ -1099,7 +1099,14 @@ namespace ControlRoomApplication.GUI
 
         private void btnResetMcuErrors_Click(object sender, EventArgs e)
         {
-            rtController.RadioTelescope.PLCDriver.ResetMCUErrors();
+            if(rtController.ResetMCUErrors())
+            {
+                logger.Info(Utilities.GetTimeStamp() + "Successfully reset motor controller errors.");
+            }
+            else
+            {
+                logger.Info(Utilities.GetTimeStamp() + "Cannot reset motor controller errors while another command is running. Please wait until the other command has completed.");
+            }
         }
 
         private void btnAzimuthAbsoluteEncoder_Click(object sender, EventArgs e)

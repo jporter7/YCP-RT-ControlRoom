@@ -16,7 +16,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
     /// The simulation sensor network, which will respond exactly the same was as the physical SensorNetwork hardware will. The SensorNetworkServer
     /// does not know the difference between this and the physical hardware.
     /// </summary>
-    public class SimulationSensorNetwork
+    public class SimulationSensorNetwork : PacketEncodingTools
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -139,7 +139,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
                     // TODO: Write the values of each sensor status in here so it can get be encoded (issue #376)
                 };
 
-                byte[] dataToSend = PacketEncodingTools.ConvertDataArraysToBytes(
+                byte[] dataToSend = ConvertDataArraysToBytes(
                     subArrays.ElevationAccl, 
                     subArrays.AzimuthAccl, 
                     subArrays.CounterBAccl, 

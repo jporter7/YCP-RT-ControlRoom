@@ -32,7 +32,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         [TestCleanup]
         public void Cleanup()
         {
-            DatabaseOperations.DeleteSensorNetworkConfig(client.config);
+            DatabaseOperations.DeleteSensorNetworkConfig(client.SensorNetworkConfig);
         }
 
         [TestMethod]
@@ -43,7 +43,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             Assert.IsTrue(((string)privClient.GetFieldOrProperty("IPAddress")).Equals(IpAddress));
             Assert.IsTrue((int)privClient.GetFieldOrProperty("Port") == Port);
-            Assert.IsTrue(client.config.TelescopeId == TelescopeId);
+            Assert.IsTrue(client.SensorNetworkConfig.TelescopeId == TelescopeId);
         }
 
         [TestMethod]
@@ -60,7 +60,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Config should now exist and be equal to the one in the client
             retrievedConfig = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(newTelescopeId);
-            Assert.IsTrue(retrievedConfig.Equals(newClient.config));
+            Assert.IsTrue(retrievedConfig.Equals(newClient.SensorNetworkConfig));
 
             // Delete config after use
             DatabaseOperations.DeleteSensorNetworkConfig(retrievedConfig);
@@ -76,7 +76,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             SensorNetworkClient existingClient = new SensorNetworkClient(IpAddress, Port, TelescopeId);
 
             // Config should exist and be equal to the one in the client
-            Assert.IsTrue(retrievedConfig.Equals(existingClient.config));
+            Assert.IsTrue(retrievedConfig.Equals(existingClient.SensorNetworkConfig));
         }
 
         [TestMethod]
@@ -120,7 +120,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             snServer.Join();
 
             // This is what we expect to see on the other end
-            var expected = client.config.GetSensorInitAsBytes();
+            var expected = client.SensorNetworkConfig.GetSensorInitAsBytes();
 
             Assert.IsTrue(succeeded);
             Assert.IsTrue(expected.SequenceEqual(result));
@@ -162,13 +162,13 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             snServer.Start();
 
             // Flip sensor initialization bytes to 0
-            client.config.ElevationTemp1Init = false;
-            client.config.AzimuthTemp1Init = false;
-            client.config.AzimuthAccelerometerInit = false;
-            client.config.ElevationAccelerometerInit = false;
-            client.config.CounterbalanceAccelerometerInit = false;
-            client.config.ElevationEncoderInit = false;
-            client.config.AzimuthEncoderInit = false;
+            client.SensorNetworkConfig.ElevationTemp1Init = false;
+            client.SensorNetworkConfig.AzimuthTemp1Init = false;
+            client.SensorNetworkConfig.AzimuthAccelerometerInit = false;
+            client.SensorNetworkConfig.ElevationAccelerometerInit = false;
+            client.SensorNetworkConfig.CounterbalanceAccelerometerInit = false;
+            client.SensorNetworkConfig.ElevationEncoderInit = false;
+            client.SensorNetworkConfig.AzimuthEncoderInit = false;
 
             // Send the init byte array
             bool succeeded = client.SendSensorInitialization();
@@ -176,7 +176,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             snServer.Join();
 
             // This is what we expect to see on the other end
-            var expected = client.config.GetSensorInitAsBytes();
+            var expected = client.SensorNetworkConfig.GetSensorInitAsBytes();
 
             Assert.IsTrue(succeeded);
             Assert.IsTrue(expected.SequenceEqual(result));

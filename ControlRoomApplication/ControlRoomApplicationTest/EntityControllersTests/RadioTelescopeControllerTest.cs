@@ -655,6 +655,57 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         }
 
         [TestMethod]
+        public void TestHomeTelescope_ContainsFinalOffset_SetsFinalOffset()
+        {
+            Orientation expectedOrientation = new Orientation(20, 20);
+
+            TestRadioTelescopeController.RadioTelescope.CalibrationOrientation = expectedOrientation;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
+
+            Orientation resultMotorEncoderOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+            Orientation resultAbsoluteEncoderOrientation = TestRadioTelescopeController.GetAbsoluteOrientation();
+
+            Assert.AreEqual(MovementResult.Success, result);
+            Assert.IsTrue(expectedOrientation.Equals(resultMotorEncoderOrientation));
+            Assert.IsTrue(expectedOrientation.Equals(resultAbsoluteEncoderOrientation));
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_FinalOffsetAboveAz360_NormalizesAzOffset()
+        {
+            Orientation expectedOrientation = new Orientation(0.5, 20);
+
+            TestRadioTelescopeController.RadioTelescope.CalibrationOrientation = new Orientation(360.5, 20); ;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
+
+            Orientation resultMotorEncoderOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+            Orientation resultAbsoluteEncoderOrientation = TestRadioTelescopeController.GetAbsoluteOrientation();
+
+            Assert.AreEqual(MovementResult.Success, result);
+            Assert.IsTrue(expectedOrientation.Equals(resultMotorEncoderOrientation));
+            Assert.IsTrue(expectedOrientation.Equals(resultAbsoluteEncoderOrientation));
+        }
+
+        [TestMethod]
+        public void TestHomeTelescope_FinalOffsetBelowAz0_NormalizesAzOffset()
+        {
+            Orientation expectedOrientation = new Orientation(359.5, 20);
+
+            TestRadioTelescopeController.RadioTelescope.CalibrationOrientation = new Orientation(-0.5, 20); ;
+
+            MovementResult result = TestRadioTelescopeController.HomeTelescope(MovementPriority.Manual);
+
+            Orientation resultMotorEncoderOrientation = TestRadioTelescopeController.GetCurrentOrientation();
+            Orientation resultAbsoluteEncoderOrientation = TestRadioTelescopeController.GetAbsoluteOrientation();
+
+            Assert.AreEqual(MovementResult.Success, result);
+            Assert.IsTrue(expectedOrientation.Equals(resultMotorEncoderOrientation));
+            Assert.IsTrue(expectedOrientation.Equals(resultAbsoluteEncoderOrientation));
+        }
+
+        [TestMethod]
         public void TestSnowDump_AllStatusesOK_Success()
         {
             MovementResult result = TestRadioTelescopeController.SnowDump(MovementPriority.Manual);
@@ -980,53 +1031,52 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             for (int i = 0; i < threadCount; i++)
                 results[i] = MovementResult.None;
 
-            Thread t0 = new Thread(() =>
+            Thread[] threads = new Thread[7];
+
+            threads[0] = new Thread(() =>
             {
                 results[0] = TestRadioTelescopeController.HomeTelescope(priority);
             });
-            Thread t1 = new Thread(() =>
+            threads[1] = new Thread(() =>
             {
                 results[1] = TestRadioTelescopeController.SnowDump(priority);
             });
-            Thread t2 = new Thread(() =>
+            threads[2] = new Thread(() =>
             {
                 results[2] = TestRadioTelescopeController.MoveRadioTelescopeToCoordinate(c, priority);
             });
-            Thread t3 = new Thread(() =>
+            threads[3] = new Thread(() =>
             {
                 results[3] = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, priority);
             });
-            Thread t4 = new Thread(() =>
+            threads[4] = new Thread(() =>
             {
                 results[4] = TestRadioTelescopeController.ThermalCalibrateRadioTelescope(priority);
             });
-            Thread t5 = new Thread(() =>
+            threads[5] = new Thread(() =>
             {
                 results[5] = TestRadioTelescopeController.StartRadioTelescopeJog(5, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.AZIMUTH);
             });
-            Thread t6 = new Thread(() =>
+            threads[6] = new Thread(() =>
             {
                 results[6] = TestRadioTelescopeController.FullElevationMove(priority);
             });
 
             // Run all threads concurrently
             // These cannot be looped through because a loop adds enough delay to throw off concurrency
-            t0.Start();
-            t1.Start();
-            t2.Start();
-            t3.Start();
-            t4.Start();
-            t5.Start();
-            t6.Start();
+            threads[0].Start();
+            threads[1].Start();
+            threads[2].Start();
+            threads[3].Start();
+            threads[4].Start();
+            threads[5].Start();
+            threads[6].Start();
 
             // Wait for all threads to complete
-            t0.Join();
-            t1.Join();
-            t2.Join();
-            t3.Join();
-            t4.Join();
-            t5.Join();
-            t6.Join();
+            foreach(Thread thread in threads)
+            {
+                thread.Join();
+            }
 
             int successes = 0;
             int alreadyMovings = 0;

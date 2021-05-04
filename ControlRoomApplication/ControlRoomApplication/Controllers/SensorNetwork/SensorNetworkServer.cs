@@ -20,7 +20,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
     /// <summary>
     /// This is the central component of the Sensor Network on the Control Room end. This handles all the main communications
     /// with the main Sensor Network system, such as receiving data, setting statuses based on data it receives, and tells the
-    /// client when to send iniC:\YCP-RT-ControlRoom\ControlRoomApplication\ControlRoomApplication\Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cstialization data.
+    /// client when to send initialization data.
     /// </summary>
     public class SensorNetworkServer : PacketDecodingTools
     {
@@ -167,7 +167,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// These two objects are used together to receive data, and should be destroyed together as well.
         /// </summary>
         private TcpListener Server;
-        NetworkStream Stream;
+        private NetworkStream Stream;
 
         /// <summary>
         /// This should be true as long as the SensorMonitoringThread is running, and set to false if that thread
@@ -195,7 +195,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             Server.Start();
             CurrentlyRunning = true;
             Status = SensorNetworkStatusEnum.Initializing;
-            Timeout.Interval = InitializationClient.config.TimeoutInitialization;
+            Timeout.Interval = InitializationClient.SensorNetworkConfig.TimeoutInitialization;
             Timeout.Start();
             SensorMonitoringThread.Start();
 
@@ -436,7 +436,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         // status will overwrite any preexisting status errors.
                         if (Status == SensorNetworkStatusEnum.ReceivingData)
                         {
-                            Timeout.Interval = InitializationClient.config.TimeoutDataRetrieval;
+                            Timeout.Interval = InitializationClient.SensorNetworkConfig.TimeoutDataRetrieval;
                             Timeout.Start();
                         }
                     }

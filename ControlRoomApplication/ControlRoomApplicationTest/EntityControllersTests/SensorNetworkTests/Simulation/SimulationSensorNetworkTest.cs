@@ -45,7 +45,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestCleanup]
         public void Cleanup()
         {
-            DatabaseOperations.DeleteSensorNetworkConfig(SensorNetworkServer.InitializationClient.config);
+            DatabaseOperations.DeleteSensorNetworkConfig(SensorNetworkServer.InitializationClient.SensorNetworkConfig);
         }
 
         [TestMethod]

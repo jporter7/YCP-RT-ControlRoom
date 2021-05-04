@@ -21,6 +21,12 @@ namespace ControlRoomApplication.Controllers
         public CoordinateCalculationController CoordinateController { get; set; }
         public OverrideSwitchData overrides;
 
+        /// <summary>
+        /// This is the final offset for when the telescope is set in production. It will be the offset to make sure
+        /// orientation 0,0 corresponds to what it should be when the telescope is set up.
+        /// </summary>
+        private Orientation FinalCalibrationOffset;
+
         private object MovementLock = new object();
 
         // Thread that monitors database current temperature
@@ -68,6 +74,7 @@ namespace ControlRoomApplication.Controllers
             snowDumpTimer.AutoReset = true;
             snowDumpTimer.Enabled = true;
 
+            FinalCalibrationOffset = new Orientation(0, 0);
         }
 
         /// <summary>
@@ -93,7 +100,17 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-            return RadioTelescope.PLCDriver.GetMotorEncoderPosition();
+            // Apply final offset
+            Orientation finalOffsetOrientation = new Orientation();
+
+            finalOffsetOrientation.Elevation = RadioTelescope.PLCDriver.GetMotorEncoderPosition().Elevation + FinalCalibrationOffset.Elevation;
+            finalOffsetOrientation.Azimuth = RadioTelescope.PLCDriver.GetMotorEncoderPosition().Azimuth + FinalCalibrationOffset.Azimuth;
+
+            // Normalize azimuth orientation
+            while (finalOffsetOrientation.Azimuth > 360) finalOffsetOrientation.Azimuth -= 360;
+            while (finalOffsetOrientation.Azimuth < 0) finalOffsetOrientation.Azimuth += 360;
+
+            return finalOffsetOrientation;
         }
 
         /// <summary>
@@ -102,7 +119,17 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public Orientation GetAbsoluteOrientation()
         {
-            return RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation;
+            // Apply final offset
+            Orientation finalOffsetOrientation = new Orientation();
+
+            finalOffsetOrientation.Elevation = RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation + FinalCalibrationOffset.Elevation;
+            finalOffsetOrientation.Azimuth = RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth + FinalCalibrationOffset.Azimuth;
+
+            // Normalize azimuth orientation
+            while (finalOffsetOrientation.Azimuth > 360) finalOffsetOrientation.Azimuth -= 360;
+            while (finalOffsetOrientation.Azimuth < 0) finalOffsetOrientation.Azimuth += 360;
+
+            return finalOffsetOrientation;
         }
 
         /// <summary>
@@ -378,7 +405,11 @@ namespace ControlRoomApplication.Controllers
             if (Monitor.TryEnter(MovementLock)) {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
+                // Remove all offsets first so we can accurately zero out the positions
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = new Orientation(0, 0);
+                FinalCalibrationOffset = new Orientation(0, 0);
+
+                // Perform a home telescope movement
                 result = RadioTelescope.PLCDriver.HomeTelescope();
 
                 // Zero out absolute encoders
@@ -395,6 +426,9 @@ namespace ControlRoomApplication.Controllers
                 {
                     result = MovementResult.IncorrectPosition;
                 }
+
+                // Apply final calibration offset
+                FinalCalibrationOffset = RadioTelescope.CalibrationOrientation;
 
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
                 
@@ -590,6 +624,28 @@ namespace ControlRoomApplication.Controllers
             return success;
         }
 
+        /// <summary>
+        /// This allows us to safely reset the motor controller errors if an error bit happens to be set.
+        /// This way, we don't have to restart the hardware to get things to work.
+        /// </summary>
+        /// <remarks>
+        /// This will overwrite a movement if one is currently running, so it cannot be run unless there are
+        /// no movements running.
+        /// </remarks>
+        /// <returns>True if successful, False if another movement is currently running</returns>
+        public bool ResetMCUErrors()
+        {
+            bool success = false;
+
+            if(Monitor.TryEnter(MovementLock))
+            {
+                RadioTelescope.PLCDriver.ResetMCUErrors();
+                success = true;
+                Monitor.Exit(MovementLock);
+            }
+
+            return success;
+        }
 
         /// <summary>
         /// return true if the RT has finished the previous move comand
