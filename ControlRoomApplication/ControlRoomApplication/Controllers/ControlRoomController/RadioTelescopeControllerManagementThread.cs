@@ -477,22 +477,6 @@ namespace ControlRoomApplication.Controllers
             RTController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
         }
 
-        public static int IndexOf(List<RadioTelescopeControllerManagementThread> ThreadList, RadioTelescope RadioTelescope)
-        {
-            int i = 0;
-            foreach (RadioTelescopeControllerManagementThread rtmt in ThreadList)
-            {
-                if (rtmt.RTController.RadioTelescope.Equals(RadioTelescope))
-                {
-                    return i;
-                }
-
-                i++;
-            }
-
-            return -1;
-        }
-
         /// <summary>
         /// Checks to see if there are any sensors that are not overriden
         /// calls the stop telescope function if it is not safe
