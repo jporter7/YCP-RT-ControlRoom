@@ -95,9 +95,8 @@ namespace ControlRoomApplication.Main
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
             CurrentAppointment.CelestialBody = new CelestialBody();
             CurrentAppointment.CelestialBody.Coordinate = new Coordinate(0, 0);
-
-            // TODO: Have this get the absolute orientation when it starts up
-            CurrentAppointment.Orientation = new Entities.Orientation(0, 0);//rtController.GetAbsoluteOrientation();
+            
+            CurrentAppointment.Orientation = rtController.GetCurrentOrientation();
             CurrentAppointment.Telescope = controlRoom.RadioTelescopes.Find(x => x.Id == rtId);
             CurrentAppointment.User = ControlRoomUser;
 

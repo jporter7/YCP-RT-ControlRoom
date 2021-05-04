@@ -553,7 +553,6 @@ namespace ControlRoomApplication.Controllers
         public abstract bool BringDown();
         protected abstract void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response);
 
-        // TODO: implement proper error handling if ch is out of acceptable range
         protected static int HexCharToInt(char ch)
         {
             int baseVal = Convert.ToByte(ch);

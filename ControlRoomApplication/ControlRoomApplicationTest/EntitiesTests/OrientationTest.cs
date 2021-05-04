@@ -86,20 +86,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             const int SAFE_VAL = 50;
 
             // Valid (low edge azimuth)
-            Orientation orientation = new Orientation(-5, SAFE_VAL);
-            Assert.IsTrue(orientation.orientationValid());
-
-            // Valid (high edge azimuth)
-            orientation = new Orientation(365, SAFE_VAL);
-            Assert.IsTrue(orientation.orientationValid());
-
-            // Invalid (low azimuth)
-            orientation = new Orientation(-6, SAFE_VAL);
-            Assert.IsFalse(orientation.orientationValid());
-
-            // Invalid (high azimuth)
-            orientation = new Orientation(366, SAFE_VAL);
-            Assert.IsFalse(orientation.orientationValid());
+            Orientation orientation;
 
             // Valid (low edge elevation)
             orientation = new Orientation(SAFE_VAL, -15);
