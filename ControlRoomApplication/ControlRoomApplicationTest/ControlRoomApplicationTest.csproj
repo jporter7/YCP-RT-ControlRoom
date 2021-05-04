@@ -102,6 +102,7 @@
     <Compile Include="CommunicationTests\PushNotificationTest.cs" />
     <Compile Include="CommunicationTests\RemoteListenerTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
+    <Compile Include="EntitiesTests\AccelerationBlobTest.cs" />
     <Compile Include="EntitiesTests\AccelerationTest.cs" />
     <Compile Include="EntitiesTests\TemperatureTest.cs" />
     <Compile Include="EntitiesTests\SensorNetworkConfigTest.cs" />

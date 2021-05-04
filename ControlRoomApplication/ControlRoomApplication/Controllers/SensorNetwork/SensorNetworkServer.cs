@@ -96,6 +96,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             Timeout = new System.Timers.Timer();
             Timeout.Elapsed += TimedOut; // TimedOut is the function at the bottom that executes when this elapses
             Timeout.AutoReset = false;
+
+            AccBlob = new AccelerationBlob();
         }
 
         /// <summary>
@@ -185,6 +187,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This will help us detect if the SensorNetworkServer has stopped receiving data.
         /// </summary>
         private System.Timers.Timer Timeout { get; }
+
+        /// <summary>
+        /// This will be used to help send acceleration data to the database
+        /// </summary>
+        private AccelerationBlob AccBlob { get; set; }
+
 
         /// <summary>
         /// This starts the SensorMonitoringRoutine. Calling this will immediately begin initialization.
@@ -334,36 +342,37 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         // Accelerometer 1 (elevation)
                         if (elAcclSize > 0)
                         {
+                            //Create array of acceleration objects 
                             CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
-                            //Database.DatabaseOperations.AddSensorData(CurrentElevationMotorAccl);
+                            AccBlob.BuildAccelerationString(CurrentElevationMotorAccl);
                         }
 
                         // Accelerometer 2 (azimuth)
                         if (azAcclSize > 0)
                         {
                             CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
-                            //Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorAccl);
+                            AccBlob.BuildAccelerationString(CurrentAzimuthMotorAccl);
                         }
 
                         // Accelerometer 3 (counterbalance)
                         if (cbAcclSize > 0)
                         {
                             CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
-                            //Database.DatabaseOperations.AddSensorData(CurrentCounterbalanceAccl);
+                            AccBlob.BuildAccelerationString(CurrentCounterbalanceAccl);
                         }
 
                         // Elevation temperature
                         if (elTempSensorSize > 0)
                         {
                             CurrentElevationMotorTemp = GetTemperatureFromBytes(ref k, data, elTempSensorSize, SensorLocationEnum.EL_MOTOR);
-                            //Database.DatabaseOperations.AddSensorData(CurrentElevationMotorTemp);
+                            Database.DatabaseOperations.AddSensorData(CurrentElevationMotorTemp);
                         }
 
                         // Azimuth temperature
                         if (azTempSensorSize > 0)
                         {
                             CurrentAzimuthMotorTemp = GetTemperatureFromBytes(ref k, data, azTempSensorSize, SensorLocationEnum.AZ_MOTOR);
-                            //Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorTemp);
+                            Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorTemp);
                         }
 
                         // Elevation absolute encoder
