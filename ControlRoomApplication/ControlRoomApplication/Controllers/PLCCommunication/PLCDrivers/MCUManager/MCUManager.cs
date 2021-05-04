@@ -905,7 +905,7 @@ namespace ControlRoomApplication.Controllers {
             // the motors if this happens. All other errors entail stopping the motors.
             if (hitLimitSwitch)
             {
-                result = MovementResult.LimitSwitchHit;
+                result = MovementResult.LimitSwitchOrEstopHit;
                 ResetMCUErrors();
             }
             else
