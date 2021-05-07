@@ -317,7 +317,7 @@ namespace ControlRoomApplication.Controllers
             {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
-                result = RadioTelescope.PLCDriver.MoveToOrientation(orientation, RadioTelescope.PLCDriver.GetMotorEncoderPosition());
+                result = RadioTelescope.PLCDriver.MoveToOrientation(orientation, GetCurrentOrientation());
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
 
                 Monitor.Exit(MovementLock);
@@ -356,7 +356,7 @@ namespace ControlRoomApplication.Controllers
             {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
-                result = RadioTelescope.PLCDriver.MoveToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), RadioTelescope.PLCDriver.GetMotorEncoderPosition()); // MOVE
+                result = RadioTelescope.PLCDriver.MoveToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), GetCurrentOrientation());
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
 
                 Monitor.Exit(MovementLock);

@@ -180,7 +180,6 @@ namespace ControlRoomApplication.Controllers {
                     // disconnected
                     if (((networkStatus[0] >> (ushort)MCUNetworkStatus.MCUNetworkDisconnected) & 1) == 1)
                     {
-                        logger.Warn(Utilities.GetTimeStamp() + ": MCU network recovered from being disconnected.");
                         inError = false;
                     }
                 }
