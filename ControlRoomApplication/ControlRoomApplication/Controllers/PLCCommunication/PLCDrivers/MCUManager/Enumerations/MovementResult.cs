@@ -77,6 +77,12 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// <summary>
         /// This is only used for Jog commands if they are running overtop of a movement that is lower priority.
         /// </summary>
-        StoppingCurrentMove
+        StoppingCurrentMove,
+
+        /// <summary>
+        /// This is set if the command could not be sent to the MCU for whatever reason. The most common reason this
+        /// may happen is if the MCU goes offline, Ethernet becomes disconnected, etc.
+        /// </summary>
+        CouldNotSendCommand
     }
 }

@@ -152,9 +152,9 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool CancelCurrentMoveCommand(MovementPriority priority)
+        public MovementResult CancelCurrentMoveCommand(MovementPriority priority)
         {
-            bool result = false;
+            MovementResult result = MovementResult.None;
 
 
             if(Monitor.TryEnter(MovementLock) && priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
@@ -558,11 +558,11 @@ namespace ControlRoomApplication.Controllers
             {
                 if (stopType == MCUCommandType.ControlledStop)
                 {
-                    if (RadioTelescope.PLCDriver.Cancel_move()) result = MovementResult.Success;
+                    result = RadioTelescope.PLCDriver.Cancel_move();
                 }
                 else if (stopType == MCUCommandType.ImmediateStop)
                 {
-                    if (RadioTelescope.PLCDriver.ImmediateStop()) result = MovementResult.Success;
+                    result = RadioTelescope.PLCDriver.ImmediateStop();
                 }
                 else throw new ArgumentException("Jogs can only be stopped with a controlled stop or immediate stop.");
 
@@ -582,21 +582,21 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRadioTelescopeControlledStop(MovementPriority priority)
+        public MovementResult ExecuteRadioTelescopeControlledStop(MovementPriority priority)
         {
-            bool success = false;
+            MovementResult result = MovementResult.None;
 
             if (Monitor.TryEnter(MovementLock))
             {
                 if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
                 {
-                    success = RadioTelescope.PLCDriver.ControlledStop();
+                    result = RadioTelescope.PLCDriver.ControlledStop();
                     RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
                 }
                 Monitor.Exit(MovementLock);
             }
 
-            return success;
+            return result;
         }
 
         /// <summary>
@@ -607,21 +607,21 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRadioTelescopeImmediateStop(MovementPriority priority)
+        public MovementResult ExecuteRadioTelescopeImmediateStop(MovementPriority priority)
         {
-            bool success = false;
+            MovementResult result = MovementResult.None;
 
             if (Monitor.TryEnter(MovementLock))
             {
                 if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
                 {
-                    success = RadioTelescope.PLCDriver.ImmediateStop();
+                    result = RadioTelescope.PLCDriver.ImmediateStop();
                     RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
                 }
                 Monitor.Exit(MovementLock);
             }
 
-            return success;
+            return result;
         }
 
         /// <summary>
