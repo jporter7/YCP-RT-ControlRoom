@@ -7,6 +7,7 @@ using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
 using System.Threading;
+using System.Text;
 
 namespace ControlRoomApplicationTest.DatabaseOperationsTests
 {
@@ -535,6 +536,26 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.AreEqual(acc[accReturn.Count - 2].z, accReturn[accReturn.Count - 2].z);
             Assert.AreEqual(acc[accReturn.Count - 2].TimeCaptured, accReturn[accReturn.Count - 2].TimeCaptured);
 
+        }
+
+
+        //Acceleration
+        [TestMethod]
+        public void TestAddAndRetrieveAccelerationBlob()
+        {
+            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            AccelerationBlob acc = new AccelerationBlob();
+            acc.Blob = "abcdefghijklmnopqrstuvwxyz";
+
+            DatabaseOperations.AddAccelerationBlobData(acc, dateTime1, true);
+            List<AccelerationBlob> accReturn = DatabaseOperations.GetAccBlobData(dateTime1 - 1, dateTime1 + 1);
+
+            Assert.AreEqual(1, accReturn.Count);
+
+            //Test only acc
+            Assert.AreEqual(acc.Blob, accReturn[0].Blob);
+            Assert.AreEqual(acc.TimeCaptured, accReturn[0].TimeCaptured);
         }
 
         [TestMethod]

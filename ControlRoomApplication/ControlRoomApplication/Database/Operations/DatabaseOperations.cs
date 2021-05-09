@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Data.Entity.Core.Objects;
 using ControlRoomApplication.Util;
 using System.Threading;
+using System.Text;
 
 namespace ControlRoomApplication.Database
 {
@@ -594,6 +595,33 @@ namespace ControlRoomApplication.Database
 
             if (testflag) t.Join();
         }
+
+        /// <summary>
+        /// add an string of sensor data to the apropriat table
+        /// </summary>
+        /// <param name="acc"></param>
+        public static void AddAccelerationBlobData(AccelerationBlob acc, long dateTime1, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+                acc.TimeCaptured = dateTime1;
+
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        Context.AccelerationBlobs.Add(acc);
+                        //foreach(Temperature tump in temp) {}
+                        SaveContext(Context);
+                    }
+                }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
+        }
+
         /// <summary>
         /// get acc between starttime and now from sensor location loc
         /// </summary>
@@ -601,9 +629,24 @@ namespace ControlRoomApplication.Database
         /// <param name="endTime"> currently unused</param>
         /// <param name="loc"></param>
         /// <returns></returns>
-        public static List<Acceleration> GetACCData( long starttime , long endTime, SensorLocationEnum loc ) {
+        public static List<Acceleration> GetACCData(long starttime, long endTime, SensorLocationEnum loc)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {//&& x.TimeCaptured < endTime
+                return Context.Accelerations.Where(x => x.TimeCaptured > starttime && x.location_ID == (int)loc).ToList();
+            }
+        }
+
+        /// <summary>
+        /// get acc between starttime and now from acc
+        /// </summary>
+        /// <param name="starttime"></param>
+        /// <param name="endTime"> currently unused</param>
+        /// <param name="loc"></param>
+        /// <returns></returns>
+        public static List<AccelerationBlob> GetAccBlobData( long starttime , long endTime) {
             using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
-                return Context.Accelerations.Where( x => x.TimeCaptured > starttime && x.location_ID == (int)loc ).ToList();
+                return Context.AccelerationBlobs.Where( x => x.TimeCaptured > starttime && x.TimeCaptured < endTime).ToList();
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 
@@ -41,6 +42,7 @@ namespace ControlRoomApplication.Main
         public DbSet<Log> Logs { get; set; }
         public DbSet<Temperature> Temperatures { get; set; }
         public DbSet<Acceleration> Accelerations { get; set; }
+        public DbSet<AccelerationBlob> AccelerationBlobs { get; set; }
         public DbSet<CelestialBody> CelestialBodies { get; set; }
         public DbSet<SensorNetworkConfig> SensorNetworkConfig { get; set; }
         public DbSet<SpectraCyberConfig> SpectraCyberConfigs { get; set; }

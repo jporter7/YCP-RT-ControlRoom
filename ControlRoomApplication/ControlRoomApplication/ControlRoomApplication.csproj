@@ -252,6 +252,7 @@
     <Compile Include="Controllers\Communications\RemoteListener.cs" />
     <Compile Include="Controllers\Communications\SNSMessage.cs" />
     <Compile Include="Documentation\LoggerQueue.cs" />
+    <Compile Include="Entities\Acceleration\AccelerationBlob.cs" />
     <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
