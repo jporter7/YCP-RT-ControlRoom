@@ -265,8 +265,10 @@ namespace ControlRoomApplication.GUI
 
             //double testVal = rtController.RadioTelescope.Encoders.GetCurentOrientation().Azimuth;
 
-            _azEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth;
-            _elEncoderDegrees = rtController.RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation;
+            Entities.Orientation currAbsOrientation = rtController.GetAbsoluteOrientation();
+
+            _azEncoderDegrees = currAbsOrientation.Azimuth;
+            _elEncoderDegrees = currAbsOrientation.Elevation;
             lblAzAbsPos.Text = Math.Round(_azEncoderDegrees, 2).ToString();
             lblElAbsPos.Text = Math.Round(_elEncoderDegrees, 2).ToString();
 

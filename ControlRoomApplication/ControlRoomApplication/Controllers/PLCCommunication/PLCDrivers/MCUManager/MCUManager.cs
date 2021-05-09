@@ -5,6 +5,7 @@ using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.Configuration;
 using ControlRoomApplication.Simulators.Hardware;
+using ControlRoomApplication.Util;
 using Modbus.Device;
 using System;
 using System.Collections.Concurrent;
@@ -44,6 +45,7 @@ namespace ControlRoomApplication.Controllers {
             McuPort = port;
             McuIp = ip;
 
+            logger.Info(Utilities.GetTimeStamp() + ": Attempting to connect to the MCU...");
             ConnectToModbusServer();
 
             HeartbeatMonitorThread = new Thread(new ThreadStart(HeartbeatMonitor)) { Name = "MCU Heartbeat Monitor Thread" };
@@ -54,7 +56,6 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns>Result of whether or not the connection was successful.</returns>
         private bool ConnectToModbusServer() {
-            logger.Info("Attempting to connect to the MCU...");
 
             // Attempt to connect to the MCU's TCP server
             try
@@ -63,8 +64,6 @@ namespace ControlRoomApplication.Controllers {
             }
             catch
             {
-                logger.Error("There was an error connecting to the MCU's TCP server. Please shut down the Control Room software " +
-                    "and verify that the Ethernet cable connecting the PLC to the MCU is firmly in place.");
                 return false;
             }
 
@@ -74,10 +73,10 @@ namespace ControlRoomApplication.Controllers {
             }
             catch
             {
-                logger.Error("There was an error creating the Modbus IP Master. Please shut down the Control Room software and verify " +
-                    "that there are no loose connections between the PLC and the MCU.");
                 return false;
             }
+
+            logger.Info(Utilities.GetTimeStamp() + ": Successfully connected to the MCU and the Modbus Master!");
 
             return true;
         }
@@ -99,7 +98,6 @@ namespace ControlRoomApplication.Controllers {
             // This may happen if we lose connection to the MCU
             catch (InvalidOperationException)
             {
-                logger.Error("The MCU failed to retrieve the register data, and is either offline or the connection has been terminated.");
                 value = new ushort[50];
             }
 
@@ -130,7 +128,7 @@ namespace ControlRoomApplication.Controllers {
             }
             catch (InvalidOperationException) {
                 
-                logger.Error("The MCU failed to receive the command, and is either offline or the connection has been terminated.");
+                logger.Error(Utilities.GetTimeStamp() + ": The MCU failed to receive the command, and is either offline or the connection has been terminated.");
                 return false;
             }
 
@@ -159,8 +157,9 @@ namespace ControlRoomApplication.Controllers {
                     {
                         if (!inError)
                         {
-                            logger.Error("MCU network disconnected...");
+                            logger.Error(Utilities.GetTimeStamp() + ": The MCU failed to retrieve the register data, and is either offline or the connection has been terminated.");
                             inError = true;
+                            logger.Info(Utilities.GetTimeStamp() + ": Attempting to connect to the MCU...");
                         }
                         ConnectToModbusServer();
                         lastConnectAttempt = DateTime.Now;
@@ -181,7 +180,6 @@ namespace ControlRoomApplication.Controllers {
                     // disconnected
                     if (((networkStatus[0] >> (ushort)MCUNetworkStatus.MCUNetworkDisconnected) & 1) == 1)
                     {
-                        logger.Warn("MCU network recovered from being disconnected.");
                         inError = false;
                     }
                 }
@@ -205,7 +203,7 @@ namespace ControlRoomApplication.Controllers {
             {
                 if((e is ThreadStateException) || (e is OutOfMemoryException))
                 {
-                    logger.Error( "Failed to start the MCU heartbeat monitor thread. Please restart the Control Room software.");
+                    logger.Error(Utilities.GetTimeStamp() + ": Failed to start the MCU heartbeat monitor thread. Please restart the Control Room software.");
                     return false;
                 }
             }
@@ -223,7 +221,7 @@ namespace ControlRoomApplication.Controllers {
                 HeartbeatMonitorThread.Join();
             } catch(Exception e) {
                 if((e is ThreadStateException) || (e is ThreadStartException)) {
-                    logger.Error( e );
+                    logger.Error(Utilities.GetTimeStamp() + ": " + e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
@@ -905,7 +903,7 @@ namespace ControlRoomApplication.Controllers {
             // the motors if this happens. All other errors entail stopping the motors.
             if (hitLimitSwitch)
             {
-                result = MovementResult.LimitSwitchHit;
+                result = MovementResult.LimitSwitchOrEstopHit;
                 ResetMCUErrors();
             }
             else

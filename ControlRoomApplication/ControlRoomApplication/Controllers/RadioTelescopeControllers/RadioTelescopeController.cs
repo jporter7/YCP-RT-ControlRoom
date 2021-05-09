@@ -317,7 +317,7 @@ namespace ControlRoomApplication.Controllers
             {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
-                result = RadioTelescope.PLCDriver.MoveToOrientation(orientation, RadioTelescope.PLCDriver.GetMotorEncoderPosition());
+                result = RadioTelescope.PLCDriver.MoveToOrientation(orientation, GetCurrentOrientation());
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
 
                 Monitor.Exit(MovementLock);
@@ -356,7 +356,7 @@ namespace ControlRoomApplication.Controllers
             {
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
 
-                result = RadioTelescope.PLCDriver.MoveToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), RadioTelescope.PLCDriver.GetMotorEncoderPosition()); // MOVE
+                result = RadioTelescope.PLCDriver.MoveToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), GetCurrentOrientation());
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
 
                 Monitor.Exit(MovementLock);
@@ -836,7 +836,10 @@ namespace ControlRoomApplication.Controllers
 
                 // insert snow dump movements here
                 // default is azimuth of 0 and elevation of 0
-                Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
+                previousSnowDumpAzimuth += 45;
+                if (previousSnowDumpAzimuth >= 360) previousSnowDumpAzimuth -= 360;
+
+                Orientation dump = new Orientation(previousSnowDumpAzimuth, -5);
                 Orientation current = GetCurrentOrientation();
 
                 Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);

@@ -170,7 +170,7 @@ namespace ControlRoomApplication.Controllers
                     BringDown();
                     break;
 
-                // TODO: implement this case further probably
+                // This command type is unused
                 case SpectraCyberCommandTypeEnum.SCAN_STOP:
                     break;
 

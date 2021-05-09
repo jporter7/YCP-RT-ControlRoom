@@ -27,6 +27,19 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         LimitSwitchHit,
 
         /// <summary>
+        /// An emergency stop was hit during the movement, so it was cancelled.
+        /// </summary>
+        EstopHit,
+
+        /// <summary>
+        /// A limit switch or emergency stop was hit during the movement, so it was cancelled.
+        /// </summary>
+        /// <remarks>
+        /// This exists because the MCU error bit denoting limit switch or estop activity are shared.
+        /// </remarks>
+        LimitSwitchOrEstopHit,
+
+        /// <summary>
         /// The movement took too long to complete, so it timed out.
         /// </summary>
         TimedOut,

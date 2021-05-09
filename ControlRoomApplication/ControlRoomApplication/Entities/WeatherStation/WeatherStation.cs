@@ -101,9 +101,6 @@ namespace ControlRoomApplication.Entities.WeatherStation
         /// <returns> void </returns>
         protected void InitializeStation(int commPort)
         {
-            
-            // TODO: make com port a parameter for InitializeStation
-
             if (OpenCommPort_V((short)commPort, 19200) != 0)
             {
                 logger.Error(Utilities.GetTimeStamp() + ": OpenCommPort unsuccessful!");
