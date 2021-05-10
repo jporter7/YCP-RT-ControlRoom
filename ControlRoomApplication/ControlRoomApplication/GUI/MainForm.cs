@@ -500,7 +500,7 @@ namespace ControlRoomApplication.Main
             {
                 RadioTelescope newRT = new RadioTelescope();
                 newRT.Location = new Location(0, 0, 0, "");
-                newRT.CalibrationOrientation = new Entities.Orientation(0, 90);
+                newRT.CalibrationOrientation = new Entities.Orientation(0, 0);
                 newRT.CurrentOrientation = new Entities.Orientation(0, 0);
 
                 // This is the TELESCOPE TYPE

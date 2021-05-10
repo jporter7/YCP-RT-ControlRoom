@@ -497,7 +497,7 @@ namespace ControlRoomApplication.Database
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x._Status == AppointmentStatusEnum.COMPLETED || x._Status == AppointmentStatusEnum.CANCELED);
+                    appointments.RemoveAll(x => x._Status == AppointmentStatusEnum.COMPLETED || x._Status == AppointmentStatusEnum.CANCELED || x._Status == AppointmentStatusEnum.REQUESTED);
                     appointments.Sort();
                     appointment = appointments.Count > 0 ? appointments[0] : null;
                 }
