@@ -266,6 +266,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
         private Appointment WaitForNextAppointment()
         {
+            bool waiting = false;
             Appointment NextAppointment = DatabaseOperations.GetNextAppointment(RadioTelescopeID);
             TimeSpan diff;
             while (NextAppointment != null && (diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
@@ -280,20 +281,10 @@ namespace ControlRoomApplication.Controllers
                 // Delay between checking database for new appointments
                 Thread.Sleep(100);
 
-                logger.Info(Utilities.GetTimeStamp() + ": Waiting for the next appointment to be within 1 minutes.");
+                if(!waiting) logger.Info(Utilities.GetTimeStamp() + ": Waiting for the next appointment to be within 1 minutes.");
+                waiting = true;
             }
 
-
-            /*          while ((diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
-                      {
-                          if (InterruptAppointmentFlag || (!KeepThreadAlive))
-                          {
-                              return null;
-                          }
-
-                          // Wait more
-                      }
-                      */
             if (NextAppointment != null && NextAppointment.Equals(OldAppointment))
             {
                 logger.Info(Utilities.GetTimeStamp() + ": The next appointment is now within the correct timeframe.");
@@ -439,7 +430,7 @@ namespace ControlRoomApplication.Controllers
                     Console.Out.WriteLine($"Could not write data! Error: {e}");
                 }
 
-                EmailNotifications.sendToUser(NextAppointment.User, subject, text, emailSender, attachmentPath);
+                EmailNotifications.sendToUser(NextAppointment.User, subject, text, emailSender, attachmentPath, true);
 
                 // Clean up after yourself, otherwise you'll just fill up our storage space
                 DataToCSV.DeleteCSVFileWhenDone(attachmentPath);
