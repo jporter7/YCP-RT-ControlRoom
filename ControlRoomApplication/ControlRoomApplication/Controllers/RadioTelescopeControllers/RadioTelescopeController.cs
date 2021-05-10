@@ -239,6 +239,7 @@ namespace ControlRoomApplication.Controllers
                 if (moveResult != MovementResult.Success)
                 {
                     if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    RadioTelescope.SpectraCyberController.StopScan();
                     Monitor.Exit(MovementLock);
                     return moveResult;
                 }
@@ -267,6 +268,7 @@ namespace ControlRoomApplication.Controllers
 
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
 
+                RadioTelescope.SpectraCyberController.StopScan();
                 Monitor.Exit(MovementLock);
             }
             else
