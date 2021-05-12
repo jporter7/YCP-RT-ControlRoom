@@ -208,35 +208,41 @@
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\ThreadNameConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\AbstractMicrocontroller.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\AbstractEncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\SimulatedEncoder.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\EncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
     <Compile Include="Controllers\Communications\DataToCSV.cs" />
     <Compile Include="Controllers\Communications\EmailNotifications.cs" />
-    <Compile Include="Controllers\Communications\Encryption\AES.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
     <Compile Include="Controllers\Communications\pushNotification.cs" />
     <Compile Include="Controllers\Communications\SendAttachmentHelper.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MCUNetworkStatus.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MovementResult.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUCommand.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MCUCommandType.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUManager.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUMessages.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MovePriority.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCEvents.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\AccelerometerErrorCodes.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\AccelerometerSelfTestState.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\AzimuthEncoderErrorCodes.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\TemperatureErrorCodes.cs" />
     <Compile Include="Controllers\SensorNetwork\PacketDecodingTools.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorInitializationEnum.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkClient.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkConstants.cs" />
     <Compile Include="Controllers\SensorNetwork\SensorNetworkServer.cs" />
-    <Compile Include="Controllers\SensorNetwork\SensorNetworkStatusEnum.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorNetworkStatusEnum.cs" />
     <Compile Include="Controllers\SensorNetwork\Simulation\PacketEncodingTools.cs" />
     <Compile Include="Controllers\SensorNetwork\Simulation\RawAccelerometerData.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\SensorStatuses.cs" />
     <Compile Include="Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\SimulationSubArrayData.cs" />
     <Compile Include="Controllers\Sensors\MiscPlcInput.cs" />
     <Compile Include="Controllers\Sensors\OverrideSwitchData.cs" />
     <Compile Include="Controllers\Sensors\TempSensorData.cs" />
@@ -246,12 +252,14 @@
     <Compile Include="Controllers\Communications\RemoteListener.cs" />
     <Compile Include="Controllers\Communications\SNSMessage.cs" />
     <Compile Include="Documentation\LoggerQueue.cs" />
+    <Compile Include="Entities\Acceleration\AccelerationBlob.cs" />
     <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBodyStatusEnum.cs" />
     <Compile Include="Entities\Configuration\MCUConfiguration.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorNetworkSensorStatus.cs" />
     <Compile Include="Entities\DiagnosticData\Temperature.cs" />
     <Compile Include="Entities\Exceptions\MCUExceptions.cs" />
     <Compile Include="Entities\Location\SensorLocationEnum.cs" />
@@ -259,6 +267,7 @@
     <Compile Include="Entities\Override\Override.cs" />
     <Compile Include="Entities\ProximitySensor\AbstractProximitySensor.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeDirectionEnum.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeTypeEnum.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeConfig.cs" />
     <Compile Include="Entities\SensorNetworkConfig\SensorNetworkConfig.cs" />
@@ -317,6 +326,7 @@
     <Compile Include="GUI\DiagnosticsForm.Designer.cs">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\DropDownEnums\SensorNetworkDropdown.cs" />
     <Compile Include="GUI\EditTestForm.cs">
       <SubType>Form</SubType>
     </Compile>

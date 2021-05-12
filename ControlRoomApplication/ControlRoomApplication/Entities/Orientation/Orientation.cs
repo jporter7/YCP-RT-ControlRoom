@@ -54,10 +54,7 @@ namespace ControlRoomApplication.Entities
         /// <returns></returns>
         public bool orientationValid()
         {
-            // TODO: implement slip ring accomodation
             if (
-                Azimuth > SimulationConstants.LIMIT_CCW_AZ_DEGREES ||
-                Azimuth < SimulationConstants.LIMIT_CW_AZ_DEGREES ||
                 Elevation > SimulationConstants.LIMIT_HIGH_EL_DEGREES ||
                 Elevation < SimulationConstants.LIMIT_LOW_EL_DEGREES
                 )

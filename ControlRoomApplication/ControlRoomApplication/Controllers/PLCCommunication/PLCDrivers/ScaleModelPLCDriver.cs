@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
 using Newtonsoft.Json;
 using static ControlRoomApplication.Constants.MCUConstants;
@@ -217,7 +218,7 @@ namespace ControlRoomApplication.Controllers {
             return true;
         }
 
-        public override Orientation read_Position() {
+        public override Orientation GetMotorEncoderPosition() {
             return new Orientation();
         }
 
@@ -226,16 +227,6 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override bool Shutdown_PLC_MCU() {
-            return true;
-
-        }
-
-        public override Task<bool> Thermal_Calibrate() {
-            return null;
-
-        }
-        
         public override bool Configure_MCU( double startSpeedAzimuth , double startSpeedElevation , int homeTimeoutAzimuth , int homeTimeoutElevation ) {
             return true;
         }
@@ -250,7 +241,7 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public bool send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public MovementResult SendRelativeMove(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
             // Move the scale model's azimuth motor on com3 and its elevation on com4
             // make sure there is a delay in this thread for enough time to have the arduino
             // move the first motor (azimuth)
@@ -270,10 +261,10 @@ namespace ControlRoomApplication.Controllers {
             // Print the state of the move operation to the console.
             //Console.WriteLine(state);
 
-            return true;
+            return MovementResult.Success;
         }
 
-        public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
             /*
                     if(Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT) {
                         logger.Error( $"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range." );
@@ -285,16 +276,14 @@ namespace ControlRoomApplication.Controllers {
                     */
             // Convert orientation object to a json string
             //string jsonOrientation = JsonConvert.SerializeObject( Plc.OutgoingOrientation );
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL );
+            return SendRelativeMove(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL);
 
         }
 
 
 
-        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
         {
-
-
             int positionTranslationAZ, positionTranslationEL;
             positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
@@ -308,92 +297,13 @@ namespace ControlRoomApplication.Controllers {
 
 
             //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return new Task<bool> (() => send_relative_move(AZ_Speed, EL_Speed, 50, positionTranslationAZ, positionTranslationEL));
+            return SendRelativeMove(AZ_Speed, EL_Speed, positionTranslationAZ, positionTranslationEL);
 
         }
 
-        public override Task<bool> SnowDump()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> Stow()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> Full_360_CCW_Rotation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> HitAzimuthLeftLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> Full_360_CW_Rotation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> HitAzimuthRightLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-      
-        public override Task<bool> Recover_CW_Hardstop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> HitElevationLowerLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> HitElevationUpperLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> RecoverFromLimitSwitch()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> FullElevationMove()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> Hit_CW_Hardstop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> Hit_CCW_Hardstop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> Recover_CCW_Hardstop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> Hit_Hardstops()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
             throw new NotImplementedException();
 
-        }
-
-        public override bool Stop_Jog() {
-            throw new NotImplementedException();
         }
 
         public override bool Get_interlock_status() {
@@ -401,20 +311,20 @@ namespace ControlRoomApplication.Controllers {
 
         }
 
-        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {//set 
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis ) {//set 
             bool[] stuf = new bool[33];
             for(int i = 0; i < 32; i++) {
                 stuf[i] = true;
             }
-            return Task.Run( () => stuf );
+            return stuf;
         }
 
-        protected override bool TestIfComponentIsAlive() {
+        public override bool TestIfComponentIsAlive() {
             return true;
 
         }
 
-        public override Task<bool> Home() {
+        public override MovementResult HomeTelescope() {
             throw new NotImplementedException();
         }
 
@@ -423,16 +333,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override Task<bool> JogOffLimitSwitches() {
-            throw new NotImplementedException();
-        }
-
         public override void setTelescopeType(RadioTelescopeTypeEnum type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
         {
             throw new NotImplementedException();
         }
@@ -451,6 +352,16 @@ namespace ControlRoomApplication.Controllers {
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
         public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool InterruptMovementAndWaitUntilStopped()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
         {
             throw new NotImplementedException();
         }

@@ -497,10 +497,7 @@ namespace ControlRoomApplication.Controllers
                 if (Schedule.PollReadiness())
                 {
                     AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointment);
-                    logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Added the RF Data to the database");
                     Schedule.Consume();
-                    logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] The schedule hath been consumed by Cthulhu");
-                    //logger.Info(Utilities.GetTimeStamp() + ": [AbstractSpectraCyberController] SC Scan");
                 }
 
                 // Tell the loop to break on its next pass (so the mutex is still released if the flag is high)
@@ -525,13 +522,10 @@ namespace ControlRoomApplication.Controllers
 
         private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, Appointment appt)
         {
-            logger.Debug(Utilities.GetTimeStamp() + ": Decimal " + spectraCyberResponse.DecimalData);
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
             appt = DatabaseOperations.GetUpdatedAppointment(appt);
             rfData.Appointment = appt;
             rfData.Intensity = rfData.Intensity * MiscellaneousHardwareConstants.SPECTRACYBER_VOLTS_PER_STEP;
-
-            logger.Info(Utilities.GetTimeStamp() + ": [AbstractSpectrCyberController] Created RF Data: " + rfData.Intensity);
 
             // Add to database
             DatabaseOperations.AddRFData(rfData);
@@ -553,7 +547,6 @@ namespace ControlRoomApplication.Controllers
         public abstract bool BringDown();
         protected abstract void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response);
 
-        // TODO: implement proper error handling if ch is out of acceptable range
         protected static int HexCharToInt(char ch)
         {
             int baseVal = Convert.ToByte(ch);

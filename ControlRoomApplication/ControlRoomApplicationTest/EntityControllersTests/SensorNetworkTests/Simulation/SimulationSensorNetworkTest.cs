@@ -1,5 +1,6 @@
 ﻿using ControlRoomApplication.Controllers.SensorNetwork;
 using ControlRoomApplication.Controllers.SensorNetwork.Simulation;
+using ControlRoomApplication.Database;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -21,26 +22,40 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         IPAddress ServerIP = IPAddress.Parse("127.0.0.2");
         int ServerPort = 3001;
 
+        int TelescopeId = 3000;
+
         string DataPath = "../../EntityControllersTests/SensorNetworkTests/Simulation/TestCSVData/";
 
         SimulationSensorNetwork SimSensorNetwork;
+        PrivateObject PrivSim;
+
+        SensorNetworkServer SensorNetworkServer;
+        PrivateObject PrivServer;
 
         [TestInitialize]
         public void Initialize()
         {
             SimSensorNetwork = new SimulationSensorNetwork(ClientIP, ClientPort, ServerIP, ServerPort, DataPath);
+            PrivSim = new PrivateObject(SimSensorNetwork);
+
+            SensorNetworkServer = new SensorNetworkServer(IPAddress.Parse(ClientIP), ClientPort, ServerIP.ToString(), ServerPort, TelescopeId, false);
+            PrivServer = new PrivateObject(SensorNetworkServer);
+        }
+
+        [TestCleanup]
+        public void Cleanup()
+        {
+            DatabaseOperations.DeleteSensorNetworkConfig(SensorNetworkServer.InitializationClient.SensorNetworkConfig);
         }
 
         [TestMethod]
         public void SimulationSensorNetwork_Constructor_AllFieldsCorrect()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Gather data
-            TcpListener resultListener = (TcpListener)privSim.GetFieldOrProperty("Server");
-            string resultClientIP = (string)privSim.GetFieldOrProperty("ClientIP");
-            int resultClientPort = (int)privSim.GetFieldOrProperty("ClientPort");
-            string resultDataDirectory = (string)privSim.GetFieldOrProperty("DataDirectory");
+            TcpListener resultListener = (TcpListener)PrivSim.GetFieldOrProperty("Server");
+            string resultClientIP = (string)PrivSim.GetFieldOrProperty("ClientIP");
+            int resultClientPort = (int)PrivSim.GetFieldOrProperty("ClientPort");
+            string resultDataDirectory = (string)PrivSim.GetFieldOrProperty("DataDirectory");
 
             // Verify server
             Assert.IsNotNull(resultListener);
@@ -58,22 +73,20 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_InitializeAllSensors_AllSensorsInitialized()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Create an initialization that will enable all sensors.
             byte[] init = new byte[9];
             for(int i = 0; i < init.Length; i++) init[i] = 1;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Create expected array length (spoiler: it is zero)
             int expectedArrLength = 0;
@@ -91,33 +104,27 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_DisableElTemp_OnlyElTempDisabled()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Create expected array length (spoiler: it is zero)
             int expectedArrLength = 0;
@@ -135,33 +142,27 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_DisableAzTemp_OnlyAzTempDisabled()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 0;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Create expected array length (spoiler: it is zero)
             int expectedArrLength = 0;
@@ -179,33 +180,27 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_DisableElEncoder_OnlyElEncoderDisabled()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 0;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Create expected array length (spoiler: it is zero)
             int expectedArrLength = 0;
@@ -223,33 +218,27 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_DisableAzEncoder_OnlyAzEncoderDisabled()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 0;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Create expected array length (spoiler: it is zero)
             int expectedArrLength = 0;
@@ -267,33 +256,27 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_DisableAzAcc_OnlyAzAccDisabled()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 0;
-            init[7] = 1;
-            init[8] = 1;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Create expected array length (spoiler: it is zero)
             int expectedArrLength = 0;
@@ -311,33 +294,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_DisableElAcc_OnlyElAccDisabled()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 0;
-            init[8] = 1;
-
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Create expected array length (spoiler: it is zero)
             int expectedArrLength = 0;
@@ -355,33 +331,26 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_DisableCbAcc_OnlyCbAccDisabled()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 1;
-            init[2] = 1;
-            init[3] = 1;
-            init[4] = 1;
-            init[5] = 1;
-            init[6] = 1;
-            init[7] = 1;
-            init[8] = 0;
-
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Create expected array length (spoiler: it is zero)
             int expectedArrLength = 0;
@@ -399,33 +368,27 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestInitializeSensors_DisableAllSensors_AllSensorsDisabled()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+            // Create an initialization
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // Create an initialization that will enable all sensors.
-            byte[] init = new byte[9];
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
-
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
 
             // Verify all arrays still have a length of 0 except the null one
             Assert.IsNull(resultElTemp);
@@ -437,45 +400,37 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             Assert.IsNull(resultCbAcc);
         }
 
-        // For these methods, each CSV file contains one entry, with each value
-        // being different than another
-
         [TestMethod]
         public void TestReadFakeDataFromCSV_ElTemp_ElTempsAreCorrect()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 1;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 1;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
-            privSim.Invoke("ReadFakeDataFromCSV");
+            PrivSim.Invoke("ReadFakeDataFromCSV");
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+
+            double[] expectedArray = new double[] { 1, 2 };
 
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultElTemp.Length);
-            Assert.AreEqual(1, resultElTemp[0]);
+            Assert.IsTrue(expectedArray.SequenceEqual(resultElTemp));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultAzTemp);
@@ -489,39 +444,34 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestReadFakeDataFromCSV_AzTemp_AzTempsAreCorrect()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 1;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 1;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
-            privSim.Invoke("ReadFakeDataFromCSV");
+            PrivSim.Invoke("ReadFakeDataFromCSV");
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+
+            double[] expectedArray = new double[] { 2, 3 };
 
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultAzTemp.Length);
-            Assert.AreEqual(2, resultAzTemp[0]);
+            Assert.IsTrue(expectedArray.SequenceEqual(resultAzTemp));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -535,39 +485,34 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestReadFakeDataFromCSV_ElEnc_ElEncPosAreCorrect()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 1;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
-            privSim.Invoke("ReadFakeDataFromCSV");
+            PrivSim.Invoke("ReadFakeDataFromCSV");
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+
+            double[] expectedArray = new double[] { 3, 4 };
 
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultElEnc.Length);
-            Assert.AreEqual(3, resultElEnc[0]);
+            Assert.IsTrue(expectedArray.SequenceEqual(resultElEnc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -581,39 +526,34 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestReadFakeDataFromCSV_AzEnc_AzEncPosAreCorrect()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-
             // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 1;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 0;
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 1;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
-            privSim.Invoke("InitializeSensors", init);
+            PrivSim.Invoke("InitializeSensors", init);
 
-            privSim.Invoke("ReadFakeDataFromCSV");
+            PrivSim.Invoke("ReadFakeDataFromCSV");
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+
+            double[] expectedArray = new double[] { 4, 5 };
 
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultAzEnc.Length);
-            Assert.AreEqual(4, resultAzEnc[0]);
+            Assert.IsTrue(expectedArray.SequenceEqual(resultAzEnc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -627,41 +567,49 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestReadFakeDataFromCSV_AzAcc_AzAccAreCorrect()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 1;
-            init[7] = 0;
-            init[8] = 0;
+            PrivSim.Invoke("InitializeSensors", init);
 
-            privSim.Invoke("InitializeSensors", init);
-
-            privSim.Invoke("ReadFakeDataFromCSV");
+            PrivSim.Invoke("ReadFakeDataFromCSV");
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+
+            RawAccelerometerData[] expectedAcc = new RawAccelerometerData[400];
+
+            for (int i = 0; i < 400; i++)
+            {
+                if (i <= 199)
+                {
+                    expectedAcc[i].X = 6;
+                    expectedAcc[i].Y = 13;
+                    expectedAcc[i].Z = 11;
+                }
+                else
+                {
+                    expectedAcc[i].X = 5;
+                    expectedAcc[i].Y = 12;
+                    expectedAcc[i].Z = 10;
+                }
+            }
 
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultAzAcc.Length);
-            Assert.AreEqual(5, resultAzAcc[0].X);
-            Assert.AreEqual(6, resultAzAcc[0].Y);
-            Assert.AreEqual(7, resultAzAcc[0].Z);
+            Assert.IsTrue(expectedAcc.SequenceEqual(resultAzAcc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -675,41 +623,49 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestReadFakeDataFromCSV_ElAcc_ElAccAreCorrect()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 1;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 0;
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 1;
-            init[8] = 0;
+            PrivSim.Invoke("InitializeSensors", init);
 
-            privSim.Invoke("InitializeSensors", init);
-
-            privSim.Invoke("ReadFakeDataFromCSV");
+            PrivSim.Invoke("ReadFakeDataFromCSV");
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+
+            RawAccelerometerData[] expectedAcc = new RawAccelerometerData[400];
+
+            for (int i = 0; i < 400; i++)
+            {
+                if (i <= 199)
+                {
+                    expectedAcc[i].X = 6;
+                    expectedAcc[i].Y = 13;
+                    expectedAcc[i].Z = 11;
+                }
+                else
+                {
+                    expectedAcc[i].X = 5;
+                    expectedAcc[i].Y = 12;
+                    expectedAcc[i].Z = 10;
+                }
+            }
 
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultElAcc.Length);
-            Assert.AreEqual(8, resultElAcc[0].X);
-            Assert.AreEqual(9, resultElAcc[0].Y);
-            Assert.AreEqual(10, resultElAcc[0].Z);
+            Assert.IsTrue(expectedAcc.SequenceEqual(resultElAcc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -723,41 +679,49 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestReadFakeDataFromCSV_CbAcc_CbAccAreCorrect()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+            byte[] init = new byte[SensorNetworkConstants.SensorNetworkSensorCount];
 
-            // Initialize only one sensor, so that is the only sensor that gets CSV data.
-            byte[] init = new byte[9];
+            init[(int)SensorInitializationEnum.ElevationTemp] = 0;
+            init[(int)SensorInitializationEnum.AzimuthTemp] = 0;
+            init[(int)SensorInitializationEnum.ElevationEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthEncoder] = 0;
+            init[(int)SensorInitializationEnum.AzimuthAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.ElevationAccelerometer] = 0;
+            init[(int)SensorInitializationEnum.CounterbalanceAccelerometer] = 1;
 
-            // This is not in a loop so that it's easy to copy, paste and modify (and understand)
-            // for other sensors
-            init[0] = 0;
-            init[1] = 0;
-            init[2] = 0;
-            init[3] = 0;
-            init[4] = 0;
-            init[5] = 0;
-            init[6] = 0;
-            init[7] = 0;
-            init[8] = 1;
+            PrivSim.Invoke("InitializeSensors", init);
 
-            privSim.Invoke("InitializeSensors", init);
-
-            privSim.Invoke("ReadFakeDataFromCSV");
+            PrivSim.Invoke("ReadFakeDataFromCSV");
 
             // Gather result data
-            double[] resultElTemp = (double[])privSim.GetFieldOrProperty("ElevationTempData");
-            double[] resultAzTemp = (double[])privSim.GetFieldOrProperty("AzimuthTempData");
-            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("ElevationAccData");
-            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("AzimuthAccData");
-            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])privSim.GetFieldOrProperty("CounterbalanceAccData");
-            double[] resultElEnc = (double[])privSim.GetFieldOrProperty("ElevationEncoderData");
-            double[] resultAzEnc = (double[])privSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] resultElTemp = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] resultAzTemp = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            RawAccelerometerData[] resultElAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] resultAzAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] resultCbAcc = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            double[] resultElEnc = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] resultAzEnc = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+
+            RawAccelerometerData[] expectedAcc = new RawAccelerometerData[400];
+
+            for (int i = 0; i < 400; i++)
+            {
+                if (i <= 199)
+                {
+                    expectedAcc[i].X = 6;
+                    expectedAcc[i].Y = 13;
+                    expectedAcc[i].Z = 11;
+                }
+                else
+                {
+                    expectedAcc[i].X = 5;
+                    expectedAcc[i].Y = 12;
+                    expectedAcc[i].Z = 10;
+                }
+            }
 
             // Verify the result array is as expected
-            Assert.AreEqual(1, resultCbAcc.Length);
-            Assert.AreEqual(11, resultCbAcc[0].X);
-            Assert.AreEqual(12, resultCbAcc[0].Y);
-            Assert.AreEqual(13, resultCbAcc[0].Z);
+            Assert.IsTrue(expectedAcc.SequenceEqual(resultCbAcc));
 
             // Verify the rest of the fields are still null
             Assert.IsNull(resultElTemp);
@@ -771,7 +735,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestWaitForAndConnectToServer_ConnectToServer_AsksForConfiguration()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
+            // Must be currently running to do this
+            PrivSim.SetFieldOrProperty("CurrentlyRunning", true);
 
             byte[] expected = Encoding.ASCII.GetBytes("Send Sensor Configuration");
             byte[] result = new byte[expected.Length];
@@ -797,14 +762,14 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             // This method has a blocking method, so we must run it in a separate thread
             Thread serverThread = new Thread(() => {
                 // Set up client on the simulation
-                privSim.Invoke("WaitForAndConnectToServer");
+                PrivSim.Invoke("WaitForAndConnectToServer");
             });
             serverThread.Start();
 
             expectConfThread.Join();
 
             // Stop the server in the simulation
-            ((TcpListener)privSim.GetFieldOrProperty("Server")).Stop();
+            ((TcpListener)PrivSim.GetFieldOrProperty("Server")).Stop();
             serverThread.Join();
 
             Assert.IsTrue(expected.SequenceEqual(result));
@@ -813,8 +778,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestRequestAndAcquireSensorInitialization_SendsConfiguration_ReceiveCorrectBytes()
         {
-            PrivateObject privSim = new PrivateObject(SimSensorNetwork);
-            
+            // Must be currently running to do this
+            PrivSim.SetFieldOrProperty("CurrentlyRunning", true);
 
             // First create server that expects the "Send Sensor Configuration" message
             // This only takes in the first
@@ -838,16 +803,16 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             });
             expectConfThread.Start();
 
-            byte[] expected = Encoding.ASCII.GetBytes("123456789");
+            byte[] expected = Encoding.ASCII.GetBytes("1234567");
             byte[] result = new byte[expected.Length];
 
             // This method has a blocking method, so we must run it in a separate thread
             Thread serverThread = new Thread(() => {
 
                 // Set up client on the simulation
-                privSim.Invoke("WaitForAndConnectToServer");
+                PrivSim.Invoke("WaitForAndConnectToServer");
 
-                result = (byte[])privSim.Invoke("RequestAndAcquireSensorInitialization");
+                result = (byte[])PrivSim.Invoke("RequestAndAcquireSensorInitialization");
             });
             serverThread.Start();
 
@@ -871,6 +836,366 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
             client.Dispose();
 
             Assert.IsTrue(expected.SequenceEqual(result));
+        }
+
+        [TestMethod]
+        public void TestStartSimulationSensorNetwork_Starts_AllObjectsAsExpected()
+        {
+            SimSensorNetwork.StartSimulationSensorNetwork();
+
+            bool resultCurrentlyRunning = (bool)PrivSim.GetFieldOrProperty("CurrentlyRunning");
+            Thread resultMonitoringThread = (Thread)PrivSim.GetFieldOrProperty("SimulationSensorMonitoringThread");
+
+            Assert.IsTrue(resultCurrentlyRunning);
+            Assert.IsTrue(resultMonitoringThread.IsAlive);
+
+            SimSensorNetwork.EndSimulationSensorNetwork();
+        }
+
+        [TestMethod]
+        public void TestEndSimulationSensorNetwork_Ends_AllObjectsBroughtDown()
+        {
+            SensorNetworkServer.StartSensorMonitoringRoutine();
+            SimSensorNetwork.StartSimulationSensorNetwork();
+
+            // Give plenty of time for everything to connect
+            Thread.Sleep(2000);
+
+            SimSensorNetwork.EndSimulationSensorNetwork();
+            SensorNetworkServer.EndSensorMonitoringRoutine();
+
+            bool resultCurrentlyRunning = (bool)PrivSim.GetFieldOrProperty("CurrentlyRunning");
+            Thread resultMonitoringThread = (Thread)PrivSim.GetFieldOrProperty("SimulationSensorMonitoringThread");
+            TcpClient resultClient = (TcpClient)PrivSim.GetFieldOrProperty("Client");
+            NetworkStream resultClientStream = (NetworkStream)PrivSim.GetFieldOrProperty("ClientStream");
+            TcpListener resultServer = (TcpListener)PrivSim.GetFieldOrProperty("Server");
+            NetworkStream resultServerStream = (NetworkStream)PrivSim.GetFieldOrProperty("ServerStream");
+
+            Assert.IsFalse(resultCurrentlyRunning);
+            Assert.IsFalse(resultMonitoringThread.IsAlive);
+            Assert.IsFalse(resultClient.Connected);
+            Assert.IsFalse(resultClientStream.CanWrite);
+            Assert.IsFalse(resultServer.Server.IsBound);
+            Assert.IsFalse(resultServerStream.CanRead);
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_AzimuthTemp_AzimuthTempIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("AzimuthTempData", new double[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            double[] initArray = (double[])PrivSim.GetFieldOrProperty("AzimuthTempData");
+            double[] expectedArray = new double[initArray.Length + 1]; // + 1 is to test looping back to the beginning
+            initArray.CopyTo(expectedArray, 0);
+            expectedArray[expectedArray.Length - 1] = initArray[0];
+
+            double[] resultArray = new double[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+            
+            for (int i = 0; i < expectedArray.Length; i++) {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref index,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                resultArray[i] = subArrays.AzimuthTemps[subArrays.AzimuthTemps.Length - 1];
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_ElevationTemp_ElevationTempIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("ElevationTempData", new double[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            double[] initArray = (double[])PrivSim.GetFieldOrProperty("ElevationTempData");
+            double[] expectedArray = new double[initArray.Length + 1]; // + 1 is to test looping back to the beginning
+            initArray.CopyTo(expectedArray, 0);
+            expectedArray[expectedArray.Length - 1] = initArray[0];
+
+            double[] resultArray = new double[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i++)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref index,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                resultArray[i] = subArrays.ElevationTemps[subArrays.ElevationTemps.Length - 1];
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_ElevationEncoder_ElevationEncoderIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("ElevationEncoderData", new double[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            double[] initArray = (double[])PrivSim.GetFieldOrProperty("ElevationEncoderData");
+            double[] expectedArray = new double[initArray.Length + 1]; // + 1 is to test looping back to the beginning
+            initArray.CopyTo(expectedArray, 0);
+            expectedArray[expectedArray.Length - 1] = initArray[0];
+
+            double[] resultArray = new double[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i++)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref index,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                resultArray[i] = subArrays.ElevationEnc[subArrays.ElevationEnc.Length - 1];
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_AzimuthEncoder_AzimuthEncoderIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("AzimuthEncoderData", new double[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            double[] initArray = (double[])PrivSim.GetFieldOrProperty("AzimuthEncoderData");
+            double[] expectedArray = new double[initArray.Length + 1]; // + 1 is to test looping back to the beginning
+            initArray.CopyTo(expectedArray, 0);
+            expectedArray[expectedArray.Length - 1] = initArray[0];
+
+            double[] resultArray = new double[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i++)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref index,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                resultArray[i] = subArrays.AzimuthEnc[subArrays.AzimuthEnc.Length - 1];
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_ElevationAccelerometer_ElevationAccelerometerIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("ElevationAccData", new RawAccelerometerData[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            RawAccelerometerData[] initArray = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("ElevationAccData");
+            RawAccelerometerData[] expectedArray = new RawAccelerometerData[initArray.Length + 200]; // + 200 is to test looping back to the beginning
+
+            // Copy original array to expected array
+            initArray.CopyTo(expectedArray, 0);
+
+            // Get first half of the initial array for looping back
+            Array.Copy(initArray, 0, expectedArray, 400, 200);
+
+            RawAccelerometerData[] resultArray = new RawAccelerometerData[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i += 100)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref index,
+                    ref nullInt,
+                    ref nullInt
+                );
+
+                subArrays.ElevationAccl.CopyTo(resultArray, i);
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_AzimuthAccelerometer_AzimuthAccelerometerIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("AzimuthAccData", new RawAccelerometerData[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            RawAccelerometerData[] initArray = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("AzimuthAccData");
+            RawAccelerometerData[] expectedArray = new RawAccelerometerData[initArray.Length + 200]; // + 200 is to test looping back to the beginning
+
+            // Copy original array to expected array
+            initArray.CopyTo(expectedArray, 0);
+
+            // Get first half of the initial array for looping back
+            Array.Copy(initArray, 0, expectedArray, 400, 200);
+
+            RawAccelerometerData[] resultArray = new RawAccelerometerData[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i += 100)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref index,
+                    ref nullInt
+                );
+
+                subArrays.AzimuthAccl.CopyTo(resultArray, i);
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestBuildSubArrays_CounterbalanceAccelerometer_CounterbalanceAccelerometerIterates()
+        {
+            // "Initialize" sensor
+            PrivSim.SetFieldOrProperty("CounterbalanceAccData", new RawAccelerometerData[0]);
+
+            // Populate initialized sensor
+            PrivSim.Invoke("ReadFakeDataFromCSV");
+
+            // Retrieve populated sensor
+            RawAccelerometerData[] initArray = (RawAccelerometerData[])PrivSim.GetFieldOrProperty("CounterbalanceAccData");
+            RawAccelerometerData[] expectedArray = new RawAccelerometerData[initArray.Length + 200]; // + 200 is to test looping back to the beginning
+
+            // Copy original array to expected array
+            initArray.CopyTo(expectedArray, 0);
+
+            // Get first half of the initial array for looping back
+            Array.Copy(initArray, 0, expectedArray, 400, 200);
+
+            RawAccelerometerData[] resultArray = new RawAccelerometerData[expectedArray.Length];
+
+            int? index = 0;
+            int? nullInt = null;
+            SimulationSubArrayData subArrays;
+
+            for (int i = 0; i < expectedArray.Length; i += 100)
+            {
+                subArrays = SimSensorNetwork.BuildSubArrays(
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref nullInt,
+                    ref index
+                );
+
+                subArrays.CounterBAccl.CopyTo(resultArray, i);
+            }
+
+            Assert.IsTrue(expectedArray.SequenceEqual(resultArray));
+        }
+
+        [TestMethod]
+        public void TestSimulationSensorMonitor_SimulationIsRunning_ConnectsToServerAndSendsData()
+        {
+            SensorNetworkServer.StartSensorMonitoringRoutine();
+            SimSensorNetwork.StartSimulationSensorNetwork();
+
+            // Give plenty of time for everything to connect
+            Thread.Sleep(2000);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, SensorNetworkServer.Status);
+            
+            SimSensorNetwork.EndSimulationSensorNetwork();
+            SensorNetworkServer.EndSensorMonitoringRoutine();
+        }
+
+        [TestMethod]
+        public void TestSimulationSensorMonitor_ServerTriggersReboot_SimulationRebootsAndStartsSendingData()
+        {
+            SensorNetworkServer.StartSensorMonitoringRoutine();
+            SimSensorNetwork.StartSimulationSensorNetwork();
+
+            // Give plenty of time for everything to connect
+            Thread.Sleep(2000);
+
+            SensorNetworkServer.RebootSensorNetwork();
+
+            // Give plenty of time for timeout and for initialization
+            Thread.Sleep(2000 + SensorNetworkConstants.WatchDogTimeout);
+
+            Assert.AreEqual(SensorNetworkStatusEnum.ReceivingData, SensorNetworkServer.Status);
+
+            SimSensorNetwork.EndSimulationSensorNetwork();
+            SensorNetworkServer.EndSensorMonitoringRoutine();
         }
     }
 }

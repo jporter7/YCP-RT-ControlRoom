@@ -8,7 +8,8 @@ using ControlRoomApplication.Controllers.Communications;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using ControlRoomApplication.Util;
-
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -190,8 +191,14 @@ namespace ControlRoomApplication.Controllers
                     // Calibrate telescope
                     if (NextAppointment._Type != AppointmentTypeEnum.FREE_CONTROL)
                     {
-                        logger.Info(Utilities.GetTimeStamp() + ": Themal Calibrating RadioTelescope");
-                        RTController.ThermalCalibrateRadioTelescope();
+                        logger.Info(Utilities.GetTimeStamp() + ": Thermal Calibrating RadioTelescope");
+                        RTController.ThermalCalibrateRadioTelescope(MovementPriority.Appointment);
+
+                        // If the temperature is low and there's precipitation, dump the dish
+                        if (RTController.RadioTelescope.WeatherStation.GetOutsideTemp() <= 40.00 && RTController.RadioTelescope.WeatherStation.GetTotalRain() > 0.00)
+                        {
+                            RTController.SnowDump(MovementPriority.Appointment);
+                        }
                     }
 
                     // Create movement thread
@@ -259,6 +266,7 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An appointment object that is next in chronological order and is less than 10 minutes away from starting. </returns>
         private Appointment WaitForNextAppointment()
         {
+            bool waiting = false;
             Appointment NextAppointment = DatabaseOperations.GetNextAppointment(RadioTelescopeID);
             TimeSpan diff;
             while (NextAppointment != null && (diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
@@ -273,20 +281,10 @@ namespace ControlRoomApplication.Controllers
                 // Delay between checking database for new appointments
                 Thread.Sleep(100);
 
-                logger.Info(Utilities.GetTimeStamp() + ": Waiting for the next appointment to be within 1 minutes.");
+                if(!waiting) logger.Info(Utilities.GetTimeStamp() + ": Waiting for the next appointment to be within 1 minutes.");
+                waiting = true;
             }
 
-
-            /*          while ((diff = NextAppointment.start_time - DateTime.UtcNow).TotalMinutes > 1)
-                      {
-                          if (InterruptAppointmentFlag || (!KeepThreadAlive))
-                          {
-                              return null;
-                          }
-
-                          // Wait more
-                      }
-                      */
             if (NextAppointment != null && NextAppointment.Equals(OldAppointment))
             {
                 logger.Info(Utilities.GetTimeStamp() + ": The next appointment is now within the correct timeframe.");
@@ -357,15 +355,24 @@ namespace ControlRoomApplication.Controllers
                     }
 
                         logger.Info(Utilities.GetTimeStamp() + ": Moving to Next Objective: Az = " + NextObjectiveOrientation.Azimuth + ", El = " + NextObjectiveOrientation.Elevation);
-                        RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation);
+                        
+                        MovementResult apptMovementResult = RTController.MoveRadioTelescopeToOrientation(NextObjectiveOrientation, MovementPriority.Appointment);
+
+                        // If the movement result was anything other than success, it means the movement failed and something is wrong with
+                        // the hardware.
+                        // TODO: Talk to Todd about thresholds for this. (issue #388) Right now, it is cancelling the appointment if the movement
+                        // returns back any single error. See the MovementResult enum for a list of the different errors. 
+                        if (apptMovementResult != MovementResult.Success)
+                        {
+                            logger.Info($"{Utilities.GetTimeStamp()}: Appointment movement FAILED with the following error message: {apptMovementResult.ToString()}");
+                            InterruptAppointmentFlag = true;
+                        }
 
                         if (InterruptAppointmentFlag)
                         {
                             break;
                         }
-
-                         //currentOrientation = RTController.GetCurrentOrientation();
-                         //logger.Info(Utilities.GetTimeStamp() + ": Progress Towards Objective: Az = " + currentOrientation.Azimuth + ", El = " + currentOrientation.Elevation);
+                        
                          Thread.Sleep(100);
 
                         NextObjectiveOrientation = null;
@@ -423,7 +430,7 @@ namespace ControlRoomApplication.Controllers
                     Console.Out.WriteLine($"Could not write data! Error: {e}");
                 }
 
-                EmailNotifications.sendToUser(NextAppointment.User, subject, text, emailSender, attachmentPath);
+                EmailNotifications.sendToUser(NextAppointment.User, subject, text, emailSender, attachmentPath, true);
 
                 // Clean up after yourself, otherwise you'll just fill up our storage space
                 DataToCSV.DeleteCSVFileWhenDone(attachmentPath);
@@ -437,7 +444,7 @@ namespace ControlRoomApplication.Controllers
         {
             logger.Info(Utilities.GetTimeStamp() + ": Ending Appointment");
             endAppt = true;
-            RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90));
+            RTController.MoveRadioTelescopeToOrientation(new Orientation(0, 90), MovementPriority.Appointment);
         }
 
         /// <summary>
@@ -461,22 +468,6 @@ namespace ControlRoomApplication.Controllers
             RTController.RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
         }
 
-        public static int IndexOf(List<RadioTelescopeControllerManagementThread> ThreadList, RadioTelescope RadioTelescope)
-        {
-            int i = 0;
-            foreach (RadioTelescopeControllerManagementThread rtmt in ThreadList)
-            {
-                if (rtmt.RTController.RadioTelescope.Equals(RadioTelescope))
-                {
-                    return i;
-                }
-
-                i++;
-            }
-
-            return -1;
-        }
-
         /// <summary>
         /// Checks to see if there are any sensors that are not overriden
         /// calls the stop telescope function if it is not safe
@@ -498,7 +489,7 @@ namespace ControlRoomApplication.Controllers
                         // we should not be operating the telescope
                         logger.Fatal(Utilities.GetTimeStamp() + ": Telescope in DANGER due to fatal sensors");
                         safeTel = false;
-                        RTController.ExecuteRadioTelescopeImmediateStop();
+                        RTController.ExecuteRadioTelescopeImmediateStop(MovementPriority.GeneralStop);
                         OverallSensorStatus = false;
                         return false;
                     }                    

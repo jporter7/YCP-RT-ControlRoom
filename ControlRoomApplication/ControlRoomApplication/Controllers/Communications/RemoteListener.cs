@@ -7,9 +7,10 @@ using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Main;
 using ControlRoomApplication.Database;
-using ControlRoomApplication.Controllers.Communications.Encryption;
 using ControlRoomApplication.Util;
-
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.SensorNetwork;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -68,10 +69,8 @@ namespace ControlRoomApplication.Controllers
                 // Loop to receive all the data sent by the client.
                 while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    // Translate data bytes to a decrypted ASCII string.
-
-                    //data = AES.Decrypt(bytes); // use this line if incoming data is encrypted
-                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i); // use this line if incoming data is in plaintext
+                    // Translate data bytes to ASCII string.
+                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
 
                     logger.Debug(Utilities.GetTimeStamp() + ": Received: " + data);
 
@@ -135,7 +134,7 @@ namespace ControlRoomApplication.Controllers
             if (data.IndexOf("COORDINATE_MOVE") != -1)
             {
                 // we have a move command coming in
-                rtController.ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
                 // get azimuth and orientation
                 int azimuthIndex = data.IndexOf("AZIM");
@@ -159,9 +158,9 @@ namespace ControlRoomApplication.Controllers
 
                 Orientation movingTo = new Orientation(azimuth, elevation);
 
-                rtController.MoveRadioTelescopeToOrientation(movingTo);
+                rtController.MoveRadioTelescopeToOrientation(movingTo, MovementPriority.Manual);
 
-                // TODO: store the User Id and movement somewhere in the database
+                // TODO: store the User Id and movement somewhere in the database (issue #392)
 
                 return true;
 
@@ -179,14 +178,6 @@ namespace ControlRoomApplication.Controllers
                     rtController.setOverride("weather station", data.Contains("OVR"));
                     DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, doOverride);
                 }
-                else if (data.Contains("AZIMUTH_MOT_TEMP"))
-                {
-                    rtController.setOverride("azimuth motor temperature", doOverride);
-                }
-                else if (data.Contains("ELEVATION_MOT_TEMP"))
-                {
-                    rtController.setOverride("elevation motor temperature", doOverride);
-                }
 
                 // PLC Overrides
                 else if (data.Contains("MAIN_GATE"))
@@ -194,15 +185,7 @@ namespace ControlRoomApplication.Controllers
                     rtController.setOverride("main gate", doOverride);
                 }
 
-                // May be removed with slip ring
-                else if (data.Contains("AZIMUTH_LIMIT_10"))
-                {
-                    rtController.setOverride("azimuth proximity (1)", doOverride);
-                }
-                else if (data.Contains("AZIMUTH_LIMIT_375"))
-                {
-                    rtController.setOverride("azimuth proximity (2)", doOverride);
-                }
+                // Proximity overrides
                 else if (data.Contains("ELEVATION_LIMIT_0"))
                 {
                     rtController.setOverride("elevation proximity (1)", doOverride);
@@ -211,6 +194,36 @@ namespace ControlRoomApplication.Controllers
                 {
                     rtController.setOverride("elevation proximity (2)", doOverride);
                 }
+
+                // Sensor network overrides
+                else if (data.Contains("AZ_ABS_ENC"))
+                {
+                    rtController.setOverride("azimuth absolute encoder", doOverride);
+                }
+                else if (data.Contains("EL_ABS_ENC"))
+                {
+                    rtController.setOverride("elevation absolute encoder", doOverride);
+                }
+                else if (data.Contains("AZ_ACC"))
+                {
+                    rtController.setOverride("azimuth motor accelerometer", doOverride);
+                }
+                else if (data.Contains("EL_ACC"))
+                {
+                    rtController.setOverride("elevation motor accelerometer", doOverride);
+                }
+                else if (data.Contains("CB_ACC"))
+                {
+                    rtController.setOverride("counterbalance accelerometer", doOverride);
+                }
+                else if (data.Contains("AZIMUTH_MOT_TEMP"))
+                {
+                    rtController.setOverride("azimuth motor temperature", doOverride);
+                }
+                else if (data.Contains("ELEVATION_MOT_TEMP"))
+                {
+                    rtController.setOverride("elevation motor temperature", doOverride);
+                }
                 else return false;
 
                 return true;
@@ -218,7 +231,7 @@ namespace ControlRoomApplication.Controllers
             else if (data.IndexOf("SCRIPT") != -1)
             {
                 // we have a move command coming in
-                rtController.ExecuteRadioTelescopeControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
                 // get azimuth and orientation
                 int colonIndex = data.IndexOf(":");
@@ -235,29 +248,27 @@ namespace ControlRoomApplication.Controllers
 
                 if (script.Contains("DUMP"))
                 {
-                    // we have to use the - 1 here because the mobile app does not specify which radio telescope to control. This will just
-                    // enable them to control the most recently created telescope.
-                    rtController.RadioTelescope.PLCDriver.SnowDump();
+                    rtController.SnowDump(MovementPriority.Manual);
                 }
                 else if (script.Contains("FULL_EV"))
                 {
-                    rtController.RadioTelescope.PLCDriver.FullElevationMove();
+                    rtController.FullElevationMove(MovementPriority.Manual);
                 }
                 else if (script.Contains("CALIBRATE"))
                 {
-                    rtController.RadioTelescope.PLCDriver.Thermal_Calibrate();
+                    rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
                 }
                 else if (script.Contains("STOW"))
                 {
-                    rtController.RadioTelescope.PLCDriver.Stow();
+                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovementPriority.Manual);
                 }
                 else if (script.Contains("FULL_CLOCK"))
                 {
-                    rtController.RadioTelescope.PLCDriver.Full_360_CW_Rotation();
+                    // TODO: Implement with MoveByX function (issue #379)
                 }
                 else if (script.Contains("FULL_COUNTER"))
                 {
-                    rtController.RadioTelescope.PLCDriver.Full_360_CCW_Rotation();
+                    // TODO: Implement with MoveByX function (issue #379)
                 }
                 else
                 {
@@ -268,7 +279,33 @@ namespace ControlRoomApplication.Controllers
             }
             else if (data.IndexOf("STOP_RT") != -1)
             {
-                rtController.RadioTelescope.PLCDriver.ControlledStop();
+                rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
+            }
+            else if (data.IndexOf("SENSOR_INIT") != -1)
+            {
+                string[] splitData = data.Split(',');
+
+                if (splitData.Length != 10) return false;
+
+                var config = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig;
+
+                // Set all the sensors to their new initialization
+                config.AzimuthTemp1Init = splitData[(int)SensorInitializationEnum.AzimuthTemp].Equals("1");
+                config.ElevationTemp1Init = splitData[(int)SensorInitializationEnum.ElevationTemp].Equals("1");
+                config.AzimuthAccelerometerInit = splitData[(int)SensorInitializationEnum.AzimuthAccelerometer].Equals("1");
+                config.ElevationAccelerometerInit = splitData[(int)SensorInitializationEnum.ElevationAccelerometer].Equals("1");
+                config.CounterbalanceAccelerometerInit = splitData[(int)SensorInitializationEnum.CounterbalanceAccelerometer].Equals("1");
+                config.AzimuthEncoderInit = splitData[(int)SensorInitializationEnum.AzimuthEncoder].Equals("1");
+                config.ElevationEncoderInit = splitData[(int)SensorInitializationEnum.ElevationEncoder].Equals("1");
+
+                // Set the timeout values
+                config.TimeoutDataRetrieval = (int)(double.Parse(splitData[7]) * 1000);
+                config.TimeoutInitialization = (int)(double.Parse(splitData[8]) * 1000);
+
+                // Reboot
+                rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
+
+                return true;
             }
 
             // can't find a keyword then we fail

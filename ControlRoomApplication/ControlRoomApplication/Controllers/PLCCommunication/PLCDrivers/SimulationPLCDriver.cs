@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
 using static ControlRoomApplication.Constants.MCUConstants;
@@ -29,7 +30,7 @@ namespace ControlRoomApplication.Controllers
         {
             SimMCU = new Simulation_control_pannel(local_ip, MCU_ip, MCU_port, PLC_port, is_Test);
             Thread.Sleep(1000);//wait for server in simMcu to come up
-            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port, true);
+            driver = new ProductionPLCDriver(local_ip, MCU_ip, MCU_port, PLC_port);
             if(startPLC) {
                 driver.StartAsyncAcceptingClients();
             }
@@ -46,7 +47,6 @@ namespace ControlRoomApplication.Controllers
 
         public override bool StartAsyncAcceptingClients()
         {
-            driver.SetParent(Parent);
             return driver.StartAsyncAcceptingClients();
         }
 
@@ -66,99 +66,14 @@ namespace ControlRoomApplication.Controllers
             return driver.Test_Connection();
         }
 
-        public override Orientation read_Position()
+        public override Orientation GetMotorEncoderPosition()
         {
-            return driver.read_Position();
+            return driver.GetMotorEncoderPosition();
         }
 
         public override bool Cancel_move()
         {
             return driver.Cancel_move();
-        }
-
-        public override bool Shutdown_PLC_MCU()
-        {
-            return driver.Shutdown_PLC_MCU();
-        }
-
-        public override Task<bool> Thermal_Calibrate()
-        {
-            return driver.Thermal_Calibrate();
-        }
-
-        public override Task<bool> SnowDump()
-        {
-            return driver.SnowDump();
-        }
-
-        public override Task<bool> Stow()
-        {
-            return driver.Stow();
-        }
-
-        public override Task<bool> HitAzimuthLeftLimitSwitch()
-        {
-            return driver.HitAzimuthLeftLimitSwitch();
-        }
-
-        public override Task<bool> HitAzimuthRightLimitSwitch()
-        {
-            return driver.HitAzimuthRightLimitSwitch();
-        }
-
-        public override Task<bool> HitElevationLowerLimitSwitch()
-        {
-            return driver.HitElevationLowerLimitSwitch();
-        }
-
-        public override Task<bool> HitElevationUpperLimitSwitch()
-        {
-            return driver.HitElevationUpperLimitSwitch();
-        }
-
-        public override Task<bool> RecoverFromLimitSwitch()
-        {
-            return driver.RecoverFromLimitSwitch();
-        }
-
-        public override Task<bool> FullElevationMove()
-        {
-            return driver.FullElevationMove();
-        }
-
-        public override Task<bool> Full_360_CCW_Rotation()
-        {
-            return driver.Full_360_CCW_Rotation();
-        }
-
-        public override Task<bool> Full_360_CW_Rotation()
-        {
-            return driver.Full_360_CW_Rotation();
-        }
-
-        public override Task<bool> Hit_CW_Hardstop()
-        {
-            return driver.Hit_CW_Hardstop();
-        }
-
-        public override Task<bool> Hit_CCW_Hardstop()
-        {
-            return driver.Hit_CCW_Hardstop();
-        }
-
-        public override Task<bool> Recover_CW_Hardstop()
-        {
-            return driver.Recover_CW_Hardstop();
-        }
-
-        public override Task<bool> Recover_CCW_Hardstop()
-        {
-            return driver.Recover_CCW_Hardstop();
-        }
-
-        public override Task<bool> Hit_Hardstops()
-        {
-            return driver.Hit_Hardstops();
         }
 
         public override bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
@@ -176,18 +91,18 @@ namespace ControlRoomApplication.Controllers
             return driver.ImmediateStop();
         }
 
-        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation)
         {
-            return driver.relative_move(programmedPeakSpeedAZInt, ACCELERATION, positionTranslationAZ, positionTranslationEL);
+            return driver.RelativeMove(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
-        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
         {
-            return driver.Move_to_orientation(target_orientation, current_orientation);
+            return driver.MoveToOrientation(target_orientation, current_orientation);
         }
 
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool EL_CW) {
-            return driver.Start_jog( AZspeed, AZ_CW, ELspeed, EL_CW);
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+            return driver.StartBothAxesJog(azSpeed, azDirection, elSpeed, elDirection);
         }
 
         public override bool Get_interlock_status()
@@ -195,25 +110,17 @@ namespace ControlRoomApplication.Controllers
             return driver.Get_interlock_status();
         }
 
-        public override Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis )
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis )
         {
             return driver.GET_MCU_Status( axis );
         }
 
-        protected override bool TestIfComponentIsAlive() {
-            return driver.workaroundAlive();
+        public override bool TestIfComponentIsAlive() {
+            return driver.TestIfComponentIsAlive();
         }
 
-        public override Task<bool> Home() {
-            return driver.Home();
-        }
-
-        public override bool Stop_Jog() {
-            return driver.Stop_Jog();
-        }
-
-        public override Task<bool> JogOffLimitSwitches() {
-            return driver.JogOffLimitSwitches();
+        public override MovementResult HomeTelescope() {
+            return driver.HomeTelescope();
         }
 
         public override void setregvalue(ushort adr, ushort value)
@@ -229,11 +136,6 @@ namespace ControlRoomApplication.Controllers
         public override void setTelescopeType(RadioTelescopeTypeEnum type)
         {
             driver.setTelescopeType(type);
-        }
-
-        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
-        {
-            return driver.CustomOrientationMove(azimuthPos, elevationPos);
         }
 
         /// <summary>
@@ -252,5 +154,16 @@ namespace ControlRoomApplication.Controllers
         {
             return driver.CheckMCUErrors();
         }
+
+        public override bool InterruptMovementAndWaitUntilStopped()
+        {
+            return driver.InterruptMovementAndWaitUntilStopped();
+        }
+
+        public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
+        {
+            return driver.MotorsCurrentlyMoving(axis);
+        }
+
     }
 }

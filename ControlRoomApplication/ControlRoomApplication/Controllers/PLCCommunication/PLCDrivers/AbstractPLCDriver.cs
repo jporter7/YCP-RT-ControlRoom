@@ -12,6 +12,8 @@ using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Controllers.PLCCommunication;
 using System.Collections.Generic;
 using static ControlRoomApplication.Constants.MCUConstants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -22,13 +24,17 @@ namespace ControlRoomApplication.Controllers
 
         protected Thread ClientManagmentThread;
 
-        protected RadioTelescope Parent;
-
         public LimitSwitchData limitSwitchData;
         public HomeSensorData homeSensorData;
         public MiscPlcInput plcInput;
         protected PLCEvents pLCEvents;
+        public OverrideSwitchData Overrides { get; set; }
 
+        /// <summary>
+        /// This is the priority of the currently-running move. This will be "None" if no move is currently running, otherwise it will
+        /// reflect the priority.
+        /// </summary>
+        public MovementPriority CurrentMovementPriority { get; set; }
 
         /// <summary>
         /// the PLC will look for the server that we create in the control room, the control room will look for the remote server that the MCU has setup
@@ -67,65 +73,24 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public abstract bool RequestStopAsyncAcceptingClientsAndJoin();
 
-        public RadioTelescope GetParent()
-        {
-            return Parent;
-        }
-
-        public void SetParent(RadioTelescope rt)
-        {
-            Parent = rt;
-        }
 
         public abstract void Bring_down();
 
         public abstract bool Test_Connection();
 
-        public abstract Orientation read_Position();
+        public abstract Orientation GetMotorEncoderPosition();
 
         public abstract bool Cancel_move();
-
-        public abstract bool Shutdown_PLC_MCU();
 
         // All of the "scripts" are here all the way to....
         // Control Scripts
 
-        public abstract Task<bool> Thermal_Calibrate();
-
-        public abstract Task<bool> FullElevationMove();
-
-        public abstract Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos);
-
-        public abstract Task<bool> Full_360_CCW_Rotation();
-
-        public abstract Task<bool> Full_360_CW_Rotation();
-
-        public abstract Task<bool> Stow();
-
-        public abstract Task<bool> SnowDump();
-
-        // Diagnostics Scripts
-
-        public abstract Task<bool> HitAzimuthLeftLimitSwitch();
-
-        public abstract Task<bool> HitAzimuthRightLimitSwitch();
-
-        public abstract Task<bool> HitElevationLowerLimitSwitch();
-
-        public abstract Task<bool> HitElevationUpperLimitSwitch();
-
-        public abstract Task<bool> RecoverFromLimitSwitch();
-
-        public abstract Task<bool> Hit_CW_Hardstop();
-
-        public abstract Task<bool> Hit_CCW_Hardstop();
-        public abstract Task<bool> Recover_CW_Hardstop();
-
-        public abstract Task<bool> Recover_CCW_Hardstop();
-
-        public abstract Task<bool> Hit_Hardstops();
-
-        // ... to here
+        /// <summary>
+        /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
+        /// the absolute encoders.
+        /// </summary>
+        /// <returns>True if homing was successful, false if it failed</returns>
+        public abstract MovementResult HomeTelescope();
 
         public abstract bool Configure_MCU(double startSpeedAzimuth, double startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation);
 
@@ -133,29 +98,18 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool ImmediateStop();
 
-        public abstract bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL);
+        public abstract MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation);
 
-        public abstract Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation);
+        public abstract MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation);
 
-        public abstract bool Start_jog( double AZspeed ,bool AZ_CW, double ELspeed ,bool EL_CW);
-
-        public abstract bool Stop_Jog();
+        public abstract MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection);
 
         public abstract bool Get_interlock_status();
-
-        public abstract Task<bool> JogOffLimitSwitches();
 
         public abstract void setregvalue(ushort adr, ushort value);
 
         public abstract ushort getregvalue(ushort adr);
 
-
-        /// <summary>
-        /// send home command to the tellescope, will move the telescope to 0 , 0  degrees 
-        /// after calling this method we should zero out the apsolute encoders
-        /// </summary>
-        /// <returns>sucsess bool</returns>
-        public abstract Task<bool> Home();
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
         /// does not suport RadioTelescopeAxisEnum.BOTH
@@ -163,7 +117,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="axis"></param>
         /// <returns></returns>
-        public abstract Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis );
+        public abstract bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis );
 
         public abstract void setTelescopeType(RadioTelescopeTypeEnum type);
 
@@ -177,5 +131,21 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns>A list of errors present in the MCU's registers</returns>
         public abstract List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors();
+
+        /// <summary>
+        /// This will interrupt the current movement, wait until it has stopped, and then
+        /// end when the movement has stopped.
+        /// 
+        /// If no motors are moving when this is called, then it will not wait, and just be
+        /// able to pass through.
+        /// </summary>
+        public abstract bool InterruptMovementAndWaitUntilStopped();
+
+        /// <summary>
+        /// Checks to see if the motors are currently moving.
+        /// </summary>
+        /// <param name="axis">Azimuth, elevation, or both.</param>
+        /// <returns>True if moving, false if not moving.</returns>
+        public abstract bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH);
     }
 }

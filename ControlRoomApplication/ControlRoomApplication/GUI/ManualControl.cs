@@ -54,7 +54,7 @@ namespace ControlRoomApplication.Main
             //UpdateText("Moving at -" + comboBox1.Text);
 
             // Start CCW Jog
-            rt_controller.StartRadioTelescopeAzimuthJog(speed, false);
+            //rt_controller.StartRadioTelescopeAzimuthJog(speed, false, );
         }
 
         private void NegButton_MouseUp(object sender, MouseEventArgs e)

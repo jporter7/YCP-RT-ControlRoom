@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Timers;
 using ControlRoomApplication.Controllers.SensorNetwork.Simulation;
 using ControlRoomApplication.Controllers.Communications;
+using System.Collections;
+using ControlRoomApplication.Entities.DiagnosticData;
 
 namespace ControlRoomApplication.Controllers.SensorNetwork
 {
@@ -18,9 +20,9 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
     /// <summary>
     /// This is the central component of the Sensor Network on the Control Room end. This handles all the main communications
     /// with the main Sensor Network system, such as receiving data, setting statuses based on data it receives, and tells the
-    /// client when to send iniC:\YCP-RT-ControlRoom\ControlRoomApplication\ControlRoomApplication\Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cstialization data.
+    /// client when to send initialization data.
     /// </summary>
-    public class SensorNetworkServer
+    public class SensorNetworkServer : PacketDecodingTools
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -62,6 +64,20 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             CurrentCounterbalanceAccl = new Acceleration[1];
             CurrentCounterbalanceAccl[0] = new Acceleration();
 
+            AbsoluteOrientationOffset = new Orientation();
+
+            // Sensor error initialization
+            SensorStatuses = new SensorStatuses();
+            SensorStatuses.AzimuthAbsoluteEncoderStatus = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.ElevationAbsoluteEncoderStatus = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.AzimuthTemperature1Status = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.AzimuthTemperature2Status = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.ElevationTemperature1Status = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.ElevationTemperature2Status = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.AzimuthAccelerometerStatus = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.ElevationAccelerometerStatus = SensorNetworkSensorStatus.Okay;
+            SensorStatuses.CounterbalanceAccelerometerStatus = SensorNetworkSensorStatus.Okay;
+
             // Initialize threads and additional processes, if applicable
             SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
             SensorMonitoringThread.Name = "SensorMonitorThread";
@@ -80,6 +96,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             Timeout = new System.Timers.Timer();
             Timeout.Elapsed += TimedOut; // TimedOut is the function at the bottom that executes when this elapses
             Timeout.AutoReset = false;
+
+            AccBlob = new AccelerationBlob();
         }
 
         /// <summary>
@@ -94,11 +112,18 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
         /// <summary>
         /// The current orientation of the telescope based off of the absolute encoders. These
-        /// are totally separate from the motor encoders' data that we get from the Read_position
+        /// are totally separate from the motor encoders' data that we get from the GetMotorEncoderPosition
         /// function in the PLC and MCU, and will provide more accurate data regarding the telescope's
         /// position.
         /// </summary>
         public Orientation CurrentAbsoluteOrientation { get; set; }
+
+        /// <summary>
+        /// The absolute encoders will be different from the motor encoders by default, so when we home the telescope,
+        /// the offset will be calculated and stored in here. This should work no matter where the homing sensor
+        /// is placed.
+        /// </summary>
+        public Orientation AbsoluteOrientationOffset { get; set; }
 
         /// <summary>
         /// This tells us the current vibration coming from the azimuth motor. It is always received as
@@ -136,10 +161,15 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         public SensorNetworkStatusEnum Status { get; set; }
 
         /// <summary>
+        /// This contains data for the individual sensors' statuses.
+        /// </summary>
+        public SensorStatuses SensorStatuses { get; set; }
+
+        /// <summary>
         /// These two objects are used together to receive data, and should be destroyed together as well.
         /// </summary>
         private TcpListener Server;
-        NetworkStream Stream;
+        private NetworkStream Stream;
 
         /// <summary>
         /// This should be true as long as the SensorMonitoringThread is running, and set to false if that thread
@@ -159,19 +189,25 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         private System.Timers.Timer Timeout { get; }
 
         /// <summary>
+        /// This will be used to help send acceleration data to the database
+        /// </summary>
+        private AccelerationBlob AccBlob { get; set; }
+
+
+        /// <summary>
         /// This starts the SensorMonitoringRoutine. Calling this will immediately begin initialization.
         /// </summary>
         /// <returns>If started successfully, return true. Else, return false.</returns>
-        public void StartSensorMonitoringRoutine()
+        public void StartSensorMonitoringRoutine(bool rebooting = false)
         {
             Server.Start();
             CurrentlyRunning = true;
             Status = SensorNetworkStatusEnum.Initializing;
-            Timeout.Interval = InitializationClient.config.TimeoutInitialization;
+            Timeout.Interval = InitializationClient.SensorNetworkConfig.TimeoutInitialization;
             Timeout.Start();
             SensorMonitoringThread.Start();
 
-            if (SimulationSensorNetwork != null)
+            if (SimulationSensorNetwork != null && !rebooting)
             {
                 SimulationSensorNetwork.StartSimulationSensorNetwork();
             }
@@ -202,16 +238,16 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             { // We want to keep using the timer if we are rebooting, not destroy it.
                 Status = SensorNetworkStatusEnum.None;
                 Timeout.Dispose();
+
+                if (SimulationSensorNetwork != null)
+                {
+                    SimulationSensorNetwork.EndSimulationSensorNetwork();
+                }
             }
             else
             {
                 Status = SensorNetworkStatusEnum.Rebooting;
                 SensorMonitoringThread = new Thread(() => { SensorMonitoringRoutine(); });
-            }
-
-            if (SimulationSensorNetwork != null)
-            {
-                SimulationSensorNetwork.EndSimulationSensorNetwork();
             }
         }
 
@@ -230,7 +266,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             // sure it REALLY times out.
             Thread.Sleep(SensorNetworkConstants.WatchDogTimeout + 50);
 
-            StartSensorMonitoringRoutine();
+            StartSensorMonitoringRoutine(true);
         }
 
         /// <summary>
@@ -280,17 +316,25 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     {
                         // At this point, we may begin parsing the data
 
+                        // Sensor statuses and error codes
+                        BitArray sensorStatus = new BitArray(new byte[] { data[5] }); // sensor statuses 
+                        UInt32 sensorErrors = (UInt32)(data[6] << 16 | data[7] << 8 | data[8]); // sensor self-tests | adxl error codes and azimuth encoder error code | temp sensor error codes
+
                         // Acquire the sample sizes for each sensor
-                        UInt16 elAcclSize = (UInt16)(data[5] << 8 | data[6]);
-                        UInt16 azAcclSize = (UInt16)(data[7] << 8 | data[8]);
-                        UInt16 cbAcclSize = (UInt16)(data[9] << 8 | data[10]);
-                        UInt16 elTempSensorSize = (UInt16)(data[11] << 8 | data[12]);
-                        UInt16 azTempSensorSize = (UInt16)(data[13] << 8 | data[14]);
-                        UInt16 elEncoderSize = (UInt16)(data[15] << 8 | data[16]);
-                        UInt16 azEncoderSize = (UInt16)(data[17] << 8 | data[18]);
+                        UInt16 elAcclSize = (UInt16)(data[9] << 8 | data[10]);
+                        UInt16 azAcclSize = (UInt16)(data[11] << 8 | data[12]);
+                        UInt16 cbAcclSize = (UInt16)(data[13] << 8 | data[14]);
+                        UInt16 elTempSensorSize = (UInt16)(data[15] << 8 | data[16]);
+                        UInt16 azTempSensorSize = (UInt16)(data[17] << 8 | data[18]);
+                        UInt16 elEncoderSize = (UInt16)(data[19] << 8 | data[20]);
+                        UInt16 azEncoderSize = (UInt16)(data[21] << 8 | data[22]);
+
+                        // TODO: Outside of right here, we aren't doing anything with the sensor statuses. These should
+                        // be updated along with the sensor data on the diagnostics form. How this looks is up to you. (issue #353)
+                        SensorStatuses = ParseSensorStatuses(sensorStatus, sensorErrors);
 
                         // This is the index we start reading sensor data
-                        int k = 19;
+                        int k = 23;
 
                         // If no data comes through for a sensor (i.e. the size is 0), then it will not be updated,
                         // otherwise the UI value would temporarily be set to 0, which would be inaccurate
@@ -298,49 +342,49 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         // Accelerometer 1 (elevation)
                         if (elAcclSize > 0)
                         {
-                            CurrentElevationMotorAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
+                            //Create array of acceleration objects 
+                            CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
+                            AccBlob.BuildAccelerationString(CurrentElevationMotorAccl);
                         }
 
                         // Accelerometer 2 (azimuth)
                         if (azAcclSize > 0)
                         {
-                            CurrentAzimuthMotorAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
+                            CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
+                            AccBlob.BuildAccelerationString(CurrentAzimuthMotorAccl);
                         }
 
                         // Accelerometer 3 (counterbalance)
                         if (cbAcclSize > 0)
                         {
-                            CurrentCounterbalanceAccl = PacketDecodingTools.GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
+                            CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
+                            AccBlob.BuildAccelerationString(CurrentCounterbalanceAccl);
                         }
 
                         // Elevation temperature
                         if (elTempSensorSize > 0)
                         {
-                            CurrentElevationMotorTemp = PacketDecodingTools.GetTemperatureFromBytes(ref k, data, elTempSensorSize, SensorLocationEnum.EL_MOTOR);
+                            CurrentElevationMotorTemp = GetTemperatureFromBytes(ref k, data, elTempSensorSize, SensorLocationEnum.EL_MOTOR);
+                            Database.DatabaseOperations.AddSensorData(CurrentElevationMotorTemp);
                         }
 
                         // Azimuth temperature
                         if (azTempSensorSize > 0)
                         {
-                            CurrentAzimuthMotorTemp = PacketDecodingTools.GetTemperatureFromBytes(ref k, data, azTempSensorSize, SensorLocationEnum.AZ_MOTOR);
+                            CurrentAzimuthMotorTemp = GetTemperatureFromBytes(ref k, data, azTempSensorSize, SensorLocationEnum.AZ_MOTOR);
+                            Database.DatabaseOperations.AddSensorData(CurrentAzimuthMotorTemp);
                         }
 
                         // Elevation absolute encoder
                         if (elEncoderSize > 0)
                         {
-                            // This must be converted into degrees, because we are only receiving raw data from the
-                            // elevation encoder
-                            CurrentAbsoluteOrientation.Elevation = 
-                                0.25 * (short)(data[k++] << 8 | data[k++]) - 20.375;
+                            CurrentAbsoluteOrientation.Elevation = GetElevationAxisPositionFromBytes(ref k, data, AbsoluteOrientationOffset.Elevation, CurrentAbsoluteOrientation.Elevation);
                         }
 
                         // Azimuth absolute encoder
                         if (azEncoderSize > 0)
                         {
-                            // This must be converted into degrees, because we are only receiving raw data from the
-                            // azimuth encoder
-                            CurrentAbsoluteOrientation.Azimuth = 
-                                360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[k++] << 8 | data[k++]);
+                            CurrentAbsoluteOrientation.Azimuth = GetAzimuthAxisPositionFromBytes(ref k, data, AbsoluteOrientationOffset.Azimuth, CurrentAbsoluteOrientation.Azimuth);
                         }
 
                         success = true;
@@ -401,7 +445,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         // status will overwrite any preexisting status errors.
                         if (Status == SensorNetworkStatusEnum.ReceivingData)
                         {
-                            Timeout.Interval = InitializationClient.config.TimeoutDataRetrieval;
+                            Timeout.Interval = InitializationClient.SensorNetworkConfig.TimeoutDataRetrieval;
                             Timeout.Start();
                         }
                     }
@@ -409,7 +453,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     localClient.Close();
                     localClient.Dispose();
                 }
-                catch
+                catch (Exception e)
                 {
                     if (CurrentlyRunning) // If we're not currently running, then it means we voluntarily shut down the server
                     {
@@ -422,6 +466,32 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// This is used to parse the sensor statuses into the SensorStatuses object.
+        /// </summary>
+        /// <param name="statuses">Regular statuses.</param>
+        /// <param name="errors">Various error codes if there are errors.</param>
+        /// <returns></returns>
+        private SensorStatuses ParseSensorStatuses(BitArray statuses, UInt32 errors)
+        {
+            SensorStatuses s = new SensorStatuses
+            {
+                // Regular statuses
+                AzimuthAbsoluteEncoderStatus = statuses[0] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                AzimuthTemperature1Status = statuses[2] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                AzimuthTemperature2Status = statuses[1] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                ElevationTemperature1Status = statuses[4] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                ElevationTemperature2Status = statuses[3] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                AzimuthAccelerometerStatus = statuses[6] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                ElevationAccelerometerStatus = statuses[7] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+                CounterbalanceAccelerometerStatus = statuses[5] ? SensorNetworkSensorStatus.Okay : SensorNetworkSensorStatus.Error,
+
+                // TODO: Parse errors here. You will need to add the errors to the SensorStatuses object (issue #353)
+            };
+
+            return s;
         }
 
         /// <summary>

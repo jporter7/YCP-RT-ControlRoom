@@ -28,13 +28,13 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         {
             IPAddress = clientIPAddress;
             Port = clientPort;
-            config = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
+            SensorNetworkConfig = DatabaseOperations.RetrieveSensorNetworkConfigByTelescopeId(telescopeId);
 
             // if the config doesn't exist, create a new one
-            if(config == null)
+            if(SensorNetworkConfig == null)
             {
-                config = new SensorNetworkConfig(telescopeId);
-                DatabaseOperations.AddSensorNetworkConfig(config);
+                SensorNetworkConfig = new SensorNetworkConfig(telescopeId);
+                DatabaseOperations.AddSensorNetworkConfig(SensorNetworkConfig);
             }
         }
 
@@ -46,7 +46,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This is the configuration we are using to store any initialization data to send, as well
         /// as timeout information.
         /// </summary>
-        public SensorNetworkConfig config;
+        public SensorNetworkConfig SensorNetworkConfig;
 
         /// <summary>
         /// Converts the initialization from the config file to bytes and then sends it to the Sensor Network.
@@ -54,7 +54,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         public bool SendSensorInitialization()
         {
             bool success = false;
-            var init = config.GetSensorInitAsBytes();
+            var init = SensorNetworkConfig.GetSensorInitAsBytes();
 
             try
             {

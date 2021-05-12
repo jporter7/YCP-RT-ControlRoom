@@ -12,7 +12,11 @@ using ControlRoomApplication.Validation;
 using Microsoft.VisualBasic;
 using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
-
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using System.Threading.Tasks;
+using ControlRoomApplication.Controllers.Communications;
 
 namespace ControlRoomApplication.Main
 {
@@ -63,6 +67,7 @@ namespace ControlRoomApplication.Main
 
             // set form data object
             formData = controlFormData;
+            formData.speed = 1;
         
             // set form data
             controlScriptsCombo.SelectedIndex = formData.controlScriptIndex;
@@ -90,7 +95,8 @@ namespace ControlRoomApplication.Main
             CurrentAppointment.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
             CurrentAppointment.CelestialBody = new CelestialBody();
             CurrentAppointment.CelestialBody.Coordinate = new Coordinate(0, 0);
-            CurrentAppointment.Orientation = rtController.GetAbsoluteOrientation();
+            
+            CurrentAppointment.Orientation = rtController.GetCurrentOrientation();
             CurrentAppointment.Telescope = controlRoom.RadioTelescopes.Find(x => x.Id == rtId);
             CurrentAppointment.User = ControlRoomUser;
 
@@ -171,14 +177,15 @@ namespace ControlRoomApplication.Main
 
             }
             plusElaButton.Enabled = formData.manualControlEnabled;
-            plusJogButton.Enabled = formData.manualControlEnabled;
-            subJogButton.Enabled = formData.manualControlEnabled;
+            cwAzJogButton.Enabled = formData.manualControlEnabled;
+            ccwAzJogButton.Enabled = formData.manualControlEnabled;
             subElaButton.Enabled = formData.manualControlEnabled;
             ControlledButtonRadio.Enabled = formData.manualControlEnabled;
             immediateRadioButton.Enabled = formData.manualControlEnabled;
             speedTextBox.Enabled = formData.manualControlEnabled;
             speedTrackBar.Enabled = formData.manualControlEnabled;
-            
+            speedTrackBar.Value = 10;
+
 
             //Initialize Start and Stop Scan buttons as disabled
             spectraEditActive = true;
@@ -191,10 +198,6 @@ namespace ControlRoomApplication.Main
             finalizeSettingsButton.Enabled = allScanInputsValid();
 
             this.FormClosing += FreeControlForm_Closing;
-
-          //  var threads = controlRoom.RTControllerManagementThreads.Where<RadioTelescopeControllerManagementThread>(t => t.RTController == rtController).ToList<RadioTelescopeControllerManagementThread>();
-         //   threads[0].ManagementThread.Abort();
-           // controlRoom.RTControllerManagementThreads.Where<RadioControllerManagementThread>( t => t.R == rtController));
 
             logger.Info(Utilities.GetTimeStamp() + ": Radio Telescope Control Form Initalized");
         }
@@ -210,8 +213,6 @@ namespace ControlRoomApplication.Main
 
             timer1.Enabled = false;
         }
-       // logger.Info(Utilities.GetTimeStamp() + ": Adding RadioTelescope Controller");
-       //MainControlRoomController.AddRadioTelescopeController(ProgramRTControllerList[current_rt_id - 1]);
 
         private void PosDecButton_Click(object sender, EventArgs e)
         {
@@ -303,134 +304,25 @@ namespace ControlRoomApplication.Main
             string RA = TargetCoordinate.RightAscension.ToString("0.##");
             string Dec = TargetCoordinate.Declination.ToString("0.##");
             logger.Info(Utilities.GetTimeStamp() + ": UpdateText, Target Coordinate = RA:" + RA + ", Dec:" + Dec);
-            SetTargetRAText(RA);
-            SetTargetDecText(Dec);
+            
+            TargetRATextBox.Text = RA;
+            TargetDecTextBox.Text = Dec;
+
             errorLabel.Text = "Free Control for Radio Telescope " + rtId.ToString();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             Entities.Orientation currentOrienation = rtController.GetCurrentOrientation();
-            SetAZText(String.Format("{0:N2}",currentOrienation.Azimuth));
-            SetELText(String.Format("{0:N2}", currentOrienation.Elevation));
             Coordinate ConvertedPosition = CoordCalc.OrientationToCoordinate(currentOrienation, DateTime.UtcNow);
-            SetActualRAText(ConvertedPosition.RightAscension.ToString("0.##"));
-            SetActualDecText(ConvertedPosition.Declination.ToString("0.##"));
-            
-        }
 
-        delegate void SetTargetRATextCallback(string text);
-        private void SetTargetRAText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (TargetRATextBox.InvokeRequired)
-            {
-                SetTargetRATextCallback d = new SetTargetRATextCallback(SetTargetRAText);
-                Invoke(d, new object[] { text });
-            }
-            else
-            {
-                TargetRATextBox.Text = text;
-            }
-        }
+            Utilities.WriteToGUIFromThread(this, () => {
+                label4.Text = String.Format("{0:N2}", currentOrienation.Azimuth);
+                label5.Text = String.Format("{0:N2}", currentOrienation.Elevation);
 
-        delegate void SetTargetDecTextCallback(string text);
-        private void SetTargetDecText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (TargetDecTextBox.InvokeRequired)
-            {
-                SetTargetDecTextCallback d = new SetTargetDecTextCallback(SetTargetDecText);
-                Invoke(d, new object[] { text });
-            }
-            else
-            {
-                TargetDecTextBox.Text = text;
-            }
-        }
-
-        delegate void SetActualRATextCallback(string text);
-        private void SetActualRAText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (ActualRATextBox.InvokeRequired)
-            {
-                SetActualRATextCallback d = new SetActualRATextCallback(SetActualRAText);
-                try
-                {
-                    Invoke(d, new object[] { text });
-
-                }
-                catch { }
-            }
-            else
-            {
-                ActualRATextBox.Text = text;
-            }
-        }
-
-        delegate void SetActualDecTextCallback(string text);
-        private void SetActualDecText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (ActualDecTextBox.InvokeRequired)
-            {
-                SetActualDecTextCallback d = new SetActualDecTextCallback(SetActualDecText);
-                try
-                {
-                    Invoke(d, new object[] { text });
-
-                }
-                catch { }
-            }
-            else
-            {
-                ActualDecTextBox.Text = text;
-            }
-        }
-
-
-        delegate void SetAZTextCallback(string text);
-        private void SetAZText(string text) {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (label4.InvokeRequired) {
-                SetAZTextCallback d = new SetAZTextCallback(SetAZText);
-                try {
-                    Invoke(d, new object[] { text });
-
-                }
-                catch { }
-            } else {
-                label4.Text = text;
-            }
-        }
-
-
-        delegate void SetELTextCallback(string text);
-        private void SetELText(string text) {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (label5.InvokeRequired) {
-                SetELTextCallback d = new SetELTextCallback(SetELText);
-                try {
-                    Invoke(d, new object[] { text });
-
-                }
-                catch { }
-            } else {
-                label5.Text = text;
-            }
+                ActualRATextBox.Text = ConvertedPosition.RightAscension.ToString("0.##");
+                ActualDecTextBox.Text = ConvertedPosition.Declination.ToString("0.##");
+            });
         }
 
         private void oneForthButton_Click(object sender, EventArgs e)
@@ -463,10 +355,6 @@ namespace ControlRoomApplication.Main
 
         private void UpdateIncrementButtons()
         {
-            //oneForthButton.BackColor = System.Drawing.Color.LightGray;
-            //oneButton.BackColor = System.Drawing.Color.LightGray;
-            //fiveButton.BackColor = System.Drawing.Color.LightGray;
-            //tenButton.BackColor = System.Drawing.Color.LightGray;
 
             switch (Increment)
             {
@@ -567,8 +455,8 @@ namespace ControlRoomApplication.Main
 
             }
             plusElaButton.Enabled = manual_save_state;
-            plusJogButton.Enabled = manual_save_state;
-            subJogButton.Enabled = manual_save_state;
+            cwAzJogButton.Enabled = manual_save_state;
+            ccwAzJogButton.Enabled = manual_save_state;
             subElaButton.Enabled = manual_save_state;
             ControlledButtonRadio.Enabled = manual_save_state;
             immediateRadioButton.Enabled = manual_save_state;
@@ -581,102 +469,50 @@ namespace ControlRoomApplication.Main
    
         //Run Script Button Functionality
         //Case Depends on which script is currently selected 
-        private void runControlScript_Click(object sender, EventArgs e)
+        private async void runControlScript_Click(object sender, EventArgs e)
         {
-            logger.Info(Utilities.GetTimeStamp() + ": Run Script Button Clicked");
-            int caseSwitch = controlScriptsCombo.SelectedIndex;
+            int index = controlScriptsCombo.SelectedIndex + 0;
+            string indexName = controlScriptsCombo.SelectedItem.ToString();
 
-            RadioTelescope tele = rtController.RadioTelescope;
+            // We must run this async so it doesn't hold up the UI
+            await Task.Run(() => {
+                logger.Info($"{Utilities.GetTimeStamp()}: Starting script {indexName}.");
 
-            Thread thread =new Thread(() => { } );
+                MovementResult movementResult = MovementResult.None;
 
-            switch (caseSwitch)
-            {
-                case 1:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Stow().GetAwaiter();
-                    });
-                    //Stow Script selected (index 0 of control script combo)
-                    break;
-                case 2:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.FullElevationMove().GetAwaiter();
-                    });
-                    //Full Elevation selected (index 1 of control script combo)
-                    break;
-                case 3:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Full_360_CW_Rotation().GetAwaiter();
-                    });
-                    //Full 360 CW selected (index 2 of control script combo)
-                    break;
-                case 4:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Full_360_CCW_Rotation().GetAwaiter();
-                    });
-                    //Full 360 CCW  selected (index 3 of control script combo)
-                    break;
-                case 5:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Thermal_Calibrate().GetAwaiter();
-                    });
-                    //Thermal Calibration selected (index 4 of control script combo)
-                    break;
-                case 6:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.SnowDump().GetAwaiter();
-                    });
-                    //Snow Dump selected (index 5 of control script combo)
-                    break;
-                case 7:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.RecoverFromLimitSwitch().GetAwaiter();
-                    });
-                    //Recover from Limit Switch (index 6 of control script combo)
-                    break;
-                case 8:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Recover_CW_Hardstop().GetAwaiter();
-                    });
-                    //Recover from Clockwise Hardstop (index 7 of control script combo)
-                    break;
-                case 9:
-                    thread = new Thread(() =>
-                    {
-                        rtController.ExecuteRadioTelescopeControlledStop();
-                        tele.PLCDriver.Recover_CCW_Hardstop().GetAwaiter();
-                    });
-                    //Recover from Counter-Clockwise Hardstop (index 8 of control script combo)
-                    break;
-                case 10:
-                    thread = new Thread(() =>
-                    {
-                        tele.PLCDriver.Home();
-                    });
-                    //Recover from Counter-Clockwise Hardstop (index 9 of control script combo)
-                    break;
+                switch (index)
+                {
+                    case 1:
+                        movementResult = rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovementPriority.Manual);
+                        break;
 
-                case 11:
-                    thread = new Thread(() =>
-                    {
+                    case 2:
+                        movementResult = rtController.FullElevationMove(MovementPriority.Manual);
+                        break;
+
+                    case 3:
+                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(360, 0), MovementPriority.Manual);
+                        break;
+
+                    case 4:
+                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(-360, 0), MovementPriority.Manual);
+                        break;
+
+                    case 5:
+                        movementResult = rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
+                        break;
+
+                    case 6:
+                        movementResult = rtController.SnowDump(MovementPriority.Manual);
+                        break;
+
+                    case 7:
+                        movementResult = rtController.HomeTelescope(MovementPriority.Manual);
+                        break;
+
+                    case 8:
                         double azimuthPos = 0;
-                        double elevationPos = 0;    
+                        double elevationPos = 0;
                         string input = "";
                         string[] values;
                         Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
@@ -687,58 +523,59 @@ namespace ControlRoomApplication.Main
                             input = Interaction.InputBox("The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
                             " This script is best run with a telescope type of SLIP_RING.\n\n" +
                             "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
-                                " and elevation between "+ Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES+ " and "+ Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
+                                " and elevation between " + Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES + " and " + Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
                                 " degrees. Format the entry as a comma-separated list in the format " +
                                 "azimuth, elevation. Ex: 55,80",
                                 "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
                             values = input.Split(',');
-                        
+
                             if (values.Length == 2 && !input.Equals(""))
                             {
                                 Double.TryParse(values[0], out azimuthPos);
                                 Double.TryParse(values[1], out elevationPos);
-                               
+
                             }
 
                             // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
                         }
-                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES) 
+                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES)
                             && (!input.Equals("") && values.Length <= 2));
 
                         // Only run script if cancel button was not hit
                         if (!input.Equals(""))
                         {
-                            tele.PLCDriver.CustomOrientationMove(azimuthPos, elevationPos);
-
+                            Entities.Orientation moveTo = new Entities.Orientation(azimuthPos, elevationPos);
+                            movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovementPriority.Manual);
                         }
-                        else 
+                        else
                         {
                             MessageBox.Show("Custom Orientation script cancelled.", "Script Cancelled");
                         }
-                    });
-                    // Custom azimuth position. This is only used to test the slip ring implementation
-                    break;
+                        break;
 
-                case 12:
-                    thread = new Thread(() =>
-                    {
-                        rtController.StartRadioTelescopeAzimuthJog(1, true);
-                    });
-                    thread.Start();
-                    MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
-                    ExecuteCorrectStop();
+                    case 9:
+                        rtController.StartRadioTelescopeJog(1, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.AZIMUTH);
+                        MessageBox.Show("Currently spinning Azimuth. Press OK to stop spinning.", "Azimuth Moving");
+                        ExecuteCorrectStop();
+                        movementResult = MovementResult.Success;
+                        break;
 
-                    break;
-                default:
-
-                    //Script cannot be run
-                    break;
-            }
-            try {
-                thread.Start();
-            } catch {
-
-            }
+                    default:
+                        // Script does not exist
+                        break;
+                }
+                
+                if(movementResult == MovementResult.Success)
+                {
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully finished script {indexName}.");
+                }
+                else if (movementResult != MovementResult.None)
+                {
+                    logger.Info($"{Utilities.GetTimeStamp()}: Script {indexName} FAILED with error message: {movementResult.ToString()}");
+                    pushNotification.sendToAllAdmins("Script Failed", $"Script {indexName} FAILED with error message: {movementResult.ToString()}");
+                    EmailNotifications.sendToAllAdmins("Script Failed", $"Script {indexName} FAILED with error message: {movementResult.ToString()}");
+                }
+            });
         }
 
         //Control Script combo box enables run button when a script has been selected
@@ -759,17 +596,21 @@ namespace ControlRoomApplication.Main
 
         }
 
-        private void subJogButton_Down( object sender , MouseEventArgs e ) {
+        private void ccwAzJogButton_Down( object sender , MouseEventArgs e ) {
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
                 double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
-                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
-
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, false);
+                    MovementResult result = rtController.StartRadioTelescopeJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, RadioTelescopeAxisEnum.AZIMUTH);
+
+                    if (result == MovementResult.Success)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Successfully started azimuth counterclockwise jog.");
+                    else if (result == MovementResult.StoppingCurrentMove)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
+                    else if (result == MovementResult.AlreadyMoving)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Azimuth counterclockwise jog BLOCKED. Another manual script is already running.");
                 }
                 else
                 {
@@ -782,16 +623,12 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void subJogButton_Up( object sender , MouseEventArgs e ) {
-            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
-            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
+        private void ccwAzJogButton_Up( object sender , MouseEventArgs e ) {
             //Stop Move
             ExecuteCorrectStop();
         }
 
-        private void plusJogButton_Down(object sender, MouseEventArgs e)
+        private void cwAzJogButton_Down(object sender, MouseEventArgs e)
         {
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
@@ -799,12 +636,15 @@ namespace ControlRoomApplication.Main
                
                 if (Validator.ValidateSpeed(speed))
                 {
-
-                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
-
                     // Start CW Jog
-                    rtController.StartRadioTelescopeAzimuthJog(speed, true);
+                    MovementResult result = rtController.StartRadioTelescopeJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.AZIMUTH);
+
+                    if (result == MovementResult.Success)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Successfully started azimuth clockwise jog.");
+                    else if (result == MovementResult.StoppingCurrentMove)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
+                    else if (result == MovementResult.AlreadyMoving)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Azimuth clockwise jog BLOCKED. Another manual script is already running.");
                 }
                 else
                 {
@@ -817,37 +657,39 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void plusJogButton_UP( object sender , MouseEventArgs e ) {
-            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
-            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
+        private void cwAzJogButton_UP( object sender , MouseEventArgs e ) {
             //  Stop Move
             ExecuteCorrectStop();
         }
 
         private void ExecuteCorrectStop()
         {
+            MovementResult result = MovementResult.None;
+
             if (ControlledButtonRadio.Checked)
             {
-                logger.Info(Utilities.GetTimeStamp() + ": Executed Controlled Stop");
-                rtController.ExecuteRadioTelescopeStopJog();
+                result = rtController.ExecuteRadioTelescopeStopJog(MCUCommandType.ControlledStop);
                 formData.immediateStopBool = false;
                 formData.controlledStopBool = true;
+
+                if (result == MovementResult.Success)
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully stopped jog with a controlled stop.");
             }
             else if (immediateRadioButton.Checked)
             {
-                logger.Info(Utilities.GetTimeStamp() + ": Executed Immediate Stop");
-                rtController.ExecuteRadioTelescopeImmediateStop();
+                result = rtController.ExecuteRadioTelescopeStopJog(MCUCommandType.ImmediateStop);
                 formData.immediateStopBool = true;
                 formData.controlledStopBool = false;
 
+                if (result == MovementResult.Success)
+                    logger.Info($"{Utilities.GetTimeStamp()}: Successfully stopped jog with an immediate stop.");
             }
             else
             {
                 logger.Info(Utilities.GetTimeStamp() + ": Invalid Stop Selected");
                 throw new Exception();
             }
+
         }
 
         //This Button executes a system call that opens up the user interface documentation as a PDF
@@ -858,48 +700,21 @@ namespace ControlRoomApplication.Main
                 System.Diagnostics.Process.Start(filename);
         }
 
-        private void groupBox2_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void ActualPositionLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void TargetPositionLabel_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void RAIncGroupbox_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void manualGroupBox_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void plusElaButton_Down(object sender, MouseEventArgs e ){
             if (Validator.ValidateSpeedTextOnly(speedTextBox.Text))
             {
                 double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
-
-                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
-
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, true);
+                    MovementResult result = rtController.StartRadioTelescopeJog(speed, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, RadioTelescopeAxisEnum.ELEVATION);
+                    
+                    if(result == MovementResult.Success)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Successfully started elevation positive jog.");
+                    else if(result == MovementResult.StoppingCurrentMove)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
+                    else if(result == MovementResult.AlreadyMoving)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Elevation positive jog BLOCKED. Another manual script is already running.");
                 }
                 else
                 {
@@ -913,9 +728,6 @@ namespace ControlRoomApplication.Main
         }
 
         private void plusElaButton_Up( object sender , MouseEventArgs e ) {
-            logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
             //  Stop Move
             ExecuteCorrectStop();
         }
@@ -926,12 +738,15 @@ namespace ControlRoomApplication.Main
                 double speed = Convert.ToDouble(speedTextBox.Text);
                 if (Validator.ValidateSpeed(speed))
                 {
-
-                    logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseDown");
-                    // UpdateText("Moving at " + comboBox1.Text);
-
                     // Start CW Jog
-                    rtController.StartRadioTelescopeElevationJog(speed, false);
+                    MovementResult result = rtController.StartRadioTelescopeJog(speed, RadioTelescopeDirectionEnum.ClockwiseOrNegative, RadioTelescopeAxisEnum.ELEVATION);
+
+                    if (result == MovementResult.Success)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Successfully started elevation negative jog.");
+                    else if (result == MovementResult.StoppingCurrentMove)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
+                    else if (result == MovementResult.AlreadyMoving)
+                        logger.Info($"{Utilities.GetTimeStamp()}: Elevation negative jog BLOCKED. Another manual script is already running.");
                 }
                 else
                 {
@@ -945,22 +760,8 @@ namespace ControlRoomApplication.Main
         }
 
         private void subElaButton_Up( object sender , MouseEventArgs e ) {
-             logger.Info(Utilities.GetTimeStamp() + ": Jog PosButton MouseUp");
-
-            // UpdateText("Manual Control for Radio Telescope " + rt_controller.RadioTelescope.Id.ToString());
-
             //  Stop Move
             ExecuteCorrectStop();
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox4_Enter(object sender, EventArgs e)
-        {
-
         }
 
         private void finalizeSettings_Click(object sender, EventArgs e)
@@ -1092,11 +893,8 @@ namespace ControlRoomApplication.Main
                 stopScanButton.BackColor = System.Drawing.Color.Red;
 
                 rtController.RadioTelescope.SpectraCyberController.StartScan(CurrentAppointment);
-                //  controlRoom.RTControllerManagementThreads.Find(t => t.RTController.RadioTelescope.Id == rtId).StartReadingData(CurrentAppointment);
                 logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has started");
-            
 
-         
         }
 
         private void stopScan_Click(object sender, EventArgs e)
@@ -1115,27 +913,6 @@ namespace ControlRoomApplication.Main
 
             stopScanButton.Enabled = false;
             stopScanButton.BackColor = System.Drawing.Color.DarkGray;
-
-        }
-
-
-        private void label11_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label9_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label12_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void FreeControlForm_Load(object sender, EventArgs e)
-        {
 
         }
 
@@ -1179,34 +956,6 @@ namespace ControlRoomApplication.Main
             }
             formData.DCGainIndex = DCGain.SelectedIndex;
             
-        }
-
-        private void lblFrequency_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblIFGain_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblIFGain_MouseHover(object sender, EventArgs e)
-        {
-            //this.IFGainToolTip.Show("IFGain must be between\n " +
-                //"10.00 and 25.75 decibles.", lblIFGain);
-        }
-
-        private void lblFrequency_MouseHover(object sender, EventArgs e)
-        {
-            //this.frequencyToolTip.Show("Frequency must be a non-negative\n " +
-                //"value, in hertz (>= 0 Hz)", lblFrequency);
-        }
-
-        private void label12_MouseHover(object sender, EventArgs e)
-        {
-            //this.offsetVoltageToolTip.Show("Offset voltage must be\n " +
-                //"between 0 - 4.095 Volts", label12);
         }
 
         private void frequency_TextChanged(object sender, EventArgs e)
@@ -1316,11 +1065,6 @@ namespace ControlRoomApplication.Main
           
         }
 
-        private void plusJogButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             if (rtController.RadioTelescope.SpectraCyberController.Schedule.Mode == SpectraCyberScanScheduleMode.OFF ||
@@ -1331,6 +1075,11 @@ namespace ControlRoomApplication.Main
                 rtController.RadioTelescope.SpectraCyberController.StopScan();
                 logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has stopped");
             }
+        }
+
+        private void speedTextBox_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -109,7 +109,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             short result = PacketEncodingTools.ConvertDegreesToRawAzData(input);
 
-            short expected = (short)((SensorNetworkConstants.AzimuthEncoderScaling * input) / 360);
+            short expected = (short)(SensorNetworkConstants.AzimuthEncoderScaling * input / 360 * -1);
 
             Assert.AreEqual(expected, result);
         }
@@ -121,7 +121,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             short result = PacketEncodingTools.ConvertDegreesToRawElData(input);
 
-            short expected = (short)Math.Round((input + 20.375) / 0.25);
+            short expected = (short)Math.Round((input - 104.375) / -0.25);
 
             Assert.AreEqual(expected, result);
         }
@@ -131,7 +131,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         {
             uint result = PacketEncodingTools.CalcDataSize(0, 0, 0, 0, 0, 0, 0);
 
-            uint expected = 19; // Default data size with no sensors
+            uint expected = 23; // Default data size with no sensors
 
             Assert.AreEqual(expected, result);
         }
@@ -143,7 +143,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             uint result = PacketEncodingTools.CalcDataSize(elAcc, 0, 0, 0, 0, 0, 0);
 
-            uint expected = 19 + 6; // Default data size plus size of sensor data
+            uint expected = 23 + 6; // Default data size plus size of sensor data
 
             Assert.AreEqual(expected, result);
         }
@@ -155,7 +155,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             uint result = PacketEncodingTools.CalcDataSize(0, azAcc, 0, 0, 0, 0, 0);
 
-            uint expected = 19 + 6; // Default data size plus size of sensor data
+            uint expected = 23 + 6; // Default data size plus size of sensor data
 
             Assert.AreEqual(expected, result);
         }
@@ -167,7 +167,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             uint result = PacketEncodingTools.CalcDataSize(0, 0, cbAcc, 0, 0, 0, 0);
 
-            uint expected = 19 + 6; // Default data size plus size of sensor data
+            uint expected = 23 + 6; // Default data size plus size of sensor data
 
             Assert.AreEqual(expected, result);
         }
@@ -179,7 +179,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             uint result = PacketEncodingTools.CalcDataSize(0, 0, 0, elTemp, 0, 0, 0);
 
-            uint expected = 19 + 2; // Default data size plus size of sensor data
+            uint expected = 23 + 2; // Default data size plus size of sensor data
 
             Assert.AreEqual(expected, result);
         }
@@ -191,7 +191,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             uint result = PacketEncodingTools.CalcDataSize(0, 0, 0, 0, azTemp, 0, 0);
 
-            uint expected = 19 + 2; // Default data size plus size of sensor data
+            uint expected = 23 + 2; // Default data size plus size of sensor data
 
             Assert.AreEqual(expected, result);
         }
@@ -203,7 +203,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             uint result = PacketEncodingTools.CalcDataSize(0, 0, 0, 0, 0, elEnc, 0);
 
-            uint expected = 19 + 2; // Default data size plus size of sensor data
+            uint expected = 23 + 2; // Default data size plus size of sensor data
 
             Assert.AreEqual(expected, result);
         }
@@ -215,7 +215,43 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
 
             uint result = PacketEncodingTools.CalcDataSize(0, 0, 0, 0, 0, 0, azEnc);
 
-            uint expected = 19 + 2; // Default data size plus size of sensor data
+            uint expected = 23 + 2; // Default data size plus size of sensor data
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void TestConvertTempCToRawData_AnyNumber_MultipliesBy16()
+        {
+            double numToConvert = 3.56;
+
+            short expected = (short)(numToConvert * 16);
+
+            short result = PacketEncodingTools.ConvertTempCToRawData(numToConvert);
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void TestConvertDegreesToRawAzData_AnyNumber_FormulaCalculatesCorrectly()
+        {
+            double numToConvert = 3.56;
+
+            short expected = (short)(SensorNetworkConstants.AzimuthEncoderScaling * numToConvert / 360 * -1);
+
+            short result = PacketEncodingTools.ConvertDegreesToRawAzData(numToConvert);
+
+            Assert.AreEqual(expected, result);
+        }
+
+        [TestMethod]
+        public void TestConvertDegreesToRawElData_AnyNumber_FormulaCalculatesCorrectly()
+        {
+            double numToConvert = 3.56;
+
+            short expected = (short)Math.Round((numToConvert - 104.375) / -0.25);
+
+            short result = PacketEncodingTools.ConvertDegreesToRawElData(numToConvert);
 
             Assert.AreEqual(expected, result);
         }

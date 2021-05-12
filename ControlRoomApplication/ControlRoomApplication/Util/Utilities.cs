@@ -43,6 +43,13 @@ namespace ControlRoomApplication.Util
             return dateTime;
         }
 
+        /// <summary>
+        /// This allows us to write to the user interface from a thread other than the thread that created
+        /// the user interface.
+        /// </summary>
+        /// <typeparam name="T">The form class name.</typeparam>
+        /// <param name="writeTo">What form class object.</param>
+        /// <param name="codeBlock">The code that changes the UI component.</param>
         public static void WriteToGUIFromThread<T>(T writeTo, Action codeBlock) where T:Form
         {
             if (writeTo.InvokeRequired)

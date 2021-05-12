@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Constants;
+using System.Net.Sockets;
 
 namespace ControlRoomApplicationTest.EntitiesTests
 {
@@ -28,6 +29,12 @@ namespace ControlRoomApplicationTest.EntitiesTests
             };
 
             controlRoom = new ControlRoom( weatherStation );
+
+            // End the CR's listener's server. We have to do this until we stop hard-coding that dang value.
+            // TODO: Remove this logic when the value is no longer hard-coded (issue #350)
+            PrivateObject listener = new PrivateObject(controlRoom.mobileControlServer);
+            ((TcpListener)listener.GetFieldOrProperty("server")).Stop();
+
             controlRoom.RTControllerManagementThreads.Add( rtManagementThreads[0] );
             controlRoom.RTControllerManagementThreads.Add( rtManagementThreads[1] );
             controlRoom.RTControllerManagementThreads.Add( rtManagementThreads[2] );

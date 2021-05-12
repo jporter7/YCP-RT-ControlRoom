@@ -18,6 +18,9 @@ using System.Collections.Generic;
 using static ControlRoomApplication.Constants.MCUConstants;
 using ControlRoomApplication.Database;
 using System.Timers;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
+using ControlRoomApplication.Controllers.Sensors;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -33,23 +36,8 @@ namespace ControlRoomApplication.Controllers
         private long PLC_last_contact = 0;
         private bool keep_modbus_server_alive = true;
         private bool is_test = false;
-        private int temp =0;
         private MCUManager MCU;
         private RadioTelescopeTypeEnum telescopeType = RadioTelescopeTypeEnum.NONE;
-
-
-        // Previous snow dump azimuth -- we need to keep track of this in order to add 45 degrees each time we dump
-        private double previousSnowDumpAzimuth;
-
-        // Snow dump timer
-        private static System.Timers.Timer snowDumpTimer;
-
-        // Used for the Unity simulation to keep track of its position
-        // This is ONLY TEMPORARY until we can find the simulation source code and fix
-        // this bug the correct way
-        private bool IsSimulation;
-        private Orientation CurrentSimOrientation;
-
         /// <summary>
         /// set this ONLY if using test driver, removes timouts and delays
         /// </summary>
@@ -64,15 +52,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        /// <param name="isSimulation">This wil tell us whether we are running a simulation or not.</param>
-        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port, bool isSimulation = false) : base(local_ip, MCU_ip, MCU_port, PLC_port)
+        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
-            if (isSimulation)
-            {
-                IsSimulation = isSimulation;
-                CurrentSimOrientation = new Orientation();
-            }
-
             limitSwitchData = new Simulators.Hardware.LimitSwitchData();
             homeSensorData = new Simulators.Hardware.HomeSensorData();
             pLCEvents = new PLCEvents();
@@ -103,14 +84,6 @@ namespace ControlRoomApplication.Controllers
                     return;
                 }
             }
-
-
-            previousSnowDumpAzimuth = 0;
-
-            snowDumpTimer = new System.Timers.Timer(DatabaseOperations.FetchWeatherThreshold().SnowDumpTime * 1000 * 60);
-            snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
-            snowDumpTimer.AutoReset = true;
-            snowDumpTimer.Enabled = true;
         }
 
 
@@ -146,43 +119,82 @@ namespace ControlRoomApplication.Controllers
 
         private async void DefaultLimitSwitchHandle( object sender , limitEventArgs e ) {
             if(e.Value) {
-                //JogOffLimitSwitches().GetAwaiter().GetResult();
                 switch(e.ChangedValue) {
-                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT : {
-                            MCU.SendSingleAxisJog( true , true , 0.25 , 0 ).Wait();
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT :
+                        {
+                            if (!Overrides.overrideAzimuthProx0)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.SendSingleAxisJog( true , false , 0.25,0 ).Wait();
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx375)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.SendSingleAxisJog( false , false , 0.25 , 0 ).Wait();
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx0)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.SendSingleAxisJog( false , true , 0.25 , 0 ).Wait();
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx90)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            }
                             break;
                         }
-
                 }
+                
             }
             if(!e.Value) {
                 switch(e.ChangedValue) {
-                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
-                            MCU.StopSingleAxisJog( true , 0 ).Wait();
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx0)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
-                            MCU.StopSingleAxisJog( true , 0 ).Wait();
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx375)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_10_LIMIT: {
-                            MCU.StopSingleAxisJog( false , 0 ).Wait();
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx0)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
-                    case PLC_modbus_server_register_mapping.EL_90_LIMIT: {
-                            MCU.StopSingleAxisJog( false , 0 ).Wait();
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx90)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
                             break;
                         }
                 }
@@ -246,11 +258,9 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-
         public override void Bring_down() {
             RequestStopAsyncAcceptingClientsAndJoin();
-            snowDumpTimer.Stop();
-            snowDumpTimer.Dispose();
+           
         }
 
         /// <summary>
@@ -263,17 +273,7 @@ namespace ControlRoomApplication.Controllers
                 logger.Info(Utilities.GetTimeStamp() + ": PLC Red data from the the control room");
             }
             PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            // Console.WriteLine(e.Message);
             return;
-            /*
-            Regex rx = new Regex(@"\b(?:Read )([0-9]+)(?:.+)(?:address )([0-9]+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection matches = rx.Matches(e.Message.ToString());
-            foreach (Match match in matches)
-            {
-                GroupCollection groups = match.Groups;
-                Console.WriteLine("'{0}' repeated at positions {1} and {2}", groups["word"].Value, groups[0].Index, groups[1].Index);
-            }
-            //*/
         }
 
 
@@ -294,63 +294,17 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CCW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CCW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_0_LIMIT , limitSwitchData.Azimuth_CCW_Limit );
-                            if (limitSwitchData.Azimuth_CCW_Limit)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CCW Limit Switch Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CCW Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CCW limit switch NOT hit");
-                            }
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_HOME: {
                         bool previous = homeSensorData.Azimuth_Home_One;
                         homeSensorData.Azimuth_Home_One = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_HOME] );
-                        if(previous != homeSensorData.Azimuth_Home_One) {
-                            if (homeSensorData.Azimuth_Home_One)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_One Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_One Sensor Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_One sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY: {
                         bool previous = homeSensorData.Azimuth_Home_Two;
                         homeSensorData.Azimuth_Home_Two = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );
-                        if(previous != homeSensorData.Azimuth_Home_Two) {
-                            if (homeSensorData.Azimuth_Home_Two)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_Two Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth_Home_Two Sensor Not Hit");;
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth_Home_Two sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
@@ -358,20 +312,6 @@ namespace ControlRoomApplication.Controllers
                         limitSwitchData.Azimuth_CW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_375_LIMIT] );
                         if(previous != limitSwitchData.Azimuth_CW_Limit) {
                             pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_375_LIMIT , limitSwitchData.Azimuth_CW_Limit );
-                            if (limitSwitchData.Azimuth_CW_Limit)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CW Limit Switch Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Azimuth CW Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Azimuth CW limit switch NOT hit");
-                            }
                         }
                         break;
                     }
@@ -387,35 +327,12 @@ namespace ControlRoomApplication.Controllers
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
                             }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Lower Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch NOT hit");
-                            }
                         }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_0_HOME: {
                         bool previous = homeSensorData.Elevation_Home;
                         homeSensorData.Elevation_Home = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_0_HOME] );
-                        if(previous != homeSensorData.Elevation_Home) {
-                            if (homeSensorData.Elevation_Home)
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Home Sensor Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Home Sensor Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation home sensor NOT hit");
-                            }
-                        }
                         break;
                     }
                 case (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT: {
@@ -429,13 +346,6 @@ namespace ControlRoomApplication.Controllers
 
                                 pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
                                 EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
-                            }
-                            else
-                            {
-                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Upper Limit Switch Not Hit");
-
-                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
-                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch NOT hit");
                             }
                         }
                         break;
@@ -499,38 +409,28 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Sets a register value on the PLC that corresponds to the given address.
         /// </summary>
-        /// <param name="adr"></param>
-        /// <param name="value"></param>
+        /// <param name="adr">The address of the value you want to set.</param>
+        /// <param name="value">The value you want to set the register to.</param>
         public override void setregvalue(ushort adr, ushort value) {
             PLC_Modbusserver.DataStore.HoldingRegisters[adr] = value;
         }
 
         /// <summary>
-        /// 
+        /// Retrieves a register value from the PLC that corresponds to the given address.
         /// </summary>
-        /// <param name="adr"></param>
+        /// <remarks>
+        /// See ControlRoomApplication.Entities.PLC_modbus_server_register_mapping for register mapping.
+        /// </remarks>
+        /// <param name="adr">Address of the register.</param>
         public override ushort getregvalue(ushort adr)
         {
             return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
         }
 
-        /// <summary>
-        /// see   ControlRoomApplication.Entities.PLC_modbus_server_register_mapping
-        /// for register maping
-        /// </summary>
-        /// <param name="adr"></param>
-        /// <returns></returns>
-        public ushort readregval(ushort adr) {
-            return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
-        }
-
-
-
         public override bool Get_interlock_status() {
             return plcInput.Gate_Sensor;
-            //return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
         }
 
         private bool Int_to_bool(int val) {
@@ -543,387 +443,8 @@ namespace ControlRoomApplication.Controllers
         //above PLC modbus server ___below MCU comands
 
 
-
-
-
-
         public override bool Test_Connection() {
             return TestIfComponentIsAlive();
-        }
-
-
-
-
-        /// <summary>
-        /// This is a script that is called when we want to check the current thermal calibration of the telescope
-        /// Moves to point to the tree, reads in data, gets data from weather station, and compares
-        /// Postcondition: return true if the telescope data IS within 0.001 degrees fahrenheit
-        ///                return false if the telescope data IS NOT within 0.001 degrees fahrenheit
-        /// </summary>
-        public override Task<bool> Thermal_Calibrate() {
-            Orientation current = read_Position();
-            Move_to_orientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
-
-            // start a timer so we can have a time variable
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            // temporarily set spectracyber mode to continuum
-            Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
-
-            // read data
-            SpectraCyberResponse response = Parent.SpectraCyberController.DoSpectraCyberScan();
-
-            // end the timer
-            stopWatch.Stop();
-            double time = stopWatch.Elapsed.TotalSeconds;
-
-            RFData rfResponse = RFData.GenerateFrom(response);
-
-            // move back to previous location
-            Move_to_orientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
-
-            // analyze data
-            // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
-            double weinConstant = 2.8977729;
-            double planckConstant = 6.62607004 * Math.Pow(10, -34);
-            double speedConstant = 299792458;
-            double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
-
-            // convert to fahrenheit
-            temperature = temperature * (9 / 5) - 459.67;
-
-            // check against weather station reading
-            double weatherStationTemp = Parent.WeatherStation.GetOutsideTemp();
-
-            // Check if we need to dump the snow off of the telescope
-            if (Parent.WeatherStation.GetOutsideTemp() <= 40.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
-            {
-                SnowDump();
-            }
-
-            // Set SpectraCyber mode back to UNKNOWN
-            Parent.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
-
-            // return true if working correctly, false if not
-            if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
-            {
-                return Stow();
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to dump snow out of the dish
-        /// </summary>
-        public override Task<bool> SnowDump()
-        {
-            // insert snow dump movements here
-            // default is azimuth of 0 and elevation of 0
-            Orientation dump = new Orientation(previousSnowDumpAzimuth += 45, -5);
-            Orientation current = read_Position();
-
-            Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
-            Orientation dumpElevation = new Orientation(dump.Azimuth, dump.Elevation);
-
-            // move to dump snow
-            Move_to_orientation(dumpAzimuth, current);
-            Move_to_orientation(dumpElevation, dumpAzimuth);
-           
-
-            // move back to initial orientation
-            return Move_to_orientation(current, dump);
-        }
-
-        private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
-        {
-
-            // Check if we need to dump the snow off of the telescope
-            if (Parent.WeatherStation.GetOutsideTemp() <= 30.00 && Parent.WeatherStation.GetTotalRain() > 0.00)
-            {
-                Console.WriteLine("Time threshold reached. Running snow dump...");
-
-                SnowDump();
-
-                Console.WriteLine("Snow dump completed");
-            }
-        }
-
-        /// <summary>
-        /// Moves the telescope to the stowed position
-        /// </summary>
-        public override Task<bool> Stow()
-        {
-            Orientation stow = new Orientation(0, 90);
-
-            return Move_to_orientation(stow, read_Position());
-        }
-
-        /// <summary>
-        /// Moves the telescope to the left azimuth switch
-        /// </summary>
-        public override Task<bool> HitAzimuthLeftLimitSwitch()
-        {
-            Orientation AZLeftLimit = new Orientation(-9, 0);
-
-            return Move_to_orientation(AZLeftLimit, read_Position());
-        }
-
-        /// <summary>
-        /// Moves the telescope to the right azimuth switch
-        /// </summary>
-        public override Task<bool> HitAzimuthRightLimitSwitch()
-        {
-            Orientation AZRightLimit = new Orientation(369, 0);
-
-            return Move_to_orientation(AZRightLimit, read_Position());
-        }
-
-        /// <summary>
-        /// Moves the telescope to the lower elevation switch
-        /// </summary>
-        public override Task<bool> HitElevationLowerLimitSwitch()
-        {
-            Orientation ELLowerLimit = new Orientation(0, -14);
-
-            return Move_to_orientation(ELLowerLimit, read_Position());
-        }
-
-        /// <summary>
-        /// Moves the telescope to the upper elevation switch
-        /// </summary>
-        public override Task<bool> HitElevationUpperLimitSwitch()
-        {
-            Orientation ELUpperLimit = new Orientation(0, 92);
-
-            return Move_to_orientation(ELUpperLimit, read_Position());
-        }
-
-        /// <summary>
-        /// Recovers the telescope when a limit switch is hit
-        /// </summary>
-        public override Task<bool> RecoverFromLimitSwitch()
-        {
-            Orientation currentPos = read_Position();
-
-            Orientation safe;
-
-            bool safeAz = false;
-            bool safeEl = false;
-
-            Task<bool> azTask;
-            Task<bool> elTask;
-
-            // Loops through just in case the move fails or if it as hit two limit switches
-            while (true)
-            {
-                // Checks to see if the left az switch has been hit
-                /// TODO: Update to also use limit switch sensors
-                if (currentPos.Azimuth <= -8 && !safeAz)
-                {
-                    safe = new Orientation(0, currentPos.Elevation);
-
-                    azTask = Move_to_orientation(safe, currentPos);
-                    safeAz = azTask.GetAwaiter().GetResult();
-                }
-                // Checks to see if the right az switch has been hit
-                /// TODO: Update to also use limit switch sensors
-                else if (currentPos.Azimuth >= 368 && !safeAz)
-                {
-                    safe = new Orientation(360, currentPos.Elevation);
-
-                    azTask = Move_to_orientation(safe, currentPos);
-                    safeAz = azTask.GetAwaiter().GetResult();
-                }
-                else
-                {
-                    safeAz = true;
-                    azTask = null;
-                }
-
-                // Checks to see if the lower el switch has been hit
-                /// TODO: Update to also use limit switch sensors
-                if (currentPos.Elevation <= -13 && !safeEl)
-                {
-                    safe = new Orientation(currentPos.Azimuth, 0);
-
-                    elTask = Move_to_orientation(safe, currentPos);
-                    safeEl = elTask.GetAwaiter().GetResult();
-                }
-                // Checks to see if the upper el switch has been hit
-                /// TODO: Update to also use limit switch sensors
-                else if (currentPos.Elevation >= 91 && !safeEl)
-                {
-                    safe = new Orientation(currentPos.Azimuth, 85);
-
-                    elTask = Move_to_orientation(safe, currentPos);
-                    safeEl = elTask.GetAwaiter().GetResult();
-                }
-                else
-                {
-                    safeEl = true;
-                    elTask = null;
-                }
-
-                // Check to see if the telescope is in a safe state
-                if (safeAz && safeEl)
-                    return elTask;
-            }
-        }
-
-        /// <summary>
-        /// Moves the telescope from its current position to a start position at
-        /// 0 degrees elevation, then moves to 90 degrees, then returns to its
-        /// initial position
-        /// </summary>
-        public override Task<bool> FullElevationMove()
-        {
-            Orientation currentPos = read_Position();
-
-            Task<bool> elStartFlag;
-            Task<bool> elFinishFlag;
-
-            Orientation elStart = new Orientation(currentPos.Azimuth, 0); ;
-            Orientation elFinish = new Orientation(currentPos.Azimuth, 90);
-
-            elStartFlag = Move_to_orientation(elStart, currentPos);
-
-            elFinishFlag = Move_to_orientation(elFinish, elStart);
-
-            if(!elStartFlag.GetAwaiter().GetResult() || !elFinishFlag.GetAwaiter().GetResult())
-            {
-                throw new Exception();
-            }
-
-            return Move_to_orientation(currentPos, elFinish);
-        }
-        
-        /// <summary>
-        /// Custom Orientaion Movement script. Used to move telescope to a specific orientation
-        /// </summary>
-        /// <param name="azimuthPos"></param>
-        /// <returns></returns>
-        public override Task<bool> CustomOrientationMove(double azimuthPos, double elevationPos)
-        {
-            Orientation currentPos = read_Position();
-
-            Orientation movement = new Orientation(azimuthPos, elevationPos);
-
-            // Move to desired azimuth coordinate
-            return Move_to_orientation(movement, currentPos);
-        }
-        
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
-        /// The counter clockwise direction
-        /// </summary>
-        public override Task<bool> Full_360_CCW_Rotation()
-        {
-            Orientation current = read_Position();
-            Orientation finish;
-
-            if (current.Azimuth == 359)
-            {
-                finish = new Orientation(0, current.Elevation);
-                return Move_to_orientation(finish, current);
-            }
-            else
-            {
-                finish = new Orientation(current.Azimuth + 1, current.Elevation);
-                return Move_to_orientation(finish, current);
-            }
-
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope in a full 360 degree azimuth rotation
-        /// The clockwise direction
-        /// </summary>
-        public override Task<bool> Full_360_CW_Rotation()
-        {
-            Orientation current = read_Position();
-            Orientation start = new Orientation(0, 0);
-            Orientation finish = new Orientation(360, 0);
-
-            if (!Move_to_orientation(start, current).GetAwaiter().GetResult() || !Move_to_orientation(finish, start).GetAwaiter().GetResult())
-            {
-                throw new Exception();
-            }
-            return Move_to_orientation(current, finish);
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope to the CW hardware stop
-        /// </summary>
-        public override Task<bool> Hit_CW_Hardstop()
-        {
-            Orientation current = read_Position();
-            Orientation hardstop = new Orientation(370, current.Elevation);
-
-            return Move_to_orientation(hardstop, current);
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope to the CCW hardware stop
-        /// </summary>
-        public override Task<bool> Hit_CCW_Hardstop()
-        {
-            Orientation current = read_Position();
-            Orientation hardstop = new Orientation(-10, current.Elevation);
-
-            return Move_to_orientation(hardstop, current);
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope from the current position
-        /// to a safe position away from the hardstop
-        /// Precondition: The telescope just hit the clockwise hardstop
-        /// Postcondition: The telescope will be placed at 360 degrees azimuth (safe spot away from hard stop)
-        /// </summary>
-        public override Task<bool> Recover_CW_Hardstop()
-        {
-            Orientation current = read_Position();
-            Orientation recover = new Orientation(360, current.Elevation);
-
-            return Move_to_orientation(recover, current);
-        }
-
-        /// <summary>
-        /// This is a script that is called when we want to move the telescope from the current position
-        /// to a safe position away from the hardstop
-        /// Precondition: The telescope just hit the counter clockwise hardstop
-        /// Postcondition: The telescope will be placed at 0 degrees azimuth (safe spot away from hard stop)
-        /// </summary>
-        public override Task<bool> Recover_CCW_Hardstop()
-        {
-            Orientation current = read_Position();
-            Orientation recover = new Orientation(0, current.Elevation);
-
-            return Move_to_orientation(recover, current);
-        }
-
-        /// <summary>
-        /// This script hits the two azimuth hardstops, first the clockwise one
-        /// WARNING: DO NOT CALL THIS SCRIPT UNLESS YOU ARE ABSOLUTELY SURE
-        /// </summary>
-        public override Task<bool> Hit_Hardstops()
-        {
-            // This will be one of the only functions that will always override the limit switch
-            // However, it will stop need an override for the rest of the sensors
-            Orientation current = read_Position();
-            Orientation hitClockwiseHardstop = new Orientation(375, current.Elevation);
-
-            Task<bool> clockwiseMove = Move_to_orientation(hitClockwiseHardstop, current);
-
-            if (!clockwiseMove.GetAwaiter().GetResult())
-            {
-                throw new Exception();
-            }
-
-            current = read_Position();
-            Orientation hitCounterHardstop = new Orientation(-15, current.Elevation);
-
-            return Move_to_orientation(hitCounterHardstop, current);
         }
 
         /// <summary>
@@ -937,23 +458,16 @@ namespace ControlRoomApplication.Controllers
         public override bool Configure_MCU(double startSpeedRPMAzimuth, double startSpeedRPMElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation) {
             return MCU.Configure_MCU(
                     new MCUConfigurationAxys() { StartSpeed = startSpeedRPMAzimuth, HomeTimeoutSec = homeTimeoutSecondsAzimuth },
-                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true },
-                    0
-                ).GetAwaiter().GetResult();
+                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true }
+                );
         }
 
         /// <summary>
         /// this gets the position stored in the MCU which is based of the number of steps the MCU has taken since it was last 0ed out
         /// </summary>
         /// <returns></returns>
-        public override Orientation read_Position(){
-
-            if (IsSimulation) return CurrentSimOrientation;
-            else return MCU.read_Position();
-        }
-
-        public ushort[] readModbusReregs(ushort start, ushort length) {
-            return MCU.readModbusReregs( start , length );
+        public override Orientation GetMotorEncoderPosition() {
+            return MCU.GetMotorEncoderPosition();
         }
 
         /// <summary>
@@ -961,12 +475,12 @@ namespace ControlRoomApplication.Controllers
         /// does not suport RadioTelescopeAxisEnum.BOTH
         /// see <see cref="MCUConstants.MCUStatusBitsMSW"/> for description of each bit
         /// </summary>
-        public override async Task<bool[]> GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
             ushort start = 0;
             if(axis == RadioTelescopeAxisEnum.ELEVATION) {
                 start = 10;
             }
-            ushort[] data = MCU.readModbusReregs( start , 2 );
+            ushort[] data = MCU.ReadMCURegisters(start , 2);
             bool[] target = new bool[32];
             for(int i = 0; i < 16; i++) {
                 target[i] = ((data[0] >> i) & 1) == 1;
@@ -981,7 +495,7 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override bool Cancel_move() {
-            return MCU.Cancel_move(2);
+            return MCU.Cancel_move();
         }
 
         /// <summary>
@@ -989,41 +503,26 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <returns></returns>
         public override bool ControlledStop(  ) {
-            return MCU.ControlledStop(2);
+            return MCU.ControlledStop();
         }
 
         public override bool ImmediateStop() {
-            return MCU.ImmediateStop(2);
-        }
-
-        // Is called when the PLC and/or MCU is shutdown, stows the telescope
-        public override bool Shutdown_PLC_MCU()
-        {
-            return Stow().GetAwaiter().GetResult();
+            return MCU.ImmediateStop();
         }
 
         /// <summary>
         /// move a set number of steps at the specified steps / second *intended for debuging
         /// </summary>
         /// <param name="programmedPeakSpeedAZInt"></param>
-        /// <param name="ACCELERATION"></param>
         /// <param name="positionTranslationAZ"></param>
         /// <param name="positionTranslationEL"></param>
+        /// <param name="targetOrientation">The target orientation.</param>
         /// <returns></returns>
-        public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            if(IsSimulation)
-            {
-                CurrentSimOrientation = new Orientation(
-                    ConversionHelper.StepsToDegrees(positionTranslationAZ, MotorConstants.GEARING_RATIO_AZIMUTH),
-                    ConversionHelper.StepsToDegrees(positionTranslationEL, MotorConstants.GEARING_RATIO_ELEVATION)
-                );
-            }
-
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
+            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
-
-        public override Task<bool> Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
         {
             int positionTranslationAZ, positionTranslationEL;
 
@@ -1045,7 +544,7 @@ namespace ControlRoomApplication.Controllers
             else if(telescopeType == RadioTelescopeTypeEnum.NONE)
             {
                 logger.Info(Utilities.GetTimeStamp() + ": ERROR: Invalid Telescope Type!");
-                return Task.FromResult(false);
+                return MovementResult.ValidationError;
             }
 
             positionTranslationAZ = ConversionHelper.DegreesToSteps(azimuthOrientationMovement, MotorConstants.GEARING_RATIO_AZIMUTH);
@@ -1058,182 +557,40 @@ namespace ControlRoomApplication.Controllers
             logger.Info(Utilities.GetTimeStamp() + ": degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
             logger.Info(Utilities.GetTimeStamp() + ": degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
-            // Set the simulation's current position
-            if(IsSimulation) CurrentSimOrientation = target_orientation;
-
-            //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL );
+            return MCU.MoveAndWaitForCompletion(
+                AZ_Speed, EL_Speed,
+                positionTranslationAZ, 
+                positionTranslationEL, 
+                target_orientation
+            );
         }
 
         /// <summary>
         /// speed in RPM
         /// </summary>
-        /// <param name="AZspeed"></param>
-        /// <param name="AZ_CW"></param>
-        /// <param name="ELspeed"></param>
-        /// <param name="ELPositive"></param>
+        /// <param name="azSpeed"></param>
+        /// <param name="azDirection"></param>
+        /// <param name="elSpeed"></param>
+        /// <param name="elDirection"></param>
         /// <returns></returns>
-        public override bool Start_jog(double AZspeed, bool AZ_CW, double ELspeed, bool ELPositive) {
-            return MCU.Send_Jog_command( Math.Abs( AZspeed ), AZ_CW, Math.Abs( ELspeed ), ELPositive,2);
-        }
-
-        public override bool Stop_Jog() {
-            return MCU.Cancel_move(2);
-        }
-
-        public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return MCU.MoveAndWaitForCompletion( SpeedAZ , SpeedEL , ACCELERATION , positionTranslationAZ , positionTranslationEL ,2).GetAwaiter().GetResult();
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+            return MCU.SendBothAxesJog(Math.Abs(azSpeed), azDirection, Math.Abs(elSpeed), elDirection);
         }
 
         /// <summary>
-        /// move both axisi to 0,0 and zero out the MCU position data, after this comand is run a comand should be sent to the absolute encoders to zero out their position should be 
+        /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
+        /// the absolute encoders.
         /// </summary>
-        /// <returns></returns>
-        public override Task<bool> Home() {
-            return HomeBothAxyes();
+        /// <returns>True if homing was successful, false if it failed</returns>
+        public override MovementResult HomeTelescope() {
+            return MCU.HomeBothAxes(0.25);
         }
-
+        
         /// <summary>
-        /// home both axsis of the RT
+        /// Tests if both the PLC and MCU are alive and working.
         /// </summary>
-        /// <returns></returns>
-        public async Task<bool> HomeBothAxyes() {
-            //place holder function until MCU homing functionality can be tested
-            //this method will also likley undego signifigant change once the hardeware configuration is locked down
-            int PRIORITY = 2;
-
-            // We only want to perform this movement if the telescope has hard stops, because the range of motion is 0-375. That gives
-            // us 15 degrees of overlap, so we want to make sure we aren't hitting a limit switch
-            if (telescopeType == RadioTelescopeTypeEnum.HARD_STOPS)
-            {
-                int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.1), MotorConstants.GEARING_RATIO_ELEVATION);
-                int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.1), MotorConstants.GEARING_RATIO_AZIMUTH);
-                int EL_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
-                int AZ_Fast = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
-
-                bool ZeroOne = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_HOME]);  //active between 350 to 360 and -10 to 0 //primary home sensor for MCU
-                bool ZeroTwo = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY]);//active between -1 to 10   and 359 to 370
-                                                                                                                                                   // comented out for testing
-                PLCEvents.OverrideLimitHandlers((object sender, limitEventArgs e) =>
-                {
-                    logger.Debug("limit hit durring homing, default handler disabled");
-                });
-                if (ZeroOne & ZeroTwo)
-                {//very close to 0 degrees 
-                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
-                    if (limitSwitchData.Azimuth_CW_Limit)
-                    {// we were actually at 360 and need to go back towards 0
-                        JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
-                    }
-                }
-                else if (ZeroOne & !ZeroTwo)
-                {//350 to 360 or -10 to 0
-                 //  move 15 degrees cw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(-20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
-                    if (limitSwitchData.Azimuth_CCW_Limit)
-                    {// we were actually less than 0 and need to go back past 0
-                        JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(25, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
-                    }
-                }
-                else if (!ZeroOne & ZeroTwo)
-                {//0 to 10   or 360 to 370
-                 //  move 15 degrees ccw slowly to ensure that we arent near a limit switch then home
-                    MCU.MoveAndWaitForCompletion(AZ_Speed, EL_Speed, 50, ConversionHelper.DegreesToSteps(20, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
-                    if (limitSwitchData.Azimuth_CW_Limit)
-                    {// we were actually at 360 and need to go back towards 0
-                        JogOffLimitSwitches().GetAwaiter().GetResult();
-                        MCU.MoveAndWaitForCompletion(AZ_Fast, EL_Fast, 50, ConversionHelper.DegreesToSteps(-250, MotorConstants.GEARING_RATIO_AZIMUTH), 0, PRIORITY).GetAwaiter().GetResult();
-                    }
-                }
-                else
-                {
-                    //we know our position is valid and can imedeatly perform a cw home
-                }
-
-                PLCEvents.ResetOverrides();
-            }
-
-            bool ELHome = Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_0_HOME]);
-            MCU.HomeBothAxyes( true , ELHome , 0.25 , PRIORITY ).Wait();
-
-            return true;
-        }
-
-        public override async Task<bool> JogOffLimitSwitches() {
-            int PRIORITY = 0;
-
-            var AZTAsk = Task.Run( () => {
-               int AZstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_AZIMUTH );
-               var timeoutMS = MCUManager.estimateTime( AZstepSpeed , 50 ,ConversionHelper.DegreesToSteps(30, MotorConstants.GEARING_RATIO_AZIMUTH ));
-               var timeout = new CancellationTokenSource( timeoutMS );
-                if (limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) {
-                    MCU.Send_Jog_command(0.2, true , 0, false, PRIORITY );
-                   while(!timeout.IsCancellationRequested) {
-                        Task.Delay( 33 ).Wait();
-                        if(!limitSwitchData.Azimuth_CCW_Limit) {
-                            Cancel_move();
-                            return true;
-                        }
-                   }
-                   Cancel_move();
-                   return false;
-               } else if (!limitSwitchData.Azimuth_CCW_Limit && limitSwitchData.Azimuth_CW_Limit) {
-                    MCU.Send_Jog_command(0.2, false , 0, false, PRIORITY );
-                   while(!timeout.IsCancellationRequested) {
-                        Task.Delay( 33 ).Wait();
-                        if(!limitSwitchData.Azimuth_CW_Limit) {
-                            Cancel_move();
-                            return true;
-                        }
-                   }
-                   Cancel_move();
-                   return false;
-               } else if(!limitSwitchData.Azimuth_CCW_Limit && !limitSwitchData.Azimuth_CW_Limit) { return true; } else {
-                   throw new ArgumentException("both the CW and CCW limit switch in the Azimuth were true only one limit Swithc can be active at once");
-                }
-            } );
-            var ELTAsk = Task<bool>.Run( ()  => {
-                int ELstepSpeed = ConversionHelper.RPMToSPS( 0.2 , MotorConstants.GEARING_RATIO_ELEVATION );
-                var timeoutMS = MCUManager.estimateTime( ELstepSpeed , 50 , ConversionHelper.DegreesToSteps( 30 , MotorConstants.GEARING_RATIO_ELEVATION ) );
-                var timeout = new CancellationTokenSource( timeoutMS );
-                if(limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) {
-                    MCU.Send_Jog_command( 0 , false , 0.2 , false , PRIORITY );
-                    while(!timeout.IsCancellationRequested) {
-                        Task.Delay( 33 ).Wait();
-                        if(!limitSwitchData.Elevation_Lower_Limit) {
-                            Cancel_move();
-                            return true;
-                        }
-                    }
-                    Cancel_move();
-                    return false;
-                } else if(!limitSwitchData.Elevation_Lower_Limit && limitSwitchData.Elevation_Upper_Limit) {
-                    MCU.Send_Jog_command( 0 , false , 0.2 , true , PRIORITY );
-                    while(!timeout.IsCancellationRequested) {
-                        Task.Delay( 33 ).Wait();
-                        if(!limitSwitchData.Elevation_Upper_Limit) {
-                            Cancel_move();
-                            return true;
-                        }
-                    }
-                    Cancel_move();
-                    return false;
-                } else if(!limitSwitchData.Elevation_Lower_Limit && !limitSwitchData.Elevation_Upper_Limit) { return true; }else {
-                    throw new ArgumentException( "both the CW and CCW limit switch in the Elevation were true only one limit Swithc can be active at once" );
-                }
-            } );
-
-            AZTAsk.GetAwaiter().GetResult();
-            ELTAsk.GetAwaiter().GetResult();
-            return true;
-        }
-
-
-
-        protected override bool TestIfComponentIsAlive() {
+        /// <returns>True if both the MCU and PLC are alive and working.</returns>
+        public override bool TestIfComponentIsAlive() {
 
             bool PLC_alive, MCU_alive;
             try {
@@ -1241,19 +598,10 @@ namespace ControlRoomApplication.Controllers
                 PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
                 MCU_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) < 3000;
                 if(is_test) {
-                    //return true;
-                    Console.WriteLine( "{0}   {1} " , (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) , (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) );
+                    return true;
                 }
                 return PLC_alive && MCU_alive;
             } catch { return false; }
-        }
-
-        /// <summary>
-        /// public version of TestIfComponentIsAlive
-        /// </summary>
-        /// <returns></returns>
-        public bool workaroundAlive() {
-            return TestIfComponentIsAlive();
         }
 
         public override void setTelescopeType(RadioTelescopeTypeEnum type)
@@ -1279,6 +627,50 @@ namespace ControlRoomApplication.Controllers
         public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
         {
             return MCU.CheckMCUErrors();
+        }
+
+        /// <summary>
+        /// This will interrupt the current movement, wait until it has stopped, and then
+        /// end when the movement has stopped.
+        /// 
+        /// If no motors are moving when this is called, then it will not wait, and just be
+        /// able to pass through.
+        /// </summary>
+        /// <returns>True if it had to wait for a movement, false if it did not have to wait and there is no movement running.</returns>
+        public override bool InterruptMovementAndWaitUntilStopped()
+        {
+            bool motorsMoving = MCU.MotorsCurrentlyMoving();
+
+            if (motorsMoving && CurrentMovementPriority != MovementPriority.None)
+            {
+                logger.Info(Utilities.GetTimeStamp() + ": Overriding current movement...");
+                MCU.MovementInterruptFlag = true;
+
+                // Wait until motors stop moving or the interrupt flag is set back to false,
+                // meaning the MCU has acknowledged and acted on the interrupt.
+                while(MotorsCurrentlyMoving() && MCU.MovementInterruptFlag == true) ;
+
+                MCU.MovementInterruptFlag = false;
+
+                // Ensure there is plenty of time between MCU commands
+                Thread.Sleep(2000);
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks to see if the motors are currently moving.
+        /// </summary>
+        /// <param name="axis">Azimuth, elevation, or both.</param>
+        /// <returns>True if moving, false if not moving.</returns>
+        public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
+        {
+            return MCU.MotorsCurrentlyMoving(axis);
         }
     }
 }

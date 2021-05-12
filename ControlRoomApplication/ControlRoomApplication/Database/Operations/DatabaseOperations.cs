@@ -8,12 +8,12 @@ using System.Linq;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
-using ControlRoomApplication.Controllers.BlkHeadUcontroler;
 using ControlRoomApplication.Main;
 using System.Reflection;
 using System.Data.Entity.Core.Objects;
 using ControlRoomApplication.Util;
-
+using System.Threading;
+using System.Text;
 
 namespace ControlRoomApplication.Database
 {
@@ -69,118 +69,6 @@ namespace ControlRoomApplication.Database
                 RTDbContext LocalContext = new RTDbContext(AWSConstants.LOCAL_DATABASE_STRING);
                 SaveContext(LocalContext);
                 return LocalContext;
-            }
-        }
-
-        /// <summary>
-        /// Populates the local database with 4 appointments for testing purposes.
-        /// </summary>
-        public static void PopulateLocalDatabase(int RT_id)
-        {
-            if (!USING_REMOTE_DATABASE)
-            {
-                Random rand = new Random();
-
-                using (RTDbContext Context = InitializeDatabaseContext())
-                {
-                    List<Appointment> appts = new List<Appointment>();
-
-                    DateTime DateTimeUniversalStart = DateTime.UtcNow.AddMinutes(1);
-
-                    Appointment appt0 = new Appointment();
-                    Appointment appt1 = new Appointment();
-                    Appointment appt2 = new Appointment();
-                    Appointment appt3 = new Appointment();
-
-                    Coordinate coordinate0 = new Coordinate();
-                    Coordinate coordinate1 = new Coordinate();
-                    Coordinate coordinate2 = new Coordinate();
-                    Coordinate coordinate3 = new Coordinate();
-
-                    coordinate0.RightAscension = 10.3;
-                    coordinate0.Declination = 50.8;
-
-                    coordinate1.RightAscension = 22.0;
-                    coordinate1.Declination = 83.63;
-
-                    coordinate2.RightAscension = 16.0;
-                    coordinate2.Declination = 71.5;
-
-                    coordinate3.RightAscension = 26.3;
-                    coordinate3.Declination = 85.12;
-
-                    User controlRoomUser = DatabaseOperations.GetControlRoomUser();
-                    RadioTelescope tele = new RadioTelescope(new SpectraCyberController(new SpectraCyber()), new TestPLCDriver(PLCConstants.LOCAL_HOST_IP, PLCConstants.LOCAL_HOST_IP, 8089, 8089, false), new Location(), new Orientation(), 0, new SimulatedMicrocontroller(0, 100, true), new EncoderReader("192.168.7.2", 1602));
-                    RadioTelescopeController rtController = new RadioTelescopeController(tele);
-
-                    // Add drift scan appointment
-                    appt0.start_time = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
-                    appt0.end_time = appt0.start_time.AddSeconds(10 + rand.Next(90));
-                    appt0._Status = AppointmentStatusEnum.REQUESTED;
-                    appt0._Type = AppointmentTypeEnum.DRIFT_SCAN;
-                    appt0._Priority = AppointmentPriorityEnum.MANUAL;
-                    appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt0.CelestialBody = new CelestialBody("control room");
-                    appt0.CelestialBody.Coordinate = new Coordinate(0, 0);
-                    appt0.Orientation = rtController.GetAbsoluteOrientation();
-                    appt0.Telescope = tele;
-                    appt0.User = controlRoomUser;
-
-                    DatabaseOperations.AddAppointment(appt0);
-
-                    // Add celesital body appointment
-                    appt1.start_time = appt0.end_time.AddSeconds(20 + rand.Next(30));
-                    appt1.end_time = appt1.start_time.AddSeconds(10 + rand.Next(90));
-                    appt1._Status = AppointmentStatusEnum.REQUESTED;
-                    appt1._Type = AppointmentTypeEnum.CELESTIAL_BODY;
-                    appt1._Priority = AppointmentPriorityEnum.MANUAL;
-                    appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt1.CelestialBody = new CelestialBody("control room");
-                    appt1.CelestialBody.Coordinate = new Coordinate(0, 0);
-                    appt1.Orientation = rtController.GetAbsoluteOrientation();
-                    appt1.Telescope = tele;
-                    appt1.User = controlRoomUser;
-
-                    DatabaseOperations.AddAppointment(appt1);
-
-                    // Add point appointment
-                    appt2.start_time = appt1.end_time.AddSeconds(20 + rand.Next(30));
-                    appt2.end_time = appt2.start_time.AddSeconds(10 + rand.Next(90));
-                    appt2._Status = AppointmentStatusEnum.REQUESTED;
-                    appt2._Type = AppointmentTypeEnum.POINT;
-                    appt2._Priority = AppointmentPriorityEnum.MANUAL;
-                    appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt2.CelestialBody = new CelestialBody("control room");
-                    appt2.CelestialBody.Coordinate = new Coordinate(0, 0);
-                    appt2.Orientation = rtController.GetAbsoluteOrientation();
-                    appt2.Telescope = tele;
-                    appt2.User = controlRoomUser;
-
-                    DatabaseOperations.AddAppointment(appt2);
-
-                    // Add raster appointment
-                    appt3.start_time = appt2.end_time.AddSeconds(20 + rand.Next(30));
-                    appt3.end_time = appt3.start_time.AddMinutes(10 + rand.Next(90));
-                    appt3._Status = AppointmentStatusEnum.REQUESTED;
-                    appt3._Type = AppointmentTypeEnum.RASTER;
-                    appt3._Priority = AppointmentPriorityEnum.MANUAL;
-                    appt3.Coordinates.Add(coordinate0);
-                    appt3.Coordinates.Add(coordinate1);
-                    appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt3.CelestialBody = new CelestialBody("control room");
-                    appt3.CelestialBody.Coordinate = new Coordinate(0, 0);
-                    appt3.Orientation = rtController.GetAbsoluteOrientation();
-                    appt3.Telescope = tele;
-                    appt3.User = controlRoomUser;
-
-                    DatabaseOperations.AddAppointment(appt3);
-
-                    SaveContext(Context);
-                }
-            }
-            else
-            {
-                logger.Error(Utilities.GetTimeStamp() + ": Cannot populate a non-local database!");
             }
         }
 
@@ -609,7 +497,7 @@ namespace ControlRoomApplication.Database
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x._Status == AppointmentStatusEnum.COMPLETED || x._Status == AppointmentStatusEnum.CANCELED);
+                    appointments.RemoveAll(x => x._Status == AppointmentStatusEnum.COMPLETED || x._Status == AppointmentStatusEnum.CANCELED || x._Status == AppointmentStatusEnum.REQUESTED);
                     appointments.Sort();
                     appointment = appointments.Count > 0 ? appointments[0] : null;
                 }
@@ -658,34 +546,82 @@ namespace ControlRoomApplication.Database
                     appt._Status.Equals(AppointmentStatusEnum.REQUESTED) ||
                     appt._Status.Equals(AppointmentStatusEnum.SCHEDULED);
         }
+
         /// <summary>
         /// add an array of sensor data to the apropriat table
         /// </summary>
         /// <param name="temp"></param>
-        public static void AddSensorData( List<Temperature> temp ) {
-            if(temp.Count <= 0) { return; }
-            if(!USING_REMOTE_DATABASE) {
-                using(RTDbContext Context = InitializeDatabaseContext()) {
-                    Context.Temperatures.AddRange( temp );
-                    //foreach(Temperature tump in temp) {}
-                    SaveContext( Context );
+        public static void AddSensorData(Temperature[] temp, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+                if (temp.Length <= 0) { return; }
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        Context.Temperatures.AddRange(temp);
+                        //foreach(Temperature tump in temp) {}
+                        SaveContext(Context);
+                    }
                 }
-            }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
         }
         /// <summary>
         /// add an array of sensor data to the apropriat table
         /// </summary>
         /// <param name="acc"></param>
-        public static void AddSensorData( List<Acceleration> acc ) {
-            if(acc.Count <= 0) { return; }
-            if(!USING_REMOTE_DATABASE) {
-                using(RTDbContext Context = InitializeDatabaseContext()) {
-                    Context.Accelerations.AddRange( acc );
-                    //foreach(Temperature tump in temp) {}
-                    SaveContext( Context );
+        public static void AddSensorData(Acceleration[] acc, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+                if (acc.Length <= 0) { return; }
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        Context.Accelerations.AddRange(acc);
+                        //foreach(Temperature tump in temp) {}
+                        SaveContext(Context);
+                    }
                 }
-            }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
         }
+
+        /// <summary>
+        /// add an string of sensor data to the apropriat table
+        /// </summary>
+        /// <param name="acc"></param>
+        public static void AddAccelerationBlobData(AccelerationBlob acc, long dateTime1, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+                acc.TimeCaptured = dateTime1;
+
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        Context.AccelerationBlobs.Add(acc);
+                        //foreach(Temperature tump in temp) {}
+                        SaveContext(Context);
+                    }
+                }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
+        }
+
         /// <summary>
         /// get acc between starttime and now from sensor location loc
         /// </summary>
@@ -693,9 +629,24 @@ namespace ControlRoomApplication.Database
         /// <param name="endTime"> currently unused</param>
         /// <param name="loc"></param>
         /// <returns></returns>
-        public static List<Acceleration> GetACCData( long starttime , long endTime, SensorLocationEnum loc ) {
+        public static List<Acceleration> GetACCData(long starttime, long endTime, SensorLocationEnum loc)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {//&& x.TimeCaptured < endTime
+                return Context.Accelerations.Where(x => x.TimeCaptured > starttime && x.location_ID == (int)loc).ToList();
+            }
+        }
+
+        /// <summary>
+        /// get acc between starttime and now from acc
+        /// </summary>
+        /// <param name="starttime"></param>
+        /// <param name="endTime"> currently unused</param>
+        /// <param name="loc"></param>
+        /// <returns></returns>
+        public static List<AccelerationBlob> GetAccBlobData( long starttime , long endTime) {
             using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
-                return Context.Accelerations.Where( x => x.TimeCaptured > starttime && x.location_ID == (int)loc ).ToList();
+                return Context.AccelerationBlobs.Where( x => x.TimeCaptured > starttime && x.TimeCaptured < endTime).ToList();
             }
         }
 

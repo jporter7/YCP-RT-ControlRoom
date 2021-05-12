@@ -30,9 +30,7 @@ namespace ControlRoomApplication.Entities
 
             // Initialize all sensors to enabled by default
             ElevationTemp1Init = true;
-            ElevationTemp2Init = true;
             AzimuthTemp1Init = true;
-            AzimuthTemp2Init = true;
             AzimuthAccelerometerInit = true;
             ElevationAccelerometerInit = true;
             CounterbalanceAccelerometerInit = true;
@@ -52,9 +50,7 @@ namespace ControlRoomApplication.Entities
 
             // Initialize all sensors to be disabled
             ElevationTemp1Init = false;
-            ElevationTemp2Init = false;
             AzimuthTemp1Init = false;
-            AzimuthTemp2Init = false;
             AzimuthAccelerometerInit = false;
             ElevationAccelerometerInit = false;
             CounterbalanceAccelerometerInit = false;
@@ -87,15 +83,6 @@ namespace ControlRoomApplication.Entities
         public bool ElevationTemp1Init { get; set; }
 
         /// <summary>
-        /// This will tell the Sensor Network whether or not to initialize the second (redundant) elevation motor temp sensor.
-        /// We will not receive data for this sensor if it is not initialized.
-        /// true = initialize;
-        /// false = do not initialize
-        /// </summary>
-        [Column("elevation_temp_2_init")]
-        public bool ElevationTemp2Init { get; set; }
-
-        /// <summary>
         /// This will tell the Sensor Network whether or not to initialize the primary azimuth motor temp sensor.
         /// We will not receive data for this sensor if it is not initialized.
         /// true = initialize;
@@ -103,15 +90,6 @@ namespace ControlRoomApplication.Entities
         /// </summary>
         [Column("azimuth_temp_1_init")]
         public bool AzimuthTemp1Init { get; set; }
-
-        /// <summary>
-        /// This will tell the Sensor Network whether or not to initialize the second (redundant) azimuth motor temp sensor.
-        /// We will not receive data for this sensor if it is not initialized.
-        /// true = initialize;
-        /// false = do not initialize
-        /// </summary>
-        [Column("azimuth_temp_2_init")]
-        public bool AzimuthTemp2Init { get; set; }
 
         /// <summary>
         /// This will tell the Sensor Network whether or not to initialize the azimuth accelerometer.
@@ -185,9 +163,7 @@ namespace ControlRoomApplication.Entities
             else if (
                 this.TelescopeId == other.TelescopeId &&
                 this.ElevationTemp1Init == other.ElevationTemp1Init &&
-                this.ElevationTemp2Init == other.ElevationTemp2Init &&
                 this.AzimuthTemp1Init == other.AzimuthTemp1Init &&
-                this.AzimuthTemp2Init == other.AzimuthTemp2Init &&
                 this.AzimuthAccelerometerInit == other.AzimuthAccelerometerInit &&
                 this.ElevationAccelerometerInit == other.ElevationAccelerometerInit &&
                 this.CounterbalanceAccelerometerInit == other.CounterbalanceAccelerometerInit &&
@@ -216,9 +192,7 @@ namespace ControlRoomApplication.Entities
         {
             byte[] init = new byte[] {
                 ElevationTemp1Init ?                (byte)1 : (byte)0,
-                ElevationTemp2Init ?                (byte)1 : (byte)0,
                 AzimuthTemp1Init ?                  (byte)1 : (byte)0,
-                AzimuthTemp2Init ?                  (byte)1 : (byte)0,
                 ElevationEncoderInit ?              (byte)1 : (byte)0,
                 AzimuthEncoderInit ?                (byte)1 : (byte)0,
                 AzimuthAccelerometerInit ?          (byte)1 : (byte)0,

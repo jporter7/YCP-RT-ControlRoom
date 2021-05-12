@@ -7,6 +7,7 @@ using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Controllers;
 using System.Threading;
+using System.Text;
 
 namespace ControlRoomApplicationTest.DatabaseOperationsTests
 {
@@ -80,14 +81,6 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         }
 
-        /*       [TestMethod]
-               public void TestPopulateLocalDatabase()
-               { 
-                   DatabaseOperations.PopulateLocalDatabase(NumRTInstances);
-                   var appt_count = DatabaseOperations.GetTotalAppointmentCount();
-                   Assert.AreEqual(45 * NumRTInstances, appt_count);
-               }
-       */
         [TestMethod]
         public void TestGetListOfAppointmentsForRadioTelescope()
         {
@@ -422,7 +415,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveTemperature()
         {
-            List<Temperature> temp = new List<Temperature>();
+            Temperature[] temp = new Temperature[1];
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
@@ -431,9 +424,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             //Generate Temperature
             Temperature t1 = Temperature.Generate(dateTime, 0.0, loc1);
 
-            temp.Add(t1);
+            temp[0] = (t1);
 
-            DatabaseOperations.AddSensorData(temp);
+            DatabaseOperations.AddSensorData(temp, true);
             List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime - 1, dateTime + 1, loc1);
 
             Assert.AreEqual(tempReturn.Count, 1);
@@ -448,7 +441,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveTemperatures()
         {
-            List<Temperature> temp = new List<Temperature>();
+            Temperature[] temp = new Temperature[2];
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
@@ -458,10 +451,10 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Temperature t1 = Temperature.Generate(dateTime, 500.0, loc1);
             Temperature t2 = Temperature.Generate(dateTime, 999.0, loc1);
 
-            temp.Add(t1);
-            temp.Add(t2);
+            temp[0] = (t1);
+            temp[1] = (t2);
 
-            DatabaseOperations.AddSensorData(temp);
+            DatabaseOperations.AddSensorData(temp, true);
             List<Temperature> tempReturn = DatabaseOperations.GetTEMPData(dateTime - 1, dateTime + 1, loc1);
 
             Assert.AreEqual(tempReturn.Count, 2);
@@ -482,7 +475,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveAcceleration()
         {
-            List<Acceleration> acc = new List<Acceleration>();
+            Acceleration[] acc = new Acceleration[1];
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
@@ -491,9 +484,9 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             //Generate Acceleration
             Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
 
-            acc.Add(a1);
+            acc[0] = a1;
 
-            DatabaseOperations.AddSensorData(acc);
+            DatabaseOperations.AddSensorData(acc, true);
             List<Acceleration> accReturn = DatabaseOperations.GetACCData(dateTime1 - 1, dateTime1 + 1, loc1);
 
             Assert.AreEqual(accReturn.Count, 1);
@@ -510,7 +503,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
         [TestMethod]
         public void TestAddAndRetrieveAccelerations()
         {
-            List<Acceleration> acc = new List<Acceleration>();
+            Acceleration[] acc = new Acceleration[2];
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             //Generate current time
@@ -520,11 +513,11 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Acceleration a1 = Acceleration.Generate(dateTime1, 1, 1, 1, loc1);
             Acceleration a2 = Acceleration.Generate(dateTime1, 2, 2, 2, loc1);
 
-            acc.Add(a1);
-            acc.Add(a2);
+            acc[0] = (a1);
+            acc[1] = (a2);
 
 
-            DatabaseOperations.AddSensorData(acc);
+            DatabaseOperations.AddSensorData(acc, true);
             List<Acceleration> accReturn = DatabaseOperations.GetACCData(dateTime1 - 1, dateTime1 + 1, loc1);
 
             Assert.AreEqual(accReturn.Count, 2);
@@ -543,6 +536,26 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
             Assert.AreEqual(acc[accReturn.Count - 2].z, accReturn[accReturn.Count - 2].z);
             Assert.AreEqual(acc[accReturn.Count - 2].TimeCaptured, accReturn[accReturn.Count - 2].TimeCaptured);
 
+        }
+
+
+        //Acceleration
+        [TestMethod]
+        public void TestAddAndRetrieveAccelerationBlob()
+        {
+            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            AccelerationBlob acc = new AccelerationBlob();
+            acc.Blob = "abcdefghijklmnopqrstuvwxyz";
+
+            DatabaseOperations.AddAccelerationBlobData(acc, dateTime1, true);
+            List<AccelerationBlob> accReturn = DatabaseOperations.GetAccBlobData(dateTime1 - 1, dateTime1 + 1);
+
+            Assert.AreEqual(1, accReturn.Count);
+
+            //Test only acc
+            Assert.AreEqual(acc.Blob, accReturn[0].Blob);
+            Assert.AreEqual(acc.TimeCaptured, accReturn[0].TimeCaptured);
         }
 
         [TestMethod]
@@ -629,9 +642,7 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
             // Change values so the updated one is different
             original.ElevationTemp1Init = false;
-            original.ElevationTemp2Init = false;
             original.AzimuthTemp1Init = false;
-            original.AzimuthTemp2Init = false;
             original.ElevationAccelerometerInit = false;
             original.AzimuthAccelerometerInit = false;
             original.CounterbalanceAccelerometerInit = false;

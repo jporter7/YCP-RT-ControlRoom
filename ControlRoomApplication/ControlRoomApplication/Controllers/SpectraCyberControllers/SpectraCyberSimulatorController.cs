@@ -92,8 +92,7 @@ namespace ControlRoomApplication.Controllers
                 response.SerialIdentifier = request.ResponseIdentifier;
 
                 // Generate random data
-                /// <TODO>
-                /// May need to update to more accurately match the data seen from the real spectra cyber
+                // TODO: may need to update to more accurately match the data seen from the real spectra cyber, or use a CSV file (issue #409)
                 int minIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MINIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
                 int maxIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MAXIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
                 response.DecimalData = random.Next(minIntensityScaled, maxIntensityScaled + 1);
@@ -105,7 +104,7 @@ namespace ControlRoomApplication.Controllers
             // Do nothing to purge a simulated buffer
         }
 
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             return true;
         }

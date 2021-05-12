@@ -8,7 +8,10 @@ using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Communications;
 using ControlRoomApplication.Util;
-
+using System.Timers;
+using System.Diagnostics;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -16,11 +19,29 @@ namespace ControlRoomApplication.Controllers
     {
         public RadioTelescope RadioTelescope { get; set; }
         public CoordinateCalculationController CoordinateController { get; set; }
-        private bool tempAcceptable = true;
         public OverrideSwitchData overrides;
 
+        /// <summary>
+        /// This is the final offset for when the telescope is set in production. It will be the offset to make sure
+        /// orientation 0,0 corresponds to what it should be when the telescope is set up.
+        /// </summary>
+        private Orientation FinalCalibrationOffset;
+
+        private object MovementLock = new object();
+
         // Thread that monitors database current temperature
-        Thread tempM;
+        private Thread SensorMonitoringThread;
+        private bool MonitoringSensors;
+        private bool AllSensorsSafe;
+
+        private double MaxElTempThreshold;
+        private double MaxAzTempThreshold;
+
+        // Previous snow dump azimuth -- we need to keep track of this in order to add 45 degrees each time we dump
+        private double previousSnowDumpAzimuth;
+
+        // Snow dump timer
+        private static System.Timers.Timer snowDumpTimer;
 
         private static readonly log4net.ILog logger =
             log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -36,11 +57,24 @@ namespace ControlRoomApplication.Controllers
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
 
             overrides = new OverrideSwitchData(radioTelescope);
+            radioTelescope.PLCDriver.Overrides = overrides;
 
-            tempM = new Thread(tempMonitor);
-            tempM.Start();
+            SensorMonitoringThread = new Thread(SensorMonitor);
+            SensorMonitoringThread.Start();
+            MonitoringSensors = true;
+            AllSensorsSafe = true;
 
+            MaxAzTempThreshold = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
+            MaxElTempThreshold = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
 
+            previousSnowDumpAzimuth = 0;
+
+            snowDumpTimer = new System.Timers.Timer(DatabaseOperations.FetchWeatherThreshold().SnowDumpTime * 1000 * 60);
+            snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
+            snowDumpTimer.AutoReset = true;
+            snowDumpTimer.Enabled = true;
+
+            FinalCalibrationOffset = new Orientation(0, 0);
         }
 
         /// <summary>
@@ -66,10 +100,18 @@ namespace ControlRoomApplication.Controllers
         /// <returns> An orientation object that holds the current azimuth/elevation of the scale model. </returns>
         public Orientation GetCurrentOrientation()
         {
-            return RadioTelescope.PLCDriver.read_Position();
+            // Apply final offset
+            Orientation finalOffsetOrientation = new Orientation();
+
+            finalOffsetOrientation.Elevation = RadioTelescope.PLCDriver.GetMotorEncoderPosition().Elevation + FinalCalibrationOffset.Elevation;
+            finalOffsetOrientation.Azimuth = RadioTelescope.PLCDriver.GetMotorEncoderPosition().Azimuth + FinalCalibrationOffset.Azimuth;
+
+            // Normalize azimuth orientation
+            while (finalOffsetOrientation.Azimuth > 360) finalOffsetOrientation.Azimuth -= 360;
+            while (finalOffsetOrientation.Azimuth < 0) finalOffsetOrientation.Azimuth += 360;
+
+            return finalOffsetOrientation;
         }
-
-
 
         /// <summary>
         /// 
@@ -77,7 +119,17 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public Orientation GetAbsoluteOrientation()
         {
-            return RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation;
+            // Apply final offset
+            Orientation finalOffsetOrientation = new Orientation();
+
+            finalOffsetOrientation.Elevation = RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation + FinalCalibrationOffset.Elevation;
+            finalOffsetOrientation.Azimuth = RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Azimuth + FinalCalibrationOffset.Azimuth;
+
+            // Normalize azimuth orientation
+            while (finalOffsetOrientation.Azimuth > 360) finalOffsetOrientation.Azimuth -= 360;
+            while (finalOffsetOrientation.Azimuth < 0) finalOffsetOrientation.Azimuth += 360;
+
+            return finalOffsetOrientation;
         }
 
         /// <summary>
@@ -100,9 +152,19 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool CancelCurrentMoveCommand()
+        public bool CancelCurrentMoveCommand(MovementPriority priority)
         {
-            return RadioTelescope.PLCDriver.Cancel_move();
+            bool result = false;
+
+
+            if(Monitor.TryEnter(MovementLock) && priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+            {
+                result = RadioTelescope.PLCDriver.Cancel_move();
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                Monitor.Exit(MovementLock);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -115,7 +177,11 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         public bool ShutdownRadioTelescope()
         {
-            return RadioTelescope.PLCDriver.Shutdown_PLC_MCU();
+            //MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow);
+            snowDumpTimer.Stop();
+            snowDumpTimer.Dispose();
+
+            return RadioTelescope.PLCDriver.RequestStopAsyncAcceptingClientsAndJoin();
         }
 
         /// <summary>
@@ -125,10 +191,92 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public Task<bool> ThermalCalibrateRadioTelescope()
+        public MovementResult ThermalCalibrateRadioTelescope(MovementPriority priority)
         {
-            if (!tempAcceptable) return Task.FromResult(false);
-            return RadioTelescope.PLCDriver.Thermal_Calibrate(); // MOVE
+            MovementResult moveResult = MovementResult.None;
+
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock))
+            {
+                Orientation current = GetCurrentOrientation();
+
+                moveResult = RadioTelescope.PLCDriver.MoveToOrientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
+
+                if (moveResult != MovementResult.Success)
+                {
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
+                    return moveResult;
+                }
+
+                // start a timer so we can have a time variable
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+
+                // temporarily set spectracyber mode to continuum
+                RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
+
+                // read data
+                SpectraCyberResponse response = RadioTelescope.SpectraCyberController.DoSpectraCyberScan();
+
+                // end the timer
+                stopWatch.Stop();
+                double time = stopWatch.Elapsed.TotalSeconds;
+
+                RFData rfResponse = RFData.GenerateFrom(response);
+
+                // move back to previous location
+                moveResult = RadioTelescope.PLCDriver.MoveToOrientation(current, MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION);
+                if (moveResult != MovementResult.Success)
+                {
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    RadioTelescope.SpectraCyberController.StopScan();
+                    Monitor.Exit(MovementLock);
+                    return moveResult;
+                }
+
+                // analyze data
+                // temperature (Kelvin) = (intensity * time * wein's displacement constant) / (Planck's constant * speed of light)
+                double weinConstant = 2.8977729;
+                double planckConstant = 6.62607004 * Math.Pow(10, -34);
+                double speedConstant = 299792458;
+                double temperature = (rfResponse.Intensity * time * weinConstant) / (planckConstant * speedConstant);
+
+                // convert to fahrenheit
+                temperature = temperature * (9 / 5) - 459.67;
+
+                // check against weather station reading
+                double weatherStationTemp = RadioTelescope.WeatherStation.GetOutsideTemp();
+
+                // Set SpectraCyber mode back to UNKNOWN
+                RadioTelescope.SpectraCyberController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.UNKNOWN);
+
+                // return true if working correctly, false if not
+                if (Math.Abs(weatherStationTemp - temperature) < MiscellaneousConstants.THERMAL_CALIBRATION_OFFSET)
+                {
+                    moveResult = RadioTelescope.PLCDriver.MoveToOrientation(MiscellaneousConstants.Stow, current);
+                }
+
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Critical) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                RadioTelescope.SpectraCyberController.StopScan();
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                moveResult = MovementResult.AlreadyMoving;
+            }
+
+            return moveResult;
         }
 
         /// <summary>
@@ -152,12 +300,36 @@ namespace ControlRoomApplication.Controllers
         /// The implementation of this functionality is on a "per-RT" basis, as
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
-        /// <see cref="Controllers.BlkHeadUcontroler.EncoderReader"/>
         /// </summary>
-        public Task<bool> MoveRadioTelescopeToOrientation(Orientation orientation)//TODO: once its intagrated use the microcontrole to get the current opsition 
+        public MovementResult MoveRadioTelescopeToOrientation(Orientation orientation, MovementPriority priority)
         {
-            if (!tempAcceptable) return Task.FromResult(false);
-            return RadioTelescope.PLCDriver.Move_to_orientation(orientation, RadioTelescope.PLCDriver.read_Position()); // MOVE
+            MovementResult result = MovementResult.None;
+
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock))
+            {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+                result = RadioTelescope.PLCDriver.MoveToOrientation(orientation, GetCurrentOrientation());
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -168,47 +340,240 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public Task<bool> MoveRadioTelescopeToCoordinate(Coordinate coordinate)
+        public MovementResult MoveRadioTelescopeToCoordinate(Coordinate coordinate, MovementPriority priority)
         {
-            if (!tempAcceptable) return Task.FromResult(false);
-            return MoveRadioTelescopeToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow)); // MOVE
+            MovementResult result = MovementResult.None;
+
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock))
+            {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+                result = RadioTelescope.PLCDriver.MoveToOrientation(CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow), GetCurrentOrientation());
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
         }
 
+        /// <summary>
+        /// This is a method used to move the radio telescope by X degrees.
+        /// Entering 0 for an axis will not move that motor.
+        /// </summary>
+        /// <param name="degreesToMoveBy">The number of degrees to move by.</param>
+        /// <param name="priority">The movement's priority.</param>
+        /// <returns></returns>
+        public MovementResult MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovementPriority priority)
+        {
+            // TODO: Implement (issue #379)
+            return MovementResult.None;
+        }
 
         /// <summary>
-        /// Method used to request to start jogging the Radio Telescope's azimuth
-        /// at a speed (in RPM), in either the clockwise or counter-clockwise direction.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
+        /// This is used to home the telescope. Immediately after homing, the telescope will move to "Stow" position.
+        /// This will also zero out the absolute encoders and account for the true north offset.
         /// </summary>
-        public bool StartRadioTelescopeAzimuthJog(double speed, bool PositiveDIR)
+        /// <param name="priority">The priority of this movement.</param>
+        /// <returns>True if homing was successful; false if homing failed.</returns>
+        public MovementResult HomeTelescope(MovementPriority priority)
         {
-            if (!tempAcceptable) return false;
-            return RadioTelescope.PLCDriver.Start_jog( speed, PositiveDIR, 0,false );// MOVE
+            MovementResult result = MovementResult.None;
+
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock)) {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+                // Remove all offsets first so we can accurately zero out the positions
+                RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = new Orientation(0, 0);
+                FinalCalibrationOffset = new Orientation(0, 0);
+
+                // Perform a home telescope movement
+                result = RadioTelescope.PLCDriver.HomeTelescope();
+
+                // Zero out absolute encoders
+                RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = (Orientation)RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Clone();
+
+                // Allow the absolute encoders' positions to even out
+                Thread.Sleep(100);
+
+                // Verify the absolute encoders have successfully zeroed out. There is a bit of fluctuation with their values, so homing could have occurred
+                // with an outlier value. This check (with half-degree of precision) verifies that did not happen.
+                Orientation absOrientation = RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation;
+                if ((Math.Abs(absOrientation.Elevation) > 0.5 && !overrides.overrideElevationAbsEncoder) || 
+                        (Math.Abs(absOrientation.Azimuth) > 0.5 && !overrides.overrideAzimuthAbsEncoder))
+                {
+                    result = MovementResult.IncorrectPosition;
+                }
+
+                // Apply final calibration offset
+                FinalCalibrationOffset = RadioTelescope.CalibrationOrientation;
+
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// A demonstration script that moves the elevation motor to its maximum and minimum.
+        /// </summary>
+        /// <param name="priority">Movement priority.</param>
+        /// <returns></returns>
+        public MovementResult FullElevationMove(MovementPriority priority)
+        {
+            MovementResult result = MovementResult.None;
+
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock)) {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+                Orientation origOrientation = GetCurrentOrientation();
+
+                Orientation move1 = new Orientation(origOrientation.Azimuth, 0);
+                Orientation move2 = new Orientation(origOrientation.Azimuth, 90);
+
+                // Move to a low elevation point
+                result = RadioTelescope.PLCDriver.MoveToOrientation(move1, origOrientation);
+                if (result != MovementResult.Success)
+                {
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
+                    return result;
+                }
+
+                // Move to a high elevation point
+                result = RadioTelescope.PLCDriver.MoveToOrientation(move2, move1);
+                if (result != MovementResult.Success)
+                {
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
+                    return result;
+                }
+
+                // Move back to the original orientation
+                result = RadioTelescope.PLCDriver.MoveToOrientation(origOrientation, move2);
+
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
         }
 
         /// <summary>
         /// Method used to request to start jogging the Radio Telescope's elevation
         /// at a speed (in RPM), in either the clockwise or counter-clockwise direction.
-        /// 
-        /// The implementation of this functionality is on a "per-RT" basis, as
-        /// in this may or may not work, it depends on if the derived
-        /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool StartRadioTelescopeElevationJog(double speed, bool PositiveDIR)
+        public MovementResult StartRadioTelescopeJog(double speed, RadioTelescopeDirectionEnum direction, RadioTelescopeAxisEnum axis)
         {
-            if (!tempAcceptable) return false;
-            return RadioTelescope.PLCDriver.Start_jog( 0,false,speed, PositiveDIR);// MOVE
+            MovementResult result = MovementResult.None;
+
+            // Return if incoming priority is equal to or less than current movement
+            if ((MovementPriority.Jog - 1) <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            if (RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped())
+            {
+                return MovementResult.StoppingCurrentMove;
+            }
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock)) {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.Jog;
+
+                double azSpeed = 0;
+                double elSpeed = 0;
+
+                if (axis == RadioTelescopeAxisEnum.AZIMUTH) azSpeed = speed;
+                else elSpeed = speed;
+                
+                result = RadioTelescope.PLCDriver.StartBothAxesJog(azSpeed, direction, elSpeed, direction);
+
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
         }
 
 
         /// <summary>
         /// send a clear move to the MCU to stop a jog
         /// </summary>
-        public bool ExecuteRadioTelescopeStopJog() {
-            return RadioTelescope.PLCDriver.Stop_Jog();
+        public MovementResult ExecuteRadioTelescopeStopJog(MCUCommandType stopType)
+        {
+            MovementResult result = MovementResult.None;
+
+            if (RadioTelescope.PLCDriver.CurrentMovementPriority != MovementPriority.Jog) return result;
+
+            if (Monitor.TryEnter(MovementLock))
+            {
+                if (stopType == MCUCommandType.ControlledStop)
+                {
+                    if (RadioTelescope.PLCDriver.Cancel_move()) result = MovementResult.Success;
+                }
+                else if (stopType == MCUCommandType.ImmediateStop)
+                {
+                    if (RadioTelescope.PLCDriver.ImmediateStop()) result = MovementResult.Success;
+                }
+                else throw new ArgumentException("Jogs can only be stopped with a controlled stop or immediate stop.");
+
+                RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -219,9 +584,21 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRadioTelescopeControlledStop()
+        public bool ExecuteRadioTelescopeControlledStop(MovementPriority priority)
         {
-            return RadioTelescope.PLCDriver.ControlledStop(); // NO MOVE
+            bool success = false;
+
+            if (Monitor.TryEnter(MovementLock))
+            {
+                if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+                {
+                    success = RadioTelescope.PLCDriver.ControlledStop();
+                    RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                }
+                Monitor.Exit(MovementLock);
+            }
+
+            return success;
         }
 
         /// <summary>
@@ -232,11 +609,45 @@ namespace ControlRoomApplication.Controllers
         /// in this may or may not work, it depends on if the derived
         /// AbstractRadioTelescope class has implemented it.
         /// </summary>
-        public bool ExecuteRadioTelescopeImmediateStop()
+        public bool ExecuteRadioTelescopeImmediateStop(MovementPriority priority)
         {
-            return RadioTelescope.PLCDriver.ImmediateStop(); // NO MOVE
+            bool success = false;
+
+            if (Monitor.TryEnter(MovementLock))
+            {
+                if (priority > RadioTelescope.PLCDriver.CurrentMovementPriority)
+                {
+                    success = RadioTelescope.PLCDriver.ImmediateStop();
+                    RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                }
+                Monitor.Exit(MovementLock);
+            }
+
+            return success;
         }
 
+        /// <summary>
+        /// This allows us to safely reset the motor controller errors if an error bit happens to be set.
+        /// This way, we don't have to restart the hardware to get things to work.
+        /// </summary>
+        /// <remarks>
+        /// This will overwrite a movement if one is currently running, so it cannot be run unless there are
+        /// no movements running.
+        /// </remarks>
+        /// <returns>True if successful, False if another movement is currently running</returns>
+        public bool ResetMCUErrors()
+        {
+            bool success = false;
+
+            if(Monitor.TryEnter(MovementLock))
+            {
+                RadioTelescope.PLCDriver.ResetMCUErrors();
+                success = true;
+                Monitor.Exit(MovementLock);
+            }
+
+            return success;
+        }
 
         /// <summary>
         /// return true if the RT has finished the previous move comand
@@ -244,12 +655,11 @@ namespace ControlRoomApplication.Controllers
         public bool finished_exicuting_move( RadioTelescopeAxisEnum axis )//[7]
         {
              
-            var Taz = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH );  //Task.Run( async () => { await  } );
+            var Taz = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.AZIMUTH );
             var Tel = RadioTelescope.PLCDriver.GET_MCU_Status( RadioTelescopeAxisEnum.ELEVATION );
-
-            Taz.Wait();
-            bool azFin = Taz.Result[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
-            bool elFin = Tel.GetAwaiter().GetResult()[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
+            
+            bool azFin = Taz[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
+            bool elFin = Tel[(int)MCUConstants.MCUStatusBitsMSW.Move_Complete];
             if(axis == RadioTelescopeAxisEnum.BOTH) {
                 return elFin && azFin;
             } else if(axis == RadioTelescopeAxisEnum.AZIMUTH) {
@@ -260,55 +670,41 @@ namespace ControlRoomApplication.Controllers
             return false;
         }
 
-
-        private static bool ResponseMetBasicExpectations(byte[] ResponseBytes, int ExpectedSize)
-        {
-            return ((ResponseBytes[0] + (ResponseBytes[1] * 256)) == ExpectedSize) && (ResponseBytes[2] == 0x1);
-            //TODO: throws object is not instance of object when the  PLCClientCommunicationHandler.ReadResponse() retuns null usually due to time out
-
-         }
-
-        private static bool MinorResponseIsValid(byte[] MinorResponseBytes)
-        {
-            
-            System.Diagnostics.Debug.WriteLine(MinorResponseBytes);
-            return ResponseMetBasicExpectations(MinorResponseBytes, 0x3);
-        }
-
         // Checks the motor temperatures against acceptable ranges every second
-        private void tempMonitor()
+        private void SensorMonitor()
         {
             // Getting initial current temperatures
-            Temperature currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
-            bool AZ = checkTemp(currAZ);
+            Temperature currAzTemp = RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp[RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp.Length - 1];
+            Temperature currElTemp = RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp[RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp.Length - 1];
+            bool elTempSafe = checkTemp(currElTemp, true);
+            bool azTempSafe = checkTemp(currAzTemp, true);
 
-            Temperature currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
-            bool EL = checkTemp(currEL);
-
+            // Sensor overrides must be taken into account
             bool currentAZOveride = overrides.overrideAzimuthMotTemp;
-
             bool currentELOveride = overrides.overrideElevatMotTemp;
 
-            // Loop through every one second to get new temperatures. If the temperature has changed, notify the user
-            while (true)
+            // Loop through every one second to get new sensor data
+            while (MonitoringSensors)
             {
-                // Only updates the info if the temperature has changed
-                if (currAZ.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR).temp || currentAZOveride != overrides.overrideAzimuthMotTemp) {
-                    currAZ = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.AZ_MOTOR);
-                    AZ = checkTemp(currAZ);
-                    currentAZOveride = overrides.overrideAzimuthMotTemp;
-                }
+                Temperature azTemp = RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp[RadioTelescope.SensorNetworkServer.CurrentAzimuthMotorTemp.Length - 1];
+                Temperature elTemp = RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp[RadioTelescope.SensorNetworkServer.CurrentElevationMotorTemp.Length - 1];
 
-                if (currEL.temp != DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR).temp || currentELOveride != overrides.overrideElevatMotTemp)
+                azTempSafe = checkTemp(azTemp, azTempSafe);
+                elTempSafe = checkTemp(elTemp, elTempSafe);
+
+                // Determines if the telescope is in a safe state
+                if (azTempSafe && elTempSafe) AllSensorsSafe = true;
+                else
                 {
-                    currEL = DatabaseOperations.GetCurrentTemp(SensorLocationEnum.EL_MOTOR);
-                    EL = checkTemp(currEL);
-                    currentELOveride = overrides.overrideElevatMotTemp;
-                }
+                    AllSensorsSafe = false;
 
-                // Determines if the temperature is acceptable for both motors
-                if (AZ && EL) tempAcceptable = true;
-                else tempAcceptable = false;
+                    // If the motors are moving, interrupt the current movement.
+                    if (RadioTelescope.PLCDriver.MotorsCurrentlyMoving())
+                    {
+                        RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+                    }
+                }
+                
                 Thread.Sleep(1000);
             }
         }
@@ -322,53 +718,62 @@ namespace ControlRoomApplication.Controllers
         ///  True - good
         /// </summary>
         /// <returns>override bool</returns>
-        public bool checkTemp(Temperature t)
+        public bool checkTemp(Temperature t, bool lastIsSafe)
         {
             // get maximum temperature threshold
             double max;
 
             // Determine whether azimuth or elevation
             String s;
-            bool b;
+            bool isOverridden;
             if (t.location_ID == (int)SensorLocationEnum.AZ_MOTOR)
             {
                 s = "Azimuth";
-                b = overrides.overrideAzimuthMotTemp;
-                max = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
+                isOverridden = overrides.overrideAzimuthMotTemp;
+                max = MaxAzTempThreshold;
             }
             else
             {
                 s = "Elevation";
-                b = overrides.overrideElevatMotTemp;
-                max = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
+                isOverridden = overrides.overrideElevatMotTemp;
+                max = MaxElTempThreshold;
             }
-            
+
             // Check temperatures
-            if (t.temp < SimulationConstants.STABLE_MOTOR_TEMP)
+            if (t.temp < SimulationConstants.MIN_MOTOR_TEMP)
             {
-                logger.Info(Utilities.GetTimeStamp() + ": "+ s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                if (lastIsSafe)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
 
-                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
-                EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                    pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                    EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature BELOW stable temperature by " + Math.Truncate(SimulationConstants.STABLE_MOTOR_TEMP - t.temp) + " degrees Fahrenheit.");
+                }
+                    
                 // Only overrides if switch is true
-                if (!b) return false;
+                if (!isOverridden) return false;
                 else return true;
             }
-            else if (t.temp > max)
+            else if (t.temp > SimulationConstants.OVERHEAT_MOTOR_TEMP)
             {
-                logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                if (lastIsSafe)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
 
-                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
-                EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                    pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                    EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature OVERHEATING by " + Math.Truncate(t.temp - max) + " degrees Fahrenheit.");
+                }
 
                 // Only overrides if switch is true
-                if (!b) return false;
+                if (!isOverridden) return false;
                 else return true;
             }
-            logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature stable.");
+            else if (t.temp <= SimulationConstants.MAX_MOTOR_TEMP && t.temp >= SimulationConstants.MIN_MOTOR_TEMP && !lastIsSafe) {
+                logger.Info(Utilities.GetTimeStamp() + ": " + s + " motor temperature stable.");
 
-            pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
-            EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
+                pushNotification.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
+                EmailNotifications.sendToAllAdmins("MOTOR TEMPERATURE", s + " motor temperature stable.");
+            }
 
             return true;
         }
@@ -410,5 +815,99 @@ namespace ControlRoomApplication.Controllers
                 EmailNotifications.sendToAllAdmins("SENSOR OVERRIDES", "Enabled " + sensor + " sensor.");
             }
         }
+
+        /// <summary>
+        /// This is a script that is called when we want to dump snow out of the dish
+        /// </summary>
+        public MovementResult SnowDump(MovementPriority priority)
+        {
+            MovementResult result = MovementResult.None;
+
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock)) {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+                // insert snow dump movements here
+                // default is azimuth of 0 and elevation of 0
+                previousSnowDumpAzimuth += 45;
+                if (previousSnowDumpAzimuth >= 360) previousSnowDumpAzimuth -= 360;
+
+                Orientation dump = new Orientation(previousSnowDumpAzimuth, -5);
+                Orientation current = GetCurrentOrientation();
+
+                Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
+                Orientation dumpElevation = new Orientation(dump.Azimuth, dump.Elevation);
+
+                // move to dump snow
+                result = RadioTelescope.PLCDriver.MoveToOrientation(dumpAzimuth, current);
+                if (result != MovementResult.Success)
+                {
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
+                    return result;
+                }
+
+                result = RadioTelescope.PLCDriver.MoveToOrientation(dumpElevation, dumpAzimuth);
+                if (result != MovementResult.Success)
+                {
+                    if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+                    Monitor.Exit(MovementLock);
+                    return result;
+                }
+
+                // move back to initial orientation
+                result = RadioTelescope.PLCDriver.MoveToOrientation(current, dumpElevation);
+
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
+        }
+
+        private void AutomaticSnowDumpInterval(Object source, ElapsedEventArgs e)
+        {
+            double DELTA = 0.01;
+            Orientation currentOrientation = GetCurrentOrientation();
+            
+            // Check if we need to dump the snow off of the telescope
+            if (RadioTelescope.WeatherStation.GetOutsideTemp() <= 30.00 && RadioTelescope.WeatherStation.GetTotalRain() > 0.00)
+            {
+                // We want to check stow position precision with a 0.01 degree margin of error
+                if(Math.Abs(currentOrientation.Azimuth - MiscellaneousConstants.Stow.Azimuth) <= DELTA && Math.Abs(currentOrientation.Elevation - MiscellaneousConstants.Stow.Elevation) <= DELTA)
+                {
+                    Console.WriteLine("Time threshold reached. Running snow dump...");
+
+                    MovementResult result = SnowDump(MovementPriority.Appointment);
+
+                    if(result != MovementResult.Success)
+                    {
+                        logger.Info($"{Utilities.GetTimeStamp()}: Automatic snow dump FAILED with error message: {result.ToString()}");
+                        pushNotification.sendToAllAdmins("Snow Dump Failed", $"Automatic snow dump FAILED with error message: {result.ToString()}");
+                        EmailNotifications.sendToAllAdmins("Snow Dump Failed", $"Automatic snow dump FAILED with error message: {result.ToString()}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Snow dump completed");
+                    }
+                }
+                
+            }
+        }
+
     }
 }

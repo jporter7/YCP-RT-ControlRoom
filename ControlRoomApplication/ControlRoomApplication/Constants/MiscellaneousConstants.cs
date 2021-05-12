@@ -26,6 +26,13 @@ namespace ControlRoomApplication.Constants
 
         public const double MIN_SPEED_RPM = 0.00;
 
+        // Constants for orientations that we use in various places
+
+        /// <summary>
+        /// The stow position of the telescope. This position has it pointing straight up in the air
+        /// </summary>
+        public static readonly Orientation Stow = new Orientation(0, 90);
+
         //private const
 
 

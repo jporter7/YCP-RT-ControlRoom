@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Controllers.Sensors;
 using ControlRoomApplication.Util;
-
+using System.Data.Entity.Core;
 
 namespace ControlRoomApplication.Entities.WeatherStation
 {
@@ -16,6 +16,8 @@ namespace ControlRoomApplication.Entities.WeatherStation
     {
         private static readonly log4net.ILog logger =
            log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        int count = 0;
 
         public struct WeatherUnits
         {
@@ -79,13 +81,13 @@ namespace ControlRoomApplication.Entities.WeatherStation
  
             InitializeStation(commPort);
 
-            ReloadWeatherDataThread = new Thread(new ThreadStart(ReloadWeatherDataRoutine));
+            ReloadWeatherDataThread = new Thread(() => { ReloadWeatherDataRoutine(); });
             KeepReloadWeatherDataThreadAlive = true;
             ReloadWeatherDataThread.Start();
         }
 
         // From the HeartbeatInterface
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             // see if we can connect to the weather station
             return GetModelNo_V() != COM_ERROR;
@@ -99,9 +101,6 @@ namespace ControlRoomApplication.Entities.WeatherStation
         /// <returns> void </returns>
         protected void InitializeStation(int commPort)
         {
-            
-            // TODO: make com port a parameter for InitializeStation
-
             if (OpenCommPort_V((short)commPort, 19200) != 0)
             {
                 logger.Error(Utilities.GetTimeStamp() + ": OpenCommPort unsuccessful!");
@@ -123,6 +122,8 @@ namespace ControlRoomApplication.Entities.WeatherStation
 
         private void ReloadWeatherDataRoutine()
         {
+            bool retrySave = false;
+
             while (KeepReloadWeatherDataThreadAlive) {
                 if (LoadCurrentVantageData_V() != COM_ERROR)
                 {
@@ -132,6 +133,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
                     data.dailyRain = GetDailyRain_V();
                     data.rainRate = GetRainRate_V();
                     data.outsideTemp = GetOutsideTemp_V();
+                    data.insideTemp = GetInsideTemp_V();
                     data.baromPressure = GetBarometer_V();
                     data.dewPoint = GetDewPt_V();
                     data.windChill = GetWindChill_V();
@@ -140,12 +142,35 @@ namespace ControlRoomApplication.Entities.WeatherStation
                     data.monthlyRain = GetMonthlyRain_V();
                     data.heatIndex = GetHeatIndex_V();
 
-                    DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
+                    // This is here for a workaround to issue #360. We will occasionally get a "Connection failed on open" Entity exception
+                    // We have this used to simply retry the database update if the exception occurs. It always (while I was testing, at least) succeeds after the retry.
+                    // We may need to remove this in production if we find a different solution for actually eliminating the bug insetad of this workaround
+                    
+                    do
+                    {
+                        try
+                        {
+                            DatabaseOperations.AddWeatherData(WeatherData.Generate(data));
+                            retrySave = false;
+                            count = 0;
+                        }
+                        catch (EntityException e)
+                        {
+                            count++;
+                            retrySave = true;
+
+                            // We want to retry 4 times, after which we will abandon the update.
+                            if (count == 4)
+                            {
+                                retrySave = false;
+                                count = 0;
+                                logger.Info(Utilities.GetTimeStamp() + " : Failed to update weather station data after 4 tries. Abandoning update...");
+                            }   
+                        }
+                    }
+                    while (retrySave);
                 }
-                else
-                {
-                    logger.Info(Utilities.GetTimeStamp() + ": Weather Data update failed");
-                }
+
 
                 Thread.Sleep(1000);
             }
@@ -253,7 +278,7 @@ namespace ControlRoomApplication.Entities.WeatherStation
                 }
             }
 
-            return "";
+            return "ERR";
         }
     }
 }

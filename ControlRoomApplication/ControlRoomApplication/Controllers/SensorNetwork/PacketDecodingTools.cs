@@ -1,4 +1,5 @@
 ﻿using ControlRoomApplication.Entities;
+using ControlRoomApplication.Entities.DiagnosticData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +64,45 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             }
 
             return temperature;
+        }
+
+        /// <summary>
+        /// Converts two bytes to the azimuth position, then adds an offset and normalizes the orientation.
+        /// </summary>
+        /// <param name="currPointer">Current index in the byte array.</param>
+        /// <param name="data">Data we are converting to a double.</param>
+        /// <param name="offset">The offset to apply after double conversion.</param>
+        /// <param name="currPos">The current position in case the one we get in is invalid.</param>
+        /// <returns>Current azimuth position.</returns>
+        public static double GetAzimuthAxisPositionFromBytes(ref int currPointer, byte[] data, double offset, double currPos)
+        {
+            double azPos = 360 / SensorNetworkConstants.AzimuthEncoderScaling * (short)(data[currPointer++] << 8 | data[currPointer++]);
+
+            if (Math.Abs(azPos) > 360) return currPos;
+
+            double azPosOffs = (azPos + offset) * -1;
+
+            // Because the offset could cause the axis position to be negative, we want to normalize that to a positive value.
+            while (azPosOffs < 0) azPosOffs += 360;
+
+            return azPosOffs;
+        }
+
+        /// <summary>
+        /// Converts two bytes to the elevation position, then adds an offset to the position.
+        /// </summary>
+        /// <param name="currPointer">Current index in the byte array.</param>
+        /// <param name="data">Data we are converting to a double.</param>
+        /// <param name="offset">The offset to apply after double conversion.</param>
+        /// <param name="currPos">The current position in case the one we get in is invalid.</param>
+        /// <returns>Current elevation position.</returns>
+        public static double GetElevationAxisPositionFromBytes(ref int currPointer, byte[] data, double offset, double currPos)
+        {
+            double elPos = -0.25 * (short)(data[currPointer++] << 8 | data[currPointer++]) + 104.375;
+
+            double elPosOffs = (elPos - offset);
+
+            return elPosOffs;
         }
     }
 }

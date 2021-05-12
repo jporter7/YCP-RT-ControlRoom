@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using ControlRoomApplication.Constants;
+using System.Net.Sockets;
 
 namespace ControlRoomApplication.Validation {
     
@@ -273,6 +274,31 @@ namespace ControlRoomApplication.Validation {
             if (upper != null && value > upper) return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// This verifies that a server is currently running on an IP address and port combo.
+        /// </summary>
+        /// <param name="ip">IP address that we are verifying.</param>
+        /// <param name="port">Port that we are verifying.</param>
+        /// <returns></returns>
+        public static bool ServerRunningOnIp(string ip, int port)
+        {
+            bool success = false;
+            TcpClient c = new TcpClient();
+            try
+            {
+                c.Connect(ip, port);
+                success = true;
+            }
+            catch {
+                success = false;
+            }
+
+            c.Close();
+            c.Dispose();
+
+            return success;
         }
     }
 
