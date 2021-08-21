@@ -16,6 +16,7 @@ namespace ControlRoomApplication.Entities
         }
         /// <summary>
         /// Test
+        /// Test
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
