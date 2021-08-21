@@ -77,7 +77,7 @@ namespace ControlRoomApplication.Entities
             if (BlobStringCounter > 4000 || testFlag == true)
             {
                 this.Blob = BlobTheBuilder.ToString();
-                Database.DatabaseOperations.AddAccelerationBlobData(this, time, true);
+                 Database.DatabaseOperations.AddAccelerationBlobData(this, time, true);
                 BlobTheBuilder.Clear();
                 BlobStringCounter = 0;
             }
