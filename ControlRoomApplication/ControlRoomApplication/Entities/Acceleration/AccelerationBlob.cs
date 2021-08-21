@@ -14,7 +14,9 @@ namespace ControlRoomApplication.Entities
             BlobTheBuilder = new StringBuilder();
             BlobStringCounter = 0;
         }
-
+        /// <summary>
+        /// Test
+        /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
