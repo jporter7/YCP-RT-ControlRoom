@@ -111,7 +111,6 @@ namespace ControlRoomApplication.Main
 
             // Initialize Button Settings 
             startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
-            createWSButton.Enabled = true;
             acceptSettings.Enabled = false;
             startButton.BackColor = System.Drawing.Color.Gainsboro;
             startButton.Enabled = false;
@@ -606,8 +605,14 @@ namespace ControlRoomApplication.Main
             {
                 case 0:
                     logger.Info(Utilities.GetTimeStamp() + ": Building ProductionWeatherStation");
+                    try
+                    {
                     return new WeatherStation(1000, int.Parse(txtWSCOMPort.Text));
-
+                    }catch(Exception e)
+                    {
+                        return null;
+                    }
+                    
                 case 2:
                     logger.Error(Utilities.GetTimeStamp() + ": The test weather station is not yet supported.");
                     throw new NotImplementedException("The test weather station is not yet supported.");
@@ -725,12 +730,6 @@ namespace ControlRoomApplication.Main
             this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Production PLC");
         }
 
-        private void createWSButton_Click(object sender, EventArgs e)
-        {
-            startButton.BackColor = System.Drawing.Color.LimeGreen;
-            startButton.Enabled = true;
-            lastCreatedProductionWeatherStation = BuildWeatherStation();
-        }
 
         private void comboSensorNetworkBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -872,16 +871,48 @@ namespace ControlRoomApplication.Main
         private void acceptSettings_Click(object sender, EventArgs e)
         {
             finalSettings = !finalSettings;
+
             if (finalSettings == false)
             {
 
-                //Editing text to relflect state -- When the settings are being edited, the button will need to say 'finalize'
-                acceptSettings.Text = "Edit Settings";
-                if (comboBox2.Text != "Production Weather Station")
+                if (comboBox2.Text == "Production Weather Station")
                 {
+                    
+                    lastCreatedProductionWeatherStation = BuildWeatherStation();
+                   
+                    if (lastCreatedProductionWeatherStation != null)
+                    {
+                        
+                        startButton.BackColor = System.Drawing.Color.LimeGreen;
+                        startButton.Enabled = true;
+                    }
+                    else
+                    {
+                        this.WCOMPortToolTip.Show("Could not create production weather station on this port.", label8);
+                        txtWSCOMPort.BackColor = System.Drawing.Color.Yellow;
+
+
+                    }
+
+                }
+                else
+                {
+
                     startButton.BackColor = System.Drawing.Color.LimeGreen;
                     startButton.Enabled = true;
                 }
+
+                //if there is an error with the production weather station, display a tooltip & do not let the user start the telescope
+
+
+
+                //Editing text to relflect state -- When the settings are being edited, the button will need to say 'finalize'
+                acceptSettings.Text = "Edit Settings";
+
+
+
+
+
                 startRTGroupbox.BackColor = System.Drawing.Color.Gray;
                 loopBackBox.Enabled = false;
 
@@ -910,6 +941,11 @@ namespace ControlRoomApplication.Main
             {
                 // Editing Text to reflect state -- when finalized, you can click "edit settings"
                 acceptSettings.Text = "Finalize Settings";
+                
+                //hide WS error
+                this.WCOMPortToolTip.Hide(label8);
+                txtWSCOMPort.BackColor = System.Drawing.Color.White;
+
 
                 startRTGroupbox.BackColor = System.Drawing.Color.DarkGray;
                 startButton.Enabled = false;
