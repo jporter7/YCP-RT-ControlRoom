@@ -968,7 +968,7 @@ namespace ControlRoomApplication.Main
                 Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
                 {
                    this.frequencyToolTip.Show("Frequency must be a non-negative\n " +
-                "value, in hertz (>= 0 Hz)", lblFrequency);
+                "value, in kilohertz (>= 0 kHz)", lblFrequency);
                 });
                 
             }
