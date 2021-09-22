@@ -34,7 +34,7 @@ namespace ControlRoomApplication.Entities
         public void BuildAccelerationString(Acceleration[] x, long time = -1, bool testFlag = false)
         {
             //If no value is passed for time
-            if(time == -1)
+            if (time == -1)
             {
                 time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             }
@@ -42,7 +42,7 @@ namespace ControlRoomApplication.Entities
             int length = x.Length - 1;
 
             //IF the next Acceleration array will bring us over 4000
-            if (BlobStringCounter+x.Length > 4000)
+            if (BlobStringCounter + x.Length > 4000)
             {
                 //Loop through array of acceleration object EXCEPT the last object 
                 for (int i = 0; i < x.Length - 1; i++)
@@ -72,7 +72,7 @@ namespace ControlRoomApplication.Entities
                 }
             }
 
-            BlobStringCounter += length + 1; 
+            BlobStringCounter += length + 1;
             //If the StringBuilder is more than 4000 characters push to database and clear the builder 
             if (BlobStringCounter > 4000 || testFlag == true)
             {
@@ -82,5 +82,46 @@ namespace ControlRoomApplication.Entities
                 BlobStringCounter = 0;
             }
         }
+
+        public Acceleration[] BlobParser(String AccelerationString)
+        {
+            //Given the blobbed string of acceleration data, split
+            //the string based on the - which seperate each Acceleration data point
+            String[] accStrings = AccelerationString.Split('-');
+
+            Acceleration[] accArray = new Acceleration[accStrings.Length];
+
+            //loop through the split array of acceleration points
+            for(int i=0; i<accStrings.Length; i++)
+            {
+                //split each acceleration data point based on the specific values
+                //acc~x~y~z~location so that they are each stored individually
+                String[] accValues = accStrings[i].Split('~');
+
+                //create an empty Acceleration object
+                Acceleration tempAcc = new Acceleration();
+
+                //set the acceleration vector value
+                tempAcc.acc = Convert.ToDouble(accValues[0]);
+
+                //set the acceleration x value
+                tempAcc.x = Convert.ToDouble(accValues[1]);
+
+                //set the acceleration y value
+                tempAcc.y = Convert.ToDouble(accValues[2]);
+
+                //set the acceleration z value
+                tempAcc.z = Convert.ToDouble(accValues[3]);
+
+                //set the acceleration location ID
+                tempAcc.location_ID = Convert.ToInt32(accValues[4]);
+
+                //store the parsed acceleration point in the Acceleration[]
+                accArray[i] = tempAcc;
+            }
+
+            return accArray;
+        }
+        
     }
 }
