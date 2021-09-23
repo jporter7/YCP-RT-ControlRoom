@@ -47,28 +47,28 @@ namespace ControlRoomApplication.Entities
                 //Loop through array of acceleration object EXCEPT the last object 
                 for (int i = 0; i < x.Length - 1; i++)
                 {
-                    //Objects appended to StringBuilder with a - added to sperate each value 
+                    //Objects appended to StringBuilder with a $ added to sperate each value 
                     //~ breaks up a single acceleration 
-                    //- breaks up acceleratrion objects
+                    //$ breaks up acceleratrion objects
                     BlobTheBuilder.Append(x[i].acc + "~" + x[i].x + "~"
-                        + x[i].y + "~" + x[i].z + "~" + x[i].location_ID + "-");
+                        + x[i].y + "~" + x[i].z + "~" + x[i].location_ID + "$");
                 }
 
                 //Last acceleration added without seperation
                 BlobTheBuilder.Append(x[length].acc + "~" + x[length].x + "~"
                         + x[length].y + "~" + x[length].z + "~" + x[length].location_ID);
             }
-            //Under 4000 and needs a - at the end
+            //Under 4000 and needs a $ at the end
             else
             {
                 //Loop through array of acceleration object
                 for (int i = 0; i < x.Length; i++)
                 {
-                    //Objects appended to StringBuilder with a - added to sperate each value 
+                    //Objects appended to StringBuilder with a $ added to sperate each value 
                     //~ breaks up a single acceleration 
-                    //- breaks up acceleratrion objects
+                    //$ breaks up acceleratrion objects
                     BlobTheBuilder.Append(x[i].acc + "~" + x[i].x + "~"
-                        + x[i].y + "~" + x[i].z + "~" + x[i].location_ID + "-");
+                        + x[i].y + "~" + x[i].z + "~" + x[i].location_ID + "$");
                 }
             }
 
@@ -86,8 +86,8 @@ namespace ControlRoomApplication.Entities
         public Acceleration[] BlobParser(String AccelerationString)
         {
             //Given the blobbed string of acceleration data, split
-            //the string based on the - which seperate each Acceleration data point
-            String[] accStrings = AccelerationString.Split('-');
+            //the string based on the $ which seperate each Acceleration data point
+            String[] accStrings = AccelerationString.Split('$');
 
             Acceleration[] accArray = new Acceleration[accStrings.Length];
 
