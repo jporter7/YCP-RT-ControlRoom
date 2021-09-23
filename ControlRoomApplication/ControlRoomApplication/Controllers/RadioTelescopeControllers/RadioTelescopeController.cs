@@ -381,7 +381,47 @@ namespace ControlRoomApplication.Controllers
         public MovementResult MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovementPriority priority)
         {
             // TODO: Implement (issue #379)
-            return MovementResult.None;
+            MovementResult result = MovementResult.None;
+
+
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            Orientation origOrientation = GetCurrentOrientation();
+
+            Orientation expectedOrientation = new Orientation((degreesToMoveBy.Azimuth + degreesToMoveBy.Azimuth) % 360, degreesToMoveBy.Elevation + origOrientation.Elevation);
+
+            if (expectedOrientation.Elevation < MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MIN || expectedOrientation.Elevation > MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MAX) return MovementResult.InvalidRequestedPostion;
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock))
+            {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+
+                int absoluteElMove, absoluteAzMove;
+                absoluteElMove = ConversionHelper.DegreesToSteps(degreesToMoveBy.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+                absoluteAzMove = ConversionHelper.DegreesToSteps(degreesToMoveBy.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+
+                result = RadioTelescope.PLCDriver.RelativeMove(10000, absoluteAzMove, absoluteElMove, expectedOrientation) ;
+
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
+        
+
+            
         }
 
         /// <summary>
