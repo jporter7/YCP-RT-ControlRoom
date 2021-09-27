@@ -885,6 +885,8 @@ namespace ControlRoomApplication.Main
                         rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
                         break;
                 }
+            
+                finalizeSettingsButton.Enabled = false;
 
                 startScanButton.Enabled = false;
                 startScanButton.BackColor = System.Drawing.Color.DarkGray;
@@ -907,6 +909,8 @@ namespace ControlRoomApplication.Main
                 rtController.RadioTelescope.SpectraCyberController.StopScan();
                 logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has stopped");
             }
+
+            finalizeSettingsButton.Enabled = true;
 
             startScanButton.Enabled = true;
             startScanButton.BackColor = System.Drawing.Color.LimeGreen;
