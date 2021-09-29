@@ -77,6 +77,12 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// <summary>
         /// This is only used for Jog commands if they are running overtop of a movement that is lower priority.
         /// </summary>
-        StoppingCurrentMove
+        StoppingCurrentMove,
+
+        /// <summary>
+        /// This is only used for the "moveradiotelescopebyxdegrees" function in RadioTelescopeController
+        /// will be returned if a relative move would put the telescope past software limits
+        /// </summary>
+        InvalidRequestedPostion
     }
 }
