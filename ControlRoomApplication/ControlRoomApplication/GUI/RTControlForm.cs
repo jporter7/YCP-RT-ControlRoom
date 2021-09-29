@@ -491,11 +491,11 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 3:
-                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(180, 0), MovementPriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(360, 0), MovementPriority.Manual);
                         break;
 
                     case 4:
-                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(360, 0), MovementPriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeByXDegrees(new Entities.Orientation(-360, 0), MovementPriority.Manual);
                         break;
 
                     case 5:

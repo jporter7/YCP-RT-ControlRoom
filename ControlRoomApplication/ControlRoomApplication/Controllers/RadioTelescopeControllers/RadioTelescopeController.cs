@@ -409,7 +409,12 @@ namespace ControlRoomApplication.Controllers
                 absoluteElMove = ConversionHelper.DegreesToSteps(degreesToMoveBy.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
                 absoluteAzMove = ConversionHelper.DegreesToSteps(degreesToMoveBy.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
 
-                result = RadioTelescope.PLCDriver.RelativeMove(10000, absoluteAzMove, absoluteElMove, expectedOrientation) ;
+                //calculate peak speed values here
+
+                int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
+                int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
+
+                result = RadioTelescope.PLCDriver.RelativeMove(10000, 10000, absoluteAzMove, absoluteElMove, expectedOrientation) ;
 
                 Monitor.Exit(MovementLock);
             }
