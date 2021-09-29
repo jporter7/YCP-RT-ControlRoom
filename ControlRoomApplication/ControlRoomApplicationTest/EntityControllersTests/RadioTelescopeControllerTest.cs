@@ -335,7 +335,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, 100_000, posTransAz, posTransEl, expectedOrientation);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl, expectedOrientation);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
@@ -365,7 +365,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, 100_000, posTransAz, posTransEl, expectedOrientation);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl, expectedOrientation);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
@@ -398,7 +398,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             posTransEl = ConversionHelper.DegreesToSteps(expectedOrientation.Elevation - currOrientation.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
 
             // Move telescope
-            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000,100_000, posTransAz, posTransEl, expectedOrientation);
+            TestRadioTelescopeController.RadioTelescope.PLCDriver.RelativeMove(100_000, posTransAz, posTransEl, expectedOrientation);
 
             // Create result orientation
             Orientation resultOrientation = TestRadioTelescopeController.RadioTelescope.PLCDriver.GetMotorEncoderPosition();
