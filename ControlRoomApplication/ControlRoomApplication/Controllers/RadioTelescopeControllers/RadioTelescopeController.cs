@@ -414,7 +414,9 @@ namespace ControlRoomApplication.Controllers
                 int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
                 int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
 
-                result = RadioTelescope.PLCDriver.RelativeMove(10000, 10000, absoluteAzMove, absoluteElMove, expectedOrientation) ;
+                result = RadioTelescope.PLCDriver.RelativeMove(AZ_Speed, EL_Speed, absoluteAzMove, absoluteElMove, expectedOrientation) ;
+
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
 
                 Monitor.Exit(MovementLock);
             }
