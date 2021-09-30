@@ -672,5 +672,10 @@ namespace ControlRoomApplication.Controllers
         {
             return MCU.MotorsCurrentlyMoving(axis);
         }
+
+        public override void SetFinalOffset(Orientation finalPos)
+        {
+            MCU.FinalPositionOffset = finalPos;
+        }
     }
 }

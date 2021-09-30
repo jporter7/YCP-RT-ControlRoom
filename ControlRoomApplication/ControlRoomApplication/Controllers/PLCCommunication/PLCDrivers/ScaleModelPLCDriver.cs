@@ -365,5 +365,10 @@ namespace ControlRoomApplication.Controllers {
         {
             throw new NotImplementedException();
         }
+
+        public override void SetFinalOffset(Orientation finalPos)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
