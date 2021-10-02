@@ -500,7 +500,8 @@ namespace ControlRoomApplication.Main
             "Snow Dump",
             "Home Telescope",
             "Custom Orientation Movement",
-            "Endless Azimuth Rotation"});
+            "Endless Azimuth Rotation",
+            "Hardware Movement Script"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
