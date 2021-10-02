@@ -912,9 +912,9 @@ namespace ControlRoomApplication.Main
             this.lblFrequency.Location = new System.Drawing.Point(155, 0);
             this.lblFrequency.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFrequency.Name = "lblFrequency";
-            this.lblFrequency.Size = new System.Drawing.Size(79, 13);
+            this.lblFrequency.Size = new System.Drawing.Size(85, 13);
             this.lblFrequency.TabIndex = 34;
-            this.lblFrequency.Text = "Frequency (Hz)";
+            this.lblFrequency.Text = "Frequency (kHz)";
             // 
             // label9
             // 
