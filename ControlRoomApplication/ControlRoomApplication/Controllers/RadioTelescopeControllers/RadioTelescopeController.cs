@@ -380,7 +380,6 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public MovementResult MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovementPriority priority)
         {
-            // TODO: Implement (issue #379)
             MovementResult result = MovementResult.None;
 
 
@@ -395,7 +394,14 @@ namespace ControlRoomApplication.Controllers
 
             Orientation origOrientation = GetCurrentOrientation();
 
-            Orientation expectedOrientation = new Orientation((degreesToMoveBy.Azimuth + degreesToMoveBy.Azimuth) % 360, degreesToMoveBy.Elevation + origOrientation.Elevation);
+
+            double normalizedAzimuth = (degreesToMoveBy.Azimuth + origOrientation.Azimuth) % 360;
+            if(normalizedAzimuth < 0)
+            {
+                normalizedAzimuth += 360;
+            }
+
+            Orientation expectedOrientation = new Orientation(normalizedAzimuth, degreesToMoveBy.Elevation + origOrientation.Elevation);
 
             if (expectedOrientation.Elevation < MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MIN || expectedOrientation.Elevation > MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MAX) return MovementResult.InvalidRequestedPostion;
 
@@ -409,12 +415,11 @@ namespace ControlRoomApplication.Controllers
                 absoluteElMove = ConversionHelper.DegreesToSteps(degreesToMoveBy.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
                 absoluteAzMove = ConversionHelper.DegreesToSteps(degreesToMoveBy.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
 
-                //calculate peak speed values here
-
+                //Peak speed calculations (using 0.6 RPM to match other move functions)
                 int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
                 int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
 
-                result = RadioTelescope.PLCDriver.RelativeMove(AZ_Speed, EL_Speed, absoluteAzMove, absoluteElMove, expectedOrientation) ;
+                result = RadioTelescope.PLCDriver.RelativeMove(AZ_Speed, EL_Speed, absoluteAzMove, absoluteElMove, expectedOrientation);
 
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
 
