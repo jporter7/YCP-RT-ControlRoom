@@ -209,7 +209,13 @@ namespace ControlRoomApplication.Main
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
 
             var threads = controlRoom.RTControllerManagementThreads.Where<RadioTelescopeControllerManagementThread>(t => t.RTController == rtController).ToList<RadioTelescopeControllerManagementThread>();
-            threads[0].EndAppointment();
+
+            //Done in a new thread so the UI does not freeze while waiting for the move to finish
+            new Thread(() =>
+            {
+                threads[0].EndAppointment();
+            }).Start();
+            
 
             timer1.Enabled = false;
         }
@@ -1078,6 +1084,11 @@ namespace ControlRoomApplication.Main
         }
 
         private void speedTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void FreeControlForm_Load(object sender, EventArgs e)
         {
 
         }
