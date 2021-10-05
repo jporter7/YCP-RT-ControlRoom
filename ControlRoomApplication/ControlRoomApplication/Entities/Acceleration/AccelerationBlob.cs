@@ -105,16 +105,16 @@ namespace ControlRoomApplication.Entities
                 tempAcc.acc = Convert.ToDouble(accValues[0]);
 
                 //set the acceleration x value
-                tempAcc.x = Convert.ToDouble(accValues[1]);
+                tempAcc.x = Convert.ToInt16(accValues[1]);
 
                 //set the acceleration y value
-                tempAcc.y = Convert.ToDouble(accValues[2]);
+                tempAcc.y = Convert.ToInt16(accValues[2]);
 
                 //set the acceleration z value
-                tempAcc.z = Convert.ToDouble(accValues[3]);
+                tempAcc.z = Convert.ToInt16(accValues[3]);
 
                 //set the acceleration location ID
-                tempAcc.location_ID = Convert.ToInt32(accValues[4]);
+                tempAcc.location_ID = Convert.ToInt16(accValues[4]);
 
                 //store the parsed acceleration point in the Acceleration[]
                 accArray[i] = tempAcc;
