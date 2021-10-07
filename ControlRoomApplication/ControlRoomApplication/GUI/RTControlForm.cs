@@ -574,7 +574,7 @@ namespace ControlRoomApplication.Main
                         // TEST 1: Move to Azimuth 180 degrees
                         logger.Info($"{Utilities.GetTimeStamp()}: Beginning second movement: Move Azimuth by 180 degrees...");
                         Entities.Orientation currOrientation = rtController.GetCurrentOrientation();
-                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(90, currOrientation.Elevation), MovementPriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(180, currOrientation.Elevation), MovementPriority.Manual);
                         logger.Info($"{Utilities.GetTimeStamp()}: Finished second movement: Move Azimuth by 180 degrees, waiting 1 second before beginning next movement...");
                         Thread.Sleep(1000);
 
