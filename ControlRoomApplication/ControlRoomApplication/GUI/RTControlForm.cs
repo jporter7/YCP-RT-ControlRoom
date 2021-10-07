@@ -574,11 +574,11 @@ namespace ControlRoomApplication.Main
                         // TEST 1: Move to Azimuth 180 degrees
                         logger.Info($"{Utilities.GetTimeStamp()}: Beginning second movement: Move Azimuth by 180 degrees...");
                         Entities.Orientation currOrientation = rtController.GetCurrentOrientation();
-                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(180, currOrientation.Elevation), MovementPriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(90, currOrientation.Elevation), MovementPriority.Manual);
                         logger.Info($"{Utilities.GetTimeStamp()}: Finished second movement: Move Azimuth by 180 degrees, waiting 1 second before beginning next movement...");
                         Thread.Sleep(1000);
 
-                        // TEST 2: Move in opposite direction 180 degrees using orientation from 180 degrees in opposite direction
+                        //TEST 2: Move in opposite direction 180 degrees using orientation from 180 degrees in opposite direction
                         logger.Info($"{Utilities.GetTimeStamp()}: Beginning third movement: Move Azimuth by -180 degrees...");
                         movementResult = rtController.MoveRadioTelescopeToOrientation(currOrientation, MovementPriority.Manual);
                         logger.Info($"{Utilities.GetTimeStamp()}: Finished third movement: Move Azimuth by -180 degrees, waiting 1 second before beginning next movement...");
@@ -586,11 +586,11 @@ namespace ControlRoomApplication.Main
 
                         // TEST 3: Move to 90 degrees elevation
                         logger.Info($"{Utilities.GetTimeStamp()}: Beginning fourth movement: Move Elevation to 90 degrees");
-                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth,90), MovementPriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 90), MovementPriority.Manual);
                         logger.Info($"{Utilities.GetTimeStamp()}: Finished fourth movement: Move Elevation to 90 degrees, waiting 1 second before beginning next movement...");
                         Thread.Sleep(1000);
 
-                        // TEST 4: Move to 0 degrees elevation
+                        //TEST 4: Move to 0 degrees elevation
                         logger.Info($"{Utilities.GetTimeStamp()}: Beginning fifth movement: Move Elevation to 0 degrees");
                         movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 0), MovementPriority.Manual);
                         logger.Info($"{Utilities.GetTimeStamp()}: Finished fifth movement: Move Elevation to 0 degrees, waiting 1 second before beginning next movement...");
@@ -598,18 +598,21 @@ namespace ControlRoomApplication.Main
 
                         // TEST 5: Move to lower elevation limit switch - movement should fail
                         logger.Info($"{Utilities.GetTimeStamp()}: Beginning sixth movement: Move Elevation to -8 degrees (lower limit switch)");
-                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, -9), MovementPriority.Manual);
+                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, -8), MovementPriority.Manual);
                         logger.Info($"{Utilities.GetTimeStamp()}: Finished sixth movement: Move Elevation to -8 degrees, waiting 5 seconds before beginning next movement...");
                         Thread.Sleep(5000);
 
                         // TEST 6: Move to upper elevation limit switch - movement should fail
-                        logger.Info($"{Utilities.GetTimeStamp()}: Beginning seventh movement: Move Elevation to 94 degrees (upper limit switch)");
-                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 94), MovementPriority.Manual);
-                        logger.Info($"{Utilities.GetTimeStamp()}: Finished seventh movement: Move Elevation to 94 degrees, waiting 1 second before beginning next movement...");
+                        logger.Info($"{Utilities.GetTimeStamp()}: Beginning seventh movement: Move Elevation to 95 degrees (upper limit switch)");
+                        movementResult = rtController.MoveRadioTelescopeToOrientation(new Entities.Orientation(currOrientation.Azimuth, 95), MovementPriority.Manual);
+                        logger.Info($"{Utilities.GetTimeStamp()}: Finished seventh movement: Move Elevation to 95 degrees, waiting 1 second before beginning next movement...");
+                        Thread.Sleep(5000);
+
+                        //TEST 7: Return to home
+                        logger.Info($"{Utilities.GetTimeStamp()}: Beginning eigth movement: Move to Home");
+                        movementResult = rtController.HomeTelescope(MovementPriority.Manual);
+                        logger.Info($"{Utilities.GetTimeStamp()}: Finished eigth movement: Move to home");
                         Thread.Sleep(1000);
-
-
-
 
 
 
