@@ -389,12 +389,12 @@ namespace ControlRoomApplication.Controllers
             // We only want to do this if it is safe to do so. Return false if not
             if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
 
+            if (Math.Abs(degreesToMoveBy.Azimuth) > MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_AZ_MAX) return MovementResult.RequestedAzimuthMoveTooLarge;
+
             // If a lower-priority movement was running, safely interrupt it.
             RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
 
             Orientation origOrientation = GetCurrentOrientation();
-
-
             double normalizedAzimuth = (degreesToMoveBy.Azimuth + origOrientation.Azimuth) % 360;
             if(normalizedAzimuth < 0)
             {
@@ -404,6 +404,7 @@ namespace ControlRoomApplication.Controllers
             Orientation expectedOrientation = new Orientation(normalizedAzimuth, degreesToMoveBy.Elevation + origOrientation.Elevation);
 
             if (expectedOrientation.Elevation < MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MIN || expectedOrientation.Elevation > MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MAX) return MovementResult.InvalidRequestedPostion;
+
 
             // If the thread is locked (two moves coming in at the same time), return
             if (Monitor.TryEnter(MovementLock))
