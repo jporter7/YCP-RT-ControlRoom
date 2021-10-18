@@ -984,7 +984,6 @@ namespace ControlRoomApplication.Main
             this.MinimumSize = new System.Drawing.Size(794, 577);
             this.Name = "FreeControlForm";
             this.Text = "Control Form";
-            this.Load += new System.EventHandler(this.FreeControlForm_Load);
             this.RAIncGroupbox.ResumeLayout(false);
             this.overRideGroupbox.ResumeLayout(false);
             this.overRideGroupbox.PerformLayout();

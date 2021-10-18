@@ -102,9 +102,8 @@ namespace ControlRoomApplication.Entities.WeatherStation
         {
             if (OpenCommPort_V((short)commPort, 19200) != 0)
             {
-                    logger.Error(Utilities.GetTimeStamp() + ": OpenCommPort unsuccessful!");
-                    
-                    throw new ExternalException();
+                logger.Error(Utilities.GetTimeStamp() + ": OpenCommPort unsuccessful!");
+                throw new ExternalException();
             }
 
             if (InitStation_V() == COM_ERROR)

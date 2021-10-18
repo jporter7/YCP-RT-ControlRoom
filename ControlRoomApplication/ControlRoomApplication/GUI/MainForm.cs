@@ -874,44 +874,31 @@ namespace ControlRoomApplication.Main
 
             if (finalSettings == false)
             {
-
                 if (comboBox2.Text == "Production Weather Station")
                 {
-                    
                     lastCreatedProductionWeatherStation = BuildWeatherStation();
                    
                     if (lastCreatedProductionWeatherStation != null)
                     {
-                        
                         startButton.BackColor = System.Drawing.Color.LimeGreen;
                         startButton.Enabled = true;
                     }
                     else
                     {
+                        //if there is an error with the production weather station, display a tooltip & do not let the user start the telescope
                         this.WCOMPortToolTip.Show("Could not create production weather station on this port.", label8);
                         txtWSCOMPort.BackColor = System.Drawing.Color.Yellow;
-
-
                     }
 
                 }
                 else
                 {
-
                     startButton.BackColor = System.Drawing.Color.LimeGreen;
                     startButton.Enabled = true;
                 }
 
-                //if there is an error with the production weather station, display a tooltip & do not let the user start the telescope
-
-
-
                 //Editing text to relflect state -- When the settings are being edited, the button will need to say 'finalize'
                 acceptSettings.Text = "Edit Settings";
-
-
-
-
 
                 startRTGroupbox.BackColor = System.Drawing.Color.Gray;
                 loopBackBox.Enabled = false;
