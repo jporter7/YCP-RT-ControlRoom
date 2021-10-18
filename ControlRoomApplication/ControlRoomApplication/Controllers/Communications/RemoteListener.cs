@@ -67,6 +67,7 @@ namespace ControlRoomApplication.Controllers
                 int i;
 
                 // Loop to receive all the data sent by the client.
+                // Add try catch to reading
                 while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
                     // Translate data bytes to ASCII string.
@@ -79,21 +80,27 @@ namespace ControlRoomApplication.Controllers
 
                     byte[] myWriteBuffer = null;
 
+                    // Inform mobile command received 
+
                     // if processing the data fails, report an error message
                     if (!processMessage(data))
                     {
                         logger.Error(Utilities.GetTimeStamp() + ": Processing data from tcp connection failed!");
 
                         // send back a failure response
+                        // Invalid command
                         myWriteBuffer = Encoding.ASCII.GetBytes("FAILURE");
                         
                     }
                     else
                     {
-                        // send back a success response
+                        // send back a success response -- finished command
                         myWriteBuffer = Encoding.ASCII.GetBytes("SUCCESS");
                     }
 
+                   
+                    // Send message back -- send final state
+                    // Surround stream writes in a try catch
                     stream.Write(myWriteBuffer, 0, myWriteBuffer.Length);
                 }
 
@@ -128,9 +135,11 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+        // TODO: change this to return a mvmt result
+        // Use manual priority for movements
         private bool processMessage(String data)
         {
-
+            // TODO: change this to Orientation_Move
             if (data.IndexOf("COORDINATE_MOVE") != -1)
             {
                 // we have a move command coming in
