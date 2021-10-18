@@ -1087,10 +1087,5 @@ namespace ControlRoomApplication.Main
         {
 
         }
-
-        private void FreeControlForm_Load(object sender, EventArgs e)
-        {
-
-        }
     }
 }
