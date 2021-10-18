@@ -1015,9 +1015,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             Assert.AreEqual(TestRadioTelescopeController.GetCurrentOrientation().Elevation, 0);
         }
 
-
-
-
         [TestMethod]
         public void TestThermalCalibrateRadioTelescope_AllStatusesOK_Success()
         {
@@ -1169,7 +1166,6 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
             threads[5].Start();
             threads[6].Start();
             threads[7].Start();
-
 
             // Wait for all threads to complete
             foreach (Thread thread in threads)

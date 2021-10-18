@@ -405,7 +405,6 @@ namespace ControlRoomApplication.Controllers
 
             if (expectedOrientation.Elevation < MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MIN || expectedOrientation.Elevation > MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MAX) return MovementResult.InvalidRequestedPostion;
 
-
             // If the thread is locked (two moves coming in at the same time), return
             if (Monitor.TryEnter(MovementLock))
             {
