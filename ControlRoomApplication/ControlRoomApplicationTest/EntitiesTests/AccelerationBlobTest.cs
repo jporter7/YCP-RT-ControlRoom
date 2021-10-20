@@ -53,7 +53,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
 
             Acceleration acc = new Acceleration();
-            acc = Acceleration.Generate(dateTime1, 1.1, 2.2, 3.3, loc1);
+            acc = Acceleration.Generate(dateTime1, 3, 4, 12, loc1);
             accArray[0] = acc;
 
             AccelerationBlob accBLob = new AccelerationBlob();
@@ -65,8 +65,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Assert.AreEqual(1,accReturn.Count);
 
             //Test only acc
-            Assert.AreEqual("4.11582312545134~1.1~2.2~3.3~0-", accReturn[0].Blob);
-            Assert.AreEqual(dateTime1, accReturn[0].TimeCaptured);
+            Assert.AreEqual(dateTime1 +"~3~4~12~1$", accReturn[0].Blob);
         }
     }
 }
