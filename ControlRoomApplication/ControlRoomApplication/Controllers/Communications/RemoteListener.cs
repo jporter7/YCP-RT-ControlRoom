@@ -146,11 +146,13 @@ namespace ControlRoomApplication.Controllers
                 rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
                 // get azimuth and orientation
+                // Change these to AZ and EL instead of AZIM and ELEV
                 int azimuthIndex = data.IndexOf("AZIM");
                 int elevationIndex = data.IndexOf("ELEV");
                 int idIndex = data.IndexOf("ID");
                 double azimuth = 0.0;
                 double elevation = 0.0;
+                // DELETE THIS
                 string userId = "";
 
                 if (azimuthIndex != -1 && elevationIndex != -1 && idIndex != -1)
@@ -283,6 +285,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     return false;
                 }
+                // TODO: add new scripts
 
                 return true;
             }
@@ -316,6 +319,8 @@ namespace ControlRoomApplication.Controllers
 
                 return true;
             }
+            // TODO: implement relative move
+
 
             // can't find a keyword then we fail
             return false;
