@@ -147,5 +147,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="axis">Azimuth, elevation, or both.</param>
         /// <returns>True if moving, false if not moving.</returns>
         public abstract bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH);
+
+        public abstract void SetFinalOffset(Orientation finalPos);
     }
 }
