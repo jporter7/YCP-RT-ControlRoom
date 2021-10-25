@@ -14,8 +14,8 @@
         public const int MOVE_BY_X_DEGREES_EL_MAX = 90;
         public const int MOVE_BY_X_DEGREES_EL_MIN = -6;
         public const int MOVE_BY_X_DEGREES_AZ_MAX = 720;
-
+      
         public const double SPECTRACYBER_VOLTS_PER_STEP = 0.0024414;
-        public const double SPECTRACYBER_BANDWIDTH_STEP = 15; // Measured in Khz
+        public const double SPECTRACYBER_BANDWIDTH_STEP = 5; // Measured in Khz
     }
 }

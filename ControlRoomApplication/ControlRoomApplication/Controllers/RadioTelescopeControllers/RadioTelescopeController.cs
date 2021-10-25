@@ -432,8 +432,6 @@ namespace ControlRoomApplication.Controllers
 
             return result;
         
-
-            
         }
 
         /// <summary>
@@ -462,6 +460,7 @@ namespace ControlRoomApplication.Controllers
                 // Remove all offsets first so we can accurately zero out the positions
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = new Orientation(0, 0);
                 FinalCalibrationOffset = new Orientation(0, 0);
+                RadioTelescope.PLCDriver.SetFinalOffset(FinalCalibrationOffset);
 
                 // Perform a home telescope movement
                 result = RadioTelescope.PLCDriver.HomeTelescope();
@@ -483,6 +482,7 @@ namespace ControlRoomApplication.Controllers
 
                 // Apply final calibration offset
                 FinalCalibrationOffset = RadioTelescope.CalibrationOrientation;
+                RadioTelescope.PLCDriver.SetFinalOffset(FinalCalibrationOffset);
 
                 if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
                 

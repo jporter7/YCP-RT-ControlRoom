@@ -90,6 +90,5 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// will be returned if a requested azimuth move is too large
         /// </summary>
         RequestedAzimuthMoveTooLarge
-
     }
 }
