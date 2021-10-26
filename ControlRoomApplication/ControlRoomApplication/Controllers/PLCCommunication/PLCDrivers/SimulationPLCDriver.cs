@@ -165,5 +165,9 @@ namespace ControlRoomApplication.Controllers
             return driver.MotorsCurrentlyMoving(axis);
         }
 
+        public override void SetFinalOffset(Orientation finalPos)
+        {
+            driver.SetFinalOffset(finalPos);
+        }
     }
 }

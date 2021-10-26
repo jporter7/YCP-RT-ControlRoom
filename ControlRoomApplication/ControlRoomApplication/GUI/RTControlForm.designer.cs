@@ -500,7 +500,8 @@ namespace ControlRoomApplication.Main
             "Snow Dump",
             "Home Telescope",
             "Custom Orientation Movement",
-            "Endless Azimuth Rotation"});
+            "Endless Azimuth Rotation",
+            "Hardware Movement Script"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
@@ -912,9 +913,9 @@ namespace ControlRoomApplication.Main
             this.lblFrequency.Location = new System.Drawing.Point(155, 0);
             this.lblFrequency.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFrequency.Name = "lblFrequency";
-            this.lblFrequency.Size = new System.Drawing.Size(79, 13);
+            this.lblFrequency.Size = new System.Drawing.Size(85, 13);
             this.lblFrequency.TabIndex = 34;
-            this.lblFrequency.Text = "Frequency (Hz)";
+            this.lblFrequency.Text = "Frequency (kHz)";
             // 
             // label9
             // 
