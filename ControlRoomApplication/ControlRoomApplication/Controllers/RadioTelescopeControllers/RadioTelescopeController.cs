@@ -756,6 +756,8 @@ namespace ControlRoomApplication.Controllers
                         RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
                     }
                 }
+
+                RadioTelescope.PLCDriver.GetRadioTelescopeDirectionEnum(RadioTelescopeAxisEnum.ELEVATION);
                 
                 Thread.Sleep(1000);
             }
