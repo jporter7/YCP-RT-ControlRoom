@@ -142,26 +142,21 @@ namespace ControlRoomApplication.Controllers
         private MovementResult processMessage(String data)
         {
             // TODO: change this to Orientation_Move
-            if (data.IndexOf("ORIENTATION_MOVE") != -1)
+            if (data.IndexOf("ORIENTATION_MOVE:") != -1)
             {
                 // we have a move command coming in
                 rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
                 // get azimuth and orientation
-                // Change these to AZ and EL instead of AZIM and ELEV
-                int azimuthIndex = data.IndexOf("AZIM");
-                int elevationIndex = data.IndexOf("ELEV");
-                int idIndex = data.IndexOf("ID");
+                int azimuthIndex = data.IndexOf("AZ");
+                int elevationIndex = data.IndexOf("EL");
                 double azimuth = 0.0;
                 double elevation = 0.0;
-                // DELETE THIS
-                string userId = "";
 
-                if (azimuthIndex != -1 && elevationIndex != -1 && idIndex != -1)
+                if (azimuthIndex != -1 && elevationIndex != -1)
                 {
-                    elevation = Convert.ToDouble(data.Substring(elevationIndex + 5, azimuthIndex - elevationIndex - 5));
-                    azimuth = Convert.ToDouble(data.Substring(azimuthIndex + 5, idIndex - azimuthIndex - 5));
-                    userId = data.Substring(idIndex + 3);
+                    azimuth = Convert.ToDouble(data.Substring(azimuthIndex + 3, elevationIndex));
+                    elevation = Convert.ToDouble(data.Substring(elevationIndex + 3, data.IndexOf("|")));
                 }
                 else
                     return MovementResult.InvalidCommand;
@@ -175,6 +170,33 @@ namespace ControlRoomApplication.Controllers
 
                 return rtController.MoveRadioTelescopeToOrientation(movingTo, MovementPriority.Manual);
 
+            }
+            else if (data.IndexOf("RELATIVE_MOVEMENT:") !=-1)
+            {
+
+                // we have a relative movement command
+                rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
+
+                // get azimuth and orientation
+                int azimuthIndex = data.IndexOf("AZ");
+                int elevationIndex = data.IndexOf("EL");
+                double azimuth = 0.0;
+                double elevation = 0.0;
+
+                if (azimuthIndex != -1 && elevationIndex != -1)
+                {
+                    azimuth = Convert.ToDouble(data.Substring(azimuthIndex + 3, elevationIndex));
+                    elevation = Convert.ToDouble(data.Substring(elevationIndex + 3, data.IndexOf("|")));
+                }
+                else
+                    return MovementResult.InvalidCommand;
+
+                logger.Debug(Utilities.GetTimeStamp() + ": Azimuth " + azimuth);
+                logger.Debug(Utilities.GetTimeStamp() + ": Elevation " + elevation);
+
+                Orientation movingBy = new Orientation(azimuth, elevation);
+
+                return rtController.MoveRadioTelescopeByXDegrees(movingBy, MovementPriority.Manual);
             }
             else if (data.IndexOf("SET_OVERRIDE:") != -1)
             {
@@ -263,7 +285,7 @@ namespace ControlRoomApplication.Controllers
                 {
                     return rtController.FullElevationMove(MovementPriority.Manual);
                 }
-                else if (script.Contains("CALIBRATE"))
+                else if (script.Contains("THERMAL_CALIBRATE"))
                 {
                     return rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
                 }
@@ -273,18 +295,25 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (script.Contains("FULL_CLOCK"))
                 {
-                    return rtController.MoveRadioTelescopeByXDegrees(new Orientation(360,0), MovementPriority.Manual);
+                    return rtController.MoveRadioTelescopeByXDegrees(new Orientation(360, 0), MovementPriority.Manual);
                 }
                 else if (script.Contains("FULL_COUNTER"))
                 {
                     return rtController.MoveRadioTelescopeByXDegrees(new Orientation(-360, 0), MovementPriority.Manual);
                 }
+                else if (script.Contains("HOME"))
+                {
+                    return rtController.HomeTelescope(MovementPriority.Manual);
+                }
+                else if (script.Contains("HARDWARE_MVMT_SCRIPT"))
+                {
+                    return rtController.ExecuteHardwareMovementScript(MovementPriority.Manual);
+                }
                 else
-                {   
+                {
                     // If no command is found, return invalid
                     return MovementResult.InvalidCommand;
                 }
-                // TODO: add new scripts
             }
             else if (data.IndexOf("STOP_RT") != -1)
             {
@@ -292,7 +321,7 @@ namespace ControlRoomApplication.Controllers
 
                 if (success) return MovementResult.Success;
                 else return MovementResult.TimedOut; // Uses a semaphore to acquire lock so a false means it has timed out or cannot gain access to movement thread
-                
+
             }
             else if (data.IndexOf("SENSOR_INIT") != -1)
             {
