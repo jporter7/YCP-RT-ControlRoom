@@ -11,6 +11,7 @@ using ControlRoomApplication.Util;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using ControlRoomApplication.Controllers.SensorNetwork;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -83,7 +84,8 @@ namespace ControlRoomApplication.Controllers
                     // Inform mobile command received 
 
                     // if processing the data fails, report an error message
-                    if (!processMessage(data))
+                    MovementResult result = processMessage(data);
+                    if (MovementResult.Success != result)
                     {
                         logger.Error(Utilities.GetTimeStamp() + ": Processing data from tcp connection failed!");
 
@@ -137,10 +139,10 @@ namespace ControlRoomApplication.Controllers
 
         // TODO: change this to return a mvmt result
         // Use manual priority for movements
-        private bool processMessage(String data)
+        private MovementResult processMessage(String data)
         {
             // TODO: change this to Orientation_Move
-            if (data.IndexOf("COORDINATE_MOVE") != -1)
+            if (data.IndexOf("ORIENTATION_MOVE") != -1)
             {
                 // we have a move command coming in
                 rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
@@ -162,31 +164,29 @@ namespace ControlRoomApplication.Controllers
                     userId = data.Substring(idIndex + 3);
                 }
                 else
-                    return false;
+                    return MovementResult.InvalidCommand;
 
                 logger.Debug(Utilities.GetTimeStamp() + ": Azimuth " + azimuth);
                 logger.Debug(Utilities.GetTimeStamp() + ": Elevation " + elevation);
 
                 Orientation movingTo = new Orientation(azimuth, elevation);
 
-                rtController.MoveRadioTelescopeToOrientation(movingTo, MovementPriority.Manual);
-
                 // TODO: store the User Id and movement somewhere in the database (issue #392)
 
-                return true;
+                return rtController.MoveRadioTelescopeToOrientation(movingTo, MovementPriority.Manual);
 
             }
-            else if (data.IndexOf("SET_OVERRIDE") != -1)
+            else if (data.IndexOf("SET_OVERRIDE:") != -1)
             {
                 // false = ENABLED; true = OVERRIDING
                 // If "OVR" is contained in the data, will return true
-                bool doOverride = data.Contains("OVR");
+                bool doOverride = data.Contains("TRUE");
 
                 // Non-PLC Overrides
                 if (data.Contains("WEATHER_STATION"))
                 {
-                    controlRoom.weatherStationOverride = data.Contains("OVR");
-                    rtController.setOverride("weather station", data.Contains("OVR"));
+                    controlRoom.weatherStationOverride = doOverride;
+                    rtController.setOverride("weather station", doOverride);
                     DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, doOverride);
                 }
 
@@ -235,11 +235,14 @@ namespace ControlRoomApplication.Controllers
                 {
                     rtController.setOverride("elevation motor temperature", doOverride);
                 }
-                else return false;
+                else
+                {
+                    return MovementResult.InvalidCommand;
+                }
 
-                return true;
+                return MovementResult.Success;
             }
-            else if (data.IndexOf("SCRIPT") != -1)
+            else if (data.IndexOf("SCRIPT:") != -1)
             {
                 // we have a move command coming in
                 rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
@@ -248,56 +251,54 @@ namespace ControlRoomApplication.Controllers
                 int colonIndex = data.IndexOf(":");
                 string script = "";
 
-                if (colonIndex != -1)
-                {
-                    script = data.Substring(colonIndex + 2);
-                }
-                else
-                    return false;
+                script = data.Substring(colonIndex + 2);
 
                 logger.Debug(Utilities.GetTimeStamp() + ": Script " + script);
 
                 if (script.Contains("DUMP"))
                 {
-                    rtController.SnowDump(MovementPriority.Manual);
+                    return rtController.SnowDump(MovementPriority.Manual);
                 }
                 else if (script.Contains("FULL_EV"))
                 {
-                    rtController.FullElevationMove(MovementPriority.Manual);
+                    return rtController.FullElevationMove(MovementPriority.Manual);
                 }
                 else if (script.Contains("CALIBRATE"))
                 {
-                    rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
+                    return rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
                 }
                 else if (script.Contains("STOW"))
                 {
-                    rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovementPriority.Manual);
+                    return rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovementPriority.Manual);
                 }
                 else if (script.Contains("FULL_CLOCK"))
                 {
-                    // TODO: Implement with MoveByX function (issue #379)
+                    return rtController.MoveRadioTelescopeByXDegrees(new Orientation(360,0), MovementPriority.Manual);
                 }
                 else if (script.Contains("FULL_COUNTER"))
                 {
-                    // TODO: Implement with MoveByX function (issue #379)
+                    return rtController.MoveRadioTelescopeByXDegrees(new Orientation(-360, 0), MovementPriority.Manual);
                 }
                 else
-                {
-                    return false;
+                {   
+                    // If no command is found, return invalid
+                    return MovementResult.InvalidCommand;
                 }
                 // TODO: add new scripts
-
-                return true;
             }
             else if (data.IndexOf("STOP_RT") != -1)
             {
-                rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
+                bool success = rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
+
+                if (success) return MovementResult.Success;
+                else return MovementResult.TimedOut; // Uses a semaphore to acquire lock so a false means it has timed out or cannot gain access to movement thread
+                
             }
             else if (data.IndexOf("SENSOR_INIT") != -1)
             {
                 string[] splitData = data.Split(',');
 
-                if (splitData.Length != 10) return false;
+                if (splitData.Length != 10) return MovementResult.InvalidCommand;
 
                 var config = rtController.RadioTelescope.SensorNetworkServer.InitializationClient.SensorNetworkConfig;
 
@@ -317,13 +318,13 @@ namespace ControlRoomApplication.Controllers
                 // Reboot
                 rtController.RadioTelescope.SensorNetworkServer.RebootSensorNetwork();
 
-                return true;
+                return MovementResult.Success;
             }
             // TODO: implement relative move
 
 
-            // can't find a keyword then we fail
-            return false;
+            // can't find a keyword then we return Invalid Command sent
+            return MovementResult.InvalidCommand;
         }
     }
 }

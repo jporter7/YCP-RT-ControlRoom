@@ -77,6 +77,11 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         /// <summary>
         /// This is only used for Jog commands if they are running overtop of a movement that is lower priority.
         /// </summary>
-        StoppingCurrentMove
+        StoppingCurrentMove,
+
+        /// <summary>
+        /// This is only used for RemoteListener Commands that cannot be parsed or do not exist.
+        /// </summary>
+        InvalidCommand
     }
 }
