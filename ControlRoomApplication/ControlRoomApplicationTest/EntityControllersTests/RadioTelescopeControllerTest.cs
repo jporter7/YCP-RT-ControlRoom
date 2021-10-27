@@ -930,7 +930,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests {
         {
             Orientation o = new Orientation(-20,70);
 
-            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeToOrientation(o, MovementPriority.Manual);
+            MovementResult result = TestRadioTelescopeController.MoveRadioTelescopeByXDegrees(o, MovementPriority.Manual);
 
             Assert.AreEqual(MovementResult.Success, result);
             //verify move within 1/10th of a degree 
