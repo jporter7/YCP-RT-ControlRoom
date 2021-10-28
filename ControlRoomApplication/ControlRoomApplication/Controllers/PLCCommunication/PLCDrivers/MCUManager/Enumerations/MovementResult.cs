@@ -80,7 +80,7 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         StoppingCurrentMove,
 
         /// <summary>
-        /// This is only used for RemoteListener Commands that cannot be parsed or do not exist.
+        /// Used if the RemoteListener class failed to parse a TCP command and movement wasn't started
         /// </summary>
         InvalidCommand
     }
