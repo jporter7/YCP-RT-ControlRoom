@@ -31,11 +31,5 @@ namespace ControlRoomApplication.Constants
         public static String MISSING_SENSOR_INIT_ARGS = "SENSOR_INIT command is missing arguments; supply all 10 of them. 1" +
             "means initialize this sensor, 0 means do not initialize.";
         public static String COMMAND_NOT_FOUND = "The specified command was not found or is invalid: ";
-
-
-
-
-
-
     }
 }
