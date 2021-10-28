@@ -198,6 +198,7 @@
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\CelestialBodyConstants.cs" />
     <Compile Include="Constants\SimulationConstants.cs" />
+    <Compile Include="Constants\TCPCommunicationConstants.cs" />
     <Compile Include="Constants\TIME.cs" />
     <Compile Include="Constants\MiscellaneousHardwareConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
@@ -210,9 +211,11 @@
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
     <Compile Include="Controllers\Communications\DataToCSV.cs" />
     <Compile Include="Controllers\Communications\EmailNotifications.cs" />
+    <Compile Include="Controllers\Communications\Enumerations\ParseTCPCommandResult.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
     <Compile Include="Controllers\Communications\pushNotification.cs" />
     <Compile Include="Controllers\Communications\SendAttachmentHelper.cs" />
+    <Compile Include="Controllers\Communications\TCPCommunicationResult.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
@@ -472,6 +475,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
