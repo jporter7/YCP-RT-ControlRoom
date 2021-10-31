@@ -85,23 +85,26 @@ namespace ControlRoomApplication.Controllers
                     byte[] myWriteBuffer = null;
 
                     // Inform mobile command received 
+                    // TODO: Surround any .Write in a try-catch
+                    myWriteBuffer = Encoding.ASCII.GetBytes("Received command: " + data);
+                    stream.Write(myWriteBuffer, 0, myWriteBuffer.Length);
 
                     // if processing the data fails, report an error message
                     TCPCommunicationResult tcpCommunicationResult = processMessage(data);
                     // TODO: Send back error messages
                     if (MovementResult.Success != tcpCommunicationResult.movementResult)
                     {
-                        logger.Error(Utilities.GetTimeStamp() + ": Processing data from tcp connection failed!");
+                        //logger.Error(Utilities.GetTimeStamp() + ": Processing data from tcp connection failed!");
 
                         // send back a failure response
                         // Invalid command
-                        myWriteBuffer = Encoding.ASCII.GetBytes("FAILURE");
+                        myWriteBuffer = Encoding.ASCII.GetBytes(tcpCommunicationResult.errorMessage);
                         
                     }
                     else
                     {
                         // send back a success response -- finished command
-                        myWriteBuffer = Encoding.ASCII.GetBytes("SUCCESS");
+                        myWriteBuffer = Encoding.ASCII.GetBytes("SUCCESSFULLY COMPLETED COMMAND: "+data);
                     }
 
                    
@@ -143,13 +146,25 @@ namespace ControlRoomApplication.Controllers
 
         private TCPCommunicationResult processMessage(String data)
         {
+            // Break our string into different parts to retrieve respective pieces of command
+            // Based on the command, we will choose what path to follow
+            String[] splitCommandString = data.Trim().Split('|');
+            // first check to make sure we have the mininum number of parameters before beginning parsing
+            if (splitCommandString.Length < TCPCommunicationConstants.MIN_NUM_PARAMS) return new TCPCommunicationResult(MovementResult.InvalidCommand, 
+                ParseTCPCommandResult.MissingCommandArgs, TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+
+            // proceed if valid
+            for(int i = 0; i<splitCommandString.Length; i++)
+            {
+                splitCommandString[i] = splitCommandString[i].Trim();
+            }
+
             // Convert version from string to double. This is the first value in our string before the "|" character.
             // From here we will direct to the appropriate parsing for said version
-            string versionString = data.Substring(0, data.IndexOf('|'));
             double version = 0.0;
             try
             {
-                version = Double.Parse(versionString);
+                version = Double.Parse(splitCommandString[TCPCommunicationConstants.VERSION_NUM]);
             }
             catch (Exception e)
             {
@@ -162,38 +177,43 @@ namespace ControlRoomApplication.Controllers
             if (version == 1.0)
             {
                 // command is placed after pike and before colon; get it here
-                // <VERSION> | <COMMANDTYPE>: <NAME<VALUES>> | TIME
+                // <VERSION> | <COMMANDTYPE> | <NAME<VALUES>> | TIME
                 // TODO: use command instead of "contains" and "indexOf"
-                String command = data.Substring(data.IndexOf('|')+1, data.IndexOf('|') - data.IndexOf(":"));
-                if (data.IndexOf("ORIENTATION_MOVE:") != -1)
+                string command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
+                
+                if (command=="ORIENTATION_MOVE")
                 {
+                    // check to see if we have a valid number of parameters before attempting to parse
+                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_ORIENTATION_MOVE_PARAMS)
+                    {
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs,
+                            TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+                    }
+
                     // we have a move command coming in
                     rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
                     // get azimuth and orientation
-                    int azimuthIndex = data.IndexOf("AZ");
-                    int elevationIndex = data.IndexOf("EL");
                     double azimuth = 0.0;
                     double elevation = 0.0;
 
-                    if (azimuthIndex != -1 && elevationIndex != -1)
+                    if (splitCommandString.Length < TCPCommunicationConstants.NUM_ORIENTATION_MOVE_PARAMS)
                     {
                         try
                         {
-                            azimuth = Convert.ToDouble(data.Substring(azimuthIndex + 3, elevationIndex));
-                            elevation = Convert.ToDouble(data.Substring(elevationIndex + 3, data.IndexOf("|")-elevationIndex-3));
+                            azimuth = Convert.ToDouble(splitCommandString[2]);
+                            elevation = Convert.ToDouble(splitCommandString[3]);
                         }
                         catch (Exception e)
                         {
-                            String errMessage = TCPCommunicationConstants.AZ_EL_CONVERSION_ERR+e.Message;
+                            String errMessage = TCPCommunicationConstants.AZ_EL_CONVERSION_ERR + e.Message;
                             return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs, errMessage);
                         }
-
                     }
                     // else we did not receive either azimuth or elevation arguments
                     else
                     {
-                        return new TCPCommunicationResult(MovementResult.InvalidCommand, 
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand,
                             ParseTCPCommandResult.InvalidCommandArgs, TCPCommunicationConstants.MISSING_AZ_EL_ARGS);
                     }
 
@@ -217,36 +237,40 @@ namespace ControlRoomApplication.Controllers
                     }
 
                 }
-                else if (data.IndexOf("RELATIVE_MOVE:") != -1)
+                else if (command=="RELATIVE_MOVE")
                 {
-
+                    // check to see if we have a valid number of parameters before attempting to parse
+                    if(splitCommandString.Length != TCPCommunicationConstants.NUM_RELATIVE_MOVE_PARAMS)
+                    {
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs,
+                            TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+                    }
+                    
                     // we have a relative movement command
                     rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
                     // get azimuth and orientation
-                    int azimuthIndex = data.IndexOf("AZ");
-                    int elevationIndex = data.IndexOf("EL");
                     double azimuth = 0.0;
                     double elevation = 0.0;
 
-                    if (azimuthIndex != -1 && elevationIndex != -1)
+                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_RELATIVE_MOVE_PARAMS) 
+                    {
+                        // the azimuth and elevation could not be found; return missing args
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs,
+                            TCPCommunicationConstants.MISSING_AZ_EL_ARGS);
+                    }
+                    else
                     {
                         try
                         {
-                            azimuth = Convert.ToDouble(data.Substring(azimuthIndex + 3, elevationIndex));
-                            elevation = Convert.ToDouble(data.Substring(elevationIndex + 3, data.IndexOf("|") - elevationIndex - 3));
+                            azimuth = Convert.ToDouble(splitCommandString[2]);
+                            elevation = Convert.ToDouble(splitCommandString[3]);
                         }
                         catch (Exception e)
                         {
                             String errMessage = TCPCommunicationConstants.AZ_EL_CONVERSION_ERR + e.Message;
                             return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs, errMessage);
                         }
-                    }
-                    else
-                    {
-                        // the azimuth and elevation could not be found; return missing args
-                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs,
-                            TCPCommunicationConstants.MISSING_AZ_EL_ARGS);
                     }
                         
 
@@ -268,75 +292,80 @@ namespace ControlRoomApplication.Controllers
                         return new TCPCommunicationResult(result, ParseTCPCommandResult.Success);
                     }
                 }
-                else if (data.IndexOf("SET_OVERRIDE:") != -1)
+                else if (command=="SET_OVERRIDE")
                 {
-                    // Discovered edge case where specifying nothing would set false. This checks for the user specifying something
-                    bool containsOverrideArg = data.Contains("TRUE") || data.Contains("FALSE");
-
-                    if (!containsOverrideArg)
+                     // Always check to see if we have our correct number of arguments for command type. Return false if not
+                    if (splitCommandString.Length < TCPCommunicationConstants.NUM_SENSOR_OVERRIDE_PARAMS)
                     {
                         return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs,
-                            TCPCommunicationConstants.MISSING_OVERRIDE_ARG);
+                            TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+                    } 
+                    // If the true false value is not given, we don't know what to do. Return error
+                    else if (splitCommandString[TCPCommunicationConstants.DO_OVERRIDE] != "TRUE" &&
+                        splitCommandString[TCPCommunicationConstants.DO_OVERRIDE] != "FALSE")
+                    {
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs,
+                            TCPCommunicationConstants.MISSING_SET_OVERRIDE_ARG);
                     }
                     else
                     {
-                        bool doOverride = data.Contains("TRUE");
-                        // Non-PLC Overrides
-                        if (data.Contains("WEATHER_STATION"))
+                        string sensorToOverride = splitCommandString[TCPCommunicationConstants.SENSOR_TO_OVERRIDE];
+                        bool doOverride = splitCommandString[TCPCommunicationConstants.DO_OVERRIDE] == "TRUE" ? true : false;
+                        switch (sensorToOverride)
                         {
-                            controlRoom.weatherStationOverride = doOverride;
-                            rtController.setOverride("weather station", doOverride);
-                            DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, doOverride);
-                        }
+                            // Non-PLC Overrides
+                            case "WEATHER_STATION":
+                                controlRoom.weatherStationOverride = doOverride;
+                                rtController.setOverride("weather station", doOverride);
+                                DatabaseOperations.SetOverrideForSensor(SensorItemEnum.WEATHER_STATION, doOverride);
+                                break;
 
-                        // PLC Overrides
-                        else if (data.Contains("MAIN_GATE"))
-                        {
-                            rtController.setOverride("main gate", doOverride);
-                        }
+                            // PLC Overrides
+                            case "MAIN_GATE":
+                                rtController.setOverride("main gate", doOverride);
+                                break;
 
-                        // Proximity overrides
-                        else if (data.Contains("ELEVATION_LIMIT_0"))
-                        {
-                            rtController.setOverride("elevation proximity (1)", doOverride);
-                        }
-                        else if (data.Contains("ELEVATION_LIMIT_90"))
-                        {
-                            rtController.setOverride("elevation proximity (2)", doOverride);
-                        }
+                            // Proximity overrides
+                            case "ELEVATION_LIMIT_0":
+                                rtController.setOverride("elevation proximity (1)", doOverride);
+                                break;
 
-                        // Sensor network overrides
-                        else if (data.Contains("AZ_ABS_ENC"))
-                        {
-                            rtController.setOverride("azimuth absolute encoder", doOverride);
-                        }
-                        else if (data.Contains("EL_ABS_ENC"))
-                        {
-                            rtController.setOverride("elevation absolute encoder", doOverride);
-                        }
-                        else if (data.Contains("AZ_ACC"))
-                        {
-                            rtController.setOverride("azimuth motor accelerometer", doOverride);
-                        }
-                        else if (data.Contains("EL_ACC"))
-                        {
-                            rtController.setOverride("elevation motor accelerometer", doOverride);
-                        }
-                        else if (data.Contains("CB_ACC"))
-                        {
-                            rtController.setOverride("counterbalance accelerometer", doOverride);
-                        }
-                        else if (data.Contains("AZIMUTH_MOT_TEMP"))
-                        {
-                            rtController.setOverride("azimuth motor temperature", doOverride);
-                        }
-                        else if (data.Contains("ELEVATION_MOT_TEMP"))
-                        {
-                            rtController.setOverride("elevation motor temperature", doOverride);
-                        }
-                        else
-                        {
-                            return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs,
+                            case "ELEVATION_LIMIT_90":
+                                rtController.setOverride("elevation proximity (2)", doOverride);
+                                break;
+
+                            // Sensor network overrides
+                            case "AZ_ABS_ENC":
+                                rtController.setOverride("azimuth absolute encoder", doOverride);
+                                break;
+
+                            case "EL_ABS_ENC":
+                                rtController.setOverride("elevation absolute encoder", doOverride);
+                                break;
+
+                            case "AZ_ACC":
+                                rtController.setOverride("azimuth motor accelerometer", doOverride);
+                                break;
+
+                            case "EL_ACC":
+                                rtController.setOverride("elevation motor accelerometer", doOverride);
+                                break;
+
+                            case "CB_ACC":
+                                rtController.setOverride("counterbalance accelerometer", doOverride);
+                                break;
+
+                            case "AZIMUTH_MOT_TEMP":
+                                rtController.setOverride("azimuth motor temperature", doOverride);
+                                break;
+
+                            case "ELEVATION_MOT_TEMP":
+                                rtController.setOverride("elevation motor temperature", doOverride);
+                                break;
+                        
+                           // If no case is reached, the sensor is not valid. Return appropriately
+                            default: 
+                                return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs,
                                 TCPCommunicationConstants.INVALID_SENSOR_OVERRIDE);
                         }
 
@@ -344,68 +373,66 @@ namespace ControlRoomApplication.Controllers
                     }
 
                 }
-                else if (data.IndexOf("SCRIPT:") != -1)
+                else if (command=="SCRIPT")
                 {
-                    // TODO: parse script out of the string and store in variable to be used in switch case
+                    // Check if we have the correct number of params in our string. If not, no need to begin parsing.
+                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_SCRIPT_PARAMS)
+                    {
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs, TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+                    }
+
                     // we have a move command coming in
                     rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
-
-                    // get azimuth and orientation
-                    int colonIndex = data.IndexOf(":");
                     string script = "";
-                    MovementResult result = MovementResult.None;
 
-                    script = data.Substring(colonIndex + 2);
+                    // Retrieve script name used for switch case
+                    script = splitCommandString[TCPCommunicationConstants.SCRIPT_NAME];
+                    MovementResult result = MovementResult.None;
 
                     logger.Debug(Utilities.GetTimeStamp() + ": Script " + script);
 
-                    if (script.Contains("DUMP"))
-                    {
-                        script = "DUMP";
-                        result = rtController.SnowDump(MovementPriority.Manual);
-                    }
-                    else if (script.Contains("FULL_EV"))
-                    {
-                        script = "FULL_EV";
-                        result = rtController.FullElevationMove(MovementPriority.Manual);
-                    }
-                    else if (script.Contains("THERMAL_CALIBRATE"))
-                    {
-                        script = "THERMAL_CALIBRATE";
-                        result = rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
-                    }
-                    else if (script.Contains("STOW"))
-                    {
-                        script = "STOW";
-                        result = rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovementPriority.Manual);
-                    }
-                    else if (script.Contains("FULL_CLOCK"))
-                    {
-                        script = "FULL_CLOCK";
-                        result = rtController.MoveRadioTelescopeByXDegrees(new Orientation(360, 0), MovementPriority.Manual);
-                    }
-                    else if (script.Contains("FULL_COUNTER"))
-                    {
-                        script = "FULL_COUNTER";
-                        result = rtController.MoveRadioTelescopeByXDegrees(new Orientation(-360, 0), MovementPriority.Manual);
-                    }
-                    else if (script.Contains("HOME"))
-                    {
-                        script = "HOME";
-                        result = rtController.HomeTelescope(MovementPriority.Manual);
-                    }
-                    else if (script.Contains("HARDWARE_MVMT_SCRIPT"))
-                    {
-                        script = "HARDWARE_MVMT_SCRIPT";
-                        result = rtController.ExecuteHardwareMovementScript(MovementPriority.Manual);
-                    }
-                    else
-                    {
-                        // If no command is found, result = invalid
-                        script = "SCRIPT_NOT_FOUND";
-                        result = MovementResult.InvalidCommand;
-                    }
+                    switch (script) {
 
+                        case "DUMP":
+                            result = rtController.SnowDump(MovementPriority.Manual);
+                            break;
+
+                        case "FULL_EV":
+                            result = rtController.FullElevationMove(MovementPriority.Manual);
+                            break;
+
+                        case "THERMAL_CALIBRATE":
+                            result = rtController.ThermalCalibrateRadioTelescope(MovementPriority.Manual);
+                            break;
+
+                        case "STOW":
+                            result = rtController.MoveRadioTelescopeToOrientation(MiscellaneousConstants.Stow, MovementPriority.Manual);
+                            break;
+
+                        case "FULL_CLOCK":
+                            result = rtController.MoveRadioTelescopeByXDegrees(new Orientation(360, 0), MovementPriority.Manual);
+                            break;
+
+                        case "FULL_COUNTER":
+                            result = rtController.MoveRadioTelescopeByXDegrees(new Orientation(-360, 0), MovementPriority.Manual);
+                            break;
+
+                        case "HOME":
+                            result = rtController.HomeTelescope(MovementPriority.Manual);
+                            break;
+
+                        case "HARDWARE_MVMT_SCRIPT":
+                            result = rtController.ExecuteHardwareMovementScript(MovementPriority.Manual);
+                            break;
+
+                        default:
+                            // If no command is found, result = invalid
+                            result = MovementResult.InvalidCommand;
+                            break;
+                    }
+                    
+
+                    // Return based off of movement result
                     if (result != MovementResult.Success)
                     {
                         return new TCPCommunicationResult(result, ParseTCPCommandResult.Success, TCPCommunicationConstants.SCRIPT_ERR + script);
@@ -416,7 +443,7 @@ namespace ControlRoomApplication.Controllers
                         return new TCPCommunicationResult(result, ParseTCPCommandResult.Success);
                     }
                 }
-                else if (data.IndexOf("STOP_RT") != -1)
+                else if (command=="STOP_RT")
                 {
                     bool success = rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
 
@@ -425,10 +452,19 @@ namespace ControlRoomApplication.Controllers
                         TCPCommunicationConstants.ALL_STOP_ERR); // Uses a semaphore to acquire lock so a false means it has timed out or cannot gain access to movement thread
 
                 }
-                else if (data.IndexOf("SENSOR_INIT") != -1)
+                else if (command=="SENSOR_INIT")
                 {
-                    string[] splitData = data.Split(',');
+                    // Check for valid number of parameters before continuing parsing
+                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_SENSOR_INIT_PARAMS)
+                    {
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs,
+                         TCPCommunicationConstants.MISSING_SENSOR_INIT_ARGS);
+                    }
 
+                    // Retrieve sensor init values from the comma separated portion of the string
+                    string[] splitData = splitCommandString[TCPCommunicationConstants.SENSOR_INIT_VALUES].Split(',');
+
+                    // there should be 10, if not, no bueno
                     if (splitData.Length != 10) return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs,
                         TCPCommunicationConstants.MISSING_SENSOR_INIT_ARGS);
 
@@ -455,13 +491,13 @@ namespace ControlRoomApplication.Controllers
 
                 // can't find a keyword then we return Invalid Command sent
                 return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandType, 
-                    TCPCommunicationConstants.COMMAND_NOT_FOUND);
+                    TCPCommunicationConstants.COMMAND_NOT_FOUND + command);
             }
             // Version is not found; add new versions here
             else
             {
                 return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidVersion,
-                    TCPCommunicationConstants.VERSION_NOT_FOUND + versionString);
+                    TCPCommunicationConstants.VERSION_NOT_FOUND + version);
             }
         }
     }
