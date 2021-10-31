@@ -196,27 +196,17 @@ namespace ControlRoomApplication.Controllers
                     // get azimuth and orientation
                     double azimuth = 0.0;
                     double elevation = 0.0;
-
-                    if (splitCommandString.Length < TCPCommunicationConstants.NUM_ORIENTATION_MOVE_PARAMS)
+                    try
                     {
-                        try
-                        {
-                            azimuth = Convert.ToDouble(splitCommandString[2]);
-                            elevation = Convert.ToDouble(splitCommandString[3]);
-                        }
-                        catch (Exception e)
-                        {
-                            String errMessage = TCPCommunicationConstants.AZ_EL_CONVERSION_ERR + e.Message;
-                            return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs, errMessage);
-                        }
+                        azimuth = Convert.ToDouble(splitCommandString[2]);
+                        elevation = Convert.ToDouble(splitCommandString[3]);
                     }
-                    // else we did not receive either azimuth or elevation arguments
-                    else
+                    catch (Exception e)
                     {
-                        return new TCPCommunicationResult(MovementResult.InvalidCommand,
-                            ParseTCPCommandResult.InvalidCommandArgs, TCPCommunicationConstants.MISSING_AZ_EL_ARGS);
+                        String errMessage = TCPCommunicationConstants.AZ_EL_CONVERSION_ERR + e.Message;
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs, errMessage);
                     }
-
+                   
                     logger.Debug(Utilities.GetTimeStamp() + ": Azimuth " + azimuth);
                     logger.Debug(Utilities.GetTimeStamp() + ": Elevation " + elevation);
 
@@ -252,27 +242,17 @@ namespace ControlRoomApplication.Controllers
                     // get azimuth and orientation
                     double azimuth = 0.0;
                     double elevation = 0.0;
-
-                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_RELATIVE_MOVE_PARAMS) 
+                    
+                    try
                     {
-                        // the azimuth and elevation could not be found; return missing args
-                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs,
-                            TCPCommunicationConstants.MISSING_AZ_EL_ARGS);
+                        azimuth = Convert.ToDouble(splitCommandString[2]);
+                        elevation = Convert.ToDouble(splitCommandString[3]);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        try
-                        {
-                            azimuth = Convert.ToDouble(splitCommandString[2]);
-                            elevation = Convert.ToDouble(splitCommandString[3]);
-                        }
-                        catch (Exception e)
-                        {
-                            String errMessage = TCPCommunicationConstants.AZ_EL_CONVERSION_ERR + e.Message;
-                            return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs, errMessage);
-                        }
+                        String errMessage = TCPCommunicationConstants.AZ_EL_CONVERSION_ERR + e.Message;
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.InvalidCommandArgs, errMessage);
                     }
-                        
 
                     logger.Debug(Utilities.GetTimeStamp() + ": Azimuth " + azimuth);
                     logger.Debug(Utilities.GetTimeStamp() + ": Elevation " + elevation);
@@ -295,7 +275,7 @@ namespace ControlRoomApplication.Controllers
                 else if (command=="SET_OVERRIDE")
                 {
                      // Always check to see if we have our correct number of arguments for command type. Return false if not
-                    if (splitCommandString.Length < TCPCommunicationConstants.NUM_SENSOR_OVERRIDE_PARAMS)
+                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_SENSOR_OVERRIDE_PARAMS)
                     {
                         return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs,
                             TCPCommunicationConstants.MISSING_COMMAND_ARGS);
