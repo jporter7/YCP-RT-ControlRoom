@@ -1067,7 +1067,6 @@ namespace ControlRoomApplication.Controllers
                 }
                 else
                 {
-                    // Temporary until recieving orientation from SensorNetworkServer
                     position = RadioTelescope.SensorNetworkServer.CurrentCBAccelElevationPosition;
                 }
 
@@ -1075,10 +1074,10 @@ namespace ControlRoomApplication.Controllers
                 RadioTelescopeDirectionEnum direction = RadioTelescope.PLCDriver.GetRadioTelescopeDirectionEnum(RadioTelescopeAxisEnum.ELEVATION);
 
                 // Perform a critical movement interrupt if the telescope is moving past either elevation threshold
-                if ((position > 90 && direction == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive) ||
+                if ((position > RadioTelescope.maxElevationDegrees && direction == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive) ||
                     (position < RadioTelescope.minElevationDegrees && direction == RadioTelescopeDirectionEnum.ClockwiseOrNegative))
                 {
-                    RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped(true);
+                    RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped(true, true);
                     logger.Info("Software-stop hit!");
                 }
             }
