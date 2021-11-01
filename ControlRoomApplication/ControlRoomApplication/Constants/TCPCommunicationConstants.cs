@@ -49,7 +49,8 @@ namespace ControlRoomApplication.Constants
         // Total params expected
         public static int NUM_SENSOR_OVERRIDE_PARAMS = 5;
         public static int NUM_SCRIPT_PARAMS = 4;
-        public static int NUM_ORIENTATION_MOVE_PARAMS, NUM_RELATIVE_MOVE_PARAMS = 5;
+        public static int NUM_ORIENTATION_MOVE_PARAMS = 5;
+        public static int NUM_RELATIVE_MOVE_PARAMS = 5;
         public static int NUM_ALL_STOP_PARAMS = 3;
         public static int NUM_SENSOR_INIT_PARAMS = 4;
         public static int NUM_REQUEST_PARAMS = 4;
