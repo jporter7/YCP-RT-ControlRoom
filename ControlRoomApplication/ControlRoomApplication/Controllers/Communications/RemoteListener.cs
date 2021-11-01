@@ -50,7 +50,7 @@ namespace ControlRoomApplication.Controllers
         public void TCPMonitoringRoutine()
         {
             // Buffer for reading data
-            Byte[] bytes = new Byte[256];
+            Byte[] bytes = new Byte[512];
             String data = null;
 
             // Enter the listening loop.
@@ -98,6 +98,7 @@ namespace ControlRoomApplication.Controllers
 
                         // send back a failure response
                         // Invalid command
+                        logger.Info("ERROR: " + tcpCommunicationResult.errorMessage);
                         myWriteBuffer = Encoding.ASCII.GetBytes(tcpCommunicationResult.errorMessage);
                         
                     }
@@ -158,6 +159,7 @@ namespace ControlRoomApplication.Controllers
             {
                 splitCommandString[i] = splitCommandString[i].Trim();
             }
+            logger.Info(Utilities.GetTimeStamp() + ": "+String.Join(" ",splitCommandString));
 
             // Convert version from string to double. This is the first value in our string before the "|" character.
             // From here we will direct to the appropriate parsing for said version
@@ -196,10 +198,15 @@ namespace ControlRoomApplication.Controllers
                     // get azimuth and orientation
                     double azimuth = 0.0;
                     double elevation = 0.0;
+                    // Get the number from the AZ and EL portions: e.g AZ 30 --> we want the "30"
+                    String[] azArr = splitCommandString[2].Split(' ');
+                    String az = azArr[1];
+                    String[] elArr = splitCommandString[3].Split(' ');
+                    String el = elArr[1];
                     try
                     {
-                        azimuth = Convert.ToDouble(splitCommandString[2]);
-                        elevation = Convert.ToDouble(splitCommandString[3]);
+                        azimuth = Convert.ToDouble(az);
+                        elevation = Convert.ToDouble(el);
                     }
                     catch (Exception e)
                     {
@@ -242,11 +249,29 @@ namespace ControlRoomApplication.Controllers
                     // get azimuth and orientation
                     double azimuth = 0.0;
                     double elevation = 0.0;
-                    
+                    String az = null;
+                    String el = null;
+                    // Get the number from the AZ and EL portions: e.g AZ 30 --> we want the "30"
+                    String[] azArr = splitCommandString[2].Split(' ');
+                    String[] elArr = splitCommandString[3].Split(' ');
+
+                    // If these numbers arent included return error
+                    if (azArr.Length != 2 || elArr.Length != 2)
+                    {
+                        return new TCPCommunicationResult(MovementResult.InvalidCommand, ParseTCPCommandResult.MissingCommandArgs,
+                                TCPCommunicationConstants.MISSING_AZ_EL_ARGS);
+                    }
+                    else
+                    {
+                        az = azArr[1];
+                        el = elArr[1];
+                    }
+
+
                     try
                     {
-                        azimuth = Convert.ToDouble(splitCommandString[2]);
-                        elevation = Convert.ToDouble(splitCommandString[3]);
+                        azimuth = Convert.ToDouble(az);
+                        elevation = Convert.ToDouble(el);
                     }
                     catch (Exception e)
                     {
