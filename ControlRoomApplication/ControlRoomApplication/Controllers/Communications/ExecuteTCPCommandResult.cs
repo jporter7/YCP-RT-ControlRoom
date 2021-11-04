@@ -8,18 +8,15 @@ using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers.Communications
 {
-    public class TCPCommunicationResult
+    public class ExecuteTCPCommandResult
     {
         public MovementResult movementResult { get; set; }
-        public ParseTCPCommandResult tcpCommunicationResult { get; set; }
-
         public String errorMessage { get; set; }
 
         // Optional ErrMessage param that can be set if an error occurred, This will allow descriptive communication between CR and Mobile
-        public TCPCommunicationResult(MovementResult mvmtResult, ParseTCPCommandResult tcpCommResult, String errMessage = null)
+        public ExecuteTCPCommandResult(MovementResult mvmtResult, String errMessage = null)
         {
             movementResult = mvmtResult;
-            tcpCommunicationResult = tcpCommResult;
             errorMessage = errMessage;
 
         }

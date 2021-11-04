@@ -25,7 +25,7 @@ namespace ControlRoomApplication.Constants
 
         public static String MISSING_SET_OVERRIDE_ARG = "No true/false value supplied for SET_OVERRIDE.";
 
-        public static String INVALID_SENSOR_OVERRIDE = "No valid sensor was found to be overridden in the data string";
+        public static String INVALID_SENSOR_OVERRIDE = "The following sensor was not found to override: ";
 
         public static String SCRIPT_ERR = "The selected script failed with error: ";
 
@@ -35,9 +35,16 @@ namespace ControlRoomApplication.Constants
             "means initialize this sensor, 0 means do not initialize.";
         public static String COMMAND_NOT_FOUND = "The specified command was not found or is invalid: ";
 
+        public static String SCRIPT_NOT_FOUND = "The specified script was not found or is invalid: ";
+
         public static String MISSING_SCRIPT_TYPE_ARG = "Missing a script name after 'SCRIPT'";
 
-        public static String MISSING_COMMAND_ARGS = "The total number of arguments is invalid for this type of command ";
+        public static String MISSING_COMMAND_ARGS = "The total number of arguments is invalid for this type of command: ";
+
+        public static String[] SCRIPT_NAME_ARRAY = new String[] { "DUMP", "FULL_EV", "THERMAL_CALIBRATE", "STOW", "FULL_CLOCK", "FULL_COUNTER", "HOME", "HARDWARE_MVMT_SCRIPT" };
+
+        public static String[] SENSORS_ARRAY = new string[] { "WEATHER_STATION", "MAIN_GATE", "ELEVATION_LIMIT_0", "ELEVATION_LIMIT_90", "AZ_ABS_ENC", "EL_ABS_ENC", "AZ_ACC", "EL_ACC", "CB_ACC",
+        "AZIMUTH_MOT_TEMP", "ELEVATION_MOT_TEMP" };
 
 
         // Integers for indexing array of command pieces

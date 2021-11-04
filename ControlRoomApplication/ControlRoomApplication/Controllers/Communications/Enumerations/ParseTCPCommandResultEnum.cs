@@ -10,7 +10,7 @@ namespace ControlRoomApplication.Controllers.Communications.Enumerations
     /// This enumeration is used to descriptively describe any and all errors the control room
     /// might encounter when parsing remote listener strings. To be used ONLY IN REMOTELISTENER for now.
     /// </summary>
-    public enum ParseTCPCommandResult
+    public enum ParseTCPCommandResultEnum
     {
         /// <summary>
         /// The command was parsed correctly

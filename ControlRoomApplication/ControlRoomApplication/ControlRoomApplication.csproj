@@ -209,13 +209,14 @@
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\ThreadNameConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
+    <Compile Include="Controllers\Communications\ParseTCPCommandResult.cs" />
     <Compile Include="Controllers\Communications\DataToCSV.cs" />
     <Compile Include="Controllers\Communications\EmailNotifications.cs" />
-    <Compile Include="Controllers\Communications\Enumerations\ParseTCPCommandResult.cs" />
+    <Compile Include="Controllers\Communications\Enumerations\ParseTCPCommandResultEnum.cs" />
     <Compile Include="Controllers\Communications\MessageType.cs" />
     <Compile Include="Controllers\Communications\pushNotification.cs" />
     <Compile Include="Controllers\Communications\SendAttachmentHelper.cs" />
-    <Compile Include="Controllers\Communications\TCPCommunicationResult.cs" />
+    <Compile Include="Controllers\Communications\ExecuteTCPCommandResult.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
