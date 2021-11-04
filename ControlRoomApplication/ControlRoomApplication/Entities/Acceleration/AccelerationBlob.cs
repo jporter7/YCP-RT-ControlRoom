@@ -54,7 +54,7 @@ namespace ControlRoomApplication.Entities
                                 i += 2;
                                 tempAcc.z = BitConverter.ToInt16(BlobToParse, i);
                                 i += 2;
-                                tempAcc.acc = Math.Sqrt(tempAcc.x * tempAcc.x + tempAcc.y * tempAcc.y + tempAcc.z * tempAcc.z)
+                                tempAcc.acc = Math.Sqrt(tempAcc.x * tempAcc.x + tempAcc.y * tempAcc.y + tempAcc.z * tempAcc.z);
 
                                 accArrayList.Add(tempAcc);
                                 break;
@@ -68,7 +68,7 @@ namespace ControlRoomApplication.Entities
                                 i += 2;
                                 tempAcc.z = BitConverter.ToInt16(BlobToParse, i);
                                 i += 2;
-                                tempAcc.acc = Math.Sqrt(tempAcc.x * tempAcc.x + tempAcc.y * tempAcc.y + tempAcc.z * tempAcc.z)
+                                tempAcc.acc = Math.Sqrt(tempAcc.x * tempAcc.x + tempAcc.y * tempAcc.y + tempAcc.z * tempAcc.z);
 
                                 accArrayList.Add(tempAcc);
                                 break;
