@@ -89,8 +89,6 @@ namespace ControlRoomApplication.Controllers
                     myWriteBuffer = Encoding.ASCII.GetBytes("Received command: " + data);
                     stream.Write(myWriteBuffer, 0, myWriteBuffer.Length);
 
-
-
                     // if processing the data fails, report an error message
                     ParseTCPCommandResult parsedTCPCommandResult = ParseRLString(data);
                     if (parsedTCPCommandResult.parseTCPCommandResultEnum != ParseTCPCommandResultEnum.Success)
@@ -104,14 +102,17 @@ namespace ControlRoomApplication.Controllers
                     // else the parsing was successful, attempt to run the command
                     else
                     {
+                        logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " +data+ ". beginning requested movement " +parsedTCPCommandResult.parsedString[1]+"...");
                         ExecuteTCPCommandResult executeTCPCommandResult = ExecuteRLCommand(parsedTCPCommandResult.parsedString);
                         // inform user of the result of command
                         if (executeTCPCommandResult.movementResult != MovementResult.Success)
                         {
+                            logger.Debug(Utilities.GetTimeStamp() + ": Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage);
                             myWriteBuffer = Encoding.ASCII.GetBytes("Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage);
                         }
                         else
                         {
+                            logger.Debug(Utilities.GetTimeStamp() + ": SUCCESSFULLY COMPLETED COMMAND: " + data);
                             // send back a success response -- finished command
                             myWriteBuffer = Encoding.ASCII.GetBytes("SUCCESSFULLY COMPLETED COMMAND: " + data);
                         }
