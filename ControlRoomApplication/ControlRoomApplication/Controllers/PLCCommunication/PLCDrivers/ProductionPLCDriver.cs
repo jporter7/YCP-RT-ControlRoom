@@ -520,8 +520,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="positionTranslationEL"></param>
         /// <param name="targetOrientation">The target orientation.</param>
         /// <returns></returns>
-        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
-            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int programmedPeakSpeedELInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
+            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedELInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
         public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)

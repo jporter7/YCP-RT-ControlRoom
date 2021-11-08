@@ -380,8 +380,58 @@ namespace ControlRoomApplication.Controllers
         /// <returns></returns>
         public MovementResult MoveRadioTelescopeByXDegrees(Orientation degreesToMoveBy, MovementPriority priority)
         {
-            // TODO: Implement (issue #379)
-            return MovementResult.None;
+            MovementResult result = MovementResult.None;
+
+
+            // Return if incoming priority is equal to or less than current movement
+            if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
+
+            // We only want to do this if it is safe to do so. Return false if not
+            if (!AllSensorsSafe) return MovementResult.SensorsNotSafe;
+
+            if (Math.Abs(degreesToMoveBy.Azimuth) > MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_AZ_MAX) return MovementResult.RequestedAzimuthMoveTooLarge;
+
+            // If a lower-priority movement was running, safely interrupt it.
+            RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+
+            Orientation origOrientation = GetCurrentOrientation();
+            double normalizedAzimuth = (degreesToMoveBy.Azimuth + origOrientation.Azimuth) % 360;
+            if(normalizedAzimuth < 0)
+            {
+                normalizedAzimuth += 360;
+            }
+
+            Orientation expectedOrientation = new Orientation(normalizedAzimuth, degreesToMoveBy.Elevation + origOrientation.Elevation);
+
+            if (expectedOrientation.Elevation < MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MIN || expectedOrientation.Elevation > MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MAX) return MovementResult.InvalidRequestedPostion;
+
+            // If the thread is locked (two moves coming in at the same time), return
+            if (Monitor.TryEnter(MovementLock))
+            {
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
+
+                int absoluteElMove, absoluteAzMove;
+                absoluteElMove = ConversionHelper.DegreesToSteps(degreesToMoveBy.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+                absoluteAzMove = ConversionHelper.DegreesToSteps(degreesToMoveBy.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+
+                //Peak speed calculations (using 0.6 RPM to match other move functions)
+                int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
+                int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
+
+                result = RadioTelescope.PLCDriver.RelativeMove(AZ_Speed, EL_Speed, absoluteAzMove, absoluteElMove, expectedOrientation);
+
+                if (RadioTelescope.PLCDriver.CurrentMovementPriority == priority) RadioTelescope.PLCDriver.CurrentMovementPriority = MovementPriority.None;
+
+                Monitor.Exit(MovementLock);
+            }
+            else
+            {
+                result = MovementResult.AlreadyMoving;
+            }
+
+            return result;
+        
         }
 
         /// <summary>
