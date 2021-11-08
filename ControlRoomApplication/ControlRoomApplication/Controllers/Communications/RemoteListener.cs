@@ -102,7 +102,18 @@ namespace ControlRoomApplication.Controllers
                     // else the parsing was successful, attempt to run the command
                     else
                     {
-                        logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " +data+ ". beginning requested movement " +parsedTCPCommandResult.parsedString[1]+"...");
+                        // if script inform which script is running, else just command type
+                        if(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "SCRIPT")
+                        {
+                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
+                                parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...");
+
+                        }
+                        else
+                        {
+                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
+                        }
+                        
                         ExecuteTCPCommandResult executeTCPCommandResult = ExecuteRLCommand(parsedTCPCommandResult.parsedString);
                         // inform user of the result of command
                         if (executeTCPCommandResult.movementResult != MovementResult.Success)
@@ -372,7 +383,7 @@ namespace ControlRoomApplication.Controllers
                     // Return based off of movement result
                     if (result != MovementResult.Success)
                     {
-                        return new ExecuteTCPCommandResult(result, TCPCommunicationConstants.SCRIPT_ERR + script);
+                        return new ExecuteTCPCommandResult(result, TCPCommunicationConstants.SCRIPT_ERR + result.ToString());
                     }
                     else
                     {
