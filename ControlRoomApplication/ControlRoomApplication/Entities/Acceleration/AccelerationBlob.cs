@@ -17,11 +17,22 @@ namespace ControlRoomApplication.Entities
 
         private int NumberDataPoints { get; set; }
 
-        private SensorLocationEnum Location { get; set; }
+        public SensorLocationEnum Location { get; set; }
 
-        public abstract void BuildAccelerationString(Acceleration[] x, bool testFlag = false);
+        public virtual void BuildAccelerationBlob(Acceleration[] x, bool testFlag = false)
+        {
+            //TODO - take the Acceleration[] and add it to the Byte[] based on the design
+            //more params will need to be passed in order to do this properly
 
-        public virtual List<Acceleration> BlobParser(Byte[] BlobToParse)
+
+            if (NumberDataPoints >= MiscellaneousConstants.BLOB_SIZE || testFlag == true)
+            {
+                Database.DatabaseOperations.AddAccelerationBlobData(this, Location, true);
+                NumberDataPoints = 0;
+            }
+        }
+
+        public virtual Acceleration[] BlobParser(Byte[] BlobToParse)
         {
             List<Acceleration> accArrayList = new List<Acceleration>();
             //The blob has been designed in a modular way so that
@@ -32,21 +43,27 @@ namespace ControlRoomApplication.Entities
             switch (version)
             {
                 case 1:
-                    byte FIFO_Size = BlobToParse[1];
-                    byte SampleFrequency = BlobToParse[2];
-                    byte GRange = BlobToParse[3];
-                    Boolean FullResolution = BitConverter.ToBoolean(BlobToParse, 4);
 
-                    for (int i = 0; i < BlobToParse.Length - 5;)
+                    //store teh FIFO size, sample frequency, GRange, and Full resolution for later use
+                    byte FIFO_Size = BlobToParse[1];
+                    short SampleFrequency = BitConverter.ToInt16(BlobToParse, 2);
+                    byte GRange = BlobToParse[4];
+                    Boolean FullResolution = BitConverter.ToBoolean(BlobToParse, 5);
+
+
+                    //loop over the rest of the blob, the first byte in this section will be a label to tell us what 
+                    //to parse out of the blob next
+                    for (int i = 6; i < BlobToParse.Length;)
                     {
-                        char label = BitConverter.ToChar(BlobToParse, i);
+                        char label = (char)BlobToParse[i];
+                        i++;
                         Acceleration tempAcc = new Acceleration();
 
                         switch (label)
                         {
                             case 't':
                                 //when the label is t, there is one time value and 3 acceleration values
-                                tempAcc.TimeCaptured = BitConverter.ToInt64(BlobToParse, i);
+                                tempAcc.TimeCaptured = BitConverter.ToInt64(BlobToParse, i) * 100;
                                 i += 8;
                                 tempAcc.x = BitConverter.ToInt16(BlobToParse, i);
                                 i += 2;
@@ -55,13 +72,13 @@ namespace ControlRoomApplication.Entities
                                 tempAcc.z = BitConverter.ToInt16(BlobToParse, i);
                                 i += 2;
                                 tempAcc.acc = Math.Sqrt(tempAcc.x * tempAcc.x + tempAcc.y * tempAcc.y + tempAcc.z * tempAcc.z);
-
+                                tempAcc.location_ID = (int)Location;
                                 accArrayList.Add(tempAcc);
                                 break;
 
                             case 'a':
                                 //when the label is a, there are 3 acceleration values
-                                tempAcc.TimeCaptured = accArrayList[accArrayList.Count - 1].TimeCaptured + (1 / SampleFrequency);
+                                tempAcc.TimeCaptured = accArrayList[accArrayList.Count - 1].TimeCaptured + (100 / SampleFrequency);
                                 tempAcc.x = BitConverter.ToInt16(BlobToParse, i);
                                 i += 2;
                                 tempAcc.y = BitConverter.ToInt16(BlobToParse, i);
@@ -69,7 +86,7 @@ namespace ControlRoomApplication.Entities
                                 tempAcc.z = BitConverter.ToInt16(BlobToParse, i);
                                 i += 2;
                                 tempAcc.acc = Math.Sqrt(tempAcc.x * tempAcc.x + tempAcc.y * tempAcc.y + tempAcc.z * tempAcc.z);
-
+                                tempAcc.location_ID = (int)Location;
                                 accArrayList.Add(tempAcc);
                                 break;
                         }
@@ -84,9 +101,26 @@ namespace ControlRoomApplication.Entities
 
             }
 
-            return accArrayList;
+            return accArrayList.ToArray();
         
         }
+
+
+        //print the blob in binary form
+        public String blobToString(Byte[] blob)
+        {
+
+            string blobString = "";
+            foreach(byte b in blob)
+            {
+                string singleByte = Convert.ToString(b, 2).PadLeft(8, '0');
+                blobString += singleByte + " ";
+            }
+
+            return blobString;
+        }
+
+
         
     }
 }

@@ -28,23 +28,6 @@ namespace ControlRoomApplication.Entities
         public override long FirstTimeCaptured { get; set; }
 
         [NotMapped]
-        private int NumberDataPoints { get; set; }
-
-        [NotMapped]
-        private SensorLocationEnum Location { get; set; }
-
-
-        public override void BuildAccelerationString(Acceleration[] x, bool testFlag = false)
-        {
-            //TODO - take the Acceleration[] and add it to the Byte[] based on the design
-            //more params will need to be passed in order to do this properly
-            
-            
-            if (NumberDataPoints >= MiscellaneousConstants.BLOB_SIZE || testFlag == true)
-            {
-                Database.DatabaseOperations.AddAccelerationBlobData(this, Location, true);
-                NumberDataPoints = 0;
-            }
-        }        
+        public int NumberDataPoints { get; set; } 
     }
 }
