@@ -10,62 +10,140 @@ namespace ControlRoomApplicationTest.EntitiesTests
     public class AccelerationBlobTest
     {
         // Class being tested
-        private Acceleration Acceleration;
+        Acceleration azAcc, cbAcc, elAcc;
+        Acceleration[] azAccArr, cbAccArr, elAccArr;
+        AzimuthAccelerationBlob azBlob;
+        CounterbalanceAccelerationBlob cbBlob;
+        ElevationAccelerationBlob elBlob;
+        byte[] blobData;
 
         [TestInitialize]
         public void BuildUp()
         {
 
+            //byte array to store 32 acceleration data points
+            blobData = new byte[238];
+            azBlob = new AzimuthAccelerationBlob();
+            cbBlob = new CounterbalanceAccelerationBlob();
+            elBlob = new ElevationAccelerationBlob();
+            azAcc = Acceleration.Generate(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), 1, 2, 3, SensorLocationEnum.AZ_MOTOR);
+            cbAcc = Acceleration.Generate(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), 1, 2, 3, SensorLocationEnum.COUNTERBALANCE);
+            elAcc = Acceleration.Generate(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), 1, 2, 3, SensorLocationEnum.EL_MOTOR);
+
+            //version
+            blobData[0] = 1;
+
+            //FIFO Size
+            blobData[1] = 32;
+
+            //SampleFrequency
+            byte[] frequency = BitConverter.GetBytes(800);
+            blobData[2] = frequency[0];
+            blobData[3] = frequency[1];
+
+            //GRange
+            blobData[4] = 1;
+
+            //full resolution
+            blobData[5] = BitConverter.GetBytes(true)[0];
+
+            //label
+            char label = 't';
+            blobData[6] = BitConverter.GetBytes(label)[0];
+
+
+            //time
+            byte[] time = BitConverter.GetBytes(azAcc.TimeCaptured);
+           
+            for (int i = 0; i < 8; i++)
+            {
+                blobData[7 + i] = time[i];
+            }
+
+            //acc x
+            byte[] accX = BitConverter.GetBytes(azAcc.x);
+
+            for (int i = 0; i < 2; i++)
+            {
+                blobData[15 + i] = accX[i];
+            }
+            //acc x
+            byte[] accY = BitConverter.GetBytes(azAcc.y);
+
+            for (int i = 0; i < 2; i++)
+            {
+                blobData[17 + i] = accY[i];
+            }
+
+            //acc z
+            byte[] accZ = BitConverter.GetBytes(azAcc.z);
+            for(int i=0; i<2; i++)
+            {
+                blobData[19 + i] = accZ[i];
+            }
+            
+
+            // write 31 data points without time
+            for(int size=0; size < 31; size++)
+            {
+                //label
+                label = 'a';
+                blobData[21+(7*(size))] = BitConverter.GetBytes(label)[0];
+
+                //acc x
+                for (int i = 0; i < 2; i++)
+                {
+                    blobData[22 + (7 * (size)) + i] = accX[i];
+                }
+                //acc y
+                for (int i = 0; i < 2; i++)
+                {
+                    blobData[24 + (7 * (size)) + i] = accY[i];
+                }
+
+                //acc z
+                for (int i = 0; i < 2; i++)
+                {
+                    blobData[26 + (7 * (size)) + i] = accZ[i];
+                }
+            }
+
+            //save the three blobs
+            azBlob.Blob = blobData;
+            cbBlob.Blob = blobData;
+            elBlob.Blob = blobData;
+
+
+            // create the three comparison acceleration arrays
+            azAccArr = new Acceleration[32];
+            cbAccArr = new Acceleration[32];
+            elAccArr = new Acceleration[32];
+
+            for (int i=0; i<32; i++)
+            {
+                azAccArr[i] = azAcc;
+                cbAccArr[i] = cbAcc;
+                elAccArr[i] = elAcc;
+            }
+
         }
 
         [TestMethod]
-        public void TestGettersAndSetters()
+        public void TestParsing()
         {
-            // Initialize appointment entity
-            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
+            //Check the first acceleration datapoint
+            Assert.IsTrue(azAcc.Equals(azBlob.BlobParser(azBlob.Blob)[0]));
+            Assert.IsTrue(cbAcc.Equals(cbBlob.BlobParser(cbBlob.Blob)[0]));
+            Assert.IsTrue(elAcc.Equals(elBlob.BlobParser(elBlob.Blob)[0]));
 
-            //Generate current time
-            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            long dateTime2 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            //check the acceleration array
+            Assert.IsTrue(Acceleration.SequenceEquals(azAccArr, azBlob.BlobParser(azBlob.Blob)));
+            Assert.IsTrue(Acceleration.SequenceEquals(cbAccArr, cbBlob.BlobParser(cbBlob.Blob)));
+            Assert.IsTrue(Acceleration.SequenceEquals(elAccArr, elBlob.BlobParser(elBlob.Blob)));
 
-            //Generate Acceleration
-            AccelerationBlob a1 = new AccelerationBlob();
-            //Acceleration t2 = Acceleration.Generate(dateTime, 2.0, loc1);
+            //print out the blob
+            Console.WriteLine(azBlob.blobToString(azBlob.Blob));
 
-            a1.Blob = "abc";
-            a1.Id = 17;
-            a1.TimeCaptured = dateTime1;
-
-            a1.TimeCaptured = dateTime2;
-            Assert.AreEqual(a1.TimeCaptured, dateTime2);
-            Assert.AreEqual(a1.Blob, "abc");
-            Assert.AreEqual(a1.Id, 17);
-
-        }
-
-        //Acceleration
-        [TestMethod]
-        public void TestAddAndRetrieveAccelerationBlob()
-        {
-            Acceleration[] accArray = new Acceleration[1];
-
-            long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            SensorLocationEnum loc1 = SensorLocationEnum.AZ_MOTOR;
-
-            Acceleration acc = new Acceleration();
-            acc = Acceleration.Generate(dateTime1, 3, 4, 12, loc1);
-            accArray[0] = acc;
-
-            AccelerationBlob accBLob = new AccelerationBlob();
-            accBLob.BuildAccelerationString(accArray, dateTime1, true);
-
-            //DatabaseOperations.AddAccelerationBlobData(acc, dateTime1, true);
-            List<AccelerationBlob> accReturn = DatabaseOperations.GetAccBlobData(dateTime1 - 1, dateTime1 + 1);
-
-            Assert.AreEqual(1,accReturn.Count);
-
-            //Test only acc
-            Assert.AreEqual(dateTime1 +"~3~4~12~1$", accReturn[0].Blob);
         }
     }
 }
