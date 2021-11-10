@@ -659,9 +659,25 @@ namespace ControlRoomApplication.Database
         /// <param name="endTime"> currently unused</param>
         /// <param name="loc"></param>
         /// <returns></returns>
-        public static List<AzimuthAccelerationBlob> GetAccBlobData( long starttime , long endTime) {
+        public static List<AzimuthAccelerationBlob> GetAzAccBlobData( long starttime , long endTime) {
             using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
-                return Context.AzimuthAccelerationBlobs.Where( x => x.FirstTimeCaptured > starttime && x.FirstTimeCaptured < endTime).ToList();
+                return Context.AzimuthAccelerationBlobs.Where( x => x.FirstTimeCaptured >= starttime && x.FirstTimeCaptured <= endTime).ToList();
+            }
+        }
+
+        public static List<CounterbalanceAccelerationBlob> GetCbAccBlobData(long starttime, long endTime)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {//&& x.TimeCaptured < endTime
+                return Context.CounterbalanceAccelerationBlobs.Where(x => x.FirstTimeCaptured >= starttime && x.FirstTimeCaptured <= endTime).ToList();
+            }
+        }
+
+        public static List<ElevationAccelerationBlob> GetElAccBlobData(long starttime, long endTime)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {//&& x.TimeCaptured < endTime
+                return Context.ElevationAccelerationBlobs.Where(x => x.FirstTimeCaptured >= starttime && x.FirstTimeCaptured <= endTime).ToList();
             }
         }
 
