@@ -21,14 +21,22 @@ namespace ControlRoomApplication.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public override int Id { get; set; }
 
+        [Required]
         [Column("acc_blob")]
-        public override Byte[] Blob { get; set; }
+        public override Byte[] BlobArray { get; set; }
 
+        [NotMapped]
+        public override List<Byte> BlobList { get; set; }
+        
+        [Required]
         [Column("first_time_captured")]
         public override long FirstTimeCaptured { get; set; }
 
         [NotMapped]
         public int NumberDataPoints { get; set; }
+
+        [NotMapped]
+        public override SensorLocationEnum Location { get; set; }
 
     }
 }
