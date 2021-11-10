@@ -37,21 +37,9 @@ namespace ControlRoomApplication.Constants
         //constants for acceleration blob
 
         /// <summary>
-        /// The number of datapoints in one dump of the accelerometer that is added to the blob at a single time
-        /// </summary>
-        public const int SUB_BLOB_SIZE = 32;
-
-
-        /// <summary>
         /// The number of acceleration datapoints in one blob to be added to the database
         /// </summary>
         public const int BLOB_SIZE = 4000;
-
-
-        /// <summary>
-        /// The time between each datapoint sampling in milliseconds (for each sub blob)
-        /// </summary>
-        public const double SAMPLE_TIME_DELTA = 1.25;
 
 
 
