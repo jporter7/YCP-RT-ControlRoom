@@ -15,14 +15,14 @@ namespace ControlRoomApplicationTest.EntitiesTests
         AzimuthAccelerationBlob azBlob;
         CounterbalanceAccelerationBlob cbBlob;
         ElevationAccelerationBlob elBlob;
-        byte[] blobData;
+        List<Byte> blobData;
 
         [TestInitialize]
         public void BuildUp()
         {
 
             //byte array to store 32 acceleration data points
-            blobData = new byte[238];
+            blobData = new List<byte>();
             azBlob = new AzimuthAccelerationBlob();
             cbBlob = new CounterbalanceAccelerationBlob();
             elBlob = new ElevationAccelerationBlob();
@@ -31,25 +31,25 @@ namespace ControlRoomApplicationTest.EntitiesTests
             elAcc = Acceleration.Generate(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), 1, 2, 3, SensorLocationEnum.EL_MOTOR);
 
             //version
-            blobData[0] = 1;
+            blobData.Add(1);
 
             //FIFO Size
-            blobData[1] = 32;
+            blobData.Add(32);
 
             //SampleFrequency
             byte[] frequency = BitConverter.GetBytes(800);
-            blobData[2] = frequency[0];
-            blobData[3] = frequency[1];
+            blobData.Add(frequency[0]);
+            blobData.Add(frequency[1]);
 
             //GRange
-            blobData[4] = 1;
+            blobData.Add(1);
 
             //full resolution
-            blobData[5] = BitConverter.GetBytes(true)[0];
+            blobData.Add(BitConverter.GetBytes(true)[0]);
 
             //label
             char label = 't';
-            blobData[6] = BitConverter.GetBytes(label)[0];
+            blobData.Add(BitConverter.GetBytes(label)[0]);
 
 
             //time
@@ -57,7 +57,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
            
             for (int i = 0; i < 8; i++)
             {
-                blobData[7 + i] = time[i];
+                blobData.Add(time[i]);
             }
 
             //acc x
@@ -65,21 +65,21 @@ namespace ControlRoomApplicationTest.EntitiesTests
 
             for (int i = 0; i < 2; i++)
             {
-                blobData[15 + i] = accX[i];
+                blobData.Add(accX[i]);
             }
             //acc x
             byte[] accY = BitConverter.GetBytes(azAcc.y);
 
             for (int i = 0; i < 2; i++)
             {
-                blobData[17 + i] = accY[i];
+                blobData.Add(accY[i]);
             }
 
             //acc z
             byte[] accZ = BitConverter.GetBytes(azAcc.z);
             for(int i=0; i<2; i++)
             {
-                blobData[19 + i] = accZ[i];
+                blobData.Add(accZ[i]);
             }
             
 
@@ -88,30 +88,31 @@ namespace ControlRoomApplicationTest.EntitiesTests
             {
                 //label
                 label = 'a';
-                blobData[21+(7*(size))] = BitConverter.GetBytes(label)[0];
+                blobData.Add(BitConverter.GetBytes(label)[0]);
 
                 //acc x
                 for (int i = 0; i < 2; i++)
                 {
-                    blobData[22 + (7 * (size)) + i] = accX[i];
+                    blobData.Add(accX[i]);
                 }
                 //acc y
                 for (int i = 0; i < 2; i++)
                 {
-                    blobData[24 + (7 * (size)) + i] = accY[i];
+                    blobData.Add(accY[i]);
                 }
 
                 //acc z
                 for (int i = 0; i < 2; i++)
                 {
-                    blobData[26 + (7 * (size)) + i] = accZ[i];
+                    blobData.Add(accZ[i]);
                 }
             }
 
             //save the three blobs
-            azBlob.Blob = blobData;
-            cbBlob.Blob = blobData;
-            elBlob.Blob = blobData;
+
+            azBlob.BlobList = blobData;
+            cbBlob.BlobList = blobData;
+            elBlob.BlobList = blobData;
 
 
             // create the three comparison acceleration arrays
@@ -132,17 +133,33 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void TestParsing()
         {
             //Check the first acceleration datapoint
-            Assert.IsTrue(azAcc.Equals(azBlob.BlobParser(azBlob.Blob)[0]));
-            Assert.IsTrue(cbAcc.Equals(cbBlob.BlobParser(cbBlob.Blob)[0]));
-            Assert.IsTrue(elAcc.Equals(elBlob.BlobParser(elBlob.Blob)[0]));
+            Assert.IsTrue(azAcc.Equals(azBlob.BlobParser(azBlob.BlobList.ToArray())[0]));
+            Assert.IsTrue(cbAcc.Equals(cbBlob.BlobParser(cbBlob.BlobList.ToArray())[0]));
+            Assert.IsTrue(elAcc.Equals(elBlob.BlobParser(elBlob.BlobList.ToArray())[0]));
 
             //check the acceleration array
-            Assert.IsTrue(Acceleration.SequenceEquals(azAccArr, azBlob.BlobParser(azBlob.Blob)));
-            Assert.IsTrue(Acceleration.SequenceEquals(cbAccArr, cbBlob.BlobParser(cbBlob.Blob)));
-            Assert.IsTrue(Acceleration.SequenceEquals(elAccArr, elBlob.BlobParser(elBlob.Blob)));
+            Assert.IsTrue(Acceleration.SequenceEquals(azAccArr, azBlob.BlobParser(azBlob.BlobList.ToArray())));
+            Assert.IsTrue(Acceleration.SequenceEquals(cbAccArr, cbBlob.BlobParser(cbBlob.BlobList.ToArray())));
+            Assert.IsTrue(Acceleration.SequenceEquals(elAccArr, elBlob.BlobParser(elBlob.BlobList.ToArray())));
 
             //print out the blob
-            Console.WriteLine(azBlob.blobToString(azBlob.Blob));
+            Console.WriteLine(azBlob.blobToString(azBlob.BlobList.ToArray()));
+
+        }
+
+        [TestMethod]
+        public void TestBlobbing()
+        {
+
+            azBlob.BuildAccelerationBlob(azAccArr, 1,32, 800, 16,true, true);
+            Assert.IsTrue(Acceleration.SequenceEquals(azBlob.BlobParser(azBlob.BlobArray), azAccArr));
+
+            cbBlob.BuildAccelerationBlob(cbAccArr, 1, 32, 800, 16, true, true);
+            Assert.IsTrue(Acceleration.SequenceEquals(cbBlob.BlobParser(cbBlob.BlobArray), cbAccArr));
+
+            elBlob.BuildAccelerationBlob(elAccArr, 1, 32, 800, 16, true, true);
+            Assert.IsTrue(Acceleration.SequenceEquals(elBlob.BlobParser(elBlob.BlobArray), elAccArr));
+
 
         }
     }
