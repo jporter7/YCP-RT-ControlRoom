@@ -358,21 +358,21 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         {
                             //Create array of acceleration objects 
                             CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
-                            ElevationAccBlob.BuildAccelerationString(CurrentElevationMotorAccl);
+                            ElevationAccBlob.BuildAccelerationBlob(CurrentElevationMotorAccl);
                         }
 
                         // Accelerometer 2 (azimuth)
                         if (azAcclSize > 0)
                         {
                             CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
-                            AzimuthAccBlob.BuildAccelerationString(CurrentAzimuthMotorAccl);
+                            AzimuthAccBlob.BuildAccelerationBlob(CurrentAzimuthMotorAccl);
                         }
 
                         // Accelerometer 3 (counterbalance)
                         if (cbAcclSize > 0)
                         {
                             CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
-                            CounterbalanceAccBlob.BuildAccelerationString(CurrentCounterbalanceAccl);
+                            CounterbalanceAccBlob.BuildAccelerationBlob(CurrentCounterbalanceAccl);
                         }
 
                         // Elevation temperature
