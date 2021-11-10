@@ -11,24 +11,138 @@ namespace ControlRoomApplication.Entities
     {
         public abstract int Id { get; set; }
 
-        public abstract Byte[] Blob { get; set; }
+        public abstract List<Byte> BlobList { get; set; }
+
+        public abstract Byte[] BlobArray { get; set; }
+
 
         public abstract long FirstTimeCaptured { get; set; }
 
         private int NumberDataPoints { get; set; }
 
-        public SensorLocationEnum Location { get; set; }
+        public virtual SensorLocationEnum Location { get; set; }
 
-        public virtual void BuildAccelerationBlob(Acceleration[] x, bool testFlag = false)
+        public virtual void BuildAccelerationBlob(Acceleration[] accArray, byte version = 1, byte FIFO_Size = 32, short SampleFrequency = 800, byte GRange = 16, Boolean FullResolution = true,  bool testFlag = false)
         {
-            //TODO - take the Acceleration[] and add it to the Byte[] based on the design
-            //more params will need to be passed in order to do this properly
-
-
-            if (NumberDataPoints >= MiscellaneousConstants.BLOB_SIZE || testFlag == true)
+            switch (version)
             {
-                Database.DatabaseOperations.AddAccelerationBlobData(this, Location, true);
-                NumberDataPoints = 0;
+                case 1:
+                    if (NumberDataPoints == 0)
+                    {
+                        //set the First Time Captured
+                        FirstTimeCaptured = accArray[0].TimeCaptured;
+
+                        //define the new List of Bytes
+                        BlobList = new List<Byte>();
+
+                        //add the version to the start
+                        BlobList.Add(version);
+
+                        //add the fifo size to the start
+                        BlobList.Add(FIFO_Size);
+
+                        //add the sample frequency to the start
+                        Byte[] frequencyBytes = BitConverter.GetBytes(SampleFrequency);
+                        for(int i=0; i<frequencyBytes.Length; i++)
+                        {
+                            BlobList.Add(frequencyBytes[i]);
+                        }
+
+                        //add the G Range to the start
+                        BlobList.Add(GRange);
+
+                        //add the Full Resolution to the start
+                        BlobList.Add(BitConverter.GetBytes(FullResolution)[0]);
+                    }
+
+                    foreach(Acceleration acc in accArray)
+                    {
+                        if (NumberDataPoints % FIFO_Size == 0)
+                        {
+                            //label this part of the blob with t for Time
+                            char label = 't';
+                            BlobList.Add((byte)label);
+
+                            //add 8 byte timestamp to blob
+                            Byte[] time = BitConverter.GetBytes(acc.TimeCaptured);
+                            for(int i=0; i<time.Length; i++)
+                            {
+                                BlobList.Add(time[i]);
+                            }
+
+                            //add 2 byte x acceleration
+                            Byte[] accX = BitConverter.GetBytes(acc.x);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                BlobList.Add(accX[i]);
+                            }
+
+                            //add 2 byte y acceleration
+                            Byte[] accY = BitConverter.GetBytes(acc.y);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                BlobList.Add(accY[i]);
+                            }
+
+                            //add 2 byte z acceleration
+                            Byte[] accZ = BitConverter.GetBytes(acc.z);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                BlobList.Add(accZ[i]);
+                            }
+
+                            NumberDataPoints++;
+
+                        }
+                        else
+                        {
+                            //label this part of the blob with a for just an Acceleration data point
+                            char label = 'a';
+                            BlobList.Add((byte)label);
+
+                            //add 2 byte x acceleration
+                            Byte[] accX = BitConverter.GetBytes(acc.x);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                BlobList.Add(accX[i]);
+                            }
+
+                            //add 2 byte y acceleration
+                            Byte[] accY = BitConverter.GetBytes(acc.y);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                BlobList.Add(accY[i]);
+                            }
+
+                            //add 2 byte z acceleration
+                            Byte[] accZ = BitConverter.GetBytes(acc.z);
+                            for (int i = 0; i < 2; i++)
+                            {
+                                BlobList.Add(accZ[i]);
+                            }
+
+                            NumberDataPoints++;
+                        }
+
+                    }
+
+                    if (NumberDataPoints >= MiscellaneousConstants.BLOB_SIZE)
+                    {
+                        BlobArray = BlobList.ToArray();
+                        Database.DatabaseOperations.AddAccelerationBlobData(this, Location, true);
+                        NumberDataPoints = 0;
+                    }else if (testFlag)
+                    {
+                        BlobArray = BlobList.ToArray();
+                        NumberDataPoints = 0;
+                    }
+
+                    break;
+
+                case 2:
+                    // if there ever is a second version of the blob, blobify it here
+                    //currently no v2 so do nothing
+                    break;
             }
         }
 
@@ -78,7 +192,7 @@ namespace ControlRoomApplication.Entities
 
                             case 'a':
                                 //when the label is a, there are 3 acceleration values
-                                tempAcc.TimeCaptured = accArrayList[accArrayList.Count - 1].TimeCaptured + (100 / SampleFrequency);
+                                tempAcc.TimeCaptured = accArrayList[accArrayList.Count - 1].TimeCaptured + ((1000 * 100) / SampleFrequency); /* 1000 / frequency = time offset, then * 100 to save precision */
                                 tempAcc.x = BitConverter.ToInt16(BlobToParse, i);
                                 i += 2;
                                 tempAcc.y = BitConverter.ToInt16(BlobToParse, i);
