@@ -365,7 +365,7 @@ namespace ControlRoomApplication.Controllers
 
             Orientation orientation = CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow);
 
-            if ((GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees && orientation.Elevation > RadioTelescope.maxElevationDegrees) ||
+            if (EnableSoftwareStops && (GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees && orientation.Elevation > RadioTelescope.maxElevationDegrees) ||
                 (GetSoftwareStopElevation() < RadioTelescope.minElevationDegrees && orientation.Elevation < RadioTelescope.minElevationDegrees)) return MovementResult.SoftwareStopHit;
 
             // Return if incoming priority is equal to or less than current movement
@@ -593,7 +593,7 @@ namespace ControlRoomApplication.Controllers
             MovementResult result = MovementResult.None;
 
             //may want to check for jogs using the RadioTelescopeAxisEnum.BOTH if a jog on both axes is needed in the future 
-            if (axis == RadioTelescopeAxisEnum.ELEVATION)
+            if (EnableSoftwareStops &&  axis == RadioTelescopeAxisEnum.ELEVATION)
             {
                 if(direction == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive && GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees)
                 {
