@@ -21,12 +21,12 @@ namespace ControlRoomApplication.Constants
         /// <summary>
         /// The maximum degree threshold for software stops to stop the telescope
         /// </summary>
-        public const double MAX_SOFTWARE_STOP_EL_DEGREES = 92.0;
+        public const double MAX_SOFTWARE_STOP_EL_DEGREES = 91.0;
 
         /// <summary>
         /// The minimum degree threshold for software stops to stop the telescope
         /// </summary>
-        public const double MIN_SOFTWARE_STOP_EL_DEGREES = -6.0;
+        public const double MIN_SOFTWARE_STOP_EL_DEGREES = -5.0;
 
         // constants used for user input validation
         public const int MAX_PORT_VALUE = 65535;

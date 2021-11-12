@@ -321,8 +321,8 @@ namespace ControlRoomApplication.Controllers
         {
             MovementResult result = MovementResult.None;
 
-            if ((GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees && orientation.Elevation > RadioTelescope.maxElevationDegrees) || 
-                (GetSoftwareStopElevation() < RadioTelescope.minElevationDegrees  && orientation.Elevation < RadioTelescope.minElevationDegrees)) return MovementResult.SoftwareStopHit;
+            if (EnableSoftwareStops && ((GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees && orientation.Elevation > RadioTelescope.maxElevationDegrees) || 
+                (GetSoftwareStopElevation() < RadioTelescope.minElevationDegrees  && orientation.Elevation < RadioTelescope.minElevationDegrees))) return MovementResult.SoftwareStopHit;
 
             // Return if incoming priority is equal to or less than current movement
             if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
@@ -940,7 +940,7 @@ namespace ControlRoomApplication.Controllers
                 previousSnowDumpAzimuth += 45;
                 if (previousSnowDumpAzimuth >= 360) previousSnowDumpAzimuth -= 360;
 
-                Orientation dump = new Orientation(previousSnowDumpAzimuth, -5);
+                Orientation dump = new Orientation(previousSnowDumpAzimuth, -4);
                 Orientation current = GetCurrentOrientation();
 
                 Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
