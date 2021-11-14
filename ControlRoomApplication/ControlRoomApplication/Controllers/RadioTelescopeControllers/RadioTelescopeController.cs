@@ -57,6 +57,8 @@ namespace ControlRoomApplication.Controllers
             RadioTelescope = radioTelescope;
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
 
+            FinalCalibrationOffset = new Orientation(0, 0);
+
             overrides = new OverrideSwitchData(radioTelescope);
             radioTelescope.PLCDriver.Overrides = overrides;
 
@@ -76,7 +78,7 @@ namespace ControlRoomApplication.Controllers
             snowDumpTimer.AutoReset = true;
             snowDumpTimer.Enabled = true;
 
-            FinalCalibrationOffset = new Orientation(0, 0);
+            
         }
 
         /// <summary>
@@ -299,7 +301,7 @@ namespace ControlRoomApplication.Controllers
         {
             if (RadioTelescope.SensorNetworkServer.SimulationSensorNetwork != null)
             {
-                return RadioTelescope.PLCDriver.GetMotorEncoderPosition().Elevation;
+                return GetCurrentOrientation().Elevation;
             }
             else
             {
