@@ -109,12 +109,16 @@ namespace ControlRoomApplication.Controllers
                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...";
                             writeBackToClient(startedCommandMsg, stream);
 
+                            // writeback eta to client
+                            writeBackToClient("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " has an estimated time of "+ ScriptETA(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " ms"), stream);
+
                         }
                         else
                         {
                             logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
                             string startedCommandMsg = "Successfully parsed command " + data + ".beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE]+"...";
                             writeBackToClient(startedCommandMsg, stream);
+
 
                         }
 
@@ -654,6 +658,84 @@ namespace ControlRoomApplication.Controllers
             
         }
 
+        public int AbsoluteMovementETA(Orientation targetOrientation)
+        {
+            // distance is degrees to steps for az/el
+            // time is in milliseconds
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
+
+            Orientation currentOrientation = rtController.GetCurrentOrientation();
+            int positionTranslationAZ = ConversionHelper.DegreesToSteps(targetOrientation.Azimuth - currentOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int positionTranslationEL = ConversionHelper.DegreesToSteps((targetOrientation.Elevation - currentOrientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
+
+
+            int timeToMoveEl = MCUManager.EstimateMovementTime(EL_Speed, positionTranslationEL);
+            int timeToMoveAz = MCUManager.EstimateMovementTime(AZ_Speed, positionTranslationAZ);
+
+            // return the greater of the two times (we have to wait for longest mvmt)
+            int timeToMove = timeToMoveEl > timeToMoveAz ? timeToMoveEl : timeToMoveAz;
+            return timeToMove;
+
+        }
+
+        public int RelativeMovementETA(Orientation movingBy)
+        {
+            // distance is degrees to steps for az/el
+            // time is in milliseconds
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
+
+            Orientation currentOrientation = rtController.GetCurrentOrientation();
+            int positionTranslationAZ = ConversionHelper.DegreesToSteps(movingBy.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
+            int positionTranslationEL = ConversionHelper.DegreesToSteps(movingBy.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
+
+
+            int timeToMoveEl = MCUManager.EstimateMovementTime(EL_Speed, positionTranslationEL);
+            int timeToMoveAz = MCUManager.EstimateMovementTime(AZ_Speed, positionTranslationAZ);
+
+            // return the greater of the two times (we have to wait for longest mvmt)
+            int timeToMove = timeToMoveEl > timeToMoveAz ? timeToMoveEl : timeToMoveAz;
+            return timeToMove;
+        }
+
+        public int ScriptETA(string scriptType)
+        {
+            switch (scriptType)
+            {
+                case "DUMP":
+                        
+                    break;
+
+                case "FULL_EV":
+                    break;
+
+                case "THERMAL_CALIBRATE":
+                    break;
+
+                case "STOW":
+                    return AbsoluteMovementETA(new Orientation(0, 90));
+
+                case "FULL_CLOCK":
+                    break;
+
+                case "FULL_COUNTER":
+                    break;
+
+                case "HOME":
+                    return AbsoluteMovementETA(new Orientation(0, 0));
+
+                case "HARDWARE_MVMT_SCRIPT":
+                    break;
+
+                default:
+                    
+                    break;
+
+            }
+            // If no command is found, invalid script. Return -1
+            return -1;
+            }
 
     }
 
