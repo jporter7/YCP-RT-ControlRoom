@@ -1109,7 +1109,7 @@ namespace ControlRoomApplication.Controllers
                     (GetSoftwareStopElevation() < RadioTelescope.minElevationDegrees && direction == RadioTelescopeDirectionEnum.ClockwiseOrNegative))
                 {
                     RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped(true, true);
-                    logger.Info("Software-stop hit!");
+                    logger.Info(Utilities.GetTimeStamp() + ": Software-stop hit!");
                 }
             }
         }

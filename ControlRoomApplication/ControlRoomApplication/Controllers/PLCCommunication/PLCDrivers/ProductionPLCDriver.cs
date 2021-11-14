@@ -86,7 +86,7 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
-
+        public override MovementPriority CurrentMovementPriority { get; set; }
 
         /// <summary>
         /// runs the modbus server to interface with the plc
@@ -644,6 +644,8 @@ namespace ControlRoomApplication.Controllers
         public override bool InterruptMovementAndWaitUntilStopped(bool isCriticalMovementInterrupt = false, bool isSoftwareStopInterrupt = false)
         {
             bool motorsMoving = MCU.MotorsCurrentlyMoving();
+            logger.Info(motorsMoving);
+            logger.Info(CurrentMovementPriority);
 
             if (motorsMoving && CurrentMovementPriority != MovementPriority.None)
             {

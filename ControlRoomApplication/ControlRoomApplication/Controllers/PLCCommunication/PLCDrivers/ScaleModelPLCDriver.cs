@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
 using Newtonsoft.Json;
@@ -192,6 +193,8 @@ namespace ControlRoomApplication.Controllers {
         public ScaleModelPLCDriver( string local_ip , string MCU_ip , int MCU_port , int PLC_port ) :base( local_ip , MCU_ip, MCU_port, PLC_port ) {
             Console.WriteLine( MCU_ip );
         }
+
+        public override MovementPriority CurrentMovementPriority { get; set; }
 
         public override void setregvalue(ushort adr, ushort value)
         {

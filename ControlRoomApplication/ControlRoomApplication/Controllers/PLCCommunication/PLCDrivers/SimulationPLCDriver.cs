@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.PLC_MCU;
@@ -38,7 +39,7 @@ namespace ControlRoomApplication.Controllers
             driver.set_is_test( is_Test );
         }
 
-
+        public override MovementPriority CurrentMovementPriority { get { return driver.CurrentMovementPriority; } set { driver.CurrentMovementPriority = value; } }
 
         public override bool RequestStopAsyncAcceptingClientsAndJoin()
         {
