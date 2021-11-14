@@ -72,22 +72,20 @@ namespace ControlRoomApplication.Controllers
 
                 // Loop to receive all the data sent by the client.
                 // Add try catch to reading
-                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                while ((i = readFromStream(stream, bytes)) != 0)
                 {
                     // Translate data bytes to ASCII string.
-                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                    data = Encoding.ASCII.GetString(bytes, 0, i);
 
                     logger.Debug(Utilities.GetTimeStamp() + ": Received: " + data);
 
                     // Process the data sent by the client.
                     data = data.ToUpper();
 
-                    byte[] myWriteBuffer = null;
+                    string myWriteBuffer = null;
 
                     // Inform mobile command received 
-                    // TODO: Surround any .Write in a try-catch
-                    myWriteBuffer = Encoding.ASCII.GetBytes("Received command: " + data);
-                    stream.Write(myWriteBuffer, 0, myWriteBuffer.Length);
+                    writeBackToClient("Received command: "+data, stream);
 
                     // if processing the data fails, report an error message
                     ParseTCPCommandResult parsedTCPCommandResult = ParseRLString(data);
@@ -97,7 +95,7 @@ namespace ControlRoomApplication.Controllers
 
                         // send back a failure response
                         logger.Info("Parsing command failed with ERROR: " + parsedTCPCommandResult.errorMessage);
-                        myWriteBuffer = Encoding.ASCII.GetBytes("Parsing command failed with error: "+ parsedTCPCommandResult.errorMessage);
+                        myWriteBuffer = "Parsing command failed with error: "+ parsedTCPCommandResult.errorMessage;
                     }
                     // else the parsing was successful, attempt to run the command
                     else
@@ -107,31 +105,36 @@ namespace ControlRoomApplication.Controllers
                         {
                             logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...");
+                            string startedCommandMsg = "Successfully parsed command " + data + ".beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
+                                parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...";
+                            writeBackToClient(startedCommandMsg, stream);
 
                         }
                         else
                         {
                             logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
+                            string startedCommandMsg = "Successfully parsed command " + data + ".beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE]+"...";
+                            writeBackToClient(startedCommandMsg, stream);
+
                         }
-                        
+
                         ExecuteTCPCommandResult executeTCPCommandResult = ExecuteRLCommand(parsedTCPCommandResult.parsedString);
                         // inform user of the result of command
                         if (executeTCPCommandResult.movementResult != MovementResult.Success)
                         {
                             logger.Debug(Utilities.GetTimeStamp() + ": Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage);
-                            myWriteBuffer = Encoding.ASCII.GetBytes("Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage);
+                            myWriteBuffer = "Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage;
                         }
                         else
                         {
                             logger.Debug(Utilities.GetTimeStamp() + ": SUCCESSFULLY COMPLETED COMMAND: " + data);
                             // send back a success response -- finished command
-                            myWriteBuffer = Encoding.ASCII.GetBytes("SUCCESSFULLY COMPLETED COMMAND: " + data);
+                            myWriteBuffer = "SUCCESSFULLY COMPLETED COMMAND: " + data;
                         }
                     }
 
                     // Send message back -- send final state
-                    // Surround stream writes in a try catch
-                    stream.Write(myWriteBuffer, 0, myWriteBuffer.Length);
+                    writeBackToClient(myWriteBuffer, stream);
                 }
 
                 // Shutdown and end connection
@@ -618,9 +621,42 @@ namespace ControlRoomApplication.Controllers
             // else all parsing was successful, return and inform client
             return new ParseTCPCommandResult(ParseTCPCommandResultEnum.Success, splitCommandString);
         }
+
+            /// <summary>
+            /// Util method to handle error checking with strem.read/writes
+            /// </summary>
+            /// <param name="text">What you are sending back to the client</param>
+        public void writeBackToClient(string text, NetworkStream stream)
+        {
+            byte[] textToBytes = Encoding.ASCII.GetBytes(text);
+            try
+            {
+                stream.Write(textToBytes, 0, textToBytes.Length);
+            }
+            catch(Exception e)
+            {
+                logger.Error("An error occured when attempting to write back to the client: " + e.Message);
+            }
+        }
+
+        public int readFromStream(NetworkStream stream, Byte[] buffer)
+        {
+            try
+            {
+                return stream.Read(buffer, 0, buffer.Length);
+            }
+            catch(Exception e)
+            {
+                logger.Error("An error occured reaading data from the client: "+ e.Message);
+             
+            }
+            return 0;
+            
+        }
+
+
     }
 
    
-
-
+   
 }
