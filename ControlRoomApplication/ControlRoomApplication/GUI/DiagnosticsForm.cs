@@ -292,6 +292,20 @@ namespace ControlRoomApplication.GUI
             double AzMotTempFahrenheit = (AzMotTemp * (9.0 / 5.0)) + 32;
 
 
+            if (controlRoom.RTControllerManagementThreads.Count > 0 && controlRoom.RTControllerManagementThreads[0].AppointmentToDisplay != null)
+            {
+                Appointment appt = controlRoom.RTControllerManagementThreads[0].AppointmentToDisplay;
+                // logger.Info("Current appointment " + );
+                statusTextBox.Text = appt.status.ToString();
+                endTimeTextBox.Text = appt.end_time.ToString();
+                startTimeTextBox.Text = appt.start_time.ToString();
+            }
+            else
+            {
+                statusTextBox.Text = "";
+                endTimeTextBox.Text = "";
+                startTimeTextBox.Text = "";
+            }
 
             //Celsius
             if (fahrenheit == false)
@@ -786,7 +800,7 @@ namespace ControlRoomApplication.GUI
                 fahrenheit = false;
                 celTempConvert.BackColor = System.Drawing.Color.LimeGreen;
                 farTempConvert.BackColor = System.Drawing.Color.DarkGray;
-                
+
             }
         }
 
