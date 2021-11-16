@@ -358,6 +358,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         {
                             //Create array of acceleration objects 
                             CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
+
+                            //add to the Elevation Acceleration Blob
                             ElevationAccBlob.BuildAccelerationBlob(CurrentElevationMotorAccl);
                         }
 
@@ -365,6 +367,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         if (azAcclSize > 0)
                         {
                             CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
+                            
+                            //add to the Azimuth Acceleration Blob
                             AzimuthAccBlob.BuildAccelerationBlob(CurrentAzimuthMotorAccl);
                         }
 
@@ -372,6 +376,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         if (cbAcclSize > 0)
                         {
                             CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
+
+                            //add to the Counterbalance Acceleration Blob
                             CounterbalanceAccBlob.BuildAccelerationBlob(CurrentCounterbalanceAccl);
                         }
 

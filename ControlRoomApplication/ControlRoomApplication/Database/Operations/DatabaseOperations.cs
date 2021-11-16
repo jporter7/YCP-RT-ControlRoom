@@ -597,7 +597,7 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
-        /// add an string of sensor data to the apropriat table
+        /// add an Blob of acceleration data to the apropriate table
         /// </summary>
         /// <param name="acc"></param>
         /// <param name="location"></param>
@@ -611,7 +611,7 @@ namespace ControlRoomApplication.Database
                 {
                     using (RTDbContext Context = InitializeDatabaseContext())
                     {
-
+                        //based on the specified location enum, add the blob to the corret table
                         switch (location)
                         {
                             case SensorLocationEnum.AZ_MOTOR:
@@ -652,19 +652,14 @@ namespace ControlRoomApplication.Database
             }
         }
 
-        /// <summary>
-        /// get acc between starttime and now from acc
-        /// </summary>
-        /// <param name="starttime"></param>
-        /// <param name="endTime"> currently unused</param>
-        /// <param name="loc"></param>
-        /// <returns></returns>
+        //returns the Azimuth Acc Blobs between the start and end times
         public static List<AzimuthAccelerationBlob> GetAzAccBlobData( long starttime , long endTime) {
             using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
                 return Context.AzimuthAccelerationBlobs.Where( x => x.FirstTimeCaptured >= starttime && x.FirstTimeCaptured <= endTime).ToList();
             }
         }
 
+        //returns the Counterbalance Acc Blobs between the start and end times
         public static List<CounterbalanceAccelerationBlob> GetCbAccBlobData(long starttime, long endTime)
         {
             using (RTDbContext Context = InitializeDatabaseContext())
@@ -673,6 +668,7 @@ namespace ControlRoomApplication.Database
             }
         }
 
+        //returns the Elevation Acc Blobs between the start and end times
         public static List<ElevationAccelerationBlob> GetElAccBlobData(long starttime, long endTime)
         {
             using (RTDbContext Context = InitializeDatabaseContext())

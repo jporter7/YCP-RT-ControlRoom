@@ -150,7 +150,12 @@ namespace ControlRoomApplicationTest.EntitiesTests
         [TestMethod]
         public void TestBlobbing()
         {
+            //run the dependent test
+            TestParsing();
 
+            //blobs and then parses and checks that the parsed values are correct
+            //if the parse is incorrect, then the blobber is incorrect, since the Parsing function test passes, as it is a dependent test
+            
             azBlob.BuildAccelerationBlob(azAccArr, 1,32, 800, 16,true, true);
             Assert.IsTrue(Acceleration.SequenceEquals(azBlob.BlobParser(azBlob.BlobArray), azAccArr));
 

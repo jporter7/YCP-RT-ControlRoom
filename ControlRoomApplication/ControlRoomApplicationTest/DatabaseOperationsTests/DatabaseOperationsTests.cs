@@ -538,27 +538,6 @@ namespace ControlRoomApplicationTest.DatabaseOperationsTests
 
         }
 
-
-        //Acceleration
-        [TestMethod]
-        public void TestAddAndRetrieveAccelerationBlob()
-        {
-           //TODO - Fix for blob redesign
-           /* long dateTime1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-            AccelerationBlob acc = new AccelerationBlob();
-            acc.Blob = "abcdefghijklmnopqrstuvwxyz";
-
-            DatabaseOperations.AddAccelerationBlobData(acc, dateTime1, true);
-            List<AccelerationBlob> accReturn = DatabaseOperations.GetAccBlobData(dateTime1 - 1, dateTime1 + 1);
-
-            Assert.AreEqual(1, accReturn.Count);
-
-            //Test only acc
-            Assert.AreEqual(acc.Blob, accReturn[0].Blob);
-            Assert.AreEqual(acc.TimeCaptured, accReturn[0].TimeCaptured);*/
-        }
-
         [TestMethod]
         public void TestUpdateTelescope()
         {
