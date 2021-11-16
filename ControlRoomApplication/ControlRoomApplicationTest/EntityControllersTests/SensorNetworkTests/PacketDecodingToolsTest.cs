@@ -18,19 +18,32 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
         {
             // The byte size for one acceleration is 6 bytes, because each axis takes up 2 bytes, 
             // and there are 3 axes.
-            byte[] oneAcceleration = new byte[6];
+            byte[] oneAcceleration = new byte[16];
+
+            // Create acceleration with timestamp of UTC 1
+            oneAcceleration[0] = 0;
+            oneAcceleration[1] = 0;
+            oneAcceleration[2] = 0;
+            oneAcceleration[3] = 0;
+            oneAcceleration[4] = 0;
+            oneAcceleration[5] = 0;
+            oneAcceleration[6] = 0;
+            oneAcceleration[7] = 1;
+
+            // Create acceleration with a size 1 FIFO dump
+            oneAcceleration[8] = 0;
+            oneAcceleration[9] = 1;
 
             // This will create an acceleration with x, y and z axes as 1, 2 and 3 respectively
-            oneAcceleration[0] = 0;
-            oneAcceleration[1] = 1;
-            oneAcceleration[2] = 0;
-            oneAcceleration[3] = 2;
-            oneAcceleration[4] = 0;
-            oneAcceleration[5] = 3;
+            oneAcceleration[10] = 0;
+            oneAcceleration[11] = 1;
+            oneAcceleration[12] = 0;
+            oneAcceleration[13] = 2;
+            oneAcceleration[14] = 0;
+            oneAcceleration[15] = 3;
 
-            // Skipping the timestamp because we aren't concerned with that in this test
             Acceleration[] expected = new Acceleration[1];
-            expected[0] = Acceleration.Generate(0, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE);
+            expected[0] = Acceleration.Generate(1, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE);
 
             // This is only used for the counter, becuase it needs a variable to be passed by reference
             int i = 0;
@@ -38,7 +51,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
             var result = PacketDecodingTools.GetAccelerationFromBytes(ref i, oneAcceleration, 1, SensorLocationEnum.COUNTERBALANCE);
 
             Assert.AreEqual(1, result.Length); // Only expecting one result
-
+            Assert.AreEqual(expected[0].TimeCaptured, result[0].TimeCaptured);
             Assert.AreEqual(expected[0].x, result[0].x);
             Assert.AreEqual(expected[0].y, result[0].y);
             Assert.AreEqual(expected[0].z, result[0].z);
@@ -50,38 +63,56 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
         {
             // The byte size for one acceleration is 6 bytes, because each axis takes up 2 bytes, 
             // and there are 3 axes.
-            byte[] twoAcceleration = new byte[12];
+            byte[] twoAcceleration = new byte[22];
 
-            // This will create two acceleration results with x, y and z axes as 1, 2 and 3 respectively
+            // Create acceleration with timestamp of UTC 1
             twoAcceleration[0] = 0;
-            twoAcceleration[1] = 1;
+            twoAcceleration[1] = 0;
             twoAcceleration[2] = 0;
-            twoAcceleration[3] = 2;
+            twoAcceleration[3] = 0;
             twoAcceleration[4] = 0;
-            twoAcceleration[5] = 3;
+            twoAcceleration[5] = 0;
             twoAcceleration[6] = 0;
             twoAcceleration[7] = 1;
+
+            // Create acceleration with a size 2 FIFO dump
             twoAcceleration[8] = 0;
             twoAcceleration[9] = 2;
+
+            // This will create two acceleration results with x, y and z axes as 1, 2 and 3 respectively
             twoAcceleration[10] = 0;
-            twoAcceleration[11] = 3;
+            twoAcceleration[11] = 1;
+            twoAcceleration[12] = 0;
+            twoAcceleration[13] = 2;
+            twoAcceleration[14] = 0;
+            twoAcceleration[15] = 3;
+            twoAcceleration[16] = 0;
+            twoAcceleration[17] = 1;
+            twoAcceleration[18] = 0;
+            twoAcceleration[19] = 2;
+            twoAcceleration[20] = 0;
+            twoAcceleration[21] = 3;
 
             // Skipping the timestamp because we aren't concerned with that in this test
             Acceleration[] expected = new Acceleration[2];
-            expected[0] = Acceleration.Generate(0, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE);
-            expected[1] = Acceleration.Generate(0, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE);
+            expected[0] = Acceleration.Generate(1, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE);
+            expected[1] = Acceleration.Generate(1 + (long)1.25, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE); // Temporary, will change when the Control Room can configure accelerometers
 
             // This is only used for the counter, becuase it needs a variable to be passed by reference
             int i = 0;
 
-            var result = PacketDecodingTools.GetAccelerationFromBytes(ref i, twoAcceleration, 2, SensorLocationEnum.COUNTERBALANCE);
+            var result = PacketDecodingTools.GetAccelerationFromBytes(ref i, twoAcceleration, 1, SensorLocationEnum.COUNTERBALANCE);
 
             Assert.AreEqual(2, result.Length); // Expecting two results
+
+            Assert.AreEqual(expected[0].TimeCaptured, result[0].TimeCaptured);
 
             Assert.AreEqual(expected[0].x, result[0].x);
             Assert.AreEqual(expected[0].y, result[0].y);
             Assert.AreEqual(expected[0].z, result[0].z);
             Assert.AreEqual(expected[0].location_ID, result[0].location_ID);
+
+            Assert.AreEqual(expected[1].TimeCaptured, result[1].TimeCaptured);
 
             Assert.AreEqual(expected[1].x, result[1].x);
             Assert.AreEqual(expected[1].y, result[1].y);

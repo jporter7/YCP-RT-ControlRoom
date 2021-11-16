@@ -1,6 +1,7 @@
 ﻿using ControlRoomApplication.Entities;
 using ControlRoomApplication.Entities.DiagnosticData;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,25 +21,33 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <param name="currPointer">This is the current place we are in the byte array. We want to pass this by reference
         /// so that future functions know where to begin.</param>
         /// <param name="data">This is the byte array that we are converting in to acceleration.</param>
-        /// <param name="size">This is the size of the acceleration data that we expect to see in the byte array.</param>
+        /// <param name="size">This is the size of the acceleration dumps that we expect to see in the byte array.</param>
         /// <param name="sensor">This is the sensor that the data is being created for.</param>
         /// <returns></returns>
         public static Acceleration[] GetAccelerationFromBytes(ref int currPointer, byte[] data, int size, SensorLocationEnum sensor)
         {
 
-            Acceleration[] acceleration = new Acceleration[size];
+            List<Acceleration> acceleration = new List<Acceleration>();  // Temporary, will change when the Control Room can configure accelerometers
             for (int j = 0; j < size; j++)
             {
-                acceleration[j] = Acceleration.Generate(
-                    DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    (short)(data[currPointer++] << 8 | data[currPointer++]),
-                    (short)(data[currPointer++] << 8 | data[currPointer++]),
-                    (short)(data[currPointer++] << 8 | data[currPointer++]),
-                    sensor
-                );
+                long timeStamp = (data[currPointer++] << 56 | data[currPointer++] << 48 | data[currPointer++] << 40 | data[currPointer++] << 32
+                    | data[currPointer++] << 24 | data[currPointer++] << 16 | data[currPointer++] << 8 | data[currPointer++]);
+
+                short dumpSize = (short)(data[currPointer++] << 8 | data[currPointer++]);
+
+                for (int k = 0; k < dumpSize; k++)
+                {
+                    acceleration.Add(Acceleration.Generate(
+                        timeStamp + (long)(k * 1.25),   // Temporary, will change when the Control Room can configure accelerometers
+                        (short)(data[currPointer++] << 8 | data[currPointer++]),
+                        (short)(data[currPointer++] << 8 | data[currPointer++]),
+                        (short)(data[currPointer++] << 8 | data[currPointer++]),
+                        sensor
+                    ));
+                }
             }
 
-            return acceleration;
+            return acceleration.ToArray();
         }
 
         /// <summary>
