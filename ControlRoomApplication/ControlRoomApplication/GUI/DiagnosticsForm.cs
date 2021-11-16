@@ -295,7 +295,6 @@ namespace ControlRoomApplication.GUI
             if (controlRoom.RTControllerManagementThreads.Count > 0 && controlRoom.RTControllerManagementThreads[0].AppointmentToDisplay != null)
             {
                 Appointment appt = controlRoom.RTControllerManagementThreads[0].AppointmentToDisplay;
-                // logger.Info("Current appointment " + );
                 statusTextBox.Text = appt.status.ToString();
                 endTimeTextBox.Text = appt.end_time.ToString();
                 startTimeTextBox.Text = appt.start_time.ToString();
