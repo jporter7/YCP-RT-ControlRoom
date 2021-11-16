@@ -105,21 +105,42 @@ namespace ControlRoomApplication.Controllers
                         // if script inform which script is running, else just command type
                         if(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "SCRIPT")
                         {
-                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
+                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...");
-                            string startedCommandMsg = "Successfully parsed command " + data + ".beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
+                            string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...";
                             writeBackToClient(startedCommandMsg, stream);
-
                             // writeback eta to client
-                            writeBackToClient("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " has an estimated time of "+ ScriptETA(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " ms"), stream);
+                            int estMoveTime = ScriptETA(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME]);
+                            logger.Info("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " has an estimated time of " + estMoveTime + " ms");
+                            writeBackToClient(("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " has an estimated time of "+ estMoveTime + " ms"), stream);
 
                         }
                         else
                         {
-                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
-                            string startedCommandMsg = "Successfully parsed command " + data + ".beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE]+"...";
+                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
+                            string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE]+"...";
                             writeBackToClient(startedCommandMsg, stream);
+
+                            if (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "ORIENTATION_MOVE")
+                            {
+                                int az = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_AZ]);
+                                int el = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_EL]);
+
+                                int mvmtTime = AbsoluteMovementETA(new Orientation(az,el));
+
+                                writeBackToClient("ORIENTATION_MOVE TO AZ " + az + " and EL " + el + " has an estimated time of " + mvmtTime + " ms", stream);
+
+                            }
+                            else if (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "RELATIVE_MOVE")
+                            {
+                                int az = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_AZ]);
+                                int el = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_EL]);
+                                int mvmtTime = RelativeMovementETA(new Orientation(az, el));
+
+                                writeBackToClient("RELATIVE_MOVE BY AZ " + az + " and EL " + el + " has an estimated time of " + mvmtTime + " ms", stream);
+
+                            }
 
 
                         }
@@ -663,6 +684,12 @@ namespace ControlRoomApplication.Controllers
             
         }
 
+        
+        /// <summary>
+        /// These ETA functions are used to calculate the estimated time a movement should take, and in turn sent back to the mobile app in order to display a progress bar.
+        /// </summary>
+        /// <param name="targetOrientation"></param>
+        /// <returns></returns>
         public int AbsoluteMovementETA(Orientation targetOrientation)
         {
             // distance is degrees to steps for az/el
@@ -673,7 +700,6 @@ namespace ControlRoomApplication.Controllers
             Orientation currentOrientation = rtController.GetCurrentOrientation();
             int positionTranslationAZ = ConversionHelper.DegreesToSteps(targetOrientation.Azimuth - currentOrientation.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
             int positionTranslationEL = ConversionHelper.DegreesToSteps((targetOrientation.Elevation - currentOrientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
-
 
             int timeToMoveEl = MCUManager.EstimateMovementTime(EL_Speed, positionTranslationEL);
             int timeToMoveAz = MCUManager.EstimateMovementTime(AZ_Speed, positionTranslationAZ);
@@ -691,10 +717,8 @@ namespace ControlRoomApplication.Controllers
             int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_ELEVATION);
             int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.6), MotorConstants.GEARING_RATIO_AZIMUTH);
 
-            Orientation currentOrientation = rtController.GetCurrentOrientation();
             int positionTranslationAZ = ConversionHelper.DegreesToSteps(movingBy.Azimuth, MotorConstants.GEARING_RATIO_AZIMUTH);
             int positionTranslationEL = ConversionHelper.DegreesToSteps(movingBy.Elevation, MotorConstants.GEARING_RATIO_ELEVATION);
-
 
             int timeToMoveEl = MCUManager.EstimateMovementTime(EL_Speed, positionTranslationEL);
             int timeToMoveAz = MCUManager.EstimateMovementTime(AZ_Speed, positionTranslationAZ);
@@ -706,41 +730,38 @@ namespace ControlRoomApplication.Controllers
 
         public int ScriptETA(string scriptType)
         {
-            switch (scriptType)
+            switch (scriptType.Trim())
             {
                 case "DUMP":
-                        
-                    break;
+                    return 0;  
 
                 case "FULL_EV":
-                    break;
+                    return AbsoluteMovementETA(new Orientation(0, 90)) + RelativeMovementETA(new Orientation(0, -90));
 
                 case "THERMAL_CALIBRATE":
-                    break;
+                    return 0;
 
                 case "STOW":
                     return AbsoluteMovementETA(new Orientation(0, 90));
 
                 case "FULL_CLOCK":
-                    break;
+                    return AbsoluteMovementETA(new Orientation(360, 0));
 
                 case "FULL_COUNTER":
-                    break;
+                    return AbsoluteMovementETA(new Orientation(-360,0));
 
                 case "HOME":
                     return AbsoluteMovementETA(new Orientation(0, 0));
 
                 case "HARDWARE_MVMT_SCRIPT":
-                    break;
+                    return 0;
 
+                // If no command is found, invalid script. Return -1
                 default:
-                    
-                    break;
-
+                    return -1;
             }
-            // If no command is found, invalid script. Return -1
             return -1;
-            }
+        }
 
     }
 
