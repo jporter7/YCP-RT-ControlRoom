@@ -91,9 +91,9 @@ namespace ControlRoomApplication.Controllers
             return driver.ImmediateStop();
         }
 
-        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation)
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int programmedPeakSpeedELInt,  int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation)
         {
-            return driver.RelativeMove(programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
+            return driver.RelativeMove(programmedPeakSpeedAZInt, programmedPeakSpeedELInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
         public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
@@ -165,5 +165,9 @@ namespace ControlRoomApplication.Controllers
             return driver.MotorsCurrentlyMoving(axis);
         }
 
+        public override void SetFinalOffset(Orientation finalPos)
+        {
+            driver.SetFinalOffset(finalPos);
+        }
     }
 }

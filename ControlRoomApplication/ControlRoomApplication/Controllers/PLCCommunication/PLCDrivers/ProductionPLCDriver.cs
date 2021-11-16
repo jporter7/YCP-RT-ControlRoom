@@ -378,6 +378,7 @@ namespace ControlRoomApplication.Controllers
                             if (plcInput.Estop)
                             {
                                 logger.Info(Utilities.GetTimeStamp() + ": Estop Hit");
+                                CurrentMovementPriority = MovementPriority.Critical;
 
                                 pushNotification.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been hit.");
                                 EmailNotifications.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been hit.");
@@ -385,6 +386,7 @@ namespace ControlRoomApplication.Controllers
                             else
                             {
                                 logger.Info(Utilities.GetTimeStamp() + ": Estop released");
+                                CurrentMovementPriority = MovementPriority.None;
 
                                 pushNotification.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been released.");
                                 EmailNotifications.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been released.");
@@ -518,8 +520,8 @@ namespace ControlRoomApplication.Controllers
         /// <param name="positionTranslationEL"></param>
         /// <param name="targetOrientation">The target orientation.</param>
         /// <returns></returns>
-        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
-            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedAZInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int programmedPeakSpeedELInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
+            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedELInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
         public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
@@ -671,6 +673,11 @@ namespace ControlRoomApplication.Controllers
         public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
         {
             return MCU.MotorsCurrentlyMoving(axis);
+        }
+
+        public override void SetFinalOffset(Orientation finalPos)
+        {
+            MCU.FinalPositionOffset = finalPos;
         }
     }
 }

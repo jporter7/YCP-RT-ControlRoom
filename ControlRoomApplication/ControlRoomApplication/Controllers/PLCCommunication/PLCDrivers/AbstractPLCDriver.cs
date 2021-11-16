@@ -98,7 +98,7 @@ namespace ControlRoomApplication.Controllers
 
         public abstract bool ImmediateStop();
 
-        public abstract MovementResult RelativeMove(int programmedPeakSpeedAZInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation);
+        public abstract MovementResult RelativeMove(int programmedPeakSpeedAZInt, int programmedPeakSpeedELInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation);
 
         public abstract MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation);
 
@@ -147,5 +147,7 @@ namespace ControlRoomApplication.Controllers
         /// <param name="axis">Azimuth, elevation, or both.</param>
         /// <returns>True if moving, false if not moving.</returns>
         public abstract bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH);
+
+        public abstract void SetFinalOffset(Orientation finalPos);
     }
 }
