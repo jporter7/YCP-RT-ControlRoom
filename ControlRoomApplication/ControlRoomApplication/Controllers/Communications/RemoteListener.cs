@@ -29,6 +29,7 @@ namespace ControlRoomApplication.Controllers
         private bool KeepTCPMonitoringThreadAlive;
         public RadioTelescopeController rtController;
         private ControlRoom controlRoom;
+        private bool connected = false;
 
         public RemoteListener(int port, ControlRoom control)
         {
@@ -62,6 +63,7 @@ namespace ControlRoomApplication.Controllers
                 // You could also user server.AcceptSocket() here.
                 TcpClient client = server.AcceptTcpClient();
                 logger.Debug(Utilities.GetTimeStamp() + ": TCP Client connected!");
+                connected = true;
 
                 data = null;
 
@@ -72,7 +74,7 @@ namespace ControlRoomApplication.Controllers
 
                 // Loop to receive all the data sent by the client.
                 // Add try catch to reading
-                while ((i = readFromStream(stream, bytes)) != 0)
+                while (connected && (i = readFromStream(stream, bytes)) != 0 )
                 {
                     // Translate data bytes to ASCII string.
                     data = Encoding.ASCII.GetString(bytes, 0, i);
@@ -139,6 +141,9 @@ namespace ControlRoomApplication.Controllers
 
                     // Send message back -- send final state
                     writeBackToClient(myWriteBuffer, stream);
+
+                    client.Close();
+                    connected = false;
                 }
 
                 // Shutdown and end connection
