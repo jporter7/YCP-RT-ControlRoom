@@ -41,7 +41,7 @@ namespace ControlRoomApplication.Constants
 
         public static String MISSING_COMMAND_ARGS = "The total number of arguments is invalid for this type of command: ";
 
-        public static String INVALID_REQUEST_TYPE = "The specified request type was not found or is invalid: ";
+        public static String INVALID_REQUEST_TYPE = "The specified REQUEST type was not found or is invalid: ";
 
         public static String[] SCRIPT_NAME_ARRAY = new String[] { "DUMP", "FULL_EV", "THERMAL_CALIBRATE", "STOW", "FULL_CLOCK", "FULL_COUNTER", "HOME", "HARDWARE_MVMT_SCRIPT" };
 
