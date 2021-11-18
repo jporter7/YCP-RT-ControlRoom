@@ -33,7 +33,16 @@ namespace ControlRoomApplication.Constants
         /// </summary>
         public static readonly Orientation Stow = new Orientation(0, 90);
 
-        //private const
+
+        //constants for acceleration blob
+
+        /// <summary>
+        /// The number of acceleration datapoints in one blob to be added to the database
+        /// </summary>
+        public const int BLOB_SIZE = 4000;
+
+
+
 
 
 

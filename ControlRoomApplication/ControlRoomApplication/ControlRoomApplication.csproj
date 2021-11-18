@@ -140,6 +140,11 @@
       <HintPath>..\packages\ScottPlot.WinForms.4.0.48\lib\net461\ScottPlot.WinForms.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.NonGeneric, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.NonGeneric.4.3.0\lib\net46\System.Collections.NonGeneric.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Collections.Specialized, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Specialized.4.3.0\lib\net46\System.Collections.Specialized.dll</HintPath>
     </Reference>
@@ -253,6 +258,9 @@
     <Compile Include="Controllers\Communications\SNSMessage.cs" />
     <Compile Include="Documentation\LoggerQueue.cs" />
     <Compile Include="Entities\Acceleration\AccelerationBlob.cs" />
+    <Compile Include="Entities\Acceleration\CounterbalanceAccelerationBlob.cs" />
+    <Compile Include="Entities\Acceleration\ElevationAccelerationBlob.cs" />
+    <Compile Include="Entities\Acceleration\AzimuthAccelerationBlob.cs" />
     <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
