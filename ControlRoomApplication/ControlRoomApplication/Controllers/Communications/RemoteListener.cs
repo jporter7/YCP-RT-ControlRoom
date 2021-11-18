@@ -58,7 +58,6 @@ namespace ControlRoomApplication.Controllers
             while (KeepTCPMonitoringThreadAlive)
             {
                 logger.Debug(Utilities.GetTimeStamp() + ": Waiting for a connection... ");
-
                 // Perform a blocking call to accept requests.
                 // You could also user server.AcceptSocket() here.
                 TcpClient client = server.AcceptTcpClient();
@@ -98,6 +97,7 @@ namespace ControlRoomApplication.Controllers
                         // send back a failure response
                         logger.Info("Parsing command failed with ERROR: " + parsedTCPCommandResult.errorMessage);
                         myWriteBuffer = "Parsing command failed with error: "+ parsedTCPCommandResult.errorMessage;
+                        writeBackToClient(myWriteBuffer, stream);
                     }
                     // else the parsing was successful, attempt to run the command
                     else
@@ -122,24 +122,26 @@ namespace ControlRoomApplication.Controllers
                             string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE]+"...";
                             writeBackToClient(startedCommandMsg, stream);
 
-                            if (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "ORIENTATION_MOVE")
+                            switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
                             {
-                                int az = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_AZ]);
-                                int el = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_EL]);
+                                case "ORIENTATION_MOVE":
+                                    int azAbs = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_AZ]);
+                                    int elAbs = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_EL]);
 
-                                int mvmtTime = AbsoluteMovementETA(new Orientation(az,el));
+                                    int mvmtTimeAbs = AbsoluteMovementETA(new Orientation(azAbs, elAbs));
 
-                                writeBackToClient("ORIENTATION_MOVE TO AZ " + az + " and EL " + el + " has an estimated time of " + mvmtTime + " ms", stream);
+                                    writeBackToClient("ORIENTATION_MOVE TO AZ " + azAbs + " and EL " + elAbs + " has an estimated time of " + mvmtTimeAbs + " ms", stream);
+                                    break;
+                                case "RELATIVE_MOVE":
+                                    int azRelative = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_AZ]);
+                                    int elRelative = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_EL]);
+                                    int mvmtTimeRelative = RelativeMovementETA(new Orientation(azRelative, elRelative));
 
-                            }
-                            else if (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "RELATIVE_MOVE")
-                            {
-                                int az = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_AZ]);
-                                int el = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_EL]);
-                                int mvmtTime = RelativeMovementETA(new Orientation(az, el));
+                                    writeBackToClient("RELATIVE_MOVE BY AZ " + azRelative + " and EL " + elRelative + " has an estimated time of " + mvmtTimeRelative + " ms", stream);
+                                    break;
 
-                                writeBackToClient("RELATIVE_MOVE BY AZ " + az + " and EL " + el + " has an estimated time of " + mvmtTime + " ms", stream);
-
+                                default:
+                                    break;
                             }
 
 
@@ -151,17 +153,34 @@ namespace ControlRoomApplication.Controllers
                         {
                             logger.Debug(Utilities.GetTimeStamp() + ": Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage);
                             myWriteBuffer = "Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage;
+                            writeBackToClient(myWriteBuffer, stream);
                         }
                         else
                         {
-                            logger.Debug(Utilities.GetTimeStamp() + ": SUCCESSFULLY COMPLETED COMMAND: " + data);
-                            // send back a success response -- finished command
-                            myWriteBuffer = "SUCCESSFULLY COMPLETED COMMAND: " + data;
+                            switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
+                            {
+                                // we write back different in the case of a request command. Otherwise, the default is just successfully completing a command
+                                case "REQUEST":
+                                    switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.REQUEST_TYPE])
+                                    {
+                                        case "MVMT_DATA":
+                                            writeBackToClient(executeTCPCommandResult.errorMessage, stream);
+                                            logger.Debug(Utilities.GetTimeStamp() + ": "+executeTCPCommandResult.errorMessage);
+                                            break;
+                                    }
+
+                                    break;
+
+                                default:
+                                    logger.Debug(Utilities.GetTimeStamp() + ": SUCCESSFULLY COMPLETED COMMAND: " + data);
+                                    // send back a success response -- finished command
+                                    myWriteBuffer = "SUCCESSFULLY COMPLETED COMMAND: " + data;
+                                    writeBackToClient(myWriteBuffer, stream);
+                                    break;
+                            }
+                           
                         }
                     }
-
-                    // Send message back -- send final state
-                    writeBackToClient(myWriteBuffer, stream);
 
                     client.Close();
                     connected = false;
@@ -461,7 +480,14 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if(command=="REQUEST")
                 {
-                    // TODO: implement request commands
+                    switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
+                    {
+                        case "MVMT_DATA":
+                            return new ExecuteTCPCommandResult(MovementResult.Success, GetMovementData());
+                          
+                        default:
+                            return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
+                    }
                 }
 
                 // can't find a keyword then we return Invalid Command sent
@@ -638,7 +664,14 @@ namespace ControlRoomApplication.Controllers
 
                     break;
                 case "REQUEST":
-                    // TODO: implement request commands
+                    switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
+                    {
+                        case "MVMT_DATA":
+                            return new ParseTCPCommandResult(ParseTCPCommandResultEnum.Success, splitCommandString);
+
+                        default:
+                            return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidRequestType, splitCommandString, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]); ;
+                    }
                     break;
 
                 // if we get here, command type not found
@@ -762,8 +795,21 @@ namespace ControlRoomApplication.Controllers
             }
             return -1;
         }
-
+        /// <summary>
+        /// Used for when the mobile app sends a command for REQUEST | MVMT_DATA. This will specify the current location of the telescope, and whether or not
+        /// it is currently moving.
+        /// </summary>
+        /// <returns></returns>
+        public string GetMovementData()
+        {
+            Orientation currentPos = rtController.GetCurrentOrientation();
+            string currentlyMoving = rtController.RadioTelescope.PLCDriver.MotorsCurrentlyMoving().ToString().ToUpper();
+            return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;  
+        }
     }
+
+    
+
 
    
    
