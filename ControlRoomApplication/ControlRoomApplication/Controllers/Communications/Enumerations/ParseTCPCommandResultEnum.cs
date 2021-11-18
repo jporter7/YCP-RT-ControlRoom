@@ -44,7 +44,12 @@ namespace ControlRoomApplication.Controllers.Communications.Enumerations
         /// <summary>
         /// The script name requested was not found or is invalid
         /// </summary>
-        InvalidScript
+        InvalidScript,
+
+        /// <summary>
+        /// The request type was not found
+        /// </summary>
+        InvalidRequestType
 
     }
 }
