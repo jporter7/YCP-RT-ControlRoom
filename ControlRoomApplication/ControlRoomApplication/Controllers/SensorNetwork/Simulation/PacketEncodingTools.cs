@@ -212,6 +212,16 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
             length += (uint)azAccSize * 6;
             length += (uint)cbAccSize * 6;
 
+            // Each accelerometer dump has a timestamp associated with it of 8 bytes. This assumes that the FIFO size is 32
+            length += (uint)Math.Ceiling(elAccSize / 32.0) * 8;
+            length += (uint)Math.Ceiling(azAccSize / 32.0) * 8;
+            length += (uint)Math.Ceiling(cbAccSize / 32.0) * 8;
+
+            // Each acceleromter dump has a dump size associated with it that takes up 2 bytes. This assumes the FIFO size is 32
+            length += (uint)Math.Ceiling(elAccSize / 32.0) * 2;
+            length += (uint)Math.Ceiling(azAccSize / 32.0) * 2;
+            length += (uint)Math.Ceiling(cbAccSize / 32.0) * 2;
+
             // Each temp and encoder value is 2 bytes
             length += (uint)elTempSize * 2;
             length += (uint)azTempSize * 2;
