@@ -304,6 +304,18 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
             dataToAddTo[counter++] = (byte)((((short)dataBeingAdded & 0x000000FF)));
         }
 
+        /// <summary>
+        /// A helper function to add 64-bit values to the byte array so we don't have to do this every single time.
+        /// </summary>
+        /// <param name="dataToAddTo">The byte array we are modifying.</param>
+        /// <param name="counter">The counter to tell us where in the byte array we are modifying.</param>
+        /// <param name="dataBeingAdded">The data we are adding to the byte array.</param>
+        public static void Add64BitValueToByteArray(ref byte[] dataToAddTo, ref int counter, ulong dataBeingAdded)
+        {
+            Add32BitValueToByteArray(ref dataToAddTo, ref counter, (uint)((dataBeingAdded & 0xFFFFFFFF00000000) >> 32));
+            Add32BitValueToByteArray(ref dataToAddTo, ref counter, (uint)(dataBeingAdded & 0x00000000FFFFFFFF));
+        }
+
 
         private static byte ConvertBoolArrayToByte(bool[] source)
         {

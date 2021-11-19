@@ -15,6 +15,54 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         PacketEncodingTools tools = new PacketEncodingTools();
 
         [TestMethod]
+        public void TestAdd64BitValueToByteArray_Max64BitUnsignedValue_ConvertsToByteArray()
+        {
+            ulong max = 0xFFFFFFFFFFFFFFFF;
+
+            byte[] resultBytes = new byte[8];
+            int counter = 0;
+
+            PacketEncodingTools.Add64BitValueToByteArray(ref resultBytes, ref counter, max);
+
+            // Create expected byte array
+            byte[] expectedBytes = new byte[8];
+            expectedBytes[0] = 255;
+            expectedBytes[1] = 255;
+            expectedBytes[2] = 255;
+            expectedBytes[3] = 255;
+            expectedBytes[4] = 255;
+            expectedBytes[5] = 255;
+            expectedBytes[6] = 255;
+            expectedBytes[7] = 255;
+
+            Assert.IsTrue(resultBytes.SequenceEqual(expectedBytes));
+        }
+
+        [TestMethod]
+        public void TestAdd64BitValueToByteArray_Min64BitUnsignedValue_ConvertsToByteArray()
+        {
+            ulong min = 0;
+
+            byte[] resultBytes = new byte[8];
+            int counter = 0;
+
+            PacketEncodingTools.Add64BitValueToByteArray(ref resultBytes, ref counter, min);
+
+            // Create expected byte array
+            byte[] expectedBytes = new byte[8];
+            expectedBytes[0] = 0;
+            expectedBytes[1] = 0;
+            expectedBytes[2] = 0;
+            expectedBytes[3] = 0;
+            expectedBytes[4] = 0;
+            expectedBytes[5] = 0;
+            expectedBytes[6] = 0;
+            expectedBytes[7] = 0;
+
+            Assert.IsTrue(resultBytes.SequenceEqual(expectedBytes));
+        }
+
+        [TestMethod]
         public void TestAdd32BitValueToByteArray_Max32BitUnsignedValue_ConvertsToByteArray()
         {
             uint max = 4294967295;
