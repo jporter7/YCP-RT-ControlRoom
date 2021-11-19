@@ -48,6 +48,8 @@ namespace ControlRoomApplication.Constants
         public static String[] SENSORS_ARRAY = new string[] { "WEATHER_STATION", "MAIN_GATE", "ELEVATION_LIMIT_0", "ELEVATION_LIMIT_90", "AZ_ABS_ENC", "EL_ABS_ENC", "AZ_ACC", "EL_ACC", "CB_ACC",
         "AZIMUTH_MOT_TEMP", "ELEVATION_MOT_TEMP" };
 
+        public static String[] ALL_VERSIONS_LIST = new String[] { "1.0" };
+
 
         // Integers for indexing array of command pieces
         // General numbers
