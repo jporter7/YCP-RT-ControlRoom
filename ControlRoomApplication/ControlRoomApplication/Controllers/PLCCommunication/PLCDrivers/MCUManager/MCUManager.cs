@@ -807,6 +807,9 @@ namespace ControlRoomApplication.Controllers {
             TimeToMove = ( int)(TimeToMove * 1.2);
             TimeToMove += 100;
 
+            if (targetOrientation.Azimuth == 0.0 || targetOrientation.Azimuth==360.0) TimeToMove += 100;
+   
+
             // Calculate azimuth movement direction
             RadioTelescopeDirectionEnum azDirection;
             if (positionTranslationAZ > 0) azDirection = RadioTelescopeDirectionEnum.ClockwiseOrNegative;
@@ -885,12 +888,19 @@ namespace ControlRoomApplication.Controllers {
                     // If this is reached, the motors have stopped and we are now checking that the orientation is correct
                     Orientation encoderOrientation = GetMotorEncoderPosition();
                     Orientation offsetOrientation = new Orientation(encoderOrientation.Azimuth + FinalPositionOffset.Azimuth, encoderOrientation.Elevation + FinalPositionOffset.Elevation);
+
                     while (offsetOrientation.Azimuth > 360) offsetOrientation.Azimuth -= 360;
                     while (offsetOrientation.Azimuth < 0) offsetOrientation.Azimuth += 360;
-                    if (Math.Abs(offsetOrientation.Azimuth - targetOrientation.Azimuth) <= 0.1 && Math.Abs(offsetOrientation.Elevation - targetOrientation.Elevation) <= 0.1)
+
+                    if ((targetOrientation.Azimuth == 0.0 || targetOrientation.Azimuth==360.0) && (offsetOrientation.Azimuth > 359.9 || offsetOrientation.Azimuth < 0.1))
                     {
                         result = MovementResult.Success;
                     }
+
+                   else if (Math.Abs(offsetOrientation.Azimuth - targetOrientation.Azimuth) <= 0.1 && Math.Abs(offsetOrientation.Elevation - targetOrientation.Elevation) <= 0.1)
+                   {
+                        result = MovementResult.Success;
+                   }
                     else
                     {
                         result = MovementResult.IncorrectPosition;
