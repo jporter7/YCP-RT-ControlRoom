@@ -629,13 +629,13 @@ namespace ControlRoomApplication.Controllers
                     // Always check to see if we have our correct number of arguments for command type. Return false if not
                     if (splitCommandString.Length != TCPCommunicationConstants.NUM_SENSOR_OVERRIDE_PARAMS)
                     {
-                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS + command);
                     }
                     // If the true false value is not given, we don't know what to do. Return error
                     else if (splitCommandString[TCPCommunicationConstants.DO_OVERRIDE] != "TRUE" &&
                         splitCommandString[TCPCommunicationConstants.DO_OVERRIDE] != "FALSE")
                     {
-                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_SET_OVERRIDE_ARG);
+                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_SET_OVERRIDE_ARG + splitCommandString[TCPCommunicationConstants.DO_OVERRIDE]);
                     }
                     else
                     {
@@ -653,7 +653,7 @@ namespace ControlRoomApplication.Controllers
                     // Check for valid number of parameters before continuing parsing
                     if (splitCommandString.Length != TCPCommunicationConstants.NUM_SENSOR_INIT_PARAMS)
                     {
-                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_SENSOR_INIT_ARGS);
+                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS + command);
                     }
 
                     // Retrieve sensor init values from the comma separated portion of the string
