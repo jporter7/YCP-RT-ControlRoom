@@ -522,6 +522,7 @@ namespace ControlRoomApplication.Controllers
             // Convert version from string to double. This is the first value in our string before the "|" character.
             // From here we will direct to the appropriate parsing for said version
             double version = 0.0;
+            bool foundVersion = false;
             try
             {
                 version = Double.Parse(splitCommandString[TCPCommunicationConstants.VERSION_NUM]);
@@ -532,7 +533,20 @@ namespace ControlRoomApplication.Controllers
                 return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidVersion, splitCommandString, errMessage);
 
             }
-            
+            // ensure version exists
+            foreach(string versionNum in TCPCommunicationConstants.ALL_VERSIONS_LIST)
+            {
+                if (versionNum == splitCommandString[TCPCommunicationConstants.VERSION_NUM].Trim())
+                {
+                    foundVersion = true;
+                    break;
+                }
+            }
+            // if version not found, return false
+            if (!foundVersion)
+            {
+                return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidVersion, splitCommandString, TCPCommunicationConstants.VERSION_NOT_FOUND + version);
+            }
   
             String command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
             switch (command)
@@ -664,6 +678,11 @@ namespace ControlRoomApplication.Controllers
 
                    
                 case "REQUEST":
+                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_REQUEST_PARAMS)
+                    {
+                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS + command);
+                    }
+
                     switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
                     {
                         case "MVMT_DATA":
