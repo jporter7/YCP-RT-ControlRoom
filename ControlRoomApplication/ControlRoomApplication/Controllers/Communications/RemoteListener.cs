@@ -217,7 +217,7 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
-        private ExecuteTCPCommandResult ExecuteRLCommand(String[] splitCommandString)
+        public ExecuteTCPCommandResult ExecuteRLCommand(String[] splitCommandString)
         {
             // Convert version from string to double. This is the first value in our string before the "|" character.
             // From here we will direct to the appropriate parsing for said version
@@ -658,11 +658,11 @@ namespace ControlRoomApplication.Controllers
 
                     // Retrieve sensor init values from the comma separated portion of the string
                     string[] splitData = splitCommandString[TCPCommunicationConstants.SENSOR_INIT_VALUES].Split(',');
-                    // there should be 10, if not, no bueno
-                    if (splitData.Length != 10) return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString,TCPCommunicationConstants.MISSING_SENSOR_INIT_ARGS);
-                    else { }
+                    // there should be 9, if not, no bueno
+                    if (splitData.Length != 9) return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString,TCPCommunicationConstants.MISSING_SENSOR_INIT_ARGS);
+                    else { return new ParseTCPCommandResult(ParseTCPCommandResultEnum.Success, splitCommandString); }
 
-                    break;
+                   
                 case "REQUEST":
                     switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
                     {
