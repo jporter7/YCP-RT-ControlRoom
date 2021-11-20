@@ -187,7 +187,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestCalcDataSize_ElAccelerometer_CalculatesSizeCorrectly()
         {
-            int elAcc = 1; // 6 bytes
+            int elAcc = 1; // 1 dump
 
             uint result = PacketEncodingTools.CalcDataSize(elAcc, 0, 0, 0, 0, 0, 0);
 
@@ -199,7 +199,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestCalcDataSize_AzAccelerometer_CalculatesSizeCorrectly()
         {
-            int azAcc = 1; // 6 bytes
+            int azAcc = 1; // 1 dump
 
             uint result = PacketEncodingTools.CalcDataSize(0, azAcc, 0, 0, 0, 0, 0);
 
@@ -211,7 +211,7 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests.S
         [TestMethod]
         public void TestCalcDataSize_CbAccelerometer_CalculatesSizeCorrectly()
         {
-            int cbAcc = 1; // 6 bytes
+            int cbAcc = 1; // 1 dump
 
             uint result = PacketEncodingTools.CalcDataSize(0, 0, cbAcc, 0, 0, 0, 0);
 
