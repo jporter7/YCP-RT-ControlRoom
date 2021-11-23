@@ -44,6 +44,7 @@ namespace ControlRoomApplication.Main
         public bool MCUPortValid = false;
         public bool PLCPortValid = false;
         public bool WCOMPortValid = false;
+        public bool RLPortValid = false;
         public bool SpectraPortValid = false;
         public bool SensorNetworkServerIPBool = false;
         public bool SensorNetworkServerPortBool = false;
@@ -142,6 +143,8 @@ namespace ControlRoomApplication.Main
             txtSpectraPort.ForeColor = System.Drawing.Color.Gray;
             txtWSCOMPort.Text = "COM";
             txtWSCOMPort.ForeColor = System.Drawing.Color.Gray;
+            txtRemoteListenerCOMPort.Text = "COM";
+            txtRemoteListenerCOMPort.ForeColor = System.Drawing.Color.Gray;
 
             logger.Info(Utilities.GetTimeStamp() + ": MainForm Initalized");
         }
@@ -286,6 +289,7 @@ namespace ControlRoomApplication.Main
                 txtPLCIP.Enabled = true;
                 txtMcuCOMPort.Enabled = true;
                 txtWSCOMPort.Enabled = true;
+                txtRemoteListenerCOMPort.Enabled = true;
                 txtPLCPort.Enabled = true;
                 txtSpectraPort.Enabled = true;
 
@@ -298,10 +302,20 @@ namespace ControlRoomApplication.Main
                     if (MainControlRoomController == null)
                     {
                         logger.Info(Utilities.GetTimeStamp() + ": Initializing ControlRoomController");
+
+                        int rlPort=0;
+                        try
+                        {
+                            Int32.Parse(txtRemoteListenerCOMPort.Text);
+                        }catch(Exception ex)
+                        {
+                            logger.Error("There was an error parsing the Remote Listener port to an integer"+ex);
+
+                        }
                         if (lastCreatedProductionWeatherStation == null)
-                            MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation()));
+                            MainControlRoomController = new ControlRoomController(new ControlRoom(BuildWeatherStation(), rlPort));
                         else
-                            MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation));
+                            MainControlRoomController = new ControlRoomController(new ControlRoom(lastCreatedProductionWeatherStation, rlPort));
                     }
 
                     bool isSensorNetworkServerSimulated = false;
@@ -779,7 +793,7 @@ namespace ControlRoomApplication.Main
                 txtPLCPort.BackColor = System.Drawing.Color.White;
                 this.PLCPortToolTip.Hide(label3);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+            if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -806,7 +820,7 @@ namespace ControlRoomApplication.Main
                 txtPLCIP.BackColor = System.Drawing.Color.White;
                 this.MCUIPToolTip.Hide(label4);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+            if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -850,7 +864,7 @@ namespace ControlRoomApplication.Main
                     this.WCOMPortToolTip.Hide(label2);
 
                 }
-                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
                 {
                     acceptSettings.Enabled = true;
                 }
@@ -860,6 +874,37 @@ namespace ControlRoomApplication.Main
             {
                 txtWSCOMPort.BackColor = System.Drawing.Color.LightGray;
                 this.WCOMPortToolTip.Hide(label2);
+            }
+        }
+
+        private void txtRemoteListenerCOMPort_TextChanged(object sender, EventArgs e)
+        {
+
+            if (txtRemoteListenerCOMPort.Text != "COM")
+            {
+                RLPortValid = Validator.ValidatePort(txtRemoteListenerCOMPort.Text);
+                if (!RLPortValid)
+                {
+                    acceptSettings.Enabled = false;
+                    txtRemoteListenerCOMPort.BackColor = System.Drawing.Color.Yellow;
+                    this.RLPortToolTip.Show("Enter a valid port number\n" +" between 1 and 65536", RLLabel);
+                }
+                else
+                {
+                    txtRemoteListenerCOMPort.BackColor = System.Drawing.Color.White;
+                    this.RLPortToolTip.Hide(RLLabel);
+
+                }
+                if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                {
+                    acceptSettings.Enabled = true;
+                }
+
+            }
+            else
+            {
+                txtRemoteListenerCOMPort.BackColor = System.Drawing.Color.LightGray;
+                this.RLPortToolTip.Hide(RLLabel);
             }
         }
 
@@ -1008,7 +1053,7 @@ namespace ControlRoomApplication.Main
                 txtMcuCOMPort.BackColor = System.Drawing.Color.White;
                 this.MCUIPToolTip.Hide(label5);
             }
-            if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+            if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
             {
                 acceptSettings.Enabled = true;
             }
@@ -1051,7 +1096,7 @@ namespace ControlRoomApplication.Main
                     sensorNetworkServerIPAddress.BackColor = System.Drawing.Color.White;
                     this.MCUIPToolTip.Hide(label6);
                 }
-                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                if (RLPortValid &&  PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
                 {
                     acceptSettings.Enabled = true;
                 }
@@ -1100,7 +1145,7 @@ namespace ControlRoomApplication.Main
                     sensorNetworkClientIPAddress.BackColor = System.Drawing.Color.White;
                     this.MCUIPToolTip.Hide(label7);
                 }
-                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
                 {
                     acceptSettings.Enabled = true;
                 }
@@ -1150,7 +1195,7 @@ namespace ControlRoomApplication.Main
                     this.WCOMPortToolTip.Hide(label6);
 
                 }
-                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
                 {
                     acceptSettings.Enabled = true;
                 }
@@ -1222,6 +1267,28 @@ namespace ControlRoomApplication.Main
             }
         }
 
+
+        //Sets removes the temp value and sets text to black 
+        private void txtRemoteListenerCOMPort_Enter(object sender, EventArgs e)
+        {
+            if (txtRemoteListenerCOMPort.Text == "COM")
+            {
+                txtRemoteListenerCOMPort.Text = "";
+                txtRemoteListenerCOMPort.ForeColor = System.Drawing.Color.Black;
+            }
+        }
+
+        //Sets sets the temp value and sets text to gray 
+        private void txtRemoteListenerCOMPort_Leave(object sender, EventArgs e)
+        {
+            if (txtRemoteListenerCOMPort.Text == "")
+            {
+                txtRemoteListenerCOMPort.Text = "COM";
+                txtRemoteListenerCOMPort.ForeColor = System.Drawing.Color.Gray;
+            }
+        }
+
+
         private void sensorNetworkClientPort_TextChanged(object sender, EventArgs e)
         {
             if (sensorNetworkClientPort.Text != "Port")
@@ -1240,7 +1307,7 @@ namespace ControlRoomApplication.Main
                     this.WCOMPortToolTip.Hide(label7);
 
                 }
-                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
+                if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool)
                 {
                     acceptSettings.Enabled = true;
                 }
@@ -1295,7 +1362,7 @@ namespace ControlRoomApplication.Main
                     this.WCOMPortToolTip.Hide(label8);
 
                 }
-                if (PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool && SpectraPortValid)
+                if (RLPortValid && PLCPortValid && MCUPortValid && MCUIPValid && WCOMPortValid && SensorNetworkServerIPBool && SensorNetworkServerPortBool && SensorNetworkClientIPBool && SensorNetworkClientPortBool && SpectraPortValid)
                 {
                     acceptSettings.Enabled = true;
                 }
