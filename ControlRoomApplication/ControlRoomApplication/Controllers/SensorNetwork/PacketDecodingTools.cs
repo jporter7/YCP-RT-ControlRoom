@@ -24,7 +24,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <param name="size">This is the size of the acceleration dumps that we expect to see in the byte array.</param>
         /// <param name="sensor">This is the sensor that the data is being created for.</param>
         /// <returns></returns>
-        public static Acceleration[] GetAccelerationFromBytes(ref int currPointer, byte[] data, int size, SensorLocationEnum sensor)
+        public static Acceleration[] GetAccelerationFromBytes(ref int currPointer, byte[] data, int size, SensorLocationEnum sensor, long timeOffset = 0)
         {
 
             List<Acceleration> acceleration = new List<Acceleration>();  // Temporary, will change when the Control Room can configure accelerometers
@@ -32,6 +32,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             {
                 long timeStamp = (data[currPointer++] << 56 | data[currPointer++] << 48 | data[currPointer++] << 40 | data[currPointer++] << 32
                     | data[currPointer++] << 24 | data[currPointer++] << 16 | data[currPointer++] << 8 | data[currPointer++]);
+
+                timeStamp += timeOffset;
 
                 short dumpSize = (short)(data[currPointer++] << 8 | data[currPointer++]);
 

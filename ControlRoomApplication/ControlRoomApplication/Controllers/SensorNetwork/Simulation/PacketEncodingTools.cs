@@ -27,8 +27,9 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         /// <param name="elEnc">Array of elevation encoder samples.</param>
         /// <param name="azEnc">Array of azimuth encoder samples.</param>
         /// <param name="statuses">All the sensor statuses and errors that come from the sensor network.</param>
+        /// <param name="connectionTimeStamp">The time the sensor network connected to the control room. Used to generate simulated acceleration time captures</param>
         /// <returns></returns>
-        public static byte[] ConvertDataArraysToBytes(RawAccelerometerData[] elAccl, RawAccelerometerData[] azAccl, RawAccelerometerData[] cbAccl, double[] elTemps, double[] azTemps, double[] elEnc, double[] azEnc, SensorStatuses statuses)
+        public static byte[] ConvertDataArraysToBytes(RawAccelerometerData[] elAccl, RawAccelerometerData[] azAccl, RawAccelerometerData[] cbAccl, double[] elTemps, double[] azTemps, double[] elEnc, double[] azEnc, SensorStatuses statuses, long connectionTimeStamp)
         {
             uint dataSize = CalcDataSize(elAccl.Length, azAccl.Length, cbAccl.Length, elTemps.Length, azTemps.Length, elEnc.Length, azEnc.Length);
 
@@ -77,9 +78,9 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
 
             int errors = 0; // TODO: implement conversion (issue #376)
 
-            return EncodeRawData(dataSize, elAccl, azAccl, cbAccl, rawElTemps, rawAzTemps, rawElEnc, rawAzEnc, sensorStatusBoolArray, errors);
+            return EncodeRawData(dataSize, elAccl, azAccl, cbAccl, rawElTemps, rawAzTemps, rawElEnc, rawAzEnc, sensorStatusBoolArray, errors, connectionTimeStamp);
         }
-        
+
         /// <summary>
         /// This will take each RAW data array and add it to its proper location in the byte array
         /// </summary>
@@ -91,8 +92,9 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         /// <param name="azTemp">Array of RAW azimuth temperature samples.</param>
         /// <param name="elEnc">Array of RAW elevation encoder samples. (Should only ever be a size of 1)</param>
         /// <param name="azEnc">Array of RAW azimuth encoder samples. (Should only ever be a size of 1)</param>
+        /// <param name="connectionTimeStamp">The time the sensor network connected to the control room. Used to generate simulated acceleration time captures</param>
         /// <returns></returns>
-        public static byte[] EncodeRawData(uint dataSize, RawAccelerometerData[] elAcclData, RawAccelerometerData[] azAcclData, RawAccelerometerData[] cbAcclData, short[] elTemp, short[] azTemp, short[] elEnc, short[] azEnc, bool[] statuses, int errors)
+        public static byte[] EncodeRawData(uint dataSize, RawAccelerometerData[] elAcclData, RawAccelerometerData[] azAcclData, RawAccelerometerData[] cbAcclData, short[] elTemp, short[] azTemp, short[] elEnc, short[] azEnc, bool[] statuses, int errors, long connectionTimeStamp)
         {
             byte[] data = new byte[dataSize];
 
@@ -133,7 +135,7 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
             for (uint k = 0; k < Math.Ceiling(elAcclData.Length * 1.0 / SensorNetworkConstants.elAccelFIFOSize); k++)
             {
                 // Add a generated timestamp
-                Add64BitValueToByteArray(ref data, ref i, (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                Add64BitValueToByteArray(ref data, ref i, (ulong)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - connectionTimeStamp));
 
                 // Set default dump size
                 short dumpSize = SensorNetworkConstants.elAccelFIFOSize;
@@ -160,7 +162,7 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
             for (uint k = 0; k < Math.Ceiling(azAcclData.Length * 1.0 / SensorNetworkConstants.azAccelFIFOSize); k++)
             {
                 // Add a generated timestamp
-                Add64BitValueToByteArray(ref data, ref i, (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                Add64BitValueToByteArray(ref data, ref i, (ulong)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - connectionTimeStamp));
 
                 // Set default dump size
                 short dumpSize = SensorNetworkConstants.azAccelFIFOSize;
@@ -187,7 +189,7 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
             for (uint k = 0; k < Math.Ceiling(cbAcclData.Length * 1.0 / SensorNetworkConstants.cbAccelFIFOSize); k++)
             {
                 // Add a generated timestamp
-                Add64BitValueToByteArray(ref data, ref i, (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                Add64BitValueToByteArray(ref data, ref i, (ulong)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - connectionTimeStamp));
 
                 // Set default dump size
                 short dumpSize = SensorNetworkConstants.cbAccelFIFOSize;

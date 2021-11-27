@@ -206,7 +206,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// </summary>
         private CounterbalanceAccelerationBlob CounterbalanceAccBlob { get; set; }
 
-
+        /// <summary>
+        /// This stores the timestamp that the sensor network server got connected with a client
+        /// </summary>
+        private long ConnectionTimestamp { get; set; }
 
         /// <summary>
         /// This starts the SensorMonitoringRoutine. Calling this will immediately begin initialization.
@@ -308,6 +311,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                 }
                 else
                 {
+                    ConnectionTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     logger.Info($"{Utilities.GetTimeStamp()}: Successfully sent sensor initialization to the Sensor Network.");
                     success = true;
                 }
@@ -357,21 +361,21 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         if (elAcclSize > 0)
                         {
                             //Create array of acceleration objects 
-                            CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
+                            CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR, ConnectionTimestamp);
                             ElevationAccBlob.BuildAccelerationBlob(CurrentElevationMotorAccl);
                         }
 
                         // Accelerometer 2 (azimuth)
                         if (azAcclSize > 0)
                         {
-                            CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
+                            CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR, ConnectionTimestamp);
                             AzimuthAccBlob.BuildAccelerationBlob(CurrentAzimuthMotorAccl);
                         }
 
                         // Accelerometer 3 (counterbalance)
                         if (cbAcclSize > 0)
                         {
-                            CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
+                            CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE, ConnectionTimestamp);
                             CounterbalanceAccBlob.BuildAccelerationBlob(CurrentCounterbalanceAccl);
                         }
 
