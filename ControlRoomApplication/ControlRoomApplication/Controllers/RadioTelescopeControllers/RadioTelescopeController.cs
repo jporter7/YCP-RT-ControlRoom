@@ -77,8 +77,6 @@ namespace ControlRoomApplication.Controllers
             snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
             snowDumpTimer.AutoReset = true;
             snowDumpTimer.Enabled = true;
-
-            
         }
 
         /// <summary>
@@ -297,7 +295,12 @@ namespace ControlRoomApplication.Controllers
             return RadioTelescope.PLCDriver.Configure_MCU(startSpeedAzimuth, startSpeedElevation, homeTimeoutAzimuth, homeTimeoutElevation); // NO MOVE
         }
 
-        public double GetSoftwareStopElevation()
+        /// <summary>
+        /// Gets the elevation readings used by the software stops. When the simulation sensor network is in use,
+        /// the motor positions are used, otherwise the sensor network's orientation reading is used.
+        /// </summary>
+        /// /// <returns></returns>
+        private double GetSoftwareStopElevation()
         {
             if (RadioTelescope.SensorNetworkServer.SimulationSensorNetwork != null)
             {
@@ -307,9 +310,7 @@ namespace ControlRoomApplication.Controllers
             {
                 return RadioTelescope.SensorNetworkServer.CurrentCBAccelElevationPosition;
             }
-           
         }
-
 
         /// <summary>
         /// Method used to request to move the Radio Telescope to an objective
@@ -606,7 +607,6 @@ namespace ControlRoomApplication.Controllers
                 {
                     return MovementResult.SoftwareStopHit;
                 }
-                
             }
 
             // Return if incoming priority is equal to or less than current movement
@@ -804,7 +804,6 @@ namespace ControlRoomApplication.Controllers
 
                 // Run the software-stop routine
                 CheckAndRunSoftwareStops();
-                //logger.Info(RadioTelescope.SensorNetworkServer.CurrentCBAccelElevationPosition);
                 
                 Thread.Sleep(100);
             }

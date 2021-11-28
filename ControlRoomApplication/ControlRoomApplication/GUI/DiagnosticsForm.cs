@@ -597,8 +597,6 @@ namespace ControlRoomApplication.GUI
                 counterBalanceAccChart.ChartAreas[0].AxisX.Minimum = double.NaN;
                 counterBalanceAccChart.ChartAreas[0].AxisX.Maximum = double.NaN;
 
-                
-
                 if (cbOld != null && Acceleration.SequenceEquals(cbOld, cbAccel))
                 {
                     for (int i = 0; i < cbAccel.Length; i++)

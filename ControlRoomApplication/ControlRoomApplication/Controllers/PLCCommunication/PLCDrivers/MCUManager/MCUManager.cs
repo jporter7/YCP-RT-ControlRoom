@@ -871,8 +871,9 @@ namespace ControlRoomApplication.Controllers {
             
             while (!command.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None)
             {
-
+                // We must wait for the MCU registers to be set before trying to read them
                 Thread.Sleep(100);
+
                 // Anything but homing...
                 if (!homing) completed = MovementCompleted();
 
@@ -935,12 +936,6 @@ namespace ControlRoomApplication.Controllers {
                 else if (errors.Count > 0)
                 {
                     result = MovementResult.McuErrorBitSet;
-                }
-
-                // If software stops interrupted, this is reached
-                else if (SoftwareStopInterruptFlag)
-                {
-                    
                 }
 
                 // If the movement was voluntarily interrupted, this is reached

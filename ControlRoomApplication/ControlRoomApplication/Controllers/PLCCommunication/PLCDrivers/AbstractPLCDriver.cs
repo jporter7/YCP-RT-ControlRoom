@@ -152,6 +152,11 @@ namespace ControlRoomApplication.Controllers
 
         public abstract void SetFinalOffset(Orientation finalPos);
 
+        /// <summary>
+        /// Gets the direction that the specfied axis is moving.
+        /// </summary>
+        /// <param name="axis">Azimuth or elevation.</param>
+        /// <returns>The direction that the specfied axis is spinning.</returns>
         public abstract RadioTelescopeDirectionEnum GetRadioTelescopeDirectionEnum(RadioTelescopeAxisEnum axis);
     }
 }

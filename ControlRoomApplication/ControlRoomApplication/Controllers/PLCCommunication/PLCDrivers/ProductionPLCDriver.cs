@@ -644,8 +644,6 @@ namespace ControlRoomApplication.Controllers
         public override bool InterruptMovementAndWaitUntilStopped(bool isCriticalMovementInterrupt = false, bool isSoftwareStopInterrupt = false)
         {
             bool motorsMoving = MCU.MotorsCurrentlyMoving();
-            logger.Info(motorsMoving);
-            logger.Info(CurrentMovementPriority);
 
             if (motorsMoving && CurrentMovementPriority != MovementPriority.None)
             {
@@ -661,14 +659,16 @@ namespace ControlRoomApplication.Controllers
                 // Set corresponding flag depending on whether or not this is a software stop interrupt
                 if (isSoftwareStopInterrupt)
                 {
-                    if(CurrentMovementPriority == MovementPriority.Jog)
+                    // Currently necessary to stop Jog movements. Setting the SoftwaeStopInterruptFlag does not
+                    // interrupt Jog movements. This should be investigated in the future.
+                    if (CurrentMovementPriority == MovementPriority.Jog)
                     {
                         ImmediateStop();
                     }
                     MCU.SoftwareStopInterruptFlag = true;
                 }
 
-                // Wait until motors stop moving or both interrupt flags are set back to false,
+                // Wait until motors stop moving or all interrupt flags are set back to false,
                 // meaning the MCU has acknowledged and acted on the interrupt.
                 while (MotorsCurrentlyMoving() && (MCU.MovementInterruptFlag == true || MCU.CriticalMovementInterruptFlag == true || MCU.SoftwareStopInterruptFlag == true)) ;
 
@@ -702,6 +702,11 @@ namespace ControlRoomApplication.Controllers
             MCU.FinalPositionOffset = finalPos;
         }
 
+        /// <summary>
+        /// Gets the direction that the specfied axis is moving.
+        /// </summary>
+        /// <param name="axis">Azimuth or elevation.</param>
+        /// <returns>The direction that the specfied axis is spinning.</returns>
         public override RadioTelescopeDirectionEnum GetRadioTelescopeDirectionEnum(RadioTelescopeAxisEnum axis)
         {
             ushort[] directionData;
@@ -744,8 +749,6 @@ namespace ControlRoomApplication.Controllers
             }
 
             return RadioTelescopeDirectionEnum.None;
-
         }
-
     }
 }
