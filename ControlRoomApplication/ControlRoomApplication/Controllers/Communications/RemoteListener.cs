@@ -72,7 +72,6 @@ namespace ControlRoomApplication.Controllers
                 int i;
 
                 // Loop to receive all the data sent by the client.
-                // Add try catch to reading
                 while (connected && (i = readFromStream(stream, bytes)) != 0 )
                 {
                     // Translate data bytes to ASCII string.
@@ -86,17 +85,15 @@ namespace ControlRoomApplication.Controllers
                     string myWriteBuffer = null;
 
                     // Inform mobile command received 
-                    writeBackToClient("Received command: "+data, stream);
+                    writeBackToClient("Received command: " + data, stream);
 
                     // if processing the data fails, report an error message
                     ParseTCPCommandResult parsedTCPCommandResult = ParseRLString(data);
                     if (parsedTCPCommandResult.parseTCPCommandResultEnum != ParseTCPCommandResultEnum.Success)
                     {
-                        //logger.Error(Utilities.GetTimeStamp() + ": Processing data from tcp connection failed!");
-
                         // send back a failure response
                         logger.Info("Parsing command failed with ERROR: " + parsedTCPCommandResult.errorMessage);
-                        myWriteBuffer = "Parsing command failed with error: "+ parsedTCPCommandResult.errorMessage;
+                        myWriteBuffer = "Parsing command failed with error: " + parsedTCPCommandResult.errorMessage;
                         writeBackToClient(myWriteBuffer, stream);
                     }
                     // else the parsing was successful, attempt to run the command
@@ -238,7 +235,6 @@ namespace ControlRoomApplication.Controllers
             {
                 // command is placed after pike and before colon; get it here
                 // <VERSION> | <COMMANDTYPE> | <NAME<VALUES>> | TIME
-                // TODO: use command instead of "contains" and "indexOf"
                 string command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
                 
                 if (command=="ORIENTATION_MOVE")

@@ -961,6 +961,12 @@ namespace ControlRoomApplication.Controllers
             }
         }
 
+        /// <summary>
+        /// This method runs the hardware movement script, used to verify the telescopes full ROM (az and el) and confirm that we can
+        /// safely back off from both limit switches.
+        /// </summary>
+        /// <param name="priority"></param>
+        /// <returns></returns>
         public MovementResult ExecuteHardwareMovementScript(MovementPriority priority)
         {
             MovementResult movementResult = MovementResult.None;
@@ -1036,10 +1042,6 @@ namespace ControlRoomApplication.Controllers
             }
 
             return movementResult;
-
-
-
-
         }
 
     }

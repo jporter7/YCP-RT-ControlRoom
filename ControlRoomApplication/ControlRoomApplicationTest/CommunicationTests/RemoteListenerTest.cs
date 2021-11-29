@@ -474,7 +474,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
         [TestMethod]
         public void TestProcessMessage_TestInvalidVersion_DoesNotExist()
         {
-            string command = "2.0 | STOP_RT | 12:00:00";
+            string command = "12.0 | STOP_RT | 12:00:00";
 
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
             Assert.AreEqual(ParseTCPCommandResultEnum.InvalidVersion, result.parseTCPCommandResultEnum);
