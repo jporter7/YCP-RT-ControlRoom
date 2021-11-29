@@ -8,6 +8,13 @@ using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers.Communications
 {
+    /// <summary>
+    /// The object returned as the result of executing a command received inside of RemoteListener.
+    /// The command will first be parsed (via ParseRLString() ), and then, if safe to do so, will execute.
+    /// The object contains a MovementResult which specifies the resulting action of any given movement sent to the PLC.
+    /// The error message string is set on error (e.g., MvmtResult!=success) and will contain a string from TCPCommunicationConstants
+    /// indicating what went wrong and where.
+    /// </summary>
     public class ExecuteTCPCommandResult
     {
         public MovementResult movementResult { get; set; }

@@ -588,7 +588,7 @@ namespace ControlRoomApplication.Controllers
     
                 case "RELATIVE_MOVE":
                     // check to see if we have a valid number of parameters before attempting to parse
-                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_ORIENTATION_MOVE_PARAMS)
+                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_RELATIVE_MOVE_PARAMS)
                     {
                         return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS + command);
                     }
@@ -689,7 +689,7 @@ namespace ControlRoomApplication.Controllers
                             return new ParseTCPCommandResult(ParseTCPCommandResultEnum.Success, splitCommandString);
 
                         default:
-                            return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidRequestType, splitCommandString, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]); ;
+                            return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidRequestType, splitCommandString, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
                     }
                     break;
 
@@ -704,10 +704,10 @@ namespace ControlRoomApplication.Controllers
             return new ParseTCPCommandResult(ParseTCPCommandResultEnum.Success, splitCommandString);
         }
 
-            /// <summary>
-            /// Util method to handle error checking with strem.read/writes
-            /// </summary>
-            /// <param name="text">What you are sending back to the client</param>
+        /// <summary>
+        /// Util method to handle error checking with strem.read/writes
+        /// </summary>
+        /// <param name="text">What you are sending back to the client</param>
         public void writeBackToClient(string text, NetworkStream stream)
         {
             byte[] textToBytes = Encoding.ASCII.GetBytes(text);
@@ -729,7 +729,7 @@ namespace ControlRoomApplication.Controllers
             }
             catch(Exception e)
             {
-                logger.Error("An error occured reaading data from the client: "+ e.Message);
+                logger.Error("An error occured reaading data from the client: " + e.Message);
              
             }
             return 0;
@@ -826,10 +826,4 @@ namespace ControlRoomApplication.Controllers
             return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;  
         }
     }
-
-    
-
-
-   
-   
 }

@@ -8,6 +8,14 @@ using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Controllers.Communications
 {
+    /// <summary>
+    /// This is the object returned as a result of the ParseRLString() function inside of RemoteListener.
+    /// A command comes in as a string inside of RemoteListener and gets passed into the ParseRLString.
+    /// This object is the result of attempting to parse said command; a ParseTCPCommunicationResult enum is set indicating if the parse
+    /// was successful, or what error occured. On error, the errMessage string is set to provide a descriptive error back to the mobile app or control room.
+    /// 
+    /// 
+    /// </summary>
     public class ParseTCPCommandResult
     {
         public ParseTCPCommandResultEnum parseTCPCommandResultEnum { get; set; }

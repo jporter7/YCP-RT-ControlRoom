@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Constants
 {
+    /// <summary>
+    /// This class contains all of the error message strings we will be sending back to the mobile app
+    /// or the front-end team while communicating with the control room via RemoteListener.
+    /// </summary>
     public sealed class TCPCommunicationConstants
     {
-        // Error messages
         public static String VERSION_CONVERSION_ERR = "Error converting version from string to double: ";
 
         public static String VERSION_NOT_FOUND = "The specified version was not found: ";
@@ -21,7 +24,7 @@ namespace ControlRoomApplication.Constants
 
         public static String RELATIVE_MOVE_ERR = "Command RELATIVE_MOVE failed with result: ";
 
-        public static String MISSING_OVERRIDE_ARG = "No sensor name supplied for SET_OVERRIDE. ";
+        public static String MISSING_OVERRIDE_ARG = "No sensor name supplied for SET_OVERRIDE.";
 
         public static String MISSING_SET_OVERRIDE_ARG = "No true/false value supplied for SET_OVERRIDE.";
 
@@ -45,7 +48,7 @@ namespace ControlRoomApplication.Constants
 
         public static String[] SCRIPT_NAME_ARRAY = new String[] { "DUMP", "FULL_EV", "THERMAL_CALIBRATE", "STOW", "FULL_CLOCK", "FULL_COUNTER", "HOME", "HARDWARE_MVMT_SCRIPT" };
 
-        public static String[] SENSORS_ARRAY = new string[] { "WEATHER_STATION", "MAIN_GATE", "ELEVATION_LIMIT_0", "ELEVATION_LIMIT_90", "AZ_ABS_ENC", "EL_ABS_ENC", "AZ_ACC", "EL_ACC", "CB_ACC",
+        public static String[] SENSORS_ARRAY = new String[] { "WEATHER_STATION", "MAIN_GATE", "ELEVATION_LIMIT_0", "ELEVATION_LIMIT_90", "AZ_ABS_ENC", "EL_ABS_ENC", "AZ_ACC", "EL_ACC", "CB_ACC",
         "AZIMUTH_MOT_TEMP", "ELEVATION_MOT_TEMP" };
 
         public static String[] ALL_VERSIONS_LIST = new String[] { "1.0" };
