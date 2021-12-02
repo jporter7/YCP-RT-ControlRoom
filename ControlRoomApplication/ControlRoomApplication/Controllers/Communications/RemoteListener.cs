@@ -122,19 +122,35 @@ namespace ControlRoomApplication.Controllers
                             switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
                             {
                                 case "ORIENTATION_MOVE":
-                                    int azAbs = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_AZ]);
-                                    int elAbs = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_EL]);
+                                    try
+                                    {
+                                        // Attempt to parse double values
+                                        double azAbs = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_AZ]);
+                                        double elAbs = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_EL]);
 
-                                    int mvmtTimeAbs = AbsoluteMovementETA(new Orientation(azAbs, elAbs));
-
-                                    writeBackToClient("ORIENTATION_MOVE TO AZ " + azAbs + " and EL " + elAbs + " has an estimated time of " + mvmtTimeAbs + " ms", stream);
+                                        int mvmtTimeAbs = AbsoluteMovementETA(new Orientation(azAbs, elAbs));
+                                        writeBackToClient("ORIENTATION_MOVE TO AZ " + azAbs + " and EL " + elAbs + " has an estimated time of " + mvmtTimeAbs + " ms", stream);
+                                    }
+                                    catch(Exception e)
+                                    {
+                                        writeBackToClient("An exception occurred attempting to parse AZ and/or EL values: " + e.Message, stream);
+                                    }
                                     break;
-                                case "RELATIVE_MOVE":
-                                    int azRelative = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_AZ]);
-                                    int elRelative = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_EL]);
-                                    int mvmtTimeRelative = RelativeMovementETA(new Orientation(azRelative, elRelative));
 
-                                    writeBackToClient("RELATIVE_MOVE BY AZ " + azRelative + " and EL " + elRelative + " has an estimated time of " + mvmtTimeRelative + " ms", stream);
+                                case "RELATIVE_MOVE":
+                                    try
+                                    {
+                                        // Attempt to parse double values
+                                        double azRelative = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_AZ]);
+                                        double elRelative = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_EL]);
+                                        int mvmtTimeRelative = RelativeMovementETA(new Orientation(azRelative, elRelative));
+
+                                        writeBackToClient("RELATIVE_MOVE BY AZ " + azRelative + " and EL " + elRelative + " has an estimated time of " + mvmtTimeRelative + " ms", stream);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        writeBackToClient("An exception occurred attempting to parse AZ and/or EL values: " + e.Message, stream);
+                                    }
                                     break;
 
                                 default:
