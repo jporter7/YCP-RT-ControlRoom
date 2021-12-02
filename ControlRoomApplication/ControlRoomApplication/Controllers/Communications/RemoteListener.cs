@@ -102,21 +102,27 @@ namespace ControlRoomApplication.Controllers
                         // if script inform which script is running, else just command type
                         if(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "SCRIPT")
                         {
-                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
+                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " + 
+                                parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...");
-                            string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
+                            string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " + 
+                                parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...";
                             writeBackToClient(startedCommandMsg, stream);
                             // writeback eta to client
                             int estMoveTime = ScriptETA(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME]);
-                            logger.Info("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " has an estimated time of " + estMoveTime + " ms");
-                            writeBackToClient(("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " has an estimated time of "+ estMoveTime + " ms"), stream);
+                            logger.Info("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + 
+                                " has an estimated time of " + estMoveTime + " ms");
+                            writeBackToClient(("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + 
+                                " has an estimated time of "+ estMoveTime + " ms"), stream);
 
                         }
                         else
                         {
-                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
-                            string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE]+"...";
+                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " + 
+                                parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
+                            string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " +
+                                parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE]+"...";
                             writeBackToClient(startedCommandMsg, stream);
 
                             switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
@@ -145,7 +151,8 @@ namespace ControlRoomApplication.Controllers
                                         double elRelative = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_EL]);
                                         int mvmtTimeRelative = RelativeMovementETA(new Orientation(azRelative, elRelative));
 
-                                        writeBackToClient("RELATIVE_MOVE BY AZ " + azRelative + " and EL " + elRelative + " has an estimated time of " + mvmtTimeRelative + " ms", stream);
+                                        writeBackToClient("RELATIVE_MOVE BY AZ " + azRelative + " and EL " + elRelative + " has an estimated time of " +
+                                            mvmtTimeRelative + " ms", stream);
                                     }
                                     catch (Exception e)
                                     {
@@ -160,7 +167,9 @@ namespace ControlRoomApplication.Controllers
 
                         }
 
+                        // Now that we have finished parsing our command, execute it since it has been determined to be valid
                         ExecuteTCPCommandResult executeTCPCommandResult = ExecuteRLCommand(parsedTCPCommandResult.parsedString);
+
                         // inform user of the result of command
                         if (executeTCPCommandResult.movementResult != MovementResult.Success)
                         {
