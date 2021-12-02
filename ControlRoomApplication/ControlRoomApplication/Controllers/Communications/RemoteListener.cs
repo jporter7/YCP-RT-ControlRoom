@@ -164,8 +164,6 @@ namespace ControlRoomApplication.Controllers
                                     default:
                                         break;
                                 }
-
-
                             }
 
                             // Now that we have finished parsing our command, execute it since it has been determined to be valid
@@ -200,7 +198,6 @@ namespace ControlRoomApplication.Controllers
                                         writeBackToClient(myWriteBuffer, stream);
                                         break;
                                 }
-
                             }
                         }
 
@@ -210,11 +207,7 @@ namespace ControlRoomApplication.Controllers
                         stream.Close();
                         stream.Dispose();
                     }
-
-                }).Start();
-
-                
-
+                }).Start(); // begin our worker thread to execute our TCP command
             }
         }
 
