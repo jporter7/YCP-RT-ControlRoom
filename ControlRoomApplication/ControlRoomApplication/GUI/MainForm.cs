@@ -686,6 +686,7 @@ namespace ControlRoomApplication.Main
                 ProdcheckBox.Checked = false;
                 this.txtWSCOMPort.Text = "222"; //default WS COM port # is 221
                 this.txtSpectraPort.Text = "777";
+                this.txtRemoteListenerCOMPort.Text = "80";
                 this.txtMcuCOMPort.Text = ((int)(8083 + ProgramPLCDriverList.Count * 3)).ToString(); ; //default MCU Port
                 this.txtPLCIP.Text = "127.0.0.1";//default IP address
 
@@ -721,6 +722,7 @@ namespace ControlRoomApplication.Main
                 this.txtSpectraPort.Text = "777";
                 this.txtMcuCOMPort.Text = "502"; //default MCU Port
                 this.txtPLCIP.Text = "192.168.0.50";//default IP address
+                this.txtRemoteListenerCOMPort.Text = "80";
                 if (LocalIPCombo.FindStringExact("192.168.0.70") == -1)
                 {
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
