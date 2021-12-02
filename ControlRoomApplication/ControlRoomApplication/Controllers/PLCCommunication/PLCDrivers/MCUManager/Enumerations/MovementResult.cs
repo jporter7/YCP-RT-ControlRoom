@@ -80,6 +80,10 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         StoppingCurrentMove,
 
         /// <summary>
+        /// Used if the RemoteListener class failed to parse a TCP command and movement wasn't started
+        /// </summary>
+        InvalidCommand,
+
         /// This is only used for the "moveradiotelescopebyxdegrees" function in RadioTelescopeController
         /// will be returned if a relative move would put the telescope past software limits
         /// </summary>
