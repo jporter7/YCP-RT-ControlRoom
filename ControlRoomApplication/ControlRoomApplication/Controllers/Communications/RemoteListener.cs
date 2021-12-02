@@ -60,7 +60,21 @@ namespace ControlRoomApplication.Controllers
                 logger.Debug(Utilities.GetTimeStamp() + ": Waiting for a connection... ");
                 // Perform a blocking call to accept requests.
                 // You could also user server.AcceptSocket() here.
-                TcpClient client = server.AcceptTcpClient();
+                TcpClient client = new TcpClient();
+                try
+                {
+                    client = server.AcceptTcpClient();
+
+                }
+                catch (SocketException e)
+                {
+                    if(e.SocketErrorCode == SocketError.Interrupted)
+                    {
+                        //blocking call was canceled, server was stopped
+                        client.Close();
+                        return;
+                    }
+                }
                 logger.Debug(Utilities.GetTimeStamp() + ": TCP Client connected!");
                 connected = true;
 
@@ -196,7 +210,9 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
+                server.Stop();
                 TCPMonitoringThread.Join();
+               
             }
             catch (Exception e)
             {

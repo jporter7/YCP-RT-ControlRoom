@@ -33,6 +33,17 @@ namespace ControlRoomApplication.Entities
             Id = localDBID;
         }
 
+        public RadioTelescope(AbstractSpectraCyberController spectraCyberController, AbstractPLCDriver plcCommsHandler, Location location, Orientation calibrationOrientation, int localDBID, SensorNetworkServer sensorNetworkServer)
+        {
+            PLCDriver = plcCommsHandler;
+            SpectraCyberController = spectraCyberController;
+            CalibrationOrientation = calibrationOrientation;
+            Location = location;
+            CurrentOrientation = new Orientation();
+            Id = localDBID;
+            SensorNetworkServer = sensorNetworkServer;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
