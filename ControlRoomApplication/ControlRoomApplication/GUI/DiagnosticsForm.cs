@@ -1296,31 +1296,6 @@ namespace ControlRoomApplication.GUI
             }
         }
 
-        private void Accelerometers_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void SoftwareStopsThresholdGroup_Enter(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblDataTimeout_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void lblInitTimeout_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void DataTimeoutValidation_Popup(object sender, PopupEventArgs e)
-        {
-
-        }
-
         private void UpdateSWStopsButton_Click(object sender, EventArgs e)
         {
 

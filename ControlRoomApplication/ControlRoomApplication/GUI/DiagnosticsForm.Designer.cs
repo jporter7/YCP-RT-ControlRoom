@@ -1993,7 +1993,6 @@
             this.lblInitTimeout.Size = new System.Drawing.Size(154, 13);
             this.lblInitTimeout.TabIndex = 78;
             this.lblInitTimeout.Text = "Initialization Timeout (seconds):";
-            this.lblInitTimeout.Click += new System.EventHandler(this.lblInitTimeout_Click);
             // 
             // lblDataTimeout
             // 
@@ -2004,7 +2003,6 @@
             this.lblDataTimeout.Size = new System.Drawing.Size(168, 13);
             this.lblDataTimeout.TabIndex = 77;
             this.lblDataTimeout.Text = "Data Retrieval Timeout (seconds):";
-            this.lblDataTimeout.Click += new System.EventHandler(this.lblDataTimeout_Click);
             // 
             // txtDataTimeout
             // 
@@ -2128,7 +2126,6 @@
             this.SoftwareStopsThresholdGroup.TabIndex = 0;
             this.SoftwareStopsThresholdGroup.TabStop = false;
             this.SoftwareStopsThresholdGroup.Text = "Software Stops Thresholds";
-            this.SoftwareStopsThresholdGroup.Enter += new System.EventHandler(this.SoftwareStopsThresholdGroup_Enter);
             // 
             // SWStopLowerLabel
             // 
@@ -2351,7 +2348,6 @@
             this.Accelerometers.TabIndex = 0;
             this.Accelerometers.TabStop = false;
             this.Accelerometers.Text = "Accelerometers";
-            this.Accelerometers.Enter += new System.EventHandler(this.Accelerometers_Enter);
             // 
             // btnElevationMotorAccelerometerOverride
             // 
@@ -2666,10 +2662,6 @@
             this.consoleLogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.consoleLogBox.Size = new System.Drawing.Size(631, 494);
             this.consoleLogBox.TabIndex = 0;
-            // 
-            // DataTimeoutValidation
-            // 
-            this.DataTimeoutValidation.Popup += new System.Windows.Forms.PopupEventHandler(this.DataTimeoutValidation_Popup);
             // 
             // DiagnosticsForm
             // 
