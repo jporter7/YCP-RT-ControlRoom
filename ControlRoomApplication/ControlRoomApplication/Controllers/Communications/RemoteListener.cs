@@ -30,6 +30,8 @@ namespace ControlRoomApplication.Controllers
         public RadioTelescopeController rtController;
         private ControlRoom controlRoom;
 
+        private bool waitingForConn = true;
+
         public RemoteListener(int port, ControlRoom control)
         {
             logger.Debug(Utilities.GetTimeStamp() + ": Setting up remote listener");
@@ -56,13 +58,16 @@ namespace ControlRoomApplication.Controllers
             // Enter the listening loop.
             while (KeepTCPMonitoringThreadAlive)
             {
-                //logger.Debug(Utilities.GetTimeStamp() + ": Waiting for a connection... ");
-                // Perform a blocking call to accept requests.
-                // You could also user server.AcceptSocket() here.
+                if (waitingForConn)
+                {
+                  logger.Debug(Utilities.GetTimeStamp() + ": Waiting for a connection... ");
+                   waitingForConn = false;
+                }                
 
                 // Place each command in its own asynchronous thread so that we can run commands in parallel
                 if (server.Pending())
                 {
+                    waitingForConn = true;
                     new Thread(() =>
                     {
                         TcpClient client = server.AcceptTcpClient();
