@@ -84,6 +84,10 @@ namespace ControlRoomApplication.GUI
         bool DataTimeoutValid;
         bool InitTimeoutValid;
 
+        //validation for software stop thresholds
+        bool ValidUpperSWStopLimit;
+        bool ValidLowerSWStopLimit;
+
         private int rtId;
 
         private Acceleration[] azOld;
@@ -176,6 +180,10 @@ namespace ControlRoomApplication.GUI
             AzimuthEncoder.Checked = SensorNetworkConfig.AzimuthEncoderInit;
             txtDataTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutDataRetrieval / 1000;
             txtInitTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutInitialization / 1000;
+
+            //get the current software stops thresholds
+            LowerSWStopsLimitText.Text = ""+(double)rtController.RadioTelescope.minElevationDegrees;
+            UpperSWStopsLimitText.Text = "" + (double)rtController.RadioTelescope.maxElevationDegrees;
 
             // Set default values for timeout validation
             DataTimeoutValid = true;
@@ -1287,5 +1295,127 @@ namespace ControlRoomApplication.GUI
                 UpdateSensorInitiliazation.Enabled = false;
             }
         }
+
+        private void Accelerometers_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SoftwareStopsThresholdGroup_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblDataTimeout_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblInitTimeout_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void DataTimeoutValidation_Popup(object sender, PopupEventArgs e)
+        {
+
+        }
+
+        private void UpdateSWStopsButton_Click(object sender, EventArgs e)
+        {
+
+            if(ValidLowerSWStopLimit && ValidUpperSWStopLimit)
+            {
+                rtController.RadioTelescope.maxElevationDegrees = double.Parse(UpperSWStopsLimitText.Text);
+                rtController.RadioTelescope.minElevationDegrees = double.Parse(LowerSWStopsLimitText.Text);
+
+                DatabaseOperations.UpdateTelescope(rtController.RadioTelescope);
+            }
+
+        }
+
+        private void ValidateUpperLimit()
+        {
+            ValidUpperSWStopLimit = false;
+
+            double requestedLowerLimit = (double)rtController.RadioTelescope.minElevationDegrees;
+            if (UpperSWStopsLimitText.Text != null && Validator.IsDouble(UpperSWStopsLimitText.Text))
+            {
+                if (LowerSWStopsLimitText.Text != null && Validator.IsDouble(LowerSWStopsLimitText.Text))
+                {
+                    requestedLowerLimit = double.Parse(LowerSWStopsLimitText.Text);
+                }
+
+                double RequestedUpperLimit = double.Parse(UpperSWStopsLimitText.Text);
+                if (!Validator.IsBetween(RequestedUpperLimit, requestedLowerLimit, MiscellaneousConstants.MAX_SOFTWARE_STOP_EL_DEGREES))
+                {
+                    UpperLimitToolTip.Show(String.Format("Upper Software Stop limit must be between {0} and {1} degrees (inclusive)", requestedLowerLimit, MiscellaneousConstants.MAX_SOFTWARE_STOP_EL_DEGREES), UpperSWStopsLimitText);
+                    UpperSWStopsLimitText.BackColor = Color.Yellow;
+                    ValidUpperSWStopLimit = false;
+                }
+                else
+                {
+                    UpperLimitToolTip.Hide(UpperSWStopsLimitText);
+                    UpperSWStopsLimitText.BackColor = Color.White;
+                    ValidUpperSWStopLimit = true;
+                }
+            }
+            else
+            {
+                UpperLimitToolTip.Show("Specified limit must be a double", UpperSWStopsLimitText);
+                UpperSWStopsLimitText.BackColor = Color.Yellow;
+                ValidUpperSWStopLimit = false;
+            }
+        }
+
+        private void ValidateLowerLimit()
+        {
+            ValidLowerSWStopLimit = false;
+
+            double requestedUpperLimit = rtController.RadioTelescope.maxElevationDegrees;
+            if (LowerSWStopsLimitText.Text != null && Validator.IsDouble(LowerSWStopsLimitText.Text))
+            {
+                if (UpperSWStopsLimitText.Text != null && Validator.IsDouble(UpperSWStopsLimitText.Text))
+                {
+                    requestedUpperLimit = double.Parse(UpperSWStopsLimitText.Text);
+                }
+
+                double RequestedLowerLimit = double.Parse(LowerSWStopsLimitText.Text);
+                if (!Validator.IsBetween(RequestedLowerLimit, MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES, requestedUpperLimit))
+                {
+                    LowerLimitToolTip.Show(String.Format("Upper Software Stop limit must be between {0} and {1} degrees (inclusive)", MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES, requestedUpperLimit), LowerSWStopsLimitText);
+                    LowerSWStopsLimitText.BackColor = Color.Yellow;
+                    ValidLowerSWStopLimit = false;
+
+                }
+                else
+                {
+                    LowerLimitToolTip.Hide(LowerSWStopsLimitText);
+                    LowerSWStopsLimitText.BackColor = Color.White;
+                    ValidLowerSWStopLimit = true;
+                }
+            }
+            else
+            {
+                LowerLimitToolTip.Show("Specified limit must be a double", LowerSWStopsLimitText);
+                LowerSWStopsLimitText.BackColor = Color.Yellow;
+                ValidLowerSWStopLimit = false;
+            }
+
+        }
+
+        private void UpperSWStopsLimitText_TextChanged(object sender, EventArgs e)
+        {
+            ValidateUpperLimit();
+            ValidateLowerLimit();
+        }
+
+        private void LowerSWStopsLimitText_TextChanged(object sender, EventArgs e)
+        {
+            ValidateUpperLimit();
+            ValidateLowerLimit(); 
+
+        }
+
     }
 }
