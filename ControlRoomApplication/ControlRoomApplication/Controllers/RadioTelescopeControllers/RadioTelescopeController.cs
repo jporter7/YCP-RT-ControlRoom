@@ -209,6 +209,8 @@ namespace ControlRoomApplication.Controllers
             {
                 Orientation current = GetCurrentOrientation();
 
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
                 moveResult = RadioTelescope.PLCDriver.MoveToOrientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
 
                 if (moveResult != MovementResult.Success)
@@ -886,7 +888,9 @@ namespace ControlRoomApplication.Controllers
 
             // If the thread is locked (two moves coming in at the same time), return
             if (Monitor.TryEnter(MovementLock)) {
+                
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
 
                 // insert snow dump movements here
                 // default is azimuth of 0 and elevation of 0
