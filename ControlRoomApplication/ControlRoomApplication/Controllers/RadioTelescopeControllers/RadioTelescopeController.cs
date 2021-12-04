@@ -805,7 +805,7 @@ namespace ControlRoomApplication.Controllers
                 // Run the software-stop routine
                 CheckAndRunSoftwareStops();
                 
-                Thread.Sleep(100);
+                Thread.Sleep(250);
             }
         }
 
