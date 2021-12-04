@@ -182,8 +182,9 @@ namespace ControlRoomApplication.GUI
             txtInitTimeout.Text = "" + (double)SensorNetworkConfig.TimeoutInitialization / 1000;
 
             //get the current software stops thresholds
-            LowerSWStopsLimitText.Text = ""+(double)rtController.RadioTelescope.minElevationDegrees;
-            UpperSWStopsLimitText.Text = "" + (double)rtController.RadioTelescope.maxElevationDegrees;
+            //get the current software stops thresholds
+            LowerSWStopsLimitText.Text = "" + rtController.RadioTelescope.minElevationDegrees.ToString("0.00");
+            UpperSWStopsLimitText.Text = "" + rtController.RadioTelescope.maxElevationDegrees.ToString("0.00");
 
             // Set default values for timeout validation
             DataTimeoutValid = true;
@@ -1313,17 +1314,22 @@ namespace ControlRoomApplication.GUI
         {
             ValidUpperSWStopLimit = false;
 
-            double requestedLowerLimit = (double)rtController.RadioTelescope.minElevationDegrees;
-            if (UpperSWStopsLimitText.Text != null && Validator.IsDouble(UpperSWStopsLimitText.Text))
+            bool isNumeric = Double.TryParse(UpperSWStopsLimitText.Text, out double requestedUpperLimit);
+
+            if (isNumeric)
             {
-                if (LowerSWStopsLimitText.Text != null && Validator.IsDouble(LowerSWStopsLimitText.Text))
-                {
-                    requestedLowerLimit = double.Parse(LowerSWStopsLimitText.Text);
-                }
+                Double.TryParse(LowerSWStopsLimitText.Text, out double requestedLowerLimit);
 
                 double RequestedUpperLimit = double.Parse(UpperSWStopsLimitText.Text);
+                
+                if (!ValidUpperSWStopLimit)
+                {
+                    requestedLowerLimit = MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES;
+                }
+
                 if (!Validator.IsBetween(RequestedUpperLimit, requestedLowerLimit, MiscellaneousConstants.MAX_SOFTWARE_STOP_EL_DEGREES))
                 {
+
                     UpperLimitToolTip.Show(String.Format("Upper Software Stop limit must be between {0} and {1} degrees (inclusive)", requestedLowerLimit, MiscellaneousConstants.MAX_SOFTWARE_STOP_EL_DEGREES), UpperSWStopsLimitText);
                     UpperSWStopsLimitText.BackColor = Color.Yellow;
                     ValidUpperSWStopLimit = false;
@@ -1347,18 +1353,22 @@ namespace ControlRoomApplication.GUI
         {
             ValidLowerSWStopLimit = false;
 
-            double requestedUpperLimit = rtController.RadioTelescope.maxElevationDegrees;
-            if (LowerSWStopsLimitText.Text != null && Validator.IsDouble(LowerSWStopsLimitText.Text))
+            bool isNumeric = Double.TryParse(LowerSWStopsLimitText.Text, out double requestedLowerLimit);
+
+            if (isNumeric)
             {
-                if (UpperSWStopsLimitText.Text != null && Validator.IsDouble(UpperSWStopsLimitText.Text))
+                Double.TryParse(UpperSWStopsLimitText.Text, out double requestedUpperLimit);
+
+                if (!ValidUpperSWStopLimit)
                 {
-                    requestedUpperLimit = double.Parse(UpperSWStopsLimitText.Text);
+                    requestedUpperLimit = MiscellaneousConstants.MAX_SOFTWARE_STOP_EL_DEGREES;
                 }
 
-                double RequestedLowerLimit = double.Parse(LowerSWStopsLimitText.Text);
-                if (!Validator.IsBetween(RequestedLowerLimit, MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES, requestedUpperLimit))
+                if (!Validator.IsBetween(requestedLowerLimit, MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES, requestedUpperLimit))
                 {
-                    LowerLimitToolTip.Show(String.Format("Upper Software Stop limit must be between {0} and {1} degrees (inclusive)", MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES, requestedUpperLimit), LowerSWStopsLimitText);
+                    
+
+                    LowerLimitToolTip.Show(String.Format("Lower Software Stop limit must be between {0} and {1} degrees (inclusive)", MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES, requestedUpperLimit), LowerSWStopsLimitText);
                     LowerSWStopsLimitText.BackColor = Color.Yellow;
                     ValidLowerSWStopLimit = false;
 
