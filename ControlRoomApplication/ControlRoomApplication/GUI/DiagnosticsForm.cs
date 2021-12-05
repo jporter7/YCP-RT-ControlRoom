@@ -1305,6 +1305,7 @@ namespace ControlRoomApplication.GUI
                 rtController.RadioTelescope.maxElevationDegrees = double.Parse(UpperSWStopsLimitText.Text);
                 rtController.RadioTelescope.minElevationDegrees = double.Parse(LowerSWStopsLimitText.Text);
 
+                logger.Info(String.Format("Updating Software stop thresholds... New values: Lower = {0} , Upper = {1} ", double.Parse(LowerSWStopsLimitText.Text), double.Parse(UpperSWStopsLimitText.Text)));
                 DatabaseOperations.UpdateTelescope(rtController.RadioTelescope);
             }
 
@@ -1343,7 +1344,7 @@ namespace ControlRoomApplication.GUI
             }
             else
             {
-                UpperLimitToolTip.Show("Specified limit must be a double", UpperSWStopsLimitText);
+                UpperLimitToolTip.Show("Upper Software Stop limit must be a number", UpperSWStopsLimitText);
                 UpperSWStopsLimitText.BackColor = Color.Yellow;
                 ValidUpperSWStopLimit = false;
             }
@@ -1366,8 +1367,6 @@ namespace ControlRoomApplication.GUI
 
                 if (!Validator.IsBetween(requestedLowerLimit, MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES, requestedUpperLimit))
                 {
-                    
-
                     LowerLimitToolTip.Show(String.Format("Lower Software Stop limit must be between {0} and {1} degrees (inclusive)", MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES, requestedUpperLimit), LowerSWStopsLimitText);
                     LowerSWStopsLimitText.BackColor = Color.Yellow;
                     ValidLowerSWStopLimit = false;
@@ -1382,7 +1381,7 @@ namespace ControlRoomApplication.GUI
             }
             else
             {
-                LowerLimitToolTip.Show("Specified limit must be a double", LowerSWStopsLimitText);
+                LowerLimitToolTip.Show("Lower Software Stop limit must be a number", LowerSWStopsLimitText);
                 LowerSWStopsLimitText.BackColor = Color.Yellow;
                 ValidLowerSWStopLimit = false;
             }
