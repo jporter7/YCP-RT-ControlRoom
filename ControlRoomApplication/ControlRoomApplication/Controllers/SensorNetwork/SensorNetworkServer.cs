@@ -568,16 +568,17 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             double y_avg = y_sum / CurrentCounterbalanceAccl.Length;
             double x_avg = x_sum / CurrentCounterbalanceAccl.Length;
             double z_avg = z_sum / CurrentCounterbalanceAccl.Length;
+            //Console.WriteLine("X: " + x_avg + " Y: " + y_avg + " Z: " + z_avg);
 
             // Map the accerlerometer output values to their proper G-force range
             double X_out = x_avg / 256.0;
             double Y_out = y_avg / 256.0;
             double Z_out = z_avg / 256.0;
+            //Console.WriteLine("X: " + X_out + " Y: " + Y_out + " Z: " + Z_out);
 
-            //double pitch = 90 - Math.Atan(-1 * X_out / Math.Sqrt(Math.Pow(Y_out, 2) + Math.Pow(Z_out, 2))) * 180 / Math.PI;
-
+            //Console.WriteLine(Math.Atan2(Y_out, -Z_out) * 180.0 / Math.PI + SensorNetworkConstants.CBAccelPositionOffset);
             // Calculate roll orientation
-            CurrentCBAccelElevationPosition = 90 + Math.Atan2(Z_out, Y_out) * 180.0 / Math.PI;
+            CurrentCBAccelElevationPosition = Math.Atan2(Y_out, -Z_out) * 180.0 / Math.PI + SensorNetworkConstants.CBAccelPositionOffset;
         }
     }
 }
