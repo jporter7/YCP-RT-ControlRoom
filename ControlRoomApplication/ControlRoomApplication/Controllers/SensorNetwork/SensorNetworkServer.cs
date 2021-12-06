@@ -577,7 +577,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             //double pitch = 90 - Math.Atan(-1 * X_out / Math.Sqrt(Math.Pow(Y_out, 2) + Math.Pow(Z_out, 2))) * 180 / Math.PI;
 
             // Calculate roll orientation
-            CurrentCBAccelElevationPosition = 90 + Math.Atan2(Z_out, Y_out) * 180.0 / Math.PI + 0.4;
+            CurrentCBAccelElevationPosition = 90 + Math.Atan2(Z_out, Y_out) * 180.0 / Math.PI;
         }
     }
 }
