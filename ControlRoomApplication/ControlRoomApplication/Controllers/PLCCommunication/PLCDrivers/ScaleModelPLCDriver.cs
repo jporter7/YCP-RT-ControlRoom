@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
 using Newtonsoft.Json;
@@ -193,6 +194,8 @@ namespace ControlRoomApplication.Controllers {
             Console.WriteLine( MCU_ip );
         }
 
+        public override MovementPriority CurrentMovementPriority { get; set; }
+
         public override void setregvalue(ushort adr, ushort value)
         {
             throw new NotImplementedException();
@@ -356,7 +359,7 @@ namespace ControlRoomApplication.Controllers {
             throw new NotImplementedException();
         }
 
-        public override bool InterruptMovementAndWaitUntilStopped()
+        public override bool InterruptMovementAndWaitUntilStopped(bool isCriticalMovementInterrupt = false, bool isSoftwareStopInterrupt = false)
         {
             throw new NotImplementedException();
         }
@@ -367,6 +370,11 @@ namespace ControlRoomApplication.Controllers {
         }
 
         public override void SetFinalOffset(Orientation finalPos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override RadioTelescopeDirectionEnum GetRadioTelescopeDirectionEnum(RadioTelescopeAxisEnum axis)
         {
             throw new NotImplementedException();
         }

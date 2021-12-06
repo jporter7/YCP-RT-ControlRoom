@@ -148,6 +148,12 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         public Acceleration[] CurrentCounterbalanceAccl { get; set; }
 
         /// <summary>
+        /// This is the current orientation calculated from the counterbalance. It is updated with every
+        /// packet recieved from the sensor network.
+        /// </summary>
+        public double CurrentCBAccelElevationPosition { get; set; }
+
+        /// <summary>
         /// This is used for sending initialization data to the Sensor Network, and is also used to
         /// access the configuration.
         /// </summary>
@@ -156,7 +162,7 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <summary>
         /// This is the simulation sensor network, which will run whenever we are not using the hardware.
         /// </summary>
-        private SimulationSensorNetwork SimulationSensorNetwork { get; }
+        public SimulationSensorNetwork SimulationSensorNetwork { get; }
 
         /// <summary>
         /// This will be used to tell us what the SensorNetwork status using <seealso cref="SensorNetworkStatusEnum"/>.
@@ -379,6 +385,9 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
 
                             //add to the Counterbalance Acceleration Blob
                             CounterbalanceAccBlob.BuildAccelerationBlob(CurrentCounterbalanceAccl);
+
+                            // If there is new counterbalance accelerometer data, update the elevation position
+                            UpdateCBAccelElevationPosition();
                         }
 
                         // Elevation temperature
@@ -538,6 +547,38 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
             logger.Error($"{Utilities.GetTimeStamp()}: Connection to the Sensor Network timed out! Status: {Status}");
 
             pushNotification.sendToAllAdmins("Sensor Network Timeout", $"Status: {Status}");
+        }
+
+        /// <summary>
+        /// Update the counterbalance accelerometer position with the data currently in CurrentCounterBalanceAccl
+        /// </summary>
+        private void UpdateCBAccelElevationPosition()
+        {
+            double y_sum = 0, z_sum = 0, x_sum = 0;
+
+            for (int i = 0; i < CurrentCounterbalanceAccl.Length; i++)
+            {
+                // Gather a sum of all the accerlometer data
+                y_sum += CurrentCounterbalanceAccl[i].y;
+                z_sum += CurrentCounterbalanceAccl[i].z;
+                x_sum += CurrentCounterbalanceAccl[i].x;
+            }
+
+            // Get an average of all accelerometer data for a more precise reading
+            double y_avg = y_sum / CurrentCounterbalanceAccl.Length;
+            double x_avg = x_sum / CurrentCounterbalanceAccl.Length;
+            double z_avg = z_sum / CurrentCounterbalanceAccl.Length;
+            //Console.WriteLine("X: " + x_avg + " Y: " + y_avg + " Z: " + z_avg);
+
+            // Map the accerlerometer output values to their proper G-force range
+            double X_out = x_avg / 256.0;
+            double Y_out = y_avg / 256.0;
+            double Z_out = z_avg / 256.0;
+            //Console.WriteLine("X: " + X_out + " Y: " + Y_out + " Z: " + Z_out);
+
+            //Console.WriteLine(Math.Atan2(Y_out, -Z_out) * 180.0 / Math.PI + SensorNetworkConstants.CBAccelPositionOffset);
+            // Calculate roll orientation
+            CurrentCBAccelElevationPosition = Math.Atan2(Y_out, -Z_out) * 180.0 / Math.PI + SensorNetworkConstants.CBAccelPositionOffset;
         }
     }
 }

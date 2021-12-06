@@ -21,6 +21,8 @@ namespace ControlRoomApplication.Controllers {
     public class MCUManager {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
         public bool MovementInterruptFlag = false;
+        public bool CriticalMovementInterruptFlag = false;
+        public bool SoftwareStopInterruptFlag = false;
 
         private long MCU_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         private Thread HeartbeatMonitorThread;
@@ -869,8 +871,9 @@ namespace ControlRoomApplication.Controllers {
             
             while (!command.timeout.IsCancellationRequested && !MovementInterruptFlag && CheckMCUErrors().Count == 0 && result == MovementResult.None)
             {
+                // We must wait for the MCU registers to be set before trying to read them
                 Thread.Sleep(100);
-              
+
                 // Anything but homing...
                 if (!homing) completed = MovementCompleted();
 
@@ -939,10 +942,29 @@ namespace ControlRoomApplication.Controllers {
                 else if (MovementInterruptFlag)
                 {
                     MovementInterruptFlag = false;
-                    result = MovementResult.Interrupted;
+
+                    // Return software-stops hit if they caused the interrupt
+                    if (SoftwareStopInterruptFlag)
+                    {
+                        SoftwareStopInterruptFlag = false;
+                        result = MovementResult.SoftwareStopHit;
+                    }
+                    else
+                    {
+                        result = MovementResult.Interrupted;
+                    }
                 }
 
-                ControlledStop();
+                // A critical movement interrupt signals an immediate stop
+                if (CriticalMovementInterruptFlag)
+                {
+                    CriticalMovementInterruptFlag = false;
+                    ImmediateStop();
+                }
+                else
+                {
+                    ControlledStop();
+                }
             }
 
             command.completed = true;
