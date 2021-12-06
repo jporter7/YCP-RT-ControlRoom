@@ -29,7 +29,8 @@ namespace ControlRoomApplication.Controllers
         private bool KeepTCPMonitoringThreadAlive;
         public RadioTelescopeController rtController;
         private ControlRoom controlRoom;
-        private bool connected = false;
+
+        private bool waitingForConn = true;
 
         public RemoteListener(int port, ControlRoom control)
         {
@@ -57,134 +58,166 @@ namespace ControlRoomApplication.Controllers
             // Enter the listening loop.
             while (KeepTCPMonitoringThreadAlive)
             {
-                logger.Debug(Utilities.GetTimeStamp() + ": Waiting for a connection... ");
-                // Perform a blocking call to accept requests.
-                // You could also user server.AcceptSocket() here.
-                TcpClient client = server.AcceptTcpClient();
-                logger.Debug(Utilities.GetTimeStamp() + ": TCP Client connected!");
-                connected = true;
-
-                data = null;
-
-                // Get a stream object for reading and writing
-                NetworkStream stream = client.GetStream();
-
-                int i;
-
-                // Loop to receive all the data sent by the client.
-                while (connected && (i = readFromStream(stream, bytes)) != 0 )
+                if (waitingForConn)
                 {
-                    // Translate data bytes to ASCII string.
-                    data = Encoding.ASCII.GetString(bytes, 0, i);
+                  logger.Debug(Utilities.GetTimeStamp() + ": Waiting for a connection... ");
+                   waitingForConn = false;
+                }                
 
-                    logger.Debug(Utilities.GetTimeStamp() + ": Received: " + data);
-
-                    // Process the data sent by the client.
-                    data = data.ToUpper();
-
-                    string myWriteBuffer = null;
-
-                    // Inform mobile command received 
-                    writeBackToClient("Received command: " + data, stream);
-
-                    // if processing the data fails, report an error message
-                    ParseTCPCommandResult parsedTCPCommandResult = ParseRLString(data);
-                    if (parsedTCPCommandResult.parseTCPCommandResultEnum != ParseTCPCommandResultEnum.Success)
+                // Place each command in its own asynchronous thread so that we can run commands in parallel
+                if (server.Pending())
+                {
+                    waitingForConn = true;
+                    new Thread(() =>
                     {
-                        // send back a failure response
-                        logger.Info("Parsing command failed with ERROR: " + parsedTCPCommandResult.errorMessage);
-                        myWriteBuffer = "Parsing command failed with error: " + parsedTCPCommandResult.errorMessage;
-                        writeBackToClient(myWriteBuffer, stream);
-                    }
-                    // else the parsing was successful, attempt to run the command
-                    else
-                    {
-                        // if script inform which script is running, else just command type
-                        if(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "SCRIPT")
-                        {
-                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
-                                parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...");
-                            string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] +" "+
-                                parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...";
-                            writeBackToClient(startedCommandMsg, stream);
-                            // writeback eta to client
-                            int estMoveTime = ScriptETA(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME]);
-                            logger.Info("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " has an estimated time of " + estMoveTime + " ms");
-                            writeBackToClient(("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + " has an estimated time of "+ estMoveTime + " ms"), stream);
+                        TcpClient client = server.AcceptTcpClient();
+                        logger.Debug(Utilities.GetTimeStamp() + ": TCP Client connected!");
 
-                        }
-                        else
-                        {
-                            logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
-                            string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE]+"...";
-                            writeBackToClient(startedCommandMsg, stream);
+                        data = null;
+                        // Get a stream object for reading and writing
+                        NetworkStream stream = client.GetStream();
 
-                            switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
+                        int i;
+
+                        // Loop to receive all the data sent by the client.
+                        if((i = readFromStream(stream, bytes)) != 0 )
+                        {
+                            // Translate data bytes to ASCII string.
+                            data = Encoding.ASCII.GetString(bytes, 0, i);
+
+                            logger.Debug(Utilities.GetTimeStamp() + ": Received: " + data);
+
+                            // Process the data sent by the client.
+                            data = data.ToUpper();
+
+                            string myWriteBuffer = null;
+
+                            // Inform mobile command received 
+                            writeBackToClient("Received command: " + data, stream);
+
+                            // if processing the data fails, report an error message
+                            ParseTCPCommandResult parsedTCPCommandResult = ParseRLString(data);
+                            if (parsedTCPCommandResult.parseTCPCommandResultEnum != ParseTCPCommandResultEnum.Success)
                             {
-                                case "ORIENTATION_MOVE":
-                                    int azAbs = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_AZ]);
-                                    int elAbs = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_EL]);
-
-                                    int mvmtTimeAbs = AbsoluteMovementETA(new Orientation(azAbs, elAbs));
-
-                                    writeBackToClient("ORIENTATION_MOVE TO AZ " + azAbs + " and EL " + elAbs + " has an estimated time of " + mvmtTimeAbs + " ms", stream);
-                                    break;
-                                case "RELATIVE_MOVE":
-                                    int azRelative = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_AZ]);
-                                    int elRelative = Int32.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_EL]);
-                                    int mvmtTimeRelative = RelativeMovementETA(new Orientation(azRelative, elRelative));
-
-                                    writeBackToClient("RELATIVE_MOVE BY AZ " + azRelative + " and EL " + elRelative + " has an estimated time of " + mvmtTimeRelative + " ms", stream);
-                                    break;
-
-                                default:
-                                    break;
+                                // send back a failure response
+                                logger.Info("Parsing command failed with ERROR: " + parsedTCPCommandResult.errorMessage);
+                                myWriteBuffer = "Parsing command failed with error: " + parsedTCPCommandResult.errorMessage;
+                                writeBackToClient(myWriteBuffer, stream);
                             }
-
-
-                        }
-
-                        ExecuteTCPCommandResult executeTCPCommandResult = ExecuteRLCommand(parsedTCPCommandResult.parsedString);
-                        // inform user of the result of command
-                        if (executeTCPCommandResult.movementResult != MovementResult.Success)
-                        {
-                            logger.Debug(Utilities.GetTimeStamp() + ": Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage);
-                            myWriteBuffer = "Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage;
-                            writeBackToClient(myWriteBuffer, stream);
-                        }
-                        else
-                        {
-                            switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
+                            // else the parsing was successful, attempt to run the command
+                            else
                             {
-                                // we write back different in the case of a request command. Otherwise, the default is just successfully completing a command
-                                case "REQUEST":
-                                    switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.REQUEST_TYPE])
+                                // if script inform which script is running, else just command type
+                                if (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] == "SCRIPT")
+                                {
+                                    logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " +
+                                        parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + " " +
+                                        parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...");
+                                    string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " +
+                                        parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + " " +
+                                        parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...";
+                                    writeBackToClient(startedCommandMsg, stream);
+                                    // writeback eta to client
+                                    int estMoveTime = ScriptETA(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME]);
+                                    logger.Info("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] +
+                                        " has an estimated time of " + estMoveTime + " ms");
+                                    writeBackToClient(("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] +
+                                        " has an estimated time of " + estMoveTime + " ms"), stream);
+
+                                }
+                                else
+                                {
+                                    logger.Debug(Utilities.GetTimeStamp() + ": Successfully parsed command " + data + ". Beginning requested movement " +
+                                        parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
+                                    string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " +
+                                        parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...";
+                                    writeBackToClient(startedCommandMsg, stream);
+
+                                    switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
                                     {
-                                        case "MVMT_DATA":
-                                            writeBackToClient(executeTCPCommandResult.errorMessage, stream);
-                                            logger.Debug(Utilities.GetTimeStamp() + ": "+executeTCPCommandResult.errorMessage);
+                                        case "ORIENTATION_MOVE":
+                                            try
+                                            {
+                                                // Attempt to parse double values
+                                                double azAbs = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_AZ]);
+                                                double elAbs = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_EL]);
+
+                                                int mvmtTimeAbs = AbsoluteMovementETA(new Orientation(azAbs, elAbs));
+                                                writeBackToClient("ORIENTATION_MOVE TO AZ " + azAbs + " and EL " + elAbs + " has an estimated time of " + mvmtTimeAbs + " ms", stream);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                writeBackToClient("An exception occurred attempting to parse AZ and/or EL values: " + e.Message, stream);
+                                            }
+                                            break;
+
+                                        case "RELATIVE_MOVE":
+                                            try
+                                            {
+                                                // Attempt to parse double values
+                                                double azRelative = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_AZ]);
+                                                double elRelative = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.RELATIVE_MOVE_EL]);
+                                                int mvmtTimeRelative = RelativeMovementETA(new Orientation(azRelative, elRelative));
+
+                                                writeBackToClient("RELATIVE_MOVE BY AZ " + azRelative + " and EL " + elRelative + " has an estimated time of " +
+                                                    mvmtTimeRelative + " ms", stream);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                writeBackToClient("An exception occurred attempting to parse AZ and/or EL values: " + e.Message, stream);
+                                            }
+                                            break;
+
+                                        default:
                                             break;
                                     }
+                                }
 
-                                    break;
+                                // Now that we have finished parsing our command, execute it since it has been determined to be valid
+                                ExecuteTCPCommandResult executeTCPCommandResult = ExecuteRLCommand(parsedTCPCommandResult.parsedString);
 
-                                default:
-                                    logger.Debug(Utilities.GetTimeStamp() + ": SUCCESSFULLY COMPLETED COMMAND: " + data);
-                                    // send back a success response -- finished command
-                                    myWriteBuffer = "SUCCESSFULLY COMPLETED COMMAND: " + data;
+                                // inform user of the result of command
+                                if (executeTCPCommandResult.movementResult != MovementResult.Success)
+                                {
+                                    logger.Debug(Utilities.GetTimeStamp() + ": Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage);
+                                    myWriteBuffer = "Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage;
                                     writeBackToClient(myWriteBuffer, stream);
-                                    break;
+                                }
+                                else
+                                {
+                                    switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
+                                    {
+                                        // we write back different in the case of a request command. Otherwise, the default is just successfully completing a command
+                                        case "REQUEST":
+                                            switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.REQUEST_TYPE])
+                                            {
+                                                case "MVMT_DATA":
+                                                    writeBackToClient(executeTCPCommandResult.errorMessage, stream);
+                                                    logger.Debug(Utilities.GetTimeStamp() + ": " + executeTCPCommandResult.errorMessage);
+                                                    break;
+                                            }
+                                            break;
+
+                                        default:
+                                            logger.Debug(Utilities.GetTimeStamp() + ": SUCCESSFULLY COMPLETED COMMAND: " + data);
+                                            // send back a success response -- finished command
+                                            myWriteBuffer = "SUCCESSFULLY COMPLETED COMMAND: " + data;
+                                            writeBackToClient(myWriteBuffer, stream);
+                                            break;
+                                    }
+                                }
                             }
-                           
+
+                            // Shutdown and end connection
+                            client.Close();
+                            client.Dispose();
+                            stream.Close();
+                            stream.Dispose();
                         }
-                    }
-
-                    client.Close();
-                    connected = false;
+                    }).Start(); // begin our worker thread to execute our TCP command
                 }
-
-                // Shutdown and end connection
-                client.Close();
+                
+               
             }
         }
 
@@ -441,11 +474,9 @@ namespace ControlRoomApplication.Controllers
                 }
                 else if (command=="STOP_RT")
                 {
-                    bool success = rtController.ExecuteRadioTelescopeControlledStop(MovementPriority.GeneralStop);
+                    rtController.RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
 
-                    if (success) return new ExecuteTCPCommandResult(MovementResult.Success);
-                    else return new ExecuteTCPCommandResult(MovementResult.TimedOut, TCPCommunicationConstants.ALL_STOP_ERR); 
-                    // Uses a semaphore to acquire lock so a false means it has timed out or cannot gain access to movement thread
+                    return new ExecuteTCPCommandResult(MovementResult.Success, TCPCommunicationConstants.ALL_STOP_ERR);
 
                 }
                 else if (command=="SENSOR_INIT")
