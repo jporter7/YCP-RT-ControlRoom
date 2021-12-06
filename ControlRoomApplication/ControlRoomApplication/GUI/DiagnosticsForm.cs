@@ -1305,7 +1305,7 @@ namespace ControlRoomApplication.GUI
                 rtController.RadioTelescope.maxElevationDegrees = double.Parse(UpperSWStopsLimitText.Text);
                 rtController.RadioTelescope.minElevationDegrees = double.Parse(LowerSWStopsLimitText.Text);
 
-                logger.Info(String.Format("Updating Software stop thresholds... New values: Lower = {0} , Upper = {1} ", double.Parse(LowerSWStopsLimitText.Text), double.Parse(UpperSWStopsLimitText.Text)));
+                logger.Info(Utilities.GetTimeStamp() + String.Format(" Updating Software stop thresholds... New values: Lower = {0} , Upper = {1} ", double.Parse(LowerSWStopsLimitText.Text), double.Parse(UpperSWStopsLimitText.Text)));
                 DatabaseOperations.UpdateTelescope(rtController.RadioTelescope);
             }
 
