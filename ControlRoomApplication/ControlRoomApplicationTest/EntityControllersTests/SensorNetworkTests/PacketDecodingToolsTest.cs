@@ -93,10 +93,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests.SensorNetworkTests
             twoAcceleration[20] = 0;
             twoAcceleration[21] = 3;
 
-            // Skipping the timestamp because we aren't concerned with that in this test
             Acceleration[] expected = new Acceleration[2];
-            expected[0] = Acceleration.Generate(1, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE);
-            expected[1] = Acceleration.Generate(1 + (long)1.25, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE); // Temporary, will change when the Control Room can configure accelerometers
+            expected[0] = Acceleration.Generate(1 - (long)(1 / SensorNetworkConstants.CbAccelSamplingFrequency * 1000), 1, 2, 3, SensorLocationEnum.COUNTERBALANCE);
+            expected[1] = Acceleration.Generate(1, 1, 2, 3, SensorLocationEnum.COUNTERBALANCE); // Temporary, will change when the Control Room can configure accelerometers
 
             // This is only used for the counter, becuase it needs a variable to be passed by reference
             int i = 0;

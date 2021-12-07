@@ -74,16 +74,31 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// <summary>
         /// This is the FIFO size used by the azimuth motor accelerometer
         /// </summary>
-        public const int azAccelFIFOSize = 32;
+        public const int AzAccelFIFOSize = 32;
 
         /// <summary>
         /// This is the FIFO size used by the elevation motor accelerometer
         /// </summary>
-        public const int elAccelFIFOSize = 32;
+        public const int ElAccelFIFOSize = 32;
 
         /// <summary>
         /// This is the FIFO size used by the counterbalance accelerometer
         /// </summary>
-        public const int cbAccelFIFOSize = 32;
+        public const int CbAccelFIFOSize = 32;
+
+        /// <summary>
+        /// This is the sampling frequency used by the azimuth motor accelerometer
+        /// </summary>
+        public const double AzAccelSamplingFrequency = 800;
+
+        /// <summary>
+        /// This is the sampling frequency used by the elevation motor accelerometer
+        /// </summary>
+        public const double ElAccelSamplingFrequency = 800;
+
+        /// <summary>
+        /// This is the sampling frequency used by the counterbalance accelerometer
+        /// </summary>
+        public const double CbAccelSamplingFrequency = 800;
     }
 }
