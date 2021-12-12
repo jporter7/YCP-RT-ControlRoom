@@ -33,6 +33,7 @@ namespace ControlRoomApplication.Controllers
         private Thread SensorMonitoringThread;
         private bool MonitoringSensors;
         private bool AllSensorsSafe;
+        public bool EnableSoftwareStops;
 
         private double MaxElTempThreshold;
         private double MaxAzTempThreshold;
@@ -56,6 +57,8 @@ namespace ControlRoomApplication.Controllers
             RadioTelescope = radioTelescope;
             CoordinateController = new CoordinateCalculationController(radioTelescope.Location);
 
+            FinalCalibrationOffset = new Orientation(0, 0);
+
             overrides = new OverrideSwitchData(radioTelescope);
             radioTelescope.PLCDriver.Overrides = overrides;
 
@@ -63,6 +66,7 @@ namespace ControlRoomApplication.Controllers
             SensorMonitoringThread.Start();
             MonitoringSensors = true;
             AllSensorsSafe = true;
+            EnableSoftwareStops = true;
 
             MaxAzTempThreshold = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.AZ_MOTOR_TEMP);
             MaxElTempThreshold = DatabaseOperations.GetThresholdForSensor(SensorItemEnum.ELEV_MOTOR_TEMP);
@@ -73,8 +77,6 @@ namespace ControlRoomApplication.Controllers
             snowDumpTimer.Elapsed += AutomaticSnowDumpInterval;
             snowDumpTimer.AutoReset = true;
             snowDumpTimer.Enabled = true;
-
-            FinalCalibrationOffset = new Orientation(0, 0);
         }
 
         /// <summary>
@@ -209,6 +211,8 @@ namespace ControlRoomApplication.Controllers
             {
                 Orientation current = GetCurrentOrientation();
 
+                RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
                 moveResult = RadioTelescope.PLCDriver.MoveToOrientation(MiscellaneousConstants.THERMAL_CALIBRATION_ORIENTATION, current);
 
                 if (moveResult != MovementResult.Success)
@@ -294,6 +298,23 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// Gets the elevation readings used by the software stops. When the simulation sensor network is in use,
+        /// the motor positions are used, otherwise the sensor network's orientation reading is used.
+        /// </summary>
+        /// /// <returns></returns>
+        private double GetSoftwareStopElevation()
+        {
+            if (RadioTelescope.SensorNetworkServer.SimulationSensorNetwork != null)
+            {
+                return GetCurrentOrientation().Elevation;
+            }
+            else
+            {
+                return RadioTelescope.SensorNetworkServer.CurrentCBAccelElevationPosition;
+            }
+        }
+
+        /// <summary>
         /// Method used to request to move the Radio Telescope to an objective
         /// azimuth/elevation orientation.
         /// 
@@ -304,6 +325,9 @@ namespace ControlRoomApplication.Controllers
         public MovementResult MoveRadioTelescopeToOrientation(Orientation orientation, MovementPriority priority)
         {
             MovementResult result = MovementResult.None;
+
+            if (EnableSoftwareStops && ((GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees && orientation.Elevation > RadioTelescope.maxElevationDegrees) || 
+                (GetSoftwareStopElevation() < RadioTelescope.minElevationDegrees  && orientation.Elevation < RadioTelescope.minElevationDegrees))) return MovementResult.SoftwareStopHit;
 
             // Return if incoming priority is equal to or less than current movement
             if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
@@ -343,6 +367,11 @@ namespace ControlRoomApplication.Controllers
         public MovementResult MoveRadioTelescopeToCoordinate(Coordinate coordinate, MovementPriority priority)
         {
             MovementResult result = MovementResult.None;
+
+            Orientation orientation = CoordinateController.CoordinateToOrientation(coordinate, DateTime.UtcNow);
+
+            if (EnableSoftwareStops && (GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees && orientation.Elevation > RadioTelescope.maxElevationDegrees) ||
+                (GetSoftwareStopElevation() < RadioTelescope.minElevationDegrees && orientation.Elevation < RadioTelescope.minElevationDegrees)) return MovementResult.SoftwareStopHit;
 
             // Return if incoming priority is equal to or less than current movement
             if (priority <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
@@ -403,7 +432,7 @@ namespace ControlRoomApplication.Controllers
 
             Orientation expectedOrientation = new Orientation(normalizedAzimuth, degreesToMoveBy.Elevation + origOrientation.Elevation);
 
-            if (expectedOrientation.Elevation < MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MIN || expectedOrientation.Elevation > MiscellaneousHardwareConstants.MOVE_BY_X_DEGREES_EL_MAX) return MovementResult.InvalidRequestedPostion;
+            if (expectedOrientation.Elevation < RadioTelescope.minElevationDegrees || expectedOrientation.Elevation > RadioTelescope.maxElevationDegrees) return MovementResult.InvalidRequestedPostion;
 
             // If the thread is locked (two moves coming in at the same time), return
             if (Monitor.TryEnter(MovementLock))
@@ -462,8 +491,12 @@ namespace ControlRoomApplication.Controllers
                 FinalCalibrationOffset = new Orientation(0, 0);
                 RadioTelescope.PLCDriver.SetFinalOffset(FinalCalibrationOffset);
 
+                EnableSoftwareStops = false;
+
                 // Perform a home telescope movement
                 result = RadioTelescope.PLCDriver.HomeTelescope();
+
+                EnableSoftwareStops = true;
 
                 // Zero out absolute encoders
                 RadioTelescope.SensorNetworkServer.AbsoluteOrientationOffset = (Orientation)RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Clone();
@@ -563,6 +596,20 @@ namespace ControlRoomApplication.Controllers
         public MovementResult StartRadioTelescopeJog(double speed, RadioTelescopeDirectionEnum direction, RadioTelescopeAxisEnum axis)
         {
             MovementResult result = MovementResult.None;
+
+            //may want to check for jogs using the RadioTelescopeAxisEnum.BOTH if a jog on both axes is needed in the future 
+            if (EnableSoftwareStops &&  axis == RadioTelescopeAxisEnum.ELEVATION)
+            {
+                if(direction == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive && GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees)
+                {
+                    return MovementResult.SoftwareStopHit;
+                }
+
+                else if(direction == RadioTelescopeDirectionEnum.ClockwiseOrNegative && GetSoftwareStopElevation() < RadioTelescope.minElevationDegrees)
+                {
+                    return MovementResult.SoftwareStopHit;
+                }
+            }
 
             // Return if incoming priority is equal to or less than current movement
             if ((MovementPriority.Jog - 1) <= RadioTelescope.PLCDriver.CurrentMovementPriority) return MovementResult.AlreadyMoving;
@@ -756,8 +803,11 @@ namespace ControlRoomApplication.Controllers
                         RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
                     }
                 }
+
+                // Run the software-stop routine
+                CheckAndRunSoftwareStops();
                 
-                Thread.Sleep(1000);
+                Thread.Sleep(100);
             }
         }
 
@@ -886,14 +936,16 @@ namespace ControlRoomApplication.Controllers
 
             // If the thread is locked (two moves coming in at the same time), return
             if (Monitor.TryEnter(MovementLock)) {
+                
                 RadioTelescope.PLCDriver.CurrentMovementPriority = priority;
+
 
                 // insert snow dump movements here
                 // default is azimuth of 0 and elevation of 0
                 previousSnowDumpAzimuth += 45;
                 if (previousSnowDumpAzimuth >= 360) previousSnowDumpAzimuth -= 360;
 
-                Orientation dump = new Orientation(previousSnowDumpAzimuth, -5);
+                Orientation dump = new Orientation(previousSnowDumpAzimuth, -4);
                 Orientation current = GetCurrentOrientation();
 
                 Orientation dumpAzimuth = new Orientation(dump.Azimuth, current.Elevation);
@@ -1044,5 +1096,25 @@ namespace ControlRoomApplication.Controllers
             return movementResult;
         }
 
+        /// <summary>
+        /// This is the method that handles and executes the software-stop logic
+        /// </summary>
+        private void CheckAndRunSoftwareStops()
+        {
+            // Run checks for software-stops only if they are enabled
+            if (EnableSoftwareStops)
+            {
+                // Get the elevation direction
+                RadioTelescopeDirectionEnum direction = RadioTelescope.PLCDriver.GetRadioTelescopeDirectionEnum(RadioTelescopeAxisEnum.ELEVATION);
+
+                // Perform a critical movement interrupt if the telescope is moving past either elevation threshold
+                if ((GetSoftwareStopElevation() > RadioTelescope.maxElevationDegrees && direction == RadioTelescopeDirectionEnum.CounterclockwiseOrPositive) ||
+                    (GetSoftwareStopElevation() < RadioTelescope.minElevationDegrees && direction == RadioTelescopeDirectionEnum.ClockwiseOrNegative))
+                {
+                    RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped(true, true);
+                    logger.Info(Utilities.GetTimeStamp() + ": Software-stop hit!");
+                }
+            }
+        }
     }
 }

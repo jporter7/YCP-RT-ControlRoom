@@ -1096,5 +1096,29 @@ namespace ControlRoomApplication.Main
 
         }
 
+        /// <summary>
+        /// Enable/disable the telescope's software-stops when the check box is checked or unchecked
+        /// </summary>
+        private void SoftwareStopsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!SoftwareStopsCheckBox.Checked)
+            {
+                DialogResult result = MessageBox.Show("Are you sure you want to disable software stops?", "Software-Stops Confirmation", MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                {
+                    rtController.EnableSoftwareStops = false;
+                }
+                else
+                {
+                    SoftwareStopsCheckBox.Checked = true;
+                    rtController.EnableSoftwareStops = true;
+                }
+            }
+            else
+            {
+                rtController.EnableSoftwareStops = true;
+            }
+        }
     }
 }
