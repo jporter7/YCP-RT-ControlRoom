@@ -47,6 +47,8 @@ namespace ControlRoomApplication.Entities
             CurrentOrientation = new Orientation();
             Id = localDBID;
             SensorNetworkServer = sensorNetworkServer;
+            maxElevationDegrees = MiscellaneousConstants.MAX_SOFTWARE_STOP_EL_DEGREES;
+            minElevationDegrees = MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES;
         }
 
         [Key]
