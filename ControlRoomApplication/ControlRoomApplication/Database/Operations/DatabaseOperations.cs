@@ -163,6 +163,7 @@ namespace ControlRoomApplication.Database
                                                         .Include(t => t.Orientation)
                                                         .Include(t => t.SpectraCyberConfig)
                                                         .Include(t => t.User)
+                                                        .OrderBy(t => t.Id)
                                                         .ToList<Appointment>();
 
                     appts = appoints.Where(x => x.telescope_id == radioTelescopeId).ToList();
