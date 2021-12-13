@@ -163,10 +163,9 @@ namespace ControlRoomApplication.Database
                                                         .Include(t => t.Orientation)
                                                         .Include(t => t.SpectraCyberConfig)
                                                         .Include(t => t.User)
-                                                        .OrderBy(t => t.Id)
                                                         .ToList<Appointment>();
 
-                    appts = appoints.Where(x => x.telescope_id == radioTelescopeId).ToList();
+                    appts = appoints.Where(x => x.telescope_id == radioTelescopeId).OrderBy(x => x.Id).ToList();
 
                     // Add coordinates to the appointment
                     var coordsForAppt = Context.Coordinates.ToList<Coordinate>();
