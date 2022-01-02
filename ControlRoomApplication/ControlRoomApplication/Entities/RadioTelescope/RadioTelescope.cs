@@ -38,6 +38,19 @@ namespace ControlRoomApplication.Entities
             minElevationDegrees = MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES;
         }
 
+        public RadioTelescope(AbstractSpectraCyberController spectraCyberController, AbstractPLCDriver plcCommsHandler, Location location, Orientation calibrationOrientation, int localDBID, SensorNetworkServer sensorNetworkServer)
+        {
+            PLCDriver = plcCommsHandler;
+            SpectraCyberController = spectraCyberController;
+            CalibrationOrientation = calibrationOrientation;
+            Location = location;
+            CurrentOrientation = new Orientation();
+            Id = localDBID;
+            SensorNetworkServer = sensorNetworkServer;
+            maxElevationDegrees = MiscellaneousConstants.MAX_SOFTWARE_STOP_EL_DEGREES;
+            minElevationDegrees = MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

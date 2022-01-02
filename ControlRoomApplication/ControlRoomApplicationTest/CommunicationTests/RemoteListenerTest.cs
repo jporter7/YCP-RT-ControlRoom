@@ -58,7 +58,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
 
             AbstractWeatherStation WS = new SimulationWeatherStation(1000);
 
-            ControlRoom = new ControlRoom(WS);
+            ControlRoom = new ControlRoom(WS,80);
             
             ControlRoom.mobileControlServer.rtController = RtController;
 

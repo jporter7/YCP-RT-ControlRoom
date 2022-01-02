@@ -229,7 +229,9 @@ namespace ControlRoomApplication.Controllers
 
             try
             {
+                server.Stop();
                 TCPMonitoringThread.Join();
+               
             }
             catch (Exception e)
             {
