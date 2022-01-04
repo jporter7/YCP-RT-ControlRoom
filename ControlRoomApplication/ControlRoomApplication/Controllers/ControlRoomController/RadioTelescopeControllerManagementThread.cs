@@ -40,6 +40,8 @@ namespace ControlRoomApplication.Controllers
 
         bool safeTel = false;
 
+        private int timeoutCounter = 0;
+
         public Orientation NextObjectiveOrientation
         {
             get
@@ -362,7 +364,16 @@ namespace ControlRoomApplication.Controllers
                         // the hardware.
                         // TODO: Talk to Todd about thresholds for this. (issue #388) Right now, it is cancelling the appointment if the movement
                         // returns back any single error. See the MovementResult enum for a list of the different errors. 
-                        if (apptMovementResult != MovementResult.Success)
+                        if (apptMovementResult == MovementResult.TimedOut)
+                        {
+                            timeoutCounter++;
+                        }
+                        else if(apptMovementResult == MovementResult.Success)
+                        {
+                            timeoutCounter = 0;
+                        }
+
+                        if (apptMovementResult != MovementResult.Success && timeoutCounter >= 5)
                         {
                             logger.Info($"{Utilities.GetTimeStamp()}: Appointment movement FAILED with the following error message: {apptMovementResult.ToString()}");
                             InterruptAppointmentFlag = true;
