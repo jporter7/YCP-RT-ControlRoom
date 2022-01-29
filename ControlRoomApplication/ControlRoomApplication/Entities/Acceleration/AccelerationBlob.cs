@@ -22,8 +22,12 @@ namespace ControlRoomApplication.Entities
 
         public virtual SensorLocationEnum Location { get; set; }
 
+        //takes an acceleration array along with other config data in order to blob together the data into a byte array
         public virtual void BuildAccelerationBlob(Acceleration[] accArray, byte version = 1, byte FIFO_Size = 32, short SampleFrequency = 800, byte GRange = 16, Boolean FullResolution = true,  bool testFlag = false)
         {
+
+            //the switch statement is used for versioning of the blob, currently only one version exists, however; it is easy to add a new version
+            //by adding to a new case
             switch (version)
             {
                 case 1:
@@ -57,6 +61,7 @@ namespace ControlRoomApplication.Entities
 
                     foreach(Acceleration acc in accArray)
                     {
+                        //if it is the first datapoint from the FIFO dump, add a t Time value as well as the acc data
                         if (NumberDataPoints % FIFO_Size == 0)
                         {
                             //label this part of the blob with t for Time
@@ -94,7 +99,7 @@ namespace ControlRoomApplication.Entities
                             NumberDataPoints++;
 
                         }
-                        else
+                        else //otherwise only add acc data
                         {
                             //label this part of the blob with a for just an Acceleration data point
                             char label = 'a';
@@ -126,12 +131,13 @@ namespace ControlRoomApplication.Entities
 
                     }
 
+                    //if the number of datapoints meets or exceeds the prespecified blob size (currently 4000), send the blob to the DB
                     if (NumberDataPoints >= MiscellaneousConstants.BLOB_SIZE)
                     {
                         BlobArray = BlobList.ToArray();
                         Database.DatabaseOperations.AddAccelerationBlobData(this, Location, true);
                         NumberDataPoints = 0;
-                    }else if (testFlag)
+                    }else if (testFlag) // if it is a test, only send it to an array so as to not mess with the DB
                     {
                         BlobArray = BlobList.ToArray();
                         NumberDataPoints = 0;
@@ -146,6 +152,7 @@ namespace ControlRoomApplication.Entities
             }
         }
 
+        //takes an array of bytes in a given order to be able to parse into acceleration data
         public virtual Acceleration[] BlobParser(Byte[] BlobToParse)
         {
             List<Acceleration> accArrayList = new List<Acceleration>();
@@ -220,7 +227,7 @@ namespace ControlRoomApplication.Entities
         }
 
 
-        //print the blob in binary form
+        //print the blob in binary form, used for visualization in presentations
         public String blobToString(Byte[] blob)
         {
 
