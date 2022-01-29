@@ -367,39 +367,21 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
                         if (elAcclSize > 0)
                         {
                             //Create array of acceleration objects 
-<<<<<<< HEAD
                             CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR, ConnectionTimestamp);
-=======
-                            CurrentElevationMotorAccl = GetAccelerationFromBytes(ref k, data, elAcclSize, SensorLocationEnum.EL_MOTOR);
-
-                            //add to the Elevation Acceleration Blob
->>>>>>> Development
                             ElevationAccBlob.BuildAccelerationBlob(CurrentElevationMotorAccl);
                         }
 
                         // Accelerometer 2 (azimuth)
                         if (azAcclSize > 0)
                         {
-<<<<<<< HEAD
                             CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR, ConnectionTimestamp);
-=======
-                            CurrentAzimuthMotorAccl = GetAccelerationFromBytes(ref k, data, azAcclSize, SensorLocationEnum.AZ_MOTOR);
-                            
-                            //add to the Azimuth Acceleration Blob
->>>>>>> Development
                             AzimuthAccBlob.BuildAccelerationBlob(CurrentAzimuthMotorAccl);
                         }
 
                         // Accelerometer 3 (counterbalance)
                         if (cbAcclSize > 0)
                         {
-<<<<<<< HEAD
                             CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE, ConnectionTimestamp);
-=======
-                            CurrentCounterbalanceAccl = GetAccelerationFromBytes(ref k, data, cbAcclSize, SensorLocationEnum.COUNTERBALANCE);
-
-                            //add to the Counterbalance Acceleration Blob
->>>>>>> Development
                             CounterbalanceAccBlob.BuildAccelerationBlob(CurrentCounterbalanceAccl);
 
                             // If there is new counterbalance accelerometer data, update the elevation position
