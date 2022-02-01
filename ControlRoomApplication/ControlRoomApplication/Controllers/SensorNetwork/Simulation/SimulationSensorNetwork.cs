@@ -66,6 +66,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
 
         private double[] ElevationEncoderData { get; set; }
 
+        private long ConnectionTimeStamp { get; set; }
+
         /// <summary>
         /// This is used to start the simulation Sensor Network. Calling this is equivalent to powering on the Teensy.
         /// </summary>
@@ -109,8 +111,10 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
             byte[] receivedInit = new byte[0];
             if(CurrentlyRunning) receivedInit = RequestAndAcquireSensorInitialization();
 
+            ConnectionTimeStamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
             // At this point, we have the initialization and can initialize the sensors
-            if(CurrentlyRunning) InitializeSensors(receivedInit);
+            if (CurrentlyRunning) InitializeSensors(receivedInit);
 
             // Now we can grab the CSV data for ONLY the initialized sensors...
             if(CurrentlyRunning) ReadFakeDataFromCSV();
@@ -147,7 +151,8 @@ namespace ControlRoomApplication.Controllers.SensorNetwork.Simulation
                     subArrays.AzimuthTemps, 
                     subArrays.ElevationEnc, 
                     subArrays.AzimuthEnc,
-                    statuses
+                    statuses,
+                    ConnectionTimeStamp
                 );
 
                 // We have to check for CurrentlyRunning down here because we don't know when the connection is going to be terminated, and
