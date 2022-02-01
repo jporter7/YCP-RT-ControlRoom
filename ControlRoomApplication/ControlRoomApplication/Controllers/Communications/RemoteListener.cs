@@ -212,31 +212,8 @@ namespace ControlRoomApplication.Controllers
                                     // Shutdown and end connection
                                     client.Close();
                                     client.Dispose();
-
-                                    logger.Debug("Disposing TcpClient ... ");
-
                                     stream.Close();
                                     stream.Dispose();
-
-                                    logger.Debug("Disposing NetworkStream ... ");
-
-                                    try
-                                    {
-                                        client.Close();
-                                    }
-                                    catch (ObjectDisposedException e)
-                                    {
-                                        logger.Debug("Client has been disposed of. ");
-                                    }
-
-                                    try
-                                    {
-                                        stream.Close();
-                                    }
-                                    catch (ObjectDisposedException e)
-                                    {
-                                        logger.Debug("Stream has been disposed of. ");
-                                    }
                                 }
                             }
                         }
