@@ -217,11 +217,8 @@ namespace ControlRoomApplication.Controllers
                                 }
                             }
                         }
-                        
                     }).Start(); // begin our worker thread to execute our TCP command
                 }
-                
-               
             }
         }
 
