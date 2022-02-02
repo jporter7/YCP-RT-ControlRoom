@@ -52,6 +52,13 @@ namespace ControlRoomApplication.Constants
         /// </summary>
         public const int BLOB_SIZE = 4000;
 
+        // Constant for deleting CSV file attempts
+
+        /// <summary>
+        /// This constant is used to represent the maximum number of attempts that are taken to delete the CSV file 
+        /// </summary>
+        public static readonly int MAX_ATTEMPTS = 9;
+
 
 
 
