@@ -520,32 +520,47 @@ namespace ControlRoomApplication.Main
                         double azimuthPos = 0;
                         double elevationPos = 0;
                         string input = "";
-                        string[] values;
-                        Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
-
-                        // Get validated user input for azimuth position
-                        do
-                        {
-                            input = Interaction.InputBox("The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
+                        string prompt = "The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
                             " This script is best run with a telescope type of SLIP_RING.\n\n" +
                             "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
                                 " and elevation between " + Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES + " and " + Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
                                 " degrees. Format the entry as a comma-separated list in the format " +
-                                "azimuth, elevation. Ex: 55,80",
-                                "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
+                                "azimuth, elevation. Ex: 55,80\n";
+                        string[] values;
+                        Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
+                        bool invalidInput = false;
+
+                        // Get validated user input for azimuth position
+                        do
+                        {
+                            if (invalidInput)
+                            {
+                                azimuthPos = 0;
+                                elevationPos = 0;
+
+                                input = Interaction.InputBox(prompt + " === INVALID VALUES SPECIFIED === ", "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
+                            }
+                            else
+                            {
+                                input = Interaction.InputBox(prompt, "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
+                            }
+
                             values = input.Split(',');
 
                             if (values.Length == 2 && !input.Equals(""))
                             {
                                 Double.TryParse(values[0], out azimuthPos);
                                 Double.TryParse(values[1], out elevationPos);
-
                             }
+
+                            invalidInput = true;
 
                             // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
                         }
                         while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES)
                             && (!input.Equals("") && values.Length <= 2));
+
+                        invalidInput = false;
 
                         // Only run script if cancel button was not hit
                         if (!input.Equals(""))
@@ -557,6 +572,7 @@ namespace ControlRoomApplication.Main
                         {
                             MessageBox.Show("Custom Orientation script cancelled.", "Script Cancelled");
                         }
+
                         break;
 
                     case 9:
