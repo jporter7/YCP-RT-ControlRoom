@@ -556,7 +556,7 @@ namespace ControlRoomApplication.Main
                                 azimuthPos = 0;
                                 elevationPos = 0;
 
-                                input = Interaction.InputBox(prompt + " === INVALID VALUES SPECIFIED === ", "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
+                                input = Interaction.InputBox(prompt + " === INVALID VALUES ENTERED === ", "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
                             }
                             else
                             {
