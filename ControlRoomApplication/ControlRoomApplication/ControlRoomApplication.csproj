@@ -332,6 +332,12 @@
     <Compile Include="Entities\WeatherStation\WeatherThreshold.cs" />
     <Compile Include="Entities\WeatherStation\WeatherData.cs" />
     <Compile Include="Entities\WeatherStation\WeatherStation.cs" />
+    <Compile Include="GUI\AzimuthInputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\AzimuthInputDialog.Designer.cs">
+      <DependentUpon>AzimuthInputDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\DiagnosticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -350,6 +356,12 @@
     </Compile>
     <Compile Include="GUI\EditDiagScriptsForm.Designer.cs">
       <DependentUpon>EditDiagScriptsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\InputDialog.Designer.cs">
+      <DependentUpon>InputDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\RTControlForm.cs">
       <SubType>Form</SubType>
@@ -438,6 +450,9 @@
     <Content Include="YCASIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="GUI\AzimuthInputDialog.resx">
+      <DependentUpon>AzimuthInputDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\DiagnosticsForm.resx">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -446,6 +461,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\EditDiagScriptsForm.resx">
       <DependentUpon>EditDiagScriptsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\InputDialog.resx">
+      <DependentUpon>InputDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\RTControlForm.resx">
       <DependentUpon>RTControlForm.cs</DependentUpon>

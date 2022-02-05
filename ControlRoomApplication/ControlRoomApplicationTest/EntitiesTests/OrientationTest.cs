@@ -89,7 +89,7 @@ namespace ControlRoomApplicationTest.EntitiesTests
             Orientation orientation;
 
             // Valid (low edge elevation)
-            orientation = new Orientation(SAFE_VAL, -15);
+            orientation = new Orientation(SAFE_VAL, -7);
             Assert.IsTrue(orientation.orientationValid());
 
             // Valid (high edge elevation)

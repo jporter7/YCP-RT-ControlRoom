@@ -1,5 +1,4 @@
-﻿//using ControlRoomApplication.GUI;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -9,7 +8,6 @@ using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Validation;
-using Microsoft.VisualBasic;
 using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Constants;
@@ -17,6 +15,7 @@ using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using System.Threading.Tasks;
 using ControlRoomApplication.Controllers.Communications;
+using ControlRoomApplication.GUI;
 
 namespace ControlRoomApplication.Main
 {
@@ -517,78 +516,17 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 8:
-                        double azimuthPos = 0;
-                        double elevationPos = 0;
-                        double elevationHighLimit = 0;
-                        double elevationLowLimit = 0;
-                        string input = "";
-                        string prompt = "";
-                        string[] values;
-                        bool invalidInput = false;
-
-                        // Determine limits based off software stops checkbox
-                        if (SoftwareStopsCheckBox.Checked)
-                        {
-                            // Set to software stop limits used by telescope
-                            elevationHighLimit = MiscellaneousConstants.MAX_SOFTWARE_STOP_EL_DEGREES;
-                            elevationLowLimit = MiscellaneousConstants.MIN_SOFTWARE_STOP_EL_DEGREES;
-                        }
-                        else
-                        {
-                            elevationHighLimit = SimulationConstants.LIMIT_HIGH_EL_DEGREES;
-                            elevationLowLimit = SimulationConstants.LIMIT_LOW_EL_DEGREES;
-                        }
-
-                        prompt = "The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
-                            " This script is best run with a telescope type of SLIP_RING.\n\n" +
-                            "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
-                                " and elevation between " + elevationLowLimit + " and " + elevationHighLimit +
-                                " degrees. Format the entry as a comma-separated list in the format " +
-                                "azimuth, elevation. Ex: 55,80\n";
+                        AzimuthInputDialog id = new AzimuthInputDialog(rtController);
                         
                         Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
+                        
+                        id.setTitle("Azimuth Orientation");
+                        //id.setPromptLabel(prompt);
 
-                        // Get validated user input for azimuth position
-                        do
+                        if (id.ShowDialog() == DialogResult.OK)
                         {
-                            if (invalidInput)
-                            {
-                                azimuthPos = 0;
-                                elevationPos = 0;
-
-                                input = Interaction.InputBox(prompt + " === INVALID VALUES ENTERED === ", "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
-                            }
-                            else
-                            {
-                                input = Interaction.InputBox(prompt, "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
-                            }
-
-                            values = input.Split(',');
-
-                            if (values.Length == 2 && !input.Equals(""))
-                            {
-                                Double.TryParse(values[0], out azimuthPos);
-                                Double.TryParse(values[1], out elevationPos);
-                            }
-
-                            invalidInput = true;
-
-                            // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
-                        }
-                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > elevationHighLimit || elevationPos <= elevationLowLimit)
-                            && (!input.Equals("") && values.Length <= 2));
-
-                        invalidInput = false;
-
-                        // Only run script if cancel button was not hit
-                        if (!input.Equals(""))
-                        {
-                            Entities.Orientation moveTo = new Entities.Orientation(azimuthPos, elevationPos);
+                            Entities.Orientation moveTo = new Entities.Orientation(id.getAzimuthPos(), id.getElevationPos());
                             movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovementPriority.Manual);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Custom Orientation script cancelled.", "Script Cancelled");
                         }
 
                         break;
