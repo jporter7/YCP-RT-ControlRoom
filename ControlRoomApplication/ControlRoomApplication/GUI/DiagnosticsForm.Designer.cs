@@ -1918,7 +1918,7 @@
             // 
             this.ElecationAbsoluteEncoder_lbl.AutoSize = true;
             this.ElecationAbsoluteEncoder_lbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ElecationAbsoluteEncoder_lbl.Location = new System.Drawing.Point(9, 68);
+            this.ElecationAbsoluteEncoder_lbl.Location = new System.Drawing.Point(9, 69);
             this.ElecationAbsoluteEncoder_lbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ElecationAbsoluteEncoder_lbl.Name = "ElecationAbsoluteEncoder_lbl";
             this.ElecationAbsoluteEncoder_lbl.Size = new System.Drawing.Size(164, 13);
@@ -1929,7 +1929,7 @@
             // 
             this.btnElevationAbsoluteEncoder.BackColor = System.Drawing.Color.Yellow;
             this.btnElevationAbsoluteEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnElevationAbsoluteEncoder.Location = new System.Drawing.Point(227, 63);
+            this.btnElevationAbsoluteEncoder.Location = new System.Drawing.Point(228, 64);
             this.btnElevationAbsoluteEncoder.Name = "btnElevationAbsoluteEncoder";
             this.btnElevationAbsoluteEncoder.Size = new System.Drawing.Size(88, 23);
             this.btnElevationAbsoluteEncoder.TabIndex = 14;
@@ -1941,7 +1941,7 @@
             // 
             this.btnAzimuthAbsoluteEncoder.BackColor = System.Drawing.Color.Yellow;
             this.btnAzimuthAbsoluteEncoder.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnAzimuthAbsoluteEncoder.Location = new System.Drawing.Point(227, 31);
+            this.btnAzimuthAbsoluteEncoder.Location = new System.Drawing.Point(228, 31);
             this.btnAzimuthAbsoluteEncoder.Name = "btnAzimuthAbsoluteEncoder";
             this.btnAzimuthAbsoluteEncoder.Size = new System.Drawing.Size(90, 23);
             this.btnAzimuthAbsoluteEncoder.TabIndex = 13;
@@ -2024,7 +2024,7 @@
             // 
             this.lblSNStatus.AutoSize = true;
             this.lblSNStatus.ForeColor = System.Drawing.Color.Black;
-            this.lblSNStatus.Location = new System.Drawing.Point(10, 186);
+            this.lblSNStatus.Location = new System.Drawing.Point(10, 189);
             this.lblSNStatus.Name = "lblSNStatus";
             this.lblSNStatus.Size = new System.Drawing.Size(40, 13);
             this.lblSNStatus.TabIndex = 10;
@@ -2158,7 +2158,7 @@
             // LowerSWStopsLimitText
             // 
             this.LowerSWStopsLimitText.AccessibleName = "SoftwareStopLowerLimitText";
-            this.LowerSWStopsLimitText.Location = new System.Drawing.Point(157, 60);
+            this.LowerSWStopsLimitText.Location = new System.Drawing.Point(157, 63);
             this.LowerSWStopsLimitText.Name = "LowerSWStopsLimitText";
             this.LowerSWStopsLimitText.Size = new System.Drawing.Size(71, 20);
             this.LowerSWStopsLimitText.TabIndex = 1;
@@ -2192,7 +2192,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(9, 62);
+            this.label4.Location = new System.Drawing.Point(9, 63);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(155, 13);
@@ -2226,7 +2226,7 @@
             // 
             this.ElevationLimitSwitch90.BackColor = System.Drawing.Color.Yellow;
             this.ElevationLimitSwitch90.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElevationLimitSwitch90.Location = new System.Drawing.Point(230, 57);
+            this.ElevationLimitSwitch90.Location = new System.Drawing.Point(228, 58);
             this.ElevationLimitSwitch90.Name = "ElevationLimitSwitch90";
             this.ElevationLimitSwitch90.Size = new System.Drawing.Size(88, 23);
             this.ElevationLimitSwitch90.TabIndex = 14;
@@ -2252,7 +2252,7 @@
             // 
             this.ElMotTempSensOverride.BackColor = System.Drawing.Color.Yellow;
             this.ElMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.ElMotTempSensOverride.Location = new System.Drawing.Point(227, 63);
+            this.ElMotTempSensOverride.Location = new System.Drawing.Point(228, 63);
             this.ElMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.ElMotTempSensOverride.Name = "ElMotTempSensOverride";
             this.ElMotTempSensOverride.Size = new System.Drawing.Size(91, 23);
@@ -2276,7 +2276,7 @@
             // 
             this.AzMotTempSensOverride.BackColor = System.Drawing.Color.Yellow;
             this.AzMotTempSensOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.AzMotTempSensOverride.Location = new System.Drawing.Point(229, 30);
+            this.AzMotTempSensOverride.Location = new System.Drawing.Point(228, 30);
             this.AzMotTempSensOverride.Margin = new System.Windows.Forms.Padding(2);
             this.AzMotTempSensOverride.Name = "AzMotTempSensOverride";
             this.AzMotTempSensOverride.Size = new System.Drawing.Size(89, 23);
@@ -2312,7 +2312,7 @@
             // 
             this.MGOverride.BackColor = System.Drawing.Color.Yellow;
             this.MGOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.MGOverride.Location = new System.Drawing.Point(227, 26);
+            this.MGOverride.Location = new System.Drawing.Point(228, 26);
             this.MGOverride.Margin = new System.Windows.Forms.Padding(2);
             this.MGOverride.Name = "MGOverride";
             this.MGOverride.Size = new System.Drawing.Size(89, 23);
@@ -2353,7 +2353,7 @@
             // 
             this.btnElevationMotorAccelerometerOverride.BackColor = System.Drawing.Color.Yellow;
             this.btnElevationMotorAccelerometerOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnElevationMotorAccelerometerOverride.Location = new System.Drawing.Point(191, 71);
+            this.btnElevationMotorAccelerometerOverride.Location = new System.Drawing.Point(194, 71);
             this.btnElevationMotorAccelerometerOverride.Name = "btnElevationMotorAccelerometerOverride";
             this.btnElevationMotorAccelerometerOverride.Size = new System.Drawing.Size(88, 23);
             this.btnElevationMotorAccelerometerOverride.TabIndex = 14;
@@ -2365,7 +2365,7 @@
             // 
             this.btnCounterbalanceMotorAccelerometerOverride.BackColor = System.Drawing.Color.Yellow;
             this.btnCounterbalanceMotorAccelerometerOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnCounterbalanceMotorAccelerometerOverride.Location = new System.Drawing.Point(191, 124);
+            this.btnCounterbalanceMotorAccelerometerOverride.Location = new System.Drawing.Point(194, 120);
             this.btnCounterbalanceMotorAccelerometerOverride.Name = "btnCounterbalanceMotorAccelerometerOverride";
             this.btnCounterbalanceMotorAccelerometerOverride.Size = new System.Drawing.Size(88, 23);
             this.btnCounterbalanceMotorAccelerometerOverride.TabIndex = 16;
@@ -2377,7 +2377,7 @@
             // 
             this.btnAzimuthMotorAccelerometerOverride.BackColor = System.Drawing.Color.Yellow;
             this.btnAzimuthMotorAccelerometerOverride.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnAzimuthMotorAccelerometerOverride.Location = new System.Drawing.Point(191, 25);
+            this.btnAzimuthMotorAccelerometerOverride.Location = new System.Drawing.Point(194, 22);
             this.btnAzimuthMotorAccelerometerOverride.Name = "btnAzimuthMotorAccelerometerOverride";
             this.btnAzimuthMotorAccelerometerOverride.Size = new System.Drawing.Size(90, 23);
             this.btnAzimuthMotorAccelerometerOverride.TabIndex = 13;
@@ -2389,7 +2389,7 @@
             // 
             this.label33.AutoSize = true;
             this.label33.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label33.Location = new System.Drawing.Point(5, 128);
+            this.label33.Location = new System.Drawing.Point(5, 125);
             this.label33.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(181, 13);
