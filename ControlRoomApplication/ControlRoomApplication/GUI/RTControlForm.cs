@@ -516,16 +516,21 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 8:
-                        AzimuthInputDialog id = new AzimuthInputDialog(rtController);
+                        bool enableSoftwareStops = rtController.EnableSoftwareStops;
+                        double minElevationDegrees = rtController.RadioTelescope.minElevationDegrees;
+                        double maxElevationDegrees = rtController.RadioTelescope.maxElevationDegrees;
+                        string teleType = rtController.RadioTelescope.teleType;
+
+                        CustomOrientationInputDialog id = new CustomOrientationInputDialog(ref rtController.EnableSoftwareStops, ref teleType, ref maxElevationDegrees, ref minElevationDegrees);
                         
                         Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
-                        
-                        id.setTitle("Azimuth Orientation");
+
+                        id.Text = "Custom Oritentation Movement";
                         //id.setPromptLabel(prompt);
 
                         if (id.ShowDialog() == DialogResult.OK)
                         {
-                            Entities.Orientation moveTo = new Entities.Orientation(id.getAzimuthPos(), id.getElevationPos());
+                            Entities.Orientation moveTo = new Entities.Orientation(id.GetAzimuthPos(), id.GetElevationPos());
                             movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovementPriority.Manual);
                         }
 

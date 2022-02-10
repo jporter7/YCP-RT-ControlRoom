@@ -20,23 +20,9 @@ namespace ControlRoomApplication.GUI
             InitializeComponent();
         }
 
-        public string getInput()
-        {
-            return textBox.Text;
-        }
-        public void setTitle(string title)
-        {
-            this.Text = title;
-        }
         public void setPromptLabel(string text)
         {
             promptLabel.Text = text;
-        }
-
-        protected override void OnLostFocus(EventArgs e)
-        {
-            base.OnLostFocus(e);
-            this.Focus();
         }
     }
 }
