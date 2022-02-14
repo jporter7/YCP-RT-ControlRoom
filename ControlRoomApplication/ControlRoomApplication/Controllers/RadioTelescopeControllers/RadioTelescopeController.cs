@@ -310,7 +310,7 @@ namespace ControlRoomApplication.Controllers
             }
             else
             {
-                return RadioTelescope.SensorNetworkServer.CurrentCBAccelElevationPosition;
+                return RadioTelescope.SensorNetworkServer.CurrentAbsoluteOrientation.Elevation;
             }
         }
 
