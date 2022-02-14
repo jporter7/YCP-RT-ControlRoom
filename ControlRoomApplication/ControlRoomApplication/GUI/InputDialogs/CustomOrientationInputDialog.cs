@@ -23,18 +23,18 @@ namespace ControlRoomApplication.GUI
         private string[] values;
         private Regex rx;
 
-        public CustomOrientationInputDialog(ref bool EnableSoftwareStops, ref string teleType, ref double maxElevationDegrees, ref double minElevationDegrees)
+        public CustomOrientationInputDialog(bool EnableSoftwareStops, string teleType, double maxElevationDegrees, double minElevationDegrees)
         {
             InitializeComponent();
 
-            rx = new Regex(@"[+-]?([0-9]+\.?[0-9]*|\.[0-9]+),[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)");
+            rx = new Regex(@"^[+-]?([0-9]+\.?[0-9]*|\.[0-9]+),[+-]?([0-9]+\.?[0-9]*|\.[0-9]+)$");   // Regex statement to validate input (Format of #,#)
 
-            okButton.Enabled = false;
-            invalidInputLabel.Visible = false;
+            okButton.Enabled = false;   // Disable the OK button by default     
+            invalidInputLabel.Visible = false;      // Don't show the invalid input label at first to avoid confusing the user 
 
             textBox.TextChanged += new EventHandler(TextBox_TextChanged);
 
-            if (EnableSoftwareStops)
+            if (EnableSoftwareStops)    // Set limits depending on whether software stops are enabled or not 
             {
                 elevationHighLimit = maxElevationDegrees;
                 elevationLowLimit = minElevationDegrees;
@@ -64,24 +64,20 @@ namespace ControlRoomApplication.GUI
         
         public void SetPrompt(string text)
         {
-            this.promptLabel.Text = text;
+            promptLabel.Text = text;
         }
 
         public void TextBox_TextChanged(Object sender, EventArgs e)
         {
-            MatchCollection matches = rx.Matches(textBox.Text);
-
-            System.Diagnostics.Debug.WriteLine("elevationHighLimit: " + elevationHighLimit);
-            System.Diagnostics.Debug.WriteLine("elevationLowLimit: " + elevationLowLimit);
-
-            if (matches.Count > 0)
+            if (rx.IsMatch(textBox.Text))
             {
                 values = textBox.Text.Split(',');
 
                 Double.TryParse(values[0], out azimuthPos);
                 Double.TryParse(values[1], out elevationPos);
 
-                if ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos >= elevationHighLimit || elevationPos <= elevationLowLimit) || values.Length != 2)
+                // Enable the OK button and hide the invalid input label if the input is valid. Otherwise grey out the OK button and hide the label. 
+                if ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > elevationHighLimit || elevationPos < elevationLowLimit) || values.Length != 2)
                 {
                     okButton.Enabled = false;
                     invalidInputLabel.Visible = true;

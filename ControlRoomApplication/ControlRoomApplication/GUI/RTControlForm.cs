@@ -516,19 +516,15 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 8:
-                        bool enableSoftwareStops = rtController.EnableSoftwareStops;
-                        double minElevationDegrees = rtController.RadioTelescope.minElevationDegrees;
-                        double maxElevationDegrees = rtController.RadioTelescope.maxElevationDegrees;
-                        string teleType = rtController.RadioTelescope.teleType;
+                        // Create a new CustomOrientationInputDialog instance to allow the user to enter data 
 
-                        CustomOrientationInputDialog id = new CustomOrientationInputDialog(ref rtController.EnableSoftwareStops, ref teleType, ref maxElevationDegrees, ref minElevationDegrees);
+                        CustomOrientationInputDialog id = new CustomOrientationInputDialog(rtController.EnableSoftwareStops, rtController.RadioTelescope.teleType, rtController.RadioTelescope.maxElevationDegrees, rtController.RadioTelescope.minElevationDegrees);
                         
                         Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
 
-                        id.Text = "Custom Oritentation Movement";
-                        //id.setPromptLabel(prompt);
+                        id.Text = "Custom Orientation Movement";    // Set the title of the input form 
 
-                        if (id.ShowDialog() == DialogResult.OK)
+                        if (id.ShowDialog() == DialogResult.OK)     // Use the data entered when the user clicks OK. (OK cannot be clicked unless the input is valid) 
                         {
                             Entities.Orientation moveTo = new Entities.Orientation(id.GetAzimuthPos(), id.GetElevationPos());
                             movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovementPriority.Manual);
