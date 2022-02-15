@@ -1120,5 +1120,11 @@ namespace ControlRoomApplication.Main
                 rtController.EnableSoftwareStops = true;
             }
         }
+
+        // Stop Telescope/stopRT Button Functionality
+        private void stopRT_click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
