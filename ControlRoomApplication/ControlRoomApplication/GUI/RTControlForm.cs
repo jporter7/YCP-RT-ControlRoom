@@ -1124,7 +1124,10 @@ namespace ControlRoomApplication.Main
         // Stop Telescope/stopRT Button Functionality
         private void stopRT_click(object sender, EventArgs e)
         {
+            // Check and send updates, most likely going to want to add to the Log that this stuff was stopped.
 
+            rtController.RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+            
         }
     }
 }
