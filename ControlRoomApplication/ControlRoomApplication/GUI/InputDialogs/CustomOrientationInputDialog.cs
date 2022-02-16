@@ -77,7 +77,7 @@ namespace ControlRoomApplication.GUI
                 Double.TryParse(values[1], out elevationPos);
 
                 // Enable the OK button and hide the invalid input label if the input is valid. Otherwise grey out the OK button and hide the label. 
-                if ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > elevationHighLimit || elevationPos < elevationLowLimit) || values.Length != 2)
+                if ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > elevationHighLimit || elevationPos < elevationLowLimit))
                 {
                     okButton.Enabled = false;
                     invalidInputLabel.Visible = true;
