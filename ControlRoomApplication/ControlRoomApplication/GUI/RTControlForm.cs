@@ -104,6 +104,10 @@ namespace ControlRoomApplication.Main
 
             DatabaseOperations.AddAppointment(CurrentAppointment);
 
+            // Initialize STOP Telescope (stopRT) button as disabled (will be disabled unless the Telescope is in motion)
+            stopRT.BackColor = System.Drawing.Color.DarkGray;
+            stopRT.Enabled = false;
+
             //Calibrate Move
             CalibrateMove();
             runControlScriptButton.Enabled = false;
@@ -295,6 +299,7 @@ namespace ControlRoomApplication.Main
             logger.Info(Utilities.GetTimeStamp() + ": CalibrateMove ");
             TargetCoordinate = CoordCalc.OrientationToCoordinate(CurrentAppointment.Orientation, DateTime.UtcNow);
             UpdateText();
+            UpdateStopButton();
         }
 
         private void CoordMove()
@@ -315,6 +320,21 @@ namespace ControlRoomApplication.Main
             TargetDecTextBox.Text = Dec;
 
             errorLabel.Text = "Free Control for Radio Telescope " + rtId.ToString();
+        }
+
+        private void UpdateStopButton()
+        {
+            // Update the Form for stopRT to enable button if the telescope is in movement
+            if (rtController.CheckIsMoving() == true)
+            {
+                stopRT.BackColor = System.Drawing.Color.Red;
+                stopRT.Enabled = true;
+            }
+            else
+            {
+                 stopRT.BackColor = System.Drawing.Color.DarkGray;
+                 stopRT.Enabled = false;
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -604,6 +624,21 @@ namespace ControlRoomApplication.Main
             
             formData.controlScriptIndex = controlScriptsCombo.SelectedIndex;
 
+        }
+
+        /// <summary>
+        /// Functionality for the STOP Telescope button on press, stops the telescope in its tracks and sends useful data to the log.
+        /// ***Might add functionality to reset the telescope to a specified position***
+        /// </summary>
+        private void stopRT_click(object sender, EventArgs e)
+        {
+            // Run the stop script for the telescope
+            rtController.RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
+            // I believe that you have to cancel the current movements for the telescope to stop completely, 
+            //and not want to continue a command, it appears that the telescope is currently stopped but is still queueing 
+            //commands and this causes a few weird things to happen such as the stop button not greying out and also the telescope 
+            //moving a command after closing the control form
+            // The error with the stop button could also be in my stop button functionality where I check the rtController to see if the telescope has motors currently moving
         }
 
         private void ccwAzJogButton_Down( object sender , MouseEventArgs e ) {
@@ -1119,15 +1154,6 @@ namespace ControlRoomApplication.Main
             {
                 rtController.EnableSoftwareStops = true;
             }
-        }
-
-        // Stop Telescope/stopRT Button Functionality
-        private void stopRT_click(object sender, EventArgs e)
-        {
-            // Check and send updates, most likely going to want to add to the Log that this stuff was stopped.
-
-            rtController.RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped();
-            
         }
     }
 }

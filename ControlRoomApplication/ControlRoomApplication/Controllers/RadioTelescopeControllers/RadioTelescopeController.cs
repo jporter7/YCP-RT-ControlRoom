@@ -1097,6 +1097,20 @@ namespace ControlRoomApplication.Controllers
         }
 
         /// <summary>
+        /// Method to check whether or not the telescope is currently moving, useful for applications such as updating buttons whether or not the scope is currently operating
+        /// Should return true if the telescope is currently moving
+        /// </summary>
+        public bool CheckIsMoving()
+        {
+            bool isMoving = false;
+            if (RadioTelescope.PLCDriver.MotorsCurrentlyMoving() == true)
+            {
+                isMoving = true;
+            }
+            return isMoving;
+        }
+
+        /// <summary>
         /// This is the method that handles and executes the software-stop logic
         /// </summary>
         private void CheckAndRunSoftwareStops()

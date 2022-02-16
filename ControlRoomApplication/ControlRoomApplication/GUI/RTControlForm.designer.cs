@@ -376,6 +376,20 @@ namespace ControlRoomApplication.Main
             this.overRideGroupbox.TabStop = false;
             this.overRideGroupbox.Text = "Position Information";
             // 
+            // stopRT
+            // 
+            this.stopRT.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.stopRT.BackColor = System.Drawing.Color.DarkGray;
+            this.stopRT.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.stopRT.Location = new System.Drawing.Point(154, 159);
+            this.stopRT.Margin = new System.Windows.Forms.Padding(2);
+            this.stopRT.Name = "stopRT";
+            this.stopRT.Size = new System.Drawing.Size(100, 31);
+            this.stopRT.TabIndex = 38;
+            this.stopRT.Text = "STOP Telescope";
+            this.stopRT.UseVisualStyleBackColor = false;
+            this.stopRT.Click += new System.EventHandler(this.stopRT_click);
+            // 
             // SoftwareStopsCheckBox
             // 
             this.SoftwareStopsCheckBox.AutoSize = true;
@@ -502,20 +516,6 @@ namespace ControlRoomApplication.Main
             this.freeControlGroupbox.TabIndex = 22;
             this.freeControlGroupbox.TabStop = false;
             this.freeControlGroupbox.Text = "Edit Target Position";
-            // 
-            // stopRT
-            // 
-            this.stopRT.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.stopRT.BackColor = System.Drawing.Color.DarkGray;
-            this.stopRT.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.stopRT.Location = new System.Drawing.Point(154, 159);
-            this.stopRT.Margin = new System.Windows.Forms.Padding(2);
-            this.stopRT.Name = "stopRT";
-            this.stopRT.Size = new System.Drawing.Size(100, 31);
-            this.stopRT.TabIndex = 38;
-            this.stopRT.Text = "STOP Telescope";
-            this.stopRT.UseVisualStyleBackColor = false;
-            this.stopRT.Click += new System.EventHandler(this.stopRT_click);
             // 
             // controlScriptsCombo
             // 
