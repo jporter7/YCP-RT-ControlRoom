@@ -16,12 +16,13 @@ namespace ControlRoomApplication.GUI
 {
     public partial class CustomOrientationInputDialog : InputDialog
     {
-        private double elevationHighLimit;
-        private double elevationLowLimit;
-        private double elevationPos;
-        private double azimuthPos;
-        private string[] values;
+        public double ElevationHighLimit { get; private set; }
+        public double ElevationLowLimit { get; private set; }
+        public double ElevationPos { get; private set; }
+        public double AzimuthPos { get; private set; }
+        public string[] Values;
         private Regex rx;
+        double TempAz, TempElev;
 
         public CustomOrientationInputDialog(bool EnableSoftwareStops, string teleType, double maxElevationDegrees, double minElevationDegrees)
         {
@@ -36,30 +37,21 @@ namespace ControlRoomApplication.GUI
 
             if (EnableSoftwareStops)    // Set limits depending on whether software stops are enabled or not 
             {
-                elevationHighLimit = maxElevationDegrees;
-                elevationLowLimit = minElevationDegrees;
+                ElevationHighLimit = maxElevationDegrees;
+                ElevationLowLimit = minElevationDegrees;
             }
             else
             {
-                elevationHighLimit = SimulationConstants.LIMIT_HIGH_EL_DEGREES;
-                elevationLowLimit = SimulationConstants.LIMIT_LOW_EL_DEGREES;
+                ElevationHighLimit = SimulationConstants.LIMIT_HIGH_EL_DEGREES;
+                ElevationLowLimit = SimulationConstants.LIMIT_LOW_EL_DEGREES;
             }
 
             promptLabel.Text = "The Radio Telescope is currently set to be type " + teleType + "." +
                             " This script is best run with a telescope type of SLIP_RING.\n\n" +
                             "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
-                                " and elevation between " + elevationLowLimit + " and " + elevationHighLimit +
+                                " and elevation between " + ElevationLowLimit + " and " + ElevationHighLimit +
                                 " degrees. Format the entry as a comma-separated list in the format " +
                                 "azimuth, elevation. Ex: 55,80";
-        }
-
-        public double GetAzimuthPos()
-        {
-            return azimuthPos;
-        }
-        public double GetElevationPos()
-        {
-            return elevationPos;
         }
         
         public void SetPrompt(string text)
@@ -71,13 +63,16 @@ namespace ControlRoomApplication.GUI
         {
             if (rx.IsMatch(textBox.Text))
             {
-                values = textBox.Text.Split(',');
+                Values = textBox.Text.Split(',');
 
-                Double.TryParse(values[0], out azimuthPos);
-                Double.TryParse(values[1], out elevationPos);
+                Double.TryParse(Values[0], out TempAz);
+                Double.TryParse(Values[1], out TempElev);
+
+                AzimuthPos = TempAz;
+                ElevationPos = TempElev;
 
                 // Enable the OK button and hide the invalid input label if the input is valid. Otherwise grey out the OK button and hide the label. 
-                if ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > elevationHighLimit || elevationPos < elevationLowLimit))
+                if ((AzimuthPos > 360 || AzimuthPos < 0) || (ElevationPos > ElevationHighLimit || ElevationPos < ElevationLowLimit))
                 {
                     okButton.Enabled = false;
                     invalidInputLabel.Visible = true;

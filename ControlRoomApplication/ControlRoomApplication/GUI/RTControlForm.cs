@@ -526,7 +526,7 @@ namespace ControlRoomApplication.Main
 
                         if (id.ShowDialog() == DialogResult.OK)     // Use the data entered when the user clicks OK. (OK cannot be clicked unless the input is valid) 
                         {
-                            Entities.Orientation moveTo = new Entities.Orientation(id.GetAzimuthPos(), id.GetElevationPos());
+                            Entities.Orientation moveTo = new Entities.Orientation(id.AzimuthPos, id.ElevationPos);
                             movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovementPriority.Manual);
                         }
 
