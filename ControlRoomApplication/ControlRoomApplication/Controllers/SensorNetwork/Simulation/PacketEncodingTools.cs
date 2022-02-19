@@ -278,10 +278,10 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         /// <param name="dataBeingAdded">The data we are adding to the byte array.</param>
         public static void Add32BitValueToByteArray(ref byte[] dataToAddTo, ref int counter, uint dataBeingAdded)
         {
-            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0xFF000000) >> 24);
-            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0x00FF0000) >> 16);
-            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0x0000FF00) >> 8);
-            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded & 0x000000FF)));
+            dataToAddTo[counter++] = (byte)((dataBeingAdded & 0xFF000000) >> 24);
+            dataToAddTo[counter++] = (byte)((dataBeingAdded & 0x00FF0000) >> 16);
+            dataToAddTo[counter++] = (byte)((dataBeingAdded & 0x0000FF00) >> 8);
+            dataToAddTo[counter++] = (byte)(dataBeingAdded & 0x000000FF);
         }
 
         /// <summary>
