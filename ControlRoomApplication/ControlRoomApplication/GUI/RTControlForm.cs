@@ -611,11 +611,11 @@ namespace ControlRoomApplication.Main
         }
 
         /// <summary>
-        /// Functionality for the STOP Telescope button on press, stops the telescope in its tracks as well as confirming with the user that they wish to stop the RT
+        /// Functionality for when the STOP Telescope button is pressed. Creates a confirmation pop up box to prevent accidental presses of the stop button before sending any stop script.
         /// </summary>
         private void stopRT_click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Are you sure you want to stop the telescope?", "Telescope-Stop Confirmation", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show("Are you sure you want to stop the telescope?", "Telescope Stop Confirmation", MessageBoxButtons.YesNo);
 
             if (result == DialogResult.Yes)
             {
