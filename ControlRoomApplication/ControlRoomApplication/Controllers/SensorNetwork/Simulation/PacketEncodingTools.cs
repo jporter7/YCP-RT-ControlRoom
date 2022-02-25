@@ -278,10 +278,10 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
         /// <param name="dataBeingAdded">The data we are adding to the byte array.</param>
         public static void Add32BitValueToByteArray(ref byte[] dataToAddTo, ref int counter, uint dataBeingAdded)
         {
-            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0xFF000000) >> 24);
-            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0x00FF0000) >> 16);
-            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded) & 0x0000FF00) >> 8);
-            dataToAddTo[counter++] = (byte)((((short)dataBeingAdded & 0x000000FF)));
+            dataToAddTo[counter++] = (byte)((dataBeingAdded & 0xFF000000) >> 24);
+            dataToAddTo[counter++] = (byte)((dataBeingAdded & 0x00FF0000) >> 16);
+            dataToAddTo[counter++] = (byte)((dataBeingAdded & 0x0000FF00) >> 8);
+            dataToAddTo[counter++] = (byte)(dataBeingAdded & 0x000000FF);
         }
 
         /// <summary>
@@ -333,8 +333,8 @@ namespace EmbeddedSystemsTest.SensorNetworkSimulation
             // Process and encode each fifo dump into the array
             for (int dumpNum = 0; dumpNum < totalNumDumps; dumpNum++)
             {
-                // Add a generated timestamp
-                Add64BitValueToByteArray(ref dataToAddTo, ref counter, (ulong)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - connectionTimeStamp));
+                // Add a generated timestamp, apply a offset to simulate time passing, and account for the connection time
+                Add64BitValueToByteArray(ref dataToAddTo, ref counter, (ulong)(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + (50 * dumpNum) - connectionTimeStamp));
 
                 // Set default dump size
                 short dumpSize = fifoSize;
