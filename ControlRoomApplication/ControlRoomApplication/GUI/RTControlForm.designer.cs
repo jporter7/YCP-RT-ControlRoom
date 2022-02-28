@@ -379,8 +379,8 @@ namespace ControlRoomApplication.Main
             // stopRT
             // 
             this.stopRT.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.stopRT.BackColor = System.Drawing.Color.DarkGray;
-            this.stopRT.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.stopRT.BackColor = System.Drawing.Color.Red;
+            this.stopRT.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.stopRT.Location = new System.Drawing.Point(154, 159);
             this.stopRT.Margin = new System.Windows.Forms.Padding(2);
             this.stopRT.Name = "stopRT";
@@ -389,6 +389,7 @@ namespace ControlRoomApplication.Main
             this.stopRT.Text = "STOP Telescope";
             this.stopRT.UseVisualStyleBackColor = false;
             this.stopRT.Click += new System.EventHandler(this.stopRT_click);
+            this.stopRT.Enabled = true;
             // 
             // SoftwareStopsCheckBox
             // 

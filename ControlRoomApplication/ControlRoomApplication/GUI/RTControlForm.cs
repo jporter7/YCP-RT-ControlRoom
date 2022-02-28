@@ -104,10 +104,6 @@ namespace ControlRoomApplication.Main
 
             DatabaseOperations.AddAppointment(CurrentAppointment);
 
-            // Initialize STOP Telescope (stopRT) button
-            stopRT.BackColor = System.Drawing.Color.Red;
-            stopRT.Enabled = true;
-
             //Calibrate Move
             CalibrateMove();
             runControlScriptButton.Enabled = false;
