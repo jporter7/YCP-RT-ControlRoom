@@ -535,19 +535,12 @@ namespace ControlRoomApplication.Controllers
             // Break our string into different parts to retrieve respective pieces of command
             // Based on the command, we will choose what path to follow
             String[] splitCommandString = data.Trim().Split('|');
-            // first check to make sure we have the mininum number of parameters before beginning parsing
-            if (splitCommandString.Length < TCPCommunicationConstants.MIN_NUM_PARAMS)
-            {
-                return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString,TCPCommunicationConstants.MISSING_COMMAND_ARGS);
-            }
 
-            // proceed if valid
-            for (int i = 0; i < splitCommandString.Length; i++)
+            // Check to make sure the data has two parts
+            if (splitCommandString.Length < 2)
             {
-                splitCommandString[i] = splitCommandString[i].Trim();
+                return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS);
             }
-            logger.Info(Utilities.GetTimeStamp() + ": " + String.Join(" ", splitCommandString));
-
 
             // Convert version from string to double. This is the first value in our string before the "|" character.
             // From here we will direct to the appropriate parsing for said version
@@ -564,7 +557,7 @@ namespace ControlRoomApplication.Controllers
 
             }
             // ensure version exists
-            foreach(string versionNum in TCPCommunicationConstants.ALL_VERSIONS_LIST)
+            foreach (string versionNum in TCPCommunicationConstants.ALL_VERSIONS_LIST)
             {
                 if (versionNum == splitCommandString[TCPCommunicationConstants.VERSION_NUM].Trim())
                 {
@@ -577,6 +570,30 @@ namespace ControlRoomApplication.Controllers
             {
                 return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidVersion, splitCommandString, TCPCommunicationConstants.VERSION_NOT_FOUND + version);
             }
+
+            // Decrypt the remainder of the command for appropriate versions 
+            if (version == 1.1)
+            {
+                // Decrypt the remainder of the command
+                string decrypted = AES.Decrypt(splitCommandString[1], AESConstants.KEY, AESConstants.IV);
+
+                // Combine the decrypted part of the command with the version number to proceed with logic as normal
+                string newCommand = splitCommandString[0] + decrypted;
+                splitCommandString = newCommand.Trim().Split('|');
+            }
+
+            // next check to make sure we have the mininum number of parameters before beginning parsing
+            if (splitCommandString.Length < TCPCommunicationConstants.MIN_NUM_PARAMS)
+            {
+                return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString,TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+            }
+
+            // proceed if valid
+            for (int i = 0; i < splitCommandString.Length; i++)
+            {
+                splitCommandString[i] = splitCommandString[i].Trim();
+            }
+            logger.Info(Utilities.GetTimeStamp() + ": " + String.Join(" ", splitCommandString));
   
             String command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
             switch (command)
