@@ -1,6 +1,8 @@
 ﻿using ControlRoomApplication.Util;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -20,7 +22,7 @@ namespace ControlRoomApplication.Controllers.Communications
                 endec.KeySize = 256;
                 endec.IV = iv;
                 endec.Key = key;
-                endec.Padding = PaddingMode.PKCS7;
+                endec.Padding = PaddingMode.None;
                 endec.Mode = CipherMode.CFB;
 
                 ICryptoTransform icrypt = endec.CreateEncryptor(endec.Key, endec.IV);
@@ -41,8 +43,8 @@ namespace ControlRoomApplication.Controllers.Communications
                 endec.KeySize = 256;
                 endec.IV = IV;
                 endec.Key = key;
+                endec.Padding = PaddingMode.None;
                 endec.Mode = CipherMode.CFB;
-                endec.Padding = PaddingMode.PKCS7;
 
                 System.Diagnostics.Debug.WriteLine(endec.Padding);
 

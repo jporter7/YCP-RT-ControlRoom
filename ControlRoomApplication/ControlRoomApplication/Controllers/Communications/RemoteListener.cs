@@ -578,7 +578,10 @@ namespace ControlRoomApplication.Controllers
                 string decrypted = AES.Decrypt(splitCommandString[1], AESConstants.KEY, AESConstants.IV);
 
                 // Combine the decrypted part of the command with the version number to proceed with logic as normal
-                string newCommand = splitCommandString[0] + decrypted;
+                string newCommand = splitCommandString[0] + "|" + decrypted;
+
+                System.Diagnostics.Debug.WriteLine("Decrypted command: " + newCommand);
+
                 splitCommandString = newCommand.Trim().Split('|');
             }
 

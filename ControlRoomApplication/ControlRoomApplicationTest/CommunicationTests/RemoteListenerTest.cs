@@ -679,5 +679,15 @@ namespace ControlRoomApplicationTest.CommunicationTests
             Assert.AreEqual(MovementResult.Success, mvmtResult.movementResult);
         }
 
+        [TestMethod]
+        public void TestProcessMessage_TestEncryptedCommand()
+        {
+            string command = "1.1|5874a5baf786e39e95c35baae6a59bb7ebc31b8164227ef61e6281788b79d6113947d33e8702506d";
+
+            ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
+            ExecuteTCPCommandResult mvmtResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
+            Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
+            Assert.AreEqual(MovementResult.Success, mvmtResult.movementResult);
+        }
     }
 }
