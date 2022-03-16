@@ -1,14 +1,19 @@
-﻿using System;
+﻿using ControlRoomApplication.Util;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ControlRoomApplication.Controllers.Communications
 {
-    public static class AES
-    {
-        public static byte[] Encrypt(string plainText, byte[] Key, byte[] IV)
+        public static class AES
         {
+        public static byte[] Encrypt(string plainText, byte[] Key, byte[] IV)
+            {
             // Check arguments.
             if (plainText == null || plainText.Length <= 0)
                 throw new ArgumentNullException("plainText");
@@ -49,7 +54,7 @@ namespace ControlRoomApplication.Controllers.Communications
         }
 
         public static string Decrypt(byte[] cipherText, byte[] Key, byte[] IV)
-        {
+            {
             // Check arguments.
             if (cipherText == null || cipherText.Length <= 0)
                 throw new ArgumentNullException("cipherText");
@@ -84,9 +89,9 @@ namespace ControlRoomApplication.Controllers.Communications
                             // and place them in a string.
                             plaintext = srDecrypt.ReadToEnd();
                         }
-                    }
-                }
             }
+        }
+}
 
             return plaintext;
         }

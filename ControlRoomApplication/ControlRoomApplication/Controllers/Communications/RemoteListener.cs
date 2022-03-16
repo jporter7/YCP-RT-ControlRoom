@@ -759,7 +759,9 @@ namespace ControlRoomApplication.Controllers
         /// <param name="text">What you are sending back to the client</param>
         public void writeBackToClient(string text, NetworkStream stream)
         {
-            byte[] textToBytes = Encoding.ASCII.GetBytes(text);
+            string encrypted = AES.Encrypt(text, AESConstants.KEY, AESConstants.IV);
+
+            byte[] textToBytes = Encoding.ASCII.GetBytes(encrypted);
             try
             {
                 stream.Write(textToBytes, 0, textToBytes.Length);
