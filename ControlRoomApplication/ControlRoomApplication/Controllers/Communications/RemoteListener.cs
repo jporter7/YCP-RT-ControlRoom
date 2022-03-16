@@ -31,6 +31,7 @@ namespace ControlRoomApplication.Controllers
         private ControlRoom controlRoom;
 
         private bool waitingForConn = true;
+        private bool encrypted;
 
         public RemoteListener(int port, ControlRoom control)
         {
@@ -83,10 +84,16 @@ namespace ControlRoomApplication.Controllers
                                 // Loop to receive all the data sent by the client.
                                 if ((i = readFromStream(stream, bytes)) != 0)
                                 {
+                                    // Reset the encrypted bool because we don't know if every command sent will be encrypted  (we will have to check each time) 
+                                    encrypted = false;
+
                                     // Translate data bytes to ASCII string.
                                     data = Encoding.ASCII.GetString(bytes, 0, i);
 
                                     logger.Debug(Utilities.GetTimeStamp() + ": Received: " + data);
+
+                                    // If the command is encrypted, decrypt the command and proceed as normal 
+                                    data = checkEncrypted(data);
 
                                     // Process the data sent by the client.
                                     data = data.ToUpper();
@@ -535,19 +542,11 @@ namespace ControlRoomApplication.Controllers
             // Break our string into different parts to retrieve respective pieces of command
             // Based on the command, we will choose what path to follow
             String[] splitCommandString = data.Trim().Split('|');
-            // first check to make sure we have the mininum number of parameters before beginning parsing
-            if (splitCommandString.Length < TCPCommunicationConstants.MIN_NUM_PARAMS)
-            {
-                return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString,TCPCommunicationConstants.MISSING_COMMAND_ARGS);
-            }
 
-            // proceed if valid
-            for (int i = 0; i < splitCommandString.Length; i++)
+            if (splitCommandString.Length < 2)
             {
-                splitCommandString[i] = splitCommandString[i].Trim();
+                return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS);
             }
-            logger.Info(Utilities.GetTimeStamp() + ": " + String.Join(" ", splitCommandString));
-
 
             // Convert version from string to double. This is the first value in our string before the "|" character.
             // From here we will direct to the appropriate parsing for said version
@@ -564,7 +563,7 @@ namespace ControlRoomApplication.Controllers
 
             }
             // ensure version exists
-            foreach(string versionNum in TCPCommunicationConstants.ALL_VERSIONS_LIST)
+            foreach (string versionNum in TCPCommunicationConstants.ALL_VERSIONS_LIST)
             {
                 if (versionNum == splitCommandString[TCPCommunicationConstants.VERSION_NUM].Trim())
                 {
@@ -577,6 +576,26 @@ namespace ControlRoomApplication.Controllers
             {
                 return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidVersion, splitCommandString, TCPCommunicationConstants.VERSION_NOT_FOUND + version);
             }
+
+            if (version == 1.1)
+            {
+                string decryptedCommand = AES.Decrypt(Utilities.HexStringToByteArray(splitCommandString[1]), AESConstants.KEY, AESConstants.IV);
+                splitCommandString = decryptedCommand.Trim().Split('|');
+            }
+
+
+            // first check to make sure we have the mininum number of parameters before beginning parsing
+            if (splitCommandString.Length < TCPCommunicationConstants.MIN_NUM_PARAMS)
+            {
+                return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString,TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+            }
+
+            // proceed if valid
+            for (int i = 0; i < splitCommandString.Length; i++)
+            {
+                splitCommandString[i] = splitCommandString[i].Trim();
+            }
+            logger.Info(Utilities.GetTimeStamp() + ": " + String.Join(" ", splitCommandString));
   
             String command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
             switch (command)
@@ -854,6 +873,29 @@ namespace ControlRoomApplication.Controllers
             Orientation currentPos = rtController.GetCurrentOrientation();
             string currentlyMoving = rtController.RadioTelescope.PLCDriver.MotorsCurrentlyMoving().ToString().ToUpper();
             return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;  
+        }
+
+        /// <summary>
+        /// Checks if the command sent is using a version of TCP that uses encryption. If so, it decrypts and return the command to be parsed like normal 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public string checkEncrypted(string data)
+        {
+            string[] splitData = data.Trim().Split('|');
+
+            // If the version is greater than 1.1, then the command is encrypted and must be decrypted 
+            if (Double.Parse(splitData[0]) >= 1.1)
+            {
+                // Set the instances encrypted bool to true
+                encrypted = true;
+
+                // Decrypt the command
+                string newCommand = AES.Decrypt(Utilities.HexStringToByteArray(splitData[1]), AESConstants.KEY, AESConstants.IV);
+                data = newCommand;
+            }
+
+            return data;
         }
     }
 }

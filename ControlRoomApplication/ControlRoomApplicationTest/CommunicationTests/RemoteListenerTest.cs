@@ -7,6 +7,7 @@ using ControlRoomApplication.Controllers.SensorNetwork;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Simulators.Hardware.WeatherStation;
+using ControlRoomApplication.Util;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -678,6 +679,16 @@ namespace ControlRoomApplicationTest.CommunicationTests
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
             Assert.AreEqual(MovementResult.Success, mvmtResult.movementResult);
         }
+        
+        [TestMethod]
+        public void TestProcessMessage_TestEncryptedMessage()
+        {
+            string command = AES.Decrypt(Utilities.HexStringToByteArray("5874a5baf786e39e95c35baae6a59bb7ebc31b8164227ef61e6281788b79d6113947d33e8702506d"), AESConstants.KEY, AESConstants.IV);
 
+            ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
+            ExecuteTCPCommandResult mvmtResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
+            Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
+            Assert.AreEqual(MovementResult.Success, mvmtResult.movementResult);
+        }
     }
 }
