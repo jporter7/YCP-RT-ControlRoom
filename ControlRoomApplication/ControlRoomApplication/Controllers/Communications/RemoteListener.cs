@@ -543,10 +543,18 @@ namespace ControlRoomApplication.Controllers
             // Based on the command, we will choose what path to follow
             String[] splitCommandString = data.Trim().Split('|');
 
-            if (splitCommandString.Length < 2)
+            // first check to make sure we have the mininum number of parameters before beginning parsing
+            if (splitCommandString.Length < TCPCommunicationConstants.MIN_NUM_PARAMS)
             {
                 return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS);
             }
+
+            // proceed if valid
+            for (int i = 0; i < splitCommandString.Length; i++)
+            {
+                splitCommandString[i] = splitCommandString[i].Trim();
+            }
+            logger.Info(Utilities.GetTimeStamp() + ": " + String.Join(" ", splitCommandString));
 
             // Convert version from string to double. This is the first value in our string before the "|" character.
             // From here we will direct to the appropriate parsing for said version
@@ -576,26 +584,6 @@ namespace ControlRoomApplication.Controllers
             {
                 return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidVersion, splitCommandString, TCPCommunicationConstants.VERSION_NOT_FOUND + version);
             }
-
-            if (version == 1.1)
-            {
-                string decryptedCommand = AES.Decrypt(Utilities.HexStringToByteArray(splitCommandString[1]), AESConstants.KEY, AESConstants.IV);
-                splitCommandString = decryptedCommand.Trim().Split('|');
-            }
-
-
-            // first check to make sure we have the mininum number of parameters before beginning parsing
-            if (splitCommandString.Length < TCPCommunicationConstants.MIN_NUM_PARAMS)
-            {
-                return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString,TCPCommunicationConstants.MISSING_COMMAND_ARGS);
-            }
-
-            // proceed if valid
-            for (int i = 0; i < splitCommandString.Length; i++)
-            {
-                splitCommandString[i] = splitCommandString[i].Trim();
-            }
-            logger.Info(Utilities.GetTimeStamp() + ": " + String.Join(" ", splitCommandString));
   
             String command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
             switch (command)
@@ -895,15 +883,20 @@ namespace ControlRoomApplication.Controllers
         {
             string[] splitData = data.Trim().Split('|');
 
-            // If the version is greater than 1.1, then the command is encrypted and must be decrypted 
-            if (Double.Parse(splitData[0]) >= 1.1)
+            // Ensure the command has at least two parameters 
+            if (splitData.Length > 1)
             {
-                // Set the instances encrypted bool to true
-                encrypted = true;
+                double versionNum;
 
-                // Decrypt the command
-                string newCommand = AES.Decrypt(Utilities.HexStringToByteArray(splitData[1]), AESConstants.KEY, AESConstants.IV);
-                data = newCommand;
+                // If the version is greater than 1.1, then the command is encrypted and must be decrypted 
+                if (Double.TryParse(splitData[0], out versionNum) && versionNum >= 1.1)
+                {
+                    // Set the instances encrypted bool to true
+                    encrypted = true;
+
+                    // Decrypt the command
+                    data = AES.Decrypt(Utilities.HexStringToByteArray(splitData[1]), AESConstants.KEY, AESConstants.IV);
+                }
             }
 
             return data;
