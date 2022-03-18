@@ -679,21 +679,16 @@ namespace ControlRoomApplicationTest.CommunicationTests
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
             Assert.AreEqual(MovementResult.Success, mvmtResult.movementResult);
         }
-
-        
         
         [TestMethod]
         public void TestProcessMessage_TestEncryptedMessage()
         {
             string command = AES.Decrypt(AES.Encrypt("1.1|SCRIPT|FULL_CLOCK|2022-03-16T20:18:03.636Z", AESConstants.KEY, AESConstants.IV), AESConstants.KEY, AESConstants.IV);
-            command = "1.1|" + command;
 
-            //TestContext.WriteLine(command);
+            command = Utilities.RemoveCommandPadding(command);
 
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
-            ExecuteTCPCommandResult mvmtResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
-            Assert.AreEqual(MovementResult.Success, mvmtResult.movementResult);
         }
     }
 }

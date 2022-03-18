@@ -95,7 +95,29 @@ namespace ControlRoomApplication.Util
             return Bytes;
         }
 
-    }
+        /// <summary>
+        /// Removes the padding from a decrypted command 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        public static string RemoveCommandPadding(string command)
+        {
+            if (command[command.Length - 1] != 'Z')
+            {
+                int stringPos = command.Length - 1;
 
+                while (command[stringPos] != 'Z')
+                {
+                    stringPos--;
+                }
+
+                return command.Remove(stringPos + 1);
+            }
+            else
+            {
+                return command;
+            }
+        }
+    }
 }
 

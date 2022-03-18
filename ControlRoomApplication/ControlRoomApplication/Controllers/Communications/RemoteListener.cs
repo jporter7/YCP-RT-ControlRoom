@@ -274,7 +274,7 @@ namespace ControlRoomApplication.Controllers
             }
 
             // Use appropriate parsing for given version
-            if (version == 1.0)
+            if (version >= 1.0)
             {
                 // command is placed after pike and before colon; get it here
                 // <VERSION> | <COMMANDTYPE> | <NAME<VALUES>> | TIME
@@ -587,8 +587,6 @@ namespace ControlRoomApplication.Controllers
   
             String command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
 
-            
-
             switch (command)
             {
                 case "ORIENTATION_MOVE":
@@ -898,7 +896,7 @@ namespace ControlRoomApplication.Controllers
                     encrypted = true;
 
                     // Decrypt the command
-                    //data = AES.Decrypt(Utilities.HexStringToByteArray(splitData[1]), AESConstants.KEY, AESConstants.IV);
+                    data = AES.Decrypt(splitData[1], AESConstants.KEY, AESConstants.IV);
                 }
             }
 

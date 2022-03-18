@@ -27,15 +27,20 @@ namespace ControlRoomApplicationTest.CommunicationTests
             string rawText = "1.1|SCRIPT|FULL_CLOCK|2022-03-16T20:18:03.636Z";
             string decrypted = AES.Decrypt(AES.Encrypt(rawText, AESConstants.KEY, AESConstants.IV), AESConstants.KEY, AESConstants.IV);
 
-            Assert.IsTrue(rawText.Equals(decrypted));
+            decrypted = Utilities.RemoveCommandPadding(decrypted);
+
+            Assert.IsTrue(rawText == decrypted);
         }
 
         [TestMethod]
         public void TestDecryption()
         {
             string encrypted = "37da34fd5c3e13eeeef2b72a2aba12969fc8302efbf119cf765e8a620bf7665eb19c61215b1af90329d7a22f36abe0a7";
-            string rawText = "1.1|SCRIPT|FULL_EV|2022-03-18T02:06:33.831Z*****";
+            string rawText = "1.1|SCRIPT|FULL_EV|2022-03-18T02:06:33.831Z";
             string decrypted = AES.Decrypt(encrypted, AESConstants.KEY, AESConstants.IV);
+
+            decrypted = Utilities.RemoveCommandPadding(decrypted);
+
             testContext.WriteLine(decrypted);
             Assert.IsTrue(rawText.Equals(decrypted));
         }
@@ -47,10 +52,12 @@ namespace ControlRoomApplicationTest.CommunicationTests
 
             text = String.Concat(text.Where(c => !Char.IsWhiteSpace(c)));
             
+            /*
             while (text.Length % 16 != 0)
             {
                 text += "*";
             }
+            */
             
             string encrypted = AES.Encrypt(text, AESConstants.KEY, AESConstants.IV);
 
