@@ -586,6 +586,9 @@ namespace ControlRoomApplication.Controllers
             }
   
             String command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
+
+            
+
             switch (command)
             {
                 case "ORIENTATION_MOVE":
@@ -751,7 +754,7 @@ namespace ControlRoomApplication.Controllers
 
             if (encrypted)
             {
-                textToBytes = AES.Encrypt(text, AESConstants.KEY, AESConstants.IV);
+                //textToBytes = AES.Encrypt(text, AESConstants.KEY, AESConstants.IV);
             }
             else
             {
@@ -761,7 +764,7 @@ namespace ControlRoomApplication.Controllers
             
             try
             {
-                stream.Write(textToBytes, 0, textToBytes.Length);
+                //stream.Write(textToBytes, 0, textToBytes.Length);
             }
             catch(Exception e)
             {
@@ -895,7 +898,7 @@ namespace ControlRoomApplication.Controllers
                     encrypted = true;
 
                     // Decrypt the command
-                    data = AES.Decrypt(Utilities.HexStringToByteArray(splitData[1]), AESConstants.KEY, AESConstants.IV);
+                    //data = AES.Decrypt(Utilities.HexStringToByteArray(splitData[1]), AESConstants.KEY, AESConstants.IV);
                 }
             }
 

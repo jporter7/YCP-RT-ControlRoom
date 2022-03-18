@@ -7,11 +7,13 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Org.BouncyCastle.Crypto;
 
 namespace ControlRoomApplication.Controllers.Communications
 {
-        public static class AES
-        {
+    public static class AES
+    {
+        /*
         public static byte[] Encrypt(string plainText, byte[] Key, byte[] IV)
             {
             // Check arguments.
@@ -26,9 +28,11 @@ namespace ControlRoomApplication.Controllers.Communications
             // with the specified key and IV.
             using (RijndaelManaged rijAlg = new RijndaelManaged())
             {
-                rijAlg.Mode = CipherMode.CBC;
+                rijAlg.Mode = CipherMode.OFB;
+                rijAlg.Padding = PaddingMode.None;
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
+                rijAlg.KeySize = 128;
 
                 // Create an encryptor to perform the stream transform.
                 ICryptoTransform encryptor = rijAlg.CreateEncryptor(rijAlg.Key, rijAlg.IV);
@@ -54,7 +58,7 @@ namespace ControlRoomApplication.Controllers.Communications
         }
 
         public static string Decrypt(byte[] cipherText, byte[] Key, byte[] IV)
-            {
+        {
             // Check arguments.
             if (cipherText == null || cipherText.Length <= 0)
                 throw new ArgumentNullException("cipherText");
@@ -71,9 +75,11 @@ namespace ControlRoomApplication.Controllers.Communications
             // with the specified key and IV.
             using (RijndaelManaged rijAlg = new RijndaelManaged())
             {
-                rijAlg.Mode = CipherMode.CBC;
+                rijAlg.Mode = CipherMode.OFB;
+                rijAlg.Padding = PaddingMode.None;
                 rijAlg.Key = Key;
                 rijAlg.IV = IV;
+                rijAlg.KeySize = 128;
 
                 // Create a decryptor to perform the stream transform.
                 ICryptoTransform decryptor = rijAlg.CreateDecryptor(rijAlg.Key, rijAlg.IV);
@@ -89,11 +95,51 @@ namespace ControlRoomApplication.Controllers.Communications
                             // and place them in a string.
                             plaintext = srDecrypt.ReadToEnd();
                         }
-            }
-        }
-}
+                    }
+                }
 
-            return plaintext;
+                return plaintext;
+            }
+        */
+        public static string Encrypt(string plainText, byte[] key, byte[] iv)
+        {
+            byte[] plainTextBytes = ASCIIEncoding.ASCII.GetBytes(plainText);
+
+            AesCryptoServiceProvider endec = new AesCryptoServiceProvider();
+
+            endec.Mode = CipherMode.CBC;
+            //endec.Padding = PaddingMode.None;
+            endec.Padding = PaddingMode.PKCS7;
+            endec.IV = iv;
+            endec.Key = key;
+
+            ICryptoTransform icrypt = endec.CreateEncryptor(endec.Key, endec.IV);
+
+            byte[] encrypted = icrypt.TransformFinalBlock(plainTextBytes, 0, plainTextBytes.Length);
+
+            icrypt.Dispose();
+
+            return Utilities.ByteArrayToHexString(encrypted);
+        }
+        public static string Decrypt(string cipherText, byte[] key, byte[] IV)
+        {
+            byte[] cipherTextBytes = Utilities.HexStringToByteArray(cipherText);
+
+            AesCryptoServiceProvider endec = new AesCryptoServiceProvider();
+
+            endec.Mode = CipherMode.CBC;
+            //endec.Padding = PaddingMode.Zeros;
+            endec.Padding = PaddingMode.PKCS7;
+            endec.IV = IV;
+            endec.Key = key;
+
+            ICryptoTransform icrypt = endec.CreateDecryptor(endec.Key, endec.IV);
+
+            byte[] dec = icrypt.TransformFinalBlock(cipherTextBytes, 0, cipherTextBytes.Length);
+
+            icrypt.Dispose();
+
+            return Encoding.ASCII.GetString(dec);
         }
     }
 }
