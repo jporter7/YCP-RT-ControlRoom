@@ -12,42 +12,65 @@ namespace ControlRoomApplication.Controllers.Communications
 {
     public static class AES
     {
-        public static string Encrypt(string plainText, byte[] key, byte[] iv)
+        public static string Encrypt(string input, string key, string iv)
         {
-            byte[] plainTextBytes = ASCIIEncoding.ASCII.GetBytes(plainText);
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return input;
+            }
+            using (RijndaelManaged rijndaelManaged = new RijndaelManaged())
+            {
+                rijndaelManaged.Mode = CipherMode.CBC;
+                rijndaelManaged.Padding = PaddingMode.PKCS7;
+                rijndaelManaged.FeedbackSize = 128;
 
-            AesCryptoServiceProvider endec = new AesCryptoServiceProvider();
+                rijndaelManaged.Key = Encoding.UTF8.GetBytes(key);
+                rijndaelManaged.IV = Encoding.UTF8.GetBytes(iv);
 
-            endec.Mode = CipherMode.CBC;
-            endec.IV = iv;
-            endec.Key = key;
-
-            ICryptoTransform icrypt = endec.CreateEncryptor(endec.Key, endec.IV);
-
-            byte[] encrypted = icrypt.TransformFinalBlock(plainTextBytes, 0, plainTextBytes.Length);
-
-            icrypt.Dispose();
-
-            return Utilities.ByteArrayToHexString(encrypted);
+                ICryptoTransform encryptor = rijndaelManaged.CreateEncryptor(rijndaelManaged.Key, rijndaelManaged.IV);
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        {
+                            swEncrypt.Write(input);
+                        }
+                        byte[] bytes = msEncrypt.ToArray();
+                        return Convert.ToBase64String(bytes);
+                    }
+                }
+            }
         }
-        public static string Decrypt(string cipherText, byte[] key, byte[] IV)
+
+        public static string Decrypt(string input, string key, string iv)
         {
-            byte[] cipherTextBytes = Utilities.HexStringToByteArray(cipherText);
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return input;
+            }
+            var buffer = Convert.FromBase64String(input);
+            using (RijndaelManaged rijndaelManaged = new RijndaelManaged())
+            {
+                rijndaelManaged.Mode = CipherMode.CBC;
+                rijndaelManaged.Padding = PaddingMode.PKCS7;
+                rijndaelManaged.FeedbackSize = 128;
 
-            AesCryptoServiceProvider endec = new AesCryptoServiceProvider();
+                rijndaelManaged.Key = Encoding.UTF8.GetBytes(key);
+                rijndaelManaged.IV = Encoding.UTF8.GetBytes(iv);
 
-            endec.Mode = CipherMode.CBC;
-            endec.Padding = PaddingMode.Zeros;
-            endec.IV = IV;
-            endec.Key = key;
-
-            ICryptoTransform icrypt = endec.CreateDecryptor(endec.Key, endec.IV);
-
-            byte[] dec = icrypt.TransformFinalBlock(cipherTextBytes, 0, cipherTextBytes.Length);
-
-            icrypt.Dispose();
-
-            return Encoding.ASCII.GetString(dec);
+                ICryptoTransform decryptor = rijndaelManaged.CreateDecryptor(rijndaelManaged.Key, rijndaelManaged.IV);
+                using (MemoryStream msEncrypt = new MemoryStream(buffer))
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srEncrypt = new StreamReader(csEncrypt))
+                        {
+                            return srEncrypt.ReadToEnd();
+                        }
+                    }
+                }
+            }
         }
     }
 }

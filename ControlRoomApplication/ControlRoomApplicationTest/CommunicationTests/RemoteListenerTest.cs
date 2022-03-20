@@ -683,9 +683,9 @@ namespace ControlRoomApplicationTest.CommunicationTests
         [TestMethod]
         public void TestProcessMessage_TestEncryptedMessage()
         {
-            string command = AES.Decrypt(AES.Encrypt("1.1|SCRIPT|FULL_CLOCK|2022-03-16T20:18:03.636Z", AESConstants.KEY, AESConstants.IV), AESConstants.KEY, AESConstants.IV);
-
-            command = Utilities.RemoveCommandPadding(command);
+            string receivedCommand = "1.1|AA9uv3O7ov+eZ2xM9478QpgOxSBhBbyYMf21krHQMZLAdnaAqGwJ2GkZcT8hxE7T";
+            string[] splitCommand = receivedCommand.Trim().Split('|');
+            string command = AES.Decrypt(splitCommand[1], AESConstants.KEY, AESConstants.IV);
 
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);

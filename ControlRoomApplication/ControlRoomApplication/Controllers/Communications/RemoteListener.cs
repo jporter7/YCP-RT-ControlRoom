@@ -752,7 +752,7 @@ namespace ControlRoomApplication.Controllers
 
             if (encrypted)
             {
-                //textToBytes = AES.Encrypt(text, AESConstants.KEY, AESConstants.IV);
+                textToBytes = Encoding.ASCII.GetBytes(AES.Encrypt(text, AESConstants.KEY, AESConstants.IV));
             }
             else
             {
@@ -762,7 +762,7 @@ namespace ControlRoomApplication.Controllers
             
             try
             {
-                //stream.Write(textToBytes, 0, textToBytes.Length);
+                stream.Write(textToBytes, 0, textToBytes.Length);
             }
             catch(Exception e)
             {
@@ -877,6 +877,7 @@ namespace ControlRoomApplication.Controllers
 
         /// <summary>
         /// Checks if the command sent is using a version of TCP that uses encryption. If so, it decrypts and return the command to be parsed like normal 
+        /// If the version of TCP uses encryption, then we must also encrypt the data sent back to the mobile app, hence we change the encrypted flag to true 
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
