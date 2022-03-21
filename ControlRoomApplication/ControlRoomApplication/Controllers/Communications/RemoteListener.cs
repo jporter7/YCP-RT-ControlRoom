@@ -92,7 +92,7 @@ namespace ControlRoomApplication.Controllers
                                     logger.Debug(Utilities.GetTimeStamp() + ": Received: " + data);
 
                                     // If the command is encrypted, decrypt the command and proceed as normal 
-                                    Tuple<string, bool> dataPair = checkEncrypted(data);
+                                    Tuple<string, bool> dataPair = Utilities.CheckEncrypted(data);
                                     data = dataPair.Item1;
                                     encrypted = dataPair.Item2;
 
@@ -874,37 +874,6 @@ namespace ControlRoomApplication.Controllers
             Orientation currentPos = rtController.GetCurrentOrientation();
             string currentlyMoving = rtController.RadioTelescope.PLCDriver.MotorsCurrentlyMoving().ToString().ToUpper();
             return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;  
-        }
-
-        /// <summary>
-        /// Checks if the command sent is using a version of TCP that uses encryption. If so, it decrypts and return the command to be parsed like normal 
-        /// If the version of TCP uses encryption, then we must also encrypt the data sent back to the mobile app, hence we change the encrypted flag to true 
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public Tuple<string, bool> checkEncrypted(string data)
-        {
-            bool encrypted = false;
-
-            string[] splitData = data.Trim().Split('|');
-
-            // Ensure the command has at least two parameters 
-            if (splitData.Length > 1)
-            {
-                double versionNum;
-
-                // If the version is greater than 1.1, then the command is encrypted and must be decrypted 
-                if (Double.TryParse(splitData[0], out versionNum) && versionNum >= 1.1)
-                {
-                    // Set the instances encrypted bool to true
-                    encrypted = true;
-
-                    // Decrypt the command
-                    data = AES.Decrypt(splitData[1], AESConstants.KEY, AESConstants.IV);
-                }
-            }
-
-            return new Tuple<string, bool>(data, encrypted);
         }
     }
 }

@@ -44,6 +44,14 @@ namespace ControlRoomApplicationTest.CommunicationTests
         readonly int SnClientPort = 3001;
         readonly int SnTelescopeId = 3000;
 
+        private TestContext testContext;
+
+        public TestContext TestContext
+        {
+            get { return testContext; }
+            set { testContext = value; }
+        }
+
         [TestInitialize]
         public void Initialize()
         {
@@ -684,8 +692,10 @@ namespace ControlRoomApplicationTest.CommunicationTests
         public void TestProcessMessage_TestEncryptedMessage()
         {
             string receivedCommand = "1.1|AA9uv3O7ov+eZ2xM9478QpgOxSBhBbyYMf21krHQMZLAdnaAqGwJ2GkZcT8hxE7T";
-            string[] splitCommand = receivedCommand.Trim().Split('|');
-            string command = AES.Decrypt(splitCommand[1], AESConstants.KEY, AESConstants.IV);
+
+            Tuple<string, bool> dataPair = Utilities.CheckEncrypted(receivedCommand);
+
+            string command = dataPair.Item1;
 
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);

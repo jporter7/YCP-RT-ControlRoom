@@ -56,7 +56,6 @@ namespace ControlRoomApplicationTest.CommunicationTests
             testContext.WriteLine("Encrypted: {0}", encrypted);
 
             testContext.WriteLine("Decrypted: {0}", AES.Decrypt(encrypted, AESConstants.KEY, AESConstants.IV));
-
         }
     }
 }
