@@ -700,5 +700,26 @@ namespace ControlRoomApplicationTest.CommunicationTests
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
         }
+
+        [TestMethod]
+        public void TestProcessMessage_TestValidResetMCUErrorBit()
+        {
+            string command = "1.1 | RESET_MCU_BIT | 12:00:00";
+
+            ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
+            ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
+            Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
+            Assert.AreEqual(MCUResetResult.Success, resetResult.resetResult);
+        }
+        
+        [TestMethod]
+        public void TestProcessMessage_TestResetMCUErrorBit_MissingTimestamp()
+        {
+            string command = "1.1 | RESET_MCU_BIT";
+
+            ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
+            ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
+            Assert.AreEqual(ParseTCPCommandResultEnum.MissingCommandArgs, result.parseTCPCommandResultEnum);
+        }
     }
 }

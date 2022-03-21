@@ -516,7 +516,7 @@ namespace ControlRoomApplication.Controllers
 
                     return new ExecuteTCPCommandResult(MovementResult.Success);
                 }
-                else if(command=="REQUEST")
+                else if (command=="REQUEST")
                 {
                     switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
                     {
@@ -527,9 +527,43 @@ namespace ControlRoomApplication.Controllers
                             return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
                     }
                 }
+                // can't find a keyword then we return Invalid Command sent. Only return is version is 1.0, so we can move on to other commands if the version is higher
+                if (version == 1.0)
+                {
+                    return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.COMMAND_NOT_FOUND + command);
+                }
+            }
+            if (version >= 1.1)
+            {
+                string command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
 
-                // can't find a keyword then we return Invalid Command sent
-                return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.COMMAND_NOT_FOUND + command);
+                if (command == "RESET_MCU_BIT")
+                {
+                    if (rtController.ResetMCUErrors())
+                    {
+                        return new ExecuteTCPCommandResult(MCUResetResult.Success, null);
+                    }
+                    else
+                    {
+                        return new ExecuteTCPCommandResult(MCUResetResult.Failed, "Failed to reset MCU error bit.");
+                    }
+                }
+                else if (command == "REQUEST")
+                {
+                    switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
+                    {
+                        case "MVMT_DATA":
+                            return new ExecuteTCPCommandResult(MovementResult.Success, GetMovementData() + " | bitFlipped " + (rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0));
+
+                        default:
+                            return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
+                    }
+                }
+                else
+                {
+                    // can't find a keyword then we return Invalid Command sent
+                    return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.COMMAND_NOT_FOUND + command);
+                }
             }
             // Version is not found; add new versions here
             else
@@ -732,12 +766,21 @@ namespace ControlRoomApplication.Controllers
                     }
                     break;
 
+                case "RESET_MCU_BIT":
+                    if (splitCommandString.Length != TCPCommunicationConstants.NUM_MCU_RESET_PARAMS)
+                    {
+                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS);
+                    }
+                    else
+                    {
+                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.Success, splitCommandString);
+                    }
+                    break;
                 // if we get here, command type not found
                 default:
                     return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidCommandType, splitCommandString, TCPCommunicationConstants.COMMAND_NOT_FOUND);
               
             }
-
 
             // else all parsing was successful, return and inform client
             return new ParseTCPCommandResult(ParseTCPCommandResultEnum.Success, splitCommandString);
@@ -760,7 +803,6 @@ namespace ControlRoomApplication.Controllers
                 textToBytes = Encoding.ASCII.GetBytes(text);
             }
 
-            
             try
             {
                 stream.Write(textToBytes, 0, textToBytes.Length);
