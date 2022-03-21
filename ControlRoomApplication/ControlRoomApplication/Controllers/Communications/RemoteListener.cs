@@ -31,7 +31,6 @@ namespace ControlRoomApplication.Controllers
         private ControlRoom controlRoom;
 
         private bool waitingForConn = true;
-        private bool encrypted;
 
         public RemoteListener(int port, ControlRoom control)
         {
@@ -85,7 +84,7 @@ namespace ControlRoomApplication.Controllers
                                 if ((i = readFromStream(stream, bytes)) != 0)
                                 {
                                     // Reset the encrypted bool because we don't know if every command sent will be encrypted  (we will have to check each time) 
-                                    encrypted = false;
+                                    bool encrypted = false;
 
                                     // Translate data bytes to ASCII string.
                                     data = Encoding.ASCII.GetString(bytes, 0, i);
@@ -93,7 +92,9 @@ namespace ControlRoomApplication.Controllers
                                     logger.Debug(Utilities.GetTimeStamp() + ": Received: " + data);
 
                                     // If the command is encrypted, decrypt the command and proceed as normal 
-                                    data = checkEncrypted(data);
+                                    Tuple<string, bool> dataPair = checkEncrypted(data);
+                                    data = dataPair.Item1;
+                                    encrypted = dataPair.Item2;
 
                                     // Process the data sent by the client.
                                     data = data.ToUpper();
@@ -101,7 +102,7 @@ namespace ControlRoomApplication.Controllers
                                     string myWriteBuffer = null;
 
                                     // Inform mobile command received 
-                                    writeBackToClient("Received command: " + data, stream);
+                                    writeBackToClient("Received command: " + data, stream, encrypted);
 
                                     // if processing the data fails, report an error message
                                     ParseTCPCommandResult parsedTCPCommandResult = ParseRLString(data);
@@ -110,7 +111,7 @@ namespace ControlRoomApplication.Controllers
                                         // send back a failure response
                                         logger.Info("Parsing command failed with ERROR: " + parsedTCPCommandResult.errorMessage);
                                         myWriteBuffer = "Parsing command failed with error: " + parsedTCPCommandResult.errorMessage;
-                                        writeBackToClient(myWriteBuffer, stream);
+                                        writeBackToClient(myWriteBuffer, stream, encrypted);
                                     }
                                     // else the parsing was successful, attempt to run the command
                                     else
@@ -124,13 +125,13 @@ namespace ControlRoomApplication.Controllers
                                             string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " +
                                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + " " +
                                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] + "...";
-                                            writeBackToClient(startedCommandMsg, stream);
+                                            writeBackToClient(startedCommandMsg, stream, encrypted);
                                             // writeback eta to client
                                             int estMoveTime = ScriptETA(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME]);
                                             logger.Info("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] +
                                                 " has an estimated time of " + estMoveTime + " ms");
                                             writeBackToClient(("Script " + parsedTCPCommandResult.parsedString[TCPCommunicationConstants.SCRIPT_NAME] +
-                                                " has an estimated time of " + estMoveTime + " ms"), stream);
+                                                " has an estimated time of " + estMoveTime + " ms"), stream, encrypted);
 
                                         }
                                         else
@@ -139,7 +140,7 @@ namespace ControlRoomApplication.Controllers
                                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...");
                                             string startedCommandMsg = "Successfully parsed command " + data + ". Beginning requested movement " +
                                                 parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE] + "...";
-                                            writeBackToClient(startedCommandMsg, stream);
+                                            writeBackToClient(startedCommandMsg, stream, encrypted);
 
                                             switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.COMMAND_TYPE])
                                             {
@@ -151,11 +152,11 @@ namespace ControlRoomApplication.Controllers
                                                         double elAbs = Double.Parse(parsedTCPCommandResult.parsedString[TCPCommunicationConstants.ORIENTATION_MOVE_EL]);
 
                                                         int mvmtTimeAbs = AbsoluteMovementETA(new Orientation(azAbs, elAbs));
-                                                        writeBackToClient("ORIENTATION_MOVE TO AZ " + azAbs + " and EL " + elAbs + " has an estimated time of " + mvmtTimeAbs + " ms", stream);
+                                                        writeBackToClient("ORIENTATION_MOVE TO AZ " + azAbs + " and EL " + elAbs + " has an estimated time of " + mvmtTimeAbs + " ms", stream, encrypted);
                                                     }
                                                     catch (Exception e)
                                                     {
-                                                        writeBackToClient("An exception occurred attempting to parse AZ and/or EL values: " + e.Message, stream);
+                                                        writeBackToClient("An exception occurred attempting to parse AZ and/or EL values: " + e.Message, stream, encrypted);
                                                     }
                                                     break;
 
@@ -168,11 +169,11 @@ namespace ControlRoomApplication.Controllers
                                                         int mvmtTimeRelative = RelativeMovementETA(new Orientation(azRelative, elRelative));
 
                                                         writeBackToClient("RELATIVE_MOVE BY AZ " + azRelative + " and EL " + elRelative + " has an estimated time of " +
-                                                            mvmtTimeRelative + " ms", stream);
+                                                            mvmtTimeRelative + " ms", stream, encrypted);
                                                     }
                                                     catch (Exception e)
                                                     {
-                                                        writeBackToClient("An exception occurred attempting to parse AZ and/or EL values: " + e.Message, stream);
+                                                        writeBackToClient("An exception occurred attempting to parse AZ and/or EL values: " + e.Message, stream, encrypted);
                                                     }
                                                     break;
 
@@ -189,7 +190,7 @@ namespace ControlRoomApplication.Controllers
                                         {
                                             logger.Debug(Utilities.GetTimeStamp() + ": Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage);
                                             myWriteBuffer = "Command " + data + " failed with error: " + executeTCPCommandResult.errorMessage;
-                                            writeBackToClient(myWriteBuffer, stream);
+                                            writeBackToClient(myWriteBuffer, stream, encrypted);
                                         }
                                         else
                                         {
@@ -200,7 +201,7 @@ namespace ControlRoomApplication.Controllers
                                                     switch (parsedTCPCommandResult.parsedString[TCPCommunicationConstants.REQUEST_TYPE])
                                                     {
                                                         case "MVMT_DATA":
-                                                            writeBackToClient(executeTCPCommandResult.errorMessage, stream);
+                                                            writeBackToClient(executeTCPCommandResult.errorMessage, stream, encrypted);
                                                             logger.Debug(Utilities.GetTimeStamp() + ": " + executeTCPCommandResult.errorMessage);
                                                             break;
                                                     }
@@ -210,7 +211,7 @@ namespace ControlRoomApplication.Controllers
                                                     logger.Debug(Utilities.GetTimeStamp() + ": SUCCESSFULLY COMPLETED COMMAND: " + data);
                                                     // send back a success response -- finished command
                                                     myWriteBuffer = "SUCCESSFULLY COMPLETED COMMAND: " + data;
-                                                    writeBackToClient(myWriteBuffer, stream);
+                                                    writeBackToClient(myWriteBuffer, stream, encrypted);
                                                     break;
                                             }
                                         }
@@ -746,7 +747,7 @@ namespace ControlRoomApplication.Controllers
         /// Util method to handle error checking with strem.read/writes
         /// </summary>
         /// <param name="text">What you are sending back to the client</param>
-        public void writeBackToClient(string text, NetworkStream stream)
+        public void writeBackToClient(string text, NetworkStream stream, bool encrypted)
         {
             byte[] textToBytes;
 
@@ -881,8 +882,10 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public string checkEncrypted(string data)
+        public Tuple<string, bool> checkEncrypted(string data)
         {
+            bool encrypted = false;
+
             string[] splitData = data.Trim().Split('|');
 
             // Ensure the command has at least two parameters 
@@ -901,7 +904,7 @@ namespace ControlRoomApplication.Controllers
                 }
             }
 
-            return data;
+            return new Tuple<string, bool>(data, encrypted);
         }
     }
 }
