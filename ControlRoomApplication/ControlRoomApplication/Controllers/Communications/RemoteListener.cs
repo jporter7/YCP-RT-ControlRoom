@@ -275,6 +275,33 @@ namespace ControlRoomApplication.Controllers
             }
 
             // Use appropriate parsing for given version
+            if (version >= 1.1)
+            {
+                string command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
+
+                if (command == "RESET_MCU_BIT")
+                {
+                    if (rtController.ResetMCUErrors())
+                    {
+                        return new ExecuteTCPCommandResult(MCUResetResult.Success, null);
+                    }
+                    else
+                    {
+                        return new ExecuteTCPCommandResult(MCUResetResult.Failed, "Failed to reset MCU error bit.");
+                    }
+                }
+                else if (command == "REQUEST")
+                {
+                    switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
+                    {
+                        case "MVMT_DATA":
+                            return new ExecuteTCPCommandResult(MovementResult.Success, GetMovementData(version));
+
+                        default:
+                            return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
+                    }
+                }
+            }
             if (version >= 1.0)
             {
                 // command is placed after pike and before colon; get it here
@@ -527,44 +554,13 @@ namespace ControlRoomApplication.Controllers
                             return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
                     }
                 }
-                // can't find a keyword then we return Invalid Command sent. Only return is version is 1.0, so we can move on to other commands if the version is higher
-                if (version == 1.0)
-                {
-                    return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.COMMAND_NOT_FOUND + command);
-                }
-            }
-            if (version >= 1.1)
-            {
-                string command = splitCommandString[TCPCommunicationConstants.COMMAND_TYPE];
-
-                if (command == "RESET_MCU_BIT")
-                {
-                    if (rtController.ResetMCUErrors())
-                    {
-                        return new ExecuteTCPCommandResult(MCUResetResult.Success, null);
-                    }
-                    else
-                    {
-                        return new ExecuteTCPCommandResult(MCUResetResult.Failed, "Failed to reset MCU error bit.");
-                    }
-                }
-                else if (command == "REQUEST")
-                {
-                    switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
-                    {
-                        case "MVMT_DATA":
-                            return new ExecuteTCPCommandResult(MovementResult.Success, GetMovementData(version));
-
-                        default:
-                            return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
-                    }
-                }
                 else
                 {
                     // can't find a keyword then we return Invalid Command sent
                     return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.COMMAND_NOT_FOUND + command);
                 }
             }
+            
             // Version is not found; add new versions here
             else
             {
@@ -915,15 +911,15 @@ namespace ControlRoomApplication.Controllers
         {
             Orientation currentPos = rtController.GetCurrentOrientation();
             string currentlyMoving = rtController.RadioTelescope.PLCDriver.MotorsCurrentlyMoving().ToString().ToUpper();
+            string sendBack = "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;
 
+            // Send back MCU data if TCP version is 1.1 or greater 
             if (versionNum >= 1.1)
             {
-                return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation + " | BIT_FLIPPED: " + Convert.ToString(rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0).ToUpper();
+                sendBack += " | BIT_FLIPPED: " + Convert.ToString(rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0).ToUpper();
             }
-            else
-            {
-                return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;
-            }
+
+            return sendBack;
         }
     }
 }
