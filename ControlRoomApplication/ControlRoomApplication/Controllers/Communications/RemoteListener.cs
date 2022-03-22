@@ -521,7 +521,7 @@ namespace ControlRoomApplication.Controllers
                     switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
                     {
                         case "MVMT_DATA":
-                            return new ExecuteTCPCommandResult(MovementResult.Success, GetMovementData());
+                            return new ExecuteTCPCommandResult(MovementResult.Success, GetMovementData(version));
                           
                         default:
                             return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
@@ -553,7 +553,7 @@ namespace ControlRoomApplication.Controllers
                     switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
                     {
                         case "MVMT_DATA":
-                            return new ExecuteTCPCommandResult(MovementResult.Success, String.Format("{0}{0}", GetMovementData(), Convert.ToString(rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0)));
+                            return new ExecuteTCPCommandResult(MovementResult.Success, GetMovementData(version));
 
                         default:
                             return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
@@ -911,11 +911,19 @@ namespace ControlRoomApplication.Controllers
         /// it is currently moving.
         /// </summary>
         /// <returns></returns>
-        public string GetMovementData()
+        public string GetMovementData(double versionNum)
         {
             Orientation currentPos = rtController.GetCurrentOrientation();
             string currentlyMoving = rtController.RadioTelescope.PLCDriver.MotorsCurrentlyMoving().ToString().ToUpper();
-            return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;
+
+            if (versionNum >= 1.1)
+            {
+                return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation + " | bitFlipped " + Convert.ToString(rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0);
+            }
+            else
+            {
+                return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;
+            }
         }
     }
 }
