@@ -708,6 +708,7 @@ namespace ControlRoomApplicationTest.CommunicationTests
 
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
             ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
+            testContext.WriteLine(resetResult.errorMessage);
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
             Assert.AreEqual(MCUResetResult.Success, resetResult.resetResult);
         }
@@ -720,6 +721,17 @@ namespace ControlRoomApplicationTest.CommunicationTests
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
             ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
             Assert.AreEqual(ParseTCPCommandResultEnum.MissingCommandArgs, result.parseTCPCommandResultEnum);
+        }
+
+        [TestMethod]
+        public void TestProcessMessage_TestRequestMCU()
+        {
+            string command = "1.1 | REQUEST | MVMT_DATA | 12:00:00 ";
+
+            ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
+            ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
+            testContext.WriteLine(resetResult.errorMessage);
+            Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
         }
     }
 }

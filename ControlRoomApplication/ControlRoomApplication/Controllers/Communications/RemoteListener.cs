@@ -96,13 +96,13 @@ namespace ControlRoomApplication.Controllers
                                     data = dataPair.Item1;
                                     encrypted = dataPair.Item2;
 
-                                    // Process the data sent by the client.
-                                    data = data.ToUpper();
-
                                     string myWriteBuffer = null;
 
                                     // Inform mobile command received 
-                                    writeBackToClient("Received command: " + data, stream, encrypted);
+                                    writeBackToClient(data, stream, encrypted);
+
+                                    // Process the data sent by the client.
+                                    data = data.ToUpper();
 
                                     // if processing the data fails, report an error message
                                     ParseTCPCommandResult parsedTCPCommandResult = ParseRLString(data);
@@ -553,7 +553,7 @@ namespace ControlRoomApplication.Controllers
                     switch (splitCommandString[TCPCommunicationConstants.REQUEST_TYPE])
                     {
                         case "MVMT_DATA":
-                            return new ExecuteTCPCommandResult(MovementResult.Success, GetMovementData() + " | bitFlipped " + (rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0));
+                            return new ExecuteTCPCommandResult(MovementResult.Success, String.Format("{0}{0}", GetMovementData(), Convert.ToString(rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0)));
 
                         default:
                             return new ExecuteTCPCommandResult(MovementResult.InvalidCommand, TCPCommunicationConstants.INVALID_REQUEST_TYPE + splitCommandString[TCPCommunicationConstants.REQUEST_TYPE]);
@@ -915,7 +915,7 @@ namespace ControlRoomApplication.Controllers
         {
             Orientation currentPos = rtController.GetCurrentOrientation();
             string currentlyMoving = rtController.RadioTelescope.PLCDriver.MotorsCurrentlyMoving().ToString().ToUpper();
-            return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;  
+            return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation;
         }
     }
 }
