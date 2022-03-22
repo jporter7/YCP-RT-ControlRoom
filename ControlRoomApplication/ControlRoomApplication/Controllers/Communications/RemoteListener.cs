@@ -918,7 +918,7 @@ namespace ControlRoomApplication.Controllers
 
             if (versionNum >= 1.1)
             {
-                return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation + " | bitFlipped " + Convert.ToString(rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0);
+                return "MOVING: " + currentlyMoving + " | " + "AZ: " + currentPos.Azimuth + " | " + "EL: " + currentPos.Elevation + " | BIT_FLIPPED: " + Convert.ToString(rtController.RadioTelescope.PLCDriver.CheckMCUErrors().Count > 0).ToUpper();
             }
             else
             {
