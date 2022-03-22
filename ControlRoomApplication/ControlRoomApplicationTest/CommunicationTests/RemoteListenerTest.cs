@@ -733,5 +733,16 @@ namespace ControlRoomApplicationTest.CommunicationTests
             testContext.WriteLine(resetResult.errorMessage);
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
         }
+
+        [TestMethod]
+        public void TestProcessMessage_TestNewTCPVersion()
+        {
+            string command = "1.1 | STOP_RT | 12:00:00";    // Run a command from an older version of TCP with a new version 
+
+            ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
+            ExecuteTCPCommandResult mvmtResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
+            Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
+            Assert.AreEqual(MovementResult.Success, mvmtResult.movementResult);
+        }
     }
 }
