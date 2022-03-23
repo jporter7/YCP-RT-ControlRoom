@@ -609,6 +609,12 @@ namespace ControlRoomApplication.Main
                         logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
                     else if (result == MovementResult.AlreadyMoving)
                         logger.Info($"{Utilities.GetTimeStamp()}: Azimuth counterclockwise jog BLOCKED. Another manual script is already running.");
+                    else
+                    {
+                        logger.Info($"{Utilities.GetTimeStamp()}: An error occurred trying to jog az clockwise: {result.ToString()}");
+                        pushNotification.sendToAllAdmins("Jog Error", $"An error occurred trying to jog az clockwise: {result.ToString()}");
+                        EmailNotifications.sendToAllAdmins("Jog Error", $"An error occurred trying to jog az clockwise: {result.ToString()}");
+                    }
                 }
                 else
                 {
@@ -643,6 +649,12 @@ namespace ControlRoomApplication.Main
                         logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
                     else if (result == MovementResult.AlreadyMoving)
                         logger.Info($"{Utilities.GetTimeStamp()}: Azimuth clockwise jog BLOCKED. Another manual script is already running.");
+                    else
+                    {
+                        logger.Info($"{Utilities.GetTimeStamp()}: An error occurred trying to jog az clockwise: {result.ToString()}");
+                        pushNotification.sendToAllAdmins("Jog Error", $"An error occurred trying to jog az clockwise: {result.ToString()}");
+                        EmailNotifications.sendToAllAdmins("Jog Error", $"An error occurred trying to jog az clockwise: {result.ToString()}");
+                    }
                 }
                 else
                 {
@@ -672,6 +684,10 @@ namespace ControlRoomApplication.Main
 
                 if (result == MovementResult.Success)
                     logger.Info($"{Utilities.GetTimeStamp()}: Successfully stopped jog with a controlled stop.");
+                else
+                {
+                    logger.Info($"{Utilities.GetTimeStamp()}: Controlled stop error: {result}");
+                }
             }
             else if (immediateRadioButton.Checked)
             {
@@ -681,6 +697,10 @@ namespace ControlRoomApplication.Main
 
                 if (result == MovementResult.Success)
                     logger.Info($"{Utilities.GetTimeStamp()}: Successfully stopped jog with an immediate stop.");
+                else
+                {
+                    logger.Info($"{Utilities.GetTimeStamp()}: Immediate stop error: {result}");
+                }
             }
             else
             {
@@ -713,6 +733,12 @@ namespace ControlRoomApplication.Main
                         logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
                     else if(result == MovementResult.AlreadyMoving)
                         logger.Info($"{Utilities.GetTimeStamp()}: Elevation positive jog BLOCKED. Another manual script is already running.");
+                    else
+                    {
+                        logger.Info($"{Utilities.GetTimeStamp()}: An error occurred trying to positive jog el: {result.ToString()}");
+                        pushNotification.sendToAllAdmins("Jog Error", $"An error occurred trying to positive jog el: {result.ToString()}");
+                        EmailNotifications.sendToAllAdmins("Jog Error", $"An error occurred trying to positive jog el: {result.ToString()}");
+                    }
                 }
                 else
                 {
@@ -745,6 +771,12 @@ namespace ControlRoomApplication.Main
                         logger.Info($"{Utilities.GetTimeStamp()}: Stopping current movement. Please wait until that movement has finished ending and try to jog again.");
                     else if (result == MovementResult.AlreadyMoving)
                         logger.Info($"{Utilities.GetTimeStamp()}: Elevation negative jog BLOCKED. Another manual script is already running.");
+                    else
+                    {
+                        logger.Info($"{Utilities.GetTimeStamp()}: An error occurred trying to negative jog el: {result.ToString()}");
+                        pushNotification.sendToAllAdmins("Jog Error", $"An error occurred trying to negative jog el: {result.ToString()}");
+                        EmailNotifications.sendToAllAdmins("Jog Error", $"An error occurred trying to negative jog el: {result.ToString()}");
+                    }
                 }
                 else
                 {
