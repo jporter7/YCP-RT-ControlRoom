@@ -1,5 +1,4 @@
-﻿//using ControlRoomApplication.GUI;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -9,7 +8,6 @@ using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Database;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Validation;
-using Microsoft.VisualBasic;
 using ControlRoomApplication.GUI.Data;
 using ControlRoomApplication.Util;
 using ControlRoomApplication.Constants;
@@ -17,6 +15,7 @@ using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.
 using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
 using System.Threading.Tasks;
 using ControlRoomApplication.Controllers.Communications;
+using ControlRoomApplication.GUI;
 
 namespace ControlRoomApplication.Main
 {
@@ -209,7 +208,13 @@ namespace ControlRoomApplication.Main
             DatabaseOperations.UpdateAppointment(CurrentAppointment);
 
             var threads = controlRoom.RTControllerManagementThreads.Where<RadioTelescopeControllerManagementThread>(t => t.RTController == rtController).ToList<RadioTelescopeControllerManagementThread>();
-            threads[0].EndAppointment();
+
+            //Done in a new thread so the UI does not freeze while waiting for the move to finish
+            new Thread(() =>
+            {
+                threads[0].EndAppointment();
+            }).Start();
+            
 
             timer1.Enabled = false;
         }
@@ -511,46 +516,20 @@ namespace ControlRoomApplication.Main
                         break;
 
                     case 8:
-                        double azimuthPos = 0;
-                        double elevationPos = 0;
-                        string input = "";
-                        string[] values;
+                        // Create a new CustomOrientationInputDialog instance to allow the user to enter data 
+
+                        CustomOrientationInputDialog id = new CustomOrientationInputDialog(rtController.EnableSoftwareStops, rtController.RadioTelescope.teleType, rtController.RadioTelescope.maxElevationDegrees, rtController.RadioTelescope.minElevationDegrees);
+                        
                         Entities.Orientation currentOrientation = rtController.GetCurrentOrientation();
 
-                        // Get validated user input for azimuth position
-                        do
+                        id.Text = "Custom Orientation Movement";    // Set the title of the input form 
+
+                        if (id.ShowDialog() == DialogResult.OK)     // Use the data entered when the user clicks OK. (OK cannot be clicked unless the input is valid) 
                         {
-                            input = Interaction.InputBox("The Radio Telescope is currently set to be type " + rtController.RadioTelescope.teleType + "." +
-                            " This script is best run with a telescope type of SLIP_RING.\n\n" +
-                            "Please type an a custom orientation containing azimuth between 0 and 360 degrees," +
-                                " and elevation between " + Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES + " and " + Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES +
-                                " degrees. Format the entry as a comma-separated list in the format " +
-                                "azimuth, elevation. Ex: 55,80",
-                                "Azimuth Orientation", currentOrientation.Azimuth.ToString() + "," + currentOrientation.Elevation.ToString());
-                            values = input.Split(',');
-
-                            if (values.Length == 2 && !input.Equals(""))
-                            {
-                                Double.TryParse(values[0], out azimuthPos);
-                                Double.TryParse(values[1], out elevationPos);
-
-                            }
-
-                            // check to make sure the entered values are valid, that there are not too many values entered, and that the entry was formatted correctly
-                        }
-                        while ((azimuthPos > 360 || azimuthPos < 0) || (elevationPos > Constants.SimulationConstants.LIMIT_HIGH_EL_DEGREES || elevationPos <= Constants.SimulationConstants.LIMIT_LOW_EL_DEGREES)
-                            && (!input.Equals("") && values.Length <= 2));
-
-                        // Only run script if cancel button was not hit
-                        if (!input.Equals(""))
-                        {
-                            Entities.Orientation moveTo = new Entities.Orientation(azimuthPos, elevationPos);
+                            Entities.Orientation moveTo = new Entities.Orientation(id.AzimuthPos, id.ElevationPos);
                             movementResult = rtController.MoveRadioTelescopeToOrientation(moveTo, MovementPriority.Manual);
                         }
-                        else
-                        {
-                            MessageBox.Show("Custom Orientation script cancelled.", "Script Cancelled");
-                        }
+
                         break;
 
                     case 9:
@@ -560,6 +539,10 @@ namespace ControlRoomApplication.Main
                         movementResult = MovementResult.Success;
                         break;
 
+                    // Hardware movement script
+                    case 10:
+                        movementResult = rtController.ExecuteHardwareMovementScript(MovementPriority.Manual);
+                        break;
                     default:
                         // Script does not exist
                         break;
@@ -594,6 +577,21 @@ namespace ControlRoomApplication.Main
             
             formData.controlScriptIndex = controlScriptsCombo.SelectedIndex;
 
+        }
+
+        /// <summary>
+        /// Functionality for when the STOP Telescope button is pressed. Creates a confirmation pop up box to prevent accidental presses of the stop button before sending any stop script.
+        /// </summary>
+        private void stopRT_click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Are you sure you want to stop the telescope?", "Telescope Stop Confirmation", MessageBoxButtons.YesNo);
+
+            if (result == DialogResult.Yes)
+            {
+                // Run the stop script for the telescope
+                rtController.RadioTelescope.PLCDriver.InterruptMovementAndWaitUntilStopped(true);
+                logger.Info($"{Utilities.GetTimeStamp()}: Telescope movement stopped.");
+            }
         }
 
         private void ccwAzJogButton_Down( object sender , MouseEventArgs e ) {
@@ -917,6 +915,8 @@ namespace ControlRoomApplication.Main
                         rtController.RadioTelescope.SpectraCyberController.SetSpectraCyberIFGain(Convert.ToDouble(IFGainVal.Text));
                         break;
                 }
+            
+                finalizeSettingsButton.Enabled = false;
 
                 startScanButton.Enabled = false;
                 startScanButton.BackColor = System.Drawing.Color.DarkGray;
@@ -939,6 +939,8 @@ namespace ControlRoomApplication.Main
                 rtController.RadioTelescope.SpectraCyberController.StopScan();
                 logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] Scan has stopped");
             }
+
+            finalizeSettingsButton.Enabled = true;
 
             startScanButton.Enabled = true;
             startScanButton.BackColor = System.Drawing.Color.LimeGreen;
@@ -1000,7 +1002,7 @@ namespace ControlRoomApplication.Main
                 Utilities.WriteToGUIFromThread<FreeControlForm>(this, () =>
                 {
                    this.frequencyToolTip.Show("Frequency must be a non-negative\n " +
-                "value, in hertz (>= 0 Hz)", lblFrequency);
+                "value, in kilohertz (>= 0 kHz)", lblFrequency);
                 });
                 
             }
@@ -1112,6 +1114,31 @@ namespace ControlRoomApplication.Main
         private void speedTextBox_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        /// <summary>
+        /// Enable/disable the telescope's software-stops when the check box is checked or unchecked
+        /// </summary>
+        private void SoftwareStopsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!SoftwareStopsCheckBox.Checked)
+            {
+                DialogResult result = MessageBox.Show("Are you sure you want to disable software stops?", "Software-Stops Confirmation", MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                {
+                    rtController.EnableSoftwareStops = false;
+                }
+                else
+                {
+                    SoftwareStopsCheckBox.Checked = true;
+                    rtController.EnableSoftwareStops = true;
+                }
+            }
+            else
+            {
+                rtController.EnableSoftwareStops = true;
+            }
         }
     }
 }

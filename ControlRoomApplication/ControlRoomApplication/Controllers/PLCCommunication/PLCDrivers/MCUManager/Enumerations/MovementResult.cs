@@ -40,6 +40,11 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         LimitSwitchOrEstopHit,
 
         /// <summary>
+        /// The telescope elevation was out of range and was moving furthur out of range, so it was cancelled.
+        /// </summary>
+        SoftwareStopHit,
+
+        /// <summary>
         /// The movement took too long to complete, so it timed out.
         /// </summary>
         TimedOut,
@@ -80,6 +85,21 @@ namespace ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUMana
         StoppingCurrentMove,
 
         /// <summary>
+        /// Used if the RemoteListener class failed to parse a TCP command and movement wasn't started
+        /// </summary>
+        InvalidCommand,
+
+        /// This is only used for the "moveradiotelescopebyxdegrees" function in RadioTelescopeController
+        /// will be returned if a relative move would put the telescope past software limits
+        /// </summary>
+        InvalidRequestedPostion,
+
+        /// <summary>
+        /// This is only used for the "moveradiotelescopebyxdegrees" function in RadioTelescopeController
+        /// will be returned if a requested azimuth move is too large
+        /// </summary>
+        RequestedAzimuthMoveTooLarge
+
         /// This is set if the command could not be sent to the MCU for whatever reason. The most common reason this
         /// may happen is if the MCU goes offline, Ethernet becomes disconnected, etc.
         /// </summary>

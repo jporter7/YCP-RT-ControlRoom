@@ -53,6 +53,7 @@ namespace ControlRoomApplication.Main
             this.editButton = new System.Windows.Forms.Button();
             this.errorLabel = new System.Windows.Forms.Label();
             this.overRideGroupbox = new System.Windows.Forms.GroupBox();
+            this.SoftwareStopsCheckBox = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.statusTextBox = new System.Windows.Forms.TextBox();
             this.ActualDecTextBox = new System.Windows.Forms.TextBox();
@@ -62,6 +63,7 @@ namespace ControlRoomApplication.Main
             this.oneButtonDec = new System.Windows.Forms.Button();
             this.oneForthButtonDec = new System.Windows.Forms.Button();
             this.freeControlGroupbox = new System.Windows.Forms.GroupBox();
+            this.stopRT = new System.Windows.Forms.Button();
             this.controlScriptsCombo = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.runControlScriptButton = new System.Windows.Forms.Button();
@@ -164,7 +166,7 @@ namespace ControlRoomApplication.Main
             // ActualRATextBox
             // 
             this.ActualRATextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ActualRATextBox.Location = new System.Drawing.Point(153, 74);
+            this.ActualRATextBox.Location = new System.Drawing.Point(154, 59);
             this.ActualRATextBox.Name = "ActualRATextBox";
             this.ActualRATextBox.ReadOnly = true;
             this.ActualRATextBox.Size = new System.Drawing.Size(100, 20);
@@ -175,7 +177,7 @@ namespace ControlRoomApplication.Main
             this.ActualPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualPositionLabel.AutoSize = true;
             this.ActualPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.ActualPositionLabel.Location = new System.Drawing.Point(149, 27);
+            this.ActualPositionLabel.Location = new System.Drawing.Point(146, 17);
             this.ActualPositionLabel.Name = "ActualPositionLabel";
             this.ActualPositionLabel.Size = new System.Drawing.Size(114, 20);
             this.ActualPositionLabel.TabIndex = 7;
@@ -185,7 +187,7 @@ namespace ControlRoomApplication.Main
             // 
             this.ActualRALabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualRALabel.AutoSize = true;
-            this.ActualRALabel.Location = new System.Drawing.Point(150, 56);
+            this.ActualRALabel.Location = new System.Drawing.Point(150, 41);
             this.ActualRALabel.Name = "ActualRALabel";
             this.ActualRALabel.Size = new System.Drawing.Size(84, 13);
             this.ActualRALabel.TabIndex = 8;
@@ -195,7 +197,7 @@ namespace ControlRoomApplication.Main
             // 
             this.ActualDecLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.ActualDecLabel.AutoSize = true;
-            this.ActualDecLabel.Location = new System.Drawing.Point(151, 102);
+            this.ActualDecLabel.Location = new System.Drawing.Point(150, 87);
             this.ActualDecLabel.Name = "ActualDecLabel";
             this.ActualDecLabel.Size = new System.Drawing.Size(60, 13);
             this.ActualDecLabel.TabIndex = 9;
@@ -205,7 +207,7 @@ namespace ControlRoomApplication.Main
             // 
             this.TargetDecLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetDecLabel.AutoSize = true;
-            this.TargetDecLabel.Location = new System.Drawing.Point(18, 102);
+            this.TargetDecLabel.Location = new System.Drawing.Point(16, 87);
             this.TargetDecLabel.Name = "TargetDecLabel";
             this.TargetDecLabel.Size = new System.Drawing.Size(60, 13);
             this.TargetDecLabel.TabIndex = 14;
@@ -215,7 +217,7 @@ namespace ControlRoomApplication.Main
             // 
             this.TargetRALabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetRALabel.AutoSize = true;
-            this.TargetRALabel.Location = new System.Drawing.Point(16, 56);
+            this.TargetRALabel.Location = new System.Drawing.Point(16, 41);
             this.TargetRALabel.Name = "TargetRALabel";
             this.TargetRALabel.Size = new System.Drawing.Size(84, 13);
             this.TargetRALabel.TabIndex = 13;
@@ -226,7 +228,7 @@ namespace ControlRoomApplication.Main
             this.TargetPositionLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.TargetPositionLabel.AutoSize = true;
             this.TargetPositionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.TargetPositionLabel.Location = new System.Drawing.Point(12, 27);
+            this.TargetPositionLabel.Location = new System.Drawing.Point(12, 17);
             this.TargetPositionLabel.Name = "TargetPositionLabel";
             this.TargetPositionLabel.Size = new System.Drawing.Size(115, 20);
             this.TargetPositionLabel.TabIndex = 12;
@@ -235,7 +237,7 @@ namespace ControlRoomApplication.Main
             // TargetDecTextBox
             // 
             this.TargetDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.TargetDecTextBox.Location = new System.Drawing.Point(20, 120);
+            this.TargetDecTextBox.Location = new System.Drawing.Point(20, 104);
             this.TargetDecTextBox.Name = "TargetDecTextBox";
             this.TargetDecTextBox.ReadOnly = true;
             this.TargetDecTextBox.Size = new System.Drawing.Size(100, 20);
@@ -244,7 +246,7 @@ namespace ControlRoomApplication.Main
             // TargetRATextBox
             // 
             this.TargetRATextBox.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.TargetRATextBox.Location = new System.Drawing.Point(19, 74);
+            this.TargetRATextBox.Location = new System.Drawing.Point(20, 59);
             this.TargetRATextBox.Name = "TargetRATextBox";
             this.TargetRATextBox.ReadOnly = true;
             this.TargetRATextBox.Size = new System.Drawing.Size(100, 20);
@@ -353,6 +355,8 @@ namespace ControlRoomApplication.Main
             // overRideGroupbox
             // 
             this.overRideGroupbox.BackColor = System.Drawing.Color.Gainsboro;
+            this.overRideGroupbox.Controls.Add(this.stopRT);
+            this.overRideGroupbox.Controls.Add(this.SoftwareStopsCheckBox);
             this.overRideGroupbox.Controls.Add(this.label8);
             this.overRideGroupbox.Controls.Add(this.statusTextBox);
             this.overRideGroupbox.Controls.Add(this.ActualRATextBox);
@@ -372,11 +376,40 @@ namespace ControlRoomApplication.Main
             this.overRideGroupbox.TabStop = false;
             this.overRideGroupbox.Text = "Position Information";
             // 
+            // stopRT
+            // 
+            this.stopRT.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.stopRT.BackColor = System.Drawing.Color.Red;
+            this.stopRT.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.stopRT.Location = new System.Drawing.Point(154, 159);
+            this.stopRT.Margin = new System.Windows.Forms.Padding(2);
+            this.stopRT.Name = "stopRT";
+            this.stopRT.Size = new System.Drawing.Size(100, 31);
+            this.stopRT.TabIndex = 38;
+            this.stopRT.Text = "STOP Telescope";
+            this.stopRT.UseVisualStyleBackColor = false;
+            this.stopRT.Click += new System.EventHandler(this.stopRT_click);
+            this.stopRT.Enabled = true;
+            // 
+            // SoftwareStopsCheckBox
+            // 
+            this.SoftwareStopsCheckBox.AutoSize = true;
+            this.SoftwareStopsCheckBox.Checked = true;
+            this.SoftwareStopsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.SoftwareStopsCheckBox.Location = new System.Drawing.Point(16, 158);
+            this.SoftwareStopsCheckBox.Margin = new System.Windows.Forms.Padding(2);
+            this.SoftwareStopsCheckBox.Name = "SoftwareStopsCheckBox";
+            this.SoftwareStopsCheckBox.Size = new System.Drawing.Size(134, 17);
+            this.SoftwareStopsCheckBox.TabIndex = 17;
+            this.SoftwareStopsCheckBox.Text = "Enable Software Stops";
+            this.SoftwareStopsCheckBox.UseVisualStyleBackColor = true;
+            this.SoftwareStopsCheckBox.CheckedChanged += new System.EventHandler(this.SoftwareStopsCheckBox_CheckedChanged);
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(18, 167);
+            this.label8.Location = new System.Drawing.Point(16, 134);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(121, 13);
@@ -385,7 +418,7 @@ namespace ControlRoomApplication.Main
             // 
             // statusTextBox
             // 
-            this.statusTextBox.Location = new System.Drawing.Point(143, 164);
+            this.statusTextBox.Location = new System.Drawing.Point(154, 131);
             this.statusTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.statusTextBox.Name = "statusTextBox";
             this.statusTextBox.ReadOnly = true;
@@ -395,7 +428,7 @@ namespace ControlRoomApplication.Main
             // ActualDecTextBox
             // 
             this.ActualDecTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ActualDecTextBox.Location = new System.Drawing.Point(153, 119);
+            this.ActualDecTextBox.Location = new System.Drawing.Point(154, 104);
             this.ActualDecTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.ActualDecTextBox.Name = "ActualDecTextBox";
             this.ActualDecTextBox.ReadOnly = true;
@@ -500,7 +533,8 @@ namespace ControlRoomApplication.Main
             "Snow Dump",
             "Home Telescope",
             "Custom Orientation Movement",
-            "Endless Azimuth Rotation"});
+            "Endless Azimuth Rotation",
+            "Hardware Movement Script"});
             this.controlScriptsCombo.Location = new System.Drawing.Point(4, 28);
             this.controlScriptsCombo.Name = "controlScriptsCombo";
             this.controlScriptsCombo.Size = new System.Drawing.Size(260, 21);
@@ -912,9 +946,9 @@ namespace ControlRoomApplication.Main
             this.lblFrequency.Location = new System.Drawing.Point(155, 0);
             this.lblFrequency.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblFrequency.Name = "lblFrequency";
-            this.lblFrequency.Size = new System.Drawing.Size(79, 13);
+            this.lblFrequency.Size = new System.Drawing.Size(85, 13);
             this.lblFrequency.TabIndex = 34;
-            this.lblFrequency.Text = "Frequency (Hz)";
+            this.lblFrequency.Text = "Frequency (kHz)";
             // 
             // label9
             // 
@@ -968,7 +1002,7 @@ namespace ControlRoomApplication.Main
             this.Controls.Add(this.overRideGroupbox);
             this.Controls.Add(this.errorLabel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MinimumSize = new System.Drawing.Size(600, 478);
+            this.MinimumSize = new System.Drawing.Size(600, 476);
             this.Name = "FreeControlForm";
             this.Text = "Control Form";
             this.RAIncGroupbox.ResumeLayout(false);
@@ -1057,7 +1091,7 @@ namespace ControlRoomApplication.Main
         private System.Windows.Forms.ToolTip offsetVoltageToolTip;
         private System.Windows.Forms.ToolTip frequencyToolTip;
         private System.Windows.Forms.TrackBar speedTrackBar;
-    
-
+        private System.Windows.Forms.CheckBox SoftwareStopsCheckBox;
+        private System.Windows.Forms.Button stopRT;
     }
 }

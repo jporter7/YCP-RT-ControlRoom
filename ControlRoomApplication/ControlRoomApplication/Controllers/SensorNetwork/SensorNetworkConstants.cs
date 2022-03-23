@@ -70,5 +70,40 @@ namespace ControlRoomApplication.Controllers.SensorNetwork
         /// This is where our simulation CSV files are located. These files can be swapped out with each other.
         /// </summary>
         public const string SimCSVDirectory = "../../Controllers/SensorNetwork/Simulation/SimulationCSVData/";
+
+        /// <summary>
+        /// This is the FIFO size used by the azimuth motor accelerometer
+        /// </summary>
+        public const int AzAccelFIFOSize = 32;
+
+        /// <summary>
+        /// This is the FIFO size used by the elevation motor accelerometer
+        /// </summary>
+        public const int ElAccelFIFOSize = 32;
+
+        /// <summary>
+        /// This is the FIFO size used by the counterbalance accelerometer
+        /// </summary>
+        public const int CbAccelFIFOSize = 32;
+
+        /// <summary>
+        /// This is the sampling frequency used by the azimuth motor accelerometer
+        /// </summary>
+        public const double AzAccelSamplingFrequency = 800;
+
+        /// <summary>
+        /// This is the sampling frequency used by the elevation motor accelerometer
+        /// </summary>
+        public const double ElAccelSamplingFrequency = 800;
+
+        /// <summary>
+        /// This is the sampling frequency used by the counterbalance accelerometer
+        /// </summary>
+        public const double CbAccelSamplingFrequency = 800;
+
+        /// <summary>
+        /// This is the degrees offset manually applied to the counterbalance accelerometer position used for greater precision.
+        /// </summary>
+        public const double CBAccelPositionOffset = 2;
     }
 }

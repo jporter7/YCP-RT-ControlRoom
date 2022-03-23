@@ -15,14 +15,13 @@ namespace ControlRoomApplication.UtilitiesTests
             string timeStamp = Utilities.GetTimeStamp();
             bool timeZone = false;
 
-            if(timeStamp.Contains("EST"))
+            // Allow for timestamps containing both EST or EDT, rather than just EST
+            if(timeStamp.Contains("EST") || timeStamp.Contains("EDT"))
             {
                 timeZone = true;
             }
-
-            //THIS WILL ONLY WORK ON COMPUTER SET TO EST
+            
             Assert.IsTrue(timeZone);
-
 
         }
     }
