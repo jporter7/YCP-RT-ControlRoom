@@ -767,6 +767,10 @@ namespace ControlRoomApplication.Controllers
                     {
                         return new ParseTCPCommandResult(ParseTCPCommandResultEnum.MissingCommandArgs, splitCommandString, TCPCommunicationConstants.MISSING_COMMAND_ARGS);
                     }
+                    else if (version < 1.1)
+                    {
+                        return new ParseTCPCommandResult(ParseTCPCommandResultEnum.InvalidVersion, splitCommandString, TCPCommunicationConstants.INVALID_VERSION);
+                    }
                     else
                     {
                         return new ParseTCPCommandResult(ParseTCPCommandResultEnum.Success, splitCommandString);
@@ -786,6 +790,8 @@ namespace ControlRoomApplication.Controllers
         /// Util method to handle error checking with strem.read/writes
         /// </summary>
         /// <param name="text">What you are sending back to the client</param>
+        /// <param name="stream">Data stream to send the data back to the client</param>
+        /// <param name="encrypted">Boolean value that represents whether or not the data should be encrypted before sending</param>
         public void writeBackToClient(string text, NetworkStream stream, bool encrypted)
         {
             byte[] textToBytes;

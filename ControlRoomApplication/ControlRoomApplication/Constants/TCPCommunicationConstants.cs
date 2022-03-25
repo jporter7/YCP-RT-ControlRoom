@@ -46,6 +46,8 @@ namespace ControlRoomApplication.Constants
 
         public static String INVALID_REQUEST_TYPE = "The specified REQUEST type was not found or is invalid: ";
 
+        public static String INVALID_VERSION = "This version of TCP does not support this command.";
+
         public static String[] SCRIPT_NAME_ARRAY = new String[] { "DUMP", "FULL_EV", "THERMAL_CALIBRATE", "STOW", "FULL_CLOCK", "FULL_COUNTER", "HOME", "HARDWARE_MVMT_SCRIPT" };
 
         public static String[] SENSORS_ARRAY = new String[] { "WEATHER_STATION", "MAIN_GATE", "ELEVATION_LIMIT_0", "ELEVATION_LIMIT_90", "AZ_ABS_ENC", "EL_ABS_ENC", "AZ_ACC", "EL_ACC", "CB_ACC",

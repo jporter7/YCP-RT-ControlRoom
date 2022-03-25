@@ -13,21 +13,13 @@ namespace ControlRoomApplicationTest.CommunicationTests
     [TestClass]
     public class AESTest
     {
-        private TestContext testContext;
-
-        public TestContext TestContext
-        {
-            get { return testContext; }
-            set { testContext = value; }
-        }
-
         [TestMethod]
         public void TestEncryptionDecryption()
         {
             string rawText = "1.1|SCRIPT|FULL_CLOCK|2022-03-16T20:18:03.636Z";
             string decrypted = AES.Decrypt(AES.Encrypt(rawText, AESConstants.KEY, AESConstants.IV), AESConstants.KEY, AESConstants.IV);
 
-            Assert.IsTrue(rawText == decrypted);
+            Assert.IsTrue(rawText.Equals(decrypted));
         }
 
         [TestMethod]
@@ -38,24 +30,6 @@ namespace ControlRoomApplicationTest.CommunicationTests
             string decrypted = AES.Decrypt(encrypted, AESConstants.KEY, AESConstants.IV);
 
             Assert.IsTrue(decrypted.Equals(command));
-        }
-
-        [TestMethod]
-        public void SendDylanSomething()
-        {
-            string text = "This better work or imma jump";
-
-            text = String.Concat(text.Where(c => !Char.IsWhiteSpace(c)));
-            
-            string encrypted = AES.Encrypt(text, AESConstants.KEY, AESConstants.IV);
-
-            testContext.WriteLine("Sending: {0}", text);
-            testContext.WriteLine("Key: {0}", AESConstants.KEY);
-            testContext.WriteLine("IV: {0}", AESConstants.IV);
-
-            testContext.WriteLine("Encrypted: {0}", encrypted);
-
-            testContext.WriteLine("Decrypted: {0}", AES.Decrypt(encrypted, AESConstants.KEY, AESConstants.IV));
         }
     }
 }

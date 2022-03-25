@@ -71,7 +71,7 @@ namespace ControlRoomApplication.Util
         /// If the version of TCP uses encryption, then we must also encrypt the data sent back to the mobile app, hence we change the encrypted flag to true 
         /// </summary>
         /// <param name="data"></param>
-        /// <returns></returns>
+        /// <returns>A tuple that contains the either decrypted or unmodified string and a boolean that says whether or not the string was encrypted.</returns>
         public static Tuple<string, bool> CheckEncrypted(string data)
         {
             bool encrypted = false;

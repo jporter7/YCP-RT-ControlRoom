@@ -44,14 +44,6 @@ namespace ControlRoomApplicationTest.CommunicationTests
         readonly int SnClientPort = 3001;
         readonly int SnTelescopeId = 3000;
 
-        private TestContext testContext;
-
-        public TestContext TestContext
-        {
-            get { return testContext; }
-            set { testContext = value; }
-        }
-
         [TestInitialize]
         public void Initialize()
         {
@@ -702,13 +694,23 @@ namespace ControlRoomApplicationTest.CommunicationTests
         }
 
         [TestMethod]
+        public void TestProcessMessage_TestEncryptionUnsupportedVersion()
+        {
+            string receivedCommand = "1.0 | STOP_RT | 12:00:00";
+
+            Tuple<string, bool> dataPair = Utilities.CheckEncrypted(receivedCommand);
+
+            Assert.IsTrue(receivedCommand.Equals(dataPair.Item1));
+            Assert.IsFalse(dataPair.Item2);
+        }
+
+        [TestMethod]
         public void TestProcessMessage_TestValidResetMCUErrorBit()
         {
             string command = "1.1 | RESET_MCU_BIT | 12:00:00";
 
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
             ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
-            testContext.WriteLine(resetResult.errorMessage);
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
             Assert.AreEqual(MCUResetResult.Success, resetResult.resetResult);
         }
@@ -722,6 +724,16 @@ namespace ControlRoomApplicationTest.CommunicationTests
             ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
             Assert.AreEqual(ParseTCPCommandResultEnum.MissingCommandArgs, result.parseTCPCommandResultEnum);
         }
+        
+        [TestMethod]
+        public void TestProcessMessage_TestResetMCUErrorBit_UnsupportedVersion()
+        {
+            string command = "1.0 | RESET_MCU_BIT | 12:00:00";
+
+            ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
+            ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
+            Assert.AreEqual(ParseTCPCommandResultEnum.InvalidVersion, result.parseTCPCommandResultEnum);
+        }
 
         [TestMethod]
         public void TestProcessMessage_TestRequestMCU()
@@ -730,7 +742,6 @@ namespace ControlRoomApplicationTest.CommunicationTests
 
             ParseTCPCommandResult result = (ParseTCPCommandResult)PrivListener.Invoke("ParseRLString", command);
             ExecuteTCPCommandResult resetResult = (ExecuteTCPCommandResult)PrivListener.Invoke("ExecuteRLCommand", new object[] { result.parsedString });
-            testContext.WriteLine(resetResult.errorMessage);
             Assert.AreEqual(ParseTCPCommandResultEnum.Success, result.parseTCPCommandResultEnum);
         }
 

@@ -28,7 +28,7 @@ namespace ControlRoomApplication.Controllers.Communications
             errorMessage = errMessage;
         }
 
-        public ExecuteTCPCommandResult(MCUResetResult resetResult, string errMessage = null)
+        public ExecuteTCPCommandResult(MCUResetResult resetResult, String errMessage = null)
         {
             resetResult = resetResult;
             errorMessage = errMessage;
