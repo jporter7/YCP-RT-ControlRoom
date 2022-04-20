@@ -733,14 +733,15 @@ namespace ControlRoomApplication.Main
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("192.168.0.70");
+                this.txtPLCPort.Text = "502";
                 comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.ProductionSensorNetwork;
                 comboSpectraCyberBox.SelectedIndex = (int)SpectraCyberDropdown.ProductionSpectraCyber;
                 comboWeatherStationBox.SelectedIndex = (int)WeatherStationDropdown.ProductionWeatherStation;
 
                 // SensorNetwork and Server IP/Ports
 
-                this.sensorNetworkServerIPAddress.Text = "127.0.0.1";
-                this.sensorNetworkClientIPAddress.Text = "127.0.0.1";
+                this.sensorNetworkServerIPAddress.Text = "192.168.0.10";
+                this.sensorNetworkClientIPAddress.Text = "192.168.0.197";
                 this.sensorNetworkServerIPAddress.ForeColor = System.Drawing.Color.Black;
                 this.sensorNetworkClientIPAddress.ForeColor = System.Drawing.Color.Black;
 
@@ -751,7 +752,7 @@ namespace ControlRoomApplication.Main
             }
             else
             {
-                this.txtPLCPort.Text = "502";
+                
                 this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Simulated PLC");
 
                 comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
