@@ -120,8 +120,8 @@ namespace ControlRoomApplication.Main
             loopBackBox.Enabled = true;
 
             comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
-            comboBox1.SelectedIndex = 1;
-            comboBox2.SelectedIndex = 1;
+            comboSpectraCyberBox.SelectedIndex = 1;
+            comboWeatherStationBox.SelectedIndex = 1;
             comboPLCType.SelectedIndex = 2;
             LocalIPCombo.SelectedIndex = 0;
 
@@ -280,8 +280,8 @@ namespace ControlRoomApplication.Main
                 shutdownButton.Enabled = true;
                 simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
                 comboSensorNetworkBox.Enabled = true;
-                comboBox2.Enabled = true;
-                comboBox1.Enabled = true;
+                comboWeatherStationBox.Enabled = true;
+                comboSpectraCyberBox.Enabled = true;
                 comboPLCType.Enabled = true;
                 LocalIPCombo.Enabled = true;
 
@@ -295,7 +295,7 @@ namespace ControlRoomApplication.Main
 
                 if (txtPLCPort.Text != null
                     && txtPLCIP.Text != null
-                    && comboBox1.SelectedIndex > -1)
+                    && comboSpectraCyberBox.SelectedIndex > -1)
                 {
 
                     // If the main control room controller hasn't been initialized, initialize it.
@@ -574,7 +574,7 @@ namespace ControlRoomApplication.Main
         /// <returns> A spectracyber instance based off of the configuration specified by the GUI. </returns>
         public AbstractSpectraCyberController BuildSpectraCyber()
         {
-            switch (comboBox1.SelectedIndex)
+            switch (comboSpectraCyberBox.SelectedIndex)
             {
                 case 0:
                     logger.Info(Utilities.GetTimeStamp() + ": Building SpectraCyber");
@@ -619,7 +619,7 @@ namespace ControlRoomApplication.Main
         /// <returns> A weather station instance based off of the configuration specified. </returns>
         public AbstractWeatherStation BuildWeatherStation()
         {
-            switch (comboBox2.SelectedIndex)
+            switch (comboWeatherStationBox.SelectedIndex)
             {
                 case 0:
                     logger.Info(Utilities.GetTimeStamp() + ": Building ProductionWeatherStation");
@@ -727,12 +727,15 @@ namespace ControlRoomApplication.Main
                 this.txtMcuCOMPort.Text = "502"; //default MCU Port
                 this.txtPLCIP.Text = "192.168.0.50";//default IP address
                 this.txtRemoteListenerCOMPort.Text = "80";
+                this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Production PLC");
                 if (LocalIPCombo.FindStringExact("192.168.0.70") == -1)
                 {
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
                 }
                 this.LocalIPCombo.SelectedIndex = LocalIPCombo.FindStringExact("192.168.0.70");
-                comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
+                comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.ProductionSensorNetwork;
+                comboSpectraCyberBox.SelectedIndex = (int)SpectraCyberDropdown.ProductionSpectraCyber;
+                comboWeatherStationBox.SelectedIndex = (int)WeatherStationDropdown.ProductionWeatherStation;
 
                 // SensorNetwork and Server IP/Ports
 
@@ -746,8 +749,15 @@ namespace ControlRoomApplication.Main
                 this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
                 this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
             }
-            this.txtPLCPort.Text = "502";
-            this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Production PLC");
+            else
+            {
+                this.txtPLCPort.Text = "502";
+                this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Simulated PLC");
+
+                comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
+                comboSpectraCyberBox.SelectedIndex = (int)SpectraCyberDropdown.SimulatedSpectraCyber;
+                comboWeatherStationBox.SelectedIndex = (int)WeatherStationDropdown.SimulatedWeatherStation;
+            }
         }
 
 
@@ -779,7 +789,12 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void comboBox2_Click(object sender, EventArgs e)
+        private void comboSpectraCyberBox_SelectedIndexChanged(object sender, EventArgs e) 
+        { 
+        
+        }
+
+        private void comboWeatherStationBox_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
@@ -925,7 +940,7 @@ namespace ControlRoomApplication.Main
 
             if (finalSettings == false)
             {
-                if (comboBox2.Text == "Production Weather Station")
+                if (comboWeatherStationBox.Text == "Production Weather Station")
                 {
                     lastCreatedProductionWeatherStation = BuildWeatherStation();
                    
@@ -956,8 +971,8 @@ namespace ControlRoomApplication.Main
 
                 simulationSettingsGroupbox.BackColor = System.Drawing.Color.DarkGray;
                 comboSensorNetworkBox.Enabled = false;
-                comboBox2.Enabled = false;
-                comboBox1.Enabled = false;
+                comboWeatherStationBox.Enabled = false;
+                comboSpectraCyberBox.Enabled = false;
                 comboPLCType.Enabled = false;
                 LocalIPCombo.Enabled = false;
 
@@ -992,8 +1007,8 @@ namespace ControlRoomApplication.Main
 
                 simulationSettingsGroupbox.BackColor = System.Drawing.Color.Gray;
                 comboSensorNetworkBox.Enabled = true;
-                comboBox2.Enabled = true;
-                comboBox1.Enabled = true;
+                comboWeatherStationBox.Enabled = true;
+                comboSpectraCyberBox.Enabled = true;
                 comboPLCType.Enabled = true;
                 LocalIPCombo.Enabled = true;
 
