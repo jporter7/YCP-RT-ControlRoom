@@ -705,6 +705,8 @@ namespace ControlRoomApplication.Main
                 this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
 
                 comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
+                comboSpectraCyberBox.SelectedIndex = (int)SpectraCyberDropdown.SimulatedSpectraCyber;
+                comboWeatherStationBox.SelectedIndex = (int)WeatherStationDropdown.SimulatedWeatherStation;
                 comboPLCType.SelectedIndex = (int)PLCType.Simulation;
 
                 if (LocalIPCombo.FindStringExact("127.0.0.1") == -1)
@@ -727,7 +729,7 @@ namespace ControlRoomApplication.Main
                 this.txtMcuCOMPort.Text = "502"; //default MCU Port
                 this.txtPLCIP.Text = "192.168.0.50";//default IP address
                 this.txtRemoteListenerCOMPort.Text = "80";
-                this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Production PLC");
+                this.comboPLCType.SelectedIndex = (int)PLCDropdown.ProductionPLC;
                 if (LocalIPCombo.FindStringExact("192.168.0.70") == -1)
                 {
                     this.LocalIPCombo.Items.Add(IPAddress.Parse("192.168.0.70"));
@@ -750,17 +752,7 @@ namespace ControlRoomApplication.Main
                 this.sensorNetworkServerPort.ForeColor = System.Drawing.Color.Black;
                 this.sensorNetworkClientPort.ForeColor = System.Drawing.Color.Black;
             }
-            else
-            {
-                
-                this.comboPLCType.SelectedIndex = this.comboPLCType.FindStringExact("Simulated PLC");
-
-                comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
-                comboSpectraCyberBox.SelectedIndex = (int)SpectraCyberDropdown.SimulatedSpectraCyber;
-                comboWeatherStationBox.SelectedIndex = (int)WeatherStationDropdown.SimulatedWeatherStation;
-            }
         }
-
 
         private void comboSensorNetworkBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -790,15 +782,19 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        private void comboSpectraCyberBox_SelectedIndexChanged(object sender, EventArgs e) 
-        { 
-        
-        }
+        /// <summary>
+        /// Whie these two methods don't currently do anything, they are here for if we ever need to use them. We also need event listeners for these two combo boxes. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comboSpectraCyberBox_SelectedIndexChanged(object sender, EventArgs e) {}
 
-        private void comboWeatherStationBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+        /// <summary>
+        /// Same as above
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comboWeatherStationBox_SelectedIndexChanged(object sender, EventArgs e){}
 
         private void txtPLCPort_TextChanged(object sender, EventArgs e)
         {
