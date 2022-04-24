@@ -120,9 +120,9 @@ namespace ControlRoomApplication.Main
             loopBackBox.Enabled = true;
 
             comboSensorNetworkBox.SelectedIndex = (int)SensorNetworkDropdown.SimulatedSensorNetwork;
-            comboSpectraCyberBox.SelectedIndex = 1;
-            comboWeatherStationBox.SelectedIndex = 1;
-            comboPLCType.SelectedIndex = 2;
+            comboSpectraCyberBox.SelectedIndex = (int)SpectraCyberDropdown.SimulatedSpectraCyber;
+            comboWeatherStationBox.SelectedIndex = (int)WeatherStationDropdown.SimulatedWeatherStation;
+            comboPLCType.SelectedIndex = (int)PLCDropdown.SimulatedPLC;
             LocalIPCombo.SelectedIndex = 0;
 
             sensorNetworkServerIPAddress.Text = "IP Address";
