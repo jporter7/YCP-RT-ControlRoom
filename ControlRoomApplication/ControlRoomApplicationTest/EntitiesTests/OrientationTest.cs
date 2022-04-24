@@ -1,4 +1,5 @@
-﻿using ControlRoomApplication.Entities;
+﻿using ControlRoomApplication.Constants;
+using ControlRoomApplication.Entities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ControlRoomApplicationTest.EntitiesTests
@@ -78,6 +79,45 @@ namespace ControlRoomApplicationTest.EntitiesTests
             orientation_2.Elevation = elevation_2;
 
             Assert.IsFalse(orientation_1.Equals(orientation_2));
+        }
+
+        [TestMethod]
+        public void TestOrientationValid()
+        {
+            const int SAFE_VAL = 50;
+
+            // Valid (low edge azimuth)
+            Orientation orientation;
+
+            // Valid (low edge elevation)
+            orientation = new Orientation(SAFE_VAL, SimulationConstants.LIMIT_LOW_EL_DEGREES);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Valid (high edge elevation)
+            orientation = new Orientation(SAFE_VAL, SimulationConstants.LIMIT_HIGH_EL_DEGREES);
+            Assert.IsTrue(orientation.orientationValid());
+
+            // Invalid (low elevation)
+            orientation = new Orientation(SAFE_VAL, SimulationConstants.LIMIT_LOW_EL_DEGREES - 1);
+            Assert.IsFalse(orientation.orientationValid());
+
+            // Invalid (high elevation)
+            orientation = new Orientation(SAFE_VAL, SimulationConstants.LIMIT_HIGH_EL_DEGREES + 1);
+            Assert.IsFalse(orientation.orientationValid());
+        }
+
+        [TestMethod]
+        public void TestCloneOrientation()
+        {
+            // Create initial orientation
+            Orientation initial = new Orientation(123, 456);
+
+            // Clone initial orientation
+            Orientation cloned = (Orientation)initial.Clone();
+
+            // Verify cloned orientation's azimuth and elevation are the same
+            Assert.AreEqual(initial.Azimuth, cloned.Azimuth);
+            Assert.AreEqual(initial.Elevation, cloned.Elevation);
         }
     }
 }

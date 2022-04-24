@@ -17,9 +17,9 @@ namespace ControlRoomApplication.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public int appointment_id { get; set; }
         [ForeignKey("appointment_id")]
         public virtual Appointment Appointment { get; set; }
-        public int? appointment_id { get; set; }
 
         [Required]
         [Column("time_captured")]
@@ -27,7 +27,7 @@ namespace ControlRoomApplication.Entities
 
         [Required]
         [Column("intensity")]
-        public long Intensity { get; set; }
+        public double Intensity { get; set; }
 
         //public Orientation AcquisitionOrientation { get; set; }
 

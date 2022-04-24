@@ -47,16 +47,22 @@
       <HintPath>..\packages\AASharp.1.99.1\lib\net45\AASharp.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.Core.3.3.103.16\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.Core.3.5.1.26\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.RDS.3.3.107.9\lib\net45\AWSSDK.RDS.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.RDS.3.5.0\lib\net45\AWSSDK.RDS.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.SimpleEmail, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.SimpleEmail.3.5.0.28\lib\net45\AWSSDK.SimpleEmail.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="FftSharp, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FftSharp.1.0.8\lib\netstandard2.0\FftSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.4.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
@@ -70,17 +76,37 @@
     <Reference Include="NModbus4, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NModbus4.2.1.0\lib\net40\NModbus4.dll</HintPath>
     </Reference>
+    <Reference Include="ScottPlot, Version=4.0.48.0, Culture=neutral, PublicKeyToken=86698dc10387c39e, processorArchitecture=MSIL">
+      <HintPath>..\packages\ScottPlot.4.0.48\lib\netstandard2.0\ScottPlot.dll</HintPath>
+    </Reference>
+    <Reference Include="ScottPlot.WinForms, Version=4.0.48.0, Culture=neutral, PublicKeyToken=5df1dfa5321e734b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ScottPlot.WinForms.4.0.48\lib\net461\ScottPlot.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.4.7.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommunicationTests\AESTest.cs" />
+    <Compile Include="CommunicationTests\DataToCSVTest.cs" />
+    <Compile Include="CommunicationTests\EmailNotificationTests.cs" />
+    <Compile Include="CommunicationTests\PushNotificationTest.cs" />
+    <Compile Include="CommunicationTests\RemoteListenerTest.cs" />
     <Compile Include="DatabaseOperationsTests\DatabaseOperationsTests.cs" />
-    <Compile Include="EntitiesTests\PLCCommandAndQueryTypeEnumTest.cs" />
+    <Compile Include="EntitiesTests\AccelerationBlobTest.cs" />
+    <Compile Include="EntitiesTests\AccelerationTest.cs" />
+    <Compile Include="EntitiesTests\TemperatureTest.cs" />
+    <Compile Include="EntitiesTests\SensorNetworkConfigTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberConfigTest.cs" />
     <Compile Include="EntitiesTests\LocationTest.cs" />
     <Compile Include="EntitiesTests\CelestialBodyTest.cs" />
@@ -92,27 +118,56 @@
     <Compile Include="EntitiesTests\HeartbeatInterfaceTests\HeartbeatInterfaceTest.cs" />
     <Compile Include="EntitiesTests\HeartbeatTrackerContainerTest.cs" />
     <Compile Include="EntitiesTests\OrientationTest.cs" />
-    <Compile Include="EntitiesTests\PLCCommandResponseExpectationEnumTest.cs" />
     <Compile Include="EntitiesTests\PLCTest.cs" />
     <Compile Include="EntitiesTests\RFDataTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberIntegratioinTimeEnumTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberResponseTest.cs" />
     <Compile Include="EntitiesTests\SpectraCyberTest.cs" />
+    <Compile Include="EntitiesTests\RadioTelescopeConfigTest.cs" />
     <Compile Include="EntityControllersTests\AbstractPLCDriverTest.cs" />
     <Compile Include="EntityControllersTests\ControlRoomControllerTest.cs" />
     <Compile Include="EntityControllersTests\CoordinateCalculationControllerTest.cs" />
     <Compile Include="EntityControllersTests\RadioTelescopeControllerManagementThreadTest.cs" />
     <Compile Include="EntityControllersTests\RadioTelescopeControllerTest.cs" />
     <Compile Include="EntityControllersTests\PLCClientAndDriverTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkTests\PacketDecodingToolsTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkTests\SensorNetworkClientTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkTests\SensorNetworkServerTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkTests\Simulation\PacketEncodingToolsTest.cs" />
+    <Compile Include="EntityControllersTests\SensorNetworkTests\Simulation\SimulationSensorNetworkTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberSimulatorControllerTest.cs" />
     <Compile Include="EntityControllersTests\SpectraCyberTestControllerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimulatorTests\SimulationAbsoluteEncoderTests.cs" />
     <Compile Include="SimulatorTests\SimulationMCUTrajectoryProfileTests.cs" />
+    <Compile Include="Util Tests\UtilitiesTests.cs" />
+    <Compile Include="Util Tests\ValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\AllData50.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyAzAccl123.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyAzEnc50.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyAzTemp50C.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyCbAccl123.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElAccl123.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElEnc25.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElEnc50.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\SensorNetworkTestPackets\OnlyElTemp50C.snp" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestAzAccX.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestAzAccY.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestAzAccZ.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestAzEnc.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestAzTemp.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestCbAccX.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestCbAccY.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestCbAccZ.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestElAccX.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestElAccY.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestElAccZ.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestElEnc.csv" />
+    <None Include="EntityControllersTests\SensorNetworkTests\Simulation\TestCSVData\TestElTemp.csv" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -124,7 +179,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.RDS.3.5.0\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.SimpleEmail.3.5.0.28\analyzers\dotnet\cs\AWSSDK.SimpleEmail.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

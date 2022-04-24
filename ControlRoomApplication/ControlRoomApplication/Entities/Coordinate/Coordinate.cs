@@ -10,6 +10,7 @@ namespace ControlRoomApplication.Entities
         {
             RightAscension = rightAscension;
             Declination = declination;
+            apptId = -1;
         }
 
         public Coordinate() : this(0, 0) { }
@@ -25,5 +26,16 @@ namespace ControlRoomApplication.Entities
         [Required]
         [Column("declination")]
         public double Declination { get; set; }
+
+        [Required]
+        [Column("hours")]
+        public int hours { get; set; }
+
+        [Required]
+        [Column("minutes")]
+        public int minutes { get; set; }
+        
+        [Column("appointment_id")]
+        public int apptId { get; set; }
     }
 }

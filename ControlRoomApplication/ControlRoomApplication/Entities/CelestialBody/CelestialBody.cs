@@ -6,7 +6,6 @@ using ControlRoomApplication.Constants;
 namespace ControlRoomApplication.Entities
 {
     [Table("celestial_body")]
-    [Serializable]
     public class CelestialBody
     {
         public CelestialBody(string name)
@@ -26,11 +25,15 @@ namespace ControlRoomApplication.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
+        // not nullable
         [Column("name")]
         public string Name { get; set; }
 
-        [Column("coordinate")]
-        public Coordinate Coordinate { get; set; }
+        // not nullable
+        public int coordinate_id { get; set; }
+        [ForeignKey("coordinate_id")]
+        public virtual Coordinate Coordinate { get; set; }
+
+        
     }
 }

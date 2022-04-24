@@ -19,12 +19,13 @@ namespace ControlRoomApplication.Controllers
             return true;
         }
 
+
         protected override void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response)
         {
             // pass
         }
 
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             //throw new System.NotImplementedException();
             return true;

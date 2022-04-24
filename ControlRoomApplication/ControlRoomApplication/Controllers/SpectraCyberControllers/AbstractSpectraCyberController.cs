@@ -3,6 +3,7 @@ using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Database;
+using ControlRoomApplication.Util;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -13,7 +14,8 @@ namespace ControlRoomApplication.Controllers
 
         protected RadioTelescope Parent { get; set; }
         protected AbstractSpectraCyber SpectraCyber { get; set; }
-        protected SpectraCyberScanSchedule Schedule { get; set; }
+        public SpectraCyberScanSchedule Schedule { get; set; }
+        public SpectraCyberConfigValues configVals;
 
         protected Thread CommunicationThread { get; set; }
         protected bool KillCommunicationThreadFlag { get; set; }
@@ -26,7 +28,41 @@ namespace ControlRoomApplication.Controllers
             KillCommunicationThreadFlag = false;
             CommunicationMutex = new Mutex();
             SpectraCyber.CurrentModeType = SpectraCyberModeTypeEnum.CONTINUUM;
+            configVals = new SpectraCyberConfigValues(SpectraCyberModeTypeEnum.CONTINUUM, 0, 0.3,
+                                                        SpectraCyberDCGainEnum.X1, SpectraCyberDCGainEnum.X1, 10, SpectraCyberBandwidthEnum.SMALL_BANDWIDTH, 1200, 0, 0, -600);
         }
+
+        public struct SpectraCyberConfigValues
+        {
+            public SpectraCyberModeTypeEnum spectraCyberMode;
+            public double offsetVoltage;
+            public double integrationStep;
+            public double IFGain;
+            public SpectraCyberDCGainEnum specGain;
+            public SpectraCyberDCGainEnum contGain;
+            public SpectraCyberBandwidthEnum bandwidth;
+            public double frequency;
+            public double rfData;
+            public double scanTime;
+            public double bandscan;
+
+            public SpectraCyberConfigValues(SpectraCyberModeTypeEnum spectraCyberModeIN, double offsetVoltageIN, double integrationStepIN,
+                                            SpectraCyberDCGainEnum specGainIN, SpectraCyberDCGainEnum contGainIN,
+                                            double IFGainIN, SpectraCyberBandwidthEnum bandwidthIN, double frequencyIN, double rfDataIN, double scanTimeIN, double bandscanIn)
+            {
+                spectraCyberMode = spectraCyberModeIN;
+                offsetVoltage = offsetVoltageIN;
+                integrationStep = integrationStepIN;
+                IFGain = IFGainIN;
+                specGain = specGainIN;
+                contGain = contGainIN;
+                bandwidth = bandwidthIN;
+                frequency = frequencyIN;
+                rfData = rfDataIN;
+                scanTime = scanTimeIN;
+                bandscan = bandscanIn;
+            }
+        };
 
         public RadioTelescope GetParent()
         {
@@ -41,41 +77,132 @@ namespace ControlRoomApplication.Controllers
         public bool SetApptConfig(Appointment appt)
         {
             bool success = false;
-            SetActiveAppointmentID(appt.Id);
+            SetActiveAppointment(appt);
             SpectraCyberConfig config = appt.SpectraCyberConfig;
-            SetSpectraCyberModeType(config.Mode);
-            if(config.Mode == SpectraCyberModeTypeEnum.CONTINUUM)
+            SetSpectraCyberModeType(config._Mode);
+            if(config._Mode == SpectraCyberModeTypeEnum.CONTINUUM)
             {
                 success = SetContinuumIntegrationTime(config.IntegrationTime) && SetContinuumOffsetVoltage(config.OffsetVoltage);
             }
-            else if(config.Mode == SpectraCyberModeTypeEnum.SPECTRAL)
+            else if(config._Mode == SpectraCyberModeTypeEnum.SPECTRAL)
             {
                 success = SetSpectralOffsetVoltage(config.OffsetVoltage) && SetSpectralIntegrationTime(config.IntegrationTime);
             }
             else
             {
                 // Unknown current mode type
-                logger.Info("[AbstractSpectraCyberController] ERROR: invalid SpectraCyber mode type: " + SpectraCyber.CurrentModeType.ToString());
+                logger.Info(Utilities.GetTimeStamp() + ": [AbstractSpectraCyberController] ERROR: invalid SpectraCyber mode type: " + SpectraCyber.CurrentModeType.ToString());
             }
             return success;
 
         }
 
+        public bool SetSpectraCyberIFGain(double ifGain)
+        {
+            if(ifGain < 10.0 || ifGain > 25.75)
+            {
+                logger.Info(Utilities.GetTimeStamp() + ": [AbstractSpectraCyberController] ERROR: invalid IF Gain value: " + ifGain);
+                return false;
+            }
+
+            double adjustedGain = (ifGain - 10.0) / 0.25;
+
+            string Command = "!A" + IntToHexString(Convert.ToInt32(adjustedGain));
+
+            SpectraCyberRequest Request = new SpectraCyberRequest(
+                SpectraCyberCommandTypeEnum.CHANGE_SETTING,
+                Command,
+                false,
+                4
+            );
+
+            SpectraCyberResponse Response = new SpectraCyberResponse();
+            SendCommand(Request, ref Response);
+
+            configVals.IFGain = ifGain;
+
+            return Response.RequestSuccessful;
+        }
+
+        public bool SetSpectraCyberDCGain(int dcgain, string identifier)
+        {
+            string Command = "!" + identifier + IntToHexString(dcgain);
+
+            SpectraCyberRequest Request = new SpectraCyberRequest(
+                SpectraCyberCommandTypeEnum.CHANGE_SETTING,
+                Command,
+                false,
+                4
+            );
+
+            SpectraCyberResponse Response = new SpectraCyberResponse();
+            SendCommand(Request, ref Response);
+
+            return Response.RequestSuccessful;
+        }
+
+        public bool SetSpecGain(SpectraCyberDCGainEnum specGain)
+        {
+            // Spec Gain is K00X where x is the enum
+            int gain = 0;
+
+            if (specGain == SpectraCyberDCGainEnum.X1)
+                gain = 0;
+            else if (specGain == SpectraCyberDCGainEnum.X5)
+                gain = 1;
+            else if (specGain == SpectraCyberDCGainEnum.X10)
+                gain = 2;
+            else if (specGain == SpectraCyberDCGainEnum.X20)
+                gain = 3;
+            else if (specGain == SpectraCyberDCGainEnum.X50)
+                gain = 4;
+            else if (specGain == SpectraCyberDCGainEnum.X60)
+                gain = 5;
+
+            configVals.specGain = specGain;
+
+            return SetSpectraCyberDCGain(gain, "K");
+        }
+
+        public bool SetContGain(SpectraCyberDCGainEnum contGain)
+        {
+            // Spec Gain is K00X where x is the enum
+            int gain = 0;
+
+            if (contGain == SpectraCyberDCGainEnum.X1)
+                gain = 0;
+            else if (contGain == SpectraCyberDCGainEnum.X5)
+                gain = 1;
+            else if (contGain == SpectraCyberDCGainEnum.X10)
+                gain = 2;
+            else if (contGain == SpectraCyberDCGainEnum.X20)
+                gain = 3;
+            else if (contGain == SpectraCyberDCGainEnum.X50)
+                gain = 4;
+            else if (contGain == SpectraCyberDCGainEnum.X60)
+                gain = 5;
+
+            configVals.specGain = contGain;
+
+            return SetSpectraCyberDCGain(gain, "G");
+        }
+
         public void SetSpectraCyberModeType(SpectraCyberModeTypeEnum type)
         {
+            configVals.spectraCyberMode = type;
             SpectraCyber.CurrentModeType = type;
         }
 
-        public void SetActiveAppointmentID(int apptId)
+        public void SetActiveAppointment(Appointment appt)
         {
             CommunicationMutex.WaitOne();
-            SpectraCyber.ActiveAppointmentID = apptId;
+            SpectraCyber.ActiveAppointment = appt;
             CommunicationMutex.ReleaseMutex();
         }
 
         public void RemoveActiveAppointmentID()
         {
-            SetActiveAppointmentID(-1);
+            SetActiveAppointment(null);
         }
 
         public void TestCommunication()
@@ -91,16 +218,18 @@ namespace ControlRoomApplication.Controllers
             SendCommand(Request, ref Response);
 
             string ResponseData = Response.SerialIdentifier + Response.DecimalData.ToString("X3");
-            logger.Info("[AbstractSpectraCyberController] Attempted RESET with command \"!R000\", heard back: " + ResponseData);
+            logger.Info(Utilities.GetTimeStamp() + ": [AbstractSpectraCyberController] Attempted RESET with command \"!R000\", heard back: " + ResponseData);
         }
 
         private bool SetSomeOffsetVoltage(double offset, char identifier)
         {
             if ((offset < 0.0) || (offset > 4.095))
             {
-                logger.Info("[AbstractSpectraCyberController] ERROR: input voltage outside of range [0, 4.095]");
+                logger.Info(Utilities.GetTimeStamp() + ": [AbstractSpectraCyberController] ERROR: input voltage outside of range [0, 4.095]");
                 return false;
             }
+
+            configVals.offsetVoltage = offset;
 
             int Magnitude = (int)(offset * 1000);
             string Command = "!" + identifier + IntToHexString(Magnitude);
@@ -147,16 +276,99 @@ namespace ControlRoomApplication.Controllers
 
         public bool SetContinuumIntegrationTime(SpectraCyberIntegrationTimeEnum time)
         {
+            if (time == SpectraCyberIntegrationTimeEnum.SHORT_TIME_SPAN)
+            {
+                configVals.integrationStep = 0.3;
+                Schedule.ScanDelayMS = 300;
+            }
+            else if (time == SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN)
+            {
+                configVals.integrationStep = 1.0;
+                Schedule.ScanDelayMS = 1000;
+            }
+            else if (time == SpectraCyberIntegrationTimeEnum.LONG_TIME_SPAN)
+            {
+                configVals.integrationStep = 10.0;
+                Schedule.ScanDelayMS = 10000;
+            }
             return SetSomeIntegrationTime(time, 'I');
         }
 
         public bool SetSpectralIntegrationTime(SpectraCyberIntegrationTimeEnum time)
         {
+            if (time == SpectraCyberIntegrationTimeEnum.SHORT_TIME_SPAN)
+            {
+                configVals.integrationStep = 0.3;
+                Schedule.ScanDelayMS = 300;
+            }
+            else if (time == SpectraCyberIntegrationTimeEnum.MID_TIME_SPAN)
+            {
+                configVals.integrationStep = 0.5;
+                Schedule.ScanDelayMS = 500;
+            }
+            else if (time == SpectraCyberIntegrationTimeEnum.LONG_TIME_SPAN)
+            {
+                configVals.integrationStep = 1.0;
+                Schedule.ScanDelayMS = 1000;
+            }
             return SetSomeIntegrationTime(time, 'L');
         }
 
+        public bool SetFrequency(double frequency)
+        {
+            string Command = "!F" + IntToHexString(Convert.ToInt32(frequency));
+
+            SpectraCyberRequest Request = new SpectraCyberRequest(
+                SpectraCyberCommandTypeEnum.CHANGE_SETTING,
+                Command,
+                false,
+                4
+            );
+
+            SpectraCyberResponse Response = new SpectraCyberResponse();
+            SendCommand(Request, ref Response);
+
+            configVals.frequency = frequency;
+            configVals.bandscan = -1 * (configVals.frequency / 2);
+
+            return Response.RequestSuccessful;
+        }
+
+        public bool SetBandwidth(SpectraCyberBandwidthEnum bandwidth)
+        {
+            // Our spectra cyber does not use this command
+            /*
+            string Command = "";
+
+            if (bandwidth.GetValue().Equals("15Khz"))
+            {
+                Command = "!B000";
+
+            }
+            else if (bandwidth.GetValue().Equals("30Khz"))
+            {
+                Command = "!B001";
+            }
+
+            SpectraCyberRequest Request = new SpectraCyberRequest(
+                SpectraCyberCommandTypeEnum.CHANGE_SETTING,
+                Command,
+                false,
+                4
+            );
+
+            SpectraCyberResponse Response = new SpectraCyberResponse();
+            SendCommand(Request, ref Response);
+
+            configVals.bandwidth = bandwidth;
+
+            return Response.RequestSuccessful;
+            */
+            return true;
+        }
+
         // Perform a single scan, based on current mode
-        protected SpectraCyberResponse DoSpectraCyberScan()
+        public SpectraCyberResponse DoSpectraCyberScan()
         {
             SpectraCyberResponse Response = new SpectraCyberResponse();
 
@@ -183,8 +395,13 @@ namespace ControlRoomApplication.Controllers
         }
 
         // Start scanning, keep doing so until requested to stop
-        public void StartScan()
+        public void StartScan(Appointment appt)
         {
+
+            // set the spectra cyber active appointment so that rf data has an appointment to refer to
+            SpectraCyber.ActiveAppointment = appt;
+
+            logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberAbstractController] Scan has been started");
             try
             {
                 CommunicationMutex.WaitOne();
@@ -200,10 +417,14 @@ namespace ControlRoomApplication.Controllers
         // Stop scanning and return scan results
         public void StopScan()
         {
+            logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberAbstractController] Scan has been stopped");
+
             try
             {
                 CommunicationMutex.WaitOne();
                 Schedule.SetModeOff();
+                configVals.scanTime = 0;
+                configVals.bandscan = -1 * (configVals.frequency / 2);
                 CommunicationMutex.ReleaseMutex();
             }
             catch
@@ -264,6 +485,8 @@ namespace ControlRoomApplication.Controllers
         {
             bool KeepRunningCommsThread = true;
 
+            logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberController] The scan schedule type is " + Schedule.GetMode());
+
             // Loop until the thread is attempting to be shutdown (don't directly reference SpectraCyber.KillCommunicationThreadFlag
             // because it can't be kept in the mutex's scope)
             while (KeepRunningCommsThread)
@@ -273,9 +496,8 @@ namespace ControlRoomApplication.Controllers
 
                 if (Schedule.PollReadiness())
                 {
-                    AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointmentID);
+                    AddToRFDataDatabase(DoSpectraCyberScan(), SpectraCyber.ActiveAppointment);
                     Schedule.Consume();
-                    //logger.Info("[AbstractSpectraCyberController] SC Scan");
                 }
 
                 // Tell the loop to break on its next pass (so the mutex is still released if the flag is high)
@@ -289,11 +511,8 @@ namespace ControlRoomApplication.Controllers
         // Implicitly kills the processing thread and waits for it to join before returning
         public void KillCommunicationThreadAndWait()
         {
-            CommunicationMutex.WaitOne();
             KillCommunicationThreadFlag = true;
-            CommunicationMutex.ReleaseMutex();
-
-            CommunicationThread.Join();
+            if(CommunicationThread.IsAlive) CommunicationThread.Join();
         }
 
         protected override bool KillHeartbeatComponent()
@@ -301,14 +520,25 @@ namespace ControlRoomApplication.Controllers
             return BringDown();
         }
 
-        private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, int appId)
+        private RFData AddToRFDataDatabase(SpectraCyberResponse spectraCyberResponse, Appointment appt)
         {
             RFData rfData = RFData.GenerateFrom(spectraCyberResponse);
+            appt = DatabaseOperations.GetUpdatedAppointment(appt);
+            rfData.Appointment = appt;
+            rfData.Intensity = rfData.Intensity * MiscellaneousHardwareConstants.SPECTRACYBER_VOLTS_PER_STEP;
 
-            //
             // Add to database
-            //
-            DatabaseOperations.CreateRFData(appId, rfData);
+            DatabaseOperations.AddRFData(rfData);
+
+            configVals.rfData = rfData.Intensity;
+
+            if (configVals.spectraCyberMode == SpectraCyberModeTypeEnum.SPECTRAL)
+                if (configVals.bandscan > configVals.frequency / 2)
+                    configVals.bandscan = -1 * (configVals.frequency / 2);
+                else
+                    configVals.bandscan = configVals.bandscan + MiscellaneousHardwareConstants.SPECTRACYBER_BANDWIDTH_STEP;
+            else if (configVals.spectraCyberMode == SpectraCyberModeTypeEnum.CONTINUUM)
+                configVals.scanTime = configVals.scanTime + configVals.integrationStep;
 
             return rfData;
         }
@@ -317,7 +547,6 @@ namespace ControlRoomApplication.Controllers
         public abstract bool BringDown();
         protected abstract void SendCommand(SpectraCyberRequest request, ref SpectraCyberResponse response);
 
-        // TODO: implement proper error handling if ch is out of acceptable range
         protected static int HexCharToInt(char ch)
         {
             int baseVal = Convert.ToByte(ch);

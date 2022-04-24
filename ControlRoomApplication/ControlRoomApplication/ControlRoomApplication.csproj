@@ -16,6 +16,21 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -38,21 +53,35 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>ControlRoomApplication.Main.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>YCASIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AASharp, Version=1.99.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\AASharp.1.99.1\lib\net45\AASharp.dll</HintPath>
+    <Reference Include="AASharp, Version=1.93.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AASharp.1.93.3\lib\net45\AASharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ArduinoDriver, Version=2.4.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ArduinoDriver.2.4.6\lib\net452\ArduinoDriver.dll</HintPath>
+    </Reference>
+    <Reference Include="ArduinoUploader, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ArduinoUploader.3.1.0\lib\net452\ArduinoUploader.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.Core.3.3.103.16\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.Core.3.5.1.26\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\packages\AWSSDK.RDS.3.3.107.9\lib\net45\AWSSDK.RDS.dll</HintPath>
+      <HintPath>..\packages\AWSSDK.RDS.3.5.0\lib\net45\AWSSDK.RDS.dll</HintPath>
     </Reference>
-    <Reference Include="BouncyCastle.Crypto, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\BouncyCastle.1.8.3.1\lib\BouncyCastle.Crypto.dll</HintPath>
+    <Reference Include="AWSSDK.SimpleEmail, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.SimpleEmail.3.5.0.28\lib\net45\AWSSDK.SimpleEmail.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.SimpleNotificationService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.SimpleNotificationService.3.5.0\lib\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
@@ -60,17 +89,27 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="FftSharp, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FftSharp.1.0.8\lib\netstandard2.0\FftSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Google.Protobuf, Version=3.8.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.8.0\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="IntelHexFormatReader, Version=2.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\IntelHexFormatReader.2.2.3\lib\net46\IntelHexFormatReader.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.4.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.4.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Registry, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Win32.Registry.4.3.0\lib\net46\Microsoft.Win32.Registry.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=8.0.17.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.8.0.17\lib\net452\MySql.Data.dll</HintPath>
@@ -78,8 +117,12 @@
     <Reference Include="MySql.Data.EntityFramework, Version=8.0.17.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.EntityFramework.8.0.17\lib\net452\MySql.Data.EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.4.10\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="NModbus4, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NModbus4.2.1.0\lib\net40\NModbus4.dll</HintPath>
@@ -87,22 +130,67 @@
     <Reference Include="Renci.SshNet, Version=2016.1.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
       <HintPath>..\packages\SSH.NET.2016.1.0\lib\net40\Renci.SshNet.dll</HintPath>
     </Reference>
+    <Reference Include="RJCP.SerialPortStream, Version=2.1.2.0, Culture=neutral, PublicKeyToken=5f5e7b70c6a74deb, processorArchitecture=MSIL">
+      <HintPath>..\packages\SerialPortStream.2.1.2\lib\net45\RJCP.SerialPortStream.dll</HintPath>
+    </Reference>
+    <Reference Include="ScottPlot, Version=4.0.48.0, Culture=neutral, PublicKeyToken=86698dc10387c39e, processorArchitecture=MSIL">
+      <HintPath>..\packages\ScottPlot.4.0.48\lib\netstandard2.0\ScottPlot.dll</HintPath>
+    </Reference>
+    <Reference Include="ScottPlot.WinForms, Version=4.0.48.0, Culture=neutral, PublicKeyToken=5df1dfa5321e734b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ScottPlot.WinForms.4.0.48\lib\net461\ScottPlot.WinForms.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.NonGeneric, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.NonGeneric.4.3.0\lib\net46\System.Collections.NonGeneric.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Collections.Specialized, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Specialized.4.3.0\lib\net46\System.Collections.Specialized.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.FileVersionInfo, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.FileVersionInfo.4.3.0\lib\net46\System.Diagnostics.FileVersionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.TraceSource, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.TraceSource.4.3.0\lib\net46\System.Diagnostics.TraceSource.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.4.7.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.IO.FileSystem, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.4.3.0\lib\net46\System.IO.FileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
+    </Reference>
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Threading.Overlapped, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Overlapped.4.3.0\lib\net46\System.Threading.Overlapped.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Thread, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.ThreadPool, Version=4.0.11.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.ThreadPool.4.3.0\lib\net46\System.Threading.ThreadPool.dll</HintPath>
+    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -112,8 +200,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\AbstractSpectraCyberConstants.cs" />
+    <Compile Include="Constants\AESConstants.cs" />
     <Compile Include="Constants\AWSConstants.cs" />
     <Compile Include="Constants\CelestialBodyConstants.cs" />
+    <Compile Include="Constants\SimulationConstants.cs" />
+    <Compile Include="Constants\TCPCommunicationConstants.cs" />
     <Compile Include="Constants\TIME.cs" />
     <Compile Include="Constants\MiscellaneousHardwareConstants.cs" />
     <Compile Include="Constants\HardwareFlags.cs" />
@@ -124,37 +215,93 @@
     <Compile Include="Constants\PLCConstants.cs" />
     <Compile Include="Constants\ThreadNameConstants.cs" />
     <Compile Include="Controllers\AASharpControllers\CoordinateCalculationController.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\AbstractMicrocontroller.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\AbstractEncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\SimulatedEncoder.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\EncoderReader.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\MicroControllerController.cs" />
-    <Compile Include="Controllers\BlkHeadUcontroler\SimulatedMicrocontroller.cs" />
+    <Compile Include="Controllers\Communications\AES.cs" />
+    <Compile Include="Controllers\Communications\ParseTCPCommandResult.cs" />
+    <Compile Include="Controllers\Communications\DataToCSV.cs" />
+    <Compile Include="Controllers\Communications\EmailNotifications.cs" />
+    <Compile Include="Controllers\Communications\Enumerations\ParseTCPCommandResultEnum.cs" />
+    <Compile Include="Controllers\Communications\MessageType.cs" />
+    <Compile Include="Controllers\Communications\pushNotification.cs" />
+    <Compile Include="Controllers\Communications\SendAttachmentHelper.cs" />
+    <Compile Include="Controllers\Communications\ExecuteTCPCommandResult.cs" />
     <Compile Include="Controllers\ControlRoomController\ControlRoomController.cs" />
     <Compile Include="Controllers\ControlRoomController\RadioTelescopeControllerManagementThread.cs" />
     <Compile Include="Controllers\PLCCommunication\ConversionHelper.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCClientCommunicationHandler.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MCUNetworkStatus.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MCUResetResult.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MovementResult.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUCommand.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MCUCommandType.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUManager.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\MCUMessages.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCDrivers\MCUManager\Enumerations\MovePriority.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionPLCDriver.cs" />
-    <Compile Include="Controllers\PLCCommunication\PLCDrivers\ProductionMCUDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\ScaleModelPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\SimulationPLCDriver.cs" />
     <Compile Include="Controllers\PLCCommunication\PLCDrivers\TestPLCDriver.cs" />
-    <Compile Include="Controllers\Sensors\AbstractTemperatureSensor.cs" />
+    <Compile Include="Controllers\PLCCommunication\PLCEvents.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\AccelerometerErrorCodes.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\AccelerometerSelfTestState.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\AzimuthEncoderErrorCodes.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\TemperatureErrorCodes.cs" />
+    <Compile Include="Controllers\SensorNetwork\PacketDecodingTools.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorInitializationEnum.cs" />
+    <Compile Include="Controllers\SensorNetwork\SensorNetworkClient.cs" />
+    <Compile Include="Controllers\SensorNetwork\SensorNetworkConstants.cs" />
+    <Compile Include="Controllers\SensorNetwork\SensorNetworkServer.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorNetworkStatusEnum.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\PacketEncodingTools.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\RawAccelerometerData.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\SensorStatuses.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\SimulationSensorNetwork.cs" />
+    <Compile Include="Controllers\SensorNetwork\Simulation\SimulationSubArrayData.cs" />
+    <Compile Include="Controllers\Sensors\MiscPlcInput.cs" />
+    <Compile Include="Controllers\Sensors\OverrideSwitchData.cs" />
+    <Compile Include="Controllers\Sensors\TempSensorData.cs" />
+    <Compile Include="Controllers\Sensors\LimitSwitchData.cs" />
+    <Compile Include="Controllers\Sensors\FakeEncoderSensor.cs" />
+    <Compile Include="Controllers\Sensors\ProximitySensorData.cs" />
+    <Compile Include="Controllers\Communications\RemoteListener.cs" />
+    <Compile Include="Controllers\Communications\SNSMessage.cs" />
+    <Compile Include="Documentation\LoggerQueue.cs" />
+    <Compile Include="Entities\Acceleration\AccelerationBlob.cs" />
+    <Compile Include="Entities\Acceleration\CounterbalanceAccelerationBlob.cs" />
+    <Compile Include="Entities\Acceleration\ElevationAccelerationBlob.cs" />
+    <Compile Include="Entities\Acceleration\AzimuthAccelerationBlob.cs" />
+    <Compile Include="Entities\Appointment\AppointmentPriorityEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentStatusEnum.cs" />
     <Compile Include="Entities\Appointment\AppointmentTypeEnum.cs" />
+    <Compile Include="Entities\CelestialBody\CelestialBodyStatusEnum.cs" />
+    <Compile Include="Entities\Configuration\MCUConfiguration.cs" />
     <Compile Include="Entities\DiagnosticData\Acceleration.cs" />
+    <Compile Include="Controllers\SensorNetwork\Enumerations\SensorNetworkSensorStatus.cs" />
     <Compile Include="Entities\DiagnosticData\Temperature.cs" />
+    <Compile Include="Entities\Exceptions\MCUExceptions.cs" />
     <Compile Include="Entities\Location\SensorLocationEnum.cs" />
     <Compile Include="Entities\Log\Log.cs" />
+    <Compile Include="Entities\Override\Override.cs" />
+    <Compile Include="Entities\ProximitySensor\AbstractProximitySensor.cs" />
     <Compile Include="Entities\RadioTelescope\RadioTelescopeAxisEnum.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeDirectionEnum.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeTypeEnum.cs" />
+    <Compile Include="Entities\RadioTelescope\RadioTelescopeConfig.cs" />
+    <Compile Include="Entities\SensorNetworkConfig\SensorNetworkConfig.cs" />
+    <Compile Include="Entities\Sensor\Sensor.cs" />
+    <Compile Include="Entities\Sensor\SensorItemEnum.cs" />
+    <Compile Include="Entities\Sensor\SensorStatus.cs" />
+    <Compile Include="Entities\Sensor\SensorStatusEnum.cs" />
+    <Compile Include="Entities\Sensor\ThresholdValues.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberConfig.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberBandwidthEnum.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberDCGainEnum.cs" />
+    <Compile Include="Entities\User\NotificationTypeEnum.cs" />
+    <Compile Include="Entities\User\User.cs" />
+    <Compile Include="Entities\User\UserRole.cs" />
+    <Compile Include="Entities\User\UserRoleEnum.cs" />
     <Compile Include="Entities\WeatherStation\AbstractWeatherStation.cs" />
     <Compile Include="Entities\CelestialBody\CelestialBody.cs" />
     <Compile Include="Entities\Location\Location.cs" />
     <Compile Include="Entities\Plc\PLCCommandAndQueryTypeEnum.cs" />
-    <Compile Include="Entities\Plc\PLCCommandResponseExpectationEnum.cs" />
     <Compile Include="Entities\Plc\PLCLimitSwitchStatusEnum.cs" />
     <Compile Include="Entities\Plc\PLCRadioTelescopeStatus.cs" />
     <Compile Include="Entities\Plc\PLCSafetyInterlockStatusEnum.cs" />
@@ -185,29 +332,65 @@
     <Compile Include="Entities\SpectraCyber\SpectraCyberResponse.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanSchedule.cs" />
     <Compile Include="Entities\SpectraCyber\SpectraCyberScanScheduleMode.cs" />
+    <Compile Include="Entities\WeatherStation\WeatherThreshold.cs" />
+    <Compile Include="Entities\WeatherStation\WeatherData.cs" />
+    <Compile Include="Entities\WeatherStation\WeatherStation.cs" />
+    <Compile Include="GUI\DropDownEnums\PLCDropdown.cs" />
+    <Compile Include="GUI\DropDownEnums\SpectraCyberDropdown.cs" />
+    <Compile Include="GUI\DropDownEnums\WeatherStationDropdown.cs" />
+    <Compile Include="GUI\InputDialogs\CustomOrientationInputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\InputDialogs\CustomOrientationInputDialog.Designer.cs">
+      <DependentUpon>CustomOrientationInputDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\DiagnosticsForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\DiagnosticsForm.Designer.cs">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\FreeControlForm.cs">
+    <Compile Include="GUI\DropDownEnums\SensorNetworkDropdown.cs" />
+    <Compile Include="GUI\EditTestForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\FreeControlForm.designer.cs">
-      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    <Compile Include="GUI\EditTestForm.Designer.cs">
+      <DependentUpon>EditTestForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\ManualControlForm.cs">
+    <Compile Include="GUI\EditDiagScriptsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\ManualControlForm.Designer.cs">
-      <DependentUpon>ManualControlForm.cs</DependentUpon>
+    <Compile Include="GUI\EditDiagScriptsForm.Designer.cs">
+      <DependentUpon>EditDiagScriptsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\InputDialogs\InputDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\InputDialogs\InputDialog.Designer.cs">
+      <DependentUpon>InputDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\RTControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\RTControlForm.designer.cs">
+      <DependentUpon>RTControlForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\ManualControl.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\ManualControl.Designer.cs">
+      <DependentUpon>ManualControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\RTControlFormData.cs" />
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.cs" />
     <Compile Include="Migrations\201904150402332_LoggingUpdgrades.Designer.cs">
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controllers\Sensors\FakeTempSensor.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Simulators\Hardware\LimitSwitches\SimulateLimitSwitches.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfile.cs" />
     <Compile Include="Simulators\Hardware\MCU\SimulationMCUTrajectoryProfileTypeEnum.cs" />
@@ -227,35 +410,72 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Database\RemoteDb\RemoteDbConfiguration.cs" />
-    <Compile Include="Simulators\Hardware\PLC_MCU\Test_control_pannel.cs" />
     <Compile Include="Simulators\Hardware\PLC_MCU\Simulation_control_pannel.cs" />
     <Compile Include="Simulators\Hardware\WeatherStation\SimulationWeatherStation.cs" />
+    <Compile Include="Util\Utilities.cs" />
+    <Compile Include="Util\Validator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
     <None Include=".travis.yml" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzAccX.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzAccY.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzAccZ.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzEnc.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestAzTemp.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestCbAccX.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestCbAccY.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestCbAccZ.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElAccX.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElAccY.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElAccZ.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElEnc.csv" />
+    <None Include="Controllers\SensorNetwork\Simulation\SimulationCSVData\TestElTemp.csv" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
     <None Include="Simulators\CSV\Spectra_Cyber_Sim_CSV.csv" />
+    <None Include="UIDoc.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\AWSSDK.RDS.3.3.38.2\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="circle-cropped.ico" />
     <Content Include="Migrations\README.txt" />
+    <Content Include="VantageProDll242\CP210xManufacturing.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VantageProDll242\SiUSBXp.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="VantageProDll242\VantagePro.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="YCASIcon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="GUI\InputDialogs\CustomOrientationInputDialog.resx">
+      <DependentUpon>CustomOrientationInputDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\DiagnosticsForm.resx">
       <DependentUpon>DiagnosticsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\FreeControlForm.resx">
-      <DependentUpon>FreeControlForm.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\EditTestForm.resx">
+      <DependentUpon>EditTestForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\ManualControlForm.resx">
-      <DependentUpon>ManualControlForm.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\EditDiagScriptsForm.resx">
+      <DependentUpon>EditDiagScriptsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\InputDialogs\InputDialog.resx">
+      <DependentUpon>InputDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\RTControlForm.resx">
+      <DependentUpon>RTControlForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\ManualControl.resx">
+      <DependentUpon>ManualControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -263,6 +483,30 @@
     <EmbeddedResource Include="Migrations\201904150402332_LoggingUpdgrades.resx">
       <DependentUpon>201904150402332_LoggingUpdgrades.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\AWSSDK.RDS.3.5.0\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.SimpleEmail.3.5.0.28\analyzers\dotnet\cs\AWSSDK.SimpleEmail.CodeAnalysis.dll" />
+    <Analyzer Include="..\packages\AWSSDK.SimpleNotificationService.3.5.0\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

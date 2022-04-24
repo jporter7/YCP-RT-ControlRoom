@@ -32,6 +32,7 @@ namespace ControlRoomApplication.Controllers
             AAS2DCoordinate Horizontal = AASCoordinateTransformation.Equatorial2Horizontal(LocalHourAngle, coordinate.Declination, Location.Latitude);
 
             // Since AASharp considers south zero, flip the orientation 180 degrees
+            // TODO: Verify that this correctly points us north or south based on our true north offset (issue #391)
             Horizontal.X += 180;
             if (Horizontal.X > 360)
             {
@@ -41,21 +42,24 @@ namespace ControlRoomApplication.Controllers
             return new Orientation(Horizontal.X, Horizontal.Y);
         }
 
-        public Coordinate OrientationToCoordinate(Orientation horizantal, DateTime datetime)
+        public Coordinate OrientationToCoordinate(Orientation currHorizontal, DateTime datetime)
         {
-            if (horizantal == null)
+            // We don't want to modify the current orientation, so we must create a new instance
+            Orientation horizontal = (Orientation)currHorizontal.Clone();
+
+            if (horizontal == null)
             {
                 throw new ArgumentException("Orientation cannot be null");
             }
 
             // Since AASharp considers south zero, flip the orientation 180 degrees
-            horizantal.Azimuth += 180;
-            if (horizantal.Azimuth > 360)
+            horizontal.Azimuth += 180;
+            if (horizontal.Azimuth > 360)
             {
-                horizantal.Azimuth -= 360;
+                horizontal.Azimuth -= 360;
             }
             
-            AAS2DCoordinate equatorial = AASCoordinateTransformation.Horizontal2Equatorial(horizantal.Azimuth, horizantal.Elevation, Location.Latitude);
+            AAS2DCoordinate equatorial = AASCoordinateTransformation.Horizontal2Equatorial(horizontal.Azimuth, horizontal.Elevation, Location.Latitude);
 
             AASDate date = new AASDate(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, true);
             double ApparentGreenwichSiderealTime = AASSidereal.ApparentGreenwichSiderealTime(date.Julian);
@@ -70,7 +74,7 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation CalculateOrientation(Appointment appt, DateTime datetime)
         {
-            switch (appt.Type)
+            switch (appt._Type)
             {
                 case (AppointmentTypeEnum.POINT):
                     return GetPointOrientation(appt, datetime);
@@ -199,7 +203,7 @@ namespace ControlRoomApplication.Controllers
 
             // Find the width and the height of the square in points (minutes),
             // rounded down to an integer
-            double num_points = (appt.EndTime - appt.StartTime).TotalMinutes;
+            double num_points = (appt.end_time - appt.start_time).TotalMinutes;
             double point_width = Math.Floor(Math.Sqrt(num_points));
             double point_height = Math.Floor(Math.Sqrt(num_points));
             if (point_width == 0 || point_height == 0)
@@ -221,7 +225,7 @@ namespace ControlRoomApplication.Controllers
             // finding the point_width and point_height)
             // If it is, just stay at the last point of the square
             double max_point = point_width * point_height;
-            double point = (datetime - appt.StartTime).TotalMinutes;
+            double point = (datetime - appt.start_time).TotalMinutes;
             if (point >= max_point)
             {
                 point = max_point - 1;
@@ -256,7 +260,6 @@ namespace ControlRoomApplication.Controllers
 
         public Orientation GetFreeControlOrientation(Appointment appt, DateTime datetime)
         {
-            appt = DatabaseOperations.GetUpdatedAppointment(appt.Id);
             Orientation free_orientation = null;
             if (appt.Orientation == null)
             {

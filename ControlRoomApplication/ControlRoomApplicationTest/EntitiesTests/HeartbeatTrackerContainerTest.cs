@@ -12,23 +12,21 @@ namespace ControlRoomApplicationTest.EntitiesTests
     public class HeartbeatTrackerContainerTest
     {
         private SpectraCyberSimulatorController HBISCSController;
-        private SimulationWeatherStation HBISimWeatherStation;
 
         [TestInitialize]
         public void BuildUp()
         {
+            HeartbeatTrackerContainer.clearChildren();
             HBISCSController = new SpectraCyberSimulatorController(new SpectraCyberSimulator());
             HBISCSController.SetSpectraCyberModeType(SpectraCyberModeTypeEnum.CONTINUUM);
             HBISCSController.BringUp();
 
-            HBISimWeatherStation = new SimulationWeatherStation(100);
-            HBISimWeatherStation.Start();
         }
 
         [TestMethod]
         public void TestLifecycle()
         {
-            Assert.AreEqual(2, HeartbeatTrackerContainer.GetNumberOfChildren());
+            Assert.AreEqual(1, HeartbeatTrackerContainer.GetNumberOfChildren());
 
             for (int i = 0; i < 5; i++)
             {
@@ -38,12 +36,9 @@ namespace ControlRoomApplicationTest.EntitiesTests
 
             HeartbeatTrackerContainer.SafelyKillHeartbeatComponents();
 
-            Assert.AreEqual(2, HeartbeatTrackerContainer.GetNumberOfChildren());
-
-            HeartbeatTrackerContainer.StopTracking(HBISCSController);
             Assert.AreEqual(1, HeartbeatTrackerContainer.GetNumberOfChildren());
 
-            HeartbeatTrackerContainer.StopTracking(HBISimWeatherStation);
+            HeartbeatTrackerContainer.StopTracking(HBISCSController);
             Assert.AreEqual(0, HeartbeatTrackerContainer.GetNumberOfChildren());
         }
 
@@ -51,7 +46,6 @@ namespace ControlRoomApplicationTest.EntitiesTests
         public void BringDown()
         {
             HBISCSController.BringDown();
-            HBISimWeatherStation.RequestKillAndJoin();
         }
     }
 }

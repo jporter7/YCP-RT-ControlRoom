@@ -1,358 +1,382 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using ControlRoomApplication.Constants;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
 using ControlRoomApplication.Entities;
+using Newtonsoft.Json;
+using static ControlRoomApplication.Constants.MCUConstants;
 
-namespace ControlRoomApplication.Controllers
-{
-    public class ScaleModelPLCDriver : AbstractPLCDriver
-    {
-        private static readonly log4net.ILog logger =  log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+namespace ControlRoomApplication.Controllers {
 
-        public ScaleModelPLCDriver(IPAddress local_ip_address, IPAddress MCU_ip_address, int MCU_port, int PLC_port) : base(local_ip_address, MCU_ip_address,  MCU_port,  PLC_port) { }
 
-        public ScaleModelPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : this(IPAddress.Parse(local_ip), IPAddress.Parse(MCU_ip), MCU_port, PLC_port) { }
+    public class PLCConnector {
+        /// <summary>
+        /// Constructor for the PLCConnector. This constructor should be used for 
+        /// connecting to a TCP connection at the localhost 127.0.0.1 address and port 8080.
+        /// </summary>
+        public PLCConnector() {
+            ConnectionEndpoint = new IPEndPoint( IPAddress.Parse( PLCConstants.LOCAL_HOST_IP ) , PLCConstants.PORT_8080 );
+            TCPClient = new TcpClient();
+        }
 
-        public bool KillClientManagementThreadFlag;
-        public TcpListener PLCTCPListener;
+        /// <summary>
+        /// Constructor for the PLCConnector. This constructor should be used for
+        /// connecting to a serial port connection.
+        /// </summary>
+        /// <param name="portName"> The serial port name that should be connected to. </param>
+        public PLCConnector( string portName ) {
+            try {
+                SPort = new SerialPort();
+                SPort.PortName = portName;
+                SPort.BaudRate = PLCConstants.SERIAL_PORT_BAUD_RATE;
+                SPort.Open();
 
-        protected override void HandleClientManagementThread()
-        {
-            TcpClient AcceptedClient = null;
-            byte[] StreamBuffer = new byte[256];
-            byte[] ClippedData;
+                logger.Info( $"Serial port ({portName}) opened." );
+            } catch(Exception) {
+                logger.Error( "Serial port was already opened." );
+            }
+        }
 
-            while (!KillClientManagementThreadFlag)
-            {
-                if (PLCTCPListener.Pending())
-                {
-                    AcceptedClient = PLCTCPListener.AcceptTcpClient();
-                    logger.Info("[AbstractPLCDriver] Connected to new client.");
+        /// <summary>
+        /// Constructor for the PLCConecctor. This constructor should be used for
+        /// connecting to a TCP connection at the specified IP address and port.
+        /// </summary>
+        /// <param name="ip"> The IP address, in string format, that should be connected to. </param>
+        /// <param name="port"> The port that should be connected to. </param>
+        public PLCConnector( string ip , int port ) {
+            // Initialize Connector with information passed in
+            ConnectionEndpoint = new IPEndPoint( IPAddress.Parse( ip ) , port );
+            TCPClient = new TcpClient();
+        }
 
-                    NetworkStream ClientStream = AcceptedClient.GetStream();
+        /// <summary>
+        /// Connects the control room application to the PLC software through a TCPConnection
+        /// that is established over ethernet.
+        /// </summary>
+        /// <returns> Returns a bool indicating whether or not the connection established successfully. </returns>
+        private bool ConnectToPLC() {
+            // This is one of 3 connect methods that must be used to connect the client 
+            // instance with the endpoint (IP address and port number) listed.
+            TCPClient.Connect( ConnectionEndpoint );
 
-                    int Fd;
-                    while ((!KillClientManagementThreadFlag) && (ClientStream != null))
-                    {
-                        if ((!ClientStream.CanRead) || (!ClientStream.DataAvailable))
-                        {
-                            continue;
-                        }
+            // This gets the stream that the client is connected to above.
+            // Stream is how we will write our data back and forth between
+            // the PLC.
+            Stream = TCPClient.GetStream();
 
-                        Fd = ClientStream.Read(StreamBuffer, 0, StreamBuffer.Length);
+            logger.Info( $"Established TCP connection at ({ConnectionEndpoint.Address}, {ConnectionEndpoint.Port})." );
+            return TCPClient.Client.Connected;
+        }
 
-                        if (Fd == 0)
-                        {
-                            continue;
-                        }
+        /// <summary>
+        /// Writes a message to the network stream that is connecting this application
+        /// to the application running the PLC hardware.
+        /// </summary>
+        /// <param name="message"> A string that represents the state of the object. </param>
+        public void WriteMessage( string message ) {
+            // Convert the message passed in into a byte[] array.
+            Data = System.Text.Encoding.ASCII.GetBytes( message );
 
-                        try
-                        {
-                            ClippedData = new byte[Fd];
-                            Array.Copy(StreamBuffer, ClippedData, ClippedData.Length);
+            // If the connection to the PLC is successful, get the NetworkStream 
+            // that is being used and write to it.
+            if(ConnectToPLC()) {
+                try {
+                    Stream = TCPClient.GetStream();
 
-                            if (!ProcessRequest(ClientStream, ClippedData))
-                            {
-                                logger.Info("[AbstractPLCDriver] FAILED to write server.");
-                            }
-                            else
-                            {
-                                //logger.Info("[AbstractPLCDriver] Successfully wrote to server: [{0}]", string.Join(", ", ClippedData));
-                                //logger.Info("[AbstractPLCDriver] Successfully wrote to server!");
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            if ((e is ArgumentNullException)
-                                || (e is RankException)
-                                || (e is ArrayTypeMismatchException)
-                                || (e is InvalidCastException)
-                                || (e is ArgumentOutOfRangeException)
-                                || (e is ArgumentException))
-                            {
-                                logger.Info("[AbstractPLCDriver] ERROR: copying buffer array into clipped array {" + Fd + "}, skipping... [" + e.ToString());
-                                continue;
-                            }
-                            else
-                            {
-                                // Unexpected exception
-                                throw e;
-                            }
-                        }
+                    Stream.Write( Data , 0 , Data.Length );
+
+                    logger.Info( "Sent message to PLC over TCP." );
+                } catch(SocketException e) {
+                    Console.WriteLine( $"Encountered a socket exception." );
+                    logger.Error( $"There was an issue with the socket: {e.Message}." );
+                }
+            }
+        }
+
+        /// <summary>
+        /// Receives messages from a TCP connection from the IPEndpoint that TCPClient
+        /// is connected to.
+        /// </summary>
+        /// <returns> A string that indicates the state of the operation. </returns>
+        public string ReceiveMessage() {
+            // Create a new byte[] array and initialize the string
+            // we will send back
+            Data = new byte[256];
+            string responseData = string.Empty;
+
+            if(ConnectToPLC()) {
+                int i;
+                try {
+                    while((i = Stream.Read( Data , 0 , Data.Length )) != 0) {
+                        Message = System.Text.Encoding.ASCII.GetString( Data , 0 , i );
                     }
-                    ClientStream.Dispose();
-                    AcceptedClient.Dispose();
+
+                    logger.Info( "Message received from PLC." );
+                } catch(SocketException e) {
+                    Console.WriteLine( "Encountered a socket exception." );
+                    logger.Error( $"There was an issue with the socket {e.Message}" );
+                } finally {
+                    DisconnectFromPLC();
+                    logger.Info( "Disconnected from PLC." );
                 }
             }
+
+            return Message;
         }
 
-        public bool ProcessRequest(NetworkStream ActiveClientStream, byte[] query)
-        {
-            int ExpectedSize = query[0] + (256 * query[1]);
-            if (query.Length != ExpectedSize)
-            {
-                throw new ArgumentException(
-                    "ScaleModelPLCDriverController read a package specifying a size [" + ExpectedSize.ToString() + "], but the actual size was different [" + query.Length + "]."
-                );
-            }
-
-            byte CommandQueryTypeAndExpectedResponseStatus = query[2];
-            byte CommandQueryTypeByte = (byte)(CommandQueryTypeAndExpectedResponseStatus & 0x3F);
-            byte ExpectedResponseStatusByte = (byte)(CommandQueryTypeAndExpectedResponseStatus >> 6);
-
-            PLCCommandAndQueryTypeEnum CommandQueryTypeEnum = PLCCommandAndQueryTypeConversionHelper.GetFromByte(CommandQueryTypeByte);
-            PLCCommandResponseExpectationEnum ExpectedResponseStatusEnum = PLCCommandResponseExpectationConversionHelper.GetFromByte(ExpectedResponseStatusByte);
-
-            byte[] FinalResponseContainer;
-
-            if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.FULL_RESPONSE)
-            {
-                FinalResponseContainer = new byte[]
-                {
-                    0x13, 0x0,
-                    0x0,
-                    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-                    0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
-                };
-
-                switch (CommandQueryTypeEnum)
-                {
-                    case PLCCommandAndQueryTypeEnum.TEST_CONNECTION:
-                        {
-                            FinalResponseContainer[3] = 0x1;
-                            FinalResponseContainer[2] = 0x1;
-                            break;
-                        }
-
-                    case PLCCommandAndQueryTypeEnum.GET_CURRENT_AZEL_POSITIONS:
-                        {
-                            double TestAzimuth = 180.0;
-                            double TestElevation = 42.0;
-                            
-                            Array.Copy(BitConverter.GetBytes(TestAzimuth), 0, FinalResponseContainer, 3, 8);
-                            Array.Copy(BitConverter.GetBytes(TestElevation), 0, FinalResponseContainer, 11, 8);
-
-                            FinalResponseContainer[2] = 0x1;
-
-                            break;
-                        }
-
-                    case PLCCommandAndQueryTypeEnum.GET_CURRENT_LIMIT_SWITCH_STATUSES:
-                        {
-                            PLCLimitSwitchStatusEnum StatusAzimuthUnderRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
-                            PLCLimitSwitchStatusEnum StatusAzimuthOverRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
-                            PLCLimitSwitchStatusEnum StatusElevationUnderRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
-                            PLCLimitSwitchStatusEnum StatusElevationOverRotation = PLCLimitSwitchStatusEnum.WITHIN_SAFE_LIMITS;
-
-                            int PacketSum =
-                                PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusElevationOverRotation)
-                                 + (PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusElevationUnderRotation) * 0x4)
-                                 + (PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusAzimuthOverRotation) * 0x10)
-                                 + (PLCLimitSwitchStatusConversionHelper.ConvertToByte(StatusAzimuthUnderRotation) * 0x40)
-                            ;
-
-                            FinalResponseContainer[3] = (byte)PacketSum;
-                            FinalResponseContainer[2] = 0x1;
-
-                            break;
-                        }
-
-                    case PLCCommandAndQueryTypeEnum.GET_CURRENT_SAFETY_INTERLOCK_STATUS:
-                        {
-                            FinalResponseContainer[3] = PLCSafetyInterlockStatusConversionHelper.ConvertToByte(PLCSafetyInterlockStatusEnum.LOCKED);
-                            FinalResponseContainer[2] = 0x1;
-                            break;
-                        }
-
-                    default:
-                        {
-                            throw new ArgumentException("Invalid PLCCommandAndQueryTypeEnum value seen while expecting a response: " + CommandQueryTypeEnum.ToString());
-                        }
-                }
-            }
-            else if (ExpectedResponseStatusEnum == PLCCommandResponseExpectationEnum.MINOR_RESPONSE)
-            {
-                FinalResponseContainer = new byte[]
-                {
-                    0x3, 0x0, 0x0
-                };
-
-                switch (CommandQueryTypeEnum)
-                {
-                    case PLCCommandAndQueryTypeEnum.CANCEL_ACTIVE_OBJECTIVE_AZEL_POSITION:
-                    case PLCCommandAndQueryTypeEnum.SHUTDOWN:
-                    case PLCCommandAndQueryTypeEnum.CALIBRATE:
-                        {
-                            FinalResponseContainer[2] = 0x1;
-                            break;
-                        }
-
-                    case PLCCommandAndQueryTypeEnum.SET_OBJECTIVE_AZEL_POSITION:
-                        {
-                            double NextAZ, NextEL;
-
-                            try
-                            {
-                                NextAZ = BitConverter.ToDouble(query, 3);
-                                NextEL = BitConverter.ToDouble(query, 11);
-                            }
-                            catch (Exception e)
-                            {
-                                if ((e is ArgumentException) || (e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
-                                {
-                                    // This error code means that the data could not be converted into a double-precision floating point
-                                    FinalResponseContainer[2] = 0x2;
-                                    break;
-                                }
-                                else
-                                {
-                                    // Unexpected exception
-                                    throw e;
-                                }
-                            }
-
-                            if ((NextAZ < 0) || (NextAZ > 360))
-                            {
-                                // This error code means that the objective azimuth position is invalid
-                                FinalResponseContainer[2] = 0x3;
-                                break;
-                            }
-
-                            if ((NextEL < 0) || (NextEL > 90))
-                            {
-                                // This error code means that the objective elevation position is invalid
-                                FinalResponseContainer[2] = 0x4;
-                                break;
-                            }
-
-                            // Otherwise, this is valid
-                            // TODO: Perform task(s) to set objective orientation!
-
-                            FinalResponseContainer[2] = 0x1;
-                            break;
-                        }
-
-                    default:
-                        {
-                            throw new ArgumentException("Invalid PLCCommandAndQueryTypeEnum value seen while NOT expecting a response: " + CommandQueryTypeEnum.ToString());
-                        }
-                }
-            }
-            else
-            {
-                throw new ArgumentException("Invalid PLCCommandResponseExpectationEnum value seen while processing client request in ScaleModelPLCDriver: " + ExpectedResponseStatusEnum.ToString());
-            }
-
-            return AttemptToWriteDataToServer(ActiveClientStream, FinalResponseContainer);
+        /// <summary>
+        /// Disconnects the TCP connection that was established to the PLC.
+        /// </summary>
+        public void DisconnectFromPLC() {
+            // Call the dispose() method to close the stream and connection.
+            TCPClient.Dispose();
+            logger.Info( "Disposed of the TCP Client." );
         }
 
+        //*** These methods will be for the arduino scale model. ***//
 
-        protected bool AttemptToWriteDataToServer(NetworkStream ActiveClientStream, byte[] ResponseData)
-        {
-            try
-            {
-                ActiveClientStream.Write(ResponseData, 0, ResponseData.Length);
-            }
-            catch (Exception e)
-            {
-                if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException) || (e is System.IO.IOException) || (e is ObjectDisposedException))
-                {
-                    logger.Info("[AbstractPLCDriver] ERROR: writing back to client with the PLC's response {" + ResponseData.ToString() + "}");
-                    return false;
-                }
-            }
+        /// <summary>
+        /// Closes the serial port that was opened in SPort.
+        /// </summary>
+        public void CloseSerialPort() {
+            SPort.Close();
+            logger.Info( "Serial port has been closed." );
+        }
 
+        /// <summary>
+        /// Gets a message from the specified serial port in SPort.
+        /// </summary>
+        /// <returns> Returns a string that was read from the serial port. </returns>
+        public string GetSerialPortMessage() {
+            Message = string.Empty;
+
+            // Read all existing bytes in the stream.
+            Message = SPort.ReadExisting();
+
+            logger.Info( "Message received from Arduino." );
+            return Message;
+        }
+
+        public bool SendSerialPortMessage( string jsonOrientation ) {
+            Data = System.Text.Encoding.ASCII.GetBytes( jsonOrientation );
+            Thread.Sleep( 10 );
+            SPort.Write( Data , 0 , Data.Length );
+            Thread.Sleep( 10 );
+            logger.Info( "Message sent to Arduino" );
             return true;
         }
 
-        public override bool StartAsyncAcceptingClients()
+        // Getters/Setters for TCP/IP connection
+        public TcpClient TCPClient { get; set; }
+        public IPEndPoint ConnectionEndpoint { get; set; }
+        public NetworkStream Stream { get; set; }
+        public byte[] Data { get; set; }
+        public string Message { get; set; }
+
+        // Getters/Setters for Serial Port connection (for arduino scale model)
+        public SerialPort SPort { get; set; }
+        private static readonly log4net.ILog logger =
+            log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
+    }
+
+    public class ScaleModelPLCDriver : AbstractPLCDriver {
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger( System.Reflection.MethodBase.GetCurrentMethod().DeclaringType );
+        public PLCConnector PlcConnector { get; set; }
+
+
+        public ScaleModelPLCDriver( string local_ip , string MCU_ip , int MCU_port , int PLC_port ) :base( local_ip , MCU_ip, MCU_port, PLC_port ) {
+            Console.WriteLine( MCU_ip );
+        }
+
+        public override MovementPriority CurrentMovementPriority { get; set; }
+
+        public override void setregvalue(ushort adr, ushort value)
         {
             throw new NotImplementedException();
         }
 
-        public override bool RequestStopAsyncAcceptingClientsAndJoin()
+
+
+        public override void HandleClientManagementThread() {}
+
+
+        public override bool StartAsyncAcceptingClients() {
+            return true;
+        }
+
+        public override bool RequestStopAsyncAcceptingClientsAndJoin() {
+            return true;
+        }
+
+        public override void Bring_down() {
+        }
+
+        public override bool Test_Connection() {
+            return true;
+        }
+
+        public override Orientation GetMotorEncoderPosition() {
+            return new Orientation();
+        }
+
+        public override MovementResult Cancel_move() {
+            return MovementResult.None;
+
+        }
+
+        public override bool Configure_MCU( double startSpeedAzimuth , double startSpeedElevation , int homeTimeoutAzimuth , int homeTimeoutElevation ) {
+            return true;
+        }
+
+        public override MovementResult ControlledStop() {
+            return MovementResult.None;
+
+        }
+
+        public override MovementResult ImmediateStop() {
+            return MovementResult.None;
+
+        }
+
+        public MovementResult SendRelativeMove(int SpeedAZ, int SpeedEL, int positionTranslationAZ, int positionTranslationEL) {
+            // Move the scale model's azimuth motor on com3 and its elevation on com4
+            // make sure there is a delay in this thread for enough time to have the arduino
+            // move the first motor (azimuth)
+            string jsonOrientation = JsonConvert.SerializeObject( new {
+                CMD = "relMove",
+                az =positionTranslationAZ,
+                el = positionTranslationEL
+            } );
+            PlcConnector = new PLCConnector( "COM12" );
+            PlcConnector.SendSerialPortMessage( jsonOrientation );
+
+            // Wait for the arduinos to send back a response 
+            // in the arduino code, as of milestone 2, the response is a string: "finished"
+            var state = string.Empty;
+            //state = PlcConnector.GetSerialPortMessage();
+            PlcConnector.CloseSerialPort();
+            // Print the state of the move operation to the console.
+            //Console.WriteLine(state);
+
+            return MovementResult.Success;
+        }
+
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int programmedPeakSpeedELInt,  int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
+            /*
+                    if(Plc.OutgoingOrientation.Azimuth < PLCConstants.RIGHT_ASCENSION_LOWER_LIMIT || Plc.OutgoingOrientation.Azimuth > PLCConstants.RIGHT_ASCENSION_UPPER_LIMIT) {
+                        logger.Error( $"Azimuth ({Plc.OutgoingOrientation.Azimuth}) was out of range." );
+                        throw new System.Exception();
+                    } else if(Plc.OutgoingOrientation.Elevation < PLCConstants.DECLINATION_LOWER_LIMIT || Plc.OutgoingOrientation.Elevation > PLCConstants.DECLINATION_UPPER_LIMIT) {
+                        logger.Error( $"Elevation ({Plc.OutgoingOrientation.Elevation} was out of range.)" );
+                        throw new System.Exception();
+                    }
+                    */
+            // Convert orientation object to a json string
+            //string jsonOrientation = JsonConvert.SerializeObject( Plc.OutgoingOrientation );
+            return SendRelativeMove(programmedPeakSpeedAZInt, programmedPeakSpeedELInt, positionTranslationAZ, positionTranslationEL);
+
+        }
+
+
+
+        public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
+        {
+            int positionTranslationAZ, positionTranslationEL;
+            positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
+            positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
+
+            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_AZIMUTH);
+
+            //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
+            Console.WriteLine("degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
+            Console.WriteLine("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
+
+
+            //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+            return SendRelativeMove(AZ_Speed, EL_Speed, positionTranslationAZ, positionTranslationEL);
+
+        }
+
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+            throw new NotImplementedException();
+
+        }
+
+        public override bool Get_interlock_status() {
+            return true;
+
+        }
+
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis ) {//set 
+            bool[] stuf = new bool[33];
+            for(int i = 0; i < 32; i++) {
+                stuf[i] = true;
+            }
+            return stuf;
+        }
+
+        public override bool TestIfComponentIsAlive() {
+            return true;
+
+        }
+
+        public override MovementResult HomeTelescope() {
+            throw new NotImplementedException();
+        }
+
+        public override ushort getregvalue(ushort adr)
         {
             throw new NotImplementedException();
         }
 
-        public override void Bring_down()
+        public override void setTelescopeType(RadioTelescopeTypeEnum type)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Test_Conection()
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// This has not been implemented on the scale model.
+        /// </summary>
+        public override void ResetMCUErrors()
         {
             throw new NotImplementedException();
         }
 
-        public override Orientation read_Position()
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
         {
             throw new NotImplementedException();
         }
 
-        public override bool Cancle_move()
+        public override bool InterruptMovementAndWaitUntilStopped(bool isCriticalMovementInterrupt = false, bool isSoftwareStopInterrupt = false)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Shutdown_PLC_MCU()
+        public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Calibrate()
+        public override void SetFinalOffset(Orientation finalPos)
         {
             throw new NotImplementedException();
         }
 
-        public override bool Configure_MCU(int startSpeedAzimuth, int startSpeedElevation, int homeTimeoutAzimuth, int homeTimeoutElevation)
+        public override RadioTelescopeDirectionEnum GetRadioTelescopeDirectionEnum(RadioTelescopeAxisEnum axis)
         {
             throw new NotImplementedException();
         }
-
-        public override bool Controled_stop(RadioTelescopeAxisEnum axis, bool both)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Immediade_stop()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool relative_move(int programmedPeakSpeedAZInt, ushort ACCELERATION, int positionTranslationAZ, int positionTranslationEL)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Get_interlock_status()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool[] Get_Limit_switches()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool[] GET_MCU_Status()
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override bool TestIfComponentIsAlive() {
-            throw new NotImplementedException();
-        }
-
     }
 }

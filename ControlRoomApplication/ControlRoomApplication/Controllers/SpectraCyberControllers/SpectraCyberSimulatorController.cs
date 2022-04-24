@@ -2,6 +2,8 @@
 using System.Threading;
 using ControlRoomApplication.Entities;
 using ControlRoomApplication.Constants;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -29,12 +31,12 @@ namespace ControlRoomApplication.Controllers
             {
                 if (e is ArgumentNullException)
                 {
-                    logger.Info("[SpectraCyberSimulatorController] Failed creating communication thread.");
+                    logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberSimulatorController] Failed creating communication thread.");
                     return false;
                 }
                 else if (e is ThreadStartException || e is OutOfMemoryException)
                 {
-                    logger.Info("[SpectraCyberSimulatorController] Failed starting communication thread.");
+                    logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberSimulatorController] Failed starting communication thread.");
                     return false;
                 }
                 else
@@ -44,7 +46,7 @@ namespace ControlRoomApplication.Controllers
                 }
             }
 
-            logger.Info("[SpectraCyberSimulatorController] Successfully started SpectraCyber communication and communication thread.");
+            logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberSimulatorController] Successfully started SpectraCyber communication and communication thread.");
             return true;
         }
 
@@ -52,7 +54,7 @@ namespace ControlRoomApplication.Controllers
         {
             KillCommunicationThreadAndWait();
 
-            logger.Info("[SpectraCyberSimulatorController] Successfully killed SpectraCyber communication and communication thread.");
+            logger.Info(Utilities.GetTimeStamp() + ": [SpectraCyberSimulatorController] Successfully killed SpectraCyber communication and communication thread.");
             return true;
         }
 
@@ -90,6 +92,7 @@ namespace ControlRoomApplication.Controllers
                 response.SerialIdentifier = request.ResponseIdentifier;
 
                 // Generate random data
+                // TODO: may need to update to more accurately match the data seen from the real spectra cyber, or use a CSV file (issue #409)
                 int minIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MINIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
                 int maxIntensityScaled = (int)(AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_MAXIMUM / AbstractSpectraCyberConstants.SIMULATED_RF_INTENSITY_DISCRETIZATION);
                 response.DecimalData = random.Next(minIntensityScaled, maxIntensityScaled + 1);
@@ -101,9 +104,10 @@ namespace ControlRoomApplication.Controllers
             // Do nothing to purge a simulated buffer
         }
 
-        protected override bool TestIfComponentIsAlive()
+        public override bool TestIfComponentIsAlive()
         {
             return true;
         }
+
     }
 }

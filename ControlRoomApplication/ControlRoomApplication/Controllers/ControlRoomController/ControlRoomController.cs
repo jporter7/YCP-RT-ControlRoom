@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Threading;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Database;
+using ControlRoomApplication.Controllers.Communications;
+using ControlRoomApplication.Util;
+
 
 namespace ControlRoomApplication.Controllers
 {
@@ -12,10 +16,13 @@ namespace ControlRoomApplication.Controllers
         private Thread WeatherMonitoringThread;
         private bool KeepWeatherMonitoringThreadAlive;
 
+        // Weather Station override
+        //public bool weatherStationOverride = false;
+
         public ControlRoomController(ControlRoom controlRoom)
         {
             ControlRoom = controlRoom;
-            WeatherMonitoringThread = new Thread(new ThreadStart(WeatherMonitoringRoutine));
+            WeatherMonitoringThread = new Thread( new ThreadStart( WeatherMonitoringRoutine ) ) { Name = "Weather Monitoring Routine" };
             KeepWeatherMonitoringThreadAlive = false;
         }
 
@@ -76,13 +83,70 @@ namespace ControlRoomApplication.Controllers
         {
             while (KeepWeatherMonitoringThreadAlive)
             {
-                // logger.Info("[ControlRoomController] Weather station reading: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH.ToString() + " MPH wind speeds.");
-                if (!ControlRoom.WeatherStation.CurrentWindSpeedIsAllowable)
+                Sensor currentSensor = ControlRoom.RTControllerManagementThreads[0].Sensors.Find(i => i.Item == SensorItemEnum.WIND);
+                int windSpeedStatus = ControlRoom.WeatherStation.CurrentWindSpeedStatus;
+
+                // The Wind Speed has triggered an Alarm Status
+                if (windSpeedStatus == 2)
                 {
-                    logger.Info("[ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    logger.Info(Utilities.GetTimeStamp() + ": [ControlRoomController] Wind speeds were too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+
+                    // Overriding the status warning if override is true
+                    if (!ControlRoom.weatherStationOverride)
+                    {
+                        currentSensor.Status = SensorStatusEnum.ALARM;
+
+                        pushNotification.sendToAllAdmins("WARNING: WEATHER STATION", "Wind speeds are too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                        EmailNotifications.sendToAllAdmins("WARNING: WEATHER STATION", "Wind speeds are too high: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    }
+                    DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
+                    //ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
+
+                    /*
+                    //shut down telescopes
+                    foreach (RadioTelescopeController telescopeController in ControlRoom.RadioTelescopeControllers)
+                    {
+                        // change the sensor status in our Radio Telescope Controller Management Thread
+                        //int id = ControlRoom.RadioTelescopes.Find(i => i.WeatherStation == ControlRoom.WeatherStation).Id;
+                        //ControlRoom.RTControllerManagementThreads[0].Sensors.Add(new Sensor(SensorItemEnum.WIND_SPEED, SensorStatus.ALARM));
+                        //ControlRoom.RTControllerManagementThreads[0].checkCurrentSensorAndOverrideStatus();
+                    }
+                    */
+                }
+                // The Wind Speed has triggered a Warning Status
+                else if(windSpeedStatus == 1)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": [ControlRoomController] Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+
+
+                    // Overriding the status warning if override is true
+                    if (!ControlRoom.weatherStationOverride)
+                    {
+                        currentSensor.Status = SensorStatusEnum.WARNING;
+
+                        pushNotification.sendToAllAdmins("WARNING: WEATHER STATION", "Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                        EmailNotifications.sendToAllAdmins("WARNING: WEATHER STATION", "Wind speeds are in Warning Range: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    }
+                    DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
+                }
+                else if (windSpeedStatus == 0)
+                {
+                    //logger.Info(Utilities.GetTimeStamp() + ": [ControlRoomController] Wind speeds are in a Safe State: " + ControlRoom.WeatherStation.CurrentWindSpeedMPH);
+                    currentSensor.Status = SensorStatusEnum.NORMAL;
+                    DatabaseOperations.AddSensorStatusData(SensorStatus.Generate(SensorStatusEnum.WARNING, SensorStatusEnum.NORMAL, SensorStatusEnum.NORMAL, SensorStatusEnum.ALARM, currentSensor.Status));
                 }
 
-                Thread.Sleep(1000);
+                /*
+                else if(currentSensor != null && currentSensor.Status == SensorStatus.ALARM) {
+
+                    //change the status
+                    currentSensor.Status = SensorStatus.NORMAL;
+                    logger.Info(Utilities.GetTimeStamp() + ": Wind speed sensor back in normal range.");
+                }*/
+
+                //logger.Info(Utilities.GetTimeStamp() + ": Current wind speed is: " + ControlRoom.WeatherStation.GetWindSpeed());
+
+                Thread.Sleep(1000);                
             }
         }
 

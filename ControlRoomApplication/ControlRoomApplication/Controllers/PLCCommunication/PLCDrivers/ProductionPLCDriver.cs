@@ -9,6 +9,18 @@ using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using ControlRoomApplication.Entities.Configuration;
+using ControlRoomApplication.Controllers.Communications;
+using ControlRoomApplication.Controllers.PLCCommunication;
+using ControlRoomApplication.Util;
+using System.Collections.Generic;
+using static ControlRoomApplication.Constants.MCUConstants;
+using ControlRoomApplication.Database;
+using System.Timers;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager;
+using ControlRoomApplication.Controllers.PLCCommunication.PLCDrivers.MCUManager.Enumerations;
+using ControlRoomApplication.Controllers.Sensors;
 
 namespace ControlRoomApplication.Controllers
 {
@@ -20,35 +32,18 @@ namespace ControlRoomApplication.Controllers
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private TcpListener PLCTCPListener;
-        private TcpClient MCUTCPClient;
         private ModbusSlave PLC_Modbusserver;
-        private ModbusIpMaster MCUModbusMaster;
-        private SemaphoreSlim comand_acknoledged = new SemaphoreSlim(0, 1);
-        private long PLC_last_contact;
-
-        private static readonly ushort[] MESSAGE_CONTENTS_IMMEDIATE_STOP = new ushort[] {
-            0x0010, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-            0x0010, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
-        };
-
-        private static readonly ushort[] MESSAGE_CONTENTS_HOLD_MOVE = new ushort[] {
-            0x0004, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-            0x0004, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
-        };
-
-        private static readonly ushort[] MESSAGE_CONTENTS_CLEAR_MOVE = new ushort[] {  
-            0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-            0x0000, 0x0003, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
-        };
-
-        private static readonly ushort[] MESSAGE_CONTENTS_RESET_ERRORS = new ushort[] {
-            0x0800, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
-            0x0800, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
-        };
-
-        private bool keep_modbus_server_alive=true;
-        private bool is_test= false;
-        public bool set_is_test(bool val) { is_test = val;return is_test; }//set this ONLY if using test driver, removes timouts and delays 
+        private long PLC_last_contact = 0;
+        private bool keep_modbus_server_alive = true;
+        private bool is_test = false;
+        private MCUManager MCU;
+        private RadioTelescopeTypeEnum telescopeType = RadioTelescopeTypeEnum.NONE;
+        /// <summary>
+        /// set this ONLY if using test driver, removes timouts and delays
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public bool set_is_test(bool val) { is_test = val; return is_test; }
         /// <summary>
         /// starts a modbus server to comunicate with the PLC on PLC_port and local_ip
         /// then sets up a modbus client to comunicate with the MCU located at MCU_ip, MCU_port (192.168.0.50 , 502) for actual hardware
@@ -57,20 +52,22 @@ namespace ControlRoomApplication.Controllers
         /// <param name="MCU_ip"></param>
         /// <param name="MCU_port"></param>
         /// <param name="PLC_port"></param>
-        public ProductionPLCDriver(string local_ip,  string MCU_ip, int MCU_port, int PLC_port) : base(local_ip,  MCU_ip, MCU_port, PLC_port)
+        public ProductionPLCDriver(string local_ip, string MCU_ip, int MCU_port, int PLC_port) : base(local_ip, MCU_ip, MCU_port, PLC_port)
         {
-            MCUTCPClient = new TcpClient(MCU_ip, MCU_port);
-            MCUModbusMaster = ModbusIpMaster.CreateIp(MCUTCPClient);
-            try
-            {
+            limitSwitchData = new Simulators.Hardware.LimitSwitchData();
+            homeSensorData = new Simulators.Hardware.HomeSensorData();
+            pLCEvents = new PLCEvents();
+            MCU = new MCUManager( MCU_ip , MCU_port  );
+
+            try {
                 PLCTCPListener = new TcpListener(new IPEndPoint(IPAddress.Parse(local_ip), PLC_port));
-                ClientManagmentThread = new Thread(new ThreadStart(HandleClientManagementThread));
+                ClientManagmentThread = new Thread( new ThreadStart( HandleClientManagementThread ) ) { Name = "PLC server Thread"};
             }
             catch (Exception e)
             {
                 if ((e is ArgumentNullException) || (e is ArgumentOutOfRangeException))
                 {
-                    logger.Info("[AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": [AbstractPLCDriver] ERROR: failure creating PLC TCP server or management thread: " + e.ToString());
                     return;
                 }
                 else { throw e; }// Unexpected exception
@@ -83,68 +80,187 @@ namespace ControlRoomApplication.Controllers
             {
                 if ((e is SocketException) || (e is ArgumentOutOfRangeException) || (e is InvalidOperationException))
                 {
-                    logger.Info("[AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
+                    logger.Info(Utilities.GetTimeStamp() + ": [AbstractPLCDriver] ERROR: failure starting PLC TCP server: " + e.ToString());
                     return;
                 }
             }
-
         }
 
-
+        public override MovementPriority CurrentMovementPriority { get; set; }
 
         /// <summary>
         /// runs the modbus server to interface with the plc
         /// </summary>
-        protected override void HandleClientManagementThread() {
+        public override void HandleClientManagementThread() {
             byte slaveId = 1;
             // create and start the TCP slave
-            PLC_Modbusserver = ModbusTcpSlave.CreateTcp( slaveId , PLCTCPListener );
+            PLC_Modbusserver = ModbusTcpSlave.CreateTcp(slaveId, PLCTCPListener);
             //coils, inputs, holdingRegisters, inputRegisters
-            PLC_Modbusserver.DataStore = DataStoreFactory.CreateDefaultDataStore( 0 , 0 , 256 , 0 );
+            PLC_Modbusserver.DataStore = DataStoreFactory.CreateDefaultDataStore(0, 0, 256, 0);
             // PLC_Modbusserver.DataStore.SyncRoot.ToString();
 
-            PLC_Modbusserver.ModbusSlaveRequestReceived += new EventHandler<ModbusSlaveRequestEventArgs>( Server_Read_handler );
-            PLC_Modbusserver.DataStore.DataStoreWrittenTo += new EventHandler<DataStoreEventArgs>( Server_Written_to_handler );
+            PLC_Modbusserver.ModbusSlaveRequestReceived += new EventHandler<ModbusSlaveRequestEventArgs>(Server_Read_handler);
+            PLC_Modbusserver.DataStore.DataStoreWrittenTo += new EventHandler<DataStoreEventArgs>(Server_Written_to_handler);
 
             PLC_Modbusserver.Listen();
 
             //PLC_Modbusserver.ListenAsync().GetAwaiter().GetResult();
 
             // prevent the main thread from exiting
-            while(keep_modbus_server_alive) {
-                Thread.Sleep( 100 );
+            Task.Delay(2000).Wait();
+
+            PLCEvents.setDefaultLimitHandler( DefaultLimitSwitchHandle );
+
+            while (keep_modbus_server_alive) {
+                Thread.Sleep(1000);
+                PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.CTRL_HEART_BEAT]++;
             }
         }
 
+        private async void DefaultLimitSwitchHandle( object sender , limitEventArgs e ) {
+            if(e.Value) {
+                switch(e.ChangedValue) {
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT :
+                        {
+                            if (!Overrides.overrideAzimuthProx0)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            }
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx375)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            }
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx0)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.CounterclockwiseOrPositive, 0.25);
+                            }
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx90)
+                            {
+                                CurrentMovementPriority = MovementPriority.Critical;
+                                MCU.SendSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION, RadioTelescopeDirectionEnum.ClockwiseOrNegative, 0.25);
+                            }
+                            break;
+                        }
+                }
+                
+            }
+            if(!e.Value) {
+                switch(e.ChangedValue) {
+                    case PLC_modbus_server_register_mapping.AZ_0_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx0)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.AZ_375_LIMIT:
+                        {
+                            if (!Overrides.overrideAzimuthProx375)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.AZIMUTH);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.EL_10_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx0)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
+                            break;
+                        }
+                    case PLC_modbus_server_register_mapping.EL_90_LIMIT:
+                        {
+                            if (!Overrides.overrideElevatProx90)
+                            {
+                                MCU.StopSingleAxisJog(RadioTelescopeAxisEnum.ELEVATION);
+                                CurrentMovementPriority = MovementPriority.None;
+                            }
+                            break;
+                        }
+                }
+            }
+        }
+
+
         public override bool StartAsyncAcceptingClients() {
+            MCU.StartAsyncAcceptingClients();
             keep_modbus_server_alive = true;
             try {
                 ClientManagmentThread.Start();
-            } catch(Exception e) {
-                if((e is ThreadStateException) || (e is OutOfMemoryException)) {
+            } catch (Exception e) {
+                if ((e is ThreadStateException) || (e is OutOfMemoryException)) {
+                    logger.Error(Utilities.GetTimeStamp() + ": failed to start prodi=uction plc and mcu threads err:____    {0}", e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
             return true;
         }
 
+        /// <summary>
+        /// Waits for the PLC to contact the control room 
+        /// </summary>
+        /// <remarks>
+        /// the PLC is constantly trying to send data to the controll room if the control room is not present it will retry again until it sucessfully connects
+        /// this method will return a task that completes when that first contact occurs or when it times out
+        /// </remarks>
+        /// <param name="timeoutS"></param>
+        /// <returns></returns>
+        public async Task WaitForPLCConnection(int timeoutS) {
+            var timout = new CancellationTokenSource( timeoutS*1000 );
+            bool PLC_alive = false;
+            while(!timout.Token.IsCancellationRequested && !PLC_alive) {
+                PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
+                Task.Delay( 50 ).Wait();
+                if(PLC_alive) {
+                    timout.Dispose();
+                    logger.Info(Utilities.GetTimeStamp() + ": sucsefully conected to the PLC");
+                    return;
+                }
+            }
+            timout.Dispose();
+            return;
+        }
 
         public override bool RequestStopAsyncAcceptingClientsAndJoin() {
+            MCU.RequestStopAsyncAcceptingClientsAndJoin();
             keep_modbus_server_alive = false;
-            try {
+            try
+            {
+                PLC_Modbusserver.Dispose();
+                PLCTCPListener.Stop();
                 ClientManagmentThread.Join();
-            } catch(Exception e) {
-                if((e is ThreadStateException) || (e is ThreadStartException)) {
-                    Console.WriteLine( e );
+            } catch (Exception e) {
+                if ((e is ThreadStateException) || (e is ThreadStartException)) {
+                    logger.Error(e);
                     return false;
                 } else { throw e; }// Unexpected exception
             }
             return true;
         }
-
 
         public override void Bring_down() {
             RequestStopAsyncAcceptingClientsAndJoin();
+           
         }
 
         /// <summary>
@@ -152,128 +268,175 @@ namespace ControlRoomApplication.Controllers
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Server_Read_handler(object sender, ModbusSlaveRequestEventArgs e)
-        {
-            PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-           // Console.WriteLine(e.Message);
-            return;
-            Regex rx = new Regex(@"\b(?:Read )([0-9]+)(?:.+)(?:address )([0-9]+)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection matches = rx.Matches(e.Message.ToString());
-            foreach (Match match in matches)
-            {
-                GroupCollection groups = match.Groups;
-                Console.WriteLine("'{0}' repeated at positions {1} and {2}", groups["word"].Value, groups[0].Index, groups[1].Index);
+        private void Server_Read_handler(object sender, ModbusSlaveRequestEventArgs e) {
+            if (is_test) {
+                logger.Info(Utilities.GetTimeStamp() + ": PLC Red data from the the control room");
             }
-            // PLC_Modbusserver.DataStore.HoldingRegisters[e.] += 1;
-            //throw new NotImplementedException();
+            PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            return;
         }
+
 
         /// <summary>
         /// fires whenever the data on the modbus server changes
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Server_Written_to_handler( object sender , DataStoreEventArgs e ) {
+        private void Server_Written_to_handler(object sender, DataStoreEventArgs e) {
             //e.Data.B //array representing data   
-
-            switch(e.StartAddress) {//
-                case (ushort)PLC_modbus_server_register_mapping.CMD_ACK: {
-                        // Console.WriteLine(" data {0} written to 22",PLC_Modbusserver.DataStore.HoldingRegisters[e.StartAddress]);
-                        try {
-                            //comand_acknoledged.Release();
-                        } catch(Exception err) {
-                            Console.WriteLine( err );
+            if (is_test) {
+                logger.Info(Utilities.GetTimeStamp() + ": recived message from PLC");
+            }
+            PLC_last_contact = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            switch (e.StartAddress) {
+                case (ushort)PLC_modbus_server_register_mapping.AZ_0_LIMIT: {
+                        bool previous = limitSwitchData.Azimuth_CCW_Limit;
+                        limitSwitchData.Azimuth_CCW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_LIMIT] );
+                        if(previous != limitSwitchData.Azimuth_CCW_Limit) {
+                            pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_0_LIMIT , limitSwitchData.Azimuth_CCW_Limit );
                         }
                         break;
-
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT: {
-
+                case (ushort)PLC_modbus_server_register_mapping.AZ_0_HOME: {
+                        bool previous = homeSensorData.Azimuth_Home_One;
+                        homeSensorData.Azimuth_Home_One = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_HOME] );
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING: {
-
+                case (ushort)PLC_modbus_server_register_mapping.AZ_0_SECONDARY: {
+                        bool previous = homeSensorData.Azimuth_Home_Two;
+                        homeSensorData.Azimuth_Home_Two = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_0_SECONDARY] );
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING: {
-
+                case (ushort)PLC_modbus_server_register_mapping.AZ_375_LIMIT: {
+                        bool previous = limitSwitchData.Azimuth_CW_Limit;
+                        limitSwitchData.Azimuth_CW_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.AZ_375_LIMIT] );
+                        if(previous != limitSwitchData.Azimuth_CW_Limit) {
+                            pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.AZ_375_LIMIT , limitSwitchData.Azimuth_CW_Limit );
+                        }
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT: {
+                case (ushort)PLC_modbus_server_register_mapping.EL_10_LIMIT: {
+                        bool previous = limitSwitchData.Elevation_Lower_Limit;
+                        limitSwitchData.Elevation_Lower_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_10_LIMIT]);
+                        if(previous != limitSwitchData.Elevation_Lower_Limit) {
+                            pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.EL_10_LIMIT , limitSwitchData.Elevation_Lower_Limit );
+                            if (limitSwitchData.Elevation_Lower_Limit)
+                            {
+                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Lower Limit Switch Hit");
 
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
+                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation lower limit switch hit");
+                            }
+                        }
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT: {
-
+                case (ushort)PLC_modbus_server_register_mapping.EL_0_HOME: {
+                        bool previous = homeSensorData.Elevation_Home;
+                        homeSensorData.Elevation_Home = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_0_HOME] );
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING: {
+                case (ushort)PLC_modbus_server_register_mapping.EL_90_LIMIT: {
+                        bool previous = limitSwitchData.Elevation_Upper_Limit;
+                        limitSwitchData.Elevation_Upper_Limit = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_90_LIMIT] );
+                        if(previous != limitSwitchData.Elevation_Upper_Limit) {
+                            pLCEvents.PLCLimitChanged( limitSwitchData , PLC_modbus_server_register_mapping.EL_90_LIMIT , limitSwitchData.Elevation_Upper_Limit );
+                            if (limitSwitchData.Elevation_Upper_Limit)
+                            {
+                                logger.Info(Utilities.GetTimeStamp() + ": Elevation Upper Limit Switch Hit");
 
+                                pushNotification.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
+                                EmailNotifications.sendToAllAdmins("LIMIT SWITCH", "Elevation upper limit switch hit");
+                            }
+                        }
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING: {
+                case (ushort)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK: {
+                        bool previous = plcInput.Gate_Sensor;
+                        plcInput.Gate_Sensor = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.Gate_Safety_INTERLOCK] );
+                        if(previous != plcInput.Gate_Sensor) {
+                            if (plcInput.Gate_Sensor)
+                            {
+                                logger.Info(Utilities.GetTimeStamp() + ": gate opened");
 
+                                pushNotification.sendToAllAdmins("GATE ACTIVITY", "Gate has been opened.");
+                                EmailNotifications.sendToAllAdmins("GATE ACTIVITY", "Gate has been opened.");
+                            }
+                            else
+                            {
+                                logger.Info(Utilities.GetTimeStamp() + ": gate closed");
+
+                                pushNotification.sendToAllAdmins("GATE ACTIVITY", "Gate has been closed.");
+                                EmailNotifications.sendToAllAdmins("GATE ACTIVITY", "Gate has been closed.");
+                            }
+                        }
                         break;
                     }
-                case (ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT: {
+                case (ushort)PLC_modbus_server_register_mapping.E_STOP: {
+                        bool previous = plcInput.Estop;
+                        plcInput.Estop = !Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.E_STOP] );
+                        if(previous != plcInput.Estop) {
+                            if (plcInput.Estop)
+                            {
+                                logger.Info(Utilities.GetTimeStamp() + ": Estop Hit");
+                                CurrentMovementPriority = MovementPriority.Critical;
 
+                                pushNotification.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been hit.");
+                                EmailNotifications.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been hit.");
+                            }
+                            else
+                            {
+                                logger.Info(Utilities.GetTimeStamp() + ": Estop released");
+                                CurrentMovementPriority = MovementPriority.None;
+
+                                pushNotification.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been released.");
+                                EmailNotifications.sendToAllAdmins("E-STOP ACTIVITY", "E-stop has been released.");
+                            }
+                        }
+                        break;
+                    }
+                case (ushort)PLC_modbus_server_register_mapping.EL_SLIP_CAPTURE: {
+                        bool previous = plcInput.EL_Slip_CAPTURE;
+                        plcInput.EL_Slip_CAPTURE = Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(int)PLC_modbus_server_register_mapping.EL_SLIP_CAPTURE] );
                         break;
                     }
             }
         }
 
-        private void set_Local_registers( ushort[] data , ushort starting_adress ) {
-            Console.WriteLine( "{0}   dsv  {1} " , data.Length , starting_adress );
-            for(int i = 1; i < (data.Length - 1); i++) {
+        private void set_Local_registers(ushort[] data, ushort starting_adress) {
+            logger.Info(data.Length + " dsv " + starting_adress);
+            for (int i = 1; i < (data.Length - 1); i++) {
                 PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] = data[i];
-                Console.Write( " {0}," , PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] );
+                logger.Info( " " + PLC_Modbusserver.DataStore.HoldingRegisters[i + starting_adress] + ",");
             }
         }
 
         /// <summary>
-        /// 
+        /// Sets a register value on the PLC that corresponds to the given address.
         /// </summary>
-        /// <param name="adr"></param>
-        /// <param name="value"></param>
-        public void setregvalue( ushort adr , ushort value ) {
+        /// <param name="adr">The address of the value you want to set.</param>
+        /// <param name="value">The value you want to set the register to.</param>
+        public override void setregvalue(ushort adr, ushort value) {
             PLC_Modbusserver.DataStore.HoldingRegisters[adr] = value;
         }
 
         /// <summary>
-        /// see   ControlRoomApplication.Entities.PLC_modbus_server_register_mapping
-        /// for register maping
+        /// Retrieves a register value from the PLC that corresponds to the given address.
         /// </summary>
-        /// <param name="adr"></param>
-        /// <returns></returns>
-        public ushort readregval( ushort adr ) {
+        /// <remarks>
+        /// See ControlRoomApplication.Entities.PLC_modbus_server_register_mapping for register mapping.
+        /// </remarks>
+        /// <param name="adr">Address of the register.</param>
+        public override ushort getregvalue(ushort adr)
+        {
             return PLC_Modbusserver.DataStore.HoldingRegisters[adr];
         }
 
-
-
         public override bool Get_interlock_status() {
-            return Int_to_bool( PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.Safty_INTERLOCK] );
+            return plcInput.Gate_Sensor;
         }
 
-
-        public override bool[] Get_Limit_switches() {
-            return new bool[] {
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_LIMIT]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_LEFT_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.AZ_RIGHT_LIMIT]),
-
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_LIMIT]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_BOTTOM_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_WARNING]),
-                Int_to_bool(PLC_Modbusserver.DataStore.HoldingRegisters[(ushort)PLC_modbus_server_register_mapping.EL_TOP_LIMIT])
-            };
-        }
-
-
-        private bool Int_to_bool( int val ) {
-            Console.WriteLine( val );
-            if(val == 0) {
+        private bool Int_to_bool(int val) {
+            if (val == 0) {
                 return false;
             } else { return true; }
         }
@@ -282,229 +445,310 @@ namespace ControlRoomApplication.Controllers
         //above PLC modbus server ___below MCU comands
 
 
-
-
-
-
-        public override bool Test_Conection()//TODO: make moar godder
-        {
-            return true;
+        public override bool Test_Connection() {
+            return TestIfComponentIsAlive();
         }
 
-        public override bool Calibrate() {//im uncertin what tasks we want this method to preform
-            if(is_test) { return true; }
-            throw new NotImplementedException();
+        /// <summary>
+        /// send basic configuration to MCU
+        /// </summary>
+        /// <param name="startSpeedRPMAzimuth"></param>
+        /// <param name="startSpeedRPMElevation"></param>
+        /// <param name="homeTimeoutSecondsAzimuth"></param>
+        /// <param name="homeTimeoutSecondsElevation"></param>
+        /// <returns></returns>
+        public override bool Configure_MCU(double startSpeedRPMAzimuth, double startSpeedRPMElevation, int homeTimeoutSecondsAzimuth, int homeTimeoutSecondsElevation) {
+            return MCU.Configure_MCU(
+                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMAzimuth, HomeTimeoutSec = homeTimeoutSecondsAzimuth },
+                    new MCUConfigurationAxys() { StartSpeed = startSpeedRPMElevation, HomeTimeoutSec = homeTimeoutSecondsElevation,UseCapture =true,CaptureActive_High =true }
+                );
         }
 
-        public override bool Configure_MCU( int startSpeedDPSAzimuth , int startSpeedDPSElevation , int homeTimeoutSecondsAzimuth , int homeTimeoutSecondsElevation ) {
-            int gearedSpeedAZ = ConversionHelper.DPSToSPS( startSpeedDPSAzimuth , MotorConstants.GEARING_RATIO_AZIMUTH );
-            int gearedSpeedEL = ConversionHelper.DPSToSPS( startSpeedDPSElevation , MotorConstants.GEARING_RATIO_ELEVATION );
-            if((gearedSpeedAZ < 1) || (gearedSpeedEL < 1) || (homeTimeoutSecondsAzimuth < 0) || (homeTimeoutSecondsElevation < 0)
-             || (gearedSpeedAZ > 1000000) || (gearedSpeedEL > 1000000) || (homeTimeoutSecondsAzimuth > 300) || (homeTimeoutSecondsElevation > 300)) {
-                return false;
-            }
-            ushort[] data = {   0x8400, 0x0000, (ushort)(gearedSpeedAZ >> 0x0010), (ushort)(gearedSpeedAZ & 0xFFFF), (ushort)homeTimeoutSecondsAzimuth,
-                                0x0,    0x0,    0x0,                                 0x0,                            0x0,
-                                0x8400, 0x0000, (ushort)(gearedSpeedEL >> 0x0010), (ushort)(gearedSpeedEL & 0xFFFF), (ushort)homeTimeoutSecondsElevation,
-                                0x0,    0x0,    0x0,                                0x0,                             0x0
-                                };
-            //set_multiple_registers( data,  1);
-            MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
-            return true;
-        }
         /// <summary>
         /// this gets the position stored in the MCU which is based of the number of steps the MCU has taken since it was last 0ed out
         /// </summary>
         /// <returns></returns>
-        public override Orientation read_Position(){
-            ushort[] data = MCUModbusMaster.ReadHoldingRegisters(2, 12);
-           // Console.WriteLine("AZ_finni2 {0,10} EL_finni2 {1,10}", (65536 * data[0]) + data[1], (65536 * data[10]) + data[11]);
-            Orientation current_orientation = new Orientation(
-                ConversionHelper.StepsToDegrees((data[0]<<16) + data[1], MotorConstants.GEARING_RATIO_AZIMUTH), 
-                ConversionHelper.StepsToDegrees((data[10]<<16) + data[11], MotorConstants.GEARING_RATIO_ELEVATION)
-            );
-            return current_orientation;
+        public override Orientation GetMotorEncoderPosition() {
+            return MCU.GetMotorEncoderPosition();
         }
+
         /// <summary>
         /// get an array of boolens representiing the register described on pages 76 -79 of the mcu documentation 
+        /// does not suport RadioTelescopeAxisEnum.BOTH
+        /// see <see cref="MCUConstants.MCUStatusBitsMSW"/> for description of each bit
         /// </summary>
-        public override bool[] GET_MCU_Status() {
-            ushort data = MCUModbusMaster.ReadHoldingRegisters( 0 , 1 )[0];
-            bool[] target = new bool[16];
+        public override bool[] GET_MCU_Status( RadioTelescopeAxisEnum axis ) {
+            ushort start = 0;
+            if(axis == RadioTelescopeAxisEnum.ELEVATION) {
+                start = 10;
+            }
+            ushort[] data = MCU.ReadMCURegisters(start , 2);
+            bool[] target = new bool[32];
             for(int i = 0; i < 16; i++) {
-                target[i] = ((data >> i) & 1) == 1;
+                target[i] = ((data[0] >> i) & 1) == 1;
+                target[i + 16] = ((data[1] >> i) & 1) == 1;
+
             }
             return target;
-
         }
+
         /// <summary>
-        /// clears the previos move comand from mthe PLC
+        /// clears the previos move comand from mthe PLC, only works for jog moves
         /// </summary>
         /// <returns></returns>
-        public override bool Cancle_move() {
-            MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_CLEAR_MOVE );
-            return true;
+        public override MovementResult Cancel_move() {
+            return MCU.Cancel_move();
         }
 
-
-        public override bool Controled_stop( RadioTelescopeAxisEnum axis , bool both ) {
-            ushort[] data = new ushort[] { 0x4 , 0x3 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 , 0x0 };
-            if(both) {
-                MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_HOLD_MOVE );
-                return true;
-            } else if (axis== RadioTelescopeAxisEnum.AZIMUTH) {
-                MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , data );
-                return true;
-            } else if(axis == RadioTelescopeAxisEnum.ELEVATION) {
-                MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS+10 , data );
-                return true;
-            }
-            return false;
+        /// <summary>
+        /// send a hold move command to the MCu
+        /// </summary>
+        /// <returns></returns>
+        public override MovementResult ControlledStop(  ) {
+            return MCU.ControlledStop();
         }
 
-        public override bool Immediade_stop() {
-            MCUModbusMaster.WriteMultipleRegisters( MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS , MESSAGE_CONTENTS_IMMEDIATE_STOP );
-            return true;
+        public override MovementResult ImmediateStop() {
+            return MCU.ImmediateStop();
         }
 
-        public override bool Shutdown_PLC_MCU()
-        {
-            Orientation stow = new Orientation(0, 0);///////////////////////change this and the value in TestShutdownRadioTelescope
-
-            Move_to_orientation(stow, read_Position());
-            if (is_test) { return true; }
-            throw new NotImplementedException();
+        /// <summary>
+        /// move a set number of steps at the specified steps / second *intended for debuging
+        /// </summary>
+        /// <param name="programmedPeakSpeedAZInt"></param>
+        /// <param name="positionTranslationAZ"></param>
+        /// <param name="positionTranslationEL"></param>
+        /// <param name="targetOrientation">The target orientation.</param>
+        /// <returns></returns>
+        public override MovementResult RelativeMove(int programmedPeakSpeedAZInt, int programmedPeakSpeedELInt, int positionTranslationAZ, int positionTranslationEL, Orientation targetOrientation) {
+            return MCU.MoveAndWaitForCompletion(programmedPeakSpeedAZInt, programmedPeakSpeedELInt, positionTranslationAZ, positionTranslationEL, targetOrientation);
         }
 
-
-
-
-
-        public override bool relative_move( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            return send_relative_move( programmedPeakSpeedAZInt , programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            //return sendmovecomand( programmedPeakSpeedAZInt , ACCELERATION , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();   //.ContinueWith(antecedent => { return antecedent.; });
-        }
-
-
-        public override bool Move_to_orientation(Orientation target_orientation, Orientation current_orientation)
+        public override MovementResult MoveToOrientation(Orientation target_orientation, Orientation current_orientation)
         {
             int positionTranslationAZ, positionTranslationEL;
-            positionTranslationAZ = ConversionHelper.DegreesToSteps((target_orientation.Azimuth - current_orientation.Azimuth), MotorConstants.GEARING_RATIO_AZIMUTH);
+
+            // Calculates the hard stop calculation by default
+            double azimuthOrientationMovement = target_orientation.Azimuth - current_orientation.Azimuth;
+
+            // If the type is a slip ring, checks to see if it needs to calculate a new route
+            if(telescopeType == RadioTelescopeTypeEnum.SLIP_RING)
+            {
+                if(azimuthOrientationMovement > 180)
+                {
+                    azimuthOrientationMovement = (target_orientation.Azimuth - 360) - current_orientation.Azimuth;
+                }
+                else if(azimuthOrientationMovement < -180)
+                {
+                    azimuthOrientationMovement = (360 - current_orientation.Azimuth) + target_orientation.Azimuth;
+                }
+            }
+            else if(telescopeType == RadioTelescopeTypeEnum.NONE)
+            {
+                logger.Info(Utilities.GetTimeStamp() + ": ERROR: Invalid Telescope Type!");
+                return MovementResult.ValidationError;
+            }
+
+            positionTranslationAZ = ConversionHelper.DegreesToSteps(azimuthOrientationMovement, MotorConstants.GEARING_RATIO_AZIMUTH);
             positionTranslationEL = ConversionHelper.DegreesToSteps((target_orientation.Elevation - current_orientation.Elevation), MotorConstants.GEARING_RATIO_ELEVATION);
 
-            int EL_Speed = ConversionHelper.DPSToSPS(ConversionHelper.RPMToDPS(0.2), MotorConstants.GEARING_RATIO_ELEVATION);
-            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.2 ) , MotorConstants.GEARING_RATIO_AZIMUTH );
+            int EL_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.6 ), MotorConstants.GEARING_RATIO_ELEVATION);
+            int AZ_Speed = ConversionHelper.DPSToSPS( ConversionHelper.RPMToDPS( 0.6 ), MotorConstants.GEARING_RATIO_AZIMUTH);
 
             //(ObjectivePositionStepsAZ - CurrentPositionStepsAZ), (ObjectivePositionStepsEL - CurrentPositionStepsEL)
-            Console.WriteLine("degrees target az "+target_orientation.Azimuth + " el " + target_orientation.Elevation);
-            Console.WriteLine("degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
+            logger.Info(Utilities.GetTimeStamp() + ": degrees target az " + target_orientation.Azimuth + " el " + target_orientation.Elevation);
+            logger.Info(Utilities.GetTimeStamp() + ": degrees curren az " + current_orientation.Azimuth + " el " + current_orientation.Elevation);
 
-
-            //return sendmovecomand( EL_Speed * 20 , 50 , positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
-            return send_relative_move( AZ_Speed , EL_Speed ,50, positionTranslationAZ , positionTranslationEL ).GetAwaiter().GetResult();
+            return MCU.MoveAndWaitForCompletion(
+                AZ_Speed, EL_Speed,
+                positionTranslationAZ, 
+                positionTranslationEL, 
+                target_orientation
+            );
         }
 
-        public override bool Start_jog(RadioTelescopeAxisEnum axis, int speed, bool clockwise)
+        /// <summary>
+        /// speed in RPM
+        /// </summary>
+        /// <param name="azSpeed"></param>
+        /// <param name="azDirection"></param>
+        /// <param name="elSpeed"></param>
+        /// <param name="elDirection"></param>
+        /// <returns></returns>
+        public override MovementResult StartBothAxesJog(double azSpeed, RadioTelescopeDirectionEnum azDirection, double elSpeed, RadioTelescopeDirectionEnum elDirection) {
+            return MCU.SendBothAxesJog(Math.Abs(azSpeed), azDirection, Math.Abs(elSpeed), elDirection);
+        }
+
+        /// <summary>
+        /// Moves both axes to where the homing sensors are. After this is run, the position offset needs applied to the motors, and then
+        /// the absolute encoders.
+        /// </summary>
+        /// <returns>True if homing was successful, false if it failed</returns>
+        public override MovementResult HomeTelescope() {
+            return MCU.HomeBothAxes(0.25);
+        }
+        
+        /// <summary>
+        /// Tests if both the PLC and MCU are alive and working.
+        /// </summary>
+        /// <returns>True if both the MCU and PLC are alive and working.</returns>
+        public override bool TestIfComponentIsAlive() {
+
+            bool PLC_alive, MCU_alive;
+            try {
+                long MCU_last_contact = MCU.getLastContact();
+                PLC_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact) < 3000;
+                MCU_alive = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - MCU_last_contact) < 3000;
+                if(is_test) {
+                    return true;
+                }
+                return PLC_alive && MCU_alive;
+            } catch { return false; }
+        }
+
+        public override void setTelescopeType(RadioTelescopeTypeEnum type)
         {
-            ushort adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, dir;
-            if (clockwise)
+            telescopeType = type;
+
+            // Also set the MCU's telescope type
+            MCU.setTelescopeType(type);
+        }
+
+        /// <summary>
+        /// Resets any errors the MCU encounters. This could be for either of the motors.
+        /// </summary>
+        public override void ResetMCUErrors()
+        {
+            MCU.ResetMCUErrors();
+        }
+
+        /// <summary>
+        /// This will check for any errors present in the MCU's registers.
+        /// </summary>
+        /// <returns>A list of errors present in the MCU's registers</returns>
+        public override List<Tuple<MCUOutputRegs, MCUStatusBitsMSW>> CheckMCUErrors()
+        {
+            return MCU.CheckMCUErrors();
+        }
+
+        /// <summary>
+        /// This will interrupt the current movement, wait until it has stopped, and then
+        /// end when the movement has stopped.
+        /// 
+        /// If no motors are moving when this is called, then it will not wait, and just be
+        /// able to pass through.
+        /// </summary>
+        /// <param name="isCriticalMovementInterrupt">Specify whether or not this is a critical movement interrupt and perform and immediate stop</param>
+        /// <param name="isSoftwareStopInterrupt">Specify whether or not this is a software-stop interrupt</param>
+        /// <returns>True if it had to wait for a movement, false if it did not have to wait and there is no movement running.</returns>
+        public override bool InterruptMovementAndWaitUntilStopped(bool isCriticalMovementInterrupt = false, bool isSoftwareStopInterrupt = false)
+        {
+            bool motorsMoving = MCU.MotorsCurrentlyMoving();
+
+            if (motorsMoving && CurrentMovementPriority != MovementPriority.None)
             {
-                dir = 0x0080;
-            } else dir = 0x0100;
-            //                                         reserved       msb speed            lsb speed  acc  dcc  reserved
-            ushort[] data = new ushort[] {dir, 0x0003, 0x0, 0x0, (ushort)(speed >> 16), (ushort)speed, 50, 25, 0x0, 0x0 };// this is a jog comand for a single axis
-            RadioTelescopeAxisEnum jogging_axies = Is_jogging();
+                logger.Info(Utilities.GetTimeStamp() + ": Overriding current movement...");
+                MCU.MovementInterruptFlag = true;
+
+                // Set corresponding flag depending on whether or not this is a critical movement interrupt
+                if (isCriticalMovementInterrupt)
+                {
+                    MCU.CriticalMovementInterruptFlag = true;
+                }
+
+                // Set corresponding flag depending on whether or not this is a software stop interrupt
+                if (isSoftwareStopInterrupt)
+                {
+                    // Currently necessary to stop Jog movements. Setting the SoftwaeStopInterruptFlag does not
+                    // interrupt Jog movements. This should be investigated in the future.
+                    if (CurrentMovementPriority == MovementPriority.Jog)
+                    {
+                        ImmediateStop();
+                    }
+                    MCU.SoftwareStopInterruptFlag = true;
+                }
+
+                // Wait until motors stop moving or all interrupt flags are set back to false,
+                // meaning the MCU has acknowledged and acted on the interrupt.
+                while (MotorsCurrentlyMoving() && (MCU.MovementInterruptFlag == true || MCU.CriticalMovementInterruptFlag == true || MCU.SoftwareStopInterruptFlag == true)) ;
+
+                MCU.MovementInterruptFlag = false;
+                MCU.CriticalMovementInterruptFlag = false;
+                MCU.SoftwareStopInterruptFlag = false;
+
+                // Ensure there is plenty of time between MCU commands
+                Thread.Sleep(2000);
+            }
+            else
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks to see if the motors are currently moving.
+        /// </summary>
+        /// <param name="axis">Azimuth, elevation, or both.</param>
+        /// <returns>True if moving, false if not moving.</returns>
+        public override bool MotorsCurrentlyMoving(RadioTelescopeAxisEnum axis = RadioTelescopeAxisEnum.BOTH)
+        {
+            return MCU.MotorsCurrentlyMoving(axis);
+        }
+
+        public override void SetFinalOffset(Orientation finalPos)
+        {
+            MCU.FinalPositionOffset = finalPos;
+        }
+
+        /// <summary>
+        /// Gets the direction that the specfied axis is moving.
+        /// </summary>
+        /// <param name="axis">Azimuth or elevation.</param>
+        /// <returns>The direction that the specfied axis is spinning.</returns>
+        public override RadioTelescopeDirectionEnum GetRadioTelescopeDirectionEnum(RadioTelescopeAxisEnum axis)
+        {
+            ushort[] directionData;
 
             switch (axis)
             {
+                //Axes must be checked independently because the MCU commands for motor moves have the same value for both Az and El
                 case RadioTelescopeAxisEnum.AZIMUTH:
-                    {
-                        break;
-                    }
+                  directionData = MCU.ReadMCURegisters(0, 1);
+                   if ((directionData[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion & 0b1) == 1)
+                   {
+                       return RadioTelescopeDirectionEnum.CounterclockwiseOrPositive;
+                   }
+
+                   if ((directionData[(int)MCUConstants.MCUOutputRegs.AZ_Status_Bist_MSW] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion & 0b1) == 1)
+                   {
+                       return RadioTelescopeDirectionEnum.ClockwiseOrNegative;
+                   }
+                   break;
+                   
                 case RadioTelescopeAxisEnum.ELEVATION:
+                    //in practice, only need to check the elevation
+                    directionData = MCU.ReadMCURegisters(10, 1);
+
+                    if (((directionData[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW-10] >> (int)MCUConstants.MCUStatusBitsMSW.CCW_Motion) & 0b1) == 1)
                     {
-                        adress = MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS + 10;
-                        break;
+                        return RadioTelescopeDirectionEnum.CounterclockwiseOrPositive;
                     }
-                case RadioTelescopeAxisEnum.BOTH:
+
+                    if (((directionData[(int)MCUConstants.MCUOutputRegs.EL_Status_Bist_MSW-10] >> (int)MCUConstants.MCUStatusBitsMSW.CW_Motion) & 0b1) == 1)
                     {
-                        ushort[] data2 = new ushort[data.Length*2];
-                        data.CopyTo(data2, 0);
-                        data.CopyTo(data2, data.Length);
-                        data = data2;
-                        break;
+                        return RadioTelescopeDirectionEnum.ClockwiseOrNegative;
                     }
+                    break;
+
                 default:
-                    {
-                        throw new ArgumentException("Invalid RadioTelescopeAxisEnum value can be AZIMUTH, ELEVATION or BOTH got: "+axis );
-                    }
+                    //This function can only accept a single axis (either Az or El)
+                    //see comment at top of function
+                    throw new ArgumentException();
             }
-            MCUModbusMaster.WriteMultipleRegisters(adress, data);
-            return true;
-            //throw new NotImplementedException();
-        }
 
-        public async Task<bool> send_relative_move( int SpeedAZ , int SpeedEL , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            bool Sucess = true;
-            await MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
-            if(!is_test) {
-                Task task = Task.Delay( 100 );//wait to ensure it is porcessed
-                await task;
-            }
-            ushort[] data = {
-                0x0002 , 0x0003, (ushort)((positionTranslationAZ & 0xFFFF0000)>>16),(ushort)(positionTranslationAZ & 0xFFFF),(ushort)((SpeedAZ & 0xFFFF0000)>>16),(ushort)(SpeedAZ & 0xFFFF), ACCELERATION,ACCELERATION ,0,0,
-                0x0002 , 0x0003, (ushort)((positionTranslationEL & 0xFFFF0000)>>16),(ushort)(positionTranslationEL & 0xFFFF),(ushort)((SpeedEL & 0xFFFF0000)>>16),(ushort)(SpeedEL & 0xFFFF), ACCELERATION,ACCELERATION ,0,0
-            };
-            await MCUModbusMaster.WriteMultipleRegistersAsync( 1024 , data );
-            return Sucess;
-        }
-
-
-        public async Task<bool> sendmovecomand( int programmedPeakSpeedAZInt , ushort ACCELERATION , int positionTranslationAZ , int positionTranslationEL ) {
-            bool Sucess = true;
-            //the mcu registers need to be reset befor a new comand can be set in case the same comand is sent multiple times in a row
-            MCUModbusMaster.WriteMultipleRegisters( 1024 , MESSAGE_CONTENTS_CLEAR_MOVE );//write a no-op to the mcu
-            if(!is_test) {
-                Task task = Task.Delay( 100 );//wait to ensure it is porcessed
-                await task;
-            }
-            ushort[] data = {0, 0x0403,
-                            (ushort)(programmedPeakSpeedAZInt >> 0x10), (ushort)(programmedPeakSpeedAZInt & 0xFFFF), ACCELERATION, ACCELERATION,
-                            (ushort)((positionTranslationAZ & 0xFFFF0000)>>16), (ushort)(positionTranslationAZ & 0xFFFF),
-                            0, 0, 0, 0,
-                            (ushort)((positionTranslationEL & 0xFFFF0000)>>16) , (ushort)(positionTranslationEL & 0xFFFF),
-                            0, 0, 0, 0, 0, 0
-            };
-            MCUModbusMaster.WriteMultipleRegisters( 1024 , data );
-            return Sucess;
-        }
-
-        public RadioTelescopeAxisEnum Is_jogging()//////////
-        {
-            ushort[] data = MCUModbusMaster.ReadHoldingRegisters(MCUConstants.ACTUAL_MCU_WRITE_REGISTER_START_ADDRESS, 20);
-            //word 0 and 10 indicate a jog comand for a specific axis however if the position registers(2,3  && 12,13) have non zero value then its a REGISTRATION MOVE
-            if ((data[10] == 0x0100|| data[10] == 0x0080) && (data[0] == 0x0100 || data[0] == 0x0080) && data[2] == 0x0 && data[3] == 0x0 && data[12] == 0x0 && data[13] == 0x0)//both jogging
-            {
-                return RadioTelescopeAxisEnum.BOTH;
-            }
-            else if ((data[10] == 0x0100 || data[10] == 0x0080) && data[12] == 0x0 && data[13] == 0x0)//el is jogging
-            {
-                return RadioTelescopeAxisEnum.ELEVATION;
-            }
-            else if ((data[0] == 0x0100 || data[0] == 0x0080) && data[2] == 0x0 && data[3] == 0x0)//az is jogging
-            {
-                return RadioTelescopeAxisEnum.AZIMUTH;
-            }
-            else return RadioTelescopeAxisEnum.UNKNOWN;
-        }
-
-        protected override bool TestIfComponentIsAlive() {
-            if(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - PLC_last_contact > 3000) {
-                return false;
-            } else return true;
-        }
-        public bool workaroundAlive() {
-            return TestIfComponentIsAlive();
+            return RadioTelescopeDirectionEnum.None;
         }
     }
 }

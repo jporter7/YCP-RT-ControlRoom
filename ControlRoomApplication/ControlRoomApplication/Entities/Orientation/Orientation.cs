@@ -1,12 +1,13 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ControlRoomApplication.Constants;
 
 namespace ControlRoomApplication.Entities
 {
     [Table("orientation")]
     [Serializable]
-    public class Orientation
+    public class Orientation : ICloneable
     {
         public Orientation(double azimuth, double elevation)
         {
@@ -47,11 +48,37 @@ namespace ControlRoomApplication.Entities
         }
 
         /// <summary>
+        /// Checks if the current orientation is valid, based off of the max/min limit switch degrees
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public bool orientationValid()
+        {
+            if (
+                Elevation > SimulationConstants.LIMIT_HIGH_EL_DEGREES ||
+                Elevation < SimulationConstants.LIMIT_LOW_EL_DEGREES
+                )
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Returns the HashCode of the Orientation's Id
         /// </summary>
         public override int GetHashCode()
         {
             return Id.GetHashCode();
+        }
+
+        /// <summary>
+        /// An extension function to duplicate (clone) an orientation.
+        /// </summary>
+        /// <returns>Returns a new orientation identical to the object in which it was called.</returns>
+        public object Clone()
+        {
+            return new Orientation(Azimuth, Elevation);
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using System;
+﻿using ControlRoomApplication.Entities.DiagnosticData;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControlRoomApplication.Entities {
     [Table( "Temperature" )]
-    public class Temperature {
+    public class Temperature : IEquatable<Temperature>
+    {
         public Temperature() {
 
         }
@@ -17,9 +19,9 @@ namespace ControlRoomApplication.Entities {
         [Required]
         [Column( "time_captured" )]
         public long TimeCapturedUTC { get; set; }
-
+            
         [Required]
-        [Column( "value" )]
+        [Column( "temperature" )]
         public double temp { get; set; }
 
         [Required]
@@ -36,5 +38,13 @@ namespace ControlRoomApplication.Entities {
             return temp;
         }
 
+        public bool Equals(Temperature other)
+        {
+            if(temp != other.temp || location_ID != other.location_ID)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

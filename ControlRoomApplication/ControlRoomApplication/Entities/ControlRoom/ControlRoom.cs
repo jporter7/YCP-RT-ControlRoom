@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using ControlRoomApplication.Controllers;
+using System.Net;
+using ControlRoomApplication.Database;
 
 namespace ControlRoomApplication.Entities
 {
@@ -7,7 +9,9 @@ namespace ControlRoomApplication.Entities
     {
         public List<RadioTelescopeControllerManagementThread> RTControllerManagementThreads { get; }
         public AbstractWeatherStation WeatherStation { get; }
-
+        public RemoteListener mobileControlServer { get; }
+        public int RemoteListenerPort { get; set; }
+        public bool weatherStationOverride { get; set; }
 
         public List<RadioTelescopeController> RadioTelescopeControllers
         {
@@ -39,10 +43,13 @@ namespace ControlRoomApplication.Entities
             }
         }
 
-        public ControlRoom(AbstractWeatherStation weatherStation)
+        public ControlRoom(AbstractWeatherStation weatherStation, int RemoteListenerPort)
         {
+            this.RemoteListenerPort = RemoteListenerPort;
             RTControllerManagementThreads = new List<RadioTelescopeControllerManagementThread>();
             WeatherStation = weatherStation;
+            mobileControlServer = new RemoteListener(RemoteListenerPort, this);
+            weatherStationOverride = DatabaseOperations.GetOverrideStatusForSensor(SensorItemEnum.WEATHER_STATION);
         }
     }
 }

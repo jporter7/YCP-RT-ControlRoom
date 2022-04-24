@@ -84,75 +84,100 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         }
 
         [TestMethod]
-        public void TestCalculateOrientation()
+        public void TestCalculateOrientation_PointAppointment()
         {
             DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
             DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
 
             // Test point appointment
             Appointment point_appt = new Appointment();
-            point_appt.Type = AppointmentTypeEnum.POINT;
-            point_appt.Status = AppointmentStatusEnum.REQUESTED;
-            point_appt.StartTime = start;
-            point_appt.EndTime = end;
+            point_appt._Type = AppointmentTypeEnum.POINT;
+            point_appt._Status = AppointmentStatusEnum.REQUESTED;
+            point_appt.start_time = start;
+            point_appt.end_time = end;
             point_appt.Coordinates.Add(new Coordinate(0, 0));
             var point_orientation = CoordinateCalculationController.CalculateOrientation(point_appt, start);
 
             Assert.IsTrue(point_orientation != null);
+        }
+
+        [TestMethod]
+        public void TestCalculateOrientation_CelestialBodyAppointment()
+        {
+            DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
+            DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
 
             // Test celesital body appointment
             Appointment sun_appt = new Appointment();
-            sun_appt.Type = AppointmentTypeEnum.CELESTIAL_BODY;
-            sun_appt.Status = AppointmentStatusEnum.REQUESTED;
-            sun_appt.StartTime = start;
-            sun_appt.EndTime = end;
+            sun_appt._Type = AppointmentTypeEnum.CELESTIAL_BODY;
+            sun_appt._Status = AppointmentStatusEnum.REQUESTED;
+            sun_appt.start_time = start;
+            sun_appt.end_time = end;
             sun_appt.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
             var sun_orientation = CoordinateCalculationController.CalculateOrientation(sun_appt, start);
 
             Assert.IsTrue(sun_orientation != null);
+        }
+
+        [TestMethod]
+        public void TestCalculateOrientation_RasterAppointment()
+        {
+            DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
+            DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
 
             // Test raster appointment
             Appointment raster_appt = new Appointment();
-            raster_appt.Type = AppointmentTypeEnum.RASTER;
-            raster_appt.Status = AppointmentStatusEnum.REQUESTED;
-            raster_appt.StartTime = start;
-            raster_appt.EndTime = end;
+            raster_appt._Type = AppointmentTypeEnum.RASTER;
+            raster_appt._Status = AppointmentStatusEnum.REQUESTED;
+            raster_appt.start_time = start;
+            raster_appt.end_time = end;
             raster_appt.Coordinates.Add(new Coordinate(0, 0));
             raster_appt.Coordinates.Add(new Coordinate(5, 5));
             var raster_orientation = CoordinateCalculationController.CalculateOrientation(raster_appt, start);
 
             Assert.IsTrue(raster_orientation != null);
+        }
+
+        [TestMethod]
+        public void TestCalculateOrientation_DriftScanAppointment()
+        {
+            DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
+            DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
 
             // Test drift scan appointment
             Appointment drift_scan_appt = new Appointment();
-            drift_scan_appt.Type = AppointmentTypeEnum.DRIFT_SCAN;
-            drift_scan_appt.Status = AppointmentStatusEnum.REQUESTED;
-            drift_scan_appt.StartTime = start;
-            drift_scan_appt.EndTime = end;
+            drift_scan_appt._Type = AppointmentTypeEnum.DRIFT_SCAN;
+            drift_scan_appt._Status = AppointmentStatusEnum.REQUESTED;
+            drift_scan_appt.start_time = start;
+            drift_scan_appt.end_time = end;
             drift_scan_appt.Orientation = new Orientation(30, 30);
             var orientation_orientation = CoordinateCalculationController.CalculateOrientation(drift_scan_appt, start);
 
             Assert.IsTrue(orientation_orientation != null);
+        }
+
+        [TestMethod]
+        public void TestCalculateOrientation_FreeControlAppointment()
+        {
+            DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
+            DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
 
             // Test free control appointment
             Appointment free_control_appt = new Appointment();
-            free_control_appt.Type = AppointmentTypeEnum.FREE_CONTROL;
-            free_control_appt.Status = AppointmentStatusEnum.REQUESTED;
-            free_control_appt.StartTime = start;
-            free_control_appt.EndTime = end;
+            free_control_appt._Type = AppointmentTypeEnum.FREE_CONTROL;
+            free_control_appt._Status = AppointmentStatusEnum.REQUESTED;
+            free_control_appt.start_time = start;
+            free_control_appt.end_time = end;
             free_control_appt.Orientation = new Orientation(30, 30);
-            DatabaseOperations.AddAppointment(free_control_appt);
+            free_control_appt._Priority = AppointmentPriorityEnum.MANUAL;
             var free_control_orientation_1 = CoordinateCalculationController.CalculateOrientation(free_control_appt, start);
 
-            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.IsTrue(free_control_orientation_1 != null);
             Assert.IsTrue(free_control_appt.Orientation == null);
 
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
-            DatabaseOperations.UpdateAppointment(free_control_appt);
             var free_control_orientation_2 = CoordinateCalculationController.CalculateOrientation(free_control_appt, end);
 
-            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.IsTrue(free_control_orientation_2 != null);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
         }
@@ -253,8 +278,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
             DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
             var appt = new Appointment();
-            appt.StartTime = start;
-            appt.EndTime = end;
+            appt.start_time = start;
+            appt.end_time = end;
             appt.Coordinates = new List<Coordinate>();
             var coord_1 = new Coordinate(12, 12);
             var coord_2 = new Coordinate(15, 15);
@@ -277,8 +302,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             DateTime start = new DateTime(2018, 10, 30, 12, 0, 0);
             DateTime end = new DateTime(2018, 10, 30, 13, 0, 0);
             var appt = new Appointment();
-            appt.StartTime = start;
-            appt.EndTime = end;
+            appt.start_time = start;
+            appt.end_time = end;
             appt.Coordinates = new List<Coordinate>();
             var coord_1 = new Coordinate(12, 12);
             var coord_2 = new Coordinate(15, 15);
@@ -300,8 +325,8 @@ namespace ControlRoomApplicationTest.EntityControllersTests
             DateTime date = new DateTime(2018, 10, 30, 12, 0, 0);
 
             Appointment drift_scan_appt = new Appointment();
-            drift_scan_appt.Type = AppointmentTypeEnum.DRIFT_SCAN;
-            drift_scan_appt.Status = AppointmentStatusEnum.REQUESTED;
+            drift_scan_appt._Type = AppointmentTypeEnum.DRIFT_SCAN;
+            drift_scan_appt._Status = AppointmentStatusEnum.REQUESTED;
             Orientation test_orientation = new Orientation(30, 30);
             drift_scan_appt.Orientation = test_orientation;
 
@@ -317,31 +342,27 @@ namespace ControlRoomApplicationTest.EntityControllersTests
 
             // Test free control appointment
             Appointment free_control_appt = new Appointment();
-            free_control_appt.Type = AppointmentTypeEnum.FREE_CONTROL;
-            free_control_appt.Status = AppointmentStatusEnum.REQUESTED;
+            free_control_appt._Type = AppointmentTypeEnum.FREE_CONTROL;
+            free_control_appt._Status = AppointmentStatusEnum.REQUESTED;
+            free_control_appt._Priority = AppointmentPriorityEnum.MANUAL;
             Orientation test_orientation = new Orientation(30, 30);
             free_control_appt.Orientation = test_orientation;
-            DatabaseOperations.AddAppointment(free_control_appt);
 
             // Test free control calibration
             var free_control_orientation_1 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
-            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.IsTrue(free_control_orientation_1.Elevation == test_orientation.Elevation);
             Assert.IsTrue(free_control_orientation_1.Azimuth == test_orientation.Azimuth);
             Assert.IsTrue(free_control_appt.Orientation == null);
 
             // Test free control move
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
-            DatabaseOperations.UpdateAppointment(free_control_appt);
             var free_control_orientation_2 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
-            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.AreEqual(-37.14, free_control_orientation_2.Elevation, 0.05);
             Assert.AreEqual(309.5, free_control_orientation_2.Azimuth, 0.05);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
 
             // Test free control move without coords
             var free_control_orientation_3 = CoordinateCalculationController.CalculateOrientation(free_control_appt, date);
-            free_control_appt = DatabaseOperations.GetUpdatedAppointment(free_control_appt.Id);
             Assert.IsTrue(free_control_orientation_3 == null);
             Assert.IsTrue(free_control_appt.Coordinates.Count == 0);
         }
@@ -351,8 +372,9 @@ namespace ControlRoomApplicationTest.EntityControllersTests
         {
             // Test free control appointment
             Appointment free_control_appt = new Appointment();
-            free_control_appt.Type = AppointmentTypeEnum.FREE_CONTROL;
-            free_control_appt.Status = AppointmentStatusEnum.REQUESTED;
+            free_control_appt._Type = AppointmentTypeEnum.FREE_CONTROL;
+            free_control_appt._Status = AppointmentStatusEnum.REQUESTED;
+            free_control_appt._Priority = AppointmentPriorityEnum.MANUAL;
             free_control_appt.Coordinates.Add(new Coordinate(0, 0));
 
             // Test free control move

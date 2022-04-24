@@ -1,10 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using ControlRoomApplication.Constants;
 using ControlRoomApplication.Entities;
+using ControlRoomApplication.Controllers;
 using ControlRoomApplication.Main;
+using System.Reflection;
+using System.Data.Entity.Core.Objects;
+using ControlRoomApplication.Util;
+using System.Threading;
+using System.Text;
 
 namespace ControlRoomApplication.Database
 {
@@ -12,6 +21,11 @@ namespace ControlRoomApplication.Database
     {
         private static readonly bool USING_REMOTE_DATABASE = false;
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        // used to tell if we need to create a control room user
+        // if control room user is already in the database, we do not want to push any users
+        // if it is not in the database, we want to create one then no more
+        private static bool createUser = false;
 
         /// <summary>
         /// Updates the appointment status by saving the appt passed in.
@@ -52,96 +66,9 @@ namespace ControlRoomApplication.Database
             }
             else
             {
-                RTDbContext LocalContext = new RTDbContext();
-                LocalContext.Database.CreateIfNotExists();
+                RTDbContext LocalContext = new RTDbContext(AWSConstants.LOCAL_DATABASE_STRING);
                 SaveContext(LocalContext);
                 return LocalContext;
-            }
-        }
-
-        /// <summary>
-        /// Populates the local database with 4 appointments for testing purposes.
-        /// </summary>
-        public static void PopulateLocalDatabase(int RT_id)
-        {
-            if (!USING_REMOTE_DATABASE)
-            {
-                Random rand = new Random();
-
-                using (RTDbContext Context = InitializeDatabaseContext())
-                {
-                    List<Appointment> appts = new List<Appointment>();
-
-                    DateTime DateTimeUniversalStart = DateTime.UtcNow.AddMinutes(1);
-
-                    Appointment appt0 = new Appointment();
-                    Appointment appt1 = new Appointment();
-                    Appointment appt2 = new Appointment();
-                    Appointment appt3 = new Appointment();
-
-                    Coordinate coordinate0 = new Coordinate();
-                    Coordinate coordinate1 = new Coordinate();
-                    Coordinate coordinate2 = new Coordinate();
-                    Coordinate coordinate3 = new Coordinate();
-
-                    coordinate0.RightAscension = 10.3;
-                    coordinate0.Declination = 50.8;
-
-                    coordinate1.RightAscension = 22.0;
-                    coordinate1.Declination = 83.63;
-
-                    coordinate2.RightAscension = 16.0;
-                    coordinate2.Declination = 71.5;
-
-                    coordinate3.RightAscension = 26.3;
-                    coordinate3.Declination = 85.12;
-
-                    // Add drift scan appointment
-                    appt0.StartTime = DateTimeUniversalStart.AddSeconds(20 + rand.Next(30));
-                    appt0.EndTime = appt0.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt0.Status = AppointmentStatusEnum.REQUESTED;
-                    appt0.Type = AppointmentTypeEnum.DRIFT_SCAN;
-                    appt0.Orientation = new Orientation(30, 30);
-                    appt0.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt0.TelescopeId = RT_id;
-                    appt0.UserId = 1;
-
-                    // Add celesital body appointment
-                    appt1.StartTime = appt0.EndTime.AddSeconds(20 + rand.Next(30));
-                    appt1.EndTime = appt1.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt1.Status = AppointmentStatusEnum.REQUESTED;
-                    appt1.Type = AppointmentTypeEnum.CELESTIAL_BODY;
-                    appt1.CelestialBody = new CelestialBody(CelestialBodyConstants.SUN);
-                    appt1.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.SPECTRAL);
-                    appt1.TelescopeId = RT_id;
-                    appt1.UserId = 1;
-
-                    // Add point appointment
-                    appt2.StartTime = appt1.EndTime.AddSeconds(20 + rand.Next(30));
-                    appt2.EndTime = appt2.StartTime.AddSeconds(10 + rand.Next(90));
-                    appt2.Status = AppointmentStatusEnum.REQUESTED;
-                    appt2.Type = AppointmentTypeEnum.POINT;
-                    appt2.Coordinates.Add(coordinate2);
-                    appt2.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt2.TelescopeId = RT_id;
-                    appt2.UserId = 1;
-
-                    // Add raster appointment
-                    appt3.StartTime = appt2.EndTime.AddSeconds(20 + rand.Next(30));
-                    appt3.EndTime = appt3.StartTime.AddMinutes(10 + rand.Next(90));
-                    appt3.Status = AppointmentStatusEnum.REQUESTED;
-                    appt3.Type = AppointmentTypeEnum.RASTER;
-                    appt3.Coordinates.Add(coordinate0);
-                    appt3.Coordinates.Add(coordinate1);
-                    appt3.SpectraCyberConfig = new SpectraCyberConfig(SpectraCyberModeTypeEnum.CONTINUUM);
-                    appt3.TelescopeId = RT_id;
-                    appt3.UserId = 1;
-
-                    appts.AddRange(new Appointment[] { appt0, appt1, appt2, appt3 });
-
-                    Context.Appointments.AddRange(appts);
-                    SaveContext(Context);
-                }
             }
         }
 
@@ -150,72 +77,235 @@ namespace ControlRoomApplication.Database
         /// </summary>
         public static void AddAppointment(Appointment appt)
         {
-            if (!USING_REMOTE_DATABASE)
+        
+            using (RTDbContext Context = InitializeDatabaseContext())
             {
-                using (RTDbContext Context = InitializeDatabaseContext())
+                if (createUser == false)
                 {
-                    Context.Appointments.Add(appt);
-                    SaveContext(Context);
+                    // we have this line so that we do not add another user
+                    Context.Entry(appt.User).State = EntityState.Unchanged;
                 }
+                else
+                {
+                    Context.Users.Add(appt.User);
+                    createUser = false;
+                }
+                    
+                if (Context.CelestialBodies.Any(t => t.Id == appt.CelestialBody.Id) == false)
+                {
+                    if (Context.Coordinates.Any(t => t.Id == appt.CelestialBody.Coordinate.Id))
+                        Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                    
+                    Context.CelestialBodies.Add(appt.CelestialBody);
+                }
+                if (Context.Orientations.Any(t => t.Id == appt.Orientation.Id) == false)
+                    Context.Orientations.Add(appt.Orientation);
+                if (Context.SpectraCyberConfigs.Any(t => t.Id == appt.SpectraCyberConfig.Id) == false)
+                    Context.SpectraCyberConfigs.Add(appt.SpectraCyberConfig);
+
+                Context.Entry(appt.Telescope).State = EntityState.Unchanged;
+                
+                Context.Appointments.Add(appt);
+                SaveContext(Context);
+
+                // Add coordinates
+                List<Appointment> alist = Context.Appointments.ToList<Appointment>();
+                foreach (Coordinate c in appt.Coordinates)
+                {
+                    c.apptId = alist[alist.Count - 1].Id;
+                    Context.Coordinates.AddOrUpdate(c);
+                }
+                SaveContext(Context);
             }
         }
 
-        /// <summary>
-        /// Deletes the local database, if it exists.
-        /// </summary>
-        public static void DeleteLocalDatabase()
+        //Update telescope to online 
+        public static void UpdateTelescope(RadioTelescope radioTelescope)
         {
-            if (!USING_REMOTE_DATABASE)
-            {
+          
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
-                    Context.Database.Delete();
+                // Update radio telescope
+
+                    radioTelescope.Location.Id = radioTelescope.location_id;
+                    Context.Location.AddOrUpdate(radioTelescope.Location);
+
+                    radioTelescope.CurrentOrientation.Id = radioTelescope.current_orientation_id;
+                    Context.Orientations.AddOrUpdate(radioTelescope.CurrentOrientation);
+
+                    radioTelescope.CalibrationOrientation.Id = radioTelescope.calibration_orientation_id;
+                    Context.Orientations.AddOrUpdate(radioTelescope.CalibrationOrientation);
+
+                    Context.RadioTelescope.AddOrUpdate(radioTelescope);
                     SaveContext(Context);
+
                 }
-            }
+            
+
         }
+
 
         /// <summary>
-        /// Returns the list of Appointments from the given context.
+        /// Returns the list of Appointments from the database.
         /// </summary>
-        private static DbQuery<Appointment> QueryAppointments(RTDbContext Context)
-        {
-            // Use Include method to load related entities from the database
-            return Context.Appointments.Include("Coordinates")
-                                        .Include("CelestialBody.Coordinate")
-                                        .Include("Orientation")
-                                        .Include("RFDatas")
-                                        .Include("SpectraCyberConfig");
-        }
-
-            /// <summary>
-            /// Returns the list of Appointments from the database.
-            /// </summary>
-            public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
+        public static List<Appointment> GetListOfAppointmentsForRadioTelescope(int radioTelescopeId)
         {
             List<Appointment> appts = new List<Appointment>();
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                // Use Include method to load related entities from the database
-                appts = QueryAppointments(Context).Where(x => x.TelescopeId == radioTelescopeId).ToList();
+                try
+                {
+
+                    // Use Include method to load related entities from the database
+                    var appoints = Context.Appointments.Include(t => t.Telescope)
+                                                        .Include(t => t.CelestialBody)
+                                                        .Include(t => t.CelestialBody.Coordinate)
+                                                        .Include(t => t.Orientation)
+                                                        .Include(t => t.SpectraCyberConfig)
+                                                        .Include(t => t.User)
+                                                        .ToList<Appointment>();
+
+                    appts = appoints.Where(x => x.telescope_id == radioTelescopeId).OrderBy(x => x.Id).ToList();
+
+                    // Add coordinates to the appointment
+                    var coordsForAppt = Context.Coordinates.ToList<Coordinate>();
+                
+                    foreach(Appointment a in appts)
+                    {
+                        foreach(Coordinate c in coordsForAppt)
+                        {
+                            if(c.apptId == a.Id) a.Coordinates.Add(c);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    ;
+                }
+                
             }
             return appts;
         }
 
         /// <summary>
-        /// Returns the updated Appointment from the database.
+        /// Returns the object of the control room user that we will use for all control room movements
         /// </summary>
-        public static Appointment GetUpdatedAppointment(int appt_id)
+        public static User GetControlRoomUser()
         {
-            Appointment appt;
+            User controlRoomUser = null;
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                List<Appointment> appts = new List<Appointment>();
                 // Use Include method to load related entities from the database
-                appts = QueryAppointments(Context).ToList();
-                appt = appts.Find(x => x.Id == appt_id);
+                List<User> users = Context.Users.SqlQuery("Select * from user WHERE first_name = 'control'").ToList<User>();
+
+                // users = users.Where(x => x.first_name == "control").ToList<User>();
+                
+                if(users.Count() == 0)
+                {
+                    users.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.SMS));
+                    createUser = true;
+                }
+                if(users.Count() > 1)
+                {
+                    throw new System.InvalidOperationException("Too many control room users");
+                }
+
+                controlRoomUser = users[0];
             }
-            return appt;
+            return controlRoomUser;
+        }
+
+        /// <summary>
+        /// Returns a list of all Users
+        /// </summary>
+        public static List<User> GetAllUsers()
+        {
+            List<User> AllUsers = new List<User>();
+
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                AllUsers = Context.Users.SqlQuery("Select * from user").ToList<User>();
+
+                if (AllUsers.Count() == 0)
+                {
+                    AllUsers.Add(new User("control", "room", "controlroom@gmail.com", NotificationTypeEnum.EMAIL));
+
+                    Context.Database.ExecuteSqlCommand("INSERT INTO user (first_name, last_name, email_address, notification_type) VALUES ('control', 'room', 'controlroom@gmail.com', 'ALL')");
+                    SaveContext(Context);
+                }
+            }
+            return AllUsers;
+        }
+        
+        /// <summary>
+        /// Returns a list of all Admin Users
+        /// </summary>
+        public static List<User> GetAllAdminUsers(bool testflag = false)
+        {
+            List<User> AdminUsers = new List<User>();
+
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                AdminUsers = Context.Users.SqlQuery("SELECT * FROM user U INNER JOIN user_role UR ON U.id = UR.user_id WHERE UR.role = 'ADMIN'").ToList<User>();
+            }
+            if(AdminUsers.Count() == 0 && testflag)
+            {
+                User dummy = CreateDummyUser();
+                AdminUsers.Add(dummy);
+            }
+            // We have to manually add the UserRole object to the admins pulled from the list; it doesn't travel with the SQL query
+            foreach (User u in AdminUsers)
+            {
+                UserRole ur = new UserRole(u.Id, UserRoleEnum.ADMIN);
+                u.UR = ur;
+            }
+            return AdminUsers;
+        }
+
+        /// <summary>
+        /// FOR TEST PURPOSES ONLY. Creates a dummy Admin-level user.
+        /// </summary>
+        /// <returns>Returns a fake 'user' with Admin privileges.</returns>
+        public static User CreateDummyUser()
+        {
+            User u = new User();
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                AddNewDummyUser();
+                u = GetDummyUser();
+                
+                Context.Database.ExecuteSqlCommand($"INSERT INTO user_role SET user_id = '{u.Id}', role = 'ADMIN'");
+                SaveContext(Context);
+            }
+            return u;
+        }
+
+        /// <summary>
+        /// FOR TEST PURPOSES ONLY. Adds the new dummy admin to the database.
+        /// </summary>
+        public static void AddNewDummyUser()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.Database.ExecuteSqlCommand("INSERT INTO user (first_name, last_name, email_address, notification_type) VALUES ('control2', 'room', 'controlroom2@gmail.com', 'ALL')");
+                SaveContext(Context);
+            }
+        }
+
+        /// <summary>
+        /// FOR TEST PURPOSES ONLY. Retrieves the dummy user from the database, if it does not already exist, to elevate to admin rank.
+        /// </summary>
+        /// <returns>The dummy user</returns>
+        public static User GetDummyUser()
+        {
+            User u = new User();
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                List<User> testUserList = new List<User>();
+                testUserList = Context.Users.SqlQuery("SELECT * FROM user WHERE (first_name = 'control2' AND last_name = 'room' AND email_address = 'controlroom2@gmail.com' AND notification_type = 'ALL')").ToList<User>();
+                u = testUserList.First();
+            }
+            return u;
         }
 
         /// <summary>
@@ -234,21 +324,124 @@ namespace ControlRoomApplication.Database
         }
 
         /// <summary>
+        /// Returns the list of Appointments from the database.
+        /// </summary>
+        public static int GetTotalRTCount()
+        {
+            int count = -1;
+
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                count = Context.RadioTelescope.Count();
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Returns the updated Appointment from the database.
+        /// </summary>
+        public static Appointment GetUpdatedAppointment(Appointment appt)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                // Because the celestial body is not required, we only want to 
+                // perform these operations if one is present.
+                if (appt.celestial_body_id != null)
+                {
+                    Context.Entry(appt.CelestialBody).State = EntityState.Unchanged;
+                    if (appt.CelestialBody.Coordinate != null)
+                        Context.Entry(appt.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                }
+                if (appt.Orientation != null)
+                    Context.Entry(appt.Orientation).State = EntityState.Unchanged;
+                Context.Entry(appt.SpectraCyberConfig).State = EntityState.Unchanged;
+                Context.Entry(appt.Telescope).State = EntityState.Unchanged;
+                Context.Entry(appt.User).State = EntityState.Unchanged;
+
+                Context.SaveChanges();
+
+                Context.Appointments.Attach(appt);
+
+                Context.Entry(appt).Reload();
+
+            }
+            return appt;
+        }
+
+        /// <summary>
         /// Creates and stores and RFData reading in the local database.
         /// </summary>
         /// <param name="data">The RFData reading to be created/stored.</param>
-        public static void CreateRFData(int apptId, RFData data)
+        public static void AddRFData(RFData data)
         {
             
             if (VerifyRFData(data))
             {
+
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
-                    var appt = Context.Appointments.Find(apptId);
-                    appt.RFDatas.Add(data);
-                    SaveContext(Context);
+
+                    // add the rf data to the list in appointment
+                    data.Appointment.RFDatas.Add(data);
+
+                    // add the rf data to the database
+                    Context.RFDatas.AddOrUpdate(data);
+
+                    Context.Entry(data.Appointment.User).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment).State = EntityState.Unchanged;
+                    if (data.Appointment.Orientation != null)
+                        Context.Entry(data.Appointment.Orientation).State = EntityState.Unchanged;
+                    if (data.Appointment.CelestialBody != null)
+                    {
+                        if (data.Appointment.CelestialBody.Coordinate != null)
+                            Context.Entry(data.Appointment.CelestialBody.Coordinate).State = EntityState.Unchanged;
+                        Context.Entry(data.Appointment.CelestialBody).State = EntityState.Unchanged;
+                    }
+                    Context.Entry(data.Appointment.SpectraCyberConfig).State = EntityState.Unchanged;
+                    Context.Entry(data.Appointment.Telescope).State = EntityState.Unchanged;
+
+                    // Only perform the following operations on a real telescope
+                    // (i.e. the fields will not be null)
+                    if(data.Appointment.Telescope.Location != null)
+                        Context.Entry(data.Appointment.Telescope.Location).State = EntityState.Unchanged;
+
+                    if(data.Appointment.Telescope.CurrentOrientation != null)
+                        Context.Entry(data.Appointment.Telescope.CurrentOrientation).State = EntityState.Unchanged;
+
+                    if(data.Appointment.Telescope.CalibrationOrientation != null)
+                        Context.Entry(data.Appointment.Telescope.CalibrationOrientation).State = EntityState.Unchanged;
+
+                    Context.SaveChanges();
                 }
             }
+        }
+
+        public static int GetTotalRFDataCount()
+        {
+            int count = -1;
+
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                count = Context.RFDatas.Count();
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Returns the list of Appointments from the database.
+        /// </summary>
+        public static List<RFData> GetListOfRFData()
+        {
+            List<RFData> appts = new List<RFData>();
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                // Use Include method to load related entities from the database
+                appts = Context.RFDatas.Include(t => t.Appointment).ToList<RFData>();
+
+            }
+            return appts;
         }
 
         /// <summary>
@@ -256,28 +449,36 @@ namespace ControlRoomApplication.Database
         /// </summary>
         /// <param name="appt"> The appt that is being updated. </param>
         public static void UpdateAppointment(Appointment appt)
-        { 
+        {
             if (VerifyAppointmentStatus(appt))
             {
                 using (RTDbContext Context = InitializeDatabaseContext())
                 {
-                    // Update database appt with new status
-                    var db_appt = QueryAppointments(Context).ToList().Find(x => x.Id == appt.Id);
-                    if (db_appt != null)
+                    // Add appointment
+                    Context.Appointments.AddOrUpdate(appt);
+
+                    // Retrieve all coordinates for appointment
+                    var coordsForAppt = Context.Coordinates.ToList<Coordinate>().Where(coord => coord.apptId == appt.Id);
+
+                    // Delete coordinates
+                    foreach(Coordinate c in coordsForAppt)
                     {
-                        db_appt.CelestialBody = appt.CelestialBody;
-                        db_appt.Coordinates = appt.Coordinates;
-                        db_appt.EndTime = appt.EndTime;
-                        db_appt.Orientation = appt.Orientation;
-                        db_appt.RFDatas = appt.RFDatas;
-                        db_appt.SpectraCyberConfig = appt.SpectraCyberConfig;
-                        db_appt.StartTime = appt.StartTime;
-                        db_appt.Status = appt.Status;
-                        db_appt.TelescopeId = appt.TelescopeId;
-                        db_appt.Type = appt.Type;
-                        db_appt.UserId = appt.UserId;
-                        SaveContext(Context);
+                        if (!appt.Coordinates.Any(co => co.Id == c.Id))
+                        {
+                            Context.Coordinates.Remove(c);
+                            Context.SaveChangesAsync();
+                        }
                     }
+
+                    // Add coordinates
+                    foreach (Coordinate c in appt.Coordinates)
+                    {
+                        c.apptId = appt.Id;
+                        Context.Coordinates.AddOrUpdate(c);
+                    }
+
+                    Context.SaveChangesAsync();
+
                 }
             }
         }
@@ -291,19 +492,18 @@ namespace ControlRoomApplication.Database
             Appointment appointment = null;
             using (RTDbContext Context = InitializeDatabaseContext())
             {
-                //logger.Debug("Retrieving list of appointments.");
+                //logger.Debug(Utilities.GetTimeStamp() + ": Retrieving list of appointments.");
                 List<Appointment> appointments = GetListOfAppointmentsForRadioTelescope(radioTelescopeId);
 
                 if (appointments.Count > 0)
                 {
-                    appointments.RemoveAll(x => x.StartTime < DateTime.UtcNow || x.Status == AppointmentStatusEnum.COMPLETED);
+                    appointments.RemoveAll(x => x._Status == AppointmentStatusEnum.COMPLETED || x._Status == AppointmentStatusEnum.CANCELED || x._Status == AppointmentStatusEnum.REQUESTED);
                     appointments.Sort();
-                    logger.Debug("Appointment list sorted. Starting to retrieve the next chronological appointment.");
                     appointment = appointments.Count > 0 ? appointments[0] : null;
                 }
                 else
                 {
-                    //logger.Debug("No appointments found");
+                    //logger.Debug(Utilities.GetTimeStamp() + ": No appointments found");
                 }
             }
             
@@ -340,44 +540,150 @@ namespace ControlRoomApplication.Database
         /// <returns> A boolean indicating whether or not the status is valid.</returns>
         private static bool VerifyAppointmentStatus(Appointment appt)
         {
-            return  appt.Status.Equals(AppointmentStatusEnum.CANCELLED) || 
-                    appt.Status.Equals(AppointmentStatusEnum.COMPLETED) ||
-                    appt.Status.Equals(AppointmentStatusEnum.IN_PROGRESS) ||
-                    appt.Status.Equals(AppointmentStatusEnum.REQUESTED) ||
-                    appt.Status.Equals(AppointmentStatusEnum.SCHEDULED);
+            return  appt._Status.Equals(AppointmentStatusEnum.CANCELED) || 
+                    appt._Status.Equals(AppointmentStatusEnum.COMPLETED) ||
+                    appt._Status.Equals(AppointmentStatusEnum.IN_PROGRESS) ||
+                    appt._Status.Equals(AppointmentStatusEnum.REQUESTED) ||
+                    appt._Status.Equals(AppointmentStatusEnum.SCHEDULED);
         }
+
         /// <summary>
         /// add an array of sensor data to the apropriat table
         /// </summary>
         /// <param name="temp"></param>
-        public static void AddSensorData( List<Temperature> temp ) {
-            if(temp.Count <= 0) { return; }
-            if(!USING_REMOTE_DATABASE) {
-                using(RTDbContext Context = InitializeDatabaseContext()) {
-                    Context.Temperatures.AddRange( temp );
-                    //foreach(Temperature tump in temp) {}
-                    SaveContext( Context );
+        public static void AddSensorData(Temperature[] temp, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+                if (temp.Length <= 0) { return; }
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        Context.Temperatures.AddRange(temp);
+                        //foreach(Temperature tump in temp) {}
+                        SaveContext(Context);
+                    }
                 }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
+        }
+        /// <summary>
+        /// add an array of sensor data to the apropriat table
+        /// </summary>
+        /// <param name="acc"></param>
+        public static void AddSensorData(Acceleration[] acc, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+                if (acc.Length <= 0) { return; }
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        Context.Accelerations.AddRange(acc);
+                        //foreach(Temperature tump in temp) {}
+                        SaveContext(Context);
+                    }
+                }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
+        }
+
+        /// <summary>
+        /// add an Blob of acceleration data to the apropriate table
+        /// </summary>
+        /// <param name="acc"></param>
+        /// <param name="location"></param>
+        /// <param name="testflag"></param>
+        public static void AddAccelerationBlobData(AccelerationBlob acc, SensorLocationEnum location, bool testflag = false)
+        {
+            Thread t = new Thread(() =>
+            {
+
+                if (!USING_REMOTE_DATABASE)
+                {
+                    using (RTDbContext Context = InitializeDatabaseContext())
+                    {
+                        //based on the specified location enum, add the blob to the corret table
+                        switch (location)
+                        {
+                            case SensorLocationEnum.AZ_MOTOR:
+                                Context.AzimuthAccelerationBlobs.Add((AzimuthAccelerationBlob)acc);
+                                break;
+
+                            case SensorLocationEnum.COUNTERBALANCE:
+                                Context.CounterbalanceAccelerationBlobs.Add((CounterbalanceAccelerationBlob)acc);
+                                break;
+
+                            case SensorLocationEnum.EL_MOTOR:
+                                Context.ElevationAccelerationBlobs.Add((ElevationAccelerationBlob)acc);
+                                break;
+                        }
+
+                        SaveContext(Context);
+                    }
+                }
+            });
+
+            t.Start();
+
+            if (testflag) t.Join();
+        }
+
+        /// <summary>
+        /// get acc between starttime and now from sensor location loc
+        /// </summary>
+        /// <param name="starttime"></param>
+        /// <param name="endTime"> currently unused</param>
+        /// <param name="loc"></param>
+        /// <returns></returns>
+        public static List<Acceleration> GetACCData(long starttime, long endTime, SensorLocationEnum loc)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {//&& x.TimeCaptured < endTime
+                return Context.Accelerations.Where(x => x.TimeCaptured > starttime && x.location_ID == (int)loc).ToList();
             }
         }
 
-        public static void AddSensorData( List<Acceleration> acc ) {
-            if(acc.Count <= 0) { return; }
-            if(!USING_REMOTE_DATABASE) {
-                using(RTDbContext Context = InitializeDatabaseContext()) {
-                    Context.Accelerations.AddRange( acc );
-                    //foreach(Temperature tump in temp) {}
-                    SaveContext( Context );
-                }
-            }
-        }
-
-        public static List<Acceleration> GetACCData( long starttime , long endTime, SensorLocationEnum loc ) {
+        //returns the Azimuth Acc Blobs between the start and end times
+        public static List<AzimuthAccelerationBlob> GetAzAccBlobData( long starttime , long endTime) {
             using(RTDbContext Context = InitializeDatabaseContext()) {//&& x.TimeCaptured < endTime
-                return Context.Accelerations.Where( x => x.TimeCaptured > starttime && x.location_ID == (int)loc ).ToList();
+                return Context.AzimuthAccelerationBlobs.Where( x => x.FirstTimeCaptured >= starttime && x.FirstTimeCaptured <= endTime).ToList();
             }
         }
 
+        //returns the Counterbalance Acc Blobs between the start and end times
+        public static List<CounterbalanceAccelerationBlob> GetCbAccBlobData(long starttime, long endTime)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {//&& x.TimeCaptured < endTime
+                return Context.CounterbalanceAccelerationBlobs.Where(x => x.FirstTimeCaptured >= starttime && x.FirstTimeCaptured <= endTime).ToList();
+            }
+        }
+
+        //returns the Elevation Acc Blobs between the start and end times
+        public static List<ElevationAccelerationBlob> GetElAccBlobData(long starttime, long endTime)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {//&& x.TimeCaptured < endTime
+                return Context.ElevationAccelerationBlobs.Where(x => x.FirstTimeCaptured >= starttime && x.FirstTimeCaptured <= endTime).ToList();
+            }
+        }
+
+        /// <summary>
+        /// get temp between starttime and now from sensor location loc
+        /// </summary>
+        /// <param name="starttime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="loc"></param>
+        /// <returns></returns>
         public static List<Temperature> GetTEMPData( long starttime , long endTime, SensorLocationEnum loc ) {
             using(RTDbContext Context = InitializeDatabaseContext()) {// && x.TimeCaptured < endTime) )   && x.TimeCaptured.Ticks < endTime.Ticks
                 return Context.Temperatures.Where( x => x.TimeCapturedUTC > starttime && x.location_ID == (int)loc ).ToList();
@@ -398,5 +704,326 @@ namespace ControlRoomApplication.Database
                 }
             }
         }
+
+        /// <summary>
+        /// Adds the weather data
+        /// </summary>
+        public static void AddWeatherData(WeatherData weather)
+        {
+           using (RTDbContext Context = InitializeDatabaseContext())
+           {
+               Context.Weather.Add(weather);
+               SaveContext(Context);
+           }
+        }
+
+        /// <summary>
+        /// Adds the sensor status data
+        /// </summary>
+        public static void AddSensorStatusData(SensorStatus sensors)
+        {
+           using (RTDbContext Context = InitializeDatabaseContext())
+           {
+               Context.SensorStatus.Add(sensors);
+               SaveContext(Context);
+
+               //logger.Info(Utilities.GetTimeStamp() + ": Added sensor status data to database");
+           }
+        }
+
+        /// <summary>
+        /// Grabs the current threshold value from the database for the specific sensor
+        /// </summary>
+        public static double GetThresholdForSensor(SensorItemEnum item)
+        {
+            double val;
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                List<ThresholdValues> thresholds = Context.ThresholdValues.Where<ThresholdValues>(t => t.sensor_name == item.ToString()).ToList<ThresholdValues>();
+
+                if (thresholds.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                val = Convert.ToDouble(thresholds[0].maxValue);
+            }
+
+            return val;
+        }
+
+        /// <summary>
+        /// Updates the current override to whatever is provided
+        /// </summary>
+        public static void SetOverrideForSensor(SensorItemEnum item, bool doOverride)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var overrides = Context.Override.Where<Override>(t => t.sensor_name == item.ToString()).ToList<Override>();
+                
+                if(overrides.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                Override current = overrides[0];
+                current.Overridden = Convert.ToSByte(doOverride);
+
+                Context.Override.AddOrUpdate(current);
+
+                Context.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Gets the current status of the override
+        /// </summary>
+        public static bool GetOverrideStatusForSensor(SensorItemEnum item)
+        {
+            Override current;
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var overrides = Context.Override.Where<Override>(t => t.sensor_name == item.ToString()).ToList<Override>();
+
+                if (overrides.Count() != 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                current = overrides[0];
+            }
+
+            return current.Overridden == 1;
+        }
+
+        /// <summary>
+        /// Adds the radio telescope
+        /// </summary>
+        public static void AddRadioTelescope(RadioTelescope telescope)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.RadioTelescope.Add(telescope);
+                SaveContext(Context);
+
+                logger.Info(Utilities.GetTimeStamp() + ": Added radio telescope to database");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the lowest 'ID' radio telescope from the database
+        /// </summary>
+        public static RadioTelescope FetchFirstRadioTelescope()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var telescopes = Context.RadioTelescope
+                    .Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .ToList<RadioTelescope>();
+
+                foreach (RadioTelescope rt in telescopes)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": Retrieved Radio Telescope from the database");
+                    return rt;
+                }
+
+                logger.Info(Utilities.GetTimeStamp() + ": No Radio Telescope found in the database");
+                return null;
+                
+            }
+        }
+
+        /// <summary>
+        /// Method used to retrieve the last RadioTelescope found in the database
+        /// </summary>
+        /// <returns>last RadioTelescope instance found in the database</returns>
+        public static RadioTelescope FetchLastRadioTelescope()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var telescopes = Context.RadioTelescope
+                    .Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .ToList<RadioTelescope>();
+
+                return telescopes[telescopes.Count - 1];
+            }
+        }
+        
+
+        /// <summary>
+        /// Function to retrieve a RT Instance in the database by a given ID
+        /// </summary>
+        /// <param name="id">ID of RadioTelescope inside the DB</param>
+        /// <returns> RadioTelescope found in the database with the associated ID
+        /// Null, if the specified RT does not exist. </returns>
+        public static RadioTelescope FetchRadioTelescopeByID(int id)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var telescope = Context.RadioTelescope.
+                    Include(t => t.Location)
+                    .Include(t => t.CalibrationOrientation)
+                    .Include(t => t.CurrentOrientation)
+                    .Where(t => t.Id == id).FirstOrDefault();
+
+                if(telescope == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The Radio Telescope with ID " + id + " could not be found.");
+                    return null;
+                }
+                else
+                {
+                    return telescope;
+                }
+            }
+
+            
+        }
+
+        /// <summary>
+        /// Adds a new Sensor Network Configuration to the database
+        /// </summary>
+        public static void AddSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                // First see if the config already exists (if Add was called by accident)
+                var testConf = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
+
+                // if it exists, forward the config to UpdateSensorNetworkConfig
+                if (testConf != null)
+                {
+                    UpdateSensorNetworkConfig(config);
+                }
+                else
+                {
+                    Context.SensorNetworkConfig.Add(config);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + $": Created Sensor Network Configuration for Radio Telescope {config.TelescopeId}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns a SensorNetworkConfig based on the RadioTelescope.Id provided.
+        /// </summary>
+        /// <param name="telescopeId">ID of the Radio Telescope the SensorNetworkConfig is related to</param>
+        /// <returns>SensorNetworkConfig pertaining to a Radio Telescope; if none is found, null</returns>
+        public static SensorNetworkConfig RetrieveSensorNetworkConfigByTelescopeId(int telescopeId)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var config = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == telescopeId).FirstOrDefault();
+
+                if (config == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The Sensor Network Configuration for Telescope ID " + telescopeId + " could not be found.");
+                    return null;
+                }
+                else
+                {
+                    return config;
+                }
+            }
+        }
+
+        /// <summary>
+        /// This will update the sensor network configuration for a specific Telescope
+        /// </summary>
+        /// <param name="config">The SensorNetworkConfig to be updated</param>
+        public static void UpdateSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var outdated = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
+
+                if (outdated == null)
+                {
+                    throw new InvalidOperationException($"Cannot update config; no config found with a telescope of ID {config.TelescopeId}");
+                }
+                else
+                {
+                    config.Id = outdated.Id;
+                    Context.SensorNetworkConfig.AddOrUpdate(config);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + ": Updated Sensor Network Configuration for Telescope ID " + config.TelescopeId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Method used to delete a SensorNetworkConfig. This is not currently being
+        /// used in any production code, only for unit tests.
+        /// </summary>
+        /// <param name="config">The SensorNetworkConfig to be deleted.</param>
+        public static void DeleteSensorNetworkConfig(SensorNetworkConfig config)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var toDelete = Context.SensorNetworkConfig
+                    .Where(c => c.TelescopeId == config.TelescopeId).FirstOrDefault();
+
+                if (toDelete == null)
+                {
+                    throw new InvalidOperationException($"Cannot delete config; no config found with a telescope of ID {config.TelescopeId}");
+                }
+                else
+                {
+                    Context.SensorNetworkConfig.Attach(toDelete);
+                    Context.SensorNetworkConfig.Remove(toDelete);
+                    SaveContext(Context);
+
+                    logger.Info(Utilities.GetTimeStamp() + ": Deleted Sensor Network Configuration for Telescope ID " + config.TelescopeId);
+                }
+            }
+        }
+        /// <summary>
+        /// Adds a selected weather Threshold to the database
+        /// </summary>
+        /// <param name="weatherThreshold"></param>
+        public static void AddWeatherThreshold(WeatherThreshold weatherThreshold)
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                Context.WeatherThreshold.Add(weatherThreshold);
+                SaveContext(Context);
+
+                logger.Info(Utilities.GetTimeStamp() + ": Added WeatherThreshold to database");
+            }
+        }
+
+        /// <summary>
+        /// Routine to retrieve the time interval for dumping snow off of the dish (in minutes) from the database
+        /// </summary>
+        public static WeatherThreshold FetchWeatherThreshold()
+        {
+            using (RTDbContext Context = InitializeDatabaseContext())
+            {
+                var threshold = Context.WeatherThreshold.FirstOrDefault();
+
+
+                if (threshold == null)
+                {
+                    logger.Info(Utilities.GetTimeStamp() + ": The WeatherThreshold data could not be found. Creating a new one with default values...");
+                    // default values of 0 windSpeed and 2 hours for snow dump time. If the table is empty, add it
+                    threshold = new WeatherThreshold(0, 120);
+                    AddWeatherThreshold(threshold);
+                }
+                return threshold;
+               
+            }
+            
+        }
+
+
     }
 }
