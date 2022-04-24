@@ -156,7 +156,6 @@
             this.comboSpectraCyberBox.Name = "comboSpectraCyberBox";
             this.comboSpectraCyberBox.Size = new System.Drawing.Size(246, 28);
             this.comboSpectraCyberBox.TabIndex = 2;
-            this.comboSpectraCyberBox.SelectedIndexChanged += new System.EventHandler(this.comboSpectraCyberBox_SelectedIndexChanged);
             // 
             // txtPLCIP
             // 
@@ -186,7 +185,6 @@
             this.comboWeatherStationBox.Name = "comboWeatherStationBox";
             this.comboWeatherStationBox.Size = new System.Drawing.Size(247, 28);
             this.comboWeatherStationBox.TabIndex = 1;
-            this.comboWeatherStationBox.SelectedIndexChanged += new System.EventHandler(this.comboWeatherStationBox_SelectedIndexChanged);
             // 
             // comboPLCType
             // 
@@ -264,7 +262,6 @@
             this.LocalIPCombo.Name = "LocalIPCombo";
             this.LocalIPCombo.Size = new System.Drawing.Size(246, 28);
             this.LocalIPCombo.TabIndex = 16;
-            this.LocalIPCombo.SelectedIndexChanged += new System.EventHandler(this.LocalIPCombo_SelectedIndexChanged);
             // 
             // label1
             // 
