@@ -782,20 +782,6 @@ namespace ControlRoomApplication.Main
             }
         }
 
-        /// <summary>
-        /// Whie these two methods don't currently do anything, they are here for if we ever need to use them. We also need event listeners for these two combo boxes. 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void comboSpectraCyberBox_SelectedIndexChanged(object sender, EventArgs e) {}
-
-        /// <summary>
-        /// Same as above
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void comboWeatherStationBox_SelectedIndexChanged(object sender, EventArgs e){}
-
         private void txtPLCPort_TextChanged(object sender, EventArgs e)
         {
             PLCPortValid = Validator.ValidatePort(txtPLCPort.Text);
@@ -815,11 +801,6 @@ namespace ControlRoomApplication.Main
             {
                 acceptSettings.Enabled = true;
             }
-
-        }
-
-        private void LocalIPCombo_SelectedIndexChanged(object sender, EventArgs e)
-        {
 
         }
 
